@@ -1,0 +1,60 @@
+# `templates/` — modelos de documento e ENV
+
+## Para que serve
+
+Modelos Markdown que skills/workflows preenchem (ARD, RFC, tech spec, PRD, planos QA…) e o **template canônico do ENV** do projeto.
+
+## Como é montado
+
+```
+templates/
+├── AGENTS.md
+├── ENV-template.md              # ÚNICA fonte do ENV.md no init (fork)
+├── CDD aplicado a Prompts.md    # referência conceitual CDD
+└── engineering/
+    ├── AGENTS-template.md       # gera AGENTS.md do projeto alvo
+    ├── ARD-template.md
+    ├── RFC-template.md
+    ├── RFC-Playbook.md
+    ├── tech-spec-template.md
+    ├── architecture-template.md
+    ├── c4-model-template.md
+    ├── plan-template.md
+    ├── PR-template.md
+    ├── breakdown-subtasks-template.md
+    ├── data-pipeline-template.md
+    ├── data-contract-template.md
+    ├── work-progress-template.md
+    ├── swagger-template.md
+    ├── CONTACTS-template.md
+    └── qa/
+        ├── qa.cypress-test-template.md
+        ├── qa.exploratory-session-template.md
+        ├── qa.quality-report-template.md
+        ├── qa.release-signoff-template.md
+        ├── qa.sprint-plan-template.md
+        └── eng.qa.quality-gate-*-template.md
+```
+
+Templates de produto (PRD/FRD/Epic) podem viver sob skills `prod-specs` ou workflows product — o núcleo engineering está nesta árvore.
+
+## `ENV-template.md` (crítico)
+
+O skill `init-jarvis` **deve** copiar este arquivo inteiro e só substituir valores. Não inventar chaves.
+
+Inclui (entre outros):
+
+- Workspace / `USER` / `MAX_AI_EXECUTION_PERCENTAGE` / `ENABLE_CDD`
+- `SQUAD`, `HUB`, `AREA`, `POSITION`
+- Pastas IDE (`FLOWS_FOLDER`, `SESSIONS_DIR`, …)
+- Task manager (vazio = freelance), VCS, chat, DB, broker, observabilidade…
+- `JARVIS_PROJECT`, `CENTRAL_DOCS_*`
+- `RTK_ENABLED`
+- Bloco `DATA_*` (só se `HUB=DATA`)
+
+## No ciclo de vida
+
+1. Versionados neste repo.
+2. `jarvis init` → `.$IDE/templates/`.
+3. `/init-jarvis` lê `templates/ENV-template.md` (do framework ou da cópia na IDE, conforme o skill) e grava `$IDE/ENV.md`.
+4. Outros workflows leem o template correspondente ao artefato (ARD, plan, …).
