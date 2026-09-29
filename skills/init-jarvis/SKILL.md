@@ -123,7 +123,7 @@ cat taxonomy.md
    - Exemplo: nomes em `###` sob Squads no `taxonomy.md`
 
 2. **HUBS**: Todas as opções sob "## 🎯 Hubs"
-   - Extrair: `AI`, `FRONTEND`, `BACKEND`, `QA`, `DATA`
+   - Extrair: `AI`, `FRONTEND`, `BACKEND`, `QA`, `DATA`, `FULLCYCLE`
 
 3. **POSITIONS**: Todas as opções sob "## 👤 Positions"
    - Extrair: `JUNIOR`, `PLENO`, `SENIOR`, `TECH LEAD`, etc.
