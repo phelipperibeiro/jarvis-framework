@@ -936,10 +936,15 @@ function matchesProfile(appliesTo, profile) {
   // FULLCYCLE é superusuário do eixo HUB: satisfaz qualquer applies_to HUB
   const hubMatches = profile.HUB === 'FULLCYCLE' || matches(appliesTo.HUB, profile.HUB)
 
+  // GENERALIST é superusuário dos eixos POSITION e AREA: transita entre
+  // ENGINEERING/PRODUCT e satisfaz qualquer POSITION exigida
+  const positionMatches = profile.POSITION === 'GENERALIST' || matches(appliesTo.POSITION, profile.POSITION)
+  const areaMatches = profile.POSITION === 'GENERALIST' || matches(appliesTo.AREA, profile.AREA)
+
   return (
     hubMatches &&
-    matches(appliesTo.POSITION, profile.POSITION) &&
-    matches(appliesTo.AREA, profile.AREA) &&
+    positionMatches &&
+    areaMatches &&
     matches(appliesTo.SQUAD, profile.SQUAD)
   )
 }
@@ -1153,7 +1158,7 @@ Se `taxonomy.md` não existir ou estiver corrompido, usar:
 const DEFAULT_OPTIONS = {
   SQUADS: ['CORE', 'SUPPORT'],
   HUBS: ['AI', 'FRONTEND', 'BACKEND', 'QA', 'DATA', 'FULLCYCLE'],
-  POSITIONS: ['HEAD', 'JUNIOR', 'PLENO', 'SENIOR', 'TECH LEAD', 'SPECIALIST', 'PM', 'TPM', 'GPM', 'CTO'],
+  POSITIONS: ['HEAD', 'JUNIOR', 'PLENO', 'SENIOR', 'TECH LEAD', 'SPECIALIST', 'PM', 'TPM', 'GPM', 'CTO', 'GENERALIST'],
   AREAS: ['ENGINEERING', 'PRODUCT']
 }
 ```

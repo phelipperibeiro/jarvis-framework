@@ -150,6 +150,13 @@ Chief Technology Officer
 - Responsável por toda organização técnica
 - Decisões de alto nível sobre arquitetura e stack
 
+### GENERALIST
+Profissional que acumula funções de outras posições (SPECIALIST, PM, dev, QA etc.) conforme a demanda — típico de times pequenos sem gente dedicada por função
+- Cargo principal (como SPECIALIST), não designação secundária (diferente de QUALITY_CHAMPION)
+- Transita entre ENGINEERING e PRODUCT — não fica restrito a uma única área
+- Em qualquer verificação de POSITION ou AREA, é tratado como coringa/superusuário: satisfaz qualquer valor exigido
+- No fluxo downstream: dono ponta-a-ponta do card que assumiu, com autonomia equivalente a TECH LEAD/staff (ver eng-rules.md)
+
 ---
 
 ## 📊 Areas (Áreas de Negócio)
