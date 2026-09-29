@@ -129,7 +129,7 @@ cat taxonomy.md
    - Extrair: `JUNIOR`, `PLENO`, `SENIOR`, `TECH LEAD`, etc.
 
 4. **AREAS**: Todas as opções sob "## 📊 Areas"
-   - Extrair: `ENGINEERING`, `PRODUCT`, `RH`, `OPERAÇÕES`, `SALES`
+   - Extrair: `ENGINEERING`, `PRODUCT`
 
 **Formato de parsing**:
 ```javascript
@@ -1151,7 +1151,7 @@ const DEFAULT_OPTIONS = {
   SQUADS: ['CORE', 'SUPPORT'],
   HUBS: ['AI', 'FRONTEND', 'BACKEND', 'QA', 'DATA'],
   POSITIONS: ['HEAD', 'JUNIOR', 'PLENO', 'SENIOR', 'TECH LEAD', 'SPECIALIST', 'PM', 'TPM', 'GPM', 'CTO'],
-  AREAS: ['ENGINEERING', 'PRODUCT', 'RH', 'OPERAÇÕES', 'SALES']
+  AREAS: ['ENGINEERING', 'PRODUCT']
 }
 ```
 

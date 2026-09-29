@@ -87,7 +87,7 @@ Seções:
 | Squads    | `CORE`, `SUPPORT`                                           |
 | Hubs      | `AI`, `FRONTEND`, `BACKEND`, `QA`, `DATA`                   |
 | Positions | `JUNIOR` … `CTO`, `QA-ENGINEER`, `TECH ANALYST`, …          |
-| Areas     | `ENGINEERING`, `PRODUCT`, `RH`, `OPERAÇÕES`, `SALES`        |
+| Areas     | `ENGINEERING`, `PRODUCT`                                    |
 | Domain    | e-mail corporativo (opcional; fork sem domínio obrigatório) |
 
 Cada opção é um heading `### NOME`. O init valida respostas contra essa lista.

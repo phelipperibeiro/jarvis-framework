@@ -174,9 +174,6 @@ HUB=$(grep "^HUB=" $IDE/ENV.md | cut -d= -f2)
 
 ex: AREA=ENGINEERING → prefix="eng",  area="engineering"
     AREA=PRODUCT     → prefix="prod", area="product"
-    AREA=RH          → prefix="rh",   area="rh"
-    AREA=OPERAÇÕES   → prefix="ops",  area="operações"
-    AREA=SALES       → prefix="sales",area="sales"
 ```
 
 > Se o prefixo não estiver definido no taxonomy, usar `lowercase(AREA)` como fallback.
@@ -202,7 +199,6 @@ git status --short               ← estado atual do repositório
 $RULES_FOLDER/{area}/{prefix}-rules.md
 ex: $RULES_FOLDER/engineering/eng-rules.md
     $RULES_FOLDER/product/prod-rules.md
-    $RULES_FOLDER/rh/rh-rules.md
 ```
 
 **Regras do hub (adicionar ao contexto base, se existir):**
@@ -224,9 +220,6 @@ README.md (raiz do projeto)      ← visão geral do projeto
 | ENGINEERING | eng | QA | `docs/engineering/index.md` → `rules/engineering/eng-rules.md` → `rules/engineering/qa/qa-rules.md` |
 | ENGINEERING | eng | AI | `docs/engineering/index.md` → `rules/engineering/eng-rules.md` → `rules/engineering/ai/ai-rules.md` |
 | PRODUCT | prod | — | `docs/product/index.md` → `rules/product/prod-rules.md` |
-| RH | rh | — | `docs/rh/index.md` → `rules/rh/rh-rules.md` |
-| OPERAÇÕES | ops | — | `docs/operações/index.md` → `rules/operações/ops-rules.md` |
-| SALES | sales | — | `docs/sales/index.md` → `rules/sales/sales-rules.md` |
 
 > **Importante**: Se um arquivo ou pasta não existir, ignore silenciosamente — não errar, não inventar.
 > Novos valores de AREA ou HUB adicionados ao taxonomy.md funcionam automaticamente sem alterar este workflow.
@@ -472,7 +465,7 @@ Roteamento:
 - D → `$FLOWS_FOLDER/product/prod.spec.epic.md`
 - E → perguntar e rotear dinamicamente
 
-### Menu genérico (AREA=RH, OPERAÇÕES, SALES ou qualquer outro)
+### Menu genérico (qualquer AREA além de ENGINEERING/PRODUCT)
 
 ```
 Como você quer continuar?
