@@ -167,28 +167,6 @@ prefix: prod
 - Discovery e research
 - Roadmap e estratégia
 
-### RH
-prefix: rh
-Recursos Humanos
-- Recrutamento e seleção
-- Desenvolvimento de pessoas
-- Cultura organizacional
-
-### OPERAÇÕES
-prefix: ops
-Operações e Execução
-- Operações diárias
-- Execução de projetos
-- Gestão de processos
-- Execução de processo manualmente
-
-### SALES
-prefix: sales
-Vendas e Comercial
-- Prospecção de clientes
-- Negociação e fechamento
-- Relacionamento comercial
-
 DOMAIN:
 
 ---

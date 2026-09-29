@@ -118,7 +118,7 @@ O framework usa `taxonomy.md` (raiz) como fonte de verdade para opções válida
 - **SQUADS** - Times de desenvolvimento
 - **HUBS** - Áreas técnicas (AI, FRONTEND, BACKEND, QA, DATA)
 - **POSITIONS** - Cargos (JUNIOR, PLENO, SENIOR, TECH LEAD, etc.)
-- **AREAS** - Áreas de negócio (ENGINEERING, PRODUCT, RH, OPERAÇÕES, SALES)
+- **AREAS** - Áreas de negócio (ENGINEERING, PRODUCT)
 
 **Relação com init-jarvis:**
 1. `taxonomy.md` define as opções válidas
