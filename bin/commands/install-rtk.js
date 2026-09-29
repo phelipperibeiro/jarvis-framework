@@ -11,6 +11,15 @@ function commandExists(cmd) {
   }
 }
 
+function isValidTokenKiller() {
+  try {
+    const helpOutput = execSync("rtk gain --help 2>&1", { encoding: "utf-8" });
+    return helpOutput.toLowerCase().includes("gain") || helpOutput.toLowerCase().includes("token");
+  } catch {
+    return false;
+  }
+}
+
 export async function installRtk(flags) {
   configureFromFlags(flags);
 
@@ -21,13 +30,20 @@ export async function installRtk(flags) {
 
   // 1. Verificar se RTK já está instalado
   if (commandExists("rtk")) {
-    try {
-      const version = execSync("rtk --version", { encoding: "utf-8" }).trim();
-      logger.info(`${GREEN}✓ RTK já instalado: ${version}${NC}`);
-      logger.info(`${DIM}  Para atualizar: cargo install brokk-rtk --force${NC}`);
+    // Validar que é o Token Killer (não Rust Type Kit)
+    if (isValidTokenKiller()) {
+      try {
+        const version = execSync("rtk --version", { encoding: "utf-8" }).trim();
+        logger.info(`${GREEN}✓ RTK já instalado: ${version}${NC}`);
+        logger.info(`${DIM}  Para atualizar: cargo install brokk-rtk --force${NC}`);
+        logger.info("");
+        return;
+      } catch {}
+    } else {
+      logger.info(`${YELLOW}⚠ RTK encontrado mas não é o Token Killer (Rust Type Kit detectado)${NC}`);
+      logger.info(`${DIM}  Sobrescrevendo com Token Killer...${NC}`);
       logger.info("");
-      return;
-    } catch {}
+    }
   }
 
   // 2. Verificar se cargo está disponível
@@ -73,15 +89,7 @@ export async function installRtk(flags) {
 
   // 4. Verificar instalação
   if (commandExists("rtk")) {
-    try {
-      // Validar que é o Token Killer (não Rust Type Kit)
-      const helpOutput = execSync("rtk gain --help 2>&1", { encoding: "utf-8" });
-
-      // Se 'gain' não funcionar, é o crate errado
-      if (!helpOutput.toLowerCase().includes("gain") && !helpOutput.toLowerCase().includes("token")) {
-        throw new Error("RTK encontrado mas não é o Token Killer (comando 'gain' não funciona)");
-      }
-
+    if (isValidTokenKiller()) {
       const version = execSync("rtk --version", { encoding: "utf-8" }).trim();
       logger.info("");
       logger.info(`${GREEN}✓ RTK instalado com sucesso: ${version}${NC}`);
@@ -90,9 +98,8 @@ export async function installRtk(flags) {
       logger.info(`  Execute ${GREEN}jarvis init${NC} (ou atualize o ENV.md) para ativar ${GREEN}RTK_ENABLED=true${NC}`);
       logger.info(`  A rule de economia de tokens será ativada automaticamente.`);
       logger.info("");
-    } catch (err) {
+    } else {
       logger.error(`${RED}✗ RTK instalado mas não é o Token Killer${NC}`);
-      logger.error(`${RED}  Erro: ${err.message}${NC}`);
       logger.info(`${DIM}  Possível conflito: crate 'rtk' no crates.io é Rust Type Kit, não Token Killer${NC}`);
       logger.info(`${DIM}  Use: cargo install brokk-rtk${NC}`);
       logger.info("");
