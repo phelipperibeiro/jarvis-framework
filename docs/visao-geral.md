@@ -227,7 +227,9 @@ Detalhe da rule: `rules/rtk-rules.md`. Comentários: `templates/ENV-template.md`
 
 ## 10. Atualizar o framework
 
-Resumo (passo a passo no README):
+**Via npm registry** (uso padrão, sem editar o framework): `npm install -g jarvis-ai-framework@latest` + `jarvis init --ide {ide}`.
+
+**Via clone local** (contribuindo com o framework) — resumo (passo a passo no README):
 
 1. `git pull` no clone  
 2. Reinstall do pacote (`npm install -g` / `--save-dev` / link)  

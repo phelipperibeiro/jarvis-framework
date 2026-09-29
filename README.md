@@ -12,7 +12,53 @@
 
 ## Get Started
 
-Por enquanto o Jarvis **não está no npm registry**. Clone o repo e instale a partir do path local.
+### 1. Instale
+
+Global (comando `jarvis` no PATH):
+
+```bash
+npm install -g jarvis-ai-framework
+```
+
+**Só neste workspace** (não sobe no PATH):
+
+```bash
+cd workspace-squad/
+npm install jarvis-ai-framework --save-dev
+```
+
+Confira **onde** o binário ficou no PATH (útil se houver mais de uma instalação):
+
+```bash
+which jarvis
+jarvis --version
+```
+
+> Quer editar o próprio framework (skills, agents, workflows) e ver as mudanças refletidas na hora? Veja [Desenvolvendo o Jarvis localmente](#desenvolvendo-o-jarvis-localmente) mais abaixo.
+
+### 2. Bootstrap da IDE
+
+```bash
+jarvis init --ide cursor
+```
+
+Se instalou só com `--save-dev`, use `npx jarvis init --ide cursor`.
+
+IDEs: `windsurf` · `claude` · `cursor` · `codex` · `opencode` · `gemini` · `kiro`
+
+### 3. No chat da IDE
+
+```
+/init-jarvis
+```
+
+Siga o guia do seu papel. Sem `/init-jarvis`, o `ENV.md` não existe e o resto dos comandos não tem contexto.
+
+---
+
+## Desenvolvendo o Jarvis localmente
+
+Se você quer editar o framework (skills, agents, workflows) e ver as mudanças refletidas na hora, instale a partir de um clone local em vez do npm registry.
 
 ### 1. Clone
 
@@ -22,7 +68,7 @@ git clone https://github.com/phelipperibeiro/jarvis-framework.git
 
 Ou baixe o ZIP e extraia. O path da pasta clonada é o que você usa no passo seguinte.
 
-### 2. Instale
+### 2. Instale a partir do clone
 
 Global (comando `jarvis` no PATH):
 
@@ -48,7 +94,7 @@ Isso já registra o comando `jarvis` no global. Opcional, para o workspace resol
 
 ```bash
 cd workspace-squad/
-npm link jarvis-framework
+npm link jarvis-ai-framework
 ```
 
 Confira **onde** o binário ficou no PATH (útil se houver mais de uma instalação):
@@ -58,29 +104,22 @@ which jarvis
 jarvis --version
 ```
 
-### 3. Bootstrap da IDE
+### 3. Bootstrap da IDE e 4. No chat da IDE
 
-```bash
-jarvis init --ide cursor
-```
-
-Se instalou só com `--save-dev` (sem `-g` / `npm link`), use `npx jarvis init --ide cursor`.
-
-IDEs: `windsurf` · `claude` · `cursor` · `codex` · `opencode` · `gemini` · `kiro`
-
-### 4. No chat da IDE
-
-```
-/init-jarvis
-```
-
-Siga o guia do seu papel. Sem `/init-jarvis`, o `ENV.md` não existe e o resto dos comandos não tem contexto.
+Mesmos passos 2 e 3 do [Get Started](#get-started) acima — `jarvis init --ide {ide}` e `/init-jarvis` no chat.
 
 ---
 
 ## Atualizar / sincronizar
 
-Quando o repo no GitHub ganhar commits novos (skills, agents, workflows…), sincronize assim:
+**Instalou via npm registry** (fluxo padrão do [Get Started](#get-started)):
+
+```bash
+npm install -g jarvis-ai-framework@latest
+jarvis init --ide {ide}   # re-sincroniza os assets (agents/skills/workflows/rules)
+```
+
+**Instalou via clone local** (fluxo de [Desenvolvendo o Jarvis localmente](#desenvolvendo-o-jarvis-localmente)) — quando o repo no GitHub ganhar commits novos, sincronize assim:
 
 ### 1. Atualizar o clone
 
