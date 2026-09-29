@@ -64,7 +64,7 @@ Cada arquivo de rule declara para quais perfis se aplica via bloco `applies_to`,
 
 | Eixo | Exemplos de valor | `all` significa |
 |------|-------------------|-----------------|
-| HUB | FRONTEND, BACKEND, QA, DATA, AI | qualquer hub |
+| HUB | FRONTEND, BACKEND, QA, DATA, AI, FULLCYCLE | qualquer hub |
 | POSITION | TECH LEAD, PM, QA-ENGINEER, SENIOR | qualquer cargo |
 | AREA | ENGINEERING, PRODUCT | qualquer área |
 | SQUAD | CORE, SUPPORT | qualquer squad |

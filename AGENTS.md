@@ -116,7 +116,7 @@ prompts/
 
 O framework usa `taxonomy.md` (raiz) como fonte de verdade para opções válidas:
 - **SQUADS** - Times de desenvolvimento
-- **HUBS** - Áreas técnicas (AI, FRONTEND, BACKEND, QA, DATA)
+- **HUBS** - Áreas técnicas (AI, FRONTEND, BACKEND, QA, DATA, FULLCYCLE)
 - **POSITIONS** - Cargos (JUNIOR, PLENO, SENIOR, TECH LEAD, etc.)
 - **AREAS** - Áreas de negócio (ENGINEERING, PRODUCT)
 
