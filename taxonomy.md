@@ -44,6 +44,9 @@ Quality Assurance, testes automatizados, testes manuais e garantia de qualidade
 
 ### DATA
 Engenharia e análise de dados, pipelines, BI e operações de dados, Machine Learning, Data Science e modelos preditivos
+
+### FULLCYCLE
+Desenvolvedor que atua em todas as camadas técnicas (frontend, backend e, quando necessário, dados) do início ao fim de uma entrega — em qualquer verificação de HUB, é tratado como coringa/superusuário: satisfaz qualquer HUB exigido, nunca bloqueado por applies_to HUB específico
 ---
 
 ## 👤 Positions (Cargos e Senioridades)

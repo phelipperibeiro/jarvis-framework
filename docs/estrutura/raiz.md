@@ -85,7 +85,7 @@ Seções:
 | Seção     | Exemplos neste fork                                         |
 | --------- | ----------------------------------------------------------- |
 | Squads    | `CORE`, `SUPPORT`                                           |
-| Hubs      | `AI`, `FRONTEND`, `BACKEND`, `QA`, `DATA`                   |
+| Hubs      | `AI`, `FRONTEND`, `BACKEND`, `QA`, `DATA`, `FULLCYCLE`      |
 | Positions | `JUNIOR` … `CTO`, `QA-ENGINEER`, `TECH ANALYST`, …          |
 | Areas     | `ENGINEERING`, `PRODUCT`                                    |
 | Domain    | e-mail corporativo (opcional; fork sem domínio obrigatório) |

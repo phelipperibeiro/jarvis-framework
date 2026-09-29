@@ -251,7 +251,7 @@ Fluxo correto:
 ### Variáveis com Opções Fixas:
 
 **Decisão por número de opções:**
-- **HUB** (5 opções: AI, FRONTEND, BACKEND, QA, DATA) → texto numerado (>4)
+- **HUB** (6 opções: AI, FRONTEND, BACKEND, QA, DATA, FULLCYCLE) → texto numerado (>4)
 - **AREA** (4-5 opções) → se ≤4 usar AskUserQuestion, senão texto
 - **IDE** (7 opções) → mostrar em texto numerado
 - **SQUAD** (do taxonomy) → mostrar em texto numerado
@@ -632,8 +632,8 @@ cat templates/ENV-template.md
 #    - Caso contrário → FLOWS_FOLDER=workflows
 
 # 5. BLOCO DATA_* — incluir ou omitir conforme HUB:
-#    - Se HUB=DATA  → incluir o bloco com os valores coletados no passo 3.1
-#    - Se HUB≠DATA  → REMOVER completamente o bloco Data Engineering e todas as DATA_*
+#    - Se HUB=DATA ou HUB=FULLCYCLE → incluir o bloco com os valores coletados no passo 3.1
+#    - Caso contrário                → REMOVER completamente o bloco Data Engineering e todas as DATA_*
 
 # 6. Garantir chaves de sistema do template:
 #    SESSIONS_DIR=.jarvis/sessions
@@ -650,7 +650,7 @@ grep -qxF '.jarvis/' .gitignore 2>/dev/null || echo '.jarvis/' >> .gitignore
 **⚠️ REGRA CRÍTICA — Bloco DATA:**
 
 ```javascript
-if (HUB === 'DATA') {
+if (HUB === 'DATA' || HUB === 'FULLCYCLE') {
   // Incluir bloco DATA_* com valores coletados no passo 3.1
 } else {
   // Remover do ENV.md gerado o bloco Data Engineering e todas as DATA_*
@@ -933,8 +933,11 @@ function matchesProfile(appliesTo, profile) {
   const matches = (list, value) =>
     list === 'all' || list.split(',').map(s => s.trim()).includes(value)
 
+  // FULLCYCLE é superusuário do eixo HUB: satisfaz qualquer applies_to HUB
+  const hubMatches = profile.HUB === 'FULLCYCLE' || matches(appliesTo.HUB, profile.HUB)
+
   return (
-    matches(appliesTo.HUB, profile.HUB) &&
+    hubMatches &&
     matches(appliesTo.POSITION, profile.POSITION) &&
     matches(appliesTo.AREA, profile.AREA) &&
     matches(appliesTo.SQUAD, profile.SQUAD)
@@ -1149,7 +1152,7 @@ Se `taxonomy.md` não existir ou estiver corrompido, usar:
 ```javascript
 const DEFAULT_OPTIONS = {
   SQUADS: ['CORE', 'SUPPORT'],
-  HUBS: ['AI', 'FRONTEND', 'BACKEND', 'QA', 'DATA'],
+  HUBS: ['AI', 'FRONTEND', 'BACKEND', 'QA', 'DATA', 'FULLCYCLE'],
   POSITIONS: ['HEAD', 'JUNIOR', 'PLENO', 'SENIOR', 'TECH LEAD', 'SPECIALIST', 'PM', 'TPM', 'GPM', 'CTO'],
   AREAS: ['ENGINEERING', 'PRODUCT']
 }
@@ -1187,7 +1190,7 @@ Pergunta 3: Qual o nome do seu squad?
 [mostrar opções do taxonomy em texto numerado]
 
 Pergunta 4: Qual o hub do projeto?
-[texto numerado com AI, FRONTEND, BACKEND, QA, DATA]
+[texto numerado com AI, FRONTEND, BACKEND, QA, DATA, FULLCYCLE]
 
 Pergunta 5: Qual a área do projeto?
 [AskUserQuestion ou texto numerado]
