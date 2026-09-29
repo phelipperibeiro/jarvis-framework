@@ -189,7 +189,7 @@ function reconcileRtk(ideDir, targetDir, ide) {
   const envPath = join(ideDir, "ENV.md");
   const hasRtk = (() => {
     try {
-      execSync("which rtk 2>/dev/null", { stdio: "pipe" });
+      execSync("rtk gain --help 2>/dev/null", { stdio: "pipe" });
       return true;
     } catch {
       return false;

@@ -17,11 +17,11 @@ Quando `RTK_ENABLED=true` no ENV.md, use o prefixo `rtk` em chamadas Bash para r
 **Antes de executar qualquer comando Bash**, verificar se RTK está disponível:
 
 ```bash
-which rtk 2>/dev/null
+rtk gain --help 2>/dev/null
 ```
 
-- Se RTK estiver no PATH: usar `rtk <comando>` em vez do comando direto
-- Se RTK **não** estiver no PATH: executar o comando original sem alteração
+- Se RTK estiver no PATH com subcomando `gain`: usar `rtk <comando>` em vez do comando direto
+- Se RTK **não** estiver no PATH ou não suportar `gain`: executar o comando original sem alteração
 
 **Fallback gracioso**: nunca falhar por causa do RTK. Se `rtk` não estiver
 instalado ou retornar erro, executar o comando original.
@@ -47,6 +47,24 @@ O RTK comprime o output automaticamente — o comportamento do comando não muda
 
 ---
 
+## ⚠️ Conflito de Nome de Crate
+
+O crate `rtk` no crates.io é o **Rust Type Kit** (FFI generator), **não** o Token Killer.
+
+**Instalar o correto:**
+```bash
+cargo install brokk-rtk
+```
+
+**NUNCA faça:**
+```bash
+cargo install rtk  # ❌ Isso instala Rust Type Kit, não Token Killer
+```
+
+Use o comando `npx jarvis install-rtk` que valida e instala a ferramenta correta automaticamente.
+
+---
+
 ## Meta-comandos RTK (usar diretamente)
 
 Estes comandos são do próprio RTK e devem ser usados sem proxy:
@@ -65,4 +83,4 @@ rtk proxy <cmd>       # Executar comando sem filtro (debug)
 - Comandos interativos que precisam de input do usuário
 - Pipes complexos onde a compressão pode afetar o resultado
 - Quando o comando original precisa de output exato (ex: parsing JSON)
-- Se `which rtk` falhar — usar o comando original silenciosamente
+- Se `rtk gain --help` falhar — usar o comando original silenciosamente
