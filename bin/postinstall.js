@@ -33,7 +33,7 @@ if (existsSync(lockPath)) {
 
 // ── Sugestão RTK (sempre, se rtk não estiver instalado) ─────────────────────
 try {
-  execSync("which rtk 2>/dev/null", { stdio: "pipe" });
+  execSync("rtk gain --help 2>/dev/null", { stdio: "pipe" });
 } catch {
   const { logger } = await import("./lib/utils/logger.js");
   logger.info(`  💡 Dica: instale o RTK para economizar 60-90% dos tokens de shell.`);

@@ -591,7 +591,7 @@ Nunca grave TOKEN_VERSION_CONTROL (chave removida do template).
 **Após as variáveis opcionais**, verificar automaticamente se o RTK está instalado:
 
 ```bash
-which rtk 2>/dev/null
+rtk gain --help 2>/dev/null
 ```
 
 **Se RTK encontrado no PATH:**
@@ -605,7 +605,7 @@ which rtk 2>/dev/null
 **Se RTK NÃO encontrado:**
 ```
 ℹ️ RTK não detectado. Integração desativada.
-   Para instalar: cargo install rtk (requer Rust)
+   Para instalar: cargo install brokk-rtk (requer Rust)
    → RTK_ENABLED=false
 ```
 

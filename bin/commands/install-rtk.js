@@ -24,7 +24,7 @@ export async function installRtk(flags) {
     try {
       const version = execSync("rtk --version", { encoding: "utf-8" }).trim();
       logger.info(`${GREEN}✓ RTK já instalado: ${version}${NC}`);
-      logger.info(`${DIM}  Para atualizar: cargo install rtk --force${NC}`);
+      logger.info(`${DIM}  Para atualizar: cargo install brokk-rtk --force${NC}`);
       logger.info("");
       return;
     } catch {}
@@ -64,7 +64,7 @@ export async function installRtk(flags) {
   logger.info(`${YELLOW}⏳ Instalando RTK via cargo (pode levar alguns minutos)...${NC}`);
   logger.info("");
   try {
-    execSync("cargo install rtk", { stdio: "inherit" });
+    execSync("cargo install brokk-rtk", { stdio: "inherit" });
   } catch (err) {
     logger.error(`${RED}✗ Falha ao instalar RTK: ${err.message}${NC}`);
     logger.info("");
@@ -73,14 +73,31 @@ export async function installRtk(flags) {
 
   // 4. Verificar instalação
   if (commandExists("rtk")) {
-    const version = execSync("rtk --version", { encoding: "utf-8" }).trim();
-    logger.info("");
-    logger.info(`${GREEN}✓ RTK instalado com sucesso: ${version}${NC}`);
-    logger.info("");
-    logger.info(`${YELLOW}Próximo passo:${NC}`);
-    logger.info(`  Execute ${GREEN}jarvis init${NC} (ou atualize o ENV.md) para ativar ${GREEN}RTK_ENABLED=true${NC}`);
-    logger.info(`  A rule de economia de tokens será ativada automaticamente.`);
-    logger.info("");
+    try {
+      // Validar que é o Token Killer (não Rust Type Kit)
+      const helpOutput = execSync("rtk gain --help 2>&1", { encoding: "utf-8" });
+
+      // Se 'gain' não funcionar, é o crate errado
+      if (!helpOutput.toLowerCase().includes("gain") && !helpOutput.toLowerCase().includes("token")) {
+        throw new Error("RTK encontrado mas não é o Token Killer (comando 'gain' não funciona)");
+      }
+
+      const version = execSync("rtk --version", { encoding: "utf-8" }).trim();
+      logger.info("");
+      logger.info(`${GREEN}✓ RTK instalado com sucesso: ${version}${NC}`);
+      logger.info("");
+      logger.info(`${YELLOW}Próximo passo:${NC}`);
+      logger.info(`  Execute ${GREEN}jarvis init${NC} (ou atualize o ENV.md) para ativar ${GREEN}RTK_ENABLED=true${NC}`);
+      logger.info(`  A rule de economia de tokens será ativada automaticamente.`);
+      logger.info("");
+    } catch (err) {
+      logger.error(`${RED}✗ RTK instalado mas não é o Token Killer${NC}`);
+      logger.error(`${RED}  Erro: ${err.message}${NC}`);
+      logger.info(`${DIM}  Possível conflito: crate 'rtk' no crates.io é Rust Type Kit, não Token Killer${NC}`);
+      logger.info(`${DIM}  Use: cargo install brokk-rtk${NC}`);
+      logger.info("");
+      process.exit(1);
+    }
   } else {
     logger.error(`${RED}✗ RTK não encontrado no PATH após instalação${NC}`);
     logger.info(`${DIM}  Reinicie o terminal e verifique: rtk --version${NC}`);
