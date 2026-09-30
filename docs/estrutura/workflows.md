@@ -31,6 +31,7 @@ workflows/
 │   └── ta/                    # tech analyst
 └── product/
     ├── prod.spec.md
+    ├── prod.spec.discovery.md
     ├── prod.spec.prd.md
     ├── prod.spec.frd.md
     ├── prod.spec.epic.md

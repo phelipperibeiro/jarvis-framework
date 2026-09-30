@@ -14,6 +14,7 @@ workflows/
 │
 ├── product/                      # Gestão de Produto & Requisitos
 │   ├── prod.spec.md              # Entrypoint de especificações
+│   ├── prod.spec.discovery.md    # Investigação inicial de uma ideia (rascunho)
 │   ├── prod.spec.prd.md          # Documento de Requisitos de Produto
 │   ├── prod.spec.frd.md          # Documento de Requisitos Funcionais
 │   ├── prod.spec.breakdown.md    # Quebra em versões / épicos / histórias
@@ -70,6 +71,7 @@ workflows/
 | Workflow | Propósito |
 |----------|-----------|
 | `prod.spec.md` | Entrypoint unificado para especificações |
+| `prod.spec.discovery.md` | Investigar uma ideia inicial (problema, requisitos e viabilidade) e gerar um rascunho |
 | `prod.spec.prd.md` | Criar/editar Documento de Requisitos de Produto |
 | `prod.spec.frd.md` | Criar/editar Documento de Requisitos Funcionais |
 | `prod.spec.breakdown.md` | Quebrar spec grande em versões, épicos e histórias |

@@ -29,8 +29,9 @@ agents/
 │       ├── eng.qa.quality-champion-task-agent.md
 │       ├── eng.qa.cypress-specialist.md
 │       └── eng.qa.quality-strategist.md
-├── product/               # Agentes ativos de produto (1 agent)
-│   └── prod.pm-checker.md
+├── product/               # Agentes ativos de produto (2 agents)
+│   ├── prod.pm-checker.md
+│   └── prod.discovery-interviewer.md
 └── archive/              # Biblioteca de agentes arquivados (9 agents)
     ├── architecture-design/  # 2 agents
     ├── implementation/       # 2 agents
@@ -174,7 +175,7 @@ ENABLE_CDD=true
 
 ### Ativos (em uso regular)
 - `engineering/` - Agentes de engenharia (12 agents: 5 main + 6 QA + 1 Data)
-- `product/` - Agentes de produto (1 agent)
+- `product/` - Agentes de produto (2 agents)
 
 ### Arquivados (biblioteca de referência)
 - `archive/` - Agentes genéricos organizados por área funcional (11 agents)

@@ -24,16 +24,17 @@ agents/
 │   │   └── eng.data-engineer.agent.md
 │   └── qa/                       # QA específico de engenharia (6 agents)
 ├── product/                      # 🎯 Agentes do domínio de Produto (ATIVOS)
-│   └── prod.pm-checker.md        # Product Manager checker
+│   ├── prod.pm-checker.md        # Product Manager checker
+│   └── prod.discovery-interviewer.md  # Entrevistador de discovery
 └── archive/                      # 📦 Biblioteca de agentes arquivados
     └── product/                  # Product WIP (5)
 ```
 
 **📊 Total:**
-- **16 agents ativos** (prontos para uso)
+- **17 agents ativos** (prontos para uso)
   - Engineering main: 8 (6 main + 1 data + subpasta qa)
   - QA: 6
-  - Product: 1
+  - Product: 2
 - **5 agents arquivados** (uso especializado quando necessário)
 
 ---
@@ -73,13 +74,14 @@ Agentes específicos para fluxos e regras do domínio de Engenharia.
 
 ---
 
-## 🎯 2. Produto (1 agente)
+## 🎯 2. Produto (2 agentes)
 
 **Pasta**: `product/`
 
 Agentes específicos para fluxos e validações do domínio de Produto.
 
 - `prod.pm-checker.md` - `@prod.pm-checker`
+- `prod.discovery-interviewer.md` - `@prod.discovery-interviewer`: entrevista o usuário sobre uma ideia e gera o rascunho de discovery
 
 ---
 
