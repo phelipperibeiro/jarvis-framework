@@ -12,6 +12,7 @@ Documentação didática (termos por extenso, exemplos, quando usar cada comando
 |---------|--------|
 | Guia de decisão (qual spec?) | [prod.spec.guide.md](../../docs/produto/prod.spec.guide.md) |
 | `/prod.spec` | [prod.spec.md](../../docs/produto/prod.spec.md) |
+| `/prod.spec.discovery` | [prod.spec.discovery.md](../../docs/produto/prod.spec.discovery.md) |
 | `/prod.spec.prd` | [prod.spec.prd.md](../../docs/produto/prod.spec.prd.md) |
 | `/prod.spec.frd` | [prod.spec.frd.md](../../docs/produto/prod.spec.frd.md) |
 | `/prod.spec.breakdown` | [prod.spec.breakdown.md](../../docs/produto/prod.spec.breakdown.md) |

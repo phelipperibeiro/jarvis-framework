@@ -23,6 +23,8 @@ No Jarvis, qualquer `POSITION` pode conduzir o card ponta a ponta. Você não pr
 ## Pirâmide (do macro ao micro)
 
 ```
+Discovery (opcional)                        ← rascunho de uma ideia: problema, hipóteses, viabilidade
+        ↓
 Documento de Requisitos de Produto          ← visão / problema / escopo macro
         ↓
 Documento de Requisitos Funcionais          ← comportamento detalhado de uma feature
@@ -32,7 +34,7 @@ Documento de Requisitos Funcionais          ← comportamento detalhado de uma f
 História de usuário / Tarefa / Bug          ← unidade da sprint
 ```
 
-Esclarecimento (`clarify`) e quebra (`breakdown`) **atravessam** essa pirâmide: melhoram ou fatiam o que já existe.
+O `discovery` vem **antes** do topo: é um rascunho para decidir se vale especificar. Esclarecimento (`clarify`) e quebra (`breakdown`) **atravessam** a pirâmide: melhoram ou fatiam o que já existe.
 
 ## Comandos (uma página cada)
 
@@ -41,6 +43,7 @@ Esclarecimento (`clarify`) e quebra (`breakdown`) **atravessam** essa pirâmide:
 | Comando na IDE         | Documento                                          | Use quando…                                   |
 | ---------------------- | -------------------------------------------------- | --------------------------------------------- |
 | `/prod.spec`           | [prod.spec.md](./prod.spec.md)                     | Não sabe por onde começar                     |
+| `/prod.spec.discovery` | [prod.spec.discovery.md](./prod.spec.discovery.md) | Só tem uma ideia e quer investigá-la antes     |
 | `/prod.spec.prd`       | [prod.spec.prd.md](./prod.spec.prd.md)             | Precisa do documento macro de produto         |
 | `/prod.spec.frd`       | [prod.spec.frd.md](./prod.spec.frd.md)             | Precisa detalhar comportamento de uma feature |
 | `/prod.spec.breakdown` | [prod.spec.breakdown.md](./prod.spec.breakdown.md) | Precisa fatiar uma spec grande                |
@@ -94,6 +97,7 @@ Siglas podem aparecer **entre parênteses na primeira menção** de cada página
 
 ```
 /prod.spec          (se estiver perdido)
+    → /prod.spec.discovery  (opcional: só tem uma ideia)
     → /prod.spec.prd
     → /prod.spec.clarify
     → /prod.spec.frd        (feature a feature)

@@ -12,6 +12,7 @@ Comando “estou perdido”: [`/prod.spec`](./prod.spec.md).
 | Pergunta | Use |
 |----------|-----|
 | Estou começando algo novo e não sei o tipo | [`/prod.spec`](./prod.spec.md) → depois a árvore abaixo |
+| Tenho só uma ideia e não sei se vale a pena | [`prod.spec.discovery`](./prod.spec.discovery.md) — investigação inicial (rascunho) |
 | Preciso do “quê / por quê” do produto ou iniciativa | [`prod.spec.prd`](./prod.spec.prd.md) — Documento de Requisitos de Produto |
 | Preciso detalhar comportamento de uma feature | [`prod.spec.frd`](./prod.spec.frd.md) — Documento de Requisitos Funcionais |
 | A spec ficou grande demais | [`prod.spec.breakdown`](./prod.spec.breakdown.md) |
@@ -30,6 +31,9 @@ O que você precisa agora?
 
 ├─ Não sei qual documento criar
 │  └─ /prod.spec
+│
+├─ Só tenho uma ideia crua; não sei se o problema é real nem se é viável
+│  └─ prod.spec.discovery   (rascunho; depois prd, frd ou issue)
 │
 ├─ Definir visão / problema / escopo macro do produto ou iniciativa
 │  └─ prod.spec.prd   (Documento de Requisitos de Produto)
@@ -50,7 +54,7 @@ O que você precisa agora?
    └─ prod.spec.issue
 ```
 
-**Atalho mental:** macro (`prd`) → detalhe (`frd`) → clareza (`clarify`) → fatia (`breakdown`) → tema (`epic`) → card (`issue`) → `/eng.start`. Pule degraus se o escopo já for pequeno.
+**Atalho mental:** ideia (`discovery`, opcional) → macro (`prd`) → detalhe (`frd`) → clareza (`clarify`) → fatia (`breakdown`) → tema (`epic`) → card (`issue`) → `/eng.start`. Pule degraus se o escopo já for pequeno.
 
 ---
 
@@ -58,6 +62,7 @@ O que você precisa agora?
 
 | Spec | Use quando | Não use quando |
 |------|------------|----------------|
+| `discovery` | Só existe uma ideia; o problema e a viabilidade ainda não foram investigados | Já sabe o que construir (`prd`, `frd` ou `issue`) |
 | `prd` | Iniciativa nova, pivot, “não tem nada escrito” | Ajuste mínimo de UI / um card óbvio |
 | `frd` | Feature com fluxos, erros, papéis, aceite rico | Ainda não há problema/valor claros (`prd` antes) |
 | `clarify` | Spec existe mas está ambígua **antes** de codar | Ainda não há arquivo de spec |
@@ -95,6 +100,15 @@ O que você precisa agora?
 | **Resultado esperado** | Plano (versões → épicos → títulos de histórias); **não** cria 20 cards sozinho |
 | **Próximo passo** | Materializar com `epic` e `issue`; primeira fatia → `/eng.start` |
 | **Exemplo** | “Central de notificações: push + e-mail + in-app + admin.” |
+
+### `prod.spec.discovery` — investigação inicial de uma ideia
+
+| | |
+|--|--|
+| **Problema que resolve** | Especificar uma ideia com problema e requisitos presumidos, sem saber se é real ou viável |
+| **Resultado esperado** | Rascunho `discovery-…md` com hipóteses, viabilidade, veredito e próximo passo sugerido; não cria tarefas |
+| **Próximo passo** | Só uma sugestão: `prd` (e `breakdown`), `frd`, `issue`, retomar o discovery ou arquivar |
+| **Exemplo** | “E se o Jarvis gerasse relatórios de uso?” |
 
 ### `prod.spec.clarify` — esclarecimento
 
