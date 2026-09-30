@@ -221,7 +221,9 @@ Precisa de ajuda?
 
 - **Documentacao completa (proposta e conceitos)** &mdash; [`docs/visao-geral.md`](docs/visao-geral.md)
 - **Estrutura do repo (cada pasta/arquivo)** &mdash; [`docs/estrutura/`](docs/estrutura/README.md)
+- **Lista rapida de comandos (`eng.*` e `prod.*`)** &mdash; [`docs/comandos.md`](docs/comandos.md)
 - **Produto / PM / PO (comandos e exemplos)** &mdash; [`docs/produto/`](docs/produto/README.md)
+- **Engenharia (um guia por comando `eng.*`)** &mdash; [`docs/engenharia/`](docs/engenharia/README.md)
 - **Indice de docs/** &mdash; [`docs/README.md`](docs/README.md)
 - **Instrucoes para agentes / mapa de skills** &mdash; `AGENTS.md`
 - **Issues/Feedback** &mdash; skill `report-issue`

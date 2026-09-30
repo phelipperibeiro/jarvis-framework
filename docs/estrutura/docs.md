@@ -12,9 +12,13 @@ Material de leitura **para pessoas** (e para onboarding): proposta do framework,
 docs/
 ├── README.md                         # índice desta pasta
 ├── visao-geral.md                    # proposta + conceitos + fluxos
+├── comandos.md                       # consulta rápida: todos os comandos eng.* e prod.*
 ├── produto/                          # universo PM/PO + um guia por comando
 │   ├── README.md
 │   └── prod.spec*.md
+├── engenharia/                       # universo de engenharia + um guia por comando eng.*
+│   ├── README.md
+│   └── eng.*.md
 └── estrutura/
     ├── README.md                     # como as pastas se montam
     ├── raiz.md                       # README, AGENTS, LICENSE, package, taxonomy, members

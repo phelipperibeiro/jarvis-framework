@@ -12,6 +12,7 @@
     "publish:gitlab": "npm publish",
     "test": "node test/e2e-docs-central.js",
     "test:utils": "node test/test-phase1-utils.js",
+    "test:comandos": "node test/test-comandos-docs.js",
     "test:all": "npm run test:utils && npm run test"
   },
   "files": [
