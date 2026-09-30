@@ -36,7 +36,7 @@ templates/
         └── eng.qa.quality-gate-*-template.md
 ```
 
-Templates de produto (PRD/FRD/Epic) podem viver sob skills `prod-specs` ou workflows product — o núcleo engineering está nesta árvore.
+Os templates de produto (PRD, FRD, épico, issue, breakdown e discovery) ficam em `templates/product/`, que é o que `$PROD_TEMPLATES` aponta; o núcleo engineering está nesta árvore.
 
 ## `ENV-template.md` (crítico)
 

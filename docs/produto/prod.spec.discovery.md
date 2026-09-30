@@ -1,6 +1,6 @@
 # `/prod.spec.discovery` — investigação inicial de uma ideia
 
-Workflow: `workflows/product/prod.spec.discovery.md` · Agente: `prod.discovery-interviewer` · Template: `skills/prod-specs/templates/prod-discovery-template.md`
+Workflow: `workflows/product/prod.spec.discovery.md` · Agente: `prod.discovery-interviewer` · Template: `templates/product/prod-discovery-template.md`
 
 ## Em uma frase
 

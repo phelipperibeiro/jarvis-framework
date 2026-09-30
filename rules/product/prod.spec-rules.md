@@ -2,75 +2,39 @@
 trigger: always_on
 ---
 
-## Principais Regras
-- O idioma padrão é o português do Brasil. Mas mude caso o usuário solicite outro idioma.
-- Sempre procure por arquivos de configuração e documentação do projeto antes de executar qualquer comando ou workflow.
-- Leia o `README.md` do projeto para saber contexto e detalhes importantes.
-- Nunca invente ou presuma dados ou informações. Se não souber, pergunte, valide e confirme com o usuário.
-- Entenda se o projeto é novo ou existente, para criar ou modificar especificações de produto ou técnicas.
-- Identifique se o produto é versionado com git e leia o histórico de commits para entender as últimas atualizações.
+> **Applies to:** HUB: all | POSITION: all | AREA: PRODUCT | SQUAD: all
 
+# Regras de Escrita de Especificação de Produto
 
-## Diretórios e Variáveis dessa Skill
+## Objetivo
 
-Utilize essas variáveis para interpretar corretamente o contexto as instruções dessa skill. Os endereços são relativos ao diretório raiz desse plugin:
+Definir os princípios que todo documento de especificação de produto (PRD, FRD, épico, história, tarefa e bug) deve seguir: o nível certo de critérios de aceitação em cada tipo de documento, contexto completo e terminologia consistente.
 
-**Diretório da skill:** `${CLAUDE_SKILL_DIR}`
+## Escopo
 
-- `$SKILL_TEMPLATE_FOLDER`: `${CLAUDE_SKILL_DIR}/templates/`
-- `$SKILL_REFERENCES_FOLDER`: `${CLAUDE_SKILL_DIR}/references/`
+Aplica-se a todos os comandos `prod.spec.*` que escrevem ou alteram um documento. Complementa o `prod-rules.md` (variáveis de ambiente, comandos, nomes de arquivos, status e perguntas ao usuário), que continua sendo a regra geral de produto.
 
+## Regras
 
-## Perguntas para guiar o usuário
+### Princípio: Critérios de aceitação e requisitos
 
-Para fazer perguntas ao usuário:
-1. Tente usar o tool `AskUserQuestion` se ele estiver disponível no seu ambiente (ex: Claude Desktop, Claude Cowork, Claude Code CLI).
-2. Se não estiver disponível, use **obrigatoriamente** (se possível) o formato de tabela abaixo. Caso não possível no formato de tabela, faça perguntas em texto corrido.
-3. Nunca avance sem coletar as respostas necessárias.
+#### Critérios de aceitação específicos do documento
 
-```
-|     | {Aqui fica a pergunta que você deve fazer para o usuário. Seja objetivo e direto ao ponto:} |
-| --- | ----------------------------------------------------------------------------------------- |
-| A   | {Resposta 1}                                                                                |
-| B   | {Resposta 2}                                                                                |
-| C   | {Resposta 3}                                                                                |
-| D   | {Resposta 4}                                                                                |
-```
-
-**NUNCA** pergunte tudo de uma vez, sempre faça perguntas separadas e aguarde a resposta antes de prosseguir.
-
-
-## Descrição dos Status
-
-Em itens e especificações, utilizamos status para identificar quais etapas do desenvolvimento cada item está. Isso é representado pela variável `$ITEM_STATUS`. 
-
-- icebox: Lista de ideias, necessidades e desejos. Item que está aguardando priorização ou definição de escopo.
-- in_review: Item que está sendo estudado, descoberto, revisado ou analisado.
-- backlog: Item já foi estudado, sabemos o que fazer e está aguardando priorização de implementação.
-- in_progress: Item que está em desenvolvimento.
-- in_production: Item que está em produção.
-- cancelled: Item que foi descontinuado ou cancelado.
-
-
-## Princípio: Critérios de aceitação e requisitos
-
-### Critérios de aceitação específicos do documento
-
-#### Para PRDs (nível macro)
+##### Para PRDs (nível macro)
 Concentre-se no "o quê" e no "porquê":
 - Definir capacidades gerais do produto
 - Definir regras e restrições de negócios
 - Estabelecer métricas de sucesso
 - Descrições sempre levando em consideração as soluções macro do Projeto, baseando-se nas FRDs
 
-#### Para FRDs (nível médio)
+##### Para FRDs (nível médio)
 Retrata as soluções macro do produto. É ponte entre estratégia e implementação:
 - Definir requisitos de nível de recurso
 - Definir limites para histórias relacionadas
 - Incluir pontos de integração
 - Definir requisitos não funcionais
 
-### Para histórias (detalhadas, funcionais)
+#### Para histórias (detalhadas, funcionais)
 
 Concentre-se em comportamentos específicos e testáveis com base em designs:
 
@@ -104,7 +68,7 @@ Concentre-se em comportamentos específicos e testáveis com base em designs:
 - **Épico**: escopo em nível de recurso e abordagem técnica
 - **Issues (História/Tarefa)**: detalhes específicos de implementação e comportamento da UI
 
-## Princípio: Contexto completo
+### Princípio: Contexto completo
 
 **Princípio**: Cada documento deve ser compreensível por si só, sem exigir conhecimento tribal.
 
@@ -147,7 +111,7 @@ As pessoas juntam-se em equipas, o contexto perde-se, as memórias desaparecem. 
 - **Bugs rápidos**: ambiente do documento, etapas, comportamento esperado
 - **Tarefas rápidas**: explique por que esse trabalho é importante
 
-## Princípio: Terminologia Consistente
+### Princípio: Terminologia Consistente
 
 **Princípio**: Use os mesmos termos para os mesmos conceitos em toda a documentação.
 
@@ -184,3 +148,13 @@ A terminologia inconsistente cria confusão. "Cliente" vs "Usuário" vs "Cliente
 - **Planos**: use os termos exatos do PRD
 - **Histórias**: Combine a terminologia do PRD e do Plano
 - **Questões rápidas**: use terminologia estabelecida ou defina novos termos
+
+## Exceções
+
+Quando o usuário pedir explicitamente outro formato ou nível de detalhe para um documento, registre a decisão no próprio documento e siga o pedido.
+
+## Referências
+
+- `prod-rules.md`: regras gerais de produto (ambiente, comandos, nomes de arquivos, status e perguntas ao usuário)
+- `../../templates/product/`: templates dos documentos
+- `../../workflows/product/`: os comandos `prod.spec.*`

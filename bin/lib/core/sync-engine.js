@@ -15,6 +15,7 @@ import { getIDEFolder } from "../config/ide-config.js";
 import {
   SYNC_DIRS,
   SYNC_ROOT_FILES,
+  OBSOLETE_PATHS,
   LOCK_FILE,
   OPENCODE_MODEL_MAP,
   OPENCODE_DEFAULT_PERMISSIONS,
@@ -132,6 +133,17 @@ export function syncAssets(targetDir, ide, opts = {}) {
       rmSync(legacyMetricsDir, { recursive: true, force: true });
       result.copied.push(`(cleanup) .${ide}/metrics/ removed`);
     } catch {}
+  }
+
+  // Cleanup de caminhos que saíram do framework (lista explícita em OBSOLETE_PATHS)
+  for (const obsolete of OBSOLETE_PATHS) {
+    const obsoletePath = join(ideDir, obsolete);
+    if (existsSync(obsoletePath) && !opts.dryRun) {
+      try {
+        rmSync(obsoletePath, { recursive: true, force: true });
+        result.copied.push(`(cleanup) .${getIDEFolder(ide)}/${obsolete} removed`);
+      } catch {}
+    }
   }
 
   if (!opts.dryRun) {

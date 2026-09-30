@@ -86,7 +86,8 @@ prompts/
 │   │   ├── churn-audit/           # Análise de churn SaaS por squad com relatório narrativo via Slack
 │   │
 │   ├── templates/                # Templates de documentos
-│   │   └── engineering/          # ARD, RFC, Tech Spec
+│   │   ├── engineering/          # ARD, RFC, Tech Spec
+│   │   └── product/              # PRD, FRD, épico, issue, breakdown, discovery
 │   │
 │   ├── rules/                    # Regras especificas (filtradas por perfil no init-jarvis)
 │   │   ├── rtk-rules.md          # RTK Token Killer (opt-in: RTK_ENABLED=true)

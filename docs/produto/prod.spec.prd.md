@@ -1,7 +1,7 @@
 # `/prod.spec.prd` — Documento de Requisitos de Produto
 
 Workflow: `workflows/product/prod.spec.prd.md`  
-Skill usual: `prod-specs`
+Template: `templates/product/prod-prd-template.md`
 
 ## Em uma frase
 
@@ -40,7 +40,7 @@ Sem esse documento (ou equivalente), épicos e histórias tendem a virar “pedi
 > “Vamos lançar um módulo de convites para times no nosso app.”
 
 1. `/prod.spec.prd módulo de convites para times`
-2. Agente usa template + skill `prod-specs`, pergunta só o necessário
+2. O comando conduz os gates pelo template `prod-prd-template.md`, perguntando só o necessário
 3. Gera algo como:  
    `$PROD_DOCS/prd-001-convites-times/prd-001-convites-times.md`
 4. Você revisa objetivos, fora de escopo e métricas

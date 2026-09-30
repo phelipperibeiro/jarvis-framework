@@ -21,7 +21,7 @@ skills/
 ├── eng-data-*                 # família Data
 ├── eng-cybersecurity/, eng-threat-model/, eng-security-*
 ├── eng-rpa via eng-scraper*, eng-scraper-robot-builder
-├── prod-specs/, prod-specs-update/, prod-roadmap-report/
+├── prod-specs/ (porta de entrada), prod-specs-update/, prod-roadmap-report/
 ├── taxonomy-manager/
 ├── report-issue/
 └── … (~50 skills)

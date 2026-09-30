@@ -58,7 +58,7 @@ Relacionado (roadmap): workflow `prod.roadmap.preview` — visão de planejament
 1. **`ENV.md`** — define pastas (`PROD_DOCS`, `PROD_FLOWS`, `PROD_RULES`, …). Sem isso, rode `/init-jarvis`.
 2. **Rules** — `rules/product/prod-rules.md` são as regras invioláveis (idioma, status, nomes de arquivo).
 3. **Workflows** — os arquivos em `workflows/product/` são o “roteiro” que a IA segue ao você digitar o comando.
-4. **Skills** — `prod-specs` / `prod-specs-update` geram e sincronizam o Markdown final.
+4. **Skills** — `prod-specs` é só a porta de entrada (aponta para os workflows); `prod-specs-update` sincroniza o Markdown final. Os templates ficam em `templates/product/`.
 5. **Sessões** — rascunhos em `.jarvis/sessions/prod/{TASK_MANAGER_KEY}/`; a versão canônica fica em `$PROD_DOCS`.
 6. **Depois da spec** — engenharia: `/eng.start` → `/eng.plan` → `/eng.work` → `/eng.pr`.
 

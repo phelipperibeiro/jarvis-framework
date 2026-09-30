@@ -42,14 +42,9 @@ Utilize o `$ARGUMENTS` como ponto de partida (caminho da spec, nome da feature o
 2. Se não houver spec pai: ofereça criar com `$PROD_FLOWS/prod.spec.prd.md` ou `$PROD_FLOWS/prod.spec.frd.md`. Não invente escopo do zero sem confirmação.
 3. Se a spec estiver cheia de “talvez” / “depois a gente vê”: sugira clarify antes; só continue se o usuário assumir o risco.
 
-## Skills
+## Template
 
-Use a Skill tool:
-
-- **`prod-specs`** — gerar/atualizar o artefato de breakdown conforme o template e padrões do projeto
-
-Template canônico do skill: `skills/prod-specs/templates/prod-breakdown-template.md`  
-(Se existir cópia em `$PROD_TEMPLATES/prod-breakdown-template.md`, prefira a do `$PROD_TEMPLATES`.)
+O artefato de breakdown segue o template `$PROD_TEMPLATES/prod-breakdown-template.md`.
 
 ## Busca no Central Docs (condicional)
 
@@ -127,7 +122,7 @@ Mostrar a árvore ao usuário e **pedir confirmação explícita** antes de grav
 
 ### 5. Gerar o artefato
 
-- Executar skill `prod-specs` com o template de breakdown
+- Gerar o artefato seguindo o template de breakdown (`$PROD_TEMPLATES/prod-breakdown-template.md`)
 - Preencher resumo, lançamentos, épicos, dependências (seções opcionais só se o usuário pedir ou se forem críticas)
 - Gravar em `$PROD_DOCS/...` (ou path acordado)
 - Atualizar índice/docs existentes se o projeto já tiver índice de produto
