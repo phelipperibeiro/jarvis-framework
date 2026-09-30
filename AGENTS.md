@@ -263,7 +263,7 @@ Cada pasta pode ter seu proprio AGENTS.md com instrucoes especificas:
 ```bash
 /eng.start "feature"     # Investigacao e arquitetura (somente planejamento)
 /eng.plan "feature"      # Plano de execucao faseado (somente planejamento)
-/eng.work "feature"      # Implementacao e testes (sem commits/PR)
+/eng.work "feature"      # Implementacao e testes (commit por fase, sem push/PR)
 /eng.pre-pr              # Validacao pre-PR
 /eng.pr                  # Cria branch, commit e PR
 ```
@@ -349,7 +349,7 @@ Quando um agente atua em tema com skill correspondente, o skill e a fonte de ver
 | Fase | Comando | Restricao |
 |------|---------|-----------|
 | Planejamento | `eng.start`, `eng.plan` | Somente analise, sem codigo |
-| Implementacao | `eng.work` | Codigo e testes, sem commits |
+| Implementacao | `eng.work` | Codigo e testes, commit por fase, sem push nem PR |
 | Entrega | `eng.pr` | Branch, commit e PR |
 
 ---

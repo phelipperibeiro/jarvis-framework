@@ -8,7 +8,7 @@ trigger: always_on
 
 ## Propósito
 
-O workflow `work` tem como **único objetivo** implementar código seguindo o plano de execução (`plan.md`). É uma etapa de **codificação pura**, sem commits ou PRs.
+O workflow `work` tem como **único objetivo** implementar código seguindo o plano de execução (`plan.md`). É uma etapa de **codificação**: commita ao final de cada fase validada, mas nunca faz push nem abre PR.
 
 ---
 
@@ -67,19 +67,23 @@ Confirmar que está na branch certa? (s/n)
 
 ## Princípios Fundamentais
 
-### 1. Somente Codificação - NUNCA Commits ou PRs
+### 1. Codificação com commit por fase - NUNCA push ou PR
 
 O `work` é **estritamente proibido** de:
 
 
-| ❌ Proibido                                 | ✅ Permitido                        |
-| ------------------------------------------- | ----------------------------------- |
-| Fazer commits                               | Escrever código                    |
-| Criar Pull Requests                         | Criar/modificar arquivos de código |
-| Executar`git add`, `git commit`, `git push` | Ler arquivos da sessão             |
-| Mover cards no Jira                         | Executar testes locais              |
-| Fazer merge de branches                     | Atualizar`plan.md` com progresso    |
-| Sugerir "vamos fazer o PR agora"            | Validar código com o usuário      |
+| ❌ Proibido                                        | ✅ Permitido                                              |
+| -------------------------------------------------- | --------------------------------------------------------- |
+| Fazer `git push`                                   | Escrever código                                           |
+| Criar Pull Requests                                | Criar/modificar arquivos de código                        |
+| Usar `git add .`                                   | `git add` de arquivos específicos da fase                 |
+| Commitar sem aprovação do usuário na fase          | Commitar ao final da fase validada, com testes passando   |
+| Commitar com testes falhando                       | Executar testes locais                                    |
+| Mover cards no Jira                                | Ler arquivos da sessão                                    |
+| Fazer merge de branches                            | Atualizar `plan.md` com progresso                         |
+| Sugerir "vamos fazer o PR agora"                   | Validar código com o usuário                              |
+
+O commit segue o formato do workflow (`{TASK_MANAGER_KEY} {tipo}({escopo}): {descrição}`, com `Refs:`). Push e PR são responsabilidade do `eng.pr`.
 
 ### 2. Escopo de Atuação
 
@@ -187,7 +191,7 @@ O workflow segue um ciclo rígido:
 
     - Informar que a fase foi concluída
     - Perguntar se deseja iniciar próxima fase
-    - ⚠️ **NUNCA sugerir PR ou commit**
+    - ⚠️ **NUNCA sugerir push ou PR** (são do `eng.pr`)
 
 ---
 
@@ -243,9 +247,9 @@ O workflow **DEVE pausar e aguardar confirmação**:
 
 1. **Escapar para Git**
 
-   - "Vou fazer o commit dessas mudanças..."
    - "Agora podemos criar o PR..."
    - "Deixa eu dar push das alterações..."
+   - `git add .` ou commit com testes falhando
 2. **Pular validação**
 
    - Implementar várias fases sem pausar
@@ -291,7 +295,7 @@ Ao finalizar **TODAS as fases** do `plan.md`, informe:
 2. Execute os testes completos
 3. Quando estiver pronto, use `eng.pr` para criar o Pull Request
 
-⚠️ Este workflow NÃO faz commits ou PRs.
+⚠️ Este workflow commita por fase, mas NÃO faz push nem PR.
    Use `eng.pr` quando estiver pronto para submeter.
 ```
 
@@ -307,6 +311,7 @@ Antes de considerar uma fase completa:
 - [ ]  Usuário validou o código
 - [ ]  `plan.md` atualizado com status
 - [ ]  Comentários adicionados no plan.md
-- [ ]  NENHUM commit foi feito
+- [ ]  Commit da fase feito (arquivos adicionados um a um, testes passando)
+- [ ]  NENHUM push foi feito
 - [ ]  NENHUM PR foi criado
 - [ ]  Próximos passos comunicados

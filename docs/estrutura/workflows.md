@@ -64,7 +64,7 @@ Definido no ENV pelo `/init-jarvis`.
     ↓
 /eng.start  → só análise
 /eng.plan   → plano faseado
-/eng.work   → código + testes (sem commit)
+/eng.work   → código + testes (commit por fase, sem push nem PR)
 /eng.pre-pr → checklist
 /eng.pr     → branch + commit + MR/PR
 ```

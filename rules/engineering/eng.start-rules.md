@@ -18,19 +18,19 @@ O workflow `start` tem como **único objetivo** criar o documento de arquitetura
 
 O `start` é **estritamente proibido** de:
 
-| ❌ Proibido                          | ✅ Permitido                              |
-| ------------------------------------ | ----------------------------------------- |
-| Criar arquivos de código (.ts, .js)  | Criar `architecture.md`                   |
-| Modificar código existente           | Ler código para análise                   |
-| Executar comandos no terminal        | Listar arquivos e estruturas              |
-| Instalar dependências                | Buscar padrões no codebase                |
-| Fazer commits                        | Criar diretório da sessão                 |
-| Executar testes                      | Documentar decisões                       |
-| Iniciar servidores                   | Dialogar com usuário                      |
+| ❌ Proibido                          | ✅ Permitido                                                |
+| ------------------------------------ | ----------------------------------------------------------- |
+| Criar arquivos de código (.ts, .js)  | Criar `architecture.md`                                     |
+| Modificar código existente           | Ler código para análise                                     |
+| Instalar dependências                | Comandos de leitura (`git`, `ls`, `grep`) para investigar   |
+| Fazer commits                        | Criar a branch de feature (Fase 1.1 do workflow)            |
+| Executar testes                      | Criar o diretório da sessão e `context.md`                  |
+| Iniciar servidores                   | Registrar `.timestamp_start` na sessão                      |
+| Alterar arquivos do projeto          | Documentar decisões e dialogar com usuário                  |
 
 ### 2. Artefato Único
 
-O **único artefato** produzido pelo `start` é:
+O **único entregável** do `start` é:
 
 ```
 $SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/architecture.md
@@ -38,7 +38,7 @@ $SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/architecture.md
 
 > 📁 **Padrão**: `TASK_MANAGER_KEY` é o ID do card em **lowercase** (ex: `TASK-123` → `task-123`)
 
-Nenhum outro arquivo deve ser criado, modificado ou deletado.
+Além dele, o `start` pode criar apenas os arquivos de apoio da própria sessão (`context.md` e `.timestamp_start`, em `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/`) e a branch de feature. Nenhum arquivo do projeto deve ser criado, modificado ou deletado.
 
 ### 3. Aprovação Obrigatória
 

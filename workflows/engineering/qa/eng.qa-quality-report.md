@@ -15,11 +15,6 @@ relatório de qualidade em markdown pronto para publicar.
 > 📤 **Template**: `$IDE/templates/engineering/qa/qa.quality-report-template.md`
 > 🔧 **Skill**: `eng-qa-quality-report`
 
-> ⚠️ **Skill pendente (Fase 5)**: `eng-qa-quality-report` ainda não foi implementada.
-> Será criada após ciclos reais de uso das skills `eng-qa-cypress-e2e`, `eng-qa-exploratory` e `eng-qa-dev-guide`.
-> Por enquanto, ao invocar este workflow o agente deve avisar o usuário e sugerir consolidação manual
-> usando o template `$TEMPLATES_FOLDER/engineering/qa/qa.quality-report-template.md`.
-
 ---
 
 ## Entrada

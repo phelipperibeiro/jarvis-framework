@@ -43,7 +43,7 @@ Transformar uma história de usuário (user story) do Jira em uma **Tech Spec co
 
 1. Documenta decisões arquiteturais
 2. Detalha implementação técnica
-3. Quebra em subtarefas executáveis (1-2h cada)
+3. Quebra em subtarefas executáveis (fatias verticais de 4h a 1 dia)
 4. Define critérios de validação técnica
 5. Identifica riscos e dependências
 
@@ -88,7 +88,7 @@ B: História / Task — implementação específica, pronta para desenvolvimento
 
 > O tipo determina o fluxo inteiro:
 > - **Épico** → Tech Spec arquitetural (sem quebra em subtarefas — a quebra em histórias vem do produto)
-> - **História** → Tech Spec de implementação (subtarefas 1-2h, plano de execução)
+> - **História** → Tech Spec de implementação (subtarefas de 4h a 1 dia, plano de execução)
 
 ---
 
@@ -564,14 +564,13 @@ Divida a implementação em **fases lógicas e incrementais**:
 - Cada fase entrega **valor testável**
 - Fases são **sequenciais** quando há dependência
 - Fases podem ser **paralelas** quando independentes
-- Máximo **1-2 horas por subtarefa**
+- Entre **4 horas e 1 dia por subtarefa** (fatia vertical completa)
 
 **Exemplo de Fases:**
 
-1. **Setup e Infraestrutura**: Configurações, dependências, migrações
-2. **Backend/API**: Lógica de negócio, endpoints, serviços
-3. **Frontend/UI**: Componentes, telas, integração com API
-4. **Testes e Validação**: Testes E2E, validação de performance
+1. **Backend/API**: endpoints completos (migration, regra de negócio, repository, testes)
+2. **Frontend/UI**: telas e modais completos (componentes, integração com API, testes)
+3. **Testes e Validação**: Testes E2E, validação de performance
 
 #### 4.2 Criação de Subtarefas
 
@@ -613,29 +612,21 @@ Crie uma **hierarquia clara** de subtarefas:
 ```
 STORY-XXX: {História original}
 │
-├─ Fase 1: Setup
-│  ├─ SUBTASK-001: Configurar dependências
-│  └─ SUBTASK-002: Criar migrações de banco
-│     └─ Depende de: SUBTASK-001
+├─ Fase 1: Backend
+│  ├─ SUBTASK-001: [BACKEND] Criar endpoint POST /api/recurso (migration + use-case + repository + controller + testes)
+│  └─ SUBTASK-002: [BACKEND] Criar endpoint GET /api/recurso (fatia vertical completa)
+│     └─ Paralela com: SUBTASK-001
 │
-├─ Fase 2: Backend
-│  ├─ SUBTASK-003: Implementar modelo de dados
-│  │  └─ Depende de: SUBTASK-002
-│  ├─ SUBTASK-004: Criar serviço de negócio
-│  │  └─ Depende de: SUBTASK-003
-│  └─ SUBTASK-005: Criar endpoints API
-│     └─ Depende de: SUBTASK-004
+├─ Fase 2: Frontend
+│  └─ SUBTASK-003: [FRONTEND] Criar tela de listagem e modal de criação (componente + hooks + integração + testes)
+│     └─ Depende de: SUBTASK-001 e SUBTASK-002
 │
-├─ Fase 3: Frontend
-│  ├─ SUBTASK-006: Criar componente UI
-│  │  └─ Depende de: SUBTASK-005
-│  └─ SUBTASK-007: Integrar com API
-│     └─ Depende de: SUBTASK-006
-│
-└─ Fase 4: Testes
-   └─ SUBTASK-008: Implementar testes E2E
-      └─ Depende de: SUBTASK-007
+└─ Fase 3: Testes
+   └─ SUBTASK-004: [QA] Testes E2E do fluxo completo (cruza backend e frontend)
+      └─ Depende de: SUBTASK-003
 ```
+
+> Cada subtarefa é uma fatia vertical de 4h a 1 dia. Nunca divida por camada (só migration, só modelo, só serviço).
 
 #### 4.4 Validação da Quebra
 
@@ -644,7 +635,7 @@ Valide que:
 - [ ] Cada subtarefa é **independente e completa**
 - [ ] Cada subtarefa tem **critérios claros de conclusão**
 - [ ] Subtarefas seguem **ordem lógica de dependência**
-- [ ] Estimativas são **realistas** (1-2h cada)
+- [ ] Estimativas são **realistas** (entre 4h e 1 dia cada)
 - [ ] Todas as subtarefas somadas **cobrem 100% da história**
 
 **Checklist de fatia vertical (obrigatório para cada subtarefa):**
@@ -897,9 +888,9 @@ Forneça ao usuário:
 - Estimativa total: {Z horas}
 
 🔗 Subtarefas criadas no Jira:
-- SUBTASK-001: {Nome} (P0, 2h)
-- SUBTASK-002: {Nome} (P1, 1.5h)
-- SUBTASK-003: {Nome} (P1, 2h)
+- SUBTASK-001: {Nome} (P0, 6h)
+- SUBTASK-002: {Nome} (P1, 4h)
+- SUBTASK-003: {Nome} (P1, 8h)
 ...
 
 ⚠️ Riscos Principais:
@@ -931,8 +922,9 @@ Forneça ao usuário:
 
 ### 📏 Estimativas Realistas
 
-- Subtarefas devem ter **1-2 horas cada**
-- Se maior que 2h → **quebrar em subtarefas menores**
+- Subtarefas devem ter **entre 4 horas e 1 dia cada**, como fatias verticais completas
+- Se maior que 1 dia → **dividir em duas fatias verticais independentes** (nunca em camadas)
+- Se menor que 4h → **agrupar com a próxima** até formar uma fatia vertical completa
 - Incluir tempo para testes e documentação
 
 ### 🔗 Rastreabilidade
@@ -1056,7 +1048,7 @@ Forneça ao usuário:
 ❌ **Evitar:**
 
 - Assumir requisitos não explícitos
-- Criar subtarefas muito grandes (>2h)
+- Criar subtarefas maiores que 1 dia ou fatias horizontais (só enum, só repository, só DTO)
 - Pular análise de riscos
 - Propor tecnologias sem justificativa
 - Documentação vaga ou genérica
@@ -1074,20 +1066,17 @@ Forneça ao usuário:
 📊 **Resumo**:
 
 - **História**: STORY-456 - Implementar autenticação de usuários
-- **Fases**: 4 fases (Setup, Backend, Frontend, Testes)
-- **Subtarefas**: 8 subtarefas
-- **Estimativa total**: 14 horas
+- **Fases**: 3 fases (Backend, Frontend, Testes)
+- **Subtarefas**: 5 subtarefas
+- **Estimativa total**: 26 horas
 
 🔗 **Subtarefas criadas no Jira**:
 
-- SUBTASK-101: Configurar biblioteca JWT (P0, 1.5h)
-- SUBTASK-102: Criar migration tabela users (P0, 1h)
-- SUBTASK-103: Implementar modelo User (P0, 2h)
-- SUBTASK-104: Criar serviço de autenticação (P0, 2h)
-- SUBTASK-105: Criar endpoints login/logout (P1, 2h)
-- SUBTASK-106: Criar componente LoginForm (P1, 2h)
-- SUBTASK-107: Integrar frontend com API (P1, 1.5h)
-- SUBTASK-108: Testes E2E autenticação (P2, 2h)
+- SUBTASK-101: [BACKEND] Criar endpoint POST /api/auth/register (P0, 6h)
+- SUBTASK-102: [BACKEND] Criar endpoint POST /api/auth/login (P0, 6h)
+- SUBTASK-103: [BACKEND] Criar endpoint POST /api/auth/logout (P1, 4h)
+- SUBTASK-104: [FRONTEND] Criar tela de login integrada à API (P1, 6h)
+- SUBTASK-105: [QA] Testes E2E do fluxo de autenticação (P2, 4h)
 
 ⚠️ **Riscos Principais**:
 
@@ -1103,9 +1092,9 @@ Forneça ao usuário:
 📌 **Próximos Passos**:
 
 1. ✅ Revisar tech spec (aguardando sua aprovação)
-2. Atribuir SUBTASK-101 a 104 para desenvolvedor backend
-3. Atribuir SUBTASK-106 a 107 para desenvolvedor frontend
-4. Iniciar por Fase 1 (Setup) - SUBTASK-101 e 102
+2. Atribuir SUBTASK-101 a 103 para desenvolvedor backend
+3. Atribuir SUBTASK-104 para desenvolvedor frontend
+4. Iniciar pelo backend - SUBTASK-101 e 102
 5. Configurar variáveis de ambiente em staging/prod
 
 🎯 **Pronto para iniciar desenvolvimento!**

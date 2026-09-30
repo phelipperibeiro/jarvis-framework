@@ -30,7 +30,7 @@ Fonte: `workflows/engineering/`. Guias didáticos: [engenharia/README.md](./enge
 | ---------------- | ------------------------------------------------ | --- |
 | [`/eng.start`](./engenharia/eng.start.md) | Inicia o planejamento e cria o `architecture.md` | [workflow](../workflows/engineering/eng.start.md) |
 | [`/eng.plan`](./engenharia/eng.plan.md) | Planejamento de execução faseada da feature | [workflow](../workflows/engineering/eng.plan.md) |
-| [`/eng.work`](./engenharia/eng.work.md) | Implementação do código, sem commits nem PR | [workflow](../workflows/engineering/eng.work.md) |
+| [`/eng.work`](./engenharia/eng.work.md) | Implementação do código, com commit por fase e sem push nem PR | [workflow](../workflows/engineering/eng.work.md) |
 | [`/eng.pre-pr`](./engenharia/eng.pre-pr.md) | Validação antes de abrir o PR/MR | [workflow](../workflows/engineering/eng.pre-pr.md) |
 | [`/eng.pr`](./engenharia/eng.pr.md) | Cria branch, commit e merge request | [workflow](../workflows/engineering/eng.pr.md) |
 | [`/eng.review`](./engenharia/eng.review.md) | Revisão de solução ou PR | [workflow](../workflows/engineering/eng.review.md) |
