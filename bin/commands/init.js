@@ -169,7 +169,7 @@ export async function init(flags) {
     `${BOLD}${CYAN}  versão: ${pkg.name} v${pkg.version}${NC}`,
   );
   logger.info(`${DIM}  origem: ${pkg.root}${NC}`);
-  logger.info(`${DIM}Pasta criada: ${ideDir}${NC}`);
+  logger.info(`${DIM}  pasta criada: ${ideDir}${NC}`);
   logger.info("");
 
   const all = discoverAll();
