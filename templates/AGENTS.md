@@ -29,12 +29,13 @@ templates/
 │   └── qa/                         # Templates de QA
 │       ├── test-plan-template.md
 │       └── quality-gate-template.md
-└── product/                        # Templates de produto
-    ├── PRD-template.md             # Product Requirements Document
-    ├── FRD-template.md             # Feature Requirements Document
-    ├── epic-template.md            # Epicos
-    ├── story-template.md           # User Stories
-    └── issue-template.md           # Issues/Tasks
+└── product/                        # Templates de produto ($PROD_TEMPLATES)
+    ├── prod-prd-template.md        # Product Requirements Document
+    ├── prod-frd-template.md        # Functional Requirements Document
+    ├── prod-epic-template.md       # Épicos
+    ├── prod-issue-template.md      # Histórias, tarefas e bugs
+    ├── prod-breakdown-template.md  # Quebra de especificação
+    └── prod-discovery-template.md  # Discovery (investigação inicial de uma ideia)
 ```
 
 ---

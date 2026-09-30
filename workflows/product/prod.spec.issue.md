@@ -40,8 +40,8 @@ Um grupo de histórias de um mesmo assunto podem formar um épico.
 - O idioma do arquivo deve corresponder ao idioma de interação do usuário
 - Se o usuário não tiver um título claro, crie um título baseado no conteúdo do arquivo e no contexto do épico
 - Uma História ou Task pode ou não ter subtasks. Sugira as subtasks que são as menores partes da issue para guiar o PM ou o Dev na criação dessas histórias ou tasks.
-- Se o usuário pedir para salver no Jira, procure no arquivo ENV.md se há o link do board e projeto Jira e salve o projeto no board correto. 
-  - Se você não encontrar as informações do board ou projeto correto do Jira, não faça nada, pergunte para o usuário quais são as informações corretas necessárias para você executar essa tarefa.
+- Se o usuário pedir para salvar no `$TASK_MANAGER`, leia `TASK_MANAGER`, `TOKEN_TASK_MANAGER` e `TASK_MANAGER_URL_BASE` no ENV.md e use `eng-task-comment` / adapter do vendor (jira | linear | github | asana).
+  - Se `TASK_MANAGER` estiver vazio (freelance) ou faltar token/URL, **não invente board** — pergunte as informações necessárias ou salve só o markdown local.
 
 ## Estrutura da Issue
 

@@ -15,7 +15,7 @@ Este comando conduz uma **entrevista** para investigar uma ideia ainda crua e re
 Antes de iniciar, revise as regras invioláveis em `$PROD_RULES/**/*`.
 
 - **Agente:** `$IDE/agents/product/prod.discovery-interviewer.md` conduz a entrevista; siga a postura dele.
-- **Template:** `$IDE/skills/prod-specs/templates/prod-discovery-template.md` define a estrutura do arquivo. Se existir cópia em `$PROD_TEMPLATES/prod-discovery-template.md`, prefira a cópia. Siga a estrutura exata do template.
+- **Template:** `$PROD_TEMPLATES/prod-discovery-template.md` define a estrutura do arquivo. Siga a estrutura exata do template.
 - **Guia humano (termos por extenso):** `docs/produto/prod.spec.discovery.md`.
 
 Utilize o `$ARGUMENTS` como ponto de partida (a ideia, ou o caminho ou nome de um discovery existente para retomar):

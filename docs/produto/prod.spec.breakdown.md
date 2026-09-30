@@ -1,7 +1,7 @@
 # `/prod.spec.breakdown` — quebrar uma especificação grande
 
 Workflow: `workflows/product/prod.spec.breakdown.md`  
-Skill usual: `prod-specs` (template `prod-breakdown-template.md`)
+Template: `templates/product/prod-breakdown-template.md`
 
 ## Em uma frase
 

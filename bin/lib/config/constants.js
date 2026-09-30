@@ -23,6 +23,18 @@ export const SYNC_DIRS = Object.freeze([
 ]);
 
 /**
+ * Caminhos que saíram do framework e são removidos das instalações que atualizam.
+ * Lista explícita, relativa à pasta da IDE (ex.: `.claude/`): o `init` nunca varre
+ * nem apaga nada fora dela. Para uma remoção futura, acrescente o caminho aqui.
+ * @constant {ReadonlyArray<string>}
+ */
+export const OBSOLETE_PATHS = Object.freeze([
+  "skills/prod-specs/references",
+  "skills/prod-specs/templates",
+  "skills/prod-specs/rules",
+]);
+
+/**
  * Arquivos da raiz que devem ser sincronizados
  * @constant {ReadonlyArray<string>}
  */

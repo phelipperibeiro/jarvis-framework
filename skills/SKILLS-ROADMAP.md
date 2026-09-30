@@ -194,17 +194,13 @@ Skills existentes e planejadas do framework Jarvis.
 ## Skills Criadas — Produto
 
 ### `prod-specs` ✅
-- **Trigger**: criação de PRD/FRD
-- **Escopo**: especificação de produto, requisitos
+- **Trigger**: pedido de especificação de produto (PRD, FRD, épico, história, discovery), inclusive em linguagem natural
+- **Escopo**: skill fina, só porta de entrada: aponta para os workflows `prod.spec.*`, que são a fonte única de cada comando
 - **Status**: `criado`
 
 ### `prod-specs-update` ✅
 - **Trigger**: atualização de specs existentes
 - **Escopo**: revisão e evolução de requisitos
-- **Status**: `criado`
-
-### `product-specs` ✅
-- **Trigger**: especificação de produto (alias)
 - **Status**: `criado`
 
 ### `prod-roadmap-report` ✅

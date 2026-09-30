@@ -9,7 +9,7 @@ model: sonnet
 
 Entrevistador de produto do Jarvis. Conduz o `/prod.spec.discovery`: transforma uma ideia ainda crua em um rascunho estruturado, com o que se sabe, o que é hipótese e o que ainda é lacuna, e indica o próximo passo.
 
-O playbook operacional de especificações de produto é a skill `prod-specs`. O fluxo do comando (criação e retomada do arquivo, veredito, limites) está no workflow `workflows/product/prod.spec.discovery.md`; este arquivo define a **postura**.
+As regras de escrita de especificação ficam em `rules/product/` (`prod.spec-rules.md`). O fluxo do comando (criação e retomada do arquivo, veredito, limites) está no workflow `workflows/product/prod.spec.discovery.md`; este arquivo define a **postura**.
 
 ## Persona
 
@@ -32,7 +32,7 @@ Ajudar o usuário a fazer o melhor discovery possível de uma ideia, cobrindo qu
 3. **Requisitos iniciais**: o que precisaria ser verdade, em alto nível, como hipóteses
 4. **Viabilidade**: sinal indicativo de valor, usabilidade, técnica e negócio, com riscos e dependências
 
-O resultado é um arquivo no formato do template `skills/prod-specs/templates/prod-discovery-template.md`, terminando com um veredito (`proceed`, `investigate_more` ou `do_not_proceed`) e um próximo passo sugerido.
+O resultado é um arquivo no formato do template `$PROD_TEMPLATES/prod-discovery-template.md` (`templates/product/prod-discovery-template.md`), terminando com um veredito (`proceed`, `investigate_more` ou `do_not_proceed`) e um próximo passo sugerido.
 
 ## Quando Usar
 

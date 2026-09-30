@@ -1,11 +1,11 @@
 # `/prod.spec.frd` — Documento de Requisitos Funcionais
 
 Workflow: `workflows/product/prod.spec.frd.md`  
-Skill usual: `prod-specs`
+Template: `templates/product/prod-frd-template.md`
 
 ## Em uma frase
 
-Cria ou atualiza o **Documento de Requisitos Funcionais** (*Functional Requirements Document* / às vezes chamado de Feature Requirements Document) — o comportamento detalhado de **uma** capacidade.
+Cria ou atualiza o **Documento de Requisitos Funcionais** (*Functional Requirements Document*) — o comportamento detalhado de **uma** capacidade.
 
 ## O que é (universo de produto)
 
@@ -48,7 +48,7 @@ Onde o Documento de Requisitos de Produto fala do produto inteiro (ou de uma ini
 ## Como o framework te favorece
 
 - Mantém o funcional **dentro** da pasta do documento macro (rastreabilidade)
-- Skill `prod-specs` aplica o template do projeto
+- O comando aplica o template `prod-frd-template.md`
 - Central docs (se configurado) evita duplicar feature já especificada em outro squad
 
 ## Relação com QA

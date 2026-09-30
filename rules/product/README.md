@@ -23,3 +23,4 @@ Documentação didática (termos por extenso, exemplos, quando usar cada comando
 ## Arquivo normativo (agentes)
 
 - [`prod-rules.md`](./prod-rules.md) — ENV, pastas, status, convenção de nomes, formato de perguntas
+- [`prod.spec-rules.md`](./prod.spec-rules.md) — princípios de escrita de spec: critérios de aceitação por tipo de documento, contexto completo e terminologia consistente
