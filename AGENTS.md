@@ -21,7 +21,7 @@ prompts/
 │   ├── MCPs.md                   # Integracoes MCP
 │   ├── LEGACY_PROJECTS.md        # Guia para projetos legados
 │   │
-│   ├── agents/                   # 17 ativos + 5 arquivados
+│   ├── agents/                   # 18 ativos + 5 arquivados
 │   │   ├── engineering/          # Agentes de engenharia (14 ativos: 7 main + 6 QA + 1 Data)
 │   │   │   ├── eng.agent.md
 │   │   │   ├── eng.cybersecurity.agent.md  # Cybersecurity e AppSec (SENTINEL)
@@ -33,8 +33,9 @@ prompts/
 │   │   │   ├── data/             # 1 agente de Data
 │   │   │   │   └── eng.data-engineer.agent.md
 │   │   │   └── qa/               # 6 agentes de QA
-│   │   ├── product/              # Agentes de produto (1 ativo)
-│   │   │   └── prod.pm-checker.md
+│   │   ├── product/              # Agentes de produto (2 ativos)
+│   │   │   ├── prod.pm-checker.md
+│   │   │   └── prod.discovery-interviewer.md
 │   │   └── archive/              # Agentes arquivados (uso especializado)
 │   │       ├── architecture-design/   # 2 agentes
 │   │       ├── implementation/        # 2 agentes
@@ -44,7 +45,7 @@ prompts/
 │   │   ├── engineering/          # 25 workflows de engenharia
 │   │   │   ├── data/             # 2 workflows de dados (data.new-pipeline, data.contract)
 │   │   │   └── frontend/         # 3 workflows de frontend (component, review, perf-audit)
-│   │   └── product/              # 6 workflows de produto
+│   │   └── product/              # 7 workflows de produto
 │   │
 │   ├── skills/                   # 50 skills
 │   │   ├── claude-plugin-creator/
@@ -378,6 +379,7 @@ Quando um agente atua em tema com skill correspondente, o skill e a fonte de ver
 
 ### Produto (Ativo)
 - `prod.pm-checker.md` - Validacao de requisitos
+- `prod.discovery-interviewer.md` - Entrevistador de discovery: investiga uma ideia sem chutar e gera um rascunho estruturado
 
 ### Arquivados
 Disponiveis em `$IDE/agents/archive/` organizados por categoria.

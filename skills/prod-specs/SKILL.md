@@ -64,6 +64,7 @@ SEMPRE utilize as instruções na íntegra contidas nessas referências de acord
 - Crie, modifique ou esclareça um PRD seguindo as instruções em `references/prod.spec.prd.md`
 - Crie, modifique ou esclareça um FRD seguindo as instruções em `references/prod.spec.frd.md`
 - Avalie, clarifique, detalhe e identifique gaps e possíveis melhorias na especificação seguindo as instruções em `references/prod.spec.clarify.md`
+- Investigue uma ideia inicial (problema, requisitos e viabilidade) seguindo o workflow `workflows/product/prod.spec.discovery.md`, conduzido pelo agente `prod.discovery-interviewer`. Esse é o único comando sem cópia em `references/`: o workflow é a fonte única (as cópias de `references/` já divergiram dos workflows)
 
 Para outras necessidades não especificadas ou que não possuam instruções ou templates, aplique as boas práticas comumente utilizadas pelos Gerentes de Produto no mercado.
 
@@ -83,6 +84,7 @@ Os templates ficam na pasta `templates` dessa skill. Elas devem ser usadas para 
 - [Template para FRD](templates/prod-frd-template.md) 
 - [Template para épicos](templates/prod-epic-template.md) 
 - [Template para itens (história/tarefa/bug)](templates/prod-issue-template.md) 
+- [Template para discovery (investigação inicial de uma ideia)](templates/prod-discovery-template.md)
 
 **Para PRDs:**
 - "criar um PRD sobre..."
@@ -101,6 +103,11 @@ Os templates ficam na pasta `templates` dessa skill. Elas devem ser usadas para 
 **Para FRDs:**
 - "criar um FRD sobre..."
 - "novo FRD para..."
+
+**Para investigar uma ideia (discovery):**
+- "investigar uma ideia..."
+- "fazer discovery de..."
+- "tenho uma ideia, vale a pena?"
 
 **Para esclarecimentos:**
 - "esclarecer a especificação..."

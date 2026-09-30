@@ -23,10 +23,12 @@ Existem níveis (macro → micro). Este comando é o **roteador**: ele não subs
 - Projeto legado sem pasta `$PROD_DOCS` organizada
 - Pedido vago: “preciso documentar essa feature”
 - Quiser criar ou editar Documento de Requisitos Funcionais, épico ou issue e ainda não escolheu o caminho
+- Tem só uma **ideia** e ainda não sabe se vale especificar → o `/prod.spec` orienta para [`/prod.spec.discovery`](./prod.spec.discovery.md)
 
 ## Quando **não** usar
 
 - Já sabe que precisa do documento macro → vá em [`/prod.spec.prd`](./prod.spec.prd.md)
+- Só tem uma ideia e quer investigar o problema, os requisitos e a viabilidade → [`/prod.spec.discovery`](./prod.spec.discovery.md)
 - Já tem spec e só quer tirar ambiguidades → [`/prod.spec.clarify`](./prod.spec.clarify.md)
 - Já tem épico e quer histórias → [`/prod.spec.issue`](./prod.spec.issue.md)
 

@@ -16,6 +16,7 @@ Estas instruções ajudam a orientar o usuário que deseja começar a construir 
 - Esse comando serve para unificar a criação de todos os tipos de especificações do projeto.
 - Ao iniciar uma nova especificação de projeto ou modificar um PRD existente
 - Quando não souber qual tipo de especificação criar
+- Quando tiver só uma **ideia inicial** e ainda não souber se o problema é real, quais são os requisitos ou se é viável (comece pelo discovery)
 - Quando precisar criar novas ou editar FRDs
 - Quando precisar criar novos ou editar épicos, issues, tasks, stories e bugs
 - Quando precisar de orientação sobre o tipo de documentação a ser gerada
@@ -41,6 +42,7 @@ Estas instruções ajudam a orientar o usuário que deseja começar a construir 
       - ARD
       - Issue (story, task ou bug)
 - **Uso adequado dos comandos e instruções**: 
+  - Para investigar uma ideia inicial (problema, requisitos e viabilidade) antes de especificar, use `$PROD_FLOWS/prod.spec.discovery.md`. Se o usuário só tem uma ideia, oriente para o discovery em vez de abrir um PRD com dados presumidos
   - Para PRD use as instruções em `$PROD_FLOWS/prod.spec.prd.md`
   - Para FRD use as instruções em `$PROD_FLOWS/prod.spec.frd.md`
   - Para ARD use as instruções em `$PROD_FLOWS/prod.spec.ard.md`

@@ -28,6 +28,7 @@ workflows/
 │
 ├── product/                        # Workflows de produto
 │   ├── prod.spec.md               # Entrypoint de specs
+│   ├── prod.spec.discovery.md     # Investigacao inicial de uma ideia
 │   ├── prod.spec.prd.md           # Documento de Requisitos de Produto
 │   ├── prod.spec.frd.md           # Documento de Requisitos Funcionais
 │   ├── prod.spec.breakdown.md     # Quebra em versões / épicos / histórias
@@ -80,6 +81,7 @@ Utilize o arquivo `../../workflows/[dominio]/nome-do-workflow.md` como template.
 | `/eng.frontend-component` | `engineering/frontend/eng.frontend-component.md` |
 | `/eng.frontend-review` | `engineering/frontend/eng.frontend-review.md` |
 | `/eng.frontend-perf-audit` | `engineering/frontend/eng.frontend-perf-audit.md` |
+| `/prod.spec.discovery` | `product/prod.spec.discovery.md` |
 | `/prod.spec.prd` | `product/prod.spec.prd.md` |
 
 ---

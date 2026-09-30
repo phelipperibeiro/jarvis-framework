@@ -11,6 +11,7 @@ Fonte: `workflows/product/`. Guia didático: [produto/README.md](./produto/READM
 | Comando                 | O que faz                                                                       | Workflow |
 | ----------------------- | ------------------------------------------------------------------------------- | --- |
 | [`/prod.spec`](./produto/prod.spec.md) | Ponto de entrada: guia a construção de especificações macro ou micro de produto | [workflow](../workflows/product/prod.spec.md) |
+| [`/prod.spec.discovery`](./produto/prod.spec.discovery.md) | Investigação inicial de uma ideia: entrevista sobre o problema, os requisitos e a viabilidade, e gera um rascunho estruturado | [workflow](../workflows/product/prod.spec.discovery.md) |
 | [`/prod.spec.prd`](./produto/prod.spec.prd.md) | Cria ou altera um PRD (Documento de Requisitos de Produto) | [workflow](../workflows/product/prod.spec.prd.md) |
 | [`/prod.spec.frd`](./produto/prod.spec.frd.md) | Cria um FRD (Documento de Requisitos Funcionais) de uma feature | [workflow](../workflows/product/prod.spec.frd.md) |
 | [`/prod.spec.epic`](./produto/prod.spec.epic.md) | Cria um épico que agrupa histórias e tarefas | [workflow](../workflows/product/prod.spec.epic.md) |

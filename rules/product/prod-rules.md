@@ -95,6 +95,7 @@ Abaixo, segue uma descrição de algumas das variáveis mais importantes para as
 Sempre siga as instruções de acordo com as relações abaixo.  
 **Guia para humanos (desenvolvedores aprendendo produto):** `docs/produto/` — uma página por comando, termos por extenso.
 
+- `$PROD_FLOWS/prod.spec.discovery.md` — Investigação inicial de uma ideia (rascunho estruturado; não define tarefas) → [docs/produto/prod.spec.discovery.md](../../docs/produto/prod.spec.discovery.md)
 - `$PROD_FLOWS/prod.spec.prd.md` — Documento de Requisitos de Produto (*Product Requirements Document*) → [docs/produto/prod.spec.prd.md](../../docs/produto/prod.spec.prd.md)
 - `$PROD_FLOWS/prod.spec.frd.md` — Documento de Requisitos Funcionais (*Functional Requirements Document*) → [docs/produto/prod.spec.frd.md](../../docs/produto/prod.spec.frd.md)
 - `$PROD_FLOWS/prod.spec.breakdown.md` — Quebra de especificação grande em fatias → [docs/produto/prod.spec.breakdown.md](../../docs/produto/prod.spec.breakdown.md)
@@ -129,6 +130,7 @@ Dentro das pastas do projeto, os caminhos de pastas e o nome dos arquivos finais
 - Documento de Requisitos Funcionais: `$PROD_DOCS/prd-{id}-{nome-do-pai}/frd-{id}-{nome}.md`
 - Épico: `$PROD_DOCS/prd-{id}-{nome-do-pai}/issues/epic-{id}-{nome}.md`
 - História / tarefa: `$PROD_DOCS/prd-{id}-{nome-do-pai}/issues/{story|task}-{id}-{nome}.md`
+- Discovery (rascunho de uma ideia, anterior ao PRD): `$PROD_DOCS/discoveries/discovery-{id}-{nome}.md`. Usa `status` (`in_review` enquanto o rascunho existe; `cancelled` se o veredito for não seguir) e `verdict` (vazio durante a entrevista, `proceed`, `investigate_more` ou `do_not_proceed`). O veredito é uma recomendação; um PRD, FRD, épico ou issue criado depois prevalece como fonte da verdade.
 
 O ID deve ser iterado nos novos arquivos seguindo a sequência existente.
 
