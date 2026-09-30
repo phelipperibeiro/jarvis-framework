@@ -6,6 +6,7 @@ status: {icebox|in_review|in_progress|in_production|deprecated}
 task_link: {URL referêncial no $TASK_MANAGER - se existir. Se não, ignore essa linha}
 related_prd: {path PRD relacionado, exemplo /master-docs/product/prd-001.md}
 related_frd: {path FRD relacionado, exemplo /master-docs/product/frds/frd-001.md}
+related_discovery: {path do discovery de origem, exemplo $PROD_DOCS/discoveries/discovery-001-nome.md. Se não existir, ignore essa linha}
 created_at: {YYYY-MM-DD}
 updated_at: {YYYY-MM-DD}
 created_by: {nome de quem criou esse doc}

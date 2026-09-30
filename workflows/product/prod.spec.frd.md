@@ -76,6 +76,7 @@ Não busque validação de tudo de uma vez; valide os gates de forma incremental
 
 ### Gate 1: Reconhecer e contextualizar
 
+- **Discovery (opcional).** Se o usuário apontar um discovery (por exemplo `discovery-002`), siga o princípio "Discovery como insumo" de `$PROD_RULES/prod.spec-rules.md`: leia-o como contexto e repasse tudo com o usuário antes de avançar. Sem discovery apontado, siga este fluxo normalmente, sem procurar na pasta `discoveries/`.
 - Reconheça o que o usuário forneceu (liste o que foi recebido) 
 - Utilize o contexto fornecido pelo usuário ou pelo agente para criar o output final
 - Se houverem PRDs, liste-as para que o usuário possa escolher qual é o PRD de origem desta FRD. Se não houver PRD, pergunte se o usuário quer criar uma antes ou continuar sem PRD relacionada

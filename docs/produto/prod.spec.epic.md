@@ -49,6 +49,15 @@ Foco no **o quê** e no valor — não no desenho de classes.
 
 Épico sem histórias é só título. Épico com 30 histórias sem prioridade é cemitério. Mantenha o épico **vivo**: status, o que já foi entregue, o que cortou.
 
+## Com um discovery como insumo (opcional)
+
+O [`discovery`](./prod.spec.discovery.md) é opcional: você pode rodar este comando direto, quando já sabe o que quer.
+
+- `/prod.spec.epic já sei o que quero` → segue o fluxo de sempre. Ter arquivos na pasta `discoveries/` não muda nada.
+- `/prod.spec.epic discovery-002` → o comando carrega esse discovery, lê como contexto e **repassa tudo com você** antes de escrever. O discovery é um rascunho de suposições, então nada vira fato sem você ter visto.
+
+O documento oficial é a fonte da verdade: o discovery nunca é alterado. Se algo divergir, o agente avisa você e o documento novo ganha uma seção **"Divergências"** com o que mudou e por quê.
+
 ## Próximo passo típico
 
 Várias [`issues`](./prod.spec.issue.md) → puxe a primeira com `/eng.start`

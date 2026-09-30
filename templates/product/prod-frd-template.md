@@ -6,6 +6,7 @@ status: {$ITEM_STATUS}
 last_editor: {nome de quem editou por último}
 updated_at: {YYYY-MM-DD}
 related_prd: {Lista de PRDs que são relacionadas a esse PRD, se forem vários, utilize sintaxe compatível com YAML}
+related_discovery: {path do discovery de origem, exemplo $PROD_DOCS/discoveries/discovery-001-nome.md. Se não existir, ignore essa linha}
 created_at: {YYYY-MM-DD}
 created_by: {nome de quem criou esse doc}
 ---

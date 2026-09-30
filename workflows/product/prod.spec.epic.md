@@ -10,6 +10,8 @@ model_justification: Criação de épicos segue templates estruturados e requer 
 
 # Crie um fluxo de trabalho épico
 
+Antes de iniciar, revise o arquivo de regras invioláveis em `$PROD_RULES/**/*`. Se você não estiver familiarizado com essa variável, leia as regras diretamente na pasta `.$IDE/rules/product/**/*.*`.
+
 Este fluxo de trabalho orienta você na criação de um épico usando `$PROD_TEMPLATES/prod-epic-template.md`. épicos agrupam histórias de usuários relacionadas que oferecem uma funcionalidade significativa.
 
 Utilize o `$ARGUMENTS` que o usuário passar como ponto de partida e para entender o contexto do que foi pedido.
@@ -26,6 +28,7 @@ Utilize o `$ARGUMENTS` que o usuário passar como ponto de partida e para entend
 - Quando o usuári quiser criar um épico independente de especificações anteriores ou para projetos que já estão em andamento
 
 ## Pré-requisitos e opcionais
+- **Discovery (opcional).** Se o usuário apontar um discovery (por exemplo `discovery-002`), siga o princípio "Discovery como insumo" de `$PROD_RULES/prod.spec-rules.md`: leia-o como contexto e repasse tudo com o usuário antes de escrever o épico. Sem discovery apontado, siga este fluxo normalmente, sem procurar na pasta `discoveries/`.
 - Ter uma PRD existente ou requisitos de produto é importante, mas opcional. Questione o usuário se ele deseja criar um PRD ou se ele deseja criar um épico independente de especificações anteriores ou para projetos que já estão em andamento
 - Ter um breakdown existente é importante, mas opcional. Questione o usuário se ele deseja criar um breakdown (siga o fluxo de trabalho `prod.spec.breakdown.md`) ou se ele deseja criar um épico independente de especificações anteriores ou para projetos que já estão em andamento
 - Compreensão de alto nível da abordagem técnica

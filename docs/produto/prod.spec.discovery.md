@@ -65,7 +65,7 @@ O `status` só diz se o rascunho está vivo. A conclusão fica no `verdict`, e �
 
 ## O próximo passo sugerido
 
-Todo discovery termina sugerindo um caminho. É só uma sugestão: o agente nunca executa o comando sozinho, e você pode escolher outro caminho ou parar ali.
+Todo discovery termina sugerindo um caminho, com o **comando pronto e o id do discovery** (por exemplo `/prod.spec.prd discovery-002`). É só uma sugestão: o agente nunca executa o comando sozinho, e você pode escolher outro caminho ou parar ali. Para usar o discovery, aponte-o no comando: [`prd`](./prod.spec.prd.md), [`frd`](./prod.spec.frd.md), [`epic`](./prod.spec.epic.md) ou [`issue`](./prod.spec.issue.md) aceitam um discovery como insumo (opcional).
 
 | O que o discovery revelou | Próximo passo sugerido |
 |---|---|
