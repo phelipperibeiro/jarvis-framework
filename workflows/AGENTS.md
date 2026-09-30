@@ -142,7 +142,7 @@ Workflows de engenharia seguem fases restritas:
 | Fase | Workflows | Restricao |
 |------|-----------|-----------|
 | Planejamento | `eng.start`, `eng.plan` | Somente analise, SEM codigo |
-| Implementacao | `eng.work` | Codigo e testes, SEM commits |
+| Implementacao | `eng.work` | Codigo e testes, commit por fase, SEM push nem PR |
 | Entrega | `eng.pr` | Branch, commit e PR |
 
 **IMPORTANTE**: Respeitar estritamente as restricoes de cada fase.

@@ -1,5 +1,5 @@
 ---
-description: Fluxo de implementação de código (SEM commits ou PRs)
+description: Fluxo de implementação de código (commit por fase, SEM push nem PRs)
 auto_execution_mode: 3
 agent: "$IDE/agents/engineering/eng.agent.md"
 rules_file: "$IDE/rules/engineering/eng.work-rules.md"

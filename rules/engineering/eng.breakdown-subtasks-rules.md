@@ -373,35 +373,32 @@ Ao gerar subtarefas com escopo de QA/testes, aplique a seguinte divisão **obrig
 
 ---
 
-## Formato de Saída: JSON
+## Formato de Saída: Markdown
 
 ### Estrutura Obrigatória
 
-```json
-{
-  "subtasks": [
-    {
-      "summary": "[STACK] Título específico da subtarefa",
-      "description": "Template completo com:\n\n## 🎯 O Que Você Vai Fazer\n\n... (resto conforme template acima)"
-    },
-    {
-      "summary": "[STACK] Próxima subtarefa",
-      "description": "..."
-    }
-  ]
-}
+Uma seção por subtarefa, em Markdown puro, na ordem de implementação:
+
+```markdown
+# Subtarefa N: [STACK] Título específico da subtarefa
+
+**Depende de:** Subtarefa X (ou "nenhuma")
+**Desbloqueia:** Subtarefa Y (ou "nenhuma")
+**Paralela com:** Subtarefa Z (ou "nenhuma")
+
+{Description ULTRA DETALHADA seguindo o template da seção "Estrutura de Subtarefa"}
+
+---
 ```
 
-### Regras CRÍTICAS para o JSON
+### Regras CRÍTICAS de formatação
 
-1. **APENAS JSON** - Sem texto antes ou depois
-2. **Use `\n` para quebras de linha** dentro das strings
-3. **Escape aspas com `\"`** dentro das strings
-4. **Todos os títulos com [STACK]** - Obrigatório
-5. **Description ULTRA DETALHADA** - Siga o template COMPLETAMENTE
-6. **Código COMPLETO** - Não use "..." ou placeholder
-7. **Caminhos reais** - Use paths que existem no projeto
-8. **Valide JSON** - Antes de retornar
+1. **Markdown nativo** - sem JSON, sem strings escapadas, sem `\n`
+2. **Todos os títulos com [STACK]** - Obrigatório
+3. **Description ULTRA DETALHADA** - Siga o template COMPLETAMENTE
+4. **Código COMPLETO** - Não use "..." ou placeholder
+5. **Caminhos reais** - Use paths que existem no projeto
+6. **Numeração sequencial** - Subtarefa 1, Subtarefa 2, etc.
 
 ---
 
@@ -434,7 +431,7 @@ Cada subtarefa deve ter seção "🔗 Dependências" indicando:
 
 ## Checklist de Qualidade Final
 
-Antes de retornar o JSON, valide CADA subtarefa:
+Antes de retornar, valide CADA subtarefa:
 
 ### ✅ Completude
 
@@ -479,7 +476,7 @@ Antes de retornar o JSON, valide CADA subtarefa:
 
 ### ✅ Validação
 
-- [ ] JSON é válido
+- [ ] Saída em Markdown válido, uma seção por subtarefa
 - [ ] Nenhuma subtarefa vaga
 - [ ] Toda subtarefa tem ≥ 4h e ≤ 1 dia de trabalho
 - [ ] Nenhuma fatia horizontal (split por camada)
@@ -500,7 +497,7 @@ eng.build-tech-spec → tech-spec.md → eng.breakdown-subtasks
 ### Saída (para onde vai)
 
 ```
-eng.breakdown-subtasks → subtasks JSON → Jira
+eng.breakdown-subtasks → subtarefas em Markdown → board
 ```
 
 ### Relação com Outros Workflows
@@ -550,12 +547,17 @@ eng.breakdown-subtasks → subtasks JSON → Jira
 
 ### ❌ MAL FEITA
 
-```json
-{
-  "summary": "[BACKEND] Criar autenticação",
-  "description": "Implementar o sistema de autenticação com JWT.\n\nFaça: Login, registro e validação.\n\nUse bcrypt para senha e JWT para token.\n\nRetorne o usuário no login."
-}
-```
+````markdown
+# Subtarefa 1: [BACKEND] Criar autenticação
+
+Implementar o sistema de autenticação com JWT.
+
+Faça: Login, registro e validação.
+
+Use bcrypt para senha e JWT para token.
+
+Retorne o usuário no login.
+````
 
 **Problemas:**
 
@@ -567,12 +569,181 @@ eng.breakdown-subtasks → subtasks JSON → Jira
 
 ### ✅ BEM FEITA
 
-````json
-{
-  "summary": "[BACKEND] Criar endpoint POST /api/auth/register com validação",
-  "description": "## 🎯 O Que Você Vai Fazer\n\nCriar o endpoint de registro que recebe email/senha, valida dados, cria usuário no banco e retorna JWT.\n\n---\n\n## 📋 Contexto\n\n### Por que?\nSistema precisa permitir novos usuários se cadastrem.\n\n### Pré-requisitos\n- [ ] Migration de usuários ([DATA] Criar migration tabela users)\n\n---\n\n## 🛠️ Stack\n\n| Tech | Versão | Para |\n|------|--------|------|\n| Express | 4.18+ | Framework HTTP |\n| bcrypt | 5.1+ | Hash de senha |\n| JWT | 9.0+ | Tokens |\n\n---\n\n## 📁 Arquivos\n\n| Arquivo | Ação | Descrição |\n|---------|------|--------|\n| `src/controllers/auth.controller.ts` | 🆕 | Controlador |\n| `src/services/auth.service.ts` | 🆕 | Lógica de negócio |\n| `src/routes/auth.ts` | 🆕 | Rotas |\n| `src/__tests__/auth.spec.ts` | 🆕 | Testes |\n\n---\n\n## 👣 Passos\n\n### Passo 1: Criar schema de validação\n\n```typescript\n// src/schemas/auth.schema.ts\nimport { body } from 'express-validator';\n\nexport const registerSchema = [\n  body('email')\n    .isEmail()\n    .withMessage('Email inválido')\n    .normalizeEmail(),\n  body('password')\n    .isLength({ min: 8 })\n    .withMessage('Mínimo 8 caracteres')\n    .matches(/[A-Z]/)\n    .withMessage('Precisa letra maiúscula'),\n];\n```\n\n**Explicação:**\n- `isEmail()`: Valida formato\n- `normalizeEmail()`: Padroniza\n- `matches(/[A-Z]/)`: Regex para maiúscula\n\n---\n\n### Passo 2: Criar AuthService\n\n```typescript\n// src/services/auth.service.ts\nimport bcrypt from 'bcrypt';\nimport jwt from 'jsonwebtoken';\n\nexport class AuthService {\n  async register(email: string, password: string) {\n    // Hash da senha\n    const hash = await bcrypt.hash(password, 10);\n    \n    // Criar usuário (assumindo repo existe)\n    const user = await this.userRepo.create({\n      email,\n      passwordHash: hash,\n    });\n    \n    // Gerar token\n    const token = jwt.sign(\n      { userId: user.id },\n      process.env.JWT_SECRET!,\n      { expiresIn: '24h' }\n    );\n    \n    return { user, token };\n  }\n}\n```\n\n**Explicação:**\n- `bcrypt.hash(password, 10)`: 10 salt rounds é seguro\n- `jwt.sign()`: Cria token que expira em 24h\n- Não retornamos passwordHash no response\n\n---\n\n## 🧪 Testes\n\n```typescript\n// src/__tests__/auth.spec.ts\nimport request from 'supertest';\nimport { app } from '../app';\n\ndescribe('POST /api/auth/register', () => {\n  it('deve registrar com email e senha válidos', async () => {\n    const response = await request(app)\n      .post('/api/auth/register')\n      .send({\n        email: 'test@example.com',\n        password: 'Senha123!',\n      });\n    \n    expect(response.status).toBe(201);\n    expect(response.body).toHaveProperty('token');\n  });\n  \n  it('deve retornar 400 para email inválido', async () => {\n    const response = await request(app)\n      .post('/api/auth/register')\n      .send({\n        email: 'invalid',\n        password: 'Senha123!',\n      });\n    \n    expect(response.status).toBe(400);\n  });\n});\n```\n\n### Cenários\n\n| Cenário | Input | Output |\n|---------|-------|--------|\n| Válido | email + senha válidos | 201 + token |\n| Email inválido | email sem @ | 400 VALIDATION_ERROR |\n| Senha fraca | < 8 chars | 400 VALIDATION_ERROR |\n\n---\n\n## ✅ Checklist\n\n- [ ] Schema criado\n- [ ] AuthService implementado\n- [ ] AuthController implementado\n- [ ] Rotas configuradas\n- [ ] Testes passando\n- [ ] Linter clean\n- [ ] Build ok\n\n---\n\n## ⚠️ Riscos\n\n| Risco | Como Evitar |\n|-------|-------------|\n| JWT_SECRET exposto | Usar .env, nunca commitar |\n| Senha em log | Não logar req.body |\n\n---\n\n## 🔗 Dependências\n\n**Depende de:** [DATA] Criar migration tabela users\n**Desbloqueia:** [FRONTEND] Criar tela de registro\n**Paralela com:** [INFRA] Configurar variáveis JWT\n"
+`````markdown
+# Subtarefa 1: [BACKEND] Criar endpoint POST /api/auth/register com validação
+
+## 🎯 O Que Você Vai Fazer
+
+Criar o endpoint de registro que recebe email/senha, valida dados, cria usuário no banco e retorna JWT.
+
+---
+
+## 📋 Contexto
+
+### Por que?
+Sistema precisa permitir novos usuários se cadastrem.
+
+### Pré-requisitos
+- [ ] Migration de usuários ([DATA] Criar migration tabela users)
+
+---
+
+## 🛠️ Stack
+
+| Tech | Versão | Para |
+|------|--------|------|
+| Express | 4.18+ | Framework HTTP |
+| bcrypt | 5.1+ | Hash de senha |
+| JWT | 9.0+ | Tokens |
+
+---
+
+## 📁 Arquivos
+
+| Arquivo | Ação | Descrição |
+|---------|------|--------|
+| `src/controllers/auth.controller.ts` | 🆕 | Controlador |
+| `src/services/auth.service.ts` | 🆕 | Lógica de negócio |
+| `src/routes/auth.ts` | 🆕 | Rotas |
+| `src/__tests__/auth.spec.ts` | 🆕 | Testes |
+
+---
+
+## 👣 Passos
+
+### Passo 1: Criar schema de validação
+
+```typescript
+// src/schemas/auth.schema.ts
+import { body } from 'express-validator';
+
+export const registerSchema = [
+  body('email')
+    .isEmail()
+    .withMessage('Email inválido')
+    .normalizeEmail(),
+  body('password')
+    .isLength({ min: 8 })
+    .withMessage('Mínimo 8 caracteres')
+    .matches(/[A-Z]/)
+    .withMessage('Precisa letra maiúscula'),
+];
+```
+
+**Explicação:**
+- `isEmail()`: Valida formato
+- `normalizeEmail()`: Padroniza
+- `matches(/[A-Z]/)`: Regex para maiúscula
+
+---
+
+### Passo 2: Criar AuthService
+
+```typescript
+// src/services/auth.service.ts
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+
+export class AuthService {
+  async register(email: string, password: string) {
+    // Hash da senha
+    const hash = await bcrypt.hash(password, 10);
+    
+    // Criar usuário (assumindo repo existe)
+    const user = await this.userRepo.create({
+      email,
+      passwordHash: hash,
+    });
+    
+    // Gerar token
+    const token = jwt.sign(
+      { userId: user.id },
+      process.env.JWT_SECRET!,
+      { expiresIn: '24h' }
+    );
+    
+    return { user, token };
+  }
 }
-````
+```
+
+**Explicação:**
+- `bcrypt.hash(password, 10)`: 10 salt rounds é seguro
+- `jwt.sign()`: Cria token que expira em 24h
+- Não retornamos passwordHash no response
+
+---
+
+## 🧪 Testes
+
+```typescript
+// src/__tests__/auth.spec.ts
+import request from 'supertest';
+import { app } from '../app';
+
+describe('POST /api/auth/register', () => {
+  it('deve registrar com email e senha válidos', async () => {
+    const response = await request(app)
+      .post('/api/auth/register')
+      .send({
+        email: 'test@example.com',
+        password: 'Senha123!',
+      });
+    
+    expect(response.status).toBe(201);
+    expect(response.body).toHaveProperty('token');
+  });
+  
+  it('deve retornar 400 para email inválido', async () => {
+    const response = await request(app)
+      .post('/api/auth/register')
+      .send({
+        email: 'invalid',
+        password: 'Senha123!',
+      });
+    
+    expect(response.status).toBe(400);
+  });
+});
+```
+
+### Cenários
+
+| Cenário | Input | Output |
+|---------|-------|--------|
+| Válido | email + senha válidos | 201 + token |
+| Email inválido | email sem @ | 400 VALIDATION_ERROR |
+| Senha fraca | < 8 chars | 400 VALIDATION_ERROR |
+
+---
+
+## ✅ Checklist
+
+- [ ] Schema criado
+- [ ] AuthService implementado
+- [ ] AuthController implementado
+- [ ] Rotas configuradas
+- [ ] Testes passando
+- [ ] Linter clean
+- [ ] Build ok
+
+---
+
+## ⚠️ Riscos
+
+| Risco | Como Evitar |
+|-------|-------------|
+| JWT_SECRET exposto | Usar .env, nunca commitar |
+| Senha em log | Não logar req.body |
+
+---
+
+## 🔗 Dependências
+
+**Depende de:** [DATA] Criar migration tabela users
+**Desbloqueia:** [FRONTEND] Criar tela de registro
+**Paralela com:** [INFRA] Configurar variáveis JWT
+`````
 
 **Diferenças:**
 

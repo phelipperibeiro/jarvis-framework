@@ -70,7 +70,7 @@ Campos importantes neste fork:
 | `engines.node` | `>=18`                                                         |
 | `repository`   | GitHub `phelipperibeiro/jarvis-framework`                      |
 
-Scripts úteis: `test`, `test:utils`, `test:all`.
+Script útil: `test:comandos` (confere workflows, guias e links dos comandos).
 
 A versão exibida no banner do `jarvis init` e em `jarvis --version` **vem daqui**. Ao evoluir o fork, incremente `version` para validar qual binário está no PATH.
 

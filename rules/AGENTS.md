@@ -147,7 +147,7 @@ Links para documentacao relacionada.
 | Fase | Comandos | Restricao |
 |------|----------|-----------|
 | Planejamento | `eng.start`, `eng.plan` | Somente analise, SEM codigo |
-| Implementacao | `eng.work` | Codigo e testes, SEM commits |
+| Implementacao | `eng.work` | Codigo e testes, commit por fase, SEM push nem PR |
 | Entrega | `eng.pr` | Branch, commit e PR |
 
 ### Seguranca
