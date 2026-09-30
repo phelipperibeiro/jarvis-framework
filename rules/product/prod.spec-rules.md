@@ -8,7 +8,7 @@ trigger: always_on
 
 ## Objetivo
 
-Definir os princípios que todo documento de especificação de produto (PRD, FRD, épico, história, tarefa e bug) deve seguir: o nível certo de critérios de aceitação em cada tipo de documento, contexto completo e terminologia consistente.
+Definir os princípios que todo documento de especificação de produto (PRD, FRD, épico, história, tarefa e bug) deve seguir: o nível certo de critérios de aceitação em cada tipo de documento, contexto completo, terminologia consistente e o uso opcional de um discovery como insumo.
 
 ## Escopo
 
@@ -149,6 +149,36 @@ A terminologia inconsistente cria confusão. "Cliente" vs "Usuário" vs "Cliente
 - **Histórias**: Combine a terminologia do PRD e do Plano
 - **Questões rápidas**: use terminologia estabelecida ou defina novos termos
 
+### Princípio: Discovery como insumo
+
+**Princípio**: O discovery (`$PROD_DOCS/discoveries/discovery-{id}-{nome}.md`) é um rascunho de suposições. Ele pode servir de contexto para um PRD, FRD, épico ou issue, mas nunca é obrigatório e nunca é tratado como verdade.
+
+**O discovery é opcional**:
+- Sem discovery apontado, siga o fluxo do comando normalmente, sem procurar na pasta `discoveries/` e sem perguntar nada sobre discovery. Ter arquivos nessa pasta não tem relação com o comando.
+- Exemplos: `/prod.spec.prd já sei o que quero` segue o fluxo de sempre; `/prod.spec.prd discovery-002` carrega o discovery.
+
+**Como apontar e achar o discovery**:
+- O usuário aponta por caminho, nome ou id (como `discovery-002`); procure em `$PROD_DOCS/discoveries/`.
+- Se o arquivo não existir: informe, liste os discoveries da pasta e pergunte qual usar, ou se o usuário prefere seguir sem discovery.
+- Se a pasta `discoveries/` não existir: siga sem discovery e não crie a pasta.
+- Se mais de um arquivo casar com o que o usuário apontou: pergunte qual usar, sem escolher sozinho.
+
+**Como usar o discovery**:
+- Leia o discovery como **contexto, não como resposta**: é um rascunho e pode estar defasado.
+- **Questione e repasse tudo com o usuário**, seção por seção: mostre o que está registrado e pergunte se ainda vale ou se mudou.
+- Hipóteses e perguntas em aberto do discovery são perguntadas como tais; o que o comando exige e o discovery não cobre é perguntado normalmente.
+- Nada do discovery entra no documento novo como fato sem o usuário ter passado por aquilo. O que ficar sem validação continua marcado como suposição.
+
+**Avisos conforme a situação do discovery**:
+- `verdict: do_not_proceed` (ou `status: cancelled`): avise que a recomendação foi não seguir, mostre o motivo registrado e só continue com confirmação explícita do usuário.
+- `verdict: investigate_more`, `verdict` vazio ou `status: in_review` (discovery ainda em entrevista): avise que há lacunas críticas, liste as perguntas em aberto e pergunte se o usuário quer retomar o discovery antes ou seguir assumindo o risco.
+- `verdict: proceed`: siga normalmente.
+
+**O documento novo é o oficial**:
+- O PRD, FRD, épico ou issue é a fonte da verdade. O discovery **nunca é alterado** por estes comandos: ele permanece como o registro do momento da investigação.
+- O documento novo referencia o discovery de origem no campo `related_discovery` do frontmatter.
+- Quando a informação do documento novo divergir do discovery, **avise o usuário na conversa** e crie no documento novo a seção **"Divergências"** (somente quando houver), com o que mudou e por quê, em poucas linhas.
+
 ## Exceções
 
 Quando o usuário pedir explicitamente outro formato ou nível de detalhe para um documento, registre a decisão no próprio documento e siga o pedido.
@@ -158,3 +188,4 @@ Quando o usuário pedir explicitamente outro formato ou nível de detalhe para u
 - `prod-rules.md`: regras gerais de produto (ambiente, comandos, nomes de arquivos, status e perguntas ao usuário)
 - `../../templates/product/`: templates dos documentos
 - `../../workflows/product/`: os comandos `prod.spec.*`
+- `prod.spec.discovery.md` (workflow) e `prod-discovery-template.md`: o comando e o formato do discovery, o rascunho que os comandos acima podem usar como insumo

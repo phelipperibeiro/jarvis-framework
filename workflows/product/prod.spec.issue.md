@@ -28,6 +28,7 @@ Um grupo de histórias de um mesmo assunto podem formar um épico.
 - Para criar ou modificar novas funcionalidades, jornadas, ações de usuário e outras modificações dentro do projeto
 
 ## Pré-requisitos
+- **Discovery (opcional).** Se o usuário apontar um discovery (por exemplo `discovery-002`), siga o princípio "Discovery como insumo" de `$PROD_RULES/prod.spec-rules.md`: leia-o como contexto e repasse tudo com o usuário antes de escrever a issue. Sem discovery apontado, siga este fluxo normalmente, sem procurar na pasta `discoveries/`.
 - Entendimento claro do trabalho a ser feito. Leia a PRD, épicos, histórias criadas anteriormente para entender o contexto a ser feito.
 - Entenda também últimos commits do projeto e outras alterações que possam ter sido feitas em sessões anteriores
 - Se não houver uma PRD ou épico relacionado, sugira para o usuário a criação do épico ou da PRD, mas é totalmente opcional

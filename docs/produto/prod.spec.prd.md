@@ -58,6 +58,15 @@ Sem esse documento (ou equivalente), épicos e histórias tendem a virar “pedi
 Documento de Requisitos de Produto bom → menos retrabalho no `/eng.plan`.  
 Documento vago → o esclarecimento é barato; descobrir na code review é caro.
 
+## Com um discovery como insumo (opcional)
+
+O [`discovery`](./prod.spec.discovery.md) é opcional: você pode rodar este comando direto, quando já sabe o que quer.
+
+- `/prod.spec.prd já sei o que quero` → segue o fluxo de sempre. Ter arquivos na pasta `discoveries/` não muda nada.
+- `/prod.spec.prd discovery-002` → o comando carrega esse discovery, lê como contexto e **repassa tudo com você** antes de escrever. O discovery é um rascunho de suposições, então nada vira fato sem você ter visto.
+
+O documento oficial é a fonte da verdade: o discovery nunca é alterado. Se algo divergir, o agente avisa você e o documento novo ganha uma seção **"Divergências"** com o que mudou e por quê.
+
 ## Próximo passo típico
 
 [`clarify`](./prod.spec.clarify.md) → [`frd`](./prod.spec.frd.md) e/ou [`epic`](./prod.spec.epic.md) → [`issue`](./prod.spec.issue.md) → `/eng.start`

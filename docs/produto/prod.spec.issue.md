@@ -63,6 +63,15 @@ Issue do tipo tarefa, ligada à história de aceitar convite — não invente ta
 
 Histórias melhores tendem a ser: Independentes, Negociáveis, Valiosas, Estimáveis, Small (cabem na sprint), Testáveis.
 
+## Com um discovery como insumo (opcional)
+
+O [`discovery`](./prod.spec.discovery.md) é opcional: você pode rodar este comando direto, quando já sabe o que quer.
+
+- `/prod.spec.issue já sei o que quero` → segue o fluxo de sempre. Ter arquivos na pasta `discoveries/` não muda nada.
+- `/prod.spec.issue discovery-002` → o comando carrega esse discovery, lê como contexto e **repassa tudo com você** antes de escrever. O discovery é um rascunho de suposições, então nada vira fato sem você ter visto.
+
+O documento oficial é a fonte da verdade: o discovery nunca é alterado. Se algo divergir, o agente avisa você e o documento novo ganha uma seção **"Divergências"** com o que mudou e por quê.
+
 ## Próximo passo típico
 
 `/eng.start` → `/eng.plan` → `/eng.work` → `/eng.pr`  

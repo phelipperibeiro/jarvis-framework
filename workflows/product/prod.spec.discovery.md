@@ -120,7 +120,7 @@ Conduza como o agente `prod.discovery-interviewer`:
    - `proceed`: vale especificar; sem lacuna crítica aberta
    - `investigate_more`: há lacuna crítica; liste o que falta
    - `do_not_proceed`: informe o motivo; mude o `status` para `cancelled`
-4. **Próximo passo sugerido**, **sempre**, qualquer que seja o veredito (comando recomendado, motivo e, se houver, alternativa). É **só uma sugestão**: ofereça usar o discovery como insumo, **nunca execute o comando sozinho**, e deixe claro que o usuário pode escolher outro caminho ou parar ali.
+4. **Próximo passo sugerido**, **sempre**, qualquer que seja o veredito (comando recomendado, motivo e, se houver, alternativa). É **só uma sugestão**: mostre o **comando pronto com o id deste discovery** (por exemplo `/prod.spec.prd discovery-002`) para o usuário usá-lo como insumo, **nunca execute o comando sozinho**, e deixe claro que o usuário pode escolher outro caminho ou parar ali.
 
 ### Mapa de escolha do próximo passo
 

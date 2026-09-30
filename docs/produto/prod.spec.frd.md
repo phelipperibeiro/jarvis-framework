@@ -55,6 +55,15 @@ Onde o Documento de Requisitos de Produto fala do produto inteiro (ou de uma ini
 
 Documento de Requisitos Funcionais bom vira roteiro de teste exploratório e base de Cypress/E2E. QA agradece critérios de aceite testáveis (“então vejo X”), não (“sistema deve ser intuitivo”).
 
+## Com um discovery como insumo (opcional)
+
+O [`discovery`](./prod.spec.discovery.md) é opcional: você pode rodar este comando direto, quando já sabe o que quer.
+
+- `/prod.spec.frd já sei o que quero` → segue o fluxo de sempre. Ter arquivos na pasta `discoveries/` não muda nada.
+- `/prod.spec.frd discovery-002` → o comando carrega esse discovery, lê como contexto e **repassa tudo com você** antes de escrever. O discovery é um rascunho de suposições, então nada vira fato sem você ter visto.
+
+O documento oficial é a fonte da verdade: o discovery nunca é alterado. Se algo divergir, o agente avisa você e o documento novo ganha uma seção **"Divergências"** com o que mudou e por quê.
+
 ## Próximo passo típico
 
 [`clarify`](./prod.spec.clarify.md) → [`issue`](./prod.spec.issue.md) (ou [`epic`](./prod.spec.epic.md) se forem muitas histórias) → `/eng.start`
