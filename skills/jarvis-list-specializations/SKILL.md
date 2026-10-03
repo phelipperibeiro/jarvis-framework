@@ -33,6 +33,7 @@ Mostrar, sem alterar nada, **todas as especializações instaladas** no projeto,
 - **ENV**: `$IDE/ENV.md` (listas `BACKEND_SPECIALIZATIONS` e `FRONTEND_SPECIALIZATIONS`)
 - **Skills instalados**: `$IDE/skills/*/SKILL.md` (só o frontmatter)
 - **Regra relacionada**: `$IDE/rules/engineering/eng.specializations-rules.md`
+- **Criação**: `$IDE/skills/jarvis-create-specialization/SKILL.md`
 
 ---
 
@@ -143,4 +144,5 @@ Especializações: {N} instaladas, {R} registradas
 Pendentes (sem marcação de área): {P}
 
 Para registrar uma especialização, inclua o nome do skill na lista da área no ENV.md.
+Para criar uma nova a partir do código do projeto, use /jarvis-create-specialization.
 ```

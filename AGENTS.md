@@ -82,6 +82,7 @@ prompts/
 │   │   ├── jarvis-report-issue/          # Auto-report de bugs no repo do Jarvis (GitLab/GitHub/Bitbucket)
 │   │   ├── eng-global-task-comment/      # Comentário no card (Jira/Linear/GitHub/Asana)
 │   │   ├── jarvis-list-specializations/ # Lista especializações de stack instaladas e registradas
+│   │   ├── jarvis-create-specialization/ # Cria uma especialização de stack a partir do código do projeto e a registra
 │   │
 │   ├── templates/                # Templates de documentos
 │   │   ├── engineering/          # ARD, RFC, Tech Spec
@@ -292,6 +293,7 @@ Quando um agente atua em tema com skill correspondente, o skill e a fonte de ver
 | `eng.pr` | `eng-global-pr` (MR/PR via `VERSION_CONTROL`) |
 | Comentário no card | `eng-global-task-comment` |
 | Listar especializações de stack (instaladas e registradas) | `jarvis-list-specializations` |
+| Criar uma especialização de stack (backend ou frontend) a partir do código do projeto | `jarvis-create-specialization` |
 | `jarvis docs sync` | `jarvis-docs-central` |
 | `jarvis docs publish` | `jarvis-docs-central` |
 | QA validation | `eng-qa-gate` |
