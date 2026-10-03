@@ -31,11 +31,6 @@ Skills existentes e planejadas do framework Jarvis.
 - **Escopo**: exploração com `act()`/`observe()`, geração de script Playwright TypeScript
 - **Status**: `criado`
 
-### `eng-tech-analyst` ✅
-- **Trigger**: triagem de chamados, diagnóstico de bugs, classificação por área, escalonamento
-- **Escopo**: fluxo de triagem, avaliação de impacto, frequência de bugs, comunicação adaptada
-- **Status**: `criado`
-
 ### `eng-design-system` ✅
 - **Trigger**: tokens, CVA, Storybook, versionamento de componentes, auditoria visual
 - **Escopo**: design tokens, variantes com `cva`, componentes reutilizáveis, changelog de UI
@@ -297,7 +292,6 @@ Removidas: `checkin`, `checkout`, `daily`, `task-log`, `send-priority`, `sent-pr
 | 2 | `eng-backend` | ✅ criado | APIs, auth, workers RabbitMQ — core do produto |
 | 3 | `eng-nestjs` | ✅ criado | Framework principal — DI, guards, Passport/JWT |
 | 4 | `eng-scraper` | ✅ criado | Puppeteer como primário, ETL pipelines NestJS |
-| 5 | `eng-tech-analyst` | ✅ criado | Triagem, diagnóstico e escalonamento |
 | 6 | `eng-design-system` | ✅ criado | Tokens, CVA, Storybook, versionamento |
 | 7 | `eng-microfrontend` | ✅ criado | Module Federation, shell/remote |
 | 8 | `eng-database` | planejado | Área densa com muitos anti-patterns críticos |

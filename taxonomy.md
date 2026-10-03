@@ -18,12 +18,6 @@ board_code:
 modules:
 Time principal. Adicione squads da sua organização com `/taxonomy add SQUADS`.
 
-### SUPPORT
-channel_id:
-board_code:
-modules: atendimento, chamados, triagem, diagnostico, escalonamento
-Time de suporte técnico — Tech Analysts. Transversal às squads de desenvolvimento.
-
 ---
 
 ## 🎯 Hubs (Áreas Técnicas)
@@ -121,18 +115,6 @@ Group Product Manager
 - Visão estratégica de produto
 - Coordenação entre diferentes áreas
 - No fluxo downstream: pode priorizar, aceitar e também assumir/conduzir um card ponta-a-ponta. Aceite apoia — não trava o owner.
-
-### TECH ANALYST
-Ponte técnica entre suporte operacional e squads de engenharia — posição de entrada em engenharia
-⚠️ Posição transversal — NÃO pertence a nenhuma squad de desenvolvimento. Squad no ENV.md = SUPPORT.
-- Diagnóstico e triagem técnica de chamados não resolvidos pelo suporte N2
-- Resolução de problemas dentro do escopo via backoffice, scripts e ferramentas internas
-- Escalonamento qualificado: avalia impacto antes de escalar, nunca escala por reflexo
-- Consulta banco de dados para diagnóstico (somente leitura — não escreve em produção)
-- Classifica e registra bugs no Jira com descrição clara, impacto avaliado e área identificada
-- Monitora e atualiza frequência de bugs recorrentes no Jarvis, alertando QA quando necessário
-- Não desenvolve features, não faz deploy, não define prioridades — isso é do PM
-- No fluxo downstream: responsável pela validação operacional pós-deploy e encaminhamento de problemas encontrados em produção
 
 ### QUALITY_CHAMPION
 Designação secundária para devs com função parcial de qualidade dentro do squad.

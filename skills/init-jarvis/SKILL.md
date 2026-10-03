@@ -298,7 +298,6 @@ Qual o nome do seu squad?
 
 Opções disponíveis: (lidas de taxonomy.md)
 1. CORE - Time principal
-2. SUPPORT - Suporte técnico / Tech Analyst
 
 Digite o número ou nome do squad:
 [aguardar resposta e validar contra lista do taxonomy.md]
@@ -564,7 +563,6 @@ Nunca grave TOKEN_VERSION_CONTROL (chave removida do template).
 | `TASK_MANAGER` | *(vazio = freelance)* | `jira`, `linear`, `github`, `asana` |
 | `TOKEN_TASK_MANAGER` | *(vazio)* | Token do board (só se TASK_MANAGER preenchido) |
 | `TASK_MANAGER_URL_BASE` | *(vazio)* | URL base para links (ex: Atlassian) |
-| `TASK_MANAGER_HUBS_BOARD` | *(vazio)* | Board de triagem N2 (Tech Analyst) |
 | `VERSION_CONTROL` | *(vazio)* | `gitlab`, `github`, `bitbucket` |
 | `MESSAGE_BROKER` | *(vazio)* | `rabbitmq`, `kafka`, `sqs` |
 | `MESSAGE_BROKER_URL_API` | *(vazio)* | API do broker |
@@ -1101,7 +1099,7 @@ Apresentar checklist de onboarding por período (Dia 1, Semana 1, Mês 1).
 
 | Erro | Ação |
 |------|------|
-| **taxonomy.md não encontrado** | Usar DEFAULT_OPTIONS (CORE/SUPPORT + hubs com DATA) e avisar |
+| **taxonomy.md não encontrado** | Usar DEFAULT_OPTIONS (CORE + hubs com DATA) e avisar |
 | **taxonomy.md inválido/corrompido** | Usar DEFAULT_OPTIONS e alertar |
 | **AskUserQuestion não disponível** | Usar texto numerado para todas as opções fixas — não bloquear o init |
 | **Múltiplas perguntas feitas de uma vez** | ERRO CRÍTICO - NUNCA faça isso. Pergunte uma por vez e aguarde resposta |
@@ -1139,7 +1137,6 @@ Qual o nome do seu squad?
 
 Opções disponíveis: (lidas de taxonomy.md)
 1. CORE - Time principal
-2. SUPPORT - Suporte técnico / Tech Analyst
 
 Digite o número ou nome do squad:
 ```
@@ -1157,7 +1154,7 @@ Se `taxonomy.md` não existir ou estiver corrompido, usar:
 
 ```javascript
 const DEFAULT_OPTIONS = {
-  SQUADS: ['CORE', 'SUPPORT'],
+  SQUADS: ['CORE'],
   HUBS: ['AI', 'FRONTEND', 'BACKEND', 'QA', 'DATA', 'FULLCYCLE'],
   POSITIONS: ['HEAD', 'JUNIOR', 'PLENO', 'SENIOR', 'TECH LEAD', 'SPECIALIST', 'PM', 'TPM', 'GPM', 'CTO', 'GENERALIST'],
   AREAS: ['ENGINEERING', 'PRODUCT']
@@ -1166,7 +1163,7 @@ const DEFAULT_OPTIONS = {
 
 **Avisar usuário:**
 ```
-⚠️ Arquivo taxonomy.md não encontrado. Usando opções padrão (CORE/SUPPORT + hubs com DATA).
+⚠️ Arquivo taxonomy.md não encontrado. Usando opções padrão (CORE + hubs com DATA).
 Para customizar, edite taxonomy.md e rode /taxonomy validate.
 ```
 

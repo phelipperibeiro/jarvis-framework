@@ -84,7 +84,6 @@ Fonte: `workflows/engineering/`. Guias didáticos: [engenharia/README.md](./enge
 | Comando               | O que faz                                                  | Workflow |
 | --------------------- | ---------------------------------------------------------- | --- |
 | [`/eng.rpa.robot`](./engenharia/eng.rpa.robot.md) | Ciclo de vida de um robô RPA | [workflow](../workflows/engineering/eng.rpa.robot.md) |
-| [`/eng.ta.atendimento`](./engenharia/eng.ta.atendimento.md) | Fluxo do Tech Analyst: triagem e escalonamento de chamados | [workflow](../workflows/engineering/ta/eng.ta.atendimento.md) |
 
 ## Outros comandos
 

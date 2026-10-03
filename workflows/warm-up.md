@@ -261,26 +261,6 @@ O menu é determinado pelos valores de `POSITION`, `AREA` e `HUB` lidos do ENV.m
 
 ---
 
-### Menu para POSITION=TECH ANALYST (sobrepõe AREA=ENGINEERING)
-
-> ℹ️ O Tech Analyst é transversal — não pertence a nenhuma squad de desenvolvimento.
-> Seu `SQUAD` no ENV.md deve ser `SUPPORT`. Interfaces com todas as squads.
-
-Quando `POSITION=TECH ANALYST`, ignorar o menu de ENGINEERING e exibir:
-
-```
-Como você quer continuar?
-
-A: Atender chamado técnico (ta.atendimento)
-B: Outro
-```
-
-Roteamento:
-- A → `$FLOWS_FOLDER/engineering/ta/eng.ta.atendimento.md`
-- B → perguntar e rotear dinamicamente
-
----
-
 ### Menu para POSITION=TECH LEAD (sobrepõe menu genérico de ENGINEERING)
 
 > ℹ️ Usar este menu quando `POSITION=TECH LEAD` e `AREA=ENGINEERING`.
@@ -487,7 +467,6 @@ Roteamento:
 | CTO e equivalentes | Menu estratégico com segurança em destaque — ver seção "Menu para POSITION=CTO" acima |
 | TECH LEAD em AREA=ENGINEERING | Menu completo de engenharia + workflows de segurança — ver seção "Menu para POSITION=TECH LEAD" acima |
 | PM, TPM, GPM em AREA=ENGINEERING | Mostrar menu PRODUCT mesmo estando na área ENGINEERING |
-| TECH ANALYST | Mostrar menu de atendimento técnico (ta.atendimento) em vez do menu ENGINEERING |
 
 ---
 

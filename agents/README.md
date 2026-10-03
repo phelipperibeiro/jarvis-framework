@@ -16,7 +16,6 @@ agents/
 │   ├── eng.bug-hunter.md         # Caça e análise de bugs
 │   ├── eng.dev-code-reviewer.md  # Code reviewer
 │   ├── eng.docs-writer.md        # Escritor de documentação
-│   ├── eng.tech-analyst.agent.md # Triagem e diagnóstico de chamados N2
 │   ├── eng.rpa.agent.md          # Automação RPA (ARACHNE)
 │   ├── eng.frontend.agent.md     # Especialista frontend: React, MFE, design system, a11y
 │   ├── eng.ux-designer.agent.md  # Especialista UX/UI: heurísticas, jornada, microcopy
@@ -50,7 +49,6 @@ Agentes específicos para fluxos e regras do domínio de Engenharia.
 - `eng.bug-hunter.md` - `@eng.bug-hunter` - Caça e análise de bugs
 - `eng.dev-code-reviewer.md` - `@eng.dev-code-reviewer` - Code review
 - `eng.docs-writer.md` - `@eng.docs-writer` - Documentação técnica
-- `eng.tech-analyst.agent.md` - `@eng.tech-analyst` - Triagem e diagnóstico de chamados N2
 - `eng.rpa.agent.md` - `@eng.rpa` - Automação e scraping RPA (ARACHNE)
 - `eng.frontend.agent.md` - `@eng.frontend` - Especialista frontend: React, micro frontend, design system, a11y
 - `eng.ux-designer.agent.md` - `@eng.ux-designer` - Especialista UX/UI: heurísticas Nielsen, jornada, microcopy
@@ -118,7 +116,7 @@ Agentes específicos para fluxos e validações do domínio de Produto.
 
 | Domínio | Agentes | Uso |
 |---------|---------|-----|
-| ⚙️ **Engineering** | 5 | Agent principal, bug hunter, code review, docs, tech analyst |
+| ⚙️ **Engineering** | 4 | Agent principal, bug hunter, code review, docs |
 | 🧪 **QA** (sub-eng) | 6 | Test planning, testing, quality gate, Cypress specialist, quality strategist |
 | 📊 **Data** (sub-eng) | 1 | Pipelines, contratos de dados, qualidade |
 | 🎯 **Product** | 1 | PM checker |
@@ -165,7 +163,6 @@ Quando um agente estiver atuando em um tema que possui skill correspondente, ele
 - **Converter fluxo manual (produto/dev) em robô Playwright via Stagehand** → `eng-scraper-robot-builder`.
 - **Criar ou manter robô RPA** → `eng.rpa.robot new|update {card}` (workflow).
 - **Testes E2E em linguagem natural, fluxos de usuário, smoke tests pós-deploy** → `eng-qa-e2e`.
-- **Atendimento técnico N2, triagem de chamados, diagnóstico, classificação de bugs, escalonamento** → `eng-tech-analyst`.
 - **Pipelines de dados, ETL/ELT, Glue, Airflow, Athena, bronze/silver/gold, contratos de dados, Great Expectations** → `eng-data-engineer`.
 
 ### Ativação Automática (Agents Ativos)

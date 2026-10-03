@@ -73,7 +73,6 @@ Cada etapa só avança com a sua aprovação. O `eng.start` e o `eng.plan` só p
 | Comando | Em uma frase |
 |---|---|
 | [`eng.rpa.robot`](./eng.rpa.robot.md) | Cria ou mantém um robô de automação |
-| [`eng.ta.atendimento`](./eng.ta.atendimento.md) | Triagem de chamados do Tech Analyst |
 
 ## Não sabe por onde começar?
 

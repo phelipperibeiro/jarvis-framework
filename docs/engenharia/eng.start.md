@@ -20,7 +20,6 @@ Além do documento, ele prepara o ambiente: cria a **branch de feature** a parti
 
 ## Quando **não** usar
 
-- Você é o perfil `TECH ANALYST` → o comando redireciona para [`eng.ta.atendimento`](./eng.ta.atendimento.md)
 - Você quer implementar direto → [`eng.work`](./eng.work.md) (exige `plan.md`, que exige `architecture.md`)
 - Bug em produção que precisa de diagnóstico → [`eng.debug`](./eng.debug.md)
 
