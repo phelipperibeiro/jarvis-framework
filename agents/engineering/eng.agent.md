@@ -187,30 +187,17 @@ Quando a tarefa envolver features com LLM, sistemas RAG, agentes de IA, chatbots
 Quando a tarefa envolver criação ou manutenção de extensões de navegador (Chrome, Firefox, Manifest V3, content scripts, popup UI):
 - Arquivo: `$IDE/skills/eng-global-browser-extension-builder/SKILL.md`
 
-### eng-backend-rabbitmq
-Quando a tarefa envolver qualquer aspecto de RabbitMQ: criação de exchanges, filas, bindings, publicação/consumo de mensagens via HTTP API, criação de código de consumers/producers, arquitetura de mensageria (DLX, retry, fanout, topic), troubleshooting de filas ou qualquer problema relacionado a mensageria:
-- Arquivo: `$IDE/skills/eng-backend-rabbitmq/SKILL.md`
-- Workflows relacionados: `eng.work` (implementação), `eng.debug` (troubleshooting), `eng.start` (arquitetura de mensageria)
-
-### eng-backend-nestjs
-Quando a tarefa envolver problemas específicos do framework NestJS: erros de injeção de dependências, circular dependencies, configuração de guards, interceptors, pipes, middleware, ciclo de vida de requisição, ConfigModule, módulos dinâmicos, exception filters ou autenticação com Passport/JWT:
-- Arquivo: `$IDE/skills/eng-backend-nestjs/SKILL.md`
-- Workflows relacionados: `eng.work` (implementação), `eng.debug` (debugging de DI e erros de framework)
-
-### eng-frontend
-Quando a tarefa envolver componentes React/Next.js/Vue/Svelte, estado (Zustand, React Query), performance de UI (bundle, SSR/SSG/ISR, Core Web Vitals, lazy loading), acessibilidade (WCAG, ARIA), design system ou testes de interface (Testing Library, Playwright):
-- Arquivo: `$IDE/skills/eng-frontend/SKILL.md`
-- Workflows relacionados: `eng.start` (arquitetura de UI), `eng.work` (implementação de componentes e features de interface)
-
-### eng-backend
-Quando a tarefa envolver APIs REST/GraphQL, autenticação (JWT, OAuth2, RBAC, sessions), workers e jobs assíncronos com RabbitMQ ou cron, integrações externas com retry/circuit breaker, webhooks, caching com Redis ou design de endpoints (paginação, versionamento, idempotência):
-- Arquivo: `$IDE/skills/eng-backend/SKILL.md`
-- Workflows relacionados: `eng.start` (arquitetura de API e serviços), `eng.work` (implementação), `eng.debug` (troubleshooting de APIs e workers)
+### Backend e frontend (skill base + especializações)
+Quando a tarefa envolver **backend** (APIs, autenticação, workers e jobs assíncronos, filas e mensageria, integrações externas, cache, banco de dados) ou **frontend** (componentes, estado, estilos, performance de UI, acessibilidade, testes de interface), não escolha o skill por nome: aplique a regra `$IDE/rules/engineering/eng.specializations-rules.md` para a área envolvida. Ela carrega o skill base e as especializações que o projeto registrou no `ENV.md`:
+- Backend: `$IDE/skills/eng-backend/SKILL.md` + itens de `BACKEND_SPECIALIZATIONS`
+- Frontend: `$IDE/skills/eng-frontend/SKILL.md` + itens de `FRONTEND_SPECIALIZATIONS`
+- Workflows relacionados: `eng.start` (arquitetura), `eng.work` (implementação), `eng.debug` (troubleshooting)
+- Para ver o que está instalado e registrado: `/jarvis-list-specializations`
 
 ### eng-scraper
 Quando a tarefa envolver web scraping, extração de dados de páginas web, automação de browser com Puppeteer, parsing de HTML/XML/PDF, pipelines ETL leves ou monitoramento de mudanças em sites:
 - Arquivo: `$IDE/skills/eng-scraper/SKILL.md`
-- Workflows relacionados: `eng.work` (implementação de scrapers como NestJS services)
+- Workflows relacionados: `eng.work` (implementação de scrapers)
 
 ### eng-scraper-robot-builder
 Quando o produto ou dev descrever um fluxo manual em linguagem natural que precisa virar automação (robô), ou quando for necessário criar um script Playwright sem conhecer seletores do site. Usa Stagehand para exploração e `observe()` para descoberta de seletores — o output final é Playwright TypeScript puro, sem dependência de LLM em runtime:

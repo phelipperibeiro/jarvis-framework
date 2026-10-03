@@ -49,6 +49,10 @@ Frontmatter comum: `name`, `description` (descoberta na IDE / Codex `openai.yaml
 
 Mapa comando → skill: ver tabela em `AGENTS.md` (raiz) e `skills/AGENTS.md`.
 
+## Áreas e nomes
+
+Todo skill tem `metadata.area` (`qa`, `data`, `ai`, `frontend`, `backend`, `security`, `scraper`, `devops`, `global` ou `product`) e um nome no padrão `<prefixo>-<área>-<nome>`: `eng-<área>-...` para engenharia, `eng-global-...` para engenharia global, `product-...` para produto e `jarvis-...` para os transversais do framework. Especializações de backend e frontend também têm `metadata.stack` e só são carregadas quando registradas no `ENV.md`. Skill sem área reconhecida bloqueia os comandos `eng.*`. Detalhes em `skills/AGENTS.md`.
+
 ## No ciclo de vida
 
 1. Versionados neste repo.

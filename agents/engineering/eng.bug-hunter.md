@@ -210,12 +210,13 @@ Para detecção automática de contexto:
 - Uso: `/jarvis-context-detect [jira-key]`
 - Chamado automaticamente pelo workflow `eng.debug`
 
-### eng-backend-microservices-trace
-Para rastreamento automático de bugs em arquitetura de microsserviços:
+### Rastreamento de bugs entre serviços (especialização de backend)
+Para rastreamento automático de bugs em arquitetura de microsserviços, use a especialização de rastreamento entre serviços **se ela estiver registrada** em `BACKEND_SPECIALIZATIONS` (regra `$IDE/rules/engineering/eng.specializations-rules.md`):
+- Nome do skill: `eng-backend-microservices-trace`
 - Arquivo: `$IDE/skills/eng-backend-microservices-trace/SKILL.md`
-- Uso: `/eng-backend-microservices-trace [serviço-entrada] [sintoma-ou-jira-key]`
-- Ativado automaticamente pelo `eng.debug` (Passo 2.5) quando o bug é suspeito de cruzar serviços
+- Ativado pelo `eng.debug` (Passo 2.5) quando o bug é suspeito de cruzar serviços
 - Mapeia cadeia de chamadas HTTP + AMQP, analisa contratos em cada boundary e rankeia hipóteses por risco
+- Sem a especialização registrada, siga a investigação cross-service manualmente
 
 ---
 

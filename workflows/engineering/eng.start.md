@@ -304,30 +304,17 @@ Documente:
 - Definir estratégias de cache, custo e guardrails de segurança
 - Planejar observabilidade e métricas de avaliação do sistema de IA
 
-**Se a feature envolver aspectos avançados do framework NestJS** (módulos, DI, guards, interceptors, pipes, exception filters, ConfigModule, autenticação Passport/JWT), use o skill [eng-backend-nestjs]($IDE/skills/eng-backend-nestjs/SKILL.md) para:
-- Definir arquitetura de módulos e boundaries de domínio
-- Planejar estratégia de guards e interceptors
-- Configurar autenticação e validação de entrada
-
-**Se a feature envolver interface ou componentes frontend** (React, Next.js, SSR/SSG, performance de UI, acessibilidade), use o skill [eng-frontend]($IDE/skills/eng-frontend/SKILL.md) para:
+**Se a feature envolver interface ou componentes frontend** (componentes, estado, estilos, renderização, performance de UI, acessibilidade), aplique a regra [eng.specializations-rules.md]($IDE/rules/engineering/eng.specializations-rules.md) para a área **frontend**: ela carrega o skill base [eng-frontend]($IDE/skills/eng-frontend/SKILL.md) mais as especializações registradas em `FRONTEND_SPECIALIZATIONS`, e então:
 - Definir estratégia de componentes, estado e renderização
-- Planejar performance de UI (bundle, Core Web Vitals, lazy loading)
+- Planejar performance de UI (bundle, Core Web Vitals, carregamento tardio)
 - Estabelecer padrões de acessibilidade e cobertura de testes de interface
+- Seguir o que cada especialização registrada pedir para a stack do projeto
 
-**Se a feature envolver o design system** (novo componente compartilhado, tokens, Storybook, breaking change em componente público), use o skill [eng-frontend-design-system]($IDE/skills/eng-frontend-design-system/SKILL.md) para:
-- Determinar se o componente pertence ao design system ou ao remote (reutilizável vs local)
-- Definir tokens semânticos, variantes CVA e API pública de props
-- Planejar story no Storybook e estratégia de versionamento (patch/minor/major)
-
-**Se a feature envolver micro frontend** (novo remote, integração ao shell, Module Federation, contratos de interface, shared dependencies), use o skill [eng-frontend-microfrontend]($IDE/skills/eng-frontend-microfrontend/SKILL.md) para:
-- Definir arquitetura shell/remote e o que será exposto
-- Planejar contrato de interface em TypeScript (tipos em `mfe-contracts`)
-- Estratégia de shared dependencies e event bus para comunicação desacoplada
-
-**Se a feature envolver APIs, autenticação ou workers backend** (endpoints REST/GraphQL, JWT/OAuth2, RBAC, RabbitMQ, cron, integrações externas, caching), use o skill [eng-backend]($IDE/skills/eng-backend/SKILL.md) para:
+**Se a feature envolver APIs, autenticação ou workers backend** (endpoints, autenticação/autorização, filas e mensageria, jobs agendados, integrações externas, cache, banco de dados), aplique a regra [eng.specializations-rules.md]($IDE/rules/engineering/eng.specializations-rules.md) para a área **backend**: ela carrega o skill base [eng-backend]($IDE/skills/eng-backend/SKILL.md) mais as especializações registradas em `BACKEND_SPECIALIZATIONS`, e então:
 - Definir design de endpoints (paginação, versionamento, idempotência)
 - Planejar autenticação/autorização e controle de acesso
-- Arquitetar workers, filas RabbitMQ e integrações com retry/circuit breaker
+- Arquitetar workers, filas e integrações com retry/circuit breaker
+- Seguir o que cada especialização registrada pedir para a stack do projeto
 
 **Se a feature envolver engenharia de dados** (pipelines ETL/ELT, modelagem dimensional, ingestão em S3/Athena, jobs AWS Glue, DAGs Airflow, contratos de dados, Great Expectations, camadas bronze/silver/gold), use o skill [eng-data-engineer]($IDE/skills/eng-data-engineer/SKILL.md) para:
 - Definir a arquitetura Medallion da feature (bronze → silver → gold)

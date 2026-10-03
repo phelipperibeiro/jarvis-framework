@@ -214,11 +214,8 @@ Se o usuário tiver sugestões, ajuste o plano.
 
 | Domínio | Indicadores | Skill |
 |---------|-------------|-------|
-| NestJS (framework) | módulos, DI, guards, interceptors, pipes, Passport/JWT | [eng-backend-nestjs]($IDE/skills/eng-backend-nestjs/SKILL.md) |
-| Frontend | componentes, UI, estado, SSR/SSG, bundle, a11y | [eng-frontend]($IDE/skills/eng-frontend/SKILL.md) |
-| Design System | novo componente DS, tokens, CVA, Storybook, breaking change | [eng-frontend-design-system]($IDE/skills/eng-frontend-design-system/SKILL.md) |
-| Micro Frontend | novo remote, shell, Module Federation, contratos de interface | [eng-frontend-microfrontend]($IDE/skills/eng-frontend-microfrontend/SKILL.md) |
-| Backend | endpoints, auth, workers, RabbitMQ, caching, integrações | [eng-backend]($IDE/skills/eng-backend/SKILL.md) |
+| Frontend | componentes, UI, estado, estilos, bundle, a11y | regra [eng.specializations-rules.md]($IDE/rules/engineering/eng.specializations-rules.md) (área frontend: `eng-frontend` + `FRONTEND_SPECIALIZATIONS`) |
+| Backend | endpoints, auth, workers, filas, cache, banco, integrações | regra [eng.specializations-rules.md]($IDE/rules/engineering/eng.specializations-rules.md) (área backend: `eng-backend` + `BACKEND_SPECIALIZATIONS`) |
 | Scraping | web scraping, Puppeteer, extração de dados, ETL, parsing | [eng-scraper]($IDE/skills/eng-scraper/SKILL.md) |
 | Robô / automação | converter fluxo manual em Playwright via Stagehand, sem seletores conhecidos | [eng-scraper-robot-builder]($IDE/skills/eng-scraper-robot-builder/SKILL.md) |
 

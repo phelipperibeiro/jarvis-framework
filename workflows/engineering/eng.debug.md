@@ -36,7 +36,7 @@ sempre respeitando `$IDE/rules/engineering/eng-rules.md`.
 | Passo 0 | `/jarvis-context-detect` | Se `ENABLE_CDD=true` no ENV.md |
 | Passo 1.0 | `mcp__claude_ai_Atlassian__getJiraIssue` | Se Jira key fornecida |
 | Passo 1.5 | `Read` / `Grep` / `Glob` (leitura do repo) | **Sempre** — obrigatório antes de formular hipóteses |
-| Passo 2.5 | `/eng-backend-microservices-trace` | Se bug suspeito de cruzar serviços |
+| Passo 2.5 | `/eng-backend-microservices-trace` | Se bug suspeito de cruzar serviços **e** a especialização estiver registrada em `BACKEND_SPECIALIZATIONS` |
 | Passo 6 | `/eng-qa-unit-test` | Para criar teste de regressão da correção |
 | Passo 7 | `/bug-report create` | Para cada débito técnico ou melhoria identificada |
 | Conclusão | `mcp__claude_ai_Atlassian__addCommentToJiraIssue` | Sempre — atualizar o card com findings |
@@ -236,7 +236,7 @@ Não sugira ainda mudanças invasivas em código ou infraestrutura.
 
 > 🎯 **Objetivo**: Automatizar a investigação cross-service antes de montar o plano de investigação.
 > 📚 **Skill**: `/eng-backend-microservices-trace`
-> ⚙️ **Condicional**: Ativar somente se sinais de envolvimento multi-serviço estiverem presentes.
+> ⚙️ **Condicional**: Ativar somente se sinais de envolvimento multi-serviço estiverem presentes **e** se a especialização `eng-backend-microservices-trace` estiver registrada em `BACKEND_SPECIALIZATIONS` (ver `$IDE/rules/engineering/eng.specializations-rules.md`). Sem ela, faça a investigação cross-service manualmente no Passo 3.
 
 ### Quando Ativar
 

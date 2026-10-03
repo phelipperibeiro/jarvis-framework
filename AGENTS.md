@@ -46,17 +46,17 @@ prompts/
 │   │   │   └── frontend/         # 3 workflows de frontend (component, review, perf-audit)
 │   │   └── product/              # 7 workflows de produto
 │   │
-│   ├── skills/                   # 50 skills
+│   ├── skills/                   # Skills (todos com metadata.area)
 │   │   ├── claude-plugin-creator/
 │   │   ├── jarvis-context-detect/
 │   │   ├── jarvis-docs-index/
 │   │   ├── eng-ai-engineer/
 │   │   ├── eng-backend-arch-c4/
-│   │   ├── eng-backend/           # APIs REST/GraphQL, auth, RabbitMQ, caching
+│   │   ├── eng-backend/           # Base neutra de backend (+ especializações em BACKEND_SPECIALIZATIONS)
 │   │   ├── eng-backend-microservices-trace/          # Rastreamento de bugs cross-service (HTTP + AMQP)
 │   │   ├── eng-global-browser-extension-builder/
 │   │   ├── eng-global-docs-write/
-│   │   ├── eng-frontend/          # React/Next.js, UI, performance, a11y
+│   │   ├── eng-frontend/          # Base neutra de frontend (+ especializações em FRONTEND_SPECIALIZATIONS)
 │   │   ├── eng-frontend-microfrontend/     # Module Federation, shell/remote, contratos, event bus
 │   │   ├── eng-frontend-design-system/     # Tokens, CVA, Storybook, versionamento, auditoria visual
 │   │   ├── eng-backend-nestjs/            # Framework NestJS: módulos, DI, guards, interceptors
@@ -300,14 +300,14 @@ Quando um agente atua em tema com skill correspondente, o skill e a fonte de ver
 | Testes unitarios | `eng-qa-unit-test` |
 | Testes TestSprite | `eng-qa-testsprite` |
 | Taxonomia | `taxonomy-manager` |
-| Mensageria / RabbitMQ | `eng-backend-rabbitmq` |
-| APIs, auth, workers, caching | `eng-backend` |
-| Componentes, UI, frontend | `eng-frontend` |
-| Micro frontend, Module Federation, shell/remote | `eng-frontend-microfrontend` |
-| Design system, tokens, CVA, Storybook, versionamento | `eng-frontend-design-system` |
-| Revisão de PR frontend (TypeScript, a11y, tokens, MFE) | `eng.frontend-review` |
-| Auditoria de performance frontend (Core Web Vitals, bundle) | `eng.frontend-perf-audit` |
-| Framework NestJS (módulos, DI, guards) | `eng-backend-nestjs` |
+| Mensageria / RabbitMQ | `eng-backend-rabbitmq` (especialização de backend) |
+| APIs, auth, workers, caching | `eng-backend` (base) + `BACKEND_SPECIALIZATIONS` |
+| Componentes, UI, frontend | `eng-frontend` (base) + `FRONTEND_SPECIALIZATIONS` |
+| Micro frontend, Module Federation, shell/remote | `eng-frontend-microfrontend` (especialização de frontend) |
+| Design system, tokens, CVA, Storybook, versionamento | `eng-frontend-design-system` (especialização de frontend) |
+| Revisão de PR frontend (tipagem, a11y, tokens, itens da stack) | `eng.frontend-review` |
+| Auditoria de performance frontend (Core Web Vitals, pacote entregue) | `eng.frontend-perf-audit` |
+| Framework NestJS (módulos, DI, guards) | `eng-backend-nestjs` (especialização de backend) |
 | Web scraping, Puppeteer, ETL | `eng-scraper` |
 | Converter fluxo manual (produto/dev) em robô Playwright via Stagehand | `eng-scraper-robot-builder` |
 | Criar ou manter robô RPA (ciclo completo) | `eng.rpa.robot` |
@@ -358,7 +358,7 @@ Quando um agente atua em tema com skill correspondente, o skill e a fonte de ver
 - `eng.dev-code-reviewer.md` - Revisao de codigo
 - `eng.docs-writer.md` - Documentacao tecnica
 - `eng.rpa.agent.md` - Automação e scraping RPA (ARACHNE) — robôs resilientes, análise de sistemas externos
-- `eng.frontend.agent.md` - Especialista frontend: React, micro frontend, design system, a11y
+- `eng.frontend.agent.md` - Especialista frontend (neutro de stack): UI, estado, performance, a11y
 - `eng.ux-designer.agent.md` - Especialista UX/UI: auditoria heurística, fluxos, microcopy, arquitetura de informação
 - `eng.cybersecurity.agent.md` - Especialista em cybersecurity e AppSec (SENTINEL) — OWASP Top 10, secrets, supply chain, incident response
 

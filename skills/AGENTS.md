@@ -27,9 +27,9 @@ skills/
 │   └── SKILL.md
 ├── jarvis-list-specializations/ # Lista especializações de stack instaladas e registradas
 │   └── SKILL.md
-├── eng-backend/          # APIs REST/GraphQL, auth JWT/OAuth2/RBAC, RabbitMQ workers, caching
+├── eng-backend/          # Base neutra de backend (APIs, auth, workers, dados); especializações por stack se somam a ele
 │   └── SKILL.md
-├── eng-frontend/         # React/Next.js/Vue, estado, performance UI, acessibilidade
+├── eng-frontend/         # Base neutra de frontend (componentes, estado, performance UI, acessibilidade); especializações se somam a ele
 │   └── SKILL.md
 ├── eng-frontend-microfrontend/    # Module Federation, shell/remote, contratos de interface, event bus
 │   └── SKILL.md
@@ -41,12 +41,41 @@ skills/
 │   └── SKILL.md
 ├── eng-security-cybersecurity/    # Segurança de aplicações: OWASP Top 10, secrets, supply chain, headers, SAST, compliance
 │   └── SKILL.md
+├── eng-backend-microservices-trace/ # Rastreamento de bugs entre serviços (HTTP + AMQP); especialização de backend
+│   └── SKILL.md
+├── eng-security-threat-model/ # Threat model estruturado do projeto (bootstrap/entrevista)
+│   └── SKILL.md
+├── eng-security-triage/ # Deduplicar, verificar e rankear achados de segurança
+│   └── SKILL.md
+├── eng-security-patch/ # Diffs candidatos para achados de segurança confirmados
+│   └── SKILL.md
+├── eng-devops-performance-engineer/ # Performance: baseline, SLIs/SLOs, load tests
+│   └── SKILL.md
+├── eng-ai-engineer/ # Features com LLM, RAG, agentes, embeddings
+│   └── SKILL.md
+├── eng-global-browser-extension-builder/ # Extensões de navegador (Manifest V3)
+│   └── SKILL.md
+├── eng-data-engineer/ # Pipelines ETL/ELT, camadas bronze/silver/gold, contratos de dados
+│   └── SKILL.md
+├── eng-data-bi/ # Dashboards BI e queries analíticas
+│   └── SKILL.md
+├── eng-data-debug/ # Diagnóstico de falhas em pipelines por camada
+│   └── SKILL.md
+├── eng-data-onboard/ # Onboarding de fonte nova de dados
+│   └── SKILL.md
+├── eng-data-orchestrator/ # DAGs, retries e alertas de orquestração
+│   └── SKILL.md
+├── eng-qa-bug-report/ # Bug reports de QA
+│   └── SKILL.md
+├── product-specs/ # Porta de entrada de especificação de produto
+│   └── SKILL.md
+├── product-specs-update/ # Sincroniza especificações de produto
+│   └── SKILL.md
+├── product-roadmap-report/ # Relatório de status do roadmap
 │   └── SKILL.md
 ├── eng-scraper/          # Web scraping com Puppeteer, Cheerio, anti-bot, pipelines ETL
 │   └── SKILL.md
 ├── eng-scraper-robot-builder/ # Converte fluxo manual (linguagem natural) em robô Playwright via Stagehand
-│   └── SKILL.md
-│   └── SKILL.md
 │   └── SKILL.md
 ├── jarvis-docs-index/           # Indexacao de documentos
 │   └── SKILL.md
@@ -126,19 +155,52 @@ license: AGPL-3.0
 metadata:
   author: jarvis-team
   version: "1.0"
+  area: backend        # obrigatório: área do skill (ver "Áreas e nomes")
+  stack: golang        # só em especializações de backend/frontend
 ---
 ```
 
+> **`metadata.area` é obrigatório.** Um skill instalado sem área reconhecida faz os comandos `eng.*` serem bloqueados (ver `rules/engineering/eng.skills-rules.md`).
+
 ---
 
-## Convencoes de Nomenclatura
+## Áreas e nomes
 
-| Domínio | Prefixo | Exemplos |
-|---------|---------|----------|
-| Engenharia | `eng-` | `eng-global-docs-write`, `eng-global-pr`, `eng-backend-arch-c4` |
-| Produto | `prod-` | `prod-prd`, `prod-frd`, `prod-epic` |
-| QA | `qa-` | `eng-qa-gate`, `eng-qa-test-plan`, `eng-qa-unit-test` |
-| Geral / utilitário | _(sem prefixo)_ | `skill-creator`, `jarvis-docs-index`, `jarvis-init` |
+### Áreas reconhecidas (`metadata.area`)
+
+| Área | O que cobre |
+|------|-------------|
+| `backend` | APIs, autenticação, workers, mensageria, banco de dados |
+| `frontend` | Componentes, estado, estilos, performance de UI, acessibilidade |
+| `qa` | Testes, quality gates, relatórios de qualidade |
+| `data` | Pipelines, qualidade e contratos de dados |
+| `ai` | Features com modelos de IA |
+| `security` | Segurança de aplicações |
+| `scraper` | Scraping e automação de robôs |
+| `devops` | Performance, infraestrutura, entrega |
+| `global` | Skills transversais de engenharia e do próprio framework |
+| `product` | Especificação de produto |
+
+Skill sem `metadata.area`, ou com área fora desta lista, é tratado como **sem área** (`unknown`) e bloqueia os comandos `eng.*`.
+
+### Nome do skill
+
+O nome tem a forma `<prefixo>-<área>-<nome>`; **só os dois primeiros segmentos importam** para a regra, o resto é livre.
+
+| Tipo | Padrão | Exemplos |
+|------|--------|----------|
+| Engenharia por área | `eng-<área>-<nome>` | `eng-qa-gate`, `eng-data-engineer`, `eng-security-cybersecurity` |
+| Skill base de backend/frontend | `eng-backend`, `eng-frontend` | — |
+| Especialização de stack | `eng-<backend\|frontend>-<stack>` | `eng-backend-nestjs`, `eng-frontend-design-system` |
+| Engenharia global | `eng-global-<nome>` | `eng-global-pr`, `eng-global-docs-write` |
+| Produto | `product-<nome>` | `product-specs`, `product-specs-update` |
+| Transversal do framework | `jarvis-<nome>` (`area: global`) | `jarvis-init`, `jarvis-docs-central` |
+
+### Skill base, especialização e `stack`
+
+- **Base:** `area: backend` ou `frontend`, **sem** `stack`. É sempre carregado pela regra `eng.specializations-rules.md`.
+- **Especialização:** `area: backend` ou `frontend`, **com** `metadata.stack` (o sufixo do nome). Só é carregada quando o projeto a registra em `BACKEND_SPECIALIZATIONS` ou `FRONTEND_SPECIALIZATIONS` no `ENV.md`.
+- Demais áreas não têm lista e não usam `stack`.
 
 ---
 
@@ -194,7 +256,7 @@ Skills são invocados de formas diferentes dependendo da IDE:
 
 | Comando / Trigger | Skill |
 |-------------------|-------|
-| `/jarvis-init` | `init` |
+| `/jarvis-init` | `jarvis-init` |
 | `/eng.docs` | `eng-global-docs-write`, `jarvis-docs-index` |
 | `/eng.pre-pr` | `eng-qa-test-plan` |
 | `/eng.pr` | `eng-global-pr` |
@@ -203,12 +265,12 @@ Skills são invocados de formas diferentes dependendo da IDE:
 | `/taxonomy-manager` | `taxonomy-manager` |
 | Listar especializações de stack (instaladas e registradas) | `jarvis-list-specializations` |
 | `/members-manager` | `members-manager` |
-| Mensageria, filas, RabbitMQ, events, consumers, producers | `eng-backend-rabbitmq` |
-| APIs REST/GraphQL, auth, workers, RabbitMQ, caching | `eng-backend` |
-| Componentes, UI, estado, SSR/SSG, performance, acessibilidade | `eng-frontend` |
-| Micro frontend, Module Federation, shell/remote, contratos de interface | `eng-frontend-microfrontend` |
-| Design system, tokens, CVA, Storybook, versionamento de componentes | `eng-frontend-design-system` |
-| Módulos NestJS, DI, guards, interceptors, pipes, Passport/JWT | `eng-backend-nestjs` |
+| Mensageria, filas, RabbitMQ, events, consumers, producers | `eng-backend-rabbitmq` (especialização de backend: registrar em `BACKEND_SPECIALIZATIONS`) |
+| APIs, auth, workers, filas, caching, banco de dados | `eng-backend` (base) + `BACKEND_SPECIALIZATIONS` |
+| Componentes, UI, estado, estilos, performance, acessibilidade | `eng-frontend` (base) + `FRONTEND_SPECIALIZATIONS` |
+| Micro frontend, Module Federation, shell/remote, contratos de interface | `eng-frontend-microfrontend` (especialização de frontend) |
+| Design system, tokens, CVA, Storybook, versionamento de componentes | `eng-frontend-design-system` (especialização de frontend) |
+| Módulos NestJS, DI, guards, interceptors, pipes, Passport/JWT | `eng-backend-nestjs` (especialização de backend) |
 | Web scraping, Puppeteer, extração de dados, parsing, ETL | `eng-scraper` |
 | Criar robô RPA novo ou manter existente (new|update + card) | `eng.rpa.robot` (workflow) |
 | Gerar specs Cypress + TypeScript para fluxos de usuário | `eng-qa-cypress-e2e` |
@@ -232,10 +294,11 @@ Use o skill-creator:
 
 Ou manualmente:
 
-1. Criar pasta: `skills/{nome}/`
-2. Copiar template: `skills/skill-creator/assets/SKILL-template.md`
-3. Preencher todos os placeholders
-4. Validar estrutura
+1. Escolher a **área** e o nome no padrão `<prefixo>-<área>-<nome>` (ver "Áreas e nomes")
+2. Criar pasta: `skills/{nome}/`
+3. Copiar template: `skills/skill-creator/assets/SKILL-template.md`
+4. Preencher todos os placeholders, **inclusive `metadata.area`** (e `metadata.stack` se for especialização)
+5. Validar estrutura: `name` igual ao nome da pasta e área reconhecida
 
 ---
 
@@ -243,7 +306,7 @@ Ou manualmente:
 
 ### Nunca
 
-- Criar skill sem frontmatter completo
+- Criar skill sem frontmatter completo ou sem `metadata.area`
 - Duplicar skill existente
 - Colocar detalhes de persona (isso vai no agent)
 - Usar URLs web em references (use caminhos locais)

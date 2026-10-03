@@ -1,11 +1,12 @@
 ---
 name: eng.frontend-review
 description: >
-  Workflow de revisão de código específico para PRs frontend: TypeScript, tokens,
-  acessibilidade, performance, micro frontend e design system.
+  Workflow de revisão de código específico para PRs frontend: tipagem, tokens de design,
+  acessibilidade, performance e testes. Neutro de stack: a linguagem, o framework e as
+  convenções vêm do projeto e das especializações registradas em FRONTEND_SPECIALIZATIONS.
   Complementa o eng.review genérico com checklist frontend aprofundado.
 author: jarvis-team
-version: "1.0"
+version: "1.1"
 
 ---
 
@@ -13,10 +14,14 @@ version: "1.0"
 
 ## Contexto
 
-Use este workflow ao revisar PRs que envolvem componentes React, design system,
-micro frontend ou qualquer código de interface.
+Use este workflow ao revisar PRs que envolvem componentes, estilos, estado ou qualquer
+código de interface.
 
-**Skill de referência**: `eng-frontend`, `eng-frontend-design-system`, `eng-frontend-microfrontend`
+**Neutro de stack:** os itens abaixo valem para qualquer stack de frontend. Onde o item depende
+da stack (por exemplo, como se busca dados ou como se organiza um módulo), a referência é a
+especialização registrada em `FRONTEND_SPECIALIZATIONS` e o código existente do projeto.
+
+**Antes de revisar**, aplique a regra `$IDE/rules/engineering/eng.specializations-rules.md` para a área **frontend**: ela carrega o skill base `eng-frontend` e as especializações registradas. Se o PR tiver exigências que você não consegue verificar sem conhecer a stack, diga isso na revisão em vez de presumir.
 
 ---
 
@@ -25,104 +30,92 @@ micro frontend ou qualquer código de interface.
 Execute para um PR específico ou para um conjunto de arquivos:
 
 ```bash
-# Ler arquivos alterados no PR
-git diff origin/main...HEAD --name-only | grep -E "\.(tsx|ts|css|scss)$"
+# Listar os arquivos alterados no PR
+git diff origin/main...HEAD --name-only
 
-# Ler cada arquivo alterado antes de revisar
+# Ler cada arquivo de interface alterado (componentes, estilos, testes) antes de revisar
 ```
 
 ---
 
 ## Checklist de Revisão
 
-### 1. TypeScript
+### 1. Tipagem e contratos
 
-- [ ] Sem `any` não documentado
-- [ ] Sem `@ts-ignore` sem comentário explicativo
-- [ ] Sem `!` (non-null assertion) sem verificação prévia
-- [ ] Props exportadas para componentes públicos
-- [ ] `strict: true` não relaxado
+Aplica-se quando a linguagem do projeto tem tipagem estática ou contratos explícitos.
 
-**Flags de atenção:**
-```bash
-grep -n "as any\|@ts-ignore\|@ts-expect-error\| \! " {arquivo}
-```
+- [ ] Sem tipo genérico solto (`any` ou equivalente) não documentado
+- [ ] Sem supressão de verificação de tipos sem comentário explicativo
+- [ ] Sem asserção de "não nulo" sem verificação prévia
+- [ ] Contrato (entradas e saídas) exportado para componentes públicos
+- [ ] Modo estrito de verificação do projeto não relaxado
 
 ---
 
 ### 2. Componentes
 
-- [ ] Single Responsibility — componente faz uma coisa só
+- [ ] Responsabilidade única — o componente faz uma coisa só
 - [ ] Sem lógica de negócio acoplada ao componente de UI
-- [ ] Sem fetch direto no componente (usar hooks ou Server Components)
-- [ ] `forwardRef` em componentes com elemento DOM
+- [ ] Sem busca de dados direto no componente de apresentação (usar a camada que o projeto adota para isso)
 - [ ] Estados visuais tratados: loading, erro, vazio
 
 **Perguntas a fazer no review:**
-- "Este componente pertence ao design system ou ao remote?"
-- "Existe componente similar no design system que poderia ser usado?"
-- "Esta lógica deveria estar em um hook?"
+- "Este componente pertence à biblioteca compartilhada ou ao módulo onde está?"
+- "Existe componente similar compartilhado que poderia ser usado?"
+- "Esta lógica deveria estar numa camada separada da interface?"
 
 ---
 
-### 3. Tokens e Design System
+### 3. Tokens de design
 
-- [ ] Cores via tokens semânticos (sem `#hex`, `rgb()`, `hsl()`)
-- [ ] Espaçamentos via escala do design system (sem px hardcodados inline)
-- [ ] Componentes reutilizáveis criados no design system, não duplicados por remote
-- [ ] Variantes com `cva` (não condicionais de classe espalhadas)
+- [ ] Cores via tokens do projeto (sem `#hex`, `rgb()`, `hsl()` soltos)
+- [ ] Espaçamentos e tipografia via a escala do projeto (sem valores fixos inline)
+- [ ] Componentes reutilizáveis criados no lugar compartilhado, não duplicados por módulo
+- [ ] Variantes organizadas do jeito que o projeto já faz (não condicionais de estilo espalhadas)
 
-**Flags de atenção:**
+**Flag de atenção:**
 ```bash
-grep -n "#[0-9a-fA-F]\{3,6\}\|rgb(\|style={{" {arquivo}
+grep -n "#[0-9a-fA-F]\{3,6\}\|rgb(" {arquivo}
 ```
 
 ---
 
 ### 4. Acessibilidade
 
-- [ ] Semântica HTML correta (`<button>` para ações, `<a>` para navegação)
-- [ ] Imagens com `alt` (informativas: descritivo; decorativas: `alt=""`)
-- [ ] Formulários: `<label>` associado via `htmlFor` ou `aria-label`
-- [ ] Erros de form com `role="alert"` ou `aria-live`
+- [ ] Semântica HTML correta (botão para ações, link para navegação)
+- [ ] Imagens com texto alternativo (informativas: descritivo; decorativas: vazio)
+- [ ] Formulários: rótulo associado a cada campo
+- [ ] Erros de formulário anunciados a tecnologias assistivas (por exemplo, `role="alert"` ou `aria-live`)
 - [ ] Elementos interativos são navegáveis por teclado
-- [ ] Focus visível — `outline` não removido sem substituto
+- [ ] Foco visível — contorno não removido sem substituto
 
-**Flags de atenção:**
+**Flag de atenção:**
 ```bash
-grep -n "outline-none\|outline: none\|tabIndex={-1}" {arquivo}
-# outline-none do Tailwind em elementos interativos sem focus-visible alternativo
+grep -n "outline-none\|outline: none\|tabindex=\"-1\"\|tabIndex" {arquivo}
+# Contorno removido em elementos interativos sem alternativa de foco visível
 ```
 
 ---
 
 ### 5. Performance
 
-- [ ] Sem `useEffect` para fetch de dados (usar React Query / Server Components)
-- [ ] Lazy loading em componentes pesados (`lazy()` + `<Suspense>`)
-- [ ] Dependências novas justificadas (avaliar impacto no bundle)
-- [ ] Memoização só onde necessário e comprovado (`memo`, `useMemo`, `useCallback`)
-- [ ] Imagens com `width` e `height` definidos
+- [ ] Dados buscados pela camada que o projeto adota para isso (conforme a especialização), não por efeitos colaterais soltos no componente
+- [ ] Carregamento tardio em componentes pesados, quando o projeto tem suporte
+- [ ] Dependências novas justificadas (avaliar impacto no tamanho do pacote final)
+- [ ] Otimização de renderização só onde necessário e comprovado por medição
+- [ ] Imagens com largura e altura definidas
 
 **Perguntas a fazer:**
-- "Este componente precisa ser Client Component, ou funciona como Server Component?"
-- "Esta dependência nova já está no bundle ou é nova?"
+- "Este componente precisa ser renderizado no cliente, ou funciona renderizado no servidor?" (se a stack tiver essa distinção)
+- "Esta dependência nova já está no pacote final ou é nova?"
 
 ---
 
-### 6. Micro Frontend (se aplicável)
+### 6. Itens específicos da stack
 
-- [ ] Sem import direto de outro remote
-- [ ] Comunicação via event bus ou props do shell
-- [ ] Contrato de interface atualizado se houver mudança na API exposta
-- [ ] Remote ainda funciona em modo standalone
-
-**Flag de atenção:**
-```bash
-# Import entre remotes (nunca deve existir)
-grep -n "from.*'apps/" {arquivo}
-grep -n "from.*'remote" {arquivo}
-```
+Para cada especialização registrada em `FRONTEND_SPECIALIZATIONS`, aplique o checklist de revisão
+do próprio skill dela (por exemplo, regras de arquitetura distribuída, de biblioteca de componentes
+ou de roteamento). Se não houver especialização registrada, esta seção não se aplica.
 
 ---
 
@@ -130,20 +123,21 @@ grep -n "from.*'remote" {arquivo}
 
 - [ ] Testes para o happy path
 - [ ] Testes para estado de erro
-- [ ] Queries por acessibilidade (`getByRole`, `getByLabelText`)
-- [ ] Sem `getByTestId` como primeira opção
-- [ ] Sem `act()` manual desnecessário
+- [ ] Consultas por papel e rótulo acessível, não por detalhes de implementação
+- [ ] Identificador de teste só quando não há alternativa acessível
+- [ ] Sem ajustes manuais de sincronização desnecessários
 
 ---
 
 ### 8. Código Geral
 
-- [ ] Sem `console.log` commitado
+- [ ] Sem log de depuração commitado
 - [ ] Sem `TODO` sem issue associada
 - [ ] Seguindo convenções de nomenclatura do projeto
 
 ```bash
 grep -n "console\.log\|console\.error\|console\.warn" {arquivo}
+# Ajuste o padrão para a função de log de depuração da linguagem do projeto
 ```
 
 ---

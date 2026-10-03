@@ -1,6 +1,6 @@
 # `/eng.frontend-component` — criar ou refatorar um componente
 
-Workflow: `workflows/engineering/frontend/eng.frontend-component.md` · Skills: `eng-frontend`, `eng-frontend-design-system`
+Workflow: `workflows/engineering/frontend/eng.frontend-component.md` · Skill base: `eng-frontend` (mais as especializações registradas em `FRONTEND_SPECIALIZATIONS`)
 
 ## Em uma frase
 
@@ -8,13 +8,13 @@ Guia a criação ou refatoração de um componente frontend com qualidade: decid
 
 ## O que é
 
-Um roteiro para que todo componente React (em micro frontends ou no design system) nasça com o mesmo padrão: no lugar certo, tipado, acessível, testado e exportado do ponto de entrada correto.
+Um roteiro, **neutro de stack**, para que todo componente frontend nasça com o mesmo padrão: no lugar certo, tipado, acessível, testado e exportado do ponto de entrada correto. O framework, as bibliotecas e a estrutura de pastas vêm do seu projeto e das especializações registradas no `ENV.md`; se faltar informação, o comando pergunta em vez de presumir.
 
 ## Quando usar
 
 - Criar um componente novo
 - Refatorar um componente existente
-- Quando você não sabe se o componente vai para o design system ou para um remote
+- Quando você não sabe se o componente deve ser compartilhado ou ficar local no módulo
 
 ## Quando **não** usar
 
@@ -25,31 +25,31 @@ Um roteiro para que todo componente React (em micro frontends ou no design syste
 
 **1. Análise.** Antes de qualquer código, responde a cinco perguntas:
 
-1. O componente será reutilizado em mais de um remote ou app? Se sim, vai para o **design system**; se não, para o **remote**
+1. O componente será reutilizado em mais de um módulo ou aplicação? Se sim, vai para a biblioteca de componentes **compartilhados** do projeto (se existir); se não, para o **módulo** onde será usado
 2. Já existe um componente parecido?
-3. Existe um primitivo Radix UI para ele (modal, select, dropdown, tooltip, checkbox)?
+3. Existe um primitivo ou componente pronto da biblioteca de UI do projeto para ele (modal, seleção, menu, dica de contexto, caixa de seleção)?
 4. Quais variantes são necessárias? (levantar com o design antes)
-5. É Server Component ou Client Component? Se usa hooks ou eventos, é Client Component
+5. Onde ele é renderizado e como guarda estado? (conforme a especialização registrada)
 
 Depois lê o código ao redor para seguir os padrões em uso.
 
-**2. Implementação,** com checklist de TypeScript, tokens do design system, acessibilidade e estados visuais.
+**2. Implementação,** com checklist de tipagem, tokens de design do projeto, acessibilidade e estados visuais.
 
-**3. Testes** com Testing Library. Cobertura mínima: renderização padrão, cada variante principal, estados de carregamento e de erro (se existirem), a interação principal e acessibilidade via `axe` (se o addon estiver configurado).
+**3. Testes** com a ferramenta de testes de interface que o projeto já usa. Cobertura mínima: renderização padrão, cada variante principal, estados de carregamento e de erro (se existirem), a interação principal e acessibilidade automatizada (se o projeto tiver ferramenta configurada).
 
-**4. Story** no Storybook, **apenas para o design system:** autodocs, controles para cada prop variável, uma story por variante e por estado especial, e uma `AllVariants` para visão geral.
+**4. Documentação visual,** apenas se o projeto usa um catálogo de componentes: documentação gerada, controles para cada entrada variável, um exemplo por variante e por estado especial.
 
-**5. Integração:** exporta do ponto de entrada correto (`index.ts` do design system ou do remote) e verifica a responsividade nos breakpoints do projeto (mobile 375px, tablet 768px, desktop 1280px).
+**5. Integração:** exporta do ponto de entrada que os demais componentes do projeto usam e verifica a responsividade nos tamanhos de tela do projeto (se o projeto não define, o comando parte de celular 375px, tablet 768px e desktop 1280px e confirma com você).
 
 ## Checklist final
 
 - Componente no lugar correto
-- Props tipadas, sem `any`
-- Tokens do design system usados, sem valor fixo no código
+- Entradas tipadas ou documentadas, sem tipo genérico solto
+- Tokens de design do projeto usados, sem valor fixo no código
 - Estados visuais completos
-- Acessibilidade: semântica, teclado e ARIA quando necessário
+- Acessibilidade: semântica, teclado e rótulos quando necessário
 - Testes cobrindo os comportamentos críticos
-- Story criada (se for design system)
+- Documentação visual criada (se o projeto usa)
 - Exportado do index correto
 - Responsivo
 

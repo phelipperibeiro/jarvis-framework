@@ -240,25 +240,10 @@ Para deteccao automatica de contexto:
 - Arquivo: `$IDE/skills/jarvis-context-detect/SKILL.md`
 - Uso: `/jarvis-context-detect [jira-key]`
 
-### eng-backend
-Para revisao de auth, JWT, RBAC, sessions, workers:
-- Arquivo: `$IDE/skills/eng-backend/SKILL.md`
-- Trigger: fluxos de autenticacao e autorizacao
-
-### eng-backend-nestjs
-Para guards, pipes, interceptors, middleware de seguranca:
-- Arquivo: `$IDE/skills/eng-backend-nestjs/SKILL.md`
-- Trigger: seguranca especifica do framework NestJS
-
-### eng-frontend
-Para CSP, XSS prevention, sanitizacao no client:
-- Arquivo: `$IDE/skills/eng-frontend/SKILL.md`
-- Trigger: seguranca de frontend e renderizacao
-
-### eng-backend-microservices-trace
-Para rastreamento de vulnerabilidades cross-service:
-- Arquivo: `$IDE/skills/eng-backend-microservices-trace/SKILL.md`
-- Trigger: vulnerabilidade que atravessa multiplos servicos
+### Backend e frontend (skill base + especializações)
+Para revisão de segurança em código de backend (auth, JWT, RBAC, sessions, workers, middleware, guards) ou de frontend (CSP, XSS, sanitização no client), aplique a regra `$IDE/rules/engineering/eng.specializations-rules.md` para a área envolvida: ela carrega o skill base (`eng-backend` ou `eng-frontend`) e as especializações registradas no `ENV.md`.
+- Trigger: fluxos de autenticação e autorização, segurança de renderização e do framework usado no projeto
+- Vulnerabilidade que atravessa múltiplos serviços: use a especialização de rastreamento entre serviços, se registrada em `BACKEND_SPECIALIZATIONS`
 
 ### eng-security-threat-model
 Para producao de threat model estruturado antes de audit ou review:
