@@ -172,7 +172,9 @@ No chat da IDE:
 /jarvis-init
 ```
 
-Escolha **Upgrade (C)** — adiciona chaves novas do template sem apagar os valores atuais.
+Escolha **Upgrade (C)** — adiciona chaves novas do template sem apagar os valores atuais e oferece o passo opcional **"adicionar as stacks"**.
+
+> **Vindo de uma versão anterior à 2.0?** O Upgrade é **obrigatório**: sem as chaves `BACKEND_SPECIALIZATIONS` e `FRONTEND_SPECIALIZATIONS`, os comandos `eng.*` de backend e de frontend param. Skills criados por você precisam de `metadata.area` (veja [especializações de stack](docs/especializacoes-de-stack.md#atualizando-de-uma-versão-anterior)).
 
 ### O que cada passo atualiza
 
@@ -198,6 +200,18 @@ Escolha **Upgrade (C)** — adiciona chaves novas do template sem apagar os valo
 | **Identidade** | `USER=` no ENV.md (fallback: git / SO). `jarvis whoami` | — |
 | **Documentacao** | Geracao e organizacao de docs tecnica e de negocio | `templates/` |
 | **Troubleshooting** | Configuracao e uso | `/jarvis-init` |
+
+---
+
+## Funciona com qualquer stack
+
+O Jarvis não presume Go, PHP, NestJS ou React. Cada área (backend e frontend) tem uma **skill base neutra**, e cada projeto registra no `ENV.md` as **especializações** da sua stack (`BACKEND_SPECIALIZATIONS` e `FRONTEND_SPECIALIZATIONS`). Os comandos `eng.*` carregam a base mais o que o projeto registrou.
+
+- **Na instalação:** o `/jarvis-init` oferece o passo opcional "adicionar as stacks", que lê o workspace e sugere registrar ou criar a especialização de cada stack
+- **A qualquer momento:** `/jarvis-create-specialization backend golang` cria a especialização a partir do código do projeto, mostra para revisão e só então grava e registra
+- **Consulta:** `/jarvis-list-specializations` mostra o que está instalado e registrado
+
+Guia completo: [`docs/especializacoes-de-stack.md`](docs/especializacoes-de-stack.md).
 
 ---
 

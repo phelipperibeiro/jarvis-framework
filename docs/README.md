@@ -7,6 +7,7 @@
 | [visao-geral.md](./visao-geral.md) | Proposta, CDD, conceitos, como as peças se montam, fluxos |
 | [estrutura/](./estrutura/README.md) | Cada arquivo/pasta da raiz explicado em subpáginas |
 | [engenharia/](./engenharia/README.md) | Universo de engenharia: um guia por comando `/eng.*` |
+| [especializacoes-de-stack.md](./especializacoes-de-stack.md) | **Adaptar o Jarvis à sua stack**: skill base, especializações, listas no `ENV.md`, criador e passo do `/jarvis-init` |
 | [comandos.md](./comandos.md) | Consulta rápida: todos os comandos `eng.*` e `prod.*` numa página |
 | [produto/](./produto/README.md) | Universo de produto (PM/PO) + um guia por comando `/prod.spec*` |
 | [produto/prod.spec.guide.md](./produto/prod.spec.guide.md) | **Qual spec usar?** — árvore de decisão |
