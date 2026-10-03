@@ -82,7 +82,7 @@ skills/
 │   └── SKILL.md
 ├── jarvis-docs-index/           # Indexacao de documentos
 │   └── SKILL.md
-├── jarvis-init/         # Inicializacao do framework (/jarvis-init)
+├── jarvis-init/         # Inicializacao do framework (/jarvis-init), com o passo opcional de adicionar as stacks
 │   ├── SKILL.md
 │   └── assets/
 ├── eng-qa-gate/              # Quality gate validation

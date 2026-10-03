@@ -181,7 +181,7 @@ Escolha **Upgrade (C)** — adiciona chaves novas do template sem apagar os valo
 | `git pull` | Código do framework no clone |
 | `npm install -g` / `--save-dev` | Binário `jarvis` + pacote que o `init` lê |
 | `jarvis init` (ou postinstall com lock) | Arquivos em `.$IDE/` (skills, agents, workflows…) |
-| `/jarvis-init` Upgrade | Só `$IDE/ENV.md` (variáveis faltantes) |
+| `/jarvis-init` Upgrade | Só `$IDE/ENV.md` (variáveis faltantes) e, se você aceitar o passo opcional "adicionar as stacks", as listas de especializações |
 
 `ENV.md`, `.jarvis/sessions/` e o `.gitignore` do workspace **não** são sobrescritos pelo sync de assets.
 
