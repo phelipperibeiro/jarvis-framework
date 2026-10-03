@@ -64,5 +64,6 @@ Vale para qualquer comando `eng.*` e seus agentes, **ao iniciar um trabalho de b
 
 - `eng-rules.md`: validação do `ENV.md` (lista presente, mesmo vazia).
 - `eng.skills-rules.md`: área obrigatória nos skills e aviso de skill inexistente (o nome citado em uma lista que não existe também segue o aviso de lá).
+- `skills/jarvis-create-specialization/SKILL.md`: criação de uma especialização a partir do código do projeto e registro na lista.
 - `skills/jarvis-list-specializations/SKILL.md`: consulta das especializações instaladas e registradas.
 - `templates/ENV-template.md`: seção "Especializações de stack".

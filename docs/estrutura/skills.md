@@ -66,4 +66,5 @@ Todo skill tem `metadata.area` (`qa`, `data`, `ai`, `frontend`, `backend`, `secu
 | `jarvis-init` | Cria ENV; Context7 obrigatório; Jira **não** bloqueia; freelance OK |
 | `eng-global-task-comment` | Comenta no board conforme `TASK_MANAGER` |
 | `jarvis-report-issue` | Abre issue no `JARVIS_PROJECT` |
+| `jarvis-create-specialization` | Cria o skill de uma stack (backend ou frontend) a partir do código do projeto, mostra para revisão e o registra na lista da área |
 | `taxonomy-manager` | Mantém `taxonomy.md` |
