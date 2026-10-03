@@ -66,7 +66,6 @@ prompts/
 │   │   ├── eng-data-engineer/     # Pipelines ETL/ELT, Athena, MySQL, Metabase, contratos de dados
 │   │   ├── eng-scraper/           # Web scraping, Puppeteer, ETL
 │   │   ├── init-jarvis/
-│   │   ├── lovable-prompt-generator/
 │   │   ├── prod-specs/
 │   │   ├── prod-specs-update/
 │   │   ├── eng-qa-bug-report/
@@ -83,7 +82,6 @@ prompts/
 │   │   ├── report-issue/          # Auto-report de bugs no repo do Jarvis (GitLab/GitHub/Bitbucket)
 │   │   ├── eng-task-comment/      # Comentário no card (Jira/Linear/GitHub/Asana)
 │   │   ├── jarvis-list-specializations/ # Lista especializações de stack instaladas e registradas
-│   │   ├── churn-audit/           # Análise de churn SaaS por squad com relatório narrativo via Slack
 │   │
 │   ├── templates/                # Templates de documentos
 │   │   ├── engineering/          # ARD, RFC, Tech Spec
@@ -303,7 +301,6 @@ Quando um agente atua em tema com skill correspondente, o skill e a fonte de ver
 | Testes TestSprite | `eng-qa-testsprite` |
 | Taxonomia | `taxonomy-manager` |
 | Mensageria / RabbitMQ | `eng-rabbitmq` |
-| Gerar prompt para Lovable | `lovable-prompt-generator` |
 | APIs, auth, workers, caching | `eng-backend` |
 | Componentes, UI, frontend | `eng-frontend` |
 | Micro frontend, Module Federation, shell/remote | `eng-microfrontend` |
@@ -319,7 +316,6 @@ Quando um agente atua em tema com skill correspondente, o skill e a fonte de ver
 | Sessão de teste exploratório (charter, roteiro de risco, achados, bug cards) | `eng-qa-exploratory` |
 | Orientar dev sobre cobertura de testes Cypress sem escrever o teste | `eng-qa-dev-guide` |
 | Consolidar sessões exploratórias, bugs e quality gates e gerar relatório de qualidade por sprint/release | `eng-qa-quality-report` |
-| Análise de churn SaaS: coleta Slack, classificação por squad via taxonomy, relatório narrativo para liderança | `churn-audit` |
 | Testes de acessibilidade WCAG 2.1 AA: integra jest-axe em testes unitários existentes | `eng-qa-a11y-audit` |
 | Testes de contrato GraphQL: valida queries frontend contra schema do BFF | `eng-qa-graphql-contract` |
 | Spec E2E para handoff: cenários, Page Objects, fixtures, intercepts, setup de ambiente | `eng-qa-e2e-spec-writer` |

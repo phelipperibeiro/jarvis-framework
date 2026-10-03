@@ -187,10 +187,6 @@ Quando a tarefa envolver features com LLM, sistemas RAG, agentes de IA, chatbots
 Quando a tarefa envolver criação ou manutenção de extensões de navegador (Chrome, Firefox, Manifest V3, content scripts, popup UI):
 - Arquivo: `$IDE/skills/eng-browser-extension-builder/SKILL.md`
 
-### lovable-prompt-generator
-Quando o usuário pedir para gerar um prompt para o Lovable, criar frontend React via Lovable, ou precisar de um prompt estruturado para geração de interface com o Lovable:
-- Arquivo: `$IDE/skills/lovable-prompt-generator/SKILL.md`
-
 ### eng-rabbitmq
 Quando a tarefa envolver qualquer aspecto de RabbitMQ: criação de exchanges, filas, bindings, publicação/consumo de mensagens via HTTP API, criação de código de consumers/producers, arquitetura de mensageria (DLX, retry, fanout, topic), troubleshooting de filas ou qualquer problema relacionado a mensageria:
 - Arquivo: `$IDE/skills/eng-rabbitmq/SKILL.md`

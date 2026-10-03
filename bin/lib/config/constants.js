@@ -39,6 +39,11 @@ export const OBSOLETE_PATHS = Object.freeze([
   "commands/eng.ta.atendimento.md",
   "steering/eng.ta.atendimento.md",
   "steering/skills/skill-eng-tech-analyst.md",
+  // churn-audit e lovable-prompt-generator (removidos)
+  "skills/churn-audit",
+  "skills/lovable-prompt-generator",
+  "steering/skills/skill-churn-audit.md",
+  "steering/skills/skill-lovable-prompt-generator.md",
 ]);
 
 /**

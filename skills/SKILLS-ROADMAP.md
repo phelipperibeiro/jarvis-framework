@@ -217,11 +217,6 @@ Removidas: `checkin`, `checkout`, `daily`, `task-log`, `send-priority`, `sent-pr
 - **Escopo**: criação de ENV.md, validação de MCPs, onboarding
 - **Status**: `criado`
 
-### `churn-audit` ✅
-- **Trigger**: análise de churn SaaS por squad
-- **Escopo**: coleta via `$MESSAGE_COMUNICATOR`, classificação por taxonomy.md, relatório narrativo
-- **Status**: `criado` (v1.5.0)
-
 ### `report-issue` ✅
 - **Trigger**: auto-report de bugs no framework Jarvis via GitLab API
 - **Status**: `criado`
@@ -232,10 +227,6 @@ Removidas: `checkin`, `checkout`, `daily`, `task-log`, `send-priority`, `sent-pr
 
 ### `docs-index` / `docs-central` / `context-detect` ✅
 - **Trigger**: indexação de docs, sync com repo central, detecção de contexto
-- **Status**: `criado`
-
-### `lovable-prompt-generator` ✅
-- **Trigger**: gerar prompts para frontend React via Lovable
 - **Status**: `criado`
 
 ---
