@@ -41,14 +41,12 @@ skills/
 │   └── SKILL.md
 ├── eng-cybersecurity/    # Segurança de aplicações: OWASP Top 10, secrets, supply chain, headers, SAST, compliance
 │   └── SKILL.md
-├── churn-audit/          # Análise de churn SaaS por squad com relatório narrativo via $MESSAGE_COMUNICATOR
 │   └── SKILL.md
 ├── eng-scraper/          # Web scraping com Puppeteer, Cheerio, anti-bot, pipelines ETL
 │   └── SKILL.md
 ├── eng-scraper-robot-builder/ # Converte fluxo manual (linguagem natural) em robô Playwright via Stagehand
 │   └── SKILL.md
 │   └── SKILL.md
-├── lovable-prompt-generator/ # Geracao de prompts para frontend React via Lovable
 │   └── SKILL.md
 ├── docs-index/           # Indexacao de documentos
 │   └── SKILL.md
@@ -206,7 +204,6 @@ Skills são invocados de formas diferentes dependendo da IDE:
 | Listar especializações de stack (instaladas e registradas) | `jarvis-list-specializations` |
 | `/members-manager` | `members-manager` |
 | Mensageria, filas, RabbitMQ, events, consumers, producers | `eng-rabbitmq` |
-| Gerar prompt para Lovable, criar frontend React com Lovable | `lovable-prompt-generator` |
 | APIs REST/GraphQL, auth, workers, RabbitMQ, caching | `eng-backend` |
 | Componentes, UI, estado, SSR/SSG, performance, acessibilidade | `eng-frontend` |
 | Micro frontend, Module Federation, shell/remote, contratos de interface | `eng-microfrontend` |
@@ -218,7 +215,6 @@ Skills são invocados de formas diferentes dependendo da IDE:
 | Sessão de teste exploratório estruturada (charter, risco, achados, bug cards) | `eng-qa-exploratory` |
 | Orientar dev sobre cobertura Cypress sem escrever o teste | `eng-qa-dev-guide` |
 | Consolidar sessões exploratórias, bugs e quality gates e gerar relatório de qualidade por sprint/release | `eng-qa-quality-report` |
-| Análise de churn SaaS: coleta Slack, classificação por squad via taxonomy, relatório narrativo | `churn-audit` |
 | Testes de acessibilidade WCAG 2.1 AA: integra jest-axe em testes unitários existentes | `eng-qa-a11y-audit` |
 | Testes de contrato GraphQL: valida queries frontend contra schema do BFF | `eng-qa-graphql-contract` |
 | Spec E2E para handoff: cenários priorizados, Page Objects, fixtures, intercepts, setup | `eng-qa-e2e-spec-writer` |
