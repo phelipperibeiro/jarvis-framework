@@ -28,6 +28,7 @@ env_file: "@/ENV.md"
     Por favor, execute `/jarvis-init` para configurar o ambiente antes de continuar.
     ```
   - **Listas de especializações (presentes, podem estar vazias)**: `BACKEND_SPECIALIZATIONS` e `FRONTEND_SPECIALIZATIONS` devem **existir** no `ENV.md`. Lista **vazia** é válida (só o skill base). Variável **ausente** interrompe o comando de backend ou de frontend e orienta o Upgrade do `/jarvis-init`. Detalhes e mensagens em `eng.specializations-rules.md`.
+  - **Skills sem área**: skill instalado sem `metadata.area` reconhecida bloqueia o comando, e skill pedido que não existe gera aviso. Detalhes e mensagens em `eng.skills-rules.md`.
 
 - **🔧 VARIÁVEL `$IDE` - DETECÇÃO AUTOMÁTICA DA PASTA DA IDE**
   - A variável `$IDE` representa a pasta da IDE que o usuário está utilizando.

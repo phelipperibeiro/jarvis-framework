@@ -23,6 +23,7 @@ rules/
 │   ├── eng.bump-rules.md     # Regras para versionamento
 │   ├── eng.tech-spec-rules.md # Regras para tech specs
 │   ├── eng.specializations-rules.md # Carregamento de especializações por stack
+│   ├── eng.skills-rules.md       # Área obrigatória nos skills e aviso de skill inexistente
 │   └── qa/                   # Regras de QA
 └── product/                  # Regras de produto
     └── prod-rules.md    # Regras de especificacao

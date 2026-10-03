@@ -22,6 +22,7 @@ rules/
 │   ├── eng.pr-rules.md
 │   ├── eng.tech-spec-rules.md
 │   ├── eng.specializations-rules.md # carregamento de especializações por stack
+│   ├── eng.skills-rules.md       # área obrigatória nos skills e aviso de skill inexistente
 │   ├── … (breakdown, docs, bump, integrations, …)
 │   ├── frontend/
 │   ├── data/
