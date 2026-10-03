@@ -147,7 +147,7 @@ CONTEXT_PROFILE:
 
 ### 5. Skill de Detecção de Contexto
 
-Criado o skill `/context-detect` em `$IDE/skills/context-detect/SKILL.md` que:
+Criado o skill `/jarvis-context-detect` em `$IDE/skills/jarvis-context-detect/SKILL.md` que:
 - Centraliza toda a lógica de detecção CDD
 - Detecta tipo de tarefa pela branch e jira key
 - Analisa características do projeto (testes, TypeScript, CI/CD, linter)
@@ -157,13 +157,13 @@ Criado o skill `/context-detect` em `$IDE/skills/context-detect/SKILL.md` que:
 
 **Uso:**
 ```
-/context-detect [jira-key]
-/context-detect --override tipo=hotfix urgencia=alta
+/jarvis-context-detect [jira-key]
+/jarvis-context-detect --override tipo=hotfix urgencia=alta
 ```
 
 **Fluxo de integração:**
 ```
-/context-detect → context.md
+/jarvis-context-detect → context.md
         ↓
 eng.start (Fase 0) ← lê context.md
         ↓
@@ -177,6 +177,6 @@ eng.work (Fase 0) ← herda
 ## Próximos Passos Sugeridos
 
 1. ~~**Aplicar CDD nos agents de QA restantes**~~: ✅ `eng.qa.test-architect.md`, `eng.qa.test-planner.md`
-2. ~~**Criar skill de detecção de contexto**~~: ✅ Implementado em `/context-detect`
+2. ~~**Criar skill de detecção de contexto**~~: ✅ Implementado em `/jarvis-context-detect`
 3. ~~**Adicionar escape hatches explícitos**~~: ✅ Implementado via `--override`
 4. **Integração com Jira**: Detectar tipo de tarefa automaticamente via API do Jira

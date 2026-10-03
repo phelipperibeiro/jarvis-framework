@@ -13,9 +13,9 @@ Use este workflow quando você quiser ajuda de engenharia para **atualizar/criar
 
 ## Skills recomendados
 
-Quando a solicitação for diretamente sobre escrita/atualização de documentação, use o skill `$IDE/skills/eng-docs-write/SKILL.md` como referência operacional.
+Quando a solicitação for diretamente sobre escrita/atualização de documentação, use o skill `$IDE/skills/eng-global-docs-write/SKILL.md` como referência operacional.
 
-Quando a solicitação for sobre organização/índice de documentação, use o skill `$IDE/skills/docs-index/SKILL.md`.
+Quando a solicitação for sobre organização/índice de documentação, use o skill `$IDE/skills/jarvis-docs-index/SKILL.md`.
 
 O assistente deve:
 

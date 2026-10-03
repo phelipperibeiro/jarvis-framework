@@ -32,7 +32,7 @@ Qual o seu número de controle para esta tarefa?
 ```
 
 3. Usar a resposta (lowercase) como pasta `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/` e no prefixo da branch.
-4. **Não** chamar `/eng-task-comment`, **não** mover card, **não** buscar issue no board.
+4. **Não** chamar `/eng-global-task-comment`, **não** mover card, **não** buscar issue no board.
 
 Com board definido, se o key não veio nos argumentos, perguntar o id do card naquele vendor (ex: Jira `TASK-123`).
 
@@ -41,7 +41,7 @@ Com board definido, se o key não veio nos argumentos, perguntar o id do card na
 Só se `TASK_MANAGER` estiver preenchido com um vendor. Freelance → pular.
 
 ```
-/eng-task-comment {TASK_MANAGER_KEY} {mensagem}
+/eng-global-task-comment {TASK_MANAGER_KEY} {mensagem}
 ```
 
 ## MR / PR

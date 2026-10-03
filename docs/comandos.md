@@ -87,4 +87,4 @@ Fonte: `workflows/engineering/`. Guias didáticos: [engenharia/README.md](./enge
 
 ## Outros comandos
 
-Os comandos de dados (`/data.new-pipeline`, `/data.contract`), `/init-jarvis`, `/warm-up` e `/taxonomy` não estão nesta lista. Para o quadro completo do que o CLI instala, rode `jarvis list`.
+Os comandos de dados (`/data.new-pipeline`, `/data.contract`), `/jarvis-init`, `/warm-up` e `/taxonomy` não estão nesta lista. Para o quadro completo do que o CLI instala, rode `jarvis list`.

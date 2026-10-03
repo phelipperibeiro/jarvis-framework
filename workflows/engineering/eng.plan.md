@@ -43,10 +43,10 @@ Pular se `TASK_MANAGER` estiver vazio (freelance).
 Após confirmar que o `architecture.md` existe, registrar início do planejamento:
 
 ```
-/eng-task-comment {TASK_MANAGER_KEY} 📋 [Jarvis] Iniciando criação do plano de execução
+/eng-global-task-comment {TASK_MANAGER_KEY} 📋 [Jarvis] Iniciando criação do plano de execução
 ```
 
-> Usa o skill `/eng-task-comment`. Não bloquear se falhar.
+> Usa o skill `/eng-global-task-comment`. Não bloquear se falhar.
 
 ---
 
@@ -72,7 +72,7 @@ Antes de criar o plano, herde o contexto da sessão (se CDD estiver habilitado):
 
 #### 0.1 Herdar Contexto da Sessão
 
-Leia o `CONTEXT_PROFILE` do arquivo `context.md` (gerado pelo `/context-detect`):
+Leia o `CONTEXT_PROFILE` do arquivo `context.md` (gerado pelo `/jarvis-context-detect`):
 
 ```bash
 # Localização: $SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/context.md
@@ -87,7 +87,7 @@ CONTEXT_PROFILE:
   autonomia: [baixa|média|alta]
 ```
 
-> Se `context.md` não existir, verifique o `architecture.md` ou execute `/context-detect {TASK_MANAGER_KEY}`
+> Se `context.md` não existir, verifique o `architecture.md` ou execute `/jarvis-context-detect {TASK_MANAGER_KEY}`
 
 #### 0.2 Calibração do Plano por Tipo
 
@@ -194,7 +194,7 @@ Pular se `TASK_MANAGER` estiver vazio (freelance).
 Após validação do plano com o usuário, registrar conclusão:
 
 ```
-/eng-task-comment {TASK_MANAGER_KEY} ✅ [Jarvis] Plano de execução criado e validado - {N} fases definidas. Pronto para implementação.
+/eng-global-task-comment {TASK_MANAGER_KEY} ✅ [Jarvis] Plano de execução criado e validado - {N} fases definidas. Pronto para implementação.
 ```
 
 ## Próximo Passo

@@ -33,10 +33,10 @@ sempre respeitando `$IDE/rules/engineering/eng-rules.md`.
 
 | Passo | Skill | Condição |
 |-------|-------|----------|
-| Passo 0 | `/context-detect` | Se `ENABLE_CDD=true` no ENV.md |
+| Passo 0 | `/jarvis-context-detect` | Se `ENABLE_CDD=true` no ENV.md |
 | Passo 1.0 | `mcp__claude_ai_Atlassian__getJiraIssue` | Se Jira key fornecida |
 | Passo 1.5 | `Read` / `Grep` / `Glob` (leitura do repo) | **Sempre** — obrigatório antes de formular hipóteses |
-| Passo 2.5 | `/eng-ms-trace` | Se bug suspeito de cruzar serviços |
+| Passo 2.5 | `/eng-backend-microservices-trace` | Se bug suspeito de cruzar serviços |
 | Passo 6 | `/eng-qa-unit-test` | Para criar teste de regressão da correção |
 | Passo 7 | `/bug-report create` | Para cada débito técnico ou melhoria identificada |
 | Conclusão | `mcp__claude_ai_Atlassian__addCommentToJiraIssue` | Sempre — atualizar o card com findings |
@@ -50,7 +50,7 @@ sempre respeitando `$IDE/rules/engineering/eng-rules.md`.
 ## Passo 0 – Análise de Contexto (CDD)
 
 > 🎯 **Objetivo**: Adaptar o rigor e urgência da investigação com base no contexto.
-> 📚 **Skill**: Use `/context-detect` se existir uma sessão ativa
+> 📚 **Skill**: Use `/jarvis-context-detect` se existir uma sessão ativa
 > ⚙️ **Configurável**: Esta fase é opcional e controlada pela variável `ENABLE_CDD` no ENV.md
 
 **Verificação de Ativação:**
@@ -66,7 +66,7 @@ grep "^ENABLE_CDD=" $IDE/ENV.md
 
 ### 0.1 Herdar Contexto (se disponível)
 
-Se existir arquivo `context.md` na sessão (gerado por `/context-detect`):
+Se existir arquivo `context.md` na sessão (gerado por `/jarvis-context-detect`):
 
 ```bash
 # Localização: $SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/context.md
@@ -235,7 +235,7 @@ Não sugira ainda mudanças invasivas em código ou infraestrutura.
 ## Passo 2.5 – Rastreamento Multi-Serviço (condicional)
 
 > 🎯 **Objetivo**: Automatizar a investigação cross-service antes de montar o plano de investigação.
-> 📚 **Skill**: `/eng-ms-trace`
+> 📚 **Skill**: `/eng-backend-microservices-trace`
 > ⚙️ **Condicional**: Ativar somente se sinais de envolvimento multi-serviço estiverem presentes.
 
 ### Quando Ativar
@@ -256,18 +256,18 @@ Ativar este passo se **qualquer** condição abaixo for verdadeira:
 Se os sinais acima estiverem presentes, invocar:
 
 ```
-/eng-ms-trace {serviço-entrada} {sintoma-ou-jira-key}
+/eng-backend-microservices-trace {serviço-entrada} {sintoma-ou-jira-key}
 ```
 
 **Exemplos:**
 ```
-/eng-ms-trace account AUTH-403-no-login
-/eng-ms-trace driver "usuário não recebe notificação após aceitar corrida"
+/eng-backend-microservices-trace account AUTH-403-no-login
+/eng-backend-microservices-trace driver "usuário não recebe notificação após aceitar corrida"
 ```
 
 ### Usar o Resultado
 
-Após `/eng-ms-trace` gerar o `ms-trace-report.md`:
+Após `/eng-backend-microservices-trace` gerar o `ms-trace-report.md`:
 
 - **Substituir** as hipóteses do Passo 2 pelas hipóteses rankeadas do trace report
 - **Focar** o Passo 3 (Plano de Investigação) diretamente no boundary de maior risco

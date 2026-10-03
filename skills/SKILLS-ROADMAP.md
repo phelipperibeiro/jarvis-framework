@@ -16,7 +16,7 @@ Skills existentes e planejadas do framework Jarvis.
 - **Escopo**: NestJS, JWT/OAuth2/RBAC, RabbitMQ, Redis, webhooks, circuit breaker
 - **Status**: `criado`
 
-### `eng-nestjs` ✅
+### `eng-backend-nestjs` ✅
 - **Trigger**: framework NestJS — DI, guards, interceptors, pipes, Passport/JWT, circular deps
 - **Escopo**: módulos, providers, middleware, ConfigModule, testes com `Test.createTestingModule`
 - **Status**: `criado`
@@ -31,32 +31,32 @@ Skills existentes e planejadas do framework Jarvis.
 - **Escopo**: exploração com `act()`/`observe()`, geração de script Playwright TypeScript
 - **Status**: `criado`
 
-### `eng-design-system` ✅
+### `eng-frontend-design-system` ✅
 - **Trigger**: tokens, CVA, Storybook, versionamento de componentes, auditoria visual
 - **Escopo**: design tokens, variantes com `cva`, componentes reutilizáveis, changelog de UI
 - **Status**: `criado`
 
-### `eng-microfrontend` ✅
+### `eng-frontend-microfrontend` ✅
 - **Trigger**: Module Federation, shell/remote, contratos de interface, event bus
 - **Escopo**: Webpack MF, standalone/integrado, shared dependencies, versionamento
 - **Status**: `criado`
 
-### `eng-rabbitmq` ✅
+### `eng-backend-rabbitmq` ✅
 - **Trigger**: mensageria, filas, events, consumers, producers, DLX
 - **Escopo**: RabbitMQ, `@golevelup/nestjs-rabbitmq`, retry, DLQ, idempotência
 - **Status**: `criado`
 
-### `eng-ms-trace` ✅
+### `eng-backend-microservices-trace` ✅
 - **Trigger**: bug cross-service, rastreamento HTTP + AMQP
 - **Escopo**: correlation ID, tracing distribuído, diagnóstico de falhas entre microsserviços
 - **Status**: `criado`
 
-### `eng-performance-engineer` ✅
+### `eng-devops-performance-engineer` ✅
 - **Trigger**: performance, latência, throughput, profiling, otimização
 - **Escopo**: Core Web Vitals, bundle analysis, lazy loading, caching, memory leaks
 - **Status**: `criado`
 
-### `eng-arch-c4` ✅
+### `eng-backend-arch-c4` ✅
 - **Trigger**: arquitetura C4, diagramas de contexto/container/componente
 - **Escopo**: modelagem C4, documentação arquitetural, decisões de design
 - **Status**: `criado`
@@ -66,24 +66,24 @@ Skills existentes e planejadas do framework Jarvis.
 - **Escopo**: integração de LLMs, prompts, RAG, automação com IA
 - **Status**: `criado`
 
-### `eng-browser-extension-builder` ✅
+### `eng-global-browser-extension-builder` ✅
 - **Trigger**: extensões de navegador, Chrome extensions, content scripts
 - **Escopo**: manifest v3, background workers, content scripts, popup UI
 - **Status**: `criado`
 
-### `eng-pr` ✅
+### `eng-global-pr` ✅
 - **Trigger**: criação de branch, commit, Merge Request
-- **Escopo**: git flow, MR description, `eng-task-comment`, code review automation
+- **Escopo**: git flow, MR description, `eng-global-task-comment`, code review automation
 - **Status**: `criado`
 
-### `eng-docs-write` ✅
+### `eng-global-docs-write` ✅
 - **Trigger**: documentação técnica, ADRs, RFCs, tech specs
 - **Escopo**: geração e atualização de docs de engenharia
 - **Status**: `criado`
 
-### `eng-task-comment` ✅
+### `eng-global-task-comment` ✅
 - **Trigger**: comentários técnicos em cards do task manager
-- **Escopo**: Jira/Linear/GitHub/Asana via adapter; alias `eng-jira-comment`
+- **Escopo**: Jira/Linear/GitHub/Asana via adapter; alias `eng-global-jira-comment`
 - **Status**: `criado`
 
 ---
@@ -188,17 +188,17 @@ Skills existentes e planejadas do framework Jarvis.
 
 ## Skills Criadas — Produto
 
-### `prod-specs` ✅
+### `product-specs` ✅
 - **Trigger**: pedido de especificação de produto (PRD, FRD, épico, história, discovery), inclusive em linguagem natural
 - **Escopo**: skill fina, só porta de entrada: aponta para os workflows `prod.spec.*`, que são a fonte única de cada comando
 - **Status**: `criado`
 
-### `prod-specs-update` ✅
+### `product-specs-update` ✅
 - **Trigger**: atualização de specs existentes
 - **Escopo**: revisão e evolução de requisitos
 - **Status**: `criado`
 
-### `prod-roadmap-report` ✅
+### `product-roadmap-report` ✅
 - **Trigger**: relatório de roadmap de produto
 - **Status**: `criado`
 
@@ -212,12 +212,12 @@ Removidas: `checkin`, `checkout`, `daily`, `task-log`, `send-priority`, `sent-pr
 
 ## Skills Criadas — Utilitários / Framework
 
-### `init-jarvis` ✅
+### `jarvis-init` ✅
 - **Trigger**: inicialização do framework
 - **Escopo**: criação de ENV.md, validação de MCPs, onboarding
 - **Status**: `criado`
 
-### `report-issue` ✅
+### `jarvis-report-issue` ✅
 - **Trigger**: auto-report de bugs no framework Jarvis via GitLab API
 - **Status**: `criado`
 
@@ -225,7 +225,7 @@ Removidas: `checkin`, `checkout`, `daily`, `task-log`, `send-priority`, `sent-pr
 - **Trigger**: criação de novos skills
 - **Status**: `criado`
 
-### `docs-index` / `docs-central` / `context-detect` ✅
+### `jarvis-docs-index` / `jarvis-docs-central` / `jarvis-context-detect` ✅
 - **Trigger**: indexação de docs, sync com repo central, detecção de contexto
 - **Status**: `criado`
 
@@ -243,7 +243,7 @@ Removidas: `checkin`, `checkout`, `daily`, `task-log`, `send-priority`, `sent-pr
 - **Escopo**: Docker, Kubernetes, GitHub Actions, Terraform, AWS/GCP, logs/métricas/tracing
 - **Status**: `planejado`
 
-### `eng-cybersecurity` ✅
+### `eng-security-cybersecurity` ✅
 - **Trigger**: segurança de aplicação, OWASP, hardening, secrets, supply chain, compliance
 - **Escopo**: OWASP Top 10, secrets management, sanitização, headers de segurança, SAST, supply chain, LGPD/GDPR
 - **Status**: `criado`
@@ -281,12 +281,12 @@ Removidas: `checkin`, `checkout`, `daily`, `task-log`, `send-priority`, `sent-pr
 |---|-------|--------|--------------|
 | 1 | `eng-frontend` | ✅ criado | Alta demanda, dois contextos (React + PHP/Blade) |
 | 2 | `eng-backend` | ✅ criado | APIs, auth, workers RabbitMQ — core do produto |
-| 3 | `eng-nestjs` | ✅ criado | Framework principal — DI, guards, Passport/JWT |
+| 3 | `eng-backend-nestjs` | ✅ criado | Framework principal — DI, guards, Passport/JWT |
 | 4 | `eng-scraper` | ✅ criado | Puppeteer como primário, ETL pipelines NestJS |
-| 6 | `eng-design-system` | ✅ criado | Tokens, CVA, Storybook, versionamento |
-| 7 | `eng-microfrontend` | ✅ criado | Module Federation, shell/remote |
+| 6 | `eng-frontend-design-system` | ✅ criado | Tokens, CVA, Storybook, versionamento |
+| 7 | `eng-frontend-microfrontend` | ✅ criado | Module Federation, shell/remote |
 | 8 | `eng-database` | planejado | Área densa com muitos anti-patterns críticos |
-| 9 | `eng-cybersecurity` | ✅ criado | Transversal — impacta todas as outras áreas |
+| 9 | `eng-security-cybersecurity` | ✅ criado | Transversal — impacta todas as outras áreas |
 | 10 | `eng-infrastructure` | planejado | Necessário para squads com CI/CD próprio |
 | 11 | `eng-back-for-frontend` | planejado | BFF, GraphQL gateway — demanda crescente |
 | 12 | `eng-ui` | planejado | Nicho — criar sob demanda |

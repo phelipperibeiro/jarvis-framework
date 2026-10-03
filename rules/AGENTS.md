@@ -75,7 +75,7 @@ Cada arquivo de rule declara para quais perfis se aplica via bloco `applies_to`,
 - Arquivos sem bloco `applies_to` são considerados **universais** — copiados para qualquer perfil
 - `rules/AGENTS.md` nunca é filtrado — sempre copiado
 
-**Quem faz a filtragem:** o skill `/init-jarvis` (Passo 9 — Profile-Aware Rules Sync). Ao criar, atualizar ou fazer upgrade do ENV.md, copia para `$IDE/rules/` apenas as rules que batem com o perfil (HUB + POSITION + AREA + SQUAD) e deleta as que não batem mais.
+**Quem faz a filtragem:** o skill `/jarvis-init` (Passo 9 — Profile-Aware Rules Sync). Ao criar, atualizar ou fazer upgrade do ENV.md, copia para `$IDE/rules/` apenas as rules que batem com o perfil (HUB + POSITION + AREA + SQUAD) e deleta as que não batem mais.
 
 **Ao criar uma nova rule**, definir o bloco `applies_to` é obrigatório. Sem ele, a rule é tratada como universal — o que pode ser indesejado para rules domain-specific.
 
@@ -160,7 +160,7 @@ Links para documentacao relacionada.
 
 ### ENV.md
 
-- Validar ENV.md antes de qualquer comando (exceto `/init-jarvis`)
+- Validar ENV.md antes de qualquer comando (exceto `/jarvis-init`)
 - Respeitar `MAX_AI_EXECUTION_PERCENTAGE`
 
 ---

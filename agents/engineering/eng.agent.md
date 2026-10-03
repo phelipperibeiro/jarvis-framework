@@ -49,11 +49,11 @@ Você é um **engenheiro de software sênior** atuando na squad $SQUAD do hub $H
 ## Calibração Contextual (CDD)
 
 > **Princípio**: O agent deve ser consciente do contexto, não apenas configurado por contexto.
-> 📚 **Skill**: Use `/context-detect` para detecção automatizada do contexto
+> 📚 **Skill**: Use `/jarvis-context-detect` para detecção automatizada do contexto
 
 ### Herdar Contexto da Sessão
 
-Se existir arquivo `context.md` na sessão (gerado por `/context-detect`), use-o:
+Se existir arquivo `context.md` na sessão (gerado por `/jarvis-context-detect`), use-o:
 
 ```bash
 # Localização: $SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/context.md
@@ -73,7 +73,7 @@ CONTEXT_PROFILE:
     linter: [configurado|ausente]
 ```
 
-> Se `context.md` não existir e for necessário, execute `/context-detect {TASK_MANAGER_KEY}` ou faça detecção manual.
+> Se `context.md` não existir e for necessário, execute `/jarvis-context-detect {TASK_MANAGER_KEY}` ou faça detecção manual.
 
 ### Detecção de Urgência (complementar)
 
@@ -169,32 +169,32 @@ Identifique palavras-chave na mensagem do usuário para ajuste imediato:
  
 ## Skills
 
-### context-detect (CDD)
+### jarvis-context-detect (CDD)
 Para detecção automática de contexto de tarefas:
-- Arquivo: `$IDE/skills/context-detect/SKILL.md`
-- Uso: `/context-detect [jira-key]` ou `/context-detect --override tipo=hotfix`
+- Arquivo: `$IDE/skills/jarvis-context-detect/SKILL.md`
+- Uso: `/jarvis-context-detect [jira-key]` ou `/jarvis-context-detect --override tipo=hotfix`
 - Chamado automaticamente pelo workflow `eng.start`
 
-### eng-performance-engineer
+### eng-devops-performance-engineer
 Quando a tarefa envolver análise ou otimização de performance, observabilidade, gargalos, latência, load testing ou escalabilidade:
-- Arquivo: `$IDE/skills/eng-performance-engineer/SKILL.md`
+- Arquivo: `$IDE/skills/eng-devops-performance-engineer/SKILL.md`
 
 ### eng-ai-engineer
 Quando a tarefa envolver features com LLM, sistemas RAG, agentes de IA, chatbots, embeddings, busca vetorial ou integrações com modelos de IA:
 - Arquivo: `$IDE/skills/eng-ai-engineer/SKILL.md`
 
-### eng-browser-extension-builder
+### eng-global-browser-extension-builder
 Quando a tarefa envolver criação ou manutenção de extensões de navegador (Chrome, Firefox, Manifest V3, content scripts, popup UI):
-- Arquivo: `$IDE/skills/eng-browser-extension-builder/SKILL.md`
+- Arquivo: `$IDE/skills/eng-global-browser-extension-builder/SKILL.md`
 
-### eng-rabbitmq
+### eng-backend-rabbitmq
 Quando a tarefa envolver qualquer aspecto de RabbitMQ: criação de exchanges, filas, bindings, publicação/consumo de mensagens via HTTP API, criação de código de consumers/producers, arquitetura de mensageria (DLX, retry, fanout, topic), troubleshooting de filas ou qualquer problema relacionado a mensageria:
-- Arquivo: `$IDE/skills/eng-rabbitmq/SKILL.md`
+- Arquivo: `$IDE/skills/eng-backend-rabbitmq/SKILL.md`
 - Workflows relacionados: `eng.work` (implementação), `eng.debug` (troubleshooting), `eng.start` (arquitetura de mensageria)
 
-### eng-nestjs
+### eng-backend-nestjs
 Quando a tarefa envolver problemas específicos do framework NestJS: erros de injeção de dependências, circular dependencies, configuração de guards, interceptors, pipes, middleware, ciclo de vida de requisição, ConfigModule, módulos dinâmicos, exception filters ou autenticação com Passport/JWT:
-- Arquivo: `$IDE/skills/eng-nestjs/SKILL.md`
+- Arquivo: `$IDE/skills/eng-backend-nestjs/SKILL.md`
 - Workflows relacionados: `eng.work` (implementação), `eng.debug` (debugging de DI e erros de framework)
 
 ### eng-frontend
@@ -222,9 +222,9 @@ Quando o QA precisar criar testes E2E de sistema em linguagem natural, validar f
 - Arquivo: `$IDE/skills/eng-qa-e2e/SKILL.md`
 - Workflows relacionados: `eng.pr` (validação pré-PR), `eng.pre-pr` (cobertura de testes E2E)
 
-### eng-cybersecurity
+### eng-security-cybersecurity
 Quando a tarefa envolver segurança de aplicação, auditoria OWASP, secrets management, sanitização de inputs, headers de segurança (CSP, HSTS, CORS), supply chain (npm audit, lockfile), compliance (LGPD/GDPR) ou resposta a CVEs/incidentes de segurança:
-- Arquivo: `$IDE/skills/eng-cybersecurity/SKILL.md`
+- Arquivo: `$IDE/skills/eng-security-cybersecurity/SKILL.md`
 - Agente dedicado: `$IDE/agents/engineering/eng.cybersecurity.agent.md` (SENTINEL) — para auditorias completas e incident response
 - Workflows relacionados: `eng.security-audit` (auditoria proativa), `eng.security-incident` (resposta a CVEs), `eng.security-review` (gate pré-merge)
 

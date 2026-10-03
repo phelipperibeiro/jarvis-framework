@@ -4,7 +4,7 @@
 
 Cada skill é uma pasta com `SKILL.md` (e às vezes `assets/`, scripts). É a **fonte operacional** de um tema: passos, validações, templates de saída.
 
-Quando o usuário digita `/init-jarvis` ou “use eng-backend”, a IDE carrega o skill correspondente.
+Quando o usuário digita `/jarvis-init` ou “use eng-backend”, a IDE carrega o skill correspondente.
 
 ## Como é montado
 
@@ -12,18 +12,18 @@ Quando o usuário digita `/init-jarvis` ou “use eng-backend”, a IDE carrega 
 skills/
 ├── AGENTS.md
 ├── SKILLS-ROADMAP.md          # roadmap interno de skills
-├── init-jarvis/              # onboarding + ENV.md
-├── context-detect/
-├── docs-central/              # sync/publish docs centrais
-├── eng-backend/, eng-frontend/, eng-nestjs/, …
-├── eng-pr/, eng-docs-write/, eng-task-comment/
+├── jarvis-init/              # onboarding + ENV.md
+├── jarvis-context-detect/
+├── jarvis-docs-central/              # sync/publish docs centrais
+├── eng-backend/, eng-frontend/, eng-backend-nestjs/, …
+├── eng-global-pr/, eng-global-docs-write/, eng-global-task-comment/
 ├── eng-qa-*                   # família QA (cypress, gate, exploratory, …)
 ├── eng-data-*                 # família Data
-├── eng-cybersecurity/, eng-threat-model/, eng-security-*
+├── eng-security-cybersecurity/, eng-security-threat-model/, eng-security-*
 ├── eng-rpa via eng-scraper*, eng-scraper-robot-builder
-├── prod-specs/ (porta de entrada), prod-specs-update/, prod-roadmap-report/
+├── product-specs/ (porta de entrada), product-specs-update/, product-roadmap-report/
 ├── taxonomy-manager/
-├── report-issue/
+├── jarvis-report-issue/
 └── … (~50 skills)
 ```
 
@@ -59,7 +59,7 @@ Mapa comando → skill: ver tabela em `AGENTS.md` (raiz) e `skills/AGENTS.md`.
 
 | Skill | Nota |
 |-------|------|
-| `init-jarvis` | Cria ENV; Context7 obrigatório; Jira **não** bloqueia; freelance OK |
-| `eng-task-comment` | Comenta no board conforme `TASK_MANAGER` |
-| `report-issue` | Abre issue no `JARVIS_PROJECT` |
+| `jarvis-init` | Cria ENV; Context7 obrigatório; Jira **não** bloqueia; freelance OK |
+| `eng-global-task-comment` | Comenta no board conforme `TASK_MANAGER` |
+| `jarvis-report-issue` | Abre issue no `JARVIS_PROJECT` |
 | `taxonomy-manager` | Mantém `taxonomy.md` |

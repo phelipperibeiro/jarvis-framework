@@ -1,6 +1,6 @@
 # `/eng.frontend-component` — criar ou refatorar um componente
 
-Workflow: `workflows/engineering/frontend/eng.frontend-component.md` · Skills: `eng-frontend`, `eng-design-system`
+Workflow: `workflows/engineering/frontend/eng.frontend-component.md` · Skills: `eng-frontend`, `eng-frontend-design-system`
 
 ## Em uma frase
 

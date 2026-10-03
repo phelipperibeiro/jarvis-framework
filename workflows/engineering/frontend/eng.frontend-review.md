@@ -16,7 +16,7 @@ version: "1.0"
 Use este workflow ao revisar PRs que envolvem componentes React, design system,
 micro frontend ou qualquer código de interface.
 
-**Skill de referência**: `eng-frontend`, `eng-design-system`, `eng-microfrontend`
+**Skill de referência**: `eng-frontend`, `eng-frontend-design-system`, `eng-frontend-microfrontend`
 
 ---
 

@@ -175,7 +175,7 @@ DOMAIN:
 
 ### Como Funciona
 - Todos os emails devem terminar com `@DOMAIN`
-- Usado na validação de ENV.md durante `/init-jarvis`
+- Usado na validação de ENV.md durante `/jarvis-init`
 - Garante que apenas emails corporativos sejam registrados
 - Exemplo: `pedro@domain.com.br`, `ana@domain.com.br`
 
@@ -195,7 +195,7 @@ Para adicionar uma nova opção:
 1. Adicione o nome em MAIÚSCULAS sob a categoria apropriada
 2. Inclua os campos estruturados (se aplicável)
 3. Inclua uma breve descrição
-4. Execute `/init-jarvis` - as novas opções aparecerão automaticamente
+4. Execute `/jarvis-init` - as novas opções aparecerão automaticamente
 
 **Exemplo — Squad com channel_id e modules:**
 ```markdown
@@ -222,7 +222,7 @@ prefix: design
 ## 🔄 Sincronização
 
 Quando este arquivo é atualizado:
-- Execute `/init-jarvis` para recriar ENV.md com novas opções
+- Execute `/jarvis-init` para recriar ENV.md com novas opções
 - Ou edite manualmente `$IDE/ENV.md` se já existir
 - As validações nos workflows usarão automaticamente as novas opções
 

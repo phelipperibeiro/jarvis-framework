@@ -3,7 +3,7 @@ name: eng.frontend.agent
 description: >
   Agente especialista em desenvolvimento frontend: React, micro frontend com Module Federation,
   design system, acessibilidade e Core Web Vitals.
-  Usa eng-frontend, eng-microfrontend e eng-design-system como skills operacionais.
+  Usa eng-frontend, eng-frontend-microfrontend e eng-frontend-design-system como skills operacionais.
 author: jarvis-team
 version: "1.0"
 ---
@@ -56,8 +56,8 @@ Não criar abstração para reutilização hipotética.
 | Tarefa | Skill |
 |--------|-------|
 | Criar/refatorar componente React | `eng-frontend` |
-| Configurar ou expandir micro frontend | `eng-microfrontend` |
-| Criar/evoluir componente do design system | `eng-design-system` |
+| Configurar ou expandir micro frontend | `eng-frontend-microfrontend` |
+| Criar/evoluir componente do design system | `eng-frontend-design-system` |
 | Auditoria de performance | `eng-frontend` (seção Performance) |
 | Testes E2E de fluxo de usuário | `eng-qa-e2e` |
 | Testes Cypress (Page Objects, intercept) | `eng-qa-cypress-e2e` |

@@ -114,19 +114,19 @@ O perfil de comunicação é derivado de `POSITION` (conforme definido no `$IDE/
 
 ## Passo 2 — Sincronizar Documentação Central (condicional)
 
-Se `CENTRAL_DOCS_REPO` estiver configurado no ENV.md, invocar o skill `docs-central` via Skill tool para carregar docs do produto.
+Se `CENTRAL_DOCS_REPO` estiver configurado no ENV.md, invocar o skill `jarvis-docs-central` via Skill tool para carregar docs do produto.
 
 > ⚠️ **IMPORTANTE**: NÃO executar `jarvis docs sync` diretamente via Bash.
-> Usar sempre: **Skill tool → docs-central (Modo 1: Buscar Docs)**
+> Usar sempre: **Skill tool → jarvis-docs-central (Modo 1: Buscar Docs)**
 
-O skill `docs-central` gerencia:
+O skill `jarvis-docs-central` gerencia:
 - Extração de token do `.npmrc`
 - Fallback quando `index.md` não existe (navegação por árvore)
 - Tratamento de erros
 
 **Invocação:**
 ```
-Skill tool: docs-central
+Skill tool: jarvis-docs-central
 Modo: 1 (Buscar Docs)
 Contexto: warm-up - sincronização inicial
 ```
@@ -533,7 +533,7 @@ Declare ao usuário: limite configurado, quantas tarefas isso representa e o que
 ## Integração com CDD
 
 Se `ENABLE_CDD=true` no ENV.md, **após o usuário selecionar a opção do menu**,
-execute `/context-detect` antes de iniciar o workflow escolhido.
+execute `/jarvis-context-detect` antes de iniciar o workflow escolhido.
 
 Se `ENABLE_CDD=false` ou não definido, prossiga diretamente para o workflow.
 

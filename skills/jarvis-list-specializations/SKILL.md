@@ -42,7 +42,7 @@ Verificar se o `$IDE/ENV.md` existe. Se não existir, interromper e orientar:
 
 ```
 ⚠️ O framework não foi inicializado.
-O arquivo ENV.md não existe. Execute /init-jarvis antes de continuar.
+O arquivo ENV.md não existe. Execute /jarvis-init antes de continuar.
 ```
 
 ---
@@ -108,7 +108,7 @@ Registrado sem skill instalado: eng-backend-naoexiste
 Depois, os **pendentes** em uma única linha:
 
 ```
-Sem marcação de área (pendentes): eng-pr, eng-qa-gate, context-detect, ...
+Sem marcação de área (pendentes): eng-global-pr, eng-qa-gate, jarvis-context-detect, ...
 ```
 
 Sem nenhuma especialização instalada, diga: `Nenhuma especialização instalada.`

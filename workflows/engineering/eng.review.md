@@ -20,14 +20,14 @@ apontando riscos, gaps e melhorias, sempre respeitando `$IDE/rules/engineering/e
   - Arquivo: `$IDE/skills/eng-qa-test-plan/SKILL.md`
 - **eng-qa-testsprite**: para executar testes automatizados e validar cobertura real das mudanças.
   - Arquivo: `$IDE/skills/eng-qa-testsprite/SKILL.md`
-- **eng-arch-c4**: quando a revisão envolver mudanças arquiteturais relevantes e precisar atualizar diagramas.
-  - Arquivo: `$IDE/skills/eng-arch-c4/SKILL.md`
+- **eng-backend-arch-c4**: quando a revisão envolver mudanças arquiteturais relevantes e precisar atualizar diagramas.
+  - Arquivo: `$IDE/skills/eng-backend-arch-c4/SKILL.md`
 - **eng-frontend**: quando a revisão envolver componentes React, hooks, performance de UI ou acessibilidade.
   - Arquivo: `$IDE/skills/eng-frontend/SKILL.md`
-- **eng-design-system**: quando a revisão envolver componentes do design system, tokens ou Storybook.
-  - Arquivo: `$IDE/skills/eng-design-system/SKILL.md`
-- **eng-microfrontend**: quando a revisão envolver Module Federation, shell/remote ou contratos de interface.
-  - Arquivo: `$IDE/skills/eng-microfrontend/SKILL.md`
+- **eng-frontend-design-system**: quando a revisão envolver componentes do design system, tokens ou Storybook.
+  - Arquivo: `$IDE/skills/eng-frontend-design-system/SKILL.md`
+- **eng-frontend-microfrontend**: quando a revisão envolver Module Federation, shell/remote ou contratos de interface.
+  - Arquivo: `$IDE/skills/eng-frontend-microfrontend/SKILL.md`
 
 ## Agentes recomendados
 

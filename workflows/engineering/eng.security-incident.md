@@ -31,7 +31,7 @@ Guiar o SENTINEL (ENG) na resposta estruturada a incidentes de seguranca — des
 
 ```bash
 if [ ! -f "$IDE/ENV.md" ]; then
-  echo "ENV.md nao encontrado. Execute /init-jarvis primeiro."
+  echo "ENV.md nao encontrado. Execute /jarvis-init primeiro."
   exit 1
 fi
 ```
@@ -175,7 +175,7 @@ git log --all --oneline -S "{secret_parcial}" 2>/dev/null | head -10
 
 ### 4.1 Implementar correcao
 
-- Usar o skill `eng-cybersecurity` como referencia de padroes seguros
+- Usar o skill `eng-security-cybersecurity` como referencia de padroes seguros
 - Corrigir a causa raiz (nao apenas o sintoma)
 - Adicionar validacao/sanitizacao onde necessario
 - Atualizar dependencias afetadas

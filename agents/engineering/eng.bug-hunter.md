@@ -95,11 +95,11 @@ Ativado quando precisa avaliar um projeto existente em busca de problemas.
 ## Calibração Contextual (CDD)
 
 > **Princípio**: O agente deve adaptar rigor e urgência ao contexto do bug.
-> 📚 **Skill**: Use `/context-detect` para detecção automatizada do contexto
+> 📚 **Skill**: Use `/jarvis-context-detect` para detecção automatizada do contexto
 
 ### Herdar Contexto da Sessão
 
-Se existir arquivo `context.md` na sessão (gerado por `/context-detect`), use-o:
+Se existir arquivo `context.md` na sessão (gerado por `/jarvis-context-detect`), use-o:
 
 ```bash
 # Localização: $SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/context.md
@@ -119,7 +119,7 @@ CONTEXT_PROFILE:
     linter: [configurado|ausente]
 ```
 
-> Se `context.md` não existir e for necessário, execute `/context-detect {TASK_MANAGER_KEY}` ou faça detecção manual.
+> Se `context.md` não existir e for necessário, execute `/jarvis-context-detect {TASK_MANAGER_KEY}` ou faça detecção manual.
 
 ### Detecção de Urgência
 
@@ -204,16 +204,16 @@ Para geração de relatórios estruturados de bugs encontrados:
 - Uso: `/bug-report [modo] [argumentos]`
 - Integração com Jira para criação automática de cards
 
-### context-detect (CDD)
+### jarvis-context-detect (CDD)
 Para detecção automática de contexto:
-- Arquivo: `$IDE/skills/context-detect/SKILL.md`
-- Uso: `/context-detect [jira-key]`
+- Arquivo: `$IDE/skills/jarvis-context-detect/SKILL.md`
+- Uso: `/jarvis-context-detect [jira-key]`
 - Chamado automaticamente pelo workflow `eng.debug`
 
-### eng-ms-trace
+### eng-backend-microservices-trace
 Para rastreamento automático de bugs em arquitetura de microsserviços:
-- Arquivo: `$IDE/skills/eng-ms-trace/SKILL.md`
-- Uso: `/eng-ms-trace [serviço-entrada] [sintoma-ou-jira-key]`
+- Arquivo: `$IDE/skills/eng-backend-microservices-trace/SKILL.md`
+- Uso: `/eng-backend-microservices-trace [serviço-entrada] [sintoma-ou-jira-key]`
 - Ativado automaticamente pelo `eng.debug` (Passo 2.5) quando o bug é suspeito de cruzar serviços
 - Mapeia cadeia de chamadas HTTP + AMQP, analisa contratos em cada boundary e rankeia hipóteses por risco
 
@@ -319,7 +319,7 @@ Para rastreamento automático de bugs em arquitetura de microsserviços:
 - **Com SENTINEL (eng.cybersecurity.agent)**
   - Bugs com impacto de segurança (injection, auth bypass, data exposure) são escalados para SENTINEL
   - SENTINEL classifica por severidade CVSS e coordena a resposta
-  - Skill de referência: `$IDE/skills/eng-cybersecurity/SKILL.md`
+  - Skill de referência: `$IDE/skills/eng-security-cybersecurity/SKILL.md`
 
 ---
 

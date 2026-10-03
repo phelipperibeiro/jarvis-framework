@@ -35,7 +35,7 @@ Automatizar a geração e execução de testes para projetos frontend e backend,
 
 ## Pré-requisito
 
-Verificar se o `ENV.md` existe e está preenchido corretamente. Se não existir ou estiver incompleto, execute `/init-jarvis` antes de continuar.
+Verificar se o `ENV.md` existe e está preenchido corretamente. Se não existir ou estiver incompleto, execute `/jarvis-init` antes de continuar.
 
 **Requisitos do projeto:**
 - Frontend: React, Vue, Angular, Svelte, Next.js, Vite ou vanilla JS/TS

@@ -14,16 +14,16 @@ A pasta `skills/` contem **playbooks executaveis** que sao a fonte de verdade op
 
 ```
 skills/
-├── eng-arch-c4/          # Diagramas C4
+├── eng-backend-arch-c4/          # Diagramas C4
 │   ├── SKILL.md
 │   └── assets/
-├── eng-docs-write/       # Escrita de documentacao
+├── eng-global-docs-write/       # Escrita de documentacao
 │   └── SKILL.md
-├── eng-pr/               # Criacao de Pull/Merge Requests (GitLab/GitHub/Bitbucket)
+├── eng-global-pr/               # Criacao de Pull/Merge Requests (GitLab/GitHub/Bitbucket)
 │   └── SKILL.md
-├── eng-task-comment/     # Comentário no card (Jira/Linear/GitHub Issues/Asana)
+├── eng-global-task-comment/     # Comentário no card (Jira/Linear/GitHub Issues/Asana)
 │   └── SKILL.md
-├── eng-jira-comment/     # Alias → eng-task-comment
+├── eng-global-jira-comment/     # Alias → eng-global-task-comment
 │   └── SKILL.md
 ├── jarvis-list-specializations/ # Lista especializações de stack instaladas e registradas
 │   └── SKILL.md
@@ -31,15 +31,15 @@ skills/
 │   └── SKILL.md
 ├── eng-frontend/         # React/Next.js/Vue, estado, performance UI, acessibilidade
 │   └── SKILL.md
-├── eng-microfrontend/    # Module Federation, shell/remote, contratos de interface, event bus
+├── eng-frontend-microfrontend/    # Module Federation, shell/remote, contratos de interface, event bus
 │   └── SKILL.md
-├── eng-design-system/    # Tokens semânticos, CVA, Storybook, versionamento, auditoria visual
+├── eng-frontend-design-system/    # Tokens semânticos, CVA, Storybook, versionamento, auditoria visual
 │   └── SKILL.md
-├── eng-nestjs/           # Framework NestJS: módulos, DI, guards, interceptors, pipes, Passport/JWT
+├── eng-backend-nestjs/           # Framework NestJS: módulos, DI, guards, interceptors, pipes, Passport/JWT
 │   └── SKILL.md
-├── eng-rabbitmq/         # Mensageria RabbitMQ (HTTP API, codigo, arquitetura, troubleshooting)
+├── eng-backend-rabbitmq/         # Mensageria RabbitMQ (HTTP API, codigo, arquitetura, troubleshooting)
 │   └── SKILL.md
-├── eng-cybersecurity/    # Segurança de aplicações: OWASP Top 10, secrets, supply chain, headers, SAST, compliance
+├── eng-security-cybersecurity/    # Segurança de aplicações: OWASP Top 10, secrets, supply chain, headers, SAST, compliance
 │   └── SKILL.md
 │   └── SKILL.md
 ├── eng-scraper/          # Web scraping com Puppeteer, Cheerio, anti-bot, pipelines ETL
@@ -48,9 +48,9 @@ skills/
 │   └── SKILL.md
 │   └── SKILL.md
 │   └── SKILL.md
-├── docs-index/           # Indexacao de documentos
+├── jarvis-docs-index/           # Indexacao de documentos
 │   └── SKILL.md
-├── init-jarvis/         # Inicializacao do framework (/init-jarvis)
+├── jarvis-init/         # Inicializacao do framework (/jarvis-init)
 │   ├── SKILL.md
 │   └── assets/
 ├── eng-qa-gate/              # Quality gate validation
@@ -80,11 +80,11 @@ skills/
 │   └── SKILL.md
 ├── eng-qa-unit-test/         # Testes unitarios
 │   └── SKILL.md
-├── report-issue/         # Reportar bug no próprio Jarvis (JARVIS_PROJECT)
+├── jarvis-report-issue/         # Reportar bug no próprio Jarvis (JARVIS_PROJECT)
 │   └── SKILL.md
-├── context-detect/       # Detecta contexto do projeto/tarefa
+├── jarvis-context-detect/       # Detecta contexto do projeto/tarefa
 │   └── SKILL.md
-└── docs-central/         # Sync/publish docs no central-docs (GitLab/GitHub/Bitbucket)
+└── jarvis-docs-central/         # Sync/publish docs no central-docs (GitLab/GitHub/Bitbucket)
     └── SKILL.md
 ```
 
@@ -135,10 +135,10 @@ metadata:
 
 | Domínio | Prefixo | Exemplos |
 |---------|---------|----------|
-| Engenharia | `eng-` | `eng-docs-write`, `eng-pr`, `eng-arch-c4` |
+| Engenharia | `eng-` | `eng-global-docs-write`, `eng-global-pr`, `eng-backend-arch-c4` |
 | Produto | `prod-` | `prod-prd`, `prod-frd`, `prod-epic` |
 | QA | `qa-` | `eng-qa-gate`, `eng-qa-test-plan`, `eng-qa-unit-test` |
-| Geral / utilitário | _(sem prefixo)_ | `skill-creator`, `docs-index`, `init-jarvis` |
+| Geral / utilitário | _(sem prefixo)_ | `skill-creator`, `jarvis-docs-index`, `jarvis-init` |
 
 ---
 
@@ -194,21 +194,21 @@ Skills são invocados de formas diferentes dependendo da IDE:
 
 | Comando / Trigger | Skill |
 |-------------------|-------|
-| `/init-jarvis` | `init` |
-| `/eng.docs` | `eng-docs-write`, `docs-index` |
+| `/jarvis-init` | `init` |
+| `/eng.docs` | `eng-global-docs-write`, `jarvis-docs-index` |
 | `/eng.pre-pr` | `eng-qa-test-plan` |
-| `/eng.pr` | `eng-pr` |
+| `/eng.pr` | `eng-global-pr` |
 | QA validation | `eng-qa-gate` |
 | Criar skill | `skill-creator` |
 | `/taxonomy-manager` | `taxonomy-manager` |
 | Listar especializações de stack (instaladas e registradas) | `jarvis-list-specializations` |
 | `/members-manager` | `members-manager` |
-| Mensageria, filas, RabbitMQ, events, consumers, producers | `eng-rabbitmq` |
+| Mensageria, filas, RabbitMQ, events, consumers, producers | `eng-backend-rabbitmq` |
 | APIs REST/GraphQL, auth, workers, RabbitMQ, caching | `eng-backend` |
 | Componentes, UI, estado, SSR/SSG, performance, acessibilidade | `eng-frontend` |
-| Micro frontend, Module Federation, shell/remote, contratos de interface | `eng-microfrontend` |
-| Design system, tokens, CVA, Storybook, versionamento de componentes | `eng-design-system` |
-| Módulos NestJS, DI, guards, interceptors, pipes, Passport/JWT | `eng-nestjs` |
+| Micro frontend, Module Federation, shell/remote, contratos de interface | `eng-frontend-microfrontend` |
+| Design system, tokens, CVA, Storybook, versionamento de componentes | `eng-frontend-design-system` |
+| Módulos NestJS, DI, guards, interceptors, pipes, Passport/JWT | `eng-backend-nestjs` |
 | Web scraping, Puppeteer, extração de dados, parsing, ETL | `eng-scraper` |
 | Criar robô RPA novo ou manter existente (new|update + card) | `eng.rpa.robot` (workflow) |
 | Gerar specs Cypress + TypeScript para fluxos de usuário | `eng-qa-cypress-e2e` |
@@ -218,7 +218,7 @@ Skills são invocados de formas diferentes dependendo da IDE:
 | Testes de acessibilidade WCAG 2.1 AA: integra jest-axe em testes unitários existentes | `eng-qa-a11y-audit` |
 | Testes de contrato GraphQL: valida queries frontend contra schema do BFF | `eng-qa-graphql-contract` |
 | Spec E2E para handoff: cenários priorizados, Page Objects, fixtures, intercepts, setup | `eng-qa-e2e-spec-writer` |
-| Segurança de aplicações: OWASP Top 10, secrets, sanitização, headers, supply chain, compliance | `eng-cybersecurity` |
+| Segurança de aplicações: OWASP Top 10, secrets, sanitização, headers, supply chain, compliance | `eng-security-cybersecurity` |
 
 ---
 

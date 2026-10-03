@@ -80,7 +80,7 @@ function help() {
     `  ${DIM}1.${NC} npm install -g ${GREEN}/caminho/para/jarvis${NC}`,
   );
   logger.info(`  ${DIM}2.${NC} ${GREEN}jarvis init${NC} --ide cursor`);
-  logger.info(`  ${DIM}3.${NC} No chat da IDE: ${GREEN}/init-jarvis${NC}`);
+  logger.info(`  ${DIM}3.${NC} No chat da IDE: ${GREEN}/jarvis-init${NC}`);
   logger.info("");
 
   logger.info(`${BLUE}📖 Exemplos:${NC}`);

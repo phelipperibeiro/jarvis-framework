@@ -23,8 +23,8 @@ Utilize o `$ARGUMENTS` que o usuário passar como ponto de partida e para entend
 - Sempre identifique o quadrimestre atual e o próximo com base na data de hoje.
 - Utilize o MCP disponível relacionado ao $TASK_MANAGER utilizado pelo usuário.
 - Antes de qualquer coisa, procure por informações sobre o projeto ou produto que o usuário está solicitando dentro da pasta de trabalho utilizado. Confirme com o usuário o que foi encontrado. Utilize também informações que o usuário já compartilhou.
-- As documentações de projeto podem ser encontradas na pasta do projeto (`$PROD_DOCS`). Rascunhos WIP: `$SESSIONS_DIR/prod/`. Caso não estejam disponíveis localmente, utilize via Skill tool a `docs-central` para buscar as informações do repositório `$CENTRAL_DOCS_REPO`.
-- Para trazer as informações, utilize via Skill tool a skill `prod-roadmap-report`
+- As documentações de projeto podem ser encontradas na pasta do projeto (`$PROD_DOCS`). Rascunhos WIP: `$SESSIONS_DIR/prod/`. Caso não estejam disponíveis localmente, utilize via Skill tool a `jarvis-docs-central` para buscar as informações do repositório `$CENTRAL_DOCS_REPO`.
+- Para trazer as informações, utilize via Skill tool a skill `product-roadmap-report`
 
 ### Status Reports por Squad
 

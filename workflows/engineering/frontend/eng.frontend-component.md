@@ -17,7 +17,7 @@ version: "1.0"
 Use este workflow para garantir que todo componente frontend seja criado com
 qualidade, acessibilidade, testes e no lugar correto (design system vs remote).
 
-**Skill de referência**: `eng-frontend`, `eng-design-system`
+**Skill de referência**: `eng-frontend`, `eng-frontend-design-system`
 
 ---
 

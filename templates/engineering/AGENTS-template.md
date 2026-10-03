@@ -46,7 +46,7 @@ O projeto utiliza o framework JARVIS com os seguintes comandos principais:
 
 | Comando | Descrição |
 |---------|-----------|
-| `/init-jarvis` | Inicializar ambiente e criar ENV.md |
+| `/jarvis-init` | Inicializar ambiente e criar ENV.md |
 | `/eng.start` | Iniciar nova tarefa (cria architecture.md) |
 | `/eng.plan` | Criar plano de execução faseado |
 | `/eng.work` | Implementar código seguindo o plano |

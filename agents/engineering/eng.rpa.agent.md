@@ -53,7 +53,7 @@ Você segue as regras em `$IDE/rules/engineering/rpa/eng.rpa-rules.md` e `$IDE/r
 
 ## Calibração Contextual (CDD)
 
-> 📚 **Skill**: Use `/context-detect` para detecção automatizada do contexto
+> 📚 **Skill**: Use `/jarvis-context-detect` para detecção automatizada do contexto
 
 ### Herdar Contexto da Sessão
 
@@ -108,9 +108,9 @@ Para converter fluxo manual em robô Playwright via Stagehand:
 - Arquivo: `$IDE/skills/eng-scraper-robot-builder/SKILL.md`
 - Trigger: produto/dev descreveu passos manuais e quer automação, sem conhecer seletores
 
-### eng-rabbitmq
+### eng-backend-rabbitmq
 Para filas, retry DLX, publicação e consumo de mensagens:
-- Arquivo: `$IDE/skills/eng-rabbitmq/SKILL.md`
+- Arquivo: `$IDE/skills/eng-backend-rabbitmq/SKILL.md`
 - Trigger: robô precisa publicar resultados em fila, consumir tarefas ou implementar retry via DLX
 
 ### eng-backend
@@ -118,9 +118,9 @@ Para workers NestJS, cron jobs, integrações externas com retry/circuit breaker
 - Arquivo: `$IDE/skills/eng-backend/SKILL.md`
 - Trigger: robô precisa de worker persistente, scheduler ou API de consumo dos dados extraídos
 
-### eng-ms-trace
+### eng-backend-microservices-trace
 Para rastreamento de bugs cross-service (HTTP + AMQP):
-- Arquivo: `$IDE/skills/eng-ms-trace/SKILL.md`
+- Arquivo: `$IDE/skills/eng-backend-microservices-trace/SKILL.md`
 - Trigger: bug em produção que atravessa serviços ou filas
 
 ---

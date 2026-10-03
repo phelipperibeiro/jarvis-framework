@@ -148,9 +148,9 @@ Quando um agente estiver atuando em um tema que possui skill correspondente, ele
 
 ### Mapeamento recomendado (Workflows/Comandos → Skills)
 
-- **eng.docs** → `eng-docs-write` (principal) e `docs-index` (quando houver índice).
-- **eng.pre-pr** → `eng-qa-test-plan` (cobertura) e `eng-docs-write` (docs).
-- **eng.pr** → `eng-pr`.
+- **eng.docs** → `eng-global-docs-write` (principal) e `jarvis-docs-index` (quando houver índice).
+- **eng.pre-pr** → `eng-qa-test-plan` (cobertura) e `eng-global-docs-write` (docs).
+- **eng.pr** → `eng-global-pr`.
 - **qa-quality-gate-validation** → `eng-qa-gate`.
 - **Sessão de teste exploratório (charter, risco, achados, bug cards)** → `eng-qa-exploratory`.
 - **Gerar specs Cypress + TypeScript (Page Objects, data-testid, intercept)** → `eng-qa-cypress-e2e`.
@@ -158,7 +158,7 @@ Quando um agente estiver atuando em um tema que possui skill correspondente, ele
 - **Consolidar sessões, bugs e quality gates e gerar relatório de qualidade por período** → `eng-qa-quality-report`.
 - **APIs, auth, workers, RabbitMQ, caching** → `eng-backend`.
 - **Componentes, UI, estado, SSR/SSG, performance, acessibilidade** → `eng-frontend`.
-- **Módulos NestJS, DI, guards, interceptors, Passport/JWT** → `eng-nestjs`.
+- **Módulos NestJS, DI, guards, interceptors, Passport/JWT** → `eng-backend-nestjs`.
 - **Web scraping, Puppeteer, extração de dados, ETL** → `eng-scraper`.
 - **Converter fluxo manual (produto/dev) em robô Playwright via Stagehand** → `eng-scraper-robot-builder`.
 - **Criar ou manter robô RPA** → `eng.rpa.robot new|update {card}` (workflow).

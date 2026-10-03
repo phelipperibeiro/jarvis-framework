@@ -18,20 +18,20 @@ Estamos nos aproximando de finalizar o trabalho nesta branch e nos preparar para
   - Arquivo: `$IDE/skills/eng-qa-test-plan/SKILL.md`
 - **eng-qa-testsprite**: para executar testes automatizados e validar cobertura com TestSprite MCP.
   - Arquivo: `$IDE/skills/eng-qa-testsprite/SKILL.md`
-- **eng-docs-write**: para atualizar documentação baseada nas mudanças da branch.
-  - Arquivo: `$IDE/skills/eng-docs-write/SKILL.md`
-- **docs-index**: para atualizar o índice de documentação quando necessário.
-  - Arquivo: `$IDE/skills/docs-index/SKILL.md`
-- **eng-performance-engineer**: para validar thresholds de performance e analisar regressões quando a feature tiver requisitos não-funcionais de latência, throughput ou escalabilidade.
-  - Arquivo: `$IDE/skills/eng-performance-engineer/SKILL.md`
+- **eng-global-docs-write**: para atualizar documentação baseada nas mudanças da branch.
+  - Arquivo: `$IDE/skills/eng-global-docs-write/SKILL.md`
+- **jarvis-docs-index**: para atualizar o índice de documentação quando necessário.
+  - Arquivo: `$IDE/skills/jarvis-docs-index/SKILL.md`
+- **eng-devops-performance-engineer**: para validar thresholds de performance e analisar regressões quando a feature tiver requisitos não-funcionais de latência, throughput ou escalabilidade.
+  - Arquivo: `$IDE/skills/eng-devops-performance-engineer/SKILL.md`
 - **eng-frontend**: para validar implementação de componentes React, performance de UI e acessibilidade (WCAG 2.1 AA).
   - Arquivo: `$IDE/skills/eng-frontend/SKILL.md`
-- **eng-design-system**: para auditar conformidade do código com tokens e componentes do design system.
-  - Arquivo: `$IDE/skills/eng-design-system/SKILL.md`
-- **eng-microfrontend**: quando a branch envolver shell app ou remotes em Module Federation.
-  - Arquivo: `$IDE/skills/eng-microfrontend/SKILL.md`
-- **eng-cybersecurity**: quando a branch tocar em auth, sessions, inputs, CORS, CSP, permissões ou adicionar dependências novas.
-  - Arquivo: `$IDE/skills/eng-cybersecurity/SKILL.md`
+- **eng-frontend-design-system**: para auditar conformidade do código com tokens e componentes do design system.
+  - Arquivo: `$IDE/skills/eng-frontend-design-system/SKILL.md`
+- **eng-frontend-microfrontend**: quando a branch envolver shell app ou remotes em Module Federation.
+  - Arquivo: `$IDE/skills/eng-frontend-microfrontend/SKILL.md`
+- **eng-security-cybersecurity**: quando a branch tocar em auth, sessions, inputs, CORS, CSP, permissões ou adicionar dependências novas.
+  - Arquivo: `$IDE/skills/eng-security-cybersecurity/SKILL.md`
 
 <arguments>
 #$ARGUMENTS
@@ -44,10 +44,10 @@ Pular se `TASK_MANAGER` estiver vazio (freelance).
 Ao iniciar o pre-PR, registrar:
 
 ```
-/eng-task-comment {TASK_MANAGER_KEY} 🔍 [Jarvis] Iniciando validação pre-PR - bateria de testes e revisão de código
+/eng-global-task-comment {TASK_MANAGER_KEY} 🔍 [Jarvis] Iniciando validação pre-PR - bateria de testes e revisão de código
 ```
 
-> Usa o skill `/eng-task-comment`. Não bloquear se falhar.
+> Usa o skill `/eng-global-task-comment`. Não bloquear se falhar.
 
 ---
 
@@ -159,7 +159,7 @@ Após apresentar o resultado final, registrar:
 - Se **Red**: `🚫 [Jarvis] Pre-PR concluído com status RED - bloqueadores encontrados, não abrir MR`
 
 ```
-/eng-task-comment {TASK_MANAGER_KEY} {mensagem_status}
+/eng-global-task-comment {TASK_MANAGER_KEY} {mensagem_status}
 ```
 
 ---

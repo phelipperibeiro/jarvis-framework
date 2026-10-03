@@ -1,6 +1,6 @@
 # `/eng.frontend-review` — revisar um PR de frontend
 
-Workflow: `workflows/engineering/frontend/eng.frontend-review.md` · Skills: `eng-frontend`, `eng-design-system`, `eng-microfrontend`
+Workflow: `workflows/engineering/frontend/eng.frontend-review.md` · Skills: `eng-frontend`, `eng-frontend-design-system`, `eng-frontend-microfrontend`
 
 ## Em uma frase
 

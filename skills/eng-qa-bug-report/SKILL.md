@@ -176,7 +176,7 @@ fi
 
 ```bash
 if [ ! -f "$IDE/ENV.md" ]; then
-  echo "⚠️ ENV.md não encontrado. Execute /init-jarvis primeiro."
+  echo "⚠️ ENV.md não encontrado. Execute /jarvis-init primeiro."
   exit 1
 fi
 

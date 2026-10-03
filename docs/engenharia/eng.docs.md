@@ -8,7 +8,7 @@ Ajuda a escrever ou atualizar a documentação de engenharia, propondo mudanças
 
 ## O que é
 
-É o atalho para pedir documentação com o contexto certo carregado: regras de engenharia, o `ENV.md` e o agente de documentação. Para escrita, usa o skill `eng-docs-write` como referência; para organização e índice, o skill `docs-index`.
+É o atalho para pedir documentação com o contexto certo carregado: regras de engenharia, o `ENV.md` e o agente de documentação. Para escrita, usa o skill `eng-global-docs-write` como referência; para organização e índice, o skill `jarvis-docs-index`.
 
 ## Quando usar
 

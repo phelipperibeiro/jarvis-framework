@@ -1,7 +1,7 @@
 # =============================================================================
 # ENV.md — contexto do workspace para o Jarvis
 # =============================================================================
-# Copiado para $IDE/ENV.md pelo /init-jarvis.
+# Copiado para $IDE/ENV.md pelo /jarvis-init.
 # Valores entre [colchetes] são opções — escolha UMA e apague o resto.
 # Deixe em branco o que não usar. Não coloque tokens/segredos no chat.
 # =============================================================================
@@ -174,7 +174,7 @@ QA_SIGNOFF_MAX_AGE=24
 
 # --- Reportar bug no próprio Jarvis (opcional) ------------------------------
 # URL ou path curto do repo do framework (ex: https://github.com/phelipperibeiro/jarvis-framework).
-# Usado pelo skill /report-issue. Alias: JARVIS_GITLAB_PROJECT.
+# Usado pelo skill /jarvis-report-issue. Alias: JARVIS_GITLAB_PROJECT.
 # Token: GitLab .npmrc | GitHub gh auth / GITHUB_TOKEN | Bitbucket BITBUCKET_TOKEN.
 JARVIS_PROJECT=https://github.com/phelipperibeiro/jarvis-framework
 
