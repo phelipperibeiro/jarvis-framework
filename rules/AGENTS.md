@@ -22,6 +22,7 @@ rules/
 │   ├── eng.pr-rules.md       # Regras para /eng.pr
 │   ├── eng.bump-rules.md     # Regras para versionamento
 │   ├── eng.tech-spec-rules.md # Regras para tech specs
+│   ├── eng.specializations-rules.md # Carregamento de especializações por stack
 │   └── qa/                   # Regras de QA
 └── product/                  # Regras de produto
     └── prod-rules.md    # Regras de especificacao

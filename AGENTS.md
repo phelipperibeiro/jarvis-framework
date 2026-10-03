@@ -83,6 +83,7 @@ prompts/
 │   │   ├── workflow-creator/
 │   │   ├── report-issue/          # Auto-report de bugs no repo do Jarvis (GitLab/GitHub/Bitbucket)
 │   │   ├── eng-task-comment/      # Comentário no card (Jira/Linear/GitHub/Asana)
+│   │   ├── jarvis-list-specializations/ # Lista especializações de stack instaladas e registradas
 │   │   ├── churn-audit/           # Análise de churn SaaS por squad com relatório narrativo via Slack
 │   │
 │   ├── templates/                # Templates de documentos
@@ -293,6 +294,7 @@ Quando um agente atua em tema com skill correspondente, o skill e a fonte de ver
 | `eng.pre-pr` | `eng-qa-test-plan`, `eng-docs-write`, `docs-central` (detectar docs) |
 | `eng.pr` | `eng-pr` (MR/PR via `VERSION_CONTROL`) |
 | Comentário no card | `eng-task-comment` |
+| Listar especializações de stack (instaladas e registradas) | `jarvis-list-specializations` |
 | `jarvis docs sync` | `docs-central` |
 | `jarvis docs publish` | `docs-central` |
 | QA validation | `eng-qa-gate` |

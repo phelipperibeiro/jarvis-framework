@@ -230,6 +230,7 @@ Fluxo correto:
 3. Se `HUB≠DATA`: remover o bloco DATA_* inteiro
 4. Garantir `SESSIONS_DIR=.jarvis/sessions` e `JARVIS_PROJECT=https://github.com/phelipperibeiro/jarvis-framework` (ou URL que o usuário informar)
 5. Escrever `$IDE/ENV.md` com o restante do template (incluindo variáveis vazias)
+6. As chaves `BACKEND_SPECIALIZATIONS` e `FRONTEND_SPECIALIZATIONS` ficam **vazias**: não são perguntadas aqui. O registro de especializações é feito depois (consulta com `jarvis-list-specializations`).
 
 ### 3. Coletar Variáveis Obrigatórias
 

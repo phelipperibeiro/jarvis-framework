@@ -21,6 +21,7 @@ rules/
 │   ├── eng.pre-pr-rules.md
 │   ├── eng.pr-rules.md
 │   ├── eng.tech-spec-rules.md
+│   ├── eng.specializations-rules.md # carregamento de especializações por stack
 │   ├── … (breakdown, docs, bump, integrations, …)
 │   ├── frontend/
 │   ├── data/
