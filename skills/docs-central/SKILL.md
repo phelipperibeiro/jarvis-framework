@@ -8,6 +8,7 @@ license: AGPL-3.0
 metadata:
   author: jarvis-team
   version: "3.0"
+  area: global
 ---
 
 # docs-central

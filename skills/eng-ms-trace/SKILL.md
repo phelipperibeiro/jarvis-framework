@@ -11,6 +11,8 @@ allowed-tools: Read Glob Grep Bash
 metadata:
   author: jarvis-team
   version: "1.0"
+  area: backend
+  stack: microservices-trace
 argument-hint: "[serviço-entrada] [sintoma-ou-TASK_MANAGER_KEY]"
 disable-model-invocation: false
 ---

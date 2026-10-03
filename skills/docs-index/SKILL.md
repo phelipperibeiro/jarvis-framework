@@ -4,6 +4,10 @@ description: Cria e mantém índice estruturado da documentação do projeto. Us
 argument-hint: "[escopo-opcional: engineering, product, api]"
 disable-model-invocation: true
 allowed-tools: Read Write Edit Grep Glob Bash MCP
+metadata:
+  author: jarvis-team
+  version: "1.0"
+  area: global
 ---
 
 # Docs Index - Organização de Documentação

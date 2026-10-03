@@ -5,6 +5,7 @@ allowed-tools: conversation_search, google_drive_search, google_drive_fetch
 metadata:
   author: jarvis-team
   version: "1.0.0"
+  area: product
 ---
 
 # Relatório de Status do Projeto

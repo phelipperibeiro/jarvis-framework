@@ -10,6 +10,7 @@ allowed-tools: Read Write Edit Glob Grep Bash
 metadata:
   author: jarvis-team
   version: "1.0"
+  area: data
 argument-hint: "[pipeline|tabela|camada] [sintoma]"
 disable-model-invocation: false
 ---

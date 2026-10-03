@@ -4,6 +4,11 @@ description: Cria e mantém documentação de arquitetura usando C4 Model. Use q
 argument-hint: "[nivel: context|container|component|code] [sistema-opcional]"
 disable-model-invocation: false
 allowed-tools: Read Write Edit Grep Glob Bash MCP
+metadata:
+  author: jarvis-team
+  version: "1.0"
+  area: backend
+  stack: arch-c4
 ---
 
 # Arch C4 - Documentação de Arquitetura

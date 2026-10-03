@@ -9,6 +9,7 @@ compatibility: Designed for Claude Code (or similar products)
 metadata:
   author: jarvis-framework
   version: "1.0"
+  area: qa
 ---
 
 # qa-e2e-spec-writer

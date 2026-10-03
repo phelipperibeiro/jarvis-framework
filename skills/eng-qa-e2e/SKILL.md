@@ -12,6 +12,7 @@ allowed-tools: Read Write Edit Grep Glob Bash
 metadata:
   author: jarvis-team
   version: "1.0"
+  area: qa
 # Campos Claude Code-specific (não fazem parte da spec oficial agentskills.io):
 argument-hint: "[cenário ou caminho do arquivo de cenários]"
 disable-model-invocation: false

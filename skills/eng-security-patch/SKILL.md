@@ -10,6 +10,10 @@ allowed-tools:
   - Task
   - AskUserQuestion
   - Bash(git log:*)
+metadata:
+  author: jarvis-team
+  version: "1.0"
+  area: security
 ---
 
 # eng-security-patch

@@ -11,6 +11,8 @@ allowed-tools: Read Bash WebFetch
 metadata:
   author: jarvis-team
   version: "2.0"
+  area: backend
+  stack: rabbitmq
 argument-hint: "[operação|criar|problema] [contexto]"
 disable-model-invocation: false
 ---

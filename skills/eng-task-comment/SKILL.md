@@ -6,6 +6,10 @@ description: >
 argument-hint: "{TASK_MANAGER_KEY} {mensagem}"
 disable-model-invocation: false
 allowed-tools: Read Bash MCP
+metadata:
+  author: jarvis-team
+  version: "1.0"
+  area: global
 ---
 
 # eng-task-comment

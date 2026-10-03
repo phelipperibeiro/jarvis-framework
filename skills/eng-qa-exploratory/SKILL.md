@@ -11,6 +11,7 @@ allowed-tools: Read Write Edit Grep Glob Bash
 metadata:
   author: jarvis-framework
   version: "1.0"
+  area: qa
 argument-hint: "[feature ou módulo a explorar]"
 disable-model-invocation: false
 ---

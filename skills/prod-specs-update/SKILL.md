@@ -9,6 +9,7 @@ allowed-tools: Read Write Edit Grep Glob Bash MCP
 metadata:
   author: jarvis-team
   version: "1.0"
+  area: product
 argument-hint: "[path-do-arquivo-criado-ou-modificado]"
 disable-model-invocation: false
 ---

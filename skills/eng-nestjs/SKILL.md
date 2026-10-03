@@ -12,6 +12,8 @@ allowed-tools: Read Write Edit Glob Grep Bash
 metadata:
   author: jarvis-team
   version: "2.0"
+  area: backend
+  stack: nestjs
 # Campos Claude Code-specific (não fazem parte da spec oficial agentskills.io):
 argument-hint: "[módulo|guard|interceptor|pipe|teste|auth|config|erro] [contexto]"
 disable-model-invocation: false

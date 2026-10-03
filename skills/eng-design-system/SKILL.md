@@ -13,6 +13,8 @@ allowed-tools: Read Write Edit Glob Grep Bash
 metadata:
   author: jarvis-team
   version: "1.0"
+  area: frontend
+  stack: design-system
 argument-hint: "[novo-componente|tokens|storybook|auditoria|breaking-change] [contexto]"
 disable-model-invocation: false
 ---

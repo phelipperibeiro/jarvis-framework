@@ -10,6 +10,7 @@ license: AGPL-3.0
 metadata:
   author: jarvis-team
   version: "1.0"
+  area: global
 ---
 
 # Context Detect - Detecção de Contexto CDD

@@ -4,6 +4,10 @@ description: Analisa mudanças de código na branch atual e atualiza a documenta
 argument-hint: "[escopo-opcional: readme, api, architecture]"
 disable-model-invocation: false
 allowed-tools: Read Write Edit Grep Glob Bash MCP
+metadata:
+  author: jarvis-team
+  version: "1.0"
+  area: global
 ---
 
 # Docs Writer - Documentação Sincronizada

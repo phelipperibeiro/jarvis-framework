@@ -11,6 +11,7 @@ allowed-tools: Read Grep Glob Bash
 metadata:
   author: jarvis-framework
   version: "1.0"
+  area: qa
 argument-hint: "[caminho do arquivo ou PR do dev]"
 disable-model-invocation: false
 ---

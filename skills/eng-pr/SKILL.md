@@ -4,6 +4,10 @@ description: Cria branch, commit e Merge Request seguindo os padrões do time. U
 argument-hint: "{TASK_MANAGER_KEY} [branch-destino]"
 disable-model-invocation: false
 allowed-tools: Read Write Edit Grep Glob Bash MCP
+metadata:
+  author: jarvis-team
+  version: "1.0"
+  area: global
 ---
 
 # PR - Pull Request / Merge Request

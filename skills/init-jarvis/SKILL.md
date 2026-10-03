@@ -8,6 +8,7 @@ license: AGPL-3.0
 metadata:
   author: jarvis-team
   version: "1.1"
+  area: global
 ---
 
 # Init - Inicialização do Framework e Onboarding

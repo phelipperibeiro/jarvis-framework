@@ -11,6 +11,7 @@ allowed-tools: Read Write Edit Glob Grep Bash
 metadata:
   author: jarvis-team
   version: "1.0"
+  area: security
 argument-hint: "[audit|incident|review|hardening|secrets|owasp] [contexto]"
 disable-model-invocation: false
 ---

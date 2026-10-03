@@ -16,6 +16,10 @@ allowed-tools:
   - Bash(find:*)
   - Bash(ls:*)
   - AskUserQuestion
+metadata:
+  author: jarvis-team
+  version: "1.0"
+  area: security
 ---
 
 # eng-threat-model
