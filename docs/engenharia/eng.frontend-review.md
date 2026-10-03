@@ -1,10 +1,10 @@
 # `/eng.frontend-review` — revisar um PR de frontend
 
-Workflow: `workflows/engineering/frontend/eng.frontend-review.md` · Skills: `eng-frontend`, `eng-design-system`, `eng-microfrontend`
+Workflow: `workflows/engineering/frontend/eng.frontend-review.md` · Skill base: `eng-frontend` (mais as especializações registradas em `FRONTEND_SPECIALIZATIONS`)
 
 ## Em uma frase
 
-Revisa um PR de frontend com um checklist aprofundado: TypeScript, componentes, tokens, acessibilidade, performance, micro frontend e testes.
+Revisa um PR de frontend, de qualquer stack, com um checklist aprofundado: tipagem, componentes, tokens, acessibilidade, performance, itens da stack e testes.
 
 ## O que é
 
@@ -12,7 +12,7 @@ Complementa o [`eng.review`](./eng.review.md) genérico com os pontos específic
 
 ## Quando usar
 
-- Revisar PR com componentes React, design system, micro frontend ou qualquer código de interface
+- Revisar PR com componentes, estilos, estado ou qualquer código de interface
 - Antes de aprovar uma mudança de UI
 
 ## Quando **não** usar
@@ -23,14 +23,14 @@ Complementa o [`eng.review`](./eng.review.md) genérico com os pontos específic
 
 ## Como funciona
 
-Lê os arquivos alterados do PR (`.tsx`, `.ts`, `.css`, `.scss`) e percorre 8 grupos de checklist:
+Lê os arquivos de interface alterados do PR e percorre 8 grupos de checklist:
 
-1. TypeScript
+1. Tipagem e contratos
 2. Componentes
-3. Tokens e design system
+3. Tokens de design
 4. Acessibilidade
 5. Performance
-6. Micro frontend (se aplicável)
+6. Itens específicos da stack (o checklist de cada especialização registrada, se houver)
 7. Testes
 8. Código geral
 

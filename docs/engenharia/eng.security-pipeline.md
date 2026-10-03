@@ -40,7 +40,7 @@ Um orquestrador. Ele detecta o que já foi feito, mostra um menu e executa os es
 
 | Estágio | O que faz | Saída |
 |---|---|---|
-| 1. Threat model (`eng-threat-model`) | Modelo de ameaças. Modos: derivar do código, entrevista com você, ou os dois em sequência | `THREAT_MODEL.md` |
+| 1. Threat model (`eng-security-threat-model`) | Modelo de ameaças. Modos: derivar do código, entrevista com você, ou os dois em sequência | `THREAT_MODEL.md` |
 | 2. Audit ([`eng.security-audit`](./eng.security-audit.md)) | Auditoria guiada pelo threat model, com o escopo que você escolher | `security-findings.json` e relatório |
 | 3. Triage (`eng-security-triage`) | Remove duplicados, verifica cada achado com votos independentes e reordena por explorabilidade | `triage.json` |
 | 4. Patch (`eng-security-patch`) | Gera diffs candidatos para os achados confirmados (todos, os N principais ou um específico) | `PATCHES/bug_NN/patch.diff` e `PATCHES.md` |

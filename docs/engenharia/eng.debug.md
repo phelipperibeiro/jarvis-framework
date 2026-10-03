@@ -19,7 +19,7 @@ O comando assume a postura investigativa do agente `eng.bug-hunter`. Ele não sa
 ## Quando **não** usar
 
 - Você já sabe a mudança e quer implementar → [`eng.work`](./eng.work.md)
-- O bug atravessa vários serviços e você quer só rastreá-lo → o skill `eng-ms-trace` (o `eng.debug` o aciona sozinho quando suspeita disso)
+- O bug atravessa vários serviços e você quer só rastreá-lo → o skill `eng-backend-microservices-trace` (o `eng.debug` o aciona sozinho quando suspeita disso, **se a especialização estiver registrada** em `BACKEND_SPECIALIZATIONS`)
 - Auditoria geral de bugs e lacunas de qualidade → [`eng.bug-audit`](./eng.bug-audit.md)
 
 ## Como funciona

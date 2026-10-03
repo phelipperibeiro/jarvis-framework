@@ -11,9 +11,9 @@ Sua missão é garantir que a documentação reflita com precisão o **estado at
 
 ## Skill de referência
 
-Use o skill `eng-docs-write` como fonte de verdade do processo e formato de entrega:
+Use o skill `eng-global-docs-write` como fonte de verdade do processo e formato de entrega:
 
-- Arquivo: `$IDE/skills/eng-docs-write/SKILL.md`
+- Arquivo: `$IDE/skills/eng-global-docs-write/SKILL.md`
 
 ---
 

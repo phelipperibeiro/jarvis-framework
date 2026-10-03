@@ -32,7 +32,7 @@ Guiar o Bug Hunter (ENG) na análise sistemática de projetos existentes para id
 ```bash
 # Verificar existência e completude
 if [ ! -f "$IDE/ENV.md" ]; then
-  echo "⚠️ ENV.md não encontrado. Execute /init-jarvis primeiro."
+  echo "⚠️ ENV.md não encontrado. Execute /jarvis-init primeiro."
   exit 1
 fi
 
@@ -61,7 +61,7 @@ Onde [escopo] pode ser:
 
 ## Fase 0 – Análise de Contexto (CDD)
 
-> 📚 **Skill**: Use `/context-detect` se existir uma sessão ativa
+> 📚 **Skill**: Use `/jarvis-context-detect` se existir uma sessão ativa
 > ⚙️ **Configurável**: Controlada pela variável `ENABLE_CDD` no ENV.md
 
 ### Verificação de Ativação

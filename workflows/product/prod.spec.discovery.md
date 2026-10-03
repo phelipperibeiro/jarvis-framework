@@ -60,9 +60,9 @@ Antes de perguntar, consulte o que já existe:
 
 - Documentos em `$PROD_DOCS` (PRDs, FRDs e discoveries), para não duplicar o que já está especificado
 - O código e os últimos commits, quando ajudarem a embasar a viabilidade
-- `docs-central`, se `CENTRAL_DOCS_REPO` estiver configurado
-- `context-detect`, para calibrar a profundidade da entrevista
-- `eng-arch-c4` e `eng-cybersecurity` são skills de engenharia: só consulte **com a confirmação do usuário**, e trate o retorno como **suposição a validar**, não como fato
+- `jarvis-docs-central`, se `CENTRAL_DOCS_REPO` estiver configurado
+- `jarvis-context-detect`, para calibrar a profundidade da entrevista
+- `eng-backend-arch-c4` e `eng-security-cybersecurity` são skills de engenharia: só consulte **com a confirmação do usuário**, e trate o retorno como **suposição a validar**, não como fato
 
 ## Passo 3 — Criar o arquivo
 

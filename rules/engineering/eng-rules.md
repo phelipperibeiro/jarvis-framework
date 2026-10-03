@@ -7,7 +7,7 @@ env_file: "@/ENV.md"
 
 - **🚨 PRÉ-REQUISITO: VALIDAÇÃO DO ENV.md**
   - **ANTES de executar qualquer comando ou workflow**, o agente **DEVE verificar** se o arquivo `$IDE/ENV.md` existe e está preenchido corretamente.
-  - **Exceção**: O comando `/init-jarvis` é o único que pode ser executado sem o `ENV.md`, pois é ele que cria o arquivo.
+  - **Exceção**: O comando `/jarvis-init` é o único que pode ser executado sem o `ENV.md`, pois é ele que cria o arquivo.
   - **Validação obrigatória**: O arquivo deve conter as seguintes variáveis preenchidas (não vazias):
     - `WORKSPACE` (se vazio: nome da pasta que contém `$IDE/`)
     - `IDE`
@@ -20,14 +20,15 @@ env_file: "@/ENV.md"
   - **Se o ENV.md não existir ou estiver incompleto**, o agente deve:
     1. Interromper a execução do comando solicitado
     2. Informar ao usuário que o framework não foi inicializado
-    3. Orientar o usuário a executar `/init-jarvis` primeiro
+    3. Orientar o usuário a executar `/jarvis-init` primeiro
     ```
     ⚠️ O framework não foi inicializado.
     
     O arquivo ENV.md não existe ou está incompleto.
-    Por favor, execute `/init-jarvis` para configurar o ambiente antes de continuar.
+    Por favor, execute `/jarvis-init` para configurar o ambiente antes de continuar.
     ```
-  - **Listas de especializações (presentes, podem estar vazias)**: `BACKEND_SPECIALIZATIONS` e `FRONTEND_SPECIALIZATIONS` devem **existir** no `ENV.md`. Lista **vazia** é válida (só o skill base). Variável **ausente** interrompe o comando de backend ou de frontend e orienta o Upgrade do `/init-jarvis`. Detalhes e mensagens em `eng.specializations-rules.md`.
+  - **Listas de especializações (presentes, podem estar vazias)**: `BACKEND_SPECIALIZATIONS` e `FRONTEND_SPECIALIZATIONS` devem **existir** no `ENV.md`. Lista **vazia** é válida (só o skill base). Variável **ausente** interrompe o comando de backend ou de frontend e orienta o Upgrade do `/jarvis-init`. Detalhes e mensagens em `eng.specializations-rules.md`.
+  - **Skills sem área**: skill instalado sem `metadata.area` reconhecida bloqueia o comando, e skill pedido que não existe gera aviso. Detalhes e mensagens em `eng.skills-rules.md`.
 
 - **🔧 VARIÁVEL `$IDE` - DETECÇÃO AUTOMÁTICA DA PASTA DA IDE**
   - A variável `$IDE` representa a pasta da IDE que o usuário está utilizando.

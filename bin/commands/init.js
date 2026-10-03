@@ -186,18 +186,18 @@ export async function init(flags) {
   if (ide === "codex") {
     logger.info(`  No ${GREEN}Codex${NC}, skills não usam slash commands.`);
     logger.info(`  Para invocar um skill, use linguagem natural:`);
-    logger.info(`  ${DIM}  "use o skill init-jarvis para configurar o projeto"${NC}`);
+    logger.info(`  ${DIM}  "use o skill jarvis-init para configurar o projeto"${NC}`);
     logger.info(`  ${DIM}  "execute o warm-up do Jarvis"${NC}`);
     logger.info("");
     logger.info(`  Skills disponíveis em ${YELLOW}.codex/skills/${NC}`);
     logger.info(`  Cada pasta é um skill — veja o SKILL.md para a descrição.`);
     logger.info("");
     logger.info(`  Para configurar as variáveis do projeto, peça ao Codex:`);
-    logger.info(`  ${GREEN}"execute o skill init-jarvis"${NC}`);
+    logger.info(`  ${GREEN}"execute o skill jarvis-init"${NC}`);
   } else if (ide === "kiro") {
     logger.info(`  No ${GREEN}Kiro${NC}, skills e workflows são steering files.`);
     logger.info(`  Para invocar um skill, use ${GREEN}#skill-{nome}${NC} no chat:`);
-    logger.info(`  ${DIM}  #skill-init-jarvis${NC}`);
+    logger.info(`  ${DIM}  #skill-jarvis-init${NC}`);
     logger.info(`  ${DIM}  #skill-eng-backend${NC}`);
     logger.info("");
     logger.info(`  Steering files gerados em ${YELLOW}.kiro/steering/${NC}`);
@@ -206,9 +206,9 @@ export async function init(flags) {
     logger.info(`  • ${DIM}steering/skills/*.md${NC} — skills (inclusion: manual)`);
     logger.info("");
     logger.info(`  Para configurar as variáveis do projeto, ative:`);
-    logger.info(`  ${GREEN}#skill-init-jarvis${NC} no chat do Kiro`);
+    logger.info(`  ${GREEN}#skill-jarvis-init${NC} no chat do Kiro`);
   } else {
-    logger.info(`  Execute o comando ${GREEN}/init-jarvis${NC} na sua IDE para`);
+    logger.info(`  Execute o comando ${GREEN}/jarvis-init${NC} na sua IDE para`);
     logger.info(`  configurar as variáveis de ambiente do projeto.`);
   }
 

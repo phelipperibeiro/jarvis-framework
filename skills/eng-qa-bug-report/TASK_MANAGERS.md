@@ -134,5 +134,5 @@ O skill normaliza para minúsculas. Se vazio ou placeholder `[jira, linear, gith
 ## Ver também
 
 - `templates/ENV-template.md` — fonte de verdade das chaves
-- `skills/eng-task-comment/SKILL.md` — comentar no card
+- `skills/eng-global-task-comment/SKILL.md` — comentar no card
 - `bin/lib/tasks/comment.js` — adapter CLI

@@ -8,7 +8,7 @@ env_file: "@/ENV.md"
 # Regras de Seguranca para Engenharia
 
 Regras de seguranca aplicaveis a todo o fluxo de engenharia — do planejamento ao merge.
-Toda implementacao deve seguir estas regras por padrao, sem necessidade de invocar o skill `eng-cybersecurity` explicitamente.
+Toda implementacao deve seguir estas regras por padrao, sem necessidade de invocar o skill `eng-security-cybersecurity` explicitamente.
 
 ---
 
@@ -118,7 +118,7 @@ Se o PR toca em areas sensiveis (auth, sessions, RBAC, CORS, CSP, permissoes), o
 
 ## Fronteira Read-Only (Analise de Seguranca)
 
-Os skills de seguranca (`eng-threat-model`, `eng.security-audit`, `eng-security-triage`) operam em **modo estatico apenas**:
+Os skills de seguranca (`eng-security-threat-model`, `eng.security-audit`, `eng-security-triage`) operam em **modo estatico apenas**:
 
 - Leem codigo-fonte, historico git e relatorios fornecidos pelo usuario
 - **Nunca** executam, buildam, fuzzam ou modificam o codigo-alvo
@@ -129,7 +129,7 @@ Os skills de seguranca (`eng-threat-model`, `eng.security-audit`, `eng-security-
 
 ## Calibracao CDD por Risco
 
-Usar `context-detect` para calibrar a profundidade da analise de seguranca:
+Usar `jarvis-context-detect` para calibrar a profundidade da analise de seguranca:
 
 | Nivel de risco | Criterio | Estrategia | Tokens (estimado) |
 |---|---|---|---|
@@ -165,7 +165,7 @@ O agente de engenharia (ATHENA) deve recomendar o uso do agente SENTINEL (`eng.c
 - Feature envolve fluxo financeiro, PII ou auth complexa (OAuth, MFA)
 - Duvida sobre impacto de seguranca que excede o escopo das regras acima
 
-> O skill `/eng-cybersecurity` pode ser invocado diretamente para consulta rapida sem ativar o agente completo.
+> O skill `/eng-security-cybersecurity` pode ser invocado diretamente para consulta rapida sem ativar o agente completo.
 
 ---
 

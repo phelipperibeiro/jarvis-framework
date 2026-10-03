@@ -13,7 +13,7 @@ Como o Jarvis está **montado** no disco: o que cada peça é, o que entra no pa
 │            │  jarvis init --ide cursor                     │
 │            ▼                                                │
 │  workspace-squad/.cursor/{agents,skills,workflows,...}      │
-│  workspace-squad/.cursor/ENV.md   ← /init-jarvis           │
+│  workspace-squad/.cursor/ENV.md   ← /jarvis-init           │
 │  workspace-squad/.jarvis/sessions/{eng,prod,qa}/           │
 └─────────────────────────────────────────────────────────────┘
 ```
@@ -21,7 +21,7 @@ Como o Jarvis está **montado** no disco: o que cada peça é, o que entra no pa
 1. Você desenvolve/versiona o **framework** neste repo.
 2. `npm install -g` / `npm link` registra o CLI `jarvis` (lê assets de `bin/` + pastas do pacote).
 3. No **workspace** do projeto, `jarvis init` **copia** agents, skills, workflows, rules, templates (+ taxonomy, AGENTS, members) para `.$IDE/`.
-4. No chat, `/init-jarvis` cria o `ENV.md` e filtra rules pelo perfil.
+4. No chat, `/jarvis-init` cria o `ENV.md` e filtra rules pelo perfil.
 
 O que o npm publica (campo `files` do `package.json`): `bin/`, `agents/`, `skills/`, `workflows/`, `templates/`, `rules/`, `taxonomy.md`, `members.md`, `AGENTS.md`, `README.md`.  
 **Não** entra no pacote: `docs/`, `issues/`, `node_modules/`, `.git/`, etc. (docs ficam no GitHub para leitura humana).

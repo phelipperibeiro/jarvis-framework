@@ -1,10 +1,10 @@
 # `/eng.frontend-perf-audit` — auditoria de performance frontend
 
-Workflow: `workflows/engineering/frontend/eng.frontend-perf-audit.md` · Skill: `eng-frontend`
+Workflow: `workflows/engineering/frontend/eng.frontend-perf-audit.md` · Skill base: `eng-frontend` (mais as especializações registradas em `FRONTEND_SPECIALIZATIONS`)
 
 ## Em uma frase
 
-Mede, diagnostica e prioriza a performance de uma aplicação React ou micro frontend, com base nos Core Web Vitals, no bundle e nos re-renders.
+Mede, diagnostica e prioriza a performance de uma aplicação frontend, de qualquer stack, com base nos Core Web Vitals, no pacote entregue e nas renderizações desnecessárias.
 
 ## O que é
 
@@ -14,7 +14,7 @@ O princípio do comando é **nunca otimizar sem medir antes**. Ele começa colet
 
 - Investigar uma página ou interface lenta
 - Auditar uma feature antes do deploy
-- Planejar otimizações em uma aplicação React ou micro frontend
+- Planejar otimizações em uma aplicação frontend
 
 ## Quando **não** usar
 
@@ -25,10 +25,10 @@ O princípio do comando é **nunca otimizar sem medir antes**. Ele começa colet
 
 | Fase | O que acontece |
 |---|---|
-| 1. Coleta de dados | Mede Core Web Vitals em produção ou staging (Lighthouse), analisa o bundle e identifica re-renders desnecessários (React DevTools) |
-| 2. Diagnóstico por área | LCP alto (carrega devagar), CLS alto (layout se move), INP alto (interface trava) e bundle grande |
-| 3. Otimizações | Por categoria: imagens, code splitting, renderização (Server vs Client), memoização (só quando justificada), listas longas (virtualização) e debounce em inputs |
-| 4. Micro frontend | Dependências compartilhadas duplicadas e carregamento dos remotes |
+| 1. Coleta de dados | Mede Core Web Vitals em produção ou staging (Lighthouse), analisa o pacote entregue e identifica renderizações desnecessárias (com a ferramenta de profiling da stack do projeto) |
+| 2. Diagnóstico por área | LCP alto (carrega devagar), CLS alto (layout se move), INP alto (interface trava) e pacote grande |
+| 3. Otimizações | Por categoria, com a técnica que a stack do projeto oferece: imagens, carregamento tardio do código, onde renderizar, memoização (só quando justificada), listas longas (virtualização) e debounce em campos de busca |
+| 4. Arquiteturas distribuídas | Só se o projeto divide o frontend em partes carregadas separadamente: dependências duplicadas e carregamento dos módulos |
 | 5. Relatório | Core Web Vitals antes e esperados depois, problemas com impacto, esforço e prioridade, ações ordenadas e próximos passos com responsável |
 
 ### Metas dos Core Web Vitals

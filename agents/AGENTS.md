@@ -130,7 +130,7 @@ Os agentes do framework sao **conscientes de contexto** quando o CDD esta habili
 
 ### Como CDD Afeta os Agentes
 
-Quando habilitado, agentes leem o `CONTEXT_PROFILE` gerado pelo skill `/context-detect`:
+Quando habilitado, agentes leem o `CONTEXT_PROFILE` gerado pelo skill `/jarvis-context-detect`:
 
 ```yaml
 CONTEXT_PROFILE:
@@ -166,7 +166,7 @@ Se `ENABLE_CDD=false` (padrao), agentes operam sem calibracao contextual:
 ENABLE_CDD=true
 ```
 
-> 📚 **Skill relacionado**: `.windsurf/skills/context-detect/SKILL.md`
+> 📚 **Skill relacionado**: `.windsurf/skills/jarvis-context-detect/SKILL.md`
 
 ---
 

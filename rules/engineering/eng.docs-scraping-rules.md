@@ -50,7 +50,7 @@ Todo arquivo `{robot-tag}-robot.md` deve conter:
 
 ### Recomendado
 
-- Chamar `/docs-index` após criar ou atualizar qualquer `{robot-tag}-robot.md` para manter o índice atualizado
+- Chamar `/jarvis-docs-index` após criar ou atualizar qualquer `{robot-tag}-robot.md` para manter o índice atualizado
 - Incluir o índice de colunas da tabela HTML (com numeração `[0]`, `[1]`, etc.) sempre que for inspecionado via log
 
 ---

@@ -25,7 +25,7 @@ Vale para qualquer comando `eng.*` e seus agentes, **ao iniciar um trabalho de b
 
 1. **Leia a variável** da área no `$IDE/ENV.md`.
 2. **Variável ausente** (a chave não existe, diferente de vazia): **interrompa o comando** e exiba:
-   `⚠️ A variável {VAR} não existe no ENV.md. Execute /init-jarvis e escolha Upgrade (C) para acrescentá-la. O comando foi interrompido.`
+   `⚠️ A variável {VAR} não existe no ENV.md. Execute /jarvis-init e escolha Upgrade (C) para acrescentá-la. O comando foi interrompido.`
 3. **Lista vazia:** siga só com o skill base e exiba:
    `ℹ️ Sem especialização registrada para {área}. Usando só a skill base ({base}).`
 4. **Lista com itens:** carregue o skill base e, para **cada item**:
@@ -63,5 +63,6 @@ Vale para qualquer comando `eng.*` e seus agentes, **ao iniciar um trabalho de b
 ## Referências
 
 - `eng-rules.md`: validação do `ENV.md` (lista presente, mesmo vazia).
+- `eng.skills-rules.md`: área obrigatória nos skills e aviso de skill inexistente (o nome citado em uma lista que não existe também segue o aviso de lá).
 - `skills/jarvis-list-specializations/SKILL.md`: consulta das especializações instaladas e registradas.
 - `templates/ENV-template.md`: seção "Especializações de stack".

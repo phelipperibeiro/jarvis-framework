@@ -133,11 +133,11 @@ Ativado para revisao de seguranca de PRs/MRs com impacto em areas sensiveis.
 ## Calibracao Contextual (CDD)
 
 > **Principio**: O agente deve adaptar rigor e urgencia ao contexto da ameaca.
-> Skill: Use `/context-detect` para deteccao automatizada do contexto
+> Skill: Use `/jarvis-context-detect` para deteccao automatizada do contexto
 
 ### Herdar Contexto da Sessao
 
-Se existir arquivo `context.md` na sessao (gerado por `/context-detect`), use-o:
+Se existir arquivo `context.md` na sessao (gerado por `/jarvis-context-detect`), use-o:
 
 ```bash
 # Localizacao: $SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/context.md
@@ -157,7 +157,7 @@ CONTEXT_PROFILE:
     linter: [configurado|ausente]
 ```
 
-> Se `context.md` nao existir e for necessario, execute `/context-detect {TASK_MANAGER_KEY}` ou faca deteccao manual.
+> Se `context.md` nao existir e for necessario, execute `/jarvis-context-detect {TASK_MANAGER_KEY}` ou faca deteccao manual.
 
 ### Deteccao de Urgencia
 
@@ -222,48 +222,33 @@ CONTEXT_PROFILE:
     - `$IDE/workflows/engineering/eng.security-audit.md` (Audit Mode)
     - `$IDE/workflows/engineering/eng.security-incident.md` (Incident Response Mode)
     - `$IDE/workflows/engineering/eng.security-review.md` (Review Mode)
-    - `$IDE/skills/eng-cybersecurity/SKILL.md` (playbook operacional)
+    - `$IDE/skills/eng-security-cybersecurity/SKILL.md` (playbook operacional)
   - Nao acione workflows de outros dominios sem autorizacao explicita do usuario
 
 ---
 
 ## Skills
 
-### eng-cybersecurity
+### eng-security-cybersecurity
 Playbook operacional de seguranca — fonte de verdade para padroes, checklists e exemplos:
-- Arquivo: `$IDE/skills/eng-cybersecurity/SKILL.md`
-- Uso: `/eng-cybersecurity [audit|incident|review|hardening|secrets|owasp] [contexto]`
+- Arquivo: `$IDE/skills/eng-security-cybersecurity/SKILL.md`
+- Uso: `/eng-security-cybersecurity [audit|incident|review|hardening|secrets|owasp] [contexto]`
 - Cobre: OWASP Top 10, secrets, sanitizacao, headers, supply chain, compliance
 
-### context-detect (CDD)
+### jarvis-context-detect (CDD)
 Para deteccao automatica de contexto:
-- Arquivo: `$IDE/skills/context-detect/SKILL.md`
-- Uso: `/context-detect [jira-key]`
+- Arquivo: `$IDE/skills/jarvis-context-detect/SKILL.md`
+- Uso: `/jarvis-context-detect [jira-key]`
 
-### eng-backend
-Para revisao de auth, JWT, RBAC, sessions, workers:
-- Arquivo: `$IDE/skills/eng-backend/SKILL.md`
-- Trigger: fluxos de autenticacao e autorizacao
+### Backend e frontend (skill base + especializações)
+Para revisão de segurança em código de backend (auth, JWT, RBAC, sessions, workers, middleware, guards) ou de frontend (CSP, XSS, sanitização no client), aplique a regra `$IDE/rules/engineering/eng.specializations-rules.md` para a área envolvida: ela carrega o skill base (`eng-backend` ou `eng-frontend`) e as especializações registradas no `ENV.md`.
+- Trigger: fluxos de autenticação e autorização, segurança de renderização e do framework usado no projeto
+- Vulnerabilidade que atravessa múltiplos serviços: use a especialização de rastreamento entre serviços, se registrada em `BACKEND_SPECIALIZATIONS`
 
-### eng-nestjs
-Para guards, pipes, interceptors, middleware de seguranca:
-- Arquivo: `$IDE/skills/eng-nestjs/SKILL.md`
-- Trigger: seguranca especifica do framework NestJS
-
-### eng-frontend
-Para CSP, XSS prevention, sanitizacao no client:
-- Arquivo: `$IDE/skills/eng-frontend/SKILL.md`
-- Trigger: seguranca de frontend e renderizacao
-
-### eng-ms-trace
-Para rastreamento de vulnerabilidades cross-service:
-- Arquivo: `$IDE/skills/eng-ms-trace/SKILL.md`
-- Trigger: vulnerabilidade que atravessa multiplos servicos
-
-### eng-threat-model
+### eng-security-threat-model
 Para producao de threat model estruturado antes de audit ou review:
-- Arquivo: `$IDE/skills/eng-threat-model/SKILL.md`
-- Uso: `/eng-threat-model [bootstrap|interview|bootstrap-then-interview] [--fresh]`
+- Arquivo: `$IDE/skills/eng-security-threat-model/SKILL.md`
+- Uso: `/eng-security-threat-model [bootstrap|interview|bootstrap-then-interview] [--fresh]`
 - Trigger: auditoria de seguranca, onboarding em novo projeto, feature com superficie de ataque significativa
 - Output: `THREAT_MODEL.md` (schema em `docs/SECURITY-ARTIFACTS-SCHEMA.md`)
 
@@ -336,7 +321,7 @@ Para gerar diffs candidatos por achado confirmado — fechar o loop técnico do 
 **Workflow**: `$IDE/workflows/engineering/eng.security-pipeline.md`
 
 **4 Estágios encadeados**:
-1. Threat Model — mapear ameaças STRIDE (`/eng-threat-model`)
+1. Threat Model — mapear ameaças STRIDE (`/eng-security-threat-model`)
 2. Audit — varredura OWASP guiada pelo threat model (`/eng.security-audit`)
 3. Triage — dedup + multi-voto + rank por exploitabilidade (`/eng-security-triage`)
 4. Patch — diffs candidatos por achado confirmado (`/eng-security-patch`)

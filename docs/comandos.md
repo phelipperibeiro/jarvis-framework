@@ -53,8 +53,8 @@ Fonte: `workflows/engineering/`. Guias didáticos: [engenharia/README.md](./enge
 
 | Comando                    | O que faz                                                                        | Workflow |
 | -------------------------- | -------------------------------------------------------------------------------- | --- |
-| [`/eng.frontend-component`](./engenharia/eng.frontend-component.md) | Cria ou refatora um componente frontend (design system, acessibilidade e testes) | [workflow](../workflows/engineering/frontend/eng.frontend-component.md) |
-| [`/eng.frontend-review`](./engenharia/eng.frontend-review.md) | Revisão de PR frontend (TypeScript, a11y, tokens, micro frontend) | [workflow](../workflows/engineering/frontend/eng.frontend-review.md) |
+| [`/eng.frontend-component`](./engenharia/eng.frontend-component.md) | Cria ou refatora um componente frontend (neutro de stack: acessibilidade, tokens e testes) | [workflow](../workflows/engineering/frontend/eng.frontend-component.md) |
+| [`/eng.frontend-review`](./engenharia/eng.frontend-review.md) | Revisão de PR frontend (tipagem, a11y, tokens, itens da stack) | [workflow](../workflows/engineering/frontend/eng.frontend-review.md) |
 | [`/eng.frontend-perf-audit`](./engenharia/eng.frontend-perf-audit.md) | Auditoria de performance frontend (Core Web Vitals, bundle) | [workflow](../workflows/engineering/frontend/eng.frontend-perf-audit.md) |
 
 ### QA
@@ -87,4 +87,4 @@ Fonte: `workflows/engineering/`. Guias didáticos: [engenharia/README.md](./enge
 
 ## Outros comandos
 
-Os comandos de dados (`/data.new-pipeline`, `/data.contract`), `/init-jarvis`, `/warm-up` e `/taxonomy` não estão nesta lista. Para o quadro completo do que o CLI instala, rode `jarvis list`.
+Os comandos de dados (`/data.new-pipeline`, `/data.contract`), `/jarvis-init`, `/warm-up` e `/taxonomy` não estão nesta lista. Para o quadro completo do que o CLI instala, rode `jarvis list`.

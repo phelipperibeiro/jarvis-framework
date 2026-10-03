@@ -17,7 +17,7 @@ agents/
 │   ├── eng.dev-code-reviewer.md  # Code reviewer
 │   ├── eng.docs-writer.md        # Escritor de documentação
 │   ├── eng.rpa.agent.md          # Automação RPA (ARACHNE)
-│   ├── eng.frontend.agent.md     # Especialista frontend: React, MFE, design system, a11y
+│   ├── eng.frontend.agent.md     # Especialista frontend (neutro de stack): UI, estado, a11y
 │   ├── eng.ux-designer.agent.md  # Especialista UX/UI: heurísticas, jornada, microcopy
 │   ├── data/                     # Data Engineering (1 agent)
 │   │   └── eng.data-engineer.agent.md
@@ -50,7 +50,7 @@ Agentes específicos para fluxos e regras do domínio de Engenharia.
 - `eng.dev-code-reviewer.md` - `@eng.dev-code-reviewer` - Code review
 - `eng.docs-writer.md` - `@eng.docs-writer` - Documentação técnica
 - `eng.rpa.agent.md` - `@eng.rpa` - Automação e scraping RPA (ARACHNE)
-- `eng.frontend.agent.md` - `@eng.frontend` - Especialista frontend: React, micro frontend, design system, a11y
+- `eng.frontend.agent.md` - `@eng.frontend` - Especialista frontend (neutro de stack): UI, estado, performance, a11y
 - `eng.ux-designer.agent.md` - `@eng.ux-designer` - Especialista UX/UI: heurísticas Nielsen, jornada, microcopy
 - `eng.cybersecurity.agent.md` - `@eng.cybersecurity` - Especialista em cybersecurity e AppSec (SENTINEL): OWASP Top 10, secrets, supply chain, incident response
 
@@ -148,17 +148,16 @@ Quando um agente estiver atuando em um tema que possui skill correspondente, ele
 
 ### Mapeamento recomendado (Workflows/Comandos → Skills)
 
-- **eng.docs** → `eng-docs-write` (principal) e `docs-index` (quando houver índice).
-- **eng.pre-pr** → `eng-qa-test-plan` (cobertura) e `eng-docs-write` (docs).
-- **eng.pr** → `eng-pr`.
+- **eng.docs** → `eng-global-docs-write` (principal) e `jarvis-docs-index` (quando houver índice).
+- **eng.pre-pr** → `eng-qa-test-plan` (cobertura) e `eng-global-docs-write` (docs).
+- **eng.pr** → `eng-global-pr`.
 - **qa-quality-gate-validation** → `eng-qa-gate`.
 - **Sessão de teste exploratório (charter, risco, achados, bug cards)** → `eng-qa-exploratory`.
 - **Gerar specs Cypress + TypeScript (Page Objects, data-testid, intercept)** → `eng-qa-cypress-e2e`.
 - **Orientar dev sobre cobertura Cypress sem escrever o teste** → `eng-qa-dev-guide`.
 - **Consolidar sessões, bugs e quality gates e gerar relatório de qualidade por período** → `eng-qa-quality-report`.
-- **APIs, auth, workers, RabbitMQ, caching** → `eng-backend`.
-- **Componentes, UI, estado, SSR/SSG, performance, acessibilidade** → `eng-frontend`.
-- **Módulos NestJS, DI, guards, interceptors, Passport/JWT** → `eng-nestjs`.
+- **APIs, auth, workers, filas, caching, banco de dados** → regra `eng.specializations-rules.md` (área backend: `eng-backend` + `BACKEND_SPECIALIZATIONS`).
+- **Componentes, UI, estado, estilos, performance, acessibilidade** → regra `eng.specializations-rules.md` (área frontend: `eng-frontend` + `FRONTEND_SPECIALIZATIONS`).
 - **Web scraping, Puppeteer, extração de dados, ETL** → `eng-scraper`.
 - **Converter fluxo manual (produto/dev) em robô Playwright via Stagehand** → `eng-scraper-robot-builder`.
 - **Criar ou manter robô RPA** → `eng.rpa.robot new|update {card}` (workflow).

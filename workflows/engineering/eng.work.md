@@ -80,10 +80,10 @@ cat $SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/context.md 2>/dev/null
 ```
 
 - Se **existir** → ler o `CONTEXT_PROFILE` e continuar para 0.2
-- Se **não existir** → **invocar o skill `/context-detect {TASK_MANAGER_KEY}` agora** (não continuar sem ele)
+- Se **não existir** → **invocar o skill `/jarvis-context-detect {TASK_MANAGER_KEY}` agora** (não continuar sem ele)
 
 ```
-/context-detect {TASK_MANAGER_KEY}
+/jarvis-context-detect {TASK_MANAGER_KEY}
 ```
 
 > ⚠️ Não avance para a Fase 1 sem `context.md` gerado.
@@ -143,10 +143,10 @@ Pular se `TASK_MANAGER` estiver vazio (freelance).
 Antes de iniciar a implementação, registrar início:
 
 ```
-/eng-task-comment {TASK_MANAGER_KEY} ⚙️ [Jarvis] Iniciando implementação - Fase {N} do plano
+/eng-global-task-comment {TASK_MANAGER_KEY} ⚙️ [Jarvis] Iniciando implementação - Fase {N} do plano
 ```
 
-> Usa o skill `/eng-task-comment`. Não bloquear se falhar.
+> Usa o skill `/eng-global-task-comment`. Não bloquear se falhar.
 
 ---
 
@@ -156,7 +156,7 @@ Antes de iniciar a implementação, registrar início:
 
 Leia os arquivos da sessão em `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/`:
 
-1. **`context.md`** - CONTEXT_PROFILE com calibrações (gerado por `/context-detect`)
+1. **`context.md`** - CONTEXT_PROFILE com calibrações (gerado por `/jarvis-context-detect`)
 2. **`architecture.md`** - Entender decisões arquiteturais
 3. **`plan.md`** - Identificar fase atual e tarefas
 
@@ -214,11 +214,8 @@ Se o usuário tiver sugestões, ajuste o plano.
 
 | Domínio | Indicadores | Skill |
 |---------|-------------|-------|
-| NestJS (framework) | módulos, DI, guards, interceptors, pipes, Passport/JWT | [eng-nestjs]($IDE/skills/eng-nestjs/SKILL.md) |
-| Frontend | componentes, UI, estado, SSR/SSG, bundle, a11y | [eng-frontend]($IDE/skills/eng-frontend/SKILL.md) |
-| Design System | novo componente DS, tokens, CVA, Storybook, breaking change | [eng-design-system]($IDE/skills/eng-design-system/SKILL.md) |
-| Micro Frontend | novo remote, shell, Module Federation, contratos de interface | [eng-microfrontend]($IDE/skills/eng-microfrontend/SKILL.md) |
-| Backend | endpoints, auth, workers, RabbitMQ, caching, integrações | [eng-backend]($IDE/skills/eng-backend/SKILL.md) |
+| Frontend | componentes, UI, estado, estilos, bundle, a11y | regra [eng.specializations-rules.md]($IDE/rules/engineering/eng.specializations-rules.md) (área frontend: `eng-frontend` + `FRONTEND_SPECIALIZATIONS`) |
+| Backend | endpoints, auth, workers, filas, cache, banco, integrações | regra [eng.specializations-rules.md]($IDE/rules/engineering/eng.specializations-rules.md) (área backend: `eng-backend` + `BACKEND_SPECIALIZATIONS`) |
 | Scraping | web scraping, Puppeteer, extração de dados, ETL, parsing | [eng-scraper]($IDE/skills/eng-scraper/SKILL.md) |
 | Robô / automação | converter fluxo manual em Playwright via Stagehand, sem seletores conhecidos | [eng-scraper-robot-builder]($IDE/skills/eng-scraper-robot-builder/SKILL.md) |
 
@@ -492,7 +489,7 @@ Refs: TASK-123"
 **Comentário no card — Conclusão** (pular se freelance):
 
 ```
-/eng-task-comment {TASK_MANAGER_KEY} ✅ [Jarvis] Implementação concluída - todas as {N} fases completadas. Commits realizados por fase.
+/eng-global-task-comment {TASK_MANAGER_KEY} ✅ [Jarvis] Implementação concluída - todas as {N} fases completadas. Commits realizados por fase.
 ```
 
 ```

@@ -15,6 +15,10 @@ allowed-tools:
   - Task
   - Bash(git log:*)
   - Bash(find:*)
+metadata:
+  author: jarvis-team
+  version: "1.0"
+  area: security
 ---
 
 # eng-security-triage

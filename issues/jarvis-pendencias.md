@@ -83,7 +83,7 @@ workspace-squad/        # Jarvis deveria ficar aqui (nível workspace)
   - Adicionar variável `WORKSPACE_REPOS=repo1,repo2,repo3` (lista de repos disponíveis)
   - **Otimização de tokens**: Não escanear todos automaticamente — perguntar ao usuário
 
-- [ ] **Atualizar `/init-jarvis`**
+- [ ] **Atualizar `/jarvis-init`**
   - Perguntar diretamente: "Este é um workspace single-repo ou multi-repo?" 
     - Opções: `single` (padrão) | `multi`
     - Default: `single` (apenas apertar Enter)
@@ -660,7 +660,7 @@ Squads que **precisam** de multi-repo:
 | Componente | Impacto | Esforço |
 |------------|---------|---------|
 | `/warm-up` | Alto | Médio |
-| `/init-jarvis` | Alto | Baixo |
+| `/jarvis-init` | Alto | Baixo |
 | Workflows de engenharia | Médio | Médio |
 | CLI (checkin/checkout) | Alto | Alto |
 | Runtime (eventos) | Baixo | Baixo |
@@ -674,7 +674,7 @@ Squads que **precisam** de multi-repo:
 
 ### Sprint 1: Fundação
 - Detecção de workspace
-- Atualização do `/init-jarvis`
+- Atualização do `/jarvis-init`
 - Atualização do `ENV-template.md`
 
 ### Sprint 2: Warm-up

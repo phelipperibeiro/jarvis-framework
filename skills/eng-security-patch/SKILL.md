@@ -10,11 +10,15 @@ allowed-tools:
   - Task
   - AskUserQuestion
   - Bash(git log:*)
+metadata:
+  author: jarvis-team
+  version: "1.0"
+  area: security
 ---
 
 # eng-security-patch
 
-Terceira peça do pipeline estático (`/eng-threat-model` → `/eng.security-audit` → `/eng-security-triage` → `/eng-security-patch`).
+Terceira peça do pipeline estático (`/eng-security-threat-model` → `/eng.security-audit` → `/eng-security-triage` → `/eng-security-patch`).
 Transforma uma lista ranqueada de achados verificados em diffs candidatos.
 
 O skill **nunca aplica um diff** ao repositório-alvo. O output é texto inerte em `./.security/outputs/PATCHES/` para o TL revisar e aplicar fora de banda. Não existe flag `--apply` ou `--approve` por design: a capacidade está ausente e portanto não pode ser prompt-injetada.
@@ -371,7 +375,7 @@ Estes são rascunhos. Revise cada diff antes de aplicar.
 ## Pipeline completo
 
 ```
-/eng-threat-model → /eng.security-audit → /eng-security-triage → /eng-security-patch
+/eng-security-threat-model → /eng.security-audit → /eng-security-triage → /eng-security-patch
     (mapa)              (scan guiado)         (verifica+ranqueia)     (fix candidato)
 ```
 

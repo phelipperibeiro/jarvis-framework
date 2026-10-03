@@ -54,7 +54,7 @@ Por isso, após o init, a árvore na IDE pode parecer “plana”, embora neste 
 | Claude | `commands` |
 | Demais | `workflows` |
 
-Definido no ENV pelo `/init-jarvis`.
+Definido no ENV pelo `/jarvis-init`.
 
 ## Ciclo canônico de engenharia
 

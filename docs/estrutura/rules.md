@@ -22,6 +22,7 @@ rules/
 │   ├── eng.pr-rules.md
 │   ├── eng.tech-spec-rules.md
 │   ├── eng.specializations-rules.md # carregamento de especializações por stack
+│   ├── eng.skills-rules.md       # área obrigatória nos skills e aviso de skill inexistente
 │   ├── … (breakdown, docs, bump, integrations, …)
 │   ├── frontend/
 │   ├── data/
@@ -39,7 +40,7 @@ Muitas rules começam com:
 > **Applies to:** HUB: all | POSITION: all | AREA: ENGINEERING | SQUAD: all
 ```
 
-No `/init-jarvis` (passo de sync de rules):
+No `/jarvis-init` (passo de sync de rules):
 
 1. Lê `HUB`, `POSITION`, `AREA`, `SQUAD` do ENV
 2. Copia para `.$IDE/rules/` só o que **bate** no perfil
@@ -53,6 +54,6 @@ Isso reduz tokens carregados na sessão.
 
 1. Editadas neste repo.
 2. `jarvis init` copia o conjunto **inteiro** para `.$IDE/rules/` (sync bruto).
-3. `/init-jarvis` **filtra** de novo conforme perfil (e RTK).
+3. `/jarvis-init` **filtra** de novo conforme perfil (e RTK).
 
-Se você só rodar `jarvis init` sem o skill de init, a IDE pode ter rules a mais do que o perfil precisa — o filtro fino é responsabilidade do `/init-jarvis`.
+Se você só rodar `jarvis init` sem o skill de init, a IDE pode ter rules a mais do que o perfil precisa — o filtro fino é responsabilidade do `/jarvis-init`.

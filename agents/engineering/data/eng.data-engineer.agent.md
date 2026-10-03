@@ -96,11 +96,11 @@ Ativado quando há suspeita de dado incorreto, queda de volume ou falha de pipel
 ## Calibração Contextual (CDD)
 
 > **Princípio**: O agente deve ser consciente do contexto, não apenas configurado por contexto.
-> 📚 **Skill**: Use `/context-detect` para detecção automatizada do contexto
+> 📚 **Skill**: Use `/jarvis-context-detect` para detecção automatizada do contexto
 
 ### Herdar Contexto da Sessão
 
-Se existir arquivo `context.md` na sessão (gerado por `/context-detect`), use-o:
+Se existir arquivo `context.md` na sessão (gerado por `/jarvis-context-detect`), use-o:
 
 ```bash
 # Localização: $SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/context.md
@@ -120,7 +120,7 @@ CONTEXT_PROFILE:
     linter: [configurado|ausente]
 ```
 
-> Se `context.md` não existir e for necessário, execute `/context-detect {TASK_MANAGER_KEY}` ou faça detecção manual.
+> Se `context.md` não existir e for necessário, execute `/jarvis-context-detect {TASK_MANAGER_KEY}` ou faça detecção manual.
 
 ### Detecção de Urgência
 
@@ -222,10 +222,10 @@ Gerenciamento de DAGs e orquestração de pipelines:
 - Uso: `/eng-data-orchestrator [criar|monitorar|retry|alerta|debug] [nome-do-dag]`
 - Agnóstico ao orquestrador: adapta exemplos para `$DATA_ORCHESTRATOR` (Airflow, Prefect, Dagster, Glue Scheduler)
 
-### context-detect (CDD)
+### jarvis-context-detect (CDD)
 Para detecção automática de contexto de tarefas:
-- Arquivo: `$IDE/skills/context-detect/SKILL.md`
-- Uso: `/context-detect [jira-key]`
+- Arquivo: `$IDE/skills/jarvis-context-detect/SKILL.md`
+- Uso: `/jarvis-context-detect [jira-key]`
 
 ---
 

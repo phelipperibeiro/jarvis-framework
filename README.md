@@ -49,10 +49,10 @@ IDEs: `windsurf` · `claude` · `cursor` · `codex` · `opencode` · `gemini` ·
 ### 3. No chat da IDE
 
 ```
-/init-jarvis
+/jarvis-init
 ```
 
-Siga o guia do seu papel. Sem `/init-jarvis`, o `ENV.md` não existe e o resto dos comandos não tem contexto.
+Siga o guia do seu papel. Sem `/jarvis-init`, o `ENV.md` não existe e o resto dos comandos não tem contexto.
 
 ---
 
@@ -106,7 +106,7 @@ jarvis --version
 
 ### 3. Bootstrap da IDE e 4. No chat da IDE
 
-Mesmos passos 2 e 3 do [Get Started](#get-started) acima — `jarvis init --ide {ide}` e `/init-jarvis` no chat.
+Mesmos passos 2 e 3 do [Get Started](#get-started) acima — `jarvis init --ide {ide}` e `/jarvis-init` no chat.
 
 ---
 
@@ -169,7 +169,7 @@ Se o workspace usa `--save-dev` e já tem `jarvis-lock.json`, o `npm install` do
 No chat da IDE:
 
 ```
-/init-jarvis
+/jarvis-init
 ```
 
 Escolha **Upgrade (C)** — adiciona chaves novas do template sem apagar os valores atuais.
@@ -181,7 +181,7 @@ Escolha **Upgrade (C)** — adiciona chaves novas do template sem apagar os valo
 | `git pull` | Código do framework no clone |
 | `npm install -g` / `--save-dev` | Binário `jarvis` + pacote que o `init` lê |
 | `jarvis init` (ou postinstall com lock) | Arquivos em `.$IDE/` (skills, agents, workflows…) |
-| `/init-jarvis` Upgrade | Só `$IDE/ENV.md` (variáveis faltantes) |
+| `/jarvis-init` Upgrade | Só `$IDE/ENV.md` (variáveis faltantes) |
 
 `ENV.md`, `.jarvis/sessions/` e o `.gitignore` do workspace **não** são sobrescritos pelo sync de assets.
 
@@ -194,10 +194,10 @@ Escolha **Upgrade (C)** — adiciona chaves novas do template sem apagar os valo
 
 | Recurso | Descricao | Link |
 |---------|-----------|------|
-| **Skills** | Playbooks executaveis (`eng-backend`, `eng-frontend`, `eng-pr`, …) | `skills/` |
+| **Skills** | Playbooks executaveis (`eng-backend`, `eng-frontend`, `eng-global-pr`, …) | `skills/` |
 | **Identidade** | `USER=` no ENV.md (fallback: git / SO). `jarvis whoami` | — |
 | **Documentacao** | Geracao e organizacao de docs tecnica e de negocio | `templates/` |
-| **Troubleshooting** | Configuracao e uso | `/init-jarvis` |
+| **Troubleshooting** | Configuracao e uso | `/jarvis-init` |
 
 ---
 
@@ -210,7 +210,7 @@ O Jarvis e organizado em 5 camadas.
 | **Agents** | Agentes especializados de IA para engenharia, QA e produto |
 | **Skills** | Playbooks executaveis com logica autonoma |
 | **Templates** | Modelos de documentos (ARD, RFC, Tech Spec, PRD, Epic) |
-| **Rules** | Regras de dominio filtradas por perfil (HUB, POSITION, AREA, SQUAD) no `/init-jarvis` |
+| **Rules** | Regras de dominio filtradas por perfil (HUB, POSITION, AREA, SQUAD) no `/jarvis-init` |
 | **Workflows** | Fluxos de execucao dos comandos slash |
 
 ---
@@ -226,6 +226,6 @@ Precisa de ajuda?
 - **Engenharia (um guia por comando `eng.*`)** &mdash; [`docs/engenharia/`](docs/engenharia/README.md)
 - **Indice de docs/** &mdash; [`docs/README.md`](docs/README.md)
 - **Instrucoes para agentes / mapa de skills** &mdash; `AGENTS.md`
-- **Issues/Feedback** &mdash; skill `report-issue`
+- **Issues/Feedback** &mdash; skill `jarvis-report-issue`
 - **Duvidas sobre comandos** &mdash; Pergunte diretamente ao agent:
   `"Como funciona /eng.start?"` | `"Qual a diferenca entre /eng.work e /pr?"` | `"O que e CDD?"`

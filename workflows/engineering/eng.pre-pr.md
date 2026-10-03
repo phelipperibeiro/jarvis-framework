@@ -18,20 +18,16 @@ Estamos nos aproximando de finalizar o trabalho nesta branch e nos preparar para
   - Arquivo: `$IDE/skills/eng-qa-test-plan/SKILL.md`
 - **eng-qa-testsprite**: para executar testes automatizados e validar cobertura com TestSprite MCP.
   - Arquivo: `$IDE/skills/eng-qa-testsprite/SKILL.md`
-- **eng-docs-write**: para atualizar documentação baseada nas mudanças da branch.
-  - Arquivo: `$IDE/skills/eng-docs-write/SKILL.md`
-- **docs-index**: para atualizar o índice de documentação quando necessário.
-  - Arquivo: `$IDE/skills/docs-index/SKILL.md`
-- **eng-performance-engineer**: para validar thresholds de performance e analisar regressões quando a feature tiver requisitos não-funcionais de latência, throughput ou escalabilidade.
-  - Arquivo: `$IDE/skills/eng-performance-engineer/SKILL.md`
-- **eng-frontend**: para validar implementação de componentes React, performance de UI e acessibilidade (WCAG 2.1 AA).
-  - Arquivo: `$IDE/skills/eng-frontend/SKILL.md`
-- **eng-design-system**: para auditar conformidade do código com tokens e componentes do design system.
-  - Arquivo: `$IDE/skills/eng-design-system/SKILL.md`
-- **eng-microfrontend**: quando a branch envolver shell app ou remotes em Module Federation.
-  - Arquivo: `$IDE/skills/eng-microfrontend/SKILL.md`
-- **eng-cybersecurity**: quando a branch tocar em auth, sessions, inputs, CORS, CSP, permissões ou adicionar dependências novas.
-  - Arquivo: `$IDE/skills/eng-cybersecurity/SKILL.md`
+- **eng-global-docs-write**: para atualizar documentação baseada nas mudanças da branch.
+  - Arquivo: `$IDE/skills/eng-global-docs-write/SKILL.md`
+- **jarvis-docs-index**: para atualizar o índice de documentação quando necessário.
+  - Arquivo: `$IDE/skills/jarvis-docs-index/SKILL.md`
+- **eng-devops-performance-engineer**: para validar thresholds de performance e analisar regressões quando a feature tiver requisitos não-funcionais de latência, throughput ou escalabilidade.
+  - Arquivo: `$IDE/skills/eng-devops-performance-engineer/SKILL.md`
+- **Skills de backend e frontend**: para validar código de backend (endpoints, autenticação, workers) ou de frontend (componentes, performance de UI e acessibilidade WCAG 2.1 AA), aplique a regra `$IDE/rules/engineering/eng.specializations-rules.md` para a área envolvida: ela carrega o skill base e as especializações registradas no `ENV.md`.
+  - Arquivo da regra: `$IDE/rules/engineering/eng.specializations-rules.md`
+- **eng-security-cybersecurity**: quando a branch tocar em auth, sessions, inputs, CORS, CSP, permissões ou adicionar dependências novas.
+  - Arquivo: `$IDE/skills/eng-security-cybersecurity/SKILL.md`
 
 <arguments>
 #$ARGUMENTS
@@ -44,10 +40,10 @@ Pular se `TASK_MANAGER` estiver vazio (freelance).
 Ao iniciar o pre-PR, registrar:
 
 ```
-/eng-task-comment {TASK_MANAGER_KEY} 🔍 [Jarvis] Iniciando validação pre-PR - bateria de testes e revisão de código
+/eng-global-task-comment {TASK_MANAGER_KEY} 🔍 [Jarvis] Iniciando validação pre-PR - bateria de testes e revisão de código
 ```
 
-> Usa o skill `/eng-task-comment`. Não bloquear se falhar.
+> Usa o skill `/eng-global-task-comment`. Não bloquear se falhar.
 
 ---
 
@@ -101,9 +97,9 @@ git diff main...HEAD | grep -E "(class|interface|schema|migration|config)" || tr
    - Se o projeto tiver frontend: execute com `type=frontend`
    - Se o projeto tiver backend: execute com `type=backend`
    - Se tiver ambos: execute os dois tipos sequencialmente
-7. **Se a branch tiver mudanças de interface** (componentes React, design system, micro frontend), invoque o agente [eng.frontend.agent]($IDE/agents/engineering/eng.frontend.agent.md) para validar:
-   - TypeScript sem `any`, tokens do design system usados, acessibilidade WCAG 2.1 AA
-   - Se micro frontend: contrato de interface atualizado, remote funciona standalone
+7. **Se a branch tiver mudanças de interface** (componentes, estilos, estado), invoque o agente [eng.frontend.agent]($IDE/agents/engineering/eng.frontend.agent.md) para validar:
+   - Tipagem forte (quando a linguagem tem), tokens de design do projeto usados, acessibilidade WCAG 2.1 AA
+   - Aplicar as exigências das especializações de frontend registradas (ver `eng.specializations-rules.md`)
 8. **Se a branch introduzir nova feature de UI ou alterar fluxo de usuário**, invoque o agente [eng.ux-designer.agent]($IDE/agents/engineering/eng.ux-designer.agent.md) para verificar:
    - Empty states, loading states e mensagens de erro em linguagem humana
    - Consistência com padrões visuais existentes no produto
@@ -159,7 +155,7 @@ Após apresentar o resultado final, registrar:
 - Se **Red**: `🚫 [Jarvis] Pre-PR concluído com status RED - bloqueadores encontrados, não abrir MR`
 
 ```
-/eng-task-comment {TASK_MANAGER_KEY} {mensagem_status}
+/eng-global-task-comment {TASK_MANAGER_KEY} {mensagem_status}
 ```
 
 ---

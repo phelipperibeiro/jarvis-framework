@@ -31,7 +31,7 @@ Guiar o SENTINEL (ENG) na auditoria proativa de seguranca de projetos — analis
 
 ```bash
 if [ ! -f "$IDE/ENV.md" ]; then
-  echo "ENV.md nao encontrado. Execute /init-jarvis primeiro."
+  echo "ENV.md nao encontrado. Execute /jarvis-init primeiro."
   exit 1
 fi
 
@@ -59,7 +59,7 @@ Onde [escopo] pode ser:
 
 ## Fase 0 – Analise de Contexto (CDD)
 
-> Skill: Use `/context-detect` se existir uma sessao ativa
+> Skill: Use `/jarvis-context-detect` se existir uma sessao ativa
 > Configuravel: Controlada pela variavel `ENABLE_CDD` no ENV.md
 
 ```bash
@@ -73,7 +73,7 @@ grep "^ENABLE_CDD=" $IDE/ENV.md
 
 ## Fase 0.5 — Threat Model Scoping
 
-Se `THREAT_MODEL.md` existe no projeto (gerado por `/eng-threat-model`):
+Se `THREAT_MODEL.md` existe no projeto (gerado por `/eng-security-threat-model`):
 
 1. Ler secao 3 "Entry points & trust boundaries" → usar como lista base de focus areas para fan-out
 2. Ler secao 4 "Threats" → filtrar por `status != mitigated` → priorizar areas com ameacas `almost_certain` ou `likely`
@@ -193,7 +193,7 @@ grep -rn --include="*.ts" --include="*.js" -E "(debug:\s*true|DEBUG=true|stack.*
 npm audit --audit-level=moderate 2>/dev/null || echo "npm audit nao disponivel"
 ```
 
-> Repetir para cada vetor relevante usando o skill `eng-cybersecurity` como referencia.
+> Repetir para cada vetor relevante usando o skill `eng-security-cybersecurity` como referencia.
 
 ---
 
@@ -305,7 +305,7 @@ Este arquivo e o input direto do skill `eng-security-triage`.
 - Pular a classificacao CVSS
 
 ### Sempre
-- Usar o skill `eng-cybersecurity` como referencia de padroes
+- Usar o skill `eng-security-cybersecurity` como referencia de padroes
 - Classificar TODOS os achados por severidade
 - Incluir evidencia (codigo) e correcao para cada achado
 - Mascarar secrets encontrados antes de reportar

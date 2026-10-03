@@ -10,6 +10,7 @@ allowed-tools: Read Write Edit Glob Grep Bash
 metadata:
   author: jarvis-team
   version: "1.0"
+  area: data
 argument-hint: "[criar|monitorar|retry|alerta|debug] [nome-do-dag]"
 disable-model-invocation: false
 ---

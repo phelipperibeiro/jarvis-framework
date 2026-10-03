@@ -9,6 +9,7 @@ license: AGPL-3.0
 metadata:
   author: jarvis-team
   version: "1.0"
+  area: qa
 ---
 
 # Test Planner - Análise de Cobertura de Testes
