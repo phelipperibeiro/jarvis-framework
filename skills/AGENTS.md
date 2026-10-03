@@ -25,6 +25,8 @@ skills/
 │   └── SKILL.md
 ├── eng-jira-comment/     # Alias → eng-task-comment
 │   └── SKILL.md
+├── jarvis-list-specializations/ # Lista especializações de stack instaladas e registradas
+│   └── SKILL.md
 ├── eng-backend/          # APIs REST/GraphQL, auth JWT/OAuth2/RBAC, RabbitMQ workers, caching
 │   └── SKILL.md
 ├── eng-frontend/         # React/Next.js/Vue, estado, performance UI, acessibilidade
@@ -202,6 +204,7 @@ Skills são invocados de formas diferentes dependendo da IDE:
 | QA validation | `eng-qa-gate` |
 | Criar skill | `skill-creator` |
 | `/taxonomy-manager` | `taxonomy-manager` |
+| Listar especializações de stack (instaladas e registradas) | `jarvis-list-specializations` |
 | `/members-manager` | `members-manager` |
 | Mensageria, filas, RabbitMQ, events, consumers, producers | `eng-rabbitmq` |
 | Gerar prompt para Lovable, criar frontend React com Lovable | `lovable-prompt-generator` |

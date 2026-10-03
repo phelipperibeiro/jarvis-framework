@@ -65,6 +65,14 @@ PROD_TEMPLATES=.$IDE/$TEMPLATES_FOLDER/$PROD_FOLDER_NAME
 PROD_DOCS=$DOCS_FOLDER/$PROD_FOLDER_NAME
 
 
+# --- Especializações de stack ------------------------------------------------
+# Skills especializados que o Jarvis carrega junto com o skill base de cada área.
+# Lista de nomes de skill separados por vírgula. Ex: eng-backend-golang,eng-backend-nestjs
+# Vazio = só o skill base (eng-backend / eng-frontend). A variável precisa EXISTIR, mesmo vazia.
+BACKEND_SPECIALIZATIONS=
+FRONTEND_SPECIALIZATIONS=
+
+
 # --- Task manager (opcional) -------------------------------------------------
 # Board de cards. Vazio = freelance: sem Jira/Linear/etc.
 # Nesse caso o workflow pergunta um número de controle próprio (TASK_MANAGER_KEY)
