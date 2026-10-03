@@ -49,6 +49,7 @@ Regras que **substituem** qualquer trecho legado deste skill ou dos assets:
 - **Configurações MCP**: `$IDE/skills/jarvis-init/assets/mcp-configs.md`
 - **Checklist Onboarding**: `$IDE/skills/jarvis-init/assets/onboarding-checklist.md`
 - **Guia de Setup**: `$IDE/skills/jarvis-init/assets/setup-guide.md`
+- **Passo "adicionar as stacks"**: `$IDE/skills/jarvis-init/assets/passo-adicionar-stacks.md` e `$IDE/skills/jarvis-init/assets/sinais-de-stack.md`
 - **Saída**: `$IDE/ENV.md`, `AGENTS.md`, `{workspace}/.jarvis/sessions/{eng,prod,qa}/`
 
 ---
@@ -76,7 +77,9 @@ Regras que **substituem** qualquer trecho legado deste skill ou dos assets:
 │        ↓                                                    │
 │  8. SYNC RULES → Filtrar por perfil (HUB/POSITION/AREA/SQUAD)│
 │        ↓                                                    │
-│  9. CONFIRMAR → Com usuário                                 │
+│  9. STACKS → Adicionar as stacks (opcional, pulável)        │
+│        ↓                                                    │
+│  10. CONFIRMAR → Com usuário                                │
 │                                                             │
 └─────────────────────────────────────────────────────────────┘
 ```
@@ -196,7 +199,7 @@ Identificar qual IDE o usuário está utilizando:
    ```
    ✅ ENV.md já está atualizado. Nenhuma variável nova encontrada.
    ```
-   Encerrar.
+   Oferecer o **passo 9 (adicionar as stacks)**, que a pessoa pode pular, e então encerrar.
 5. Se houver diff, exibir prévia:
    ```
    🔍 Variáveis novas encontradas no template:
@@ -216,7 +219,7 @@ Identificar qual IDE o usuário está utilizando:
    ✅ ENV.md atualizado! N variável(is) nova(s) adicionada(s).
    ⚠️ Preencha os valores em branco antes de usar os novos recursos.
    ```
-8. Encerrar (não continuar para o fluxo de onboarding completo).
+8. Oferecer o **passo 9 (adicionar as stacks)**, que a pessoa pode pular, e então encerrar (não continuar para o fluxo de onboarding completo).
 
 **⚠️ OBRIGATÓRIO - Criação do ENV.md**:
 
@@ -231,7 +234,7 @@ Fluxo correto:
 3. Se `HUB≠DATA`: remover o bloco DATA_* inteiro
 4. Garantir `SESSIONS_DIR=.jarvis/sessions` e `JARVIS_PROJECT=https://github.com/phelipperibeiro/jarvis-framework` (ou URL que o usuário informar)
 5. Escrever `$IDE/ENV.md` com o restante do template (incluindo variáveis vazias)
-6. As chaves `BACKEND_SPECIALIZATIONS` e `FRONTEND_SPECIALIZATIONS` ficam **vazias**: não são perguntadas aqui. O registro de especializações é feito depois (consulta com `jarvis-list-specializations`).
+6. As chaves `BACKEND_SPECIALIZATIONS` e `FRONTEND_SPECIALIZATIONS` ficam **vazias**: não são perguntadas aqui. O registro de especializações é feito no **passo 9 (adicionar as stacks)**, ou depois, a qualquer momento: consulta com `jarvis-list-specializations` e criação com `jarvis-create-specialization`.
 
 ### 3. Coletar Variáveis Obrigatórias
 
@@ -992,6 +995,24 @@ cp "rules/$relPath" "$IDE/rules/$relPath"
 
 ---
 
+### 9. Adicionar as stacks (opcional)
+
+Oferecido sempre que o `ENV.md` fica pronto: criação, atualização, **Upgrade (C)** e o caso "já atualizado". **Não** é oferecido ao cancelar (D). A pessoa pode **pular**; ao pular, as listas ficam como estão e o projeto usa só a skill base.
+
+Trata **somente backend e frontend**. O passo:
+
+1. Confere que `BACKEND_SPECIALIZATIONS` e `FRONTEND_SPECIALIZATIONS` existem (acrescenta vazias se faltarem)
+2. Lista as especializações instaladas, registradas ou não, e deixa registrar uma direto
+3. **Lê** o workspace (a análise **só lê**: não altera arquivos do projeto nem as listas), identifica as stacks de backend e de frontend, inclusive de vários projetos, e **mostra o que encontrou antes de sugerir**
+4. Para cada stack, sugere **registrar o skill que já existe** (mesmo `area` e `stack`) ou **criar um novo** com `/jarvis-create-specialization {área} {stack}`; a pessoa escolhe, e o que não aceita não muda
+5. Mostra um resumo das listas e do que foi registrado ou criado
+
+O tempo de ~10 minutos é referência, não limite. Nunca leia `.env*`, chaves ou credenciais.
+
+> **Fluxo completo**: Ver `assets/passo-adicionar-stacks.md`. **Tabela de detecção**: `assets/sinais-de-stack.md`.
+
+---
+
 ### 10. Confirmar Criação
 
 ```
@@ -1010,6 +1031,7 @@ cp "rules/$relPath" "$IDE/rules/$relPath"
 - Usuário: {USER}
 - Cargo: {POSITION}
 - Limite AI: {MAX_AI_EXECUTION_PERCENTAGE}%
+- Especializações: {BACKEND_SPECIALIZATIONS e FRONTEND_SPECIALIZATIONS, ou "só skill base"}
 - CDD: habilitado
 - JARVIS_PROJECT: {JARVIS_PROJECT}
 
@@ -1227,6 +1249,7 @@ Pergunta 8 (opcional): Usa task manager? jira/linear/github/asana ou Nenhum (fre
 - Repos: {WORKSPACE_REPOS ou (todas as pastas com .git/)}
 - Task manager: {TASK_MANAGER ou freelance}
 - Squad: {SQUAD}
+- Especializações: {registradas/criadas, ou "só skill base"}
 
 ✅ MCPs:
 - Context7: OK (obrigatório)
@@ -1277,6 +1300,7 @@ Bem-vindo! 🎉
 - [ ] Se TASK_MANAGER vazio: pulou MCP de task manager
 - [ ] Provisionou MCPs opcionais (Code Quality, se configurado)
 - [ ] Criou AGENTS.md
+- [ ] Ofereceu o passo 9 (adicionar as stacks), que é pulável; a detecção só leu e mostrou antes de sugerir; listas atualizadas sem duplicar
 - [ ] Confirmou criação com usuário
 - [ ] Alertou sobre dados sensíveis
 - [ ] Apresentou processos (sem checkin/daily/metrics)

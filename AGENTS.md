@@ -253,7 +253,7 @@ Cada pasta pode ter seu proprio AGENTS.md com instrucoes especificas:
 ### Inicializacao
 
 ```bash
-/jarvis-init            # Cria ENV.md lendo taxonomy.md (unico comando sem ENV.md)
+/jarvis-init            # Cria ENV.md lendo taxonomy.md (unico comando sem ENV.md); oferece o passo opcional de adicionar as stacks
 /warm-up                 # Carrega contexto do projeto
 ```
 
