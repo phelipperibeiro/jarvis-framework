@@ -34,7 +34,6 @@ Ler do `$IDE/ENV.md`:
 - `SQUAD` — squad do usuário (formato: ALL-CAPS-COM-HIFEN)
 - `WORKSPACE` — nome do workspace em kebab-case
 - `AREA` — define quais tipos de doc buscar
-- `POSITION` — cargo do usuário; se `TECH ANALYST`, ativa busca cross-squad no Modo 1
 
 **Token VCS** (resolvido pelo adapter `bin/lib/utils/npmrc-parser.js` → `getVcsToken`):
 - GitLab: `.npmrc` `:_authToken=` ou `GITLAB_TOKEN`
@@ -139,43 +138,6 @@ O CI (`.gitlab-ci.yml`) **falha** se o `index.md` commitado divergir do que o sc
 ## Fluxo de Trabalho
 
 ### Modo 1: Buscar Docs (usado em warm-up, eng.start)
-
-**Passo 0 — Detectar escopo**
-
-> Se `POSITION=TECH ANALYST`: executar fluxo multi-squad abaixo e encerrar o Modo 1.
-> Caso contrário, prosseguir para o Passo 1 normalmente.
-
-**Modo 1-TA: Busca cross-squad (somente TECH ANALYST)**
-
-O TA é transversal e precisa dos índices de todos os squads para triagem e diagnóstico de chamados.
-
-```bash
-# Squads: headings ### do taxonomy.md (fonte de verdade da org)
-SQUADS=$(awk '/^## .*Squads/{f=1;next} /^## /{f=0} f && /^### /{print $2}' taxonomy.md)
-
-for SQUAD_NAME in ${SQUADS}; do
-  bash bin/lib/docs/fetch-file.sh "${SQUAD_NAME}/index.md" "${CENTRAL_DOCS_REF}" 2>/dev/null || true
-done
-```
-
-> Buscar apenas índices — não baixar arquivos individuais de todos os squads (volume alto).
-> Quando o chamado exigir deep dive em um produto específico, buscar os arquivos daquele squad normalmente via Passo 3.
-
-**Output para TECH ANALYST:**
-
-```markdown
-# Contexto Cross-Squad — Central Docs
-
-## SQUAD-A
-[índice do squad A]
-
-## SQUAD-B
-[índice do squad B]
-
-...
-```
-
----
 
 **Passo 1 — Buscar índice do squad**
 

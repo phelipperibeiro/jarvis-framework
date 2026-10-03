@@ -47,7 +47,6 @@ skills/
 │   └── SKILL.md
 ├── eng-scraper-robot-builder/ # Converte fluxo manual (linguagem natural) em robô Playwright via Stagehand
 │   └── SKILL.md
-├── eng-tech-analyst/          # Triagem de chamados do HUBS board: keywords, sub-bug linking, frequência via comentários no card, encaminhamento para squad
 │   └── SKILL.md
 ├── lovable-prompt-generator/ # Geracao de prompts para frontend React via Lovable
 │   └── SKILL.md
@@ -215,7 +214,6 @@ Skills são invocados de formas diferentes dependendo da IDE:
 | Módulos NestJS, DI, guards, interceptors, pipes, Passport/JWT | `eng-nestjs` |
 | Web scraping, Puppeteer, extração de dados, parsing, ETL | `eng-scraper` |
 | Criar robô RPA novo ou manter existente (new|update + card) | `eng.rpa.robot` (workflow) |
-| Atendimento técnico, triagem de chamados, diagnóstico, classificação de bugs, escalonamento | `eng-tech-analyst` |
 | Gerar specs Cypress + TypeScript para fluxos de usuário | `eng-qa-cypress-e2e` |
 | Sessão de teste exploratório estruturada (charter, risco, achados, bug cards) | `eng-qa-exploratory` |
 | Orientar dev sobre cobertura Cypress sem escrever o teste | `eng-qa-dev-guide` |

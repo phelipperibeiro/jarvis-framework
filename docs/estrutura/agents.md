@@ -20,7 +20,6 @@ agents/
 │   ├── eng.docs-writer.md
 │   ├── eng.frontend.agent.md
 │   ├── eng.rpa.agent.md             # ARACHNE
-│   ├── eng.tech-analyst.agent.md
 │   ├── eng.ux-designer.agent.md
 │   ├── data/
 │   │   └── eng.data-engineer.agent.md   # HEPHAESTUS

@@ -28,7 +28,7 @@ Papéis no fluxo (ainda existem; não são cadeado):
 | **TECH LEAD** | `TECH LEAD` | Apoia priorização, review e deploy quando pedido |
 | **PM** | `PM`, `TPM`, `GPM` | Apoia aceite de produto quando pedido |
 | **QA** | `QA-ENGINEER` | Executa testes em apoio; não bloqueia o owner |
-| **N2** | Tech Analyst / suporte | Validação operacional se o time tiver esse papel |
+| **N2** | Suporte N2 | Validação operacional se o time tiver esse papel |
 
 ## Diagrama do Fluxo
 

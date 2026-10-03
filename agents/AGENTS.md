@@ -19,7 +19,6 @@ agents/
 │   ├── eng.bug-hunter.md
 │   ├── eng.dev-code-reviewer.md
 │   ├── eng.docs-writer.md
-│   ├── eng.tech-analyst.agent.md
 │   ├── data/              # Agentes de Data (1 agent)
 │   │   └── eng.data-engineer.agent.md
 │   └── qa/                # Agentes de QA (6 agents)

@@ -35,7 +35,7 @@ ENABLE_CDD=true
 
 
 # --- Organização (obrigatório — opções vêm do taxonomy.md) -------------------
-SQUAD=[CORE, SUPPORT]
+SQUAD=[CORE]
 HUB=[AI, FRONTEND, BACKEND, QA, DATA, FULLCYCLE]
 AREA=[ENGINEERING, PRODUCT]
 POSITION=[JUNIOR, PLENO, SENIOR, TECH LEAD, SPECIALIST, PM, TPM, GPM, CTO, GENERALIST]
@@ -134,11 +134,6 @@ SMTP=[google, ses, sendgrid]
 # Instale com: cargo install rtk (requer Rust).
 # false = a rule RTK não é copiada para $IDE/rules/.
 RTK_ENABLED=false
-
-
-# --- Tech Analyst (opcional) -------------------------------------------------
-# Project key do board de triagem N2 (cards que chegam ao Tech Analyst).
-TASK_MANAGER_HUBS_BOARD=
 
 
 # --- Data Engineering (só se HUB=DATA) ---------------------------------------

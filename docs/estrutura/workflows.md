@@ -28,7 +28,6 @@ workflows/
 │   ├── data/                  # data.new-pipeline, data.contract, …
 │   ├── frontend/              # component, review, perf-audit, …
 │   ├── qa/                    # fluxos QA
-│   └── ta/                    # tech analyst
 └── product/
     ├── prod.spec.md
     ├── prod.spec.discovery.md

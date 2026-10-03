@@ -28,7 +28,6 @@ prompts/
 │   │   │   ├── eng.bug-hunter.md
 │   │   │   ├── eng.dev-code-reviewer.md
 │   │   │   ├── eng.docs-writer.md
-│   │   │   ├── eng.tech-analyst.agent.md
 │   │   │   ├── eng.rpa.agent.md   # Agente RPA/Scraping (ARACHNE) — skill técnica
 │   │   │   ├── data/             # 1 agente de Data
 │   │   │   │   └── eng.data-engineer.agent.md
@@ -335,7 +334,6 @@ Quando um agente atua em tema com skill correspondente, o skill e a fonte de ver
 | Criar/manter DAGs, retry strategies, alertas, troubleshooting de orquestração | `eng-data-orchestrator` |
 | Documentação central (GitLab/GitHub/Bitbucket) | `docs-central` |
 | Bug cross-service (HTTP + AMQP) | `eng-ms-trace` |
-| Triagem de chamados HUBS board: diagnóstico, sub-bug linking, frequência, encaminhamento para squad | `eng-tech-analyst` |
 | Auditoria de segurança OWASP, secrets, supply chain, headers, compliance | `eng-cybersecurity` |
 | Resposta a incidentes de segurança, CVEs, vulnerabilidades | `eng.security-incident` |
 | Review de segurança em PRs (gate pré-merge) | `eng.security-review` |
@@ -363,7 +361,6 @@ Quando um agente atua em tema com skill correspondente, o skill e a fonte de ver
 - `eng.bug-hunter.md` - Caça e análise de bugs
 - `eng.dev-code-reviewer.md` - Revisao de codigo
 - `eng.docs-writer.md` - Documentacao tecnica
-- `eng.tech-analyst.agent.md` - Triagem e diagnóstico de chamados N2, escalonamento
 - `eng.rpa.agent.md` - Automação e scraping RPA (ARACHNE) — robôs resilientes, análise de sistemas externos
 - `eng.frontend.agent.md` - Especialista frontend: React, micro frontend, design system, a11y
 - `eng.ux-designer.agent.md` - Especialista UX/UI: auditoria heurística, fluxos, microcopy, arquitetura de informação

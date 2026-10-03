@@ -32,6 +32,13 @@ export const OBSOLETE_PATHS = Object.freeze([
   "skills/prod-specs/references",
   "skills/prod-specs/templates",
   "skills/prod-specs/rules",
+  // Tech Analyst (removido): skill, agente e o comando, que é achatado na pasta de workflows de cada IDE
+  "skills/eng-tech-analyst",
+  "agents/engineering/eng.tech-analyst.agent.md",
+  "workflows/eng.ta.atendimento.md",
+  "commands/eng.ta.atendimento.md",
+  "steering/eng.ta.atendimento.md",
+  "steering/skills/skill-eng-tech-analyst.md",
 ]);
 
 /**

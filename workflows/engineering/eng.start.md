@@ -40,27 +40,6 @@ Ler `TASK_MANAGER` do `$IDE/ENV.md`. Seguir `$IDE/rules/engineering/eng.integrat
 
 ---
 
-## Fase 0: Verificação de Perfil
-
-Ler `POSITION` do ENV.md:
-
-```bash
-grep "^POSITION=" $IDE/ENV.md
-```
-
-Se `POSITION=TECH ANALYST`:
-```
-→ Este workflow não é adequado para o perfil TECH ANALYST.
-→ Redirecionar para: $FLOWS_FOLDER/engineering/ta/eng.ta.atendimento.md
-
-ℹ️ O eng.start é voltado para desenvolvimento de features.
-   Para atendimento técnico, use ta.atendimento.
-```
-
-Caso contrário, continuar normalmente.
-
----
-
 ## Fase 0.1: Análise de Contexto (CDD)
 
 > 🎯 **Objetivo**: Adaptar o rigor e cerimônia do workflow com base no contexto real da tarefa.
