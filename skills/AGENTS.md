@@ -219,10 +219,11 @@ O nome tem a forma `<prefixo>-<área>-<nome>`; **só os dois primeiros segmentos
 6. **Quando Usar** - Cenarios de uso
 7. **Padroes Criticos** - Regras mais importantes
 8. **Fluxo de Trabalho** - Passo a passo
-9. **Regras** - Nunca/Sempre
-10. **Checklist de Conclusao** - Validacao final
-11. **Output** - Artefatos gerados
-12. **Mensagem de Conclusao** - Feedback ao usuario
+9. **Skills invocados durante a execução do skill** - Subseção (`###`) com a tabela `| Passo | Skill | Condição |` do que o skill chama no próprio fluxo (não vale pré-requisito pedido ao usuário nem sugestão de próximo passo). Sem chamadas, uma linha `Nenhuma — skill autocontida`. Vem depois do fluxo e antes de Tratamento de Erros/Checklist
+10. **Regras** - Nunca/Sempre
+11. **Checklist de Conclusao** - Validacao final
+12. **Output** - Artefatos gerados
+13. **Mensagem de Conclusao** - Feedback ao usuario
 
 ---
 
