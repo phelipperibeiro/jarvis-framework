@@ -432,6 +432,12 @@ describe('[Funcionalidade]', () => {
 4. Identificar lacunas e priorizar
 5. Gerar relatório `$DOCS_FOLDER/engineering/qa/{task-id}-test_coverage_branch_report.md`
 
+### Skills invocados durante a execução do skill
+
+| Passo | Skill | Condição |
+|-------|-------|----------|
+| — | Nenhuma — skill autocontida | — |
+
 ---
 
 ## Resumo dos Fluxos

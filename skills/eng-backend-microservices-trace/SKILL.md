@@ -411,6 +411,12 @@ Ao concluir, retornar:
    - Se inconclusivo: `→ eng.debug Passo 3 (Plano de Investigação) — coletar logs de {serviços}`
    - Se bug multi-serviço complexo: `→ eng.plan {TASK_MANAGER_KEY} — múltiplos componentes afetados`
 
+### Skills invocados durante a execução do skill
+
+| Passo | Skill | Condição |
+|-------|-------|----------|
+| — | Nenhuma — skill autocontida | — |
+
 ---
 
 ## Regras

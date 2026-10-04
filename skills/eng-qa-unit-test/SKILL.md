@@ -324,6 +324,12 @@ pytest {arquivo} -v
 go test -v -run {funcao}
 ```
 
+### Skills invocados durante a execução do skill
+
+| Passo | Skill | Condição |
+|-------|-------|----------|
+| — | Nenhuma — skill autocontida | — |
+
 ---
 
 ## Regras

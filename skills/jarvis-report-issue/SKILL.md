@@ -146,6 +146,12 @@ Erro:
 Verifique token (GitLab .npmrc / gh auth / BITBUCKET_TOKEN) e JARVIS_PROJECT.
 ```
 
+### Skills invocados durante a execução do skill
+
+| Passo | Skill | Condição |
+|-------|-------|----------|
+| — | Nenhuma — skill autocontida | — |
+
 ---
 
 ## Regras

@@ -90,6 +90,12 @@ done
 - Um item da lista **sem skill instalado** aparece como "registrado sem skill instalado".
 - Se `$ARGUMENTS` for `backend` ou `frontend`, mostre só essa área.
 
+### Skills invocados durante a execução do skill
+
+| Passo | Skill | Condição |
+|-------|-------|----------|
+| — | Nenhuma — skill autocontida | — |
+
 ---
 
 ## Saída

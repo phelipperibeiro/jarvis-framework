@@ -1064,6 +1064,12 @@ Apresentar checklist de onboarding por período (Dia 1, Semana 1, Mês 1).
 
 > **Checklists detalhados**: Ver `assets/onboarding-checklist.md`
 
+### Skills invocados durante a execução do skill
+
+| Passo | Skill | Condição |
+|-------|-------|----------|
+| Passo 9 — Adicionar as stacks (opcional) | `/jarvis-create-specialization {área} {stack}` | Se a pessoa escolher criar um skill novo para uma stack que ainda não tem especialização instalada (uma stack por vez; pular o passo não chama nada) |
+
 ---
 
 ## Validações de Segurança

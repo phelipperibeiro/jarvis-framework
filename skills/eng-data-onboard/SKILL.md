@@ -274,6 +274,12 @@ Próximos passos recomendados:
 4. Se expor para outra squad → criar contrato via data.contract.md
 ```
 
+### Skills invocados durante a execução do skill
+
+| Passo | Skill | Condição |
+|-------|-------|----------|
+| — | Nenhuma — skill autocontida | — |
+
 ---
 
 ## Tratamento de Campos Sensíveis

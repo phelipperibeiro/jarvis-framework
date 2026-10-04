@@ -43,3 +43,11 @@ Para outras necessidades de produto sem workflow próprio, aplique as boas prát
 **Discovery:** "investigar uma ideia..." · "fazer discovery de..." · "tenho uma ideia, vale a pena?"
 
 **Esclarecimento:** "esclarecer a especificação..." · "esclarecer o PRD..."
+
+### Skills invocados durante a execução do skill
+
+| Passo | Skill | Condição |
+|-------|-------|----------|
+| — | Nenhuma — skill autocontida | — |
+
+A skill só roteia para os workflows `prod.spec.*` (tabela acima); workflows não são skills e ficam fora desta tabela.

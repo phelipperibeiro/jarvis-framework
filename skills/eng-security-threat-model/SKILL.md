@@ -152,6 +152,12 @@ Criar `.security/state/` se não existir. Salvar `.security/state/threat-model-m
 }
 ```
 
+### Skills invocados durante a execução do skill
+
+| Passo | Skill | Condição |
+|-------|-------|----------|
+| — | Nenhuma — skill autocontida | — |
+
 ---
 
 ## Step 3 — Sumário ao usuário

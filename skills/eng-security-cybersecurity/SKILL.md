@@ -568,6 +568,12 @@ LGPD/GDPR — checklist minimo:
 10. DPO designado (quando aplicavel)
 ```
 
+### Skills invocados durante a execução do skill
+
+| Passo | Skill | Condição |
+|-------|-------|----------|
+| — | Nenhuma — skill autocontida | — |
+
 ---
 
 ## Regras

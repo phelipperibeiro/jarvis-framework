@@ -62,3 +62,9 @@ Exit 0 → comentário ok. Exit 2 → avisar e **não bloquear** o workflow.
 ```
 
 Nunca pedir credenciais no chat. Nunca parar o fluxo principal por falha de comentário.
+
+### Skills invocados durante a execução do skill
+
+| Passo | Skill | Condição |
+|-------|-------|----------|
+| — | Nenhuma — skill autocontida | — |

@@ -247,6 +247,12 @@ rm -rf $SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/
 
 > ⚠️ **IMPORTANTE**: Sempre pedir confirmação antes de executar comandos destrutivos.
 
+### Skills invocados durante a execução do skill
+
+| Passo | Skill | Condição |
+|-------|-------|----------|
+| Passo 6 — Atualizar o card | `/eng-global-task-comment` | Se `TASK_MANAGER` estiver preenchido (freelance pula): comentário no card com o link do MR |
+
 ---
 
 ## Regras de Segurança

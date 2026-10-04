@@ -291,6 +291,12 @@ describe("{Funcionalidade}", () => {
 });
 ```
 
+### Skills invocados durante a execução do skill
+
+| Passo | Skill | Condição |
+|-------|-------|----------|
+| — | Nenhuma — skill autocontida | — |
+
 ---
 
 ## Árvore de Decisão

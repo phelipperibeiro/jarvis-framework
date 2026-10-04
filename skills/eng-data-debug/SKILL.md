@@ -288,6 +288,12 @@ Após a correção:
 | Métrica errada | Gold | Join ou regra de negócio |
 | Dashboard não atualiza | Gold / Cache | Data da última ingestão em gold |
 
+### Skills invocados durante a execução do skill
+
+| Passo | Skill | Condição |
+|-------|-------|----------|
+| — | Nenhuma — skill autocontida | — |
+
 ---
 
 ## Regras Críticas

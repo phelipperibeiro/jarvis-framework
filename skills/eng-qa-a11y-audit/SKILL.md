@@ -219,6 +219,12 @@ npx vitest run {padrão}
 ──────────────────────────────────────────────────────────
 ```
 
+### Skills invocados durante a execução do skill
+
+| Passo | Skill | Condição |
+|-------|-------|----------|
+| — | Nenhuma — skill autocontida | — |
+
 ---
 
 ## Regras

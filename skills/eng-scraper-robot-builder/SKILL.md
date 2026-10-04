@@ -265,6 +265,12 @@ npx tsx scripts/robots/{nome}.ts
 npx playwright test scripts/robots/{nome}.ts
 ```
 
+### Skills invocados durante a execução do skill
+
+| Passo | Skill | Condição |
+|-------|-------|----------|
+| — | Nenhuma — skill autocontida | — |
+
 ---
 
 ## Árvore de Decisão

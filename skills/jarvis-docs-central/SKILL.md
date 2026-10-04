@@ -284,6 +284,12 @@ URL: {url do MR/PR retornada pelo adapter}
    URL: {CENTRAL_DOCS_REPO}/-/merge_requests/44
 ```
 
+### Skills invocados durante a execução do skill
+
+| Passo | Skill | Condição |
+|-------|-------|----------|
+| — | Nenhuma — skill autocontida | — |
+
 ---
 
 ## Regras

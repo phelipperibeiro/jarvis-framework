@@ -350,6 +350,12 @@ jarvis docs publish \
 
 Se `CENTRAL_DOCS_REPO` não estiver definido: apenas informar que a publicação pode ser habilitada via ENV.md.
 
+### Skills invocados durante a execução do skill
+
+| Passo | Skill | Condição |
+|-------|-------|----------|
+| Fase 7 — Publicação no Central Docs | `/jarvis-docs-central` (via `jarvis docs publish`) | Se `CENTRAL_DOCS_REPO` estiver configurado no ENV.md e o usuário aceitar publicar |
+
 ---
 
 ## Regras

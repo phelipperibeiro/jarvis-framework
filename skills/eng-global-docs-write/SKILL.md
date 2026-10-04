@@ -25,7 +25,7 @@ Garantir que a documentação reflita com precisão o **estado atual do codebase
 ## Recursos
 
 - **Template C4**: `$IDE/templates/engineering/c4-model-template.md`
-- **Skill arch-c4**: `$IDE/skills/arch-c4/SKILL.md`
+- **Skill eng-backend-arch-c4**: `$IDE/skills/eng-backend-arch-c4/SKILL.md`
 - **Saída**: `$DOCS_FOLDER/` (conforme ENV.md)
 
 > **Dica**: Em caso de dúvida sobre documentação de bibliotecas ou frameworks, use o MCP `context7` para consultar documentação atualizada.
@@ -172,7 +172,7 @@ Você gostaria que eu prosseguisse com essas atualizações?
 
 ## Documentação de Arquitetura (C4 Model)
 
-Quando houver **mudanças arquiteturais significativas**, utilize a skill `arch-c4`:
+Quando houver **mudanças arquiteturais significativas**, utilize a skill `eng-backend-arch-c4`:
 
 ### Quando usar C4 Model
 
@@ -289,10 +289,15 @@ Antes de finalizar:
 
 ## Integração com Outros Skills
 
-Após atualizar a documentação, considere:
+### Skills invocados durante a execução do skill
 
-- **jarvis-docs-index**: Atualizar o índice de documentação (`$IDE/skills/jarvis-docs-index/SKILL.md`)
-- **arch-c4**: Atualizar diagramas C4 se houver mudanças arquiteturais
+| Passo | Skill | Condição |
+|-------|-------|----------|
+| Documentação de Arquitetura (C4 Model) | `/eng-backend-arch-c4` | Se houver mudanças arquiteturais significativas (novos serviços ou contêineres, integrações externas, componentes, bancos ou filas, APIs públicas) |
+
+Sugestões após atualizar a documentação (não são chamadas do fluxo):
+
+- `jarvis-docs-index`: atualizar o índice de documentação (`$IDE/skills/jarvis-docs-index/SKILL.md`)
 
 ---
 

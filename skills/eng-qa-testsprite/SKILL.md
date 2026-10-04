@@ -216,6 +216,12 @@ Executar `testsprite_generate_code_and_execute`:
 
 Verificar relatório gerado e apresentar resumo ao usuário.
 
+### Skills invocados durante a execução do skill
+
+| Passo | Skill | Condição |
+|-------|-------|----------|
+| — | Nenhuma — skill autocontida | — |
+
 ---
 
 ## Regras

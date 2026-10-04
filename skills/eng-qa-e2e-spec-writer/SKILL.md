@@ -269,6 +269,12 @@ $SESSIONS_DIR/qa/{TASK_MANAGER_KEY}/e2e-spec-{feature-slug}.md
 
 **6.3** Apresentar ao usuário para revisão.
 
+### Skills invocados durante a execução do skill
+
+| Passo | Skill | Condição |
+|-------|-------|----------|
+| — | Nenhuma — skill autocontida | — |
+
 ---
 
 ## Regras

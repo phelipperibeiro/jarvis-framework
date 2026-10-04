@@ -572,6 +572,12 @@ Non-breaking (bump MINOR ou PATCH):
 export type LegacyButtonVariant = 'danger'
 ```
 
+### Skills invocados durante a execução do skill
+
+| Passo | Skill | Condição |
+|-------|-------|----------|
+| — | Nenhuma — skill autocontida | — |
+
 ---
 
 ## Regras

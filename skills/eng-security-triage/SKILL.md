@@ -237,6 +237,12 @@ Para cada achado `confirmed` ou `inconclusive`, identificar o dono mais especifi
 
 Salvar como `owner_hint` no achado. Para achados `rejected` ou `duplicate`: `owner_hint: null`.
 
+### Skills invocados durante a execução do skill
+
+| Passo | Skill | Condição |
+|-------|-------|----------|
+| — | Nenhuma — skill autocontida | — |
+
 ---
 
 ## Step 2 — Escrever output

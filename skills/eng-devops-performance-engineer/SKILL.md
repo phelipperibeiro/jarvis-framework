@@ -222,6 +222,12 @@ Focar nos maiores gargalos primeiro para maximizar ROI:
 - Configurar alertas para prevenir regressão
 - Documentar otimizações com métricas e impacto
 
+### Skills invocados durante a execução do skill
+
+| Passo | Skill | Condição |
+|-------|-------|----------|
+| — | Nenhuma — skill autocontida | — |
+
 ---
 
 ## Comportamentos Esperados

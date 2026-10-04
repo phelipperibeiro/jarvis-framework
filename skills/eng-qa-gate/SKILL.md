@@ -239,6 +239,12 @@ Relatório completo anexado.
 ---
 ```
 
+### Skills invocados durante a execução do skill
+
+| Passo | Skill | Condição |
+|-------|-------|----------|
+| Passo 7 — Atualizar o card (opcional) | `/eng-global-task-comment` | Se `TASK_MANAGER` estiver definido e o card existir (sugerido ao usuário, opcional) |
+
 ---
 
 ## Formato de Saída
