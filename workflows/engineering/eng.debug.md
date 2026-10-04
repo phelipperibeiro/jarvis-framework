@@ -27,7 +27,7 @@ sempre respeitando `$IDE/rules/engineering/eng-rules.md`.
 
 ### Rules
 - **`$IDE/rules/engineering/eng-rules.md`** — regras obrigatórias de engenharia
-  - Inclui: Correlation ID obrigatório, fluxo downstream de cards, rigor por contexto (CDD)
+  - Inclui: Correlation ID obrigatório, autonomia no card, rigor por contexto (CDD)
 
 ### Skills invocados durante o workflow
 

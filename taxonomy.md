@@ -58,63 +58,63 @@ Desenvolvedor Júnior (0-2 anos de experiência)
 - Aprendendo tecnologias e processos
 - Pede ajuda quando precisar — sem gate obrigatório de TL/PM
 - Foco em desenvolver habilidades técnicas
-- No fluxo downstream: dono ponta-a-ponta do card que assumiu (puxar, implementar, MR, validar, deploy)
+- No card: dono ponta-a-ponta do card que assumiu (puxar, implementar, MR, validar, deploy)
 
 ### PLENO
 Desenvolvedor Pleno (2-4 anos de experiência)
 - Autonomia em tarefas individuais
 - Contribui para decisões técnicas
 - Mentoría desenvolvedores júnior
-- No fluxo downstream: dono ponta-a-ponta do card que assumiu
+- No card: dono ponta-a-ponta do card que assumiu
 
 ### SENIOR
 Desenvolvedor Sênior (4+ anos de experiência)
 - Alta autonomia técnica
 - Toma decisões arquiteturais
 - Mentoria e liderança técnica
-- No fluxo downstream: dono ponta-a-ponta do card que assumiu
+- No card: dono ponta-a-ponta do card que assumiu
 
 ### TECH LEAD
 Líder técnico de time ou squad
 - Responsável por direção técnica do time
 - Coordena desenvolvimento e arquitetura
 - Interface entre time e stakeholders
-- No fluxo downstream: apoia o time. Não é gate — o profissional que assumiu o card conduz ponta-a-ponta. TL desbloqueia e cobre quando pedido.
+- No card: apoia o time. Não é gate — o profissional que assumiu o card conduz ponta-a-ponta. TL desbloqueia e cobre quando pedido.
 
 ### SPECIALIST
 Especialista em área técnica ou disciplina específica
 - Expert em domínio particular (segurança, performance, etc.)
 - Consultoria técnica para times
 - Define padrões e melhores práticas
-- No fluxo downstream: dono ponta-a-ponta do card que assumiu
+- No card: dono ponta-a-ponta do card que assumiu
 
 ### QA-ENGINEER
 Engenheiro de Quality Assurance
 - Planejamento e execução de testes (manuais e automatizados)
 - Reporte e rastreamento de bugs
 - Validação técnica de entregas antes da aprovação de produto
-- No fluxo downstream: apoia o DEV na validação — não move cards, apenas executa e reporta
+- No card: apoia o DEV na validação — não move cards, apenas executa e reporta
 
 ### PM
 Product Manager
 - Gestão de produto e roadmap
 - Define prioridades e features
 - Interface com stakeholders de negócio
-- No fluxo downstream: pode priorizar, aceitar e também assumir/conduzir um card ponta-a-ponta. Aceite apoia — não trava o owner.
+- No card: pode priorizar, aceitar e também assumir/conduzir um card ponta-a-ponta. Aceite apoia — não trava o owner.
 
 ### TPM
 Technical Product Manager
 - Product Manager com foco técnico
 - Ponte entre produto e engenharia
 - Decisões de produto com viés técnico
-- No fluxo downstream: pode priorizar, aceitar e também assumir/conduzir um card ponta-a-ponta. Aceite apoia — não trava o owner.
+- No card: pode priorizar, aceitar e também assumir/conduzir um card ponta-a-ponta. Aceite apoia — não trava o owner.
 
 ### GPM
 Group Product Manager
 - Gerencia múltiplos PMs
 - Visão estratégica de produto
 - Coordenação entre diferentes áreas
-- No fluxo downstream: pode priorizar, aceitar e também assumir/conduzir um card ponta-a-ponta. Aceite apoia — não trava o owner.
+- No card: pode priorizar, aceitar e também assumir/conduzir um card ponta-a-ponta. Aceite apoia — não trava o owner.
 
 ### QUALITY_CHAMPION
 Designação secundária para devs com função parcial de qualidade dentro do squad.
@@ -124,7 +124,7 @@ Registrado no campo Posição do `members.md` junto com o cargo principal.
 - Executa quality gates e orienta outros devs via eng-qa-dev-guide
 - NÃO substitui QA em features críticas, decisões de bloqueio ou sign-off de release
 - Dedicação típica: ~30% do tempo em atividades de qualidade
-- No fluxo downstream: apoia o QA-ENGINEER na cobertura — não toma decisões de bloqueio
+- No card: apoia o QA-ENGINEER na cobertura — não toma decisões de bloqueio
 
 ### CTO
 Chief Technology Officer
@@ -137,7 +137,7 @@ Profissional que acumula funções de outras posições (SPECIALIST, PM, dev, QA
 - Cargo principal (como SPECIALIST), não designação secundária (diferente de QUALITY_CHAMPION)
 - Transita entre ENGINEERING e PRODUCT — não fica restrito a uma única área
 - Em qualquer verificação de POSITION ou AREA, é tratado como coringa/superusuário: satisfaz qualquer valor exigido
-- No fluxo downstream: dono ponta-a-ponta do card que assumiu, com autonomia equivalente a TECH LEAD/staff (ver eng-rules.md)
+- No card: dono ponta-a-ponta do card que assumiu, com autonomia equivalente a TECH LEAD/staff (ver eng-rules.md)
 
 ---
 
