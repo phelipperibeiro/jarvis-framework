@@ -557,6 +557,12 @@ import { useShellStore } from 'shell/store'  // import direto entre remote e she
 - [ ] URL de deploy configurada via variável de ambiente
 - [ ] Breaking changes documentadas e comunicadas ao time do shell
 
+### Skills invocados durante a execução do skill
+
+| Passo | Skill | Condição |
+|-------|-------|----------|
+| — | Nenhuma — skill autocontida | — |
+
 ---
 
 ## Regras

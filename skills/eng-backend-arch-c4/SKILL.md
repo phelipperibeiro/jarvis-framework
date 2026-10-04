@@ -259,6 +259,12 @@ git diff origin/main --name-only | grep -E "docker|config|src/(domain|infrastruc
 | Novo container/serviço | Container | Adicionar |
 | Novo módulo/componente | Component | Atualizar |
 
+### Skills invocados durante a execução do skill
+
+| Passo | Skill | Condição |
+|-------|-------|----------|
+| — | Nenhuma — skill autocontida | — |
+
 ---
 
 ## Integração com ADRs

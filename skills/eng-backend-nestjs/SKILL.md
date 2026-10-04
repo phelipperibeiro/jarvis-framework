@@ -713,6 +713,12 @@ export class AppModule {}
 - `REQUEST` → nova instância por requisição (todos os providers injetados herdam o escopo)
 - `TRANSIENT` → nova instância por injeção
 
+### Skills invocados durante a execução do skill
+
+| Passo | Skill | Condição |
+|-------|-------|----------|
+| — | Nenhuma — skill autocontida | — |
+
 ---
 
 ## Regras
