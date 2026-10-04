@@ -1,7 +1,7 @@
 # =============================================================================
 # ENV.md — contexto do workspace para o Jarvis
 # =============================================================================
-# Copiado para $IDE/ENV.md pelo /init-jarvis.
+# Copiado para $IDE/ENV.md pelo /jarvis-init.
 # Valores entre [colchetes] são opções — escolha UMA e apague o resto.
 # Deixe em branco o que não usar. Não coloque tokens/segredos no chat.
 # =============================================================================
@@ -35,7 +35,7 @@ ENABLE_CDD=true
 
 
 # --- Organização (obrigatório — opções vêm do taxonomy.md) -------------------
-SQUAD=[CORE, SUPPORT]
+SQUAD=[CORE]
 HUB=[AI, FRONTEND, BACKEND, QA, DATA, FULLCYCLE]
 AREA=[ENGINEERING, PRODUCT]
 POSITION=[JUNIOR, PLENO, SENIOR, TECH LEAD, SPECIALIST, PM, TPM, GPM, CTO, GENERALIST]
@@ -63,6 +63,14 @@ PROD_RULES=$RULES_FOLDER/$PROD_FOLDER_NAME
 PROD_FLOWS=.$IDE/$FLOWS_FOLDER
 PROD_TEMPLATES=.$IDE/$TEMPLATES_FOLDER/$PROD_FOLDER_NAME
 PROD_DOCS=$DOCS_FOLDER/$PROD_FOLDER_NAME
+
+
+# --- Especializações de stack ------------------------------------------------
+# Skills especializados que o Jarvis carrega junto com o skill base de cada área.
+# Lista de nomes de skill separados por vírgula. Ex: eng-backend-golang,eng-backend-nestjs
+# Vazio = só o skill base (eng-backend / eng-frontend). A variável precisa EXISTIR, mesmo vazia.
+BACKEND_SPECIALIZATIONS=
+FRONTEND_SPECIALIZATIONS=
 
 
 # --- Task manager (opcional) -------------------------------------------------
@@ -128,11 +136,6 @@ SMTP=[google, ses, sendgrid]
 RTK_ENABLED=false
 
 
-# --- Tech Analyst (opcional) -------------------------------------------------
-# Project key do board de triagem N2 (cards que chegam ao Tech Analyst).
-TASK_MANAGER_HUBS_BOARD=
-
-
 # --- Data Engineering (só se HUB=DATA) ---------------------------------------
 # Obrigatório quando HUB=DATA. Omitir o bloco inteiro se o HUB for outro.
 DATA_ORCHESTRATOR=[airflow, prefect, dagster, glue-scheduler]
@@ -171,7 +174,7 @@ QA_SIGNOFF_MAX_AGE=24
 
 # --- Reportar bug no próprio Jarvis (opcional) ------------------------------
 # URL ou path curto do repo do framework (ex: https://github.com/phelipperibeiro/jarvis-framework).
-# Usado pelo skill /report-issue. Alias: JARVIS_GITLAB_PROJECT.
+# Usado pelo skill /jarvis-report-issue. Alias: JARVIS_GITLAB_PROJECT.
 # Token: GitLab .npmrc | GitHub gh auth / GITHUB_TOKEN | Bitbucket BITBUCKET_TOKEN.
 JARVIS_PROJECT=https://github.com/phelipperibeiro/jarvis-framework
 

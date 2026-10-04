@@ -8,6 +8,7 @@ license: AGPL-3.0
 metadata:
   author: jarvis-team
   version: "1.0"
+  area: qa
 ---
 
 # Quality Gate - Validação de Tech Spec
@@ -70,7 +71,7 @@ Senão:
 ```bash
 # Verificar existência do ENV.md
 if [ ! -f "$IDE/ENV.md" ]; then
-  echo "⚠️ ENV.md não encontrado. Execute /init-jarvis primeiro."
+  echo "⚠️ ENV.md não encontrado. Execute /jarvis-init primeiro."
   exit 1
 fi
 
@@ -217,7 +218,7 @@ EOF
 Se `TASK_MANAGER` estiver definido e o card existir, sugerir:
 
 1. **Adicionar label**: `QualityGate::{Status}`
-2. **Adicionar comentário** com resumo do relatório (`eng-task-comment`)
+2. **Adicionar comentário** com resumo do relatório (`eng-global-task-comment`)
 3. **Anexar** o arquivo `qa-gate-report.md`
 
 ```markdown

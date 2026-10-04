@@ -114,19 +114,19 @@ O perfil de comunicação é derivado de `POSITION` (conforme definido no `$IDE/
 
 ## Passo 2 — Sincronizar Documentação Central (condicional)
 
-Se `CENTRAL_DOCS_REPO` estiver configurado no ENV.md, invocar o skill `docs-central` via Skill tool para carregar docs do produto.
+Se `CENTRAL_DOCS_REPO` estiver configurado no ENV.md, invocar o skill `jarvis-docs-central` via Skill tool para carregar docs do produto.
 
 > ⚠️ **IMPORTANTE**: NÃO executar `jarvis docs sync` diretamente via Bash.
-> Usar sempre: **Skill tool → docs-central (Modo 1: Buscar Docs)**
+> Usar sempre: **Skill tool → jarvis-docs-central (Modo 1: Buscar Docs)**
 
-O skill `docs-central` gerencia:
+O skill `jarvis-docs-central` gerencia:
 - Extração de token do `.npmrc`
 - Fallback quando `index.md` não existe (navegação por árvore)
 - Tratamento de erros
 
 **Invocação:**
 ```
-Skill tool: docs-central
+Skill tool: jarvis-docs-central
 Modo: 1 (Buscar Docs)
 Contexto: warm-up - sincronização inicial
 ```
@@ -258,26 +258,6 @@ O menu é determinado pelos valores de `POSITION`, `AREA` e `HUB` lidos do ENV.m
 
 > Se o valor de AREA não tiver menu definido abaixo, use o **menu genérico**.
 > Novos valores de AREA adicionados ao taxonomy.md devem ganhar um menu correspondente aqui.
-
----
-
-### Menu para POSITION=TECH ANALYST (sobrepõe AREA=ENGINEERING)
-
-> ℹ️ O Tech Analyst é transversal — não pertence a nenhuma squad de desenvolvimento.
-> Seu `SQUAD` no ENV.md deve ser `SUPPORT`. Interfaces com todas as squads.
-
-Quando `POSITION=TECH ANALYST`, ignorar o menu de ENGINEERING e exibir:
-
-```
-Como você quer continuar?
-
-A: Atender chamado técnico (ta.atendimento)
-B: Outro
-```
-
-Roteamento:
-- A → `$FLOWS_FOLDER/engineering/ta/eng.ta.atendimento.md`
-- B → perguntar e rotear dinamicamente
 
 ---
 
@@ -487,7 +467,6 @@ Roteamento:
 | CTO e equivalentes | Menu estratégico com segurança em destaque — ver seção "Menu para POSITION=CTO" acima |
 | TECH LEAD em AREA=ENGINEERING | Menu completo de engenharia + workflows de segurança — ver seção "Menu para POSITION=TECH LEAD" acima |
 | PM, TPM, GPM em AREA=ENGINEERING | Mostrar menu PRODUCT mesmo estando na área ENGINEERING |
-| TECH ANALYST | Mostrar menu de atendimento técnico (ta.atendimento) em vez do menu ENGINEERING |
 
 ---
 
@@ -554,7 +533,7 @@ Declare ao usuário: limite configurado, quantas tarefas isso representa e o que
 ## Integração com CDD
 
 Se `ENABLE_CDD=true` no ENV.md, **após o usuário selecionar a opção do menu**,
-execute `/context-detect` antes de iniciar o workflow escolhido.
+execute `/jarvis-context-detect` antes de iniciar o workflow escolhido.
 
 Se `ENABLE_CDD=false` ou não definido, prossiga diretamente para o workflow.
 

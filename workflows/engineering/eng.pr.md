@@ -19,17 +19,17 @@ Este comando cria a **branch, commita as alterações e abre um Merge Request**.
 ## Skills recomendados
 
 - **pr**: siga o playbook do skill para padronizar branch, commits e MR.
-  - Arquivo: `$IDE/skills/eng-pr/SKILL.md`
+  - Arquivo: `$IDE/skills/eng-global-pr/SKILL.md`
 - **eng-qa-test-plan**: se precisar validar lacunas de testes antes de abrir o MR.
   - Arquivo: `$IDE/skills/eng-qa-test-plan/SKILL.md`
 - **eng-qa-testsprite**: para executar testes automatizados E2E/API antes de abrir o MR.
   - Arquivo: `$IDE/skills/eng-qa-testsprite/SKILL.md`
 - **eng-qa-e2e**: para validar fluxos de usuário críticos com testes E2E em linguagem natural antes de abrir o MR.
   - Arquivo: `$IDE/skills/eng-qa-e2e/SKILL.md`
-- **eng-docs-write**: se houver necessidade de atualizar documentação junto do PR.
-  - Arquivo: `$IDE/skills/eng-docs-write/SKILL.md`
-- **eng-cybersecurity**: se o PR toca em auth, inputs, APIs públicas ou permissões — adicionar label `security` ao MR.
-  - Arquivo: `$IDE/skills/eng-cybersecurity/SKILL.md`
+- **eng-global-docs-write**: se houver necessidade de atualizar documentação junto do PR.
+  - Arquivo: `$IDE/skills/eng-global-docs-write/SKILL.md`
+- **eng-security-cybersecurity**: se o PR toca em auth, inputs, APIs públicas ou permissões — adicionar label `security` ao MR.
+  - Arquivo: `$IDE/skills/eng-security-cybersecurity/SKILL.md`
 
 ## Agentes recomendados (opcional)
 
@@ -64,10 +64,10 @@ Pular se `TASK_MANAGER` estiver vazio (freelance).
 Registrar início da criação do MR:
 
 ```
-/eng-task-comment {TASK_MANAGER_KEY} 🔀 [Jarvis] Iniciando criação do Merge Request para {TARGET_BRANCH}
+/eng-global-task-comment {TASK_MANAGER_KEY} 🔀 [Jarvis] Iniciando criação do Merge Request para {TARGET_BRANCH}
 ```
 
-> Usa o skill `/eng-task-comment`. Não bloquear se falhar.
+> Usa o skill `/eng-global-task-comment`. Não bloquear se falhar.
 
 ---
 
@@ -257,7 +257,7 @@ Pular se `TASK_MANAGER` estiver vazio (freelance).
 Após MR criado com sucesso, registrar:
 
 ```
-/eng-task-comment {TASK_MANAGER_KEY} ✅ [Jarvis] MR criado: {TITULO_DO_MR} → {TARGET_BRANCH} | Link: {LINK_DO_MR}
+/eng-global-task-comment {TASK_MANAGER_KEY} ✅ [Jarvis] MR criado: {TITULO_DO_MR} → {TARGET_BRANCH} | Link: {LINK_DO_MR}
 ```
 
 ---

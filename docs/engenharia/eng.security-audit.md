@@ -1,6 +1,6 @@
 # `/eng.security-audit` — auditoria de segurança
 
-Workflow: `workflows/engineering/eng.security-audit.md` · Agente: `SENTINEL` (`eng.cybersecurity.agent`) · Skill: `eng-cybersecurity`
+Workflow: `workflows/engineering/eng.security-audit.md` · Agente: `SENTINEL` (`eng.cybersecurity.agent`) · Skill: `eng-security-cybersecurity`
 
 ## Em uma frase
 

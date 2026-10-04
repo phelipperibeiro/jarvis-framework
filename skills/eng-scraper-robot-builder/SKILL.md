@@ -12,6 +12,7 @@ allowed-tools: Read Write Edit Grep Glob Bash
 metadata:
   author: jarvis-team
   version: "1.0"
+  area: scraper
 # Campos Claude Code-specific (não fazem parte da spec oficial agentskills.io):
 argument-hint: "[url-alvo] [descrição do fluxo]"
 disable-model-invocation: false

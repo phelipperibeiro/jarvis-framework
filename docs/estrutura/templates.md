@@ -40,7 +40,7 @@ Os templates de produto (PRD, FRD, épico, issue, breakdown e discovery) ficam e
 
 ## `ENV-template.md` (crítico)
 
-O skill `init-jarvis` **deve** copiar este arquivo inteiro e só substituir valores. Não inventar chaves.
+O skill `jarvis-init` **deve** copiar este arquivo inteiro e só substituir valores. Não inventar chaves.
 
 Inclui (entre outros):
 
@@ -48,6 +48,7 @@ Inclui (entre outros):
 - `SQUAD`, `HUB`, `AREA`, `POSITION`
 - Pastas IDE (`FLOWS_FOLDER`, `SESSIONS_DIR`, …)
 - Task manager (vazio = freelance), VCS, chat, DB, broker, observabilidade…
+- `BACKEND_SPECIALIZATIONS` e `FRONTEND_SPECIALIZATIONS` (seção "Especializações de stack"): listas de nomes de skill, separadas por vírgula, que os `eng.*` carregam junto da skill base; precisam **existir**, mesmo vazias (ver [especializações de stack](../especializacoes-de-stack.md))
 - `JARVIS_PROJECT`, `CENTRAL_DOCS_*`
 - `RTK_ENABLED`
 - Bloco `DATA_*` (só se `HUB=DATA`)
@@ -56,5 +57,5 @@ Inclui (entre outros):
 
 1. Versionados neste repo.
 2. `jarvis init` → `.$IDE/templates/`.
-3. `/init-jarvis` lê `templates/ENV-template.md` (do framework ou da cópia na IDE, conforme o skill) e grava `$IDE/ENV.md`.
+3. `/jarvis-init` lê `templates/ENV-template.md` (do framework ou da cópia na IDE, conforme o skill) e grava `$IDE/ENV.md`.
 4. Outros workflows leem o template correspondente ao artefato (ARD, plan, …).

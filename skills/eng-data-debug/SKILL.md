@@ -2,7 +2,7 @@
 name: eng-data-debug
 description: >
   Diagnóstico e rastreamento de falhas em pipelines de dados por camada (fonte → bronze → silver → gold).
-  Analogia com eng-ms-trace mas para data lineage. Cobre logs, checks de qualidade e plano de reprocessamento.
+  Analogia com eng-backend-microservices-trace mas para data lineage. Cobre logs, checks de qualidade e plano de reprocessamento.
   Trigger: Use quando um pipeline falhou, dado está incorreto, volume caiu ou dado está desatualizado.
 license: AGPL-3.0
 compatibility: Designed for Claude Code (or similar products)
@@ -10,6 +10,7 @@ allowed-tools: Read Write Edit Glob Grep Bash
 metadata:
   author: jarvis-team
   version: "1.0"
+  area: data
 argument-hint: "[pipeline|tabela|camada] [sintoma]"
 disable-model-invocation: false
 ---

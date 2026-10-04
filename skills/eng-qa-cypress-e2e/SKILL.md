@@ -11,6 +11,7 @@ allowed-tools: Read Write Edit Grep Glob Bash
 metadata:
   author: jarvis-framework
   version: "1.0"
+  area: qa
 argument-hint: "[caminho da spec / ID da task / descrição do fluxo]"
 disable-model-invocation: false
 ---

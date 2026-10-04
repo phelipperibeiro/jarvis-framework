@@ -4,7 +4,7 @@
 
  Membros do Time
 
-> Esta seção é atualizada automaticamente quando alguém executa `/init-jarvis`.
+> Esta seção é atualizada automaticamente quando alguém executa `/jarvis-init`.
 
 | Nome | Cargo | Área | Hub | Email |
 |------|-------|------|-----|-------|

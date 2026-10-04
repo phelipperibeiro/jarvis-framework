@@ -85,7 +85,7 @@ Onde `$ARGUMENTS` é um dos formatos:
 ## Após Modificações
 
 Depois de adicionar/remover opções:
-1. Execute `/init-jarvis` - as novas opções aparecem automaticamente
+1. Execute `/jarvis-init` - as novas opções aparecem automaticamente
 2. Não é necessário reiniciar o Claude ou a IDE
 3. Projetos existentes continuam funcionando
 

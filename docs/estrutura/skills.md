@@ -4,7 +4,7 @@
 
 Cada skill é uma pasta com `SKILL.md` (e às vezes `assets/`, scripts). É a **fonte operacional** de um tema: passos, validações, templates de saída.
 
-Quando o usuário digita `/init-jarvis` ou “use eng-backend”, a IDE carrega o skill correspondente.
+Quando o usuário digita `/jarvis-init` ou “use eng-backend”, a IDE carrega o skill correspondente.
 
 ## Como é montado
 
@@ -12,19 +12,19 @@ Quando o usuário digita `/init-jarvis` ou “use eng-backend”, a IDE carrega 
 skills/
 ├── AGENTS.md
 ├── SKILLS-ROADMAP.md          # roadmap interno de skills
-├── init-jarvis/              # onboarding + ENV.md
-├── context-detect/
-├── docs-central/              # sync/publish docs centrais
-├── eng-backend/, eng-frontend/, eng-nestjs/, …
-├── eng-pr/, eng-docs-write/, eng-task-comment/
+├── jarvis-init/              # onboarding + ENV.md
+├── jarvis-context-detect/
+├── jarvis-docs-central/              # sync/publish docs centrais
+├── eng-backend/, eng-frontend/, eng-backend-nestjs/, …
+├── eng-global-pr/, eng-global-docs-write/, eng-global-task-comment/
 ├── eng-qa-*                   # família QA (cypress, gate, exploratory, …)
 ├── eng-data-*                 # família Data
-├── eng-cybersecurity/, eng-threat-model/, eng-security-*
+├── eng-security-cybersecurity/, eng-security-threat-model/, eng-security-*
 ├── eng-rpa via eng-scraper*, eng-scraper-robot-builder
-├── prod-specs/ (porta de entrada), prod-specs-update/, prod-roadmap-report/
+├── product-specs/ (porta de entrada), product-specs-update/, product-roadmap-report/
 ├── taxonomy-manager/
-├── report-issue/
-└── … (~50 skills)
+├── jarvis-report-issue/
+└── … (49 skills; todos com `metadata.area`)
 ```
 
 Inventário atual (pastas): rode `ls skills` ou `jarvis list` após o pacote instalado.
@@ -49,6 +49,10 @@ Frontmatter comum: `name`, `description` (descoberta na IDE / Codex `openai.yaml
 
 Mapa comando → skill: ver tabela em `AGENTS.md` (raiz) e `skills/AGENTS.md`.
 
+## Áreas e nomes
+
+Todo skill tem `metadata.area` (`qa`, `data`, `ai`, `frontend`, `backend`, `security`, `scraper`, `devops`, `global` ou `product`) e um nome no padrão `<prefixo>-<área>-<nome>`: `eng-<área>-...` para engenharia, `eng-global-...` para engenharia global, `product-...` para produto e `jarvis-...` para os transversais do framework. Especializações de backend e frontend também têm `metadata.stack` e só são carregadas quando registradas no `ENV.md`. Skill sem área reconhecida bloqueia os comandos `eng.*`. Detalhes em `skills/AGENTS.md`.
+
 ## No ciclo de vida
 
 1. Versionados neste repo.
@@ -59,7 +63,9 @@ Mapa comando → skill: ver tabela em `AGENTS.md` (raiz) e `skills/AGENTS.md`.
 
 | Skill | Nota |
 |-------|------|
-| `init-jarvis` | Cria ENV; Context7 obrigatório; Jira **não** bloqueia; freelance OK |
-| `eng-task-comment` | Comenta no board conforme `TASK_MANAGER` |
-| `report-issue` | Abre issue no `JARVIS_PROJECT` |
+| `jarvis-init` | Cria ENV; Context7 obrigatório; Jira **não** bloqueia; freelance OK; passo opcional **adicionar as stacks** (detecta a stack do workspace e registra ou cria a especialização) |
+| `eng-global-task-comment` | Comenta no board conforme `TASK_MANAGER` |
+| `jarvis-report-issue` | Abre issue no `JARVIS_PROJECT` |
+| `jarvis-list-specializations` | Lista as especializações instaladas (backend e frontend) e se estão registradas nas listas do `ENV.md`; só lê |
+| `jarvis-create-specialization` | Cria o skill de uma stack (backend ou frontend) a partir do código do projeto, mostra para revisão e o registra na lista da área |
 | `taxonomy-manager` | Mantém `taxonomy.md` |

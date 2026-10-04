@@ -20,23 +20,18 @@ apontando riscos, gaps e melhorias, sempre respeitando `$IDE/rules/engineering/e
   - Arquivo: `$IDE/skills/eng-qa-test-plan/SKILL.md`
 - **eng-qa-testsprite**: para executar testes automatizados e validar cobertura real das mudanças.
   - Arquivo: `$IDE/skills/eng-qa-testsprite/SKILL.md`
-- **eng-arch-c4**: quando a revisão envolver mudanças arquiteturais relevantes e precisar atualizar diagramas.
-  - Arquivo: `$IDE/skills/eng-arch-c4/SKILL.md`
-- **eng-frontend**: quando a revisão envolver componentes React, hooks, performance de UI ou acessibilidade.
-  - Arquivo: `$IDE/skills/eng-frontend/SKILL.md`
-- **eng-design-system**: quando a revisão envolver componentes do design system, tokens ou Storybook.
-  - Arquivo: `$IDE/skills/eng-design-system/SKILL.md`
-- **eng-microfrontend**: quando a revisão envolver Module Federation, shell/remote ou contratos de interface.
-  - Arquivo: `$IDE/skills/eng-microfrontend/SKILL.md`
+- **Skills de backend e frontend**: quando a revisão envolver código de backend (endpoints, autenticação, workers, banco de dados) ou de frontend (componentes, estado, estilos, performance de UI, acessibilidade), aplique a regra `$IDE/rules/engineering/eng.specializations-rules.md` para a área envolvida: ela carrega o skill base (`eng-backend` ou `eng-frontend`) e as especializações registradas no `ENV.md`.
+  - Arquivo da regra: `$IDE/rules/engineering/eng.specializations-rules.md`
+  - Para mudanças arquiteturais relevantes que exijam atualizar diagramas, use a especialização de arquitetura registrada em `BACKEND_SPECIALIZATIONS`, se houver; sem ela, descreva a mudança no próprio documento de arquitetura.
 
 ## Agentes recomendados
 
 - **eng.qa.test-planner**: para análise detalhada de cobertura de testes e identificação de gaps.
   - Arquivo: `$IDE/agents/engineering/qa/eng.qa.test-planner.md`
   - Quando usar: Se a revisão identificar problemas de cobertura que precisam de análise mais profunda.
-- **eng.frontend.agent**: para revisão aprofundada de código React, decisões arquiteturais frontend e acessibilidade.
+- **eng.frontend.agent**: para revisão aprofundada de código frontend (conforme as especializações registradas), decisões arquiteturais e acessibilidade.
   - Arquivo: `$IDE/agents/engineering/eng.frontend.agent.md`
-  - Quando usar: PR com mudanças significativas de interface, componentes ou micro frontend.
+  - Quando usar: PR com mudanças significativas de interface ou componentes.
 - **eng.ux-designer.agent**: para avaliação de usabilidade, fluxo do usuário e microcopy.
   - Arquivo: `$IDE/agents/engineering/eng.ux-designer.agent.md`
   - Quando usar: PR que introduz nova feature de UI ou altera fluxo de usuário existente.

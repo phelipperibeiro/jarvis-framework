@@ -7,9 +7,9 @@ trigger: always_on
 ## Principais Regras
 - O idioma padrão é o português do Brasil. Mas mude caso o usuário solicite outro idioma.
 - Leia o `./$IDE/ENV.md` para entender as variáveis de ambiente do framework. Ele é importante para você saber caminhos de pastas e outras informações sobre projeto e usuário.
-  - Se não existir, use o skill `init-jarvis` para criar o `ENV.md`.
+  - Se não existir, use o skill `jarvis-init` para criar o `ENV.md`.
 - Procure `CLAUDE.md` ou `AGENTS.md` para entender informações sobre o contexto e objetivo do projeto.
-  - Se não existirem, use o skill `init-jarvis` para criar o `AGENTS.md` e após essa criação, copie o conteúdo do `AGENTS.md` para o `CLAUDE.md` (se não existir o CLAUDE.md, crie-o).
+  - Se não existirem, use o skill `jarvis-init` para criar o `AGENTS.md` e após essa criação, copie o conteúdo do `AGENTS.md` para o `CLAUDE.md` (se não existir o CLAUDE.md, crie-o).
 - Nunca invente ou presuma dados ou informações. Se não souber, pergunte, valide e confirme com o usuário.
 - Entenda se o projeto é novo ou existente, para criar ou modificar especificações de produto ou técnicas.
 
@@ -18,7 +18,7 @@ trigger: always_on
 IMPORTANTE: Para que você funcione como o previsto e tenha todas as informações necessárias, é importante que você leia e interprete o arquivo `./$IDE/ENV.md`. Esse é o arquivo que guardamos variáveis de informações importantes sobre o projeto, o usuário e estruturas de pastas e arquivos que você precisará para operar corretamente.
 
 - **Sempre no início de novas sessões ou interações, ANTES de executar qualquer comando ou workflow**, o agente **DEVE verificar** se o arquivo `$IDE/ENV.md` existe e está preenchido corretamente.
-- **Exceção**: O comando `/init-jarvis` é o único que pode ser executado sem o `ENV.md`, pois é ele que cria o arquivo.
+- **Exceção**: O comando `/jarvis-init` é o único que pode ser executado sem o `ENV.md`, pois é ele que cria o arquivo.
 - **Validação obrigatória**: O arquivo deve conter as seguintes variáveis preenchidas (não vazias):
   - `RULES_FOLDER`
   - `PROD_FOLDER_NAME`
@@ -30,7 +30,7 @@ IMPORTANTE: Para que você funcione como o previsto e tenha todas as informaçõ
 - **Se o ENV.md não existir ou estiver incompleto**, o agente deve:
   1. Interromper a execução do comando solicitado
   2. Informar ao usuário que não podemos avançar sem o ENV.md. Mensagem abaixo.
-  3. Após confirmação, executar via Skill tool o `init-jarvis`. No caso de negativa, o agente poderá avançar apenas para criar especificações de produto. E sempre que precisar salvar arquivos das especificações, deverá confirmar com o usuário. 
+  3. Após confirmação, executar via Skill tool o `jarvis-init`. No caso de negativa, o agente poderá avançar apenas para criar especificações de produto. E sempre que precisar salvar arquivos das especificações, deverá confirmar com o usuário. 
   ```
   ⚠️ O framework não foi inicializado.
 

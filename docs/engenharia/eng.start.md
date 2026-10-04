@@ -20,7 +20,6 @@ Além do documento, ele prepara o ambiente: cria a **branch de feature** a parti
 
 ## Quando **não** usar
 
-- Você é o perfil `TECH ANALYST` → o comando redireciona para [`eng.ta.atendimento`](./eng.ta.atendimento.md)
 - Você quer implementar direto → [`eng.work`](./eng.work.md) (exige `plan.md`, que exige `architecture.md`)
 - Bug em produção que precisa de diagnóstico → [`eng.debug`](./eng.debug.md)
 
@@ -41,6 +40,7 @@ Além do documento, ele prepara o ambiente: cria a **branch de feature** a parti
 - **Nunca cria branch a partir de `main`/`master`**, sempre de `dev`
 - **Nunca avança sozinho:** só termina com aprovação explícita do documento
 - **Não assume requisitos:** distingue fato de suposição e pergunta
+- **Stack do projeto:** em trabalho de backend ou de frontend, carrega a skill base mais as **especializações** registradas no `ENV.md` (`BACKEND_SPECIALIZATIONS` e `FRONTEND_SPECIALIZATIONS`); se algum skill instalado não tem `metadata.area`, **o comando é interrompido** ([especializações de stack](../especializacoes-de-stack.md))
 - Toda feature precisa registrar em `architecture.md` os pontos de segurança (dados sensíveis, superfície de ataque, modelo de auth), ou declarar "sem superfície de segurança identificada"
 
 ## Próximo passo típico

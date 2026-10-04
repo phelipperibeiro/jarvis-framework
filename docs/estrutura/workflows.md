@@ -28,7 +28,6 @@ workflows/
 │   ├── data/                  # data.new-pipeline, data.contract, …
 │   ├── frontend/              # component, review, perf-audit, …
 │   ├── qa/                    # fluxos QA
-│   └── ta/                    # tech analyst
 └── product/
     ├── prod.spec.md
     ├── prod.spec.discovery.md
@@ -55,7 +54,7 @@ Por isso, após o init, a árvore na IDE pode parecer “plana”, embora neste 
 | Claude | `commands` |
 | Demais | `workflows` |
 
-Definido no ENV pelo `/init-jarvis`.
+Definido no ENV pelo `/jarvis-init`.
 
 ## Ciclo canônico de engenharia
 

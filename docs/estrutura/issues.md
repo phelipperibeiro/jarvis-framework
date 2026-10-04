@@ -14,7 +14,7 @@ Notas e checklists **internos** sobre o próprio Jarvis (dívidas técnicas, ide
 
 - Não substitui GitHub Issues do repo ([phelipperibeiro/jarvis-framework](https://github.com/phelipperibeiro/jarvis-framework/issues))
 - Não é lido automaticamente pelos workflows de engenharia do produto
-- Para reportar bug do framework pelo chat: skill `report-issue` (usa `JARVIS_PROJECT` no ENV)
+- Para reportar bug do framework pelo chat: skill `jarvis-report-issue` (usa `JARVIS_PROJECT` no ENV)
 
 ## Pacote npm
 

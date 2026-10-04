@@ -11,7 +11,7 @@ Documentação dos arquivos soltos na raiz do repositório Jarvis.
 
 Contém:
 
-- Get Started (clone → install → `jarvis init` → `/init-jarvis`)
+- Get Started (clone → install → `jarvis init` → `/jarvis-init`)
 - Atualizar / sincronizar (`git pull`, `npm install`, `which jarvis`, `jarvis init`, Upgrade do ENV)
 - Tabelas curtas de papéis, recursos e camadas
 - Links para a documentação completa em `docs/`
@@ -29,7 +29,7 @@ Não explica cada pasta em profundidade — isso fica em [estrutura/](./README.m
 
 - Visão geral (repo ≠ app executável)
 - Árvore de pastas (histórico ainda cita `.windsurf/` como layout tipico pós-init)
-- Pré-requisito `ENV.md` (exceto `/init-jarvis`)
+- Pré-requisito `ENV.md` (exceto `/jarvis-init`)
 - Taxonomia, variáveis obrigatórias, detecção de IDE
 - Hierarquia de leitura de documentos
 - Fluxos `/eng.start` → `/eng.pr`
@@ -39,7 +39,7 @@ Não explica cada pasta em profundidade — isso fica em [estrutura/](./README.m
 
 Há `AGENTS.md` **aninhados** em `agents/`, `skills/`, `rules/`, `templates/`, `workflows/` — o mais próximo do arquivo em edição tem precedência.
 
-Não confundir com o template `templates/engineering/AGENTS-template.md`, que gera o `AGENTS.md` **do projeto alvo** no `/init-jarvis`.
+Não confundir com o template `templates/engineering/AGENTS-template.md`, que gera o `AGENTS.md` **do projeto alvo** no `/jarvis-init`.
 
 ---
 
@@ -78,21 +78,21 @@ A versão exibida no banner do `jarvis init` e em `jarvis --version` **vem daqui
 
 ## `taxonomy.md`
 
-**Fonte de verdade** das opções organizacionais usadas pelo `/init-jarvis` e pelo skill `taxonomy-manager`.
+**Fonte de verdade** das opções organizacionais usadas pelo `/jarvis-init` e pelo skill `taxonomy-manager`.
 
 Seções:
 
 | Seção     | Exemplos neste fork                                         |
 | --------- | ----------------------------------------------------------- |
-| Squads    | `CORE`, `SUPPORT`                                           |
+| Squads    | `CORE`                                                      |
 | Hubs      | `AI`, `FRONTEND`, `BACKEND`, `QA`, `DATA`, `FULLCYCLE`      |
-| Positions | `JUNIOR` … `CTO`, `QA-ENGINEER`, `TECH ANALYST`, `GENERALIST`, … |
+| Positions | `JUNIOR` … `CTO`, `QA-ENGINEER`, `GENERALIST`, … |
 | Areas     | `ENGINEERING`, `PRODUCT`                                    |
 | Domain    | e-mail corporativo (opcional; fork sem domínio obrigatório) |
 
 Cada opção é um heading `### NOME`. O init valida respostas contra essa lista.
 
-Para customizar a org: edite o arquivo ou use `/taxonomy add|update|remove|validate`, depois alinhe o `ENV.md` com `/init-jarvis` se necessário.
+Para customizar a org: edite o arquivo ou use `/taxonomy add|update|remove|validate`, depois alinhe o `ENV.md` com `/jarvis-init` se necessário.
 
 `taxonomy.md` é **copiado** para `.$IDE/` no `jarvis init` (está em `SYNC_ROOT_FILES`).
 

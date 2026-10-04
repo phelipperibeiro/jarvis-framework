@@ -40,27 +40,6 @@ Ler `TASK_MANAGER` do `$IDE/ENV.md`. Seguir `$IDE/rules/engineering/eng.integrat
 
 ---
 
-## Fase 0: Verificação de Perfil
-
-Ler `POSITION` do ENV.md:
-
-```bash
-grep "^POSITION=" $IDE/ENV.md
-```
-
-Se `POSITION=TECH ANALYST`:
-```
-→ Este workflow não é adequado para o perfil TECH ANALYST.
-→ Redirecionar para: $FLOWS_FOLDER/engineering/ta/eng.ta.atendimento.md
-
-ℹ️ O eng.start é voltado para desenvolvimento de features.
-   Para atendimento técnico, use ta.atendimento.
-```
-
-Caso contrário, continuar normalmente.
-
----
-
 ## Fase 0.1: Análise de Contexto (CDD)
 
 > 🎯 **Objetivo**: Adaptar o rigor e cerimônia do workflow com base no contexto real da tarefa.
@@ -74,19 +53,19 @@ grep "^ENABLE_CDD=" $IDE/ENV.md
 
 - Se `ENABLE_CDD=false` ou não definida → **Pular esta fase** e ir direto para Fase 1
 
-- Se `ENABLE_CDD=true` → **Executar obrigatoriamente o skill `/context-detect` agora** (não pular, não sugerir ao usuário — executar)
+- Se `ENABLE_CDD=true` → **Executar obrigatoriamente o skill `/jarvis-context-detect` agora** (não pular, não sugerir ao usuário — executar)
 
 ### 0.1 Executar Detecção de Contexto
 
 **OBRIGATÓRIO quando `ENABLE_CDD=true`**: invocar o skill imediatamente antes de qualquer outra ação:
 
 ```
-/context-detect {TASK_MANAGER_KEY}
+/jarvis-context-detect {TASK_MANAGER_KEY}
 ```
 
-> ⚠️ Não continue para a Fase 1 sem que o `/context-detect` tenha sido executado com sucesso e o `context.md` gerado.
+> ⚠️ Não continue para a Fase 1 sem que o `/jarvis-context-detect` tenha sido executado com sucesso e o `context.md` gerado.
 
-O skill `/context-detect` irá:
+O skill `/jarvis-context-detect` irá:
 - Analisar a branch, Jira key e características do projeto
 - Ler POSITION e MAX_AI_EXECUTION_PERCENTAGE do ENV.md
 - Gerar o arquivo `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/context.md`
@@ -133,10 +112,10 @@ Pular se `TASK_MANAGER` estiver vazio (freelance).
 Após obter o `TASK_MANAGER_KEY`, registrar o início do planejamento:
 
 ```
-/eng-task-comment {TASK_MANAGER_KEY} 🚀 [Jarvis] Iniciando planejamento - architecture.md sendo criado
+/eng-global-task-comment {TASK_MANAGER_KEY} 🚀 [Jarvis] Iniciando planejamento - architecture.md sendo criado
 ```
 
-> Usa o skill `/eng-task-comment` (MCP Atlassian → fallback curl). Não bloquear se falhar.
+> Usa o skill `/eng-global-task-comment` (MCP Atlassian → fallback curl). Não bloquear se falhar.
 
 ---
 
@@ -226,7 +205,7 @@ Se `CENTRAL_DOCS_REPO` estiver configurado no ENV.md, buscar docs relacionados:
 
 **Passo 1:** Identificar docs relevantes com base no Jira ID e tags do card
 
-**Passo 2:** Buscar documentos via skill docs-central:
+**Passo 2:** Buscar documentos via skill jarvis-docs-central:
 - PRD relacionado (contexto de produto)
 - ARD geral do produto (arquitetura macro)
 - ARD específico do repo (se existir)
@@ -315,7 +294,7 @@ Documente:
 
 > ⚠️ **Quando executar**: Features que envolvam APIs públicas, processamento de dados sensíveis, alta carga esperada ou requisitos não-funcionais explícitos.
 
-**Se a feature tiver requisitos de performance** (latência, throughput, escalabilidade), use o skill [eng-performance-engineer]($IDE/skills/eng-performance-engineer/SKILL.md) para:
+**Se a feature tiver requisitos de performance** (latência, throughput, escalabilidade), use o skill [eng-devops-performance-engineer]($IDE/skills/eng-devops-performance-engineer/SKILL.md) para:
 - Estabelecer baseline de métricas antes de implementar
 - Definir thresholds e SLIs/SLOs da feature
 - Planejar load tests com cenários realistas
@@ -325,30 +304,17 @@ Documente:
 - Definir estratégias de cache, custo e guardrails de segurança
 - Planejar observabilidade e métricas de avaliação do sistema de IA
 
-**Se a feature envolver aspectos avançados do framework NestJS** (módulos, DI, guards, interceptors, pipes, exception filters, ConfigModule, autenticação Passport/JWT), use o skill [eng-nestjs]($IDE/skills/eng-nestjs/SKILL.md) para:
-- Definir arquitetura de módulos e boundaries de domínio
-- Planejar estratégia de guards e interceptors
-- Configurar autenticação e validação de entrada
-
-**Se a feature envolver interface ou componentes frontend** (React, Next.js, SSR/SSG, performance de UI, acessibilidade), use o skill [eng-frontend]($IDE/skills/eng-frontend/SKILL.md) para:
+**Se a feature envolver interface ou componentes frontend** (componentes, estado, estilos, renderização, performance de UI, acessibilidade), aplique a regra [eng.specializations-rules.md]($IDE/rules/engineering/eng.specializations-rules.md) para a área **frontend**: ela carrega o skill base [eng-frontend]($IDE/skills/eng-frontend/SKILL.md) mais as especializações registradas em `FRONTEND_SPECIALIZATIONS`, e então:
 - Definir estratégia de componentes, estado e renderização
-- Planejar performance de UI (bundle, Core Web Vitals, lazy loading)
+- Planejar performance de UI (bundle, Core Web Vitals, carregamento tardio)
 - Estabelecer padrões de acessibilidade e cobertura de testes de interface
+- Seguir o que cada especialização registrada pedir para a stack do projeto
 
-**Se a feature envolver o design system** (novo componente compartilhado, tokens, Storybook, breaking change em componente público), use o skill [eng-design-system]($IDE/skills/eng-design-system/SKILL.md) para:
-- Determinar se o componente pertence ao design system ou ao remote (reutilizável vs local)
-- Definir tokens semânticos, variantes CVA e API pública de props
-- Planejar story no Storybook e estratégia de versionamento (patch/minor/major)
-
-**Se a feature envolver micro frontend** (novo remote, integração ao shell, Module Federation, contratos de interface, shared dependencies), use o skill [eng-microfrontend]($IDE/skills/eng-microfrontend/SKILL.md) para:
-- Definir arquitetura shell/remote e o que será exposto
-- Planejar contrato de interface em TypeScript (tipos em `mfe-contracts`)
-- Estratégia de shared dependencies e event bus para comunicação desacoplada
-
-**Se a feature envolver APIs, autenticação ou workers backend** (endpoints REST/GraphQL, JWT/OAuth2, RBAC, RabbitMQ, cron, integrações externas, caching), use o skill [eng-backend]($IDE/skills/eng-backend/SKILL.md) para:
+**Se a feature envolver APIs, autenticação ou workers backend** (endpoints, autenticação/autorização, filas e mensageria, jobs agendados, integrações externas, cache, banco de dados), aplique a regra [eng.specializations-rules.md]($IDE/rules/engineering/eng.specializations-rules.md) para a área **backend**: ela carrega o skill base [eng-backend]($IDE/skills/eng-backend/SKILL.md) mais as especializações registradas em `BACKEND_SPECIALIZATIONS`, e então:
 - Definir design de endpoints (paginação, versionamento, idempotência)
 - Planejar autenticação/autorização e controle de acesso
-- Arquitetar workers, filas RabbitMQ e integrações com retry/circuit breaker
+- Arquitetar workers, filas e integrações com retry/circuit breaker
+- Seguir o que cada especialização registrada pedir para a stack do projeto
 
 **Se a feature envolver engenharia de dados** (pipelines ETL/ELT, modelagem dimensional, ingestão em S3/Athena, jobs AWS Glue, DAGs Airflow, contratos de dados, Great Expectations, camadas bronze/silver/gold), use o skill [eng-data-engineer]($IDE/skills/eng-data-engineer/SKILL.md) para:
 - Definir a arquitetura Medallion da feature (bronze → silver → gold)
@@ -361,7 +327,7 @@ Documente:
 - Definir ferramenta e arquitetura do scraper
 - Planejar resiliência, rate limiting e formato de saída
 
-**Se a feature envolver autenticação, autorização, inputs de usuário, dados sensíveis ou endpoints públicos**, use o skill [eng-cybersecurity]($IDE/skills/eng-cybersecurity/SKILL.md) para:
+**Se a feature envolver autenticação, autorização, inputs de usuário, dados sensíveis ou endpoints públicos**, use o skill [eng-security-cybersecurity]($IDE/skills/eng-security-cybersecurity/SKILL.md) para:
 - Mapear superfície de ataque e dados sensíveis (PII, financeiros)
 - Definir modelo de auth e RBAC adequado
 - Planejar estratégia de sanitização de inputs
@@ -429,7 +395,7 @@ Pular se `TASK_MANAGER` estiver vazio (freelance).
 Registrar conclusão do planejamento:
 
 ```
-/eng-task-comment {TASK_MANAGER_KEY} ✅ [Jarvis] Planejamento concluído - architecture.md criado. Branch: {NOME_DA_BRANCH}
+/eng-global-task-comment {TASK_MANAGER_KEY} ✅ [Jarvis] Planejamento concluído - architecture.md criado. Branch: {NOME_DA_BRANCH}
 ```
 
 ### 5.5 Finalização

@@ -76,9 +76,9 @@ Executar cada estágio em sequência. Ao final de cada um, confirmar com o usuá
 
 ---
 
-### Estágio 1 — Threat Model (`/eng-threat-model`)
+### Estágio 1 — Threat Model (`/eng-security-threat-model`)
 
-**Skill**: `$IDE/skills/eng-threat-model/SKILL.md`
+**Skill**: `$IDE/skills/eng-security-threat-model/SKILL.md`
 
 Perguntar modo de operação:
 ```

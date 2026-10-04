@@ -72,8 +72,8 @@ Não use quando já existe uma spec (use `/prod.spec.clarify`) ou quando o escop
 
 ## Apoio de skills (apoio, nunca a fonte da decisão)
 
-- **Sempre:** busca em `$PROD_DOCS`; `docs-central` quando `CENTRAL_DOCS_REPO` estiver configurado; `context-detect` para calibrar a profundidade da entrevista
-- **Só com a confirmação do usuário:** `eng-arch-c4` (arquitetura atual) e `eng-cybersecurity` (quando a ideia envolve autenticação, dados pessoais ou fluxo financeiro). São skills de engenharia: pergunte antes de consultá-las, e o que retornarem entra no discovery como **suposição a validar**, não como fato
+- **Sempre:** busca em `$PROD_DOCS`; `jarvis-docs-central` quando `CENTRAL_DOCS_REPO` estiver configurado; `jarvis-context-detect` para calibrar a profundidade da entrevista
+- **Só com a confirmação do usuário:** `eng-backend-arch-c4` (arquitetura atual) e `eng-security-cybersecurity` (quando a ideia envolve autenticação, dados pessoais ou fluxo financeiro). São skills de engenharia: pergunte antes de consultá-las, e o que retornarem entra no discovery como **suposição a validar**, não como fato
 
 ## Restrições
 

@@ -107,7 +107,7 @@ jarvis/
 │  jarvis-lock.json   │  versão + origem do framework
 │  .jarvis/sessions/  │  estado local eng/prod/qa
 └──────────┬───────────┘
-           │ no chat: /init-jarvis
+           │ no chat: /jarvis-init
            ▼
 ┌──────────────────────┐
 │  .cursor/ENV.md      │  perfil (USER, SQUAD, HUB, vendors, RTK…)
@@ -131,7 +131,11 @@ Estado do framework **não** fica em `~/.jarvis/` neste fork (exceto restos lega
 
 ### ENV.md
 
-Fonte de verdade do perfil no projeto. Criado só via `/init-jarvis` a partir de [templates/ENV-template.md](./estrutura/templates.md). Sem ENV, workflows de eng não têm contexto confiável.
+Fonte de verdade do perfil no projeto. Criado só via `/jarvis-init` a partir de [templates/ENV-template.md](./estrutura/templates.md). Sem ENV, workflows de eng não têm contexto confiável.
+
+### Especializações de stack
+
+O Jarvis é **neutro de stack**: `eng-backend` e `eng-frontend` guardam o que vale em qualquer linguagem, e cada projeto registra as **especializações** da sua stack em `BACKEND_SPECIALIZATIONS` e `FRONTEND_SPECIALIZATIONS` (no `ENV.md`). Todo skill tem `metadata.area` (e, nas especializações, `metadata.stack`), e um skill sem área reconhecida bloqueia os `eng.*`. O `/jarvis-init` oferece o passo "adicionar as stacks" e o `/jarvis-create-specialization` cria uma especialização a partir do código. Detalhes: [especializacoes-de-stack.md](./especializacoes-de-stack.md).
 
 ### Taxonomia
 
@@ -158,7 +162,7 @@ Sem OAuth. Ordem: `USER=` no ENV → `git config user.email` → `whoami`. CLI: 
 | Agents | [agents.md](./estrutura/agents.md) | `.$IDE/agents/` |
 | Skills | [skills.md](./estrutura/skills.md) | `.$IDE/skills/` |
 | Workflows | [workflows.md](./estrutura/workflows.md) | `.$IDE/workflows/` ou `commands/` |
-| Rules | [rules.md](./estrutura/rules.md) | `.$IDE/rules/` (filtradas no init-jarvis) |
+| Rules | [rules.md](./estrutura/rules.md) | `.$IDE/rules/` (filtradas no jarvis-init) |
 | Templates | [templates.md](./estrutura/templates.md) | `.$IDE/templates/` |
 
 **Agents × Skills:** agent = postura; skill = playbook. Com skill no tema, a skill manda.
@@ -208,7 +212,7 @@ O banner do `init` mostra **versão + path de origem** do pacote.
 | Chat | `MESSAGE_COMUNICATOR` | slack/discord/teams |
 | Demais | ver ENV-template | DB, broker, storage, observability, Sonar… |
 
-**MCPs no `/init-jarvis`:** Context7 **obrigatório**. Task manager / Jira **não bloqueiam**.
+**MCPs no `/jarvis-init`:** Context7 **obrigatório**. Task manager / Jira **não bloqueiam**.
 
 ---
 
@@ -235,7 +239,7 @@ Detalhe da rule: `rules/rtk-rules.md`. Comentários: `templates/ENV-template.md`
 2. Reinstall do pacote (`npm install -g` / `--save-dev` / link)  
 3. `which jarvis` + `jarvis --version`  
 4. No workspace: `jarvis init` (espelha `.$IDE/`)  
-5. `/init-jarvis` → **Upgrade (C)** só se houver chaves novas no template  
+5. `/jarvis-init` → **Upgrade (C)** só se houver chaves novas no template (obrigatório ao vir de uma versão anterior à 2.0: acrescenta as listas de especializações)  
 
 `ENV.md` e `.jarvis/sessions/` **não** são sobrescritos pelo sync de assets.
 

@@ -26,12 +26,47 @@ export const SYNC_DIRS = Object.freeze([
  * Caminhos que saíram do framework e são removidos das instalações que atualizam.
  * Lista explícita, relativa à pasta da IDE (ex.: `.claude/`): o `init` nunca varre
  * nem apaga nada fora dela. Para uma remoção futura, acrescente o caminho aqui.
+ * Inclui as pastas dos skills renomeados para o padrão de áreas (`<prefixo>-<área>-...`).
  * @constant {ReadonlyArray<string>}
  */
 export const OBSOLETE_PATHS = Object.freeze([
   "skills/prod-specs/references",
   "skills/prod-specs/templates",
   "skills/prod-specs/rules",
+  // Tech Analyst (removido): skill, agente e o comando, que é achatado na pasta de workflows de cada IDE
+  "skills/eng-tech-analyst",
+  "agents/engineering/eng.tech-analyst.agent.md",
+  "workflows/eng.ta.atendimento.md",
+  "commands/eng.ta.atendimento.md",
+  "steering/eng.ta.atendimento.md",
+  "steering/skills/skill-eng-tech-analyst.md",
+  // churn-audit e lovable-prompt-generator (removidos)
+  "skills/churn-audit",
+  "skills/lovable-prompt-generator",
+  "steering/skills/skill-churn-audit.md",
+  "steering/skills/skill-lovable-prompt-generator.md",
+  "skills/eng-nestjs",
+  "skills/eng-rabbitmq",
+  "skills/eng-arch-c4",
+  "skills/eng-ms-trace",
+  "skills/eng-microfrontend",
+  "skills/eng-design-system",
+  "skills/eng-cybersecurity",
+  "skills/eng-threat-model",
+  "skills/eng-performance-engineer",
+  "skills/eng-pr",
+  "skills/eng-jira-comment",
+  "skills/eng-task-comment",
+  "skills/eng-docs-write",
+  "skills/eng-browser-extension-builder",
+  "skills/prod-specs",
+  "skills/prod-specs-update",
+  "skills/prod-roadmap-report",
+  "skills/init-jarvis",
+  "skills/context-detect",
+  "skills/report-issue",
+  "skills/docs-central",
+  "skills/docs-index",
 ]);
 
 /**

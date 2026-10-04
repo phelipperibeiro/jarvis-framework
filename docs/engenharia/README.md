@@ -40,6 +40,8 @@ Cada etapa só avança com a sua aprovação. O `eng.start` e o `eng.plan` só p
 
 ## Frontend
 
+Os comandos de frontend e de backend são **neutros de stack**: carregam a skill base mais as especializações que o projeto registrou no `ENV.md`. Veja [como adaptar o Jarvis à sua stack](../especializacoes-de-stack.md).
+
 | Comando | Em uma frase |
 |---|---|
 | [`eng.frontend-component`](./eng.frontend-component.md) | Cria ou refatora um componente |
@@ -73,7 +75,6 @@ Cada etapa só avança com a sua aprovação. O `eng.start` e o `eng.plan` só p
 | Comando | Em uma frase |
 |---|---|
 | [`eng.rpa.robot`](./eng.rpa.robot.md) | Cria ou mantém um robô de automação |
-| [`eng.ta.atendimento`](./eng.ta.atendimento.md) | Triagem de chamados do Tech Analyst |
 
 ## Não sabe por onde começar?
 

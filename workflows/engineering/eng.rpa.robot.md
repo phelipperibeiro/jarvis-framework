@@ -56,7 +56,7 @@ grep -E "^(SQUAD|HUB|POSITION|ENABLE_CDD)=" $IDE/ENV.md
 grep "^ENABLE_CDD=" $IDE/ENV.md
 ```
 
-- Se `ENABLE_CDD=true` → executar `/context-detect {TASK_MANAGER_KEY}` antes de prosseguir
+- Se `ENABLE_CDD=true` → executar `/jarvis-context-detect {TASK_MANAGER_KEY}` antes de prosseguir
 - Se `ENABLE_CDD=false` ou não definida → pular
 
 ### 0.3 Criar Branch e Sessão
@@ -206,7 +206,7 @@ Seguir `$IDE/rules/engineering/eng.docs-scraping-rules.md`:
 | Histórico de Bugs | Vazio na criação |
 | Checklist de Troubleshooting | Sintoma → causa provável → ação |
 
-Chamar `/docs-index` após criar.
+Chamar `/jarvis-docs-index` após criar.
 
 ### Fase N5 — Pre-PR e PR
 
@@ -301,7 +301,7 @@ Atualizar `docs/engineering/robots/{robot-tag}-robot.md`:
 
 > Uma atualização sem `{robot-tag}-robot.md` atualizado **não está pronta**.
 
-Chamar `/docs-index` após atualizar.
+Chamar `/jarvis-docs-index` após atualizar.
 
 ### Fase U5 — Pre-PR e PR
 

@@ -254,7 +254,7 @@ Foco em entender o sistema como um todo — não arquivos específicos, mas fron
 #### 2A.2 Análise de Documentação de Produto
 
 - Verifique se há PRD ou FRD relacionado ao épico em `$DOCS_FOLDER` ou no $TASK_MANAGER
-- Se `CENTRAL_DOCS_REPO` configurado: buscar docs via skill `docs-central`
+- Se `CENTRAL_DOCS_REPO` configurado: buscar docs via skill `jarvis-docs-central`
 
 #### 2A.3 Identificação de Restrições
 

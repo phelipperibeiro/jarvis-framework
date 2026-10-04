@@ -19,7 +19,7 @@ Revisa uma solução técnica, um ARD, um PR ou um trecho de código, apontando 
 ## Quando **não** usar
 
 - Validação final antes de abrir o PR da própria branch → [`eng.pre-pr`](./eng.pre-pr.md)
-- PR de frontend com checklist aprofundado (TypeScript, tokens, a11y, micro frontend) → [`eng.frontend-review`](./eng.frontend-review.md)
+- PR de frontend com checklist aprofundado (tipagem, tokens, a11y, itens da stack) → [`eng.frontend-review`](./eng.frontend-review.md)
 - Revisão específica de segurança → [`eng.security-review`](./eng.security-review.md)
 
 ## Como funciona
@@ -32,7 +32,7 @@ Revisa uma solução técnica, um ARD, um PR ou um trecho de código, apontando 
 6. **Testes e cobertura mínima**, com análise de cobertura e execução via TestSprite como etapas opcionais
 7. **Recomendação e próximos passos**
 
-Conforme o que a mudança toca, o comando recomenda apoio de agentes e skills: cobertura de testes, arquitetura (C4), frontend, design system, micro frontend e usabilidade.
+Conforme o que a mudança toca, o comando recomenda apoio de agentes e skills: cobertura de testes, backend e frontend (o skill base mais as especializações registradas no `ENV.md`) e usabilidade.
 
 ## Regras que importam
 

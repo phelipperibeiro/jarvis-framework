@@ -2,7 +2,7 @@
 name: eng-qa-quality-report
 description: >
   Consolida sessões exploratórias, bug reports e quality gates de um período (sprint ou release)
-  e gera relatório de qualidade em markdown pronto para publicar via docs-central.
+  e gera relatório de qualidade em markdown pronto para publicar via jarvis-docs-central.
   Pressupõe que as skills qa-exploratory, qa-cypress-e2e e qa-gate tenham sido usadas no período.
   Trigger: Use quando precisar gerar o relatório de qualidade de uma sprint ou release.
 license: AGPL-3.0
@@ -11,6 +11,7 @@ allowed-tools: Read Write Edit Grep Glob Bash
 metadata:
   author: jarvis-framework
   version: "1.0"
+  area: qa
 argument-hint: "[Sprint N | Release X.Y | mês YYYY-MM]"
 disable-model-invocation: false
 ---
@@ -64,7 +65,7 @@ Validar ENV.md antes de executar:
 
 ```bash
 if [ ! -f "$IDE/ENV.md" ]; then
-  echo "⚠️ ENV.md não encontrado. Execute /init-jarvis primeiro."
+  echo "⚠️ ENV.md não encontrado. Execute /jarvis-init primeiro."
   exit 1
 fi
 

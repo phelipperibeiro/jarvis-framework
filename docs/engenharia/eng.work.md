@@ -45,6 +45,7 @@ Exemplo: plano com 10 tarefas e `MAX=80` → a IA executa 8 e para.
 - **Não faz push nem abre PR** (isso é do `eng.pr`)
 - **Nunca usa `git add .`** e nunca commita sem sua aprovação da fase nem com testes falhando
 - **Não move cards** no board
+- **Stack do projeto:** em trabalho de backend ou de frontend, carrega a skill base mais as **especializações** registradas no `ENV.md` (`BACKEND_SPECIALIZATIONS` e `FRONTEND_SPECIALIZATIONS`); se algum skill instalado não tem `metadata.area`, **o comando é interrompido** ([especializações de stack](../especializacoes-de-stack.md))
 - Se surgir um bloqueio técnico, registra no plano como bloqueada (🚫), explica e sugere alternativas
 - Se você pedir commit antes da fase terminar, ele explica que o commit é feito ao final da fase validada
 
