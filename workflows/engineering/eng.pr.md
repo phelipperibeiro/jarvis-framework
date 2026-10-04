@@ -37,6 +37,22 @@ Este comando cria a **branch, commita as alterações e abre um Merge Request**.
   - Arquivo: `$IDE/agents/engineering/qa/eng.qa.test-planner.md`
   - Quando usar: Se houver dúvidas sobre cobertura de testes ou mudanças significativas.
 
+### Skills invocados durante o workflow
+
+| Passo | Skill | Condição |
+|-------|-------|----------|
+| Cabeçalho (agente) | `eng.agent` (agente) | Sempre — identidade do workflow |
+| Skills recomendados | `/eng-global-pr` | Sempre — seguir o playbook do skill para padronizar branch, commits e MR |
+| Skills recomendados | `/eng-qa-test-plan` | Se for preciso validar lacunas de testes antes de abrir o MR |
+| Fase 1 › 1.4 Executar Testes Automatizados (Opcional) | `/eng-qa-testsprite` | Se o projeto estiver rodando localmente (`/eng-qa-testsprite diff`); passo opcional, recomendado em mudanças significativas |
+| Skills recomendados | `/eng-qa-e2e` | Se for preciso validar fluxos de usuário críticos com testes E2E em linguagem natural antes de abrir o MR |
+| Skills recomendados | `/eng-global-docs-write` | Se houver necessidade de atualizar documentação junto do PR |
+| Skills recomendados | `/eng-security-cybersecurity` | Se o PR tocar em auth, inputs, APIs públicas ou permissões (adicionar label `security` ao MR) |
+| Agentes recomendados (opcional) | `eng.qa.test-planner` (agente) | Se houver dúvidas sobre cobertura de testes ou mudanças significativas |
+| Fase 0.5: Comentário no card — Início | `/eng-global-task-comment` | Se `TASK_MANAGER` estiver preenchido (freelance pula) |
+| Fase 4 › 4.2 Criar MR/PR via adapter | `node bin/lib/vcs/create-merge.js` (CLI do Jarvis) | Sempre — abre o MR/PR conforme `VERSION_CONTROL` ou o host do `origin` |
+| Fase 5: Comentário no card — Conclusão | `/eng-global-task-comment` | Se `TASK_MANAGER` estiver preenchido, depois de o MR ser criado (freelance pula) |
+
 ---
 
 ## Entrada

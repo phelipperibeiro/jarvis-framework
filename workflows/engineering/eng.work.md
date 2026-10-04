@@ -19,6 +19,22 @@ Este comando executa a **implementação de código** seguindo o plano de execu�
 > ⚠️ **IMPORTANTE**: Este workflow é para codificação com commits incrementais por fase.
 > **NÃO crie PRs, NÃO faça push**, mas **FAZ commit ao final de cada fase validada.**
 
+### Skills invocados durante o workflow
+
+| Passo | Skill | Condição |
+|-------|-------|----------|
+| Cabeçalho (agente) | `eng.agent` (agente) | Sempre — identidade do workflow |
+| Fase 0 › 0.1 Verificar ou Gerar Contexto da Sessão | `/jarvis-context-detect` | Se `ENABLE_CDD=true` e o `context.md` não existir (obrigatório antes da Fase 1) |
+| Fase 0.5: Comentário no card — Início | `/eng-global-task-comment` | Se `TASK_MANAGER` estiver preenchido (freelance pula) |
+| Fase 3 › 3.1 Implementar Código (skill de domínio) | `/eng-frontend` (via `eng.specializations-rules.md`) | Se o domínio da feature for frontend (componentes, UI, estado, estilos, bundle, a11y); a regra também carrega `FRONTEND_SPECIALIZATIONS` |
+| Fase 3 › 3.1 Implementar Código (skill de domínio) | `/eng-backend` (via `eng.specializations-rules.md`) | Se o domínio da feature for backend (endpoints, auth, workers, filas, cache, banco, integrações); a regra também carrega `BACKEND_SPECIALIZATIONS` |
+| Fase 3 › 3.1 Implementar Código (skill de domínio) | `/eng-scraper` | Se o domínio da feature for scraping, extração de dados, ETL ou parsing |
+| Fase 3 › 3.1 Implementar Código (skill de domínio) | `/eng-scraper-robot-builder` | Se a tarefa for converter um fluxo manual em Playwright via Stagehand, sem seletores conhecidos |
+| Fase 3 › 3.3.1 Identificar Gaps de Teste | `eng.qa.test-planner` (agente) | Sempre, depois de implementar o código da fase |
+| Fase 3 › 3.3.2 Implementar Testes Faltantes (Opção A) | `eng.qa.testing-engineer` (agente) | Se o test-planner identificar gaps e a estratégia do `architecture.md` seção 6.5 indicar testes manuais (unitário/integração) |
+| Fase 3 › 3.3.2 Implementar Testes Faltantes (Opção B) | `/eng-qa-testsprite` | Se a estratégia do `architecture.md` seção 6.5 indicar TestSprite (`testScope=diff`) |
+| Fase 6 › 6.2 Se Todas as Fases Foram Concluídas | `/eng-global-task-comment` | Se `TASK_MANAGER` estiver preenchido e todas as fases estiverem concluídas (freelance pula) |
+
 ---
 
 ## Regra de Execução Máxima
