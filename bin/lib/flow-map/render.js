@@ -9,6 +9,7 @@ const TYPE_LABEL = {
   agent: "agente",
   cli: "CLI",
   mcp: "MCP",
+  external: "externo",
   broken: "?",
   unresolved: "?",
 };
@@ -57,5 +58,29 @@ export function renderTree(root) {
     });
   }
   walk(root, "");
+  return lines;
+}
+
+/**
+ * @param {string} name
+ * @param {string} type
+ * @param {ReturnType<typeof import("./tree.js").reverseEdges>} edges
+ * @returns {string[]}
+ */
+export function renderReverse(name, type, edges) {
+  const lines = [`Quem chama ${name} [${TYPE_LABEL[type]}]`];
+  if (edges.length === 0) {
+    lines.push(`└── nenhum artefato chama ${name} — pode ser um ponto de entrada`);
+    return lines;
+  }
+  edges.forEach((e, i) => {
+    const notes = [];
+    if (e.passo) notes.push(`passo: ${e.passo}`);
+    if (e.available) notes.push("disponível");
+    const condition = summarizeCondition(e.condicao);
+    if (condition) notes.push(condition);
+    if (e.via) notes.push(`via ${e.via}`);
+    lines.push(`${i === edges.length - 1 ? "└── " : "├── "}${e.from} [${TYPE_LABEL[e.type]}]${notes.length ? `  (${notes.join("; ")})` : ""}`);
+  });
   return lines;
 }

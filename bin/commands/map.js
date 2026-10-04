@@ -1,9 +1,9 @@
-import { buildGraph, forwardTree, suggest, DEFAULT_DEPTH } from "../lib/flow-map/tree.js";
-import { renderTree } from "../lib/flow-map/render.js";
+import { buildGraph, forwardTree, reverseEdges, suggest, DEFAULT_DEPTH } from "../lib/flow-map/tree.js";
+import { renderTree, renderReverse } from "../lib/flow-map/render.js";
 import { getFrameworkRoot } from "../lib/utils/paths.js";
 import { logger } from "../lib/utils/logger.js";
 
-const USAGE = "Uso: jarvis map <nome> [--depth N]   (nome de um workflow, skill ou agente)";
+const USAGE = "Uso: jarvis map <nome> [--depth N] [--reverse]   (nome de um workflow, skill ou agente)";
 
 /**
  * Monta a saída do mapa. Separado de `map` para ser testável.
@@ -30,6 +30,9 @@ export function runMap(name, flags = {}, root = getFrameworkRoot()) {
     return { code: 1, lines };
   }
 
+  if (flags.reverse) {
+    return { code: 0, lines: renderReverse(name, graph.items.get(name).type, reverseEdges(graph, name)) };
+  }
   return { code: 0, lines: renderTree(forwardTree(graph, name, { depth })) };
 }
 

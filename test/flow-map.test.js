@@ -7,8 +7,8 @@ import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { buildIndex } from "../bin/lib/flow-map/index.js";
 import { parseDeclaration, classifyCell, splitCells } from "../bin/lib/flow-map/parse.js";
-import { buildGraph, forwardTree, suggest } from "../bin/lib/flow-map/tree.js";
-import { renderTree, summarizeCondition } from "../bin/lib/flow-map/render.js";
+import { buildGraph, forwardTree, reverseEdges, findBrokenReferences, suggest } from "../bin/lib/flow-map/tree.js";
+import { renderTree, renderReverse, summarizeCondition } from "../bin/lib/flow-map/render.js";
 import { runMap } from "../bin/commands/map.js";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -32,6 +32,9 @@ test("classifyCell: skill/workflow, com argumentos, CLI, MCP, agente e ferrament
   ]);
   assert.deepEqual(classifyCell("`eng.agent` (agente)").targets, [{ kind: "agent", name: "eng.agent" }]);
   assert.deepEqual(classifyCell("`Read` / `Grep` / `Glob` (leitura do repo)").targets, []);
+  assert.deepEqual(classifyCell("`/triage-issue` (skill externo `atlassian:triage-issue`)").targets, [
+    { kind: "external", name: "triage-issue" },
+  ]);
 });
 
 test("classifyCell: via, várias chamadas, autocontido e marcadores", () => {
@@ -303,4 +306,46 @@ test("framework real: eng.start, warm-up, eng-qa-gate e eng.agent mapeiam", () =
   const agent = runMap("eng.agent", {}, root);
   assert.equal(agent.code, 0);
   assert.ok(agent.lines.some((l) => l.includes("disponível")));
+});
+
+test("reverseEdges e renderReverse: com e sem chamadores", () => {
+  const dir = frameworkDeExemplo();
+  try {
+    const graph = buildGraph(dir);
+    const edges = reverseEdges(graph, "s-c");
+    assert.deepEqual(edges.map((e) => e.from), ["ag-x", "s-e", "w-main"]);
+    assert.equal(edges.find((e) => e.from === "ag-x").available, true);
+    assert.equal(edges.find((e) => e.from === "w-main").passo, "Fase 2");
+
+    const lines = renderReverse("s-c", "skill", edges);
+    assert.equal(lines[0], "Quem chama s-c [skill]");
+    assert.match(lines[1], /^├── ag-x \[agente\]  \(disponível; /);
+    assert.ok(lines[3].startsWith("└── w-main [workflow]  (passo: Fase 2;"));
+
+    assert.deepEqual(renderReverse("w-deep", "workflow", reverseEdges(graph, "w-deep")), [
+      "Quem chama w-deep [workflow]",
+      "└── nenhum artefato chama w-deep — pode ser um ponto de entrada",
+    ]);
+    assert.ok(runMap("s-c", { reverse: true }, dir).lines[0].startsWith("Quem chama s-c"));
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("findBrokenReferences: erro para nome inexistente, aviso para marcado e sem declaração", () => {
+  const dir = frameworkDeExemplo();
+  try {
+    const { errors, warnings } = findBrokenReferences(buildGraph(dir));
+    assert.deepEqual(errors.map((e) => e.name), ["nao-existe"]);
+    assert.equal(errors[0].file, "workflows/engineering/w-main.md");
+    assert.ok(warnings.some((w) => w.name === "Jira MCP" && /a confirmar/.test(w.reason)));
+    assert.ok(warnings.some((w) => w.name === "s-d" && /sem declaração/.test(w.reason)));
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("framework real: nenhuma referência quebrada nas tabelas", () => {
+  const { errors } = findBrokenReferences(buildGraph(root));
+  assert.deepEqual(errors, []);
 });

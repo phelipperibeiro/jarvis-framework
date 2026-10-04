@@ -13,7 +13,7 @@ export const SKILL_TITLE = "Skills invocados durante a execução do skill";
 
 /**
  * @typedef {Object} Target
- * @property {"internal" | "agent" | "cli" | "mcp" | "unresolved"} kind
+ * @property {"internal" | "agent" | "cli" | "mcp" | "external" | "unresolved"} kind
  * @property {string} name
  */
 
@@ -88,6 +88,7 @@ export function classifyCell(cell) {
 
   const spans = [...analyzed.matchAll(/`([^`]+)`(\s*\(agente\))?/g)];
   const targets = [];
+  const external = /skill externo/i.test(analyzed); // skill de fora do framework: não está no índice
 
   if (/\(MCP/.test(analyzed) && spans[0]) {
     targets.push({ kind: "mcp", name: spans[0][1].trim() });
@@ -97,7 +98,9 @@ export function classifyCell(cell) {
   for (const span of spans) {
     const token = span[1].trim();
     if (span[2]) targets.push({ kind: "agent", name: token });
-    else if (token.startsWith("/")) targets.push({ kind: "internal", name: token.slice(1).split(/\s+/)[0] });
+    else if (token.startsWith("/")) {
+      targets.push({ kind: external ? "external" : "internal", name: token.slice(1).split(/\s+/)[0] });
+    }
     else if (/^(jarvis|node)\s/.test(token)) targets.push({ kind: "cli", name: token });
     else if (token.startsWith("mcp__")) targets.push({ kind: "mcp", name: token });
     // Read, Grep, Glob e texto livre não são chamadas a artefatos: ignorados
@@ -195,7 +198,8 @@ function parseAgent(text) {
     }
   }
 
-  return { declared: skills !== null || related !== null, selfContained: false, rows };
+  const declared = skills !== null || related !== null;
+  return { declared, selfContained: declared && rows.length === 0, rows };
 }
 
 /**

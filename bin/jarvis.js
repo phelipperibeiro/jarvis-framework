@@ -69,7 +69,7 @@ function help() {
     `  ${GREEN}jarvis tokens${NC} [--hub <h> --position <p> --area <a> --squad <s>] [--rtk] [--json]   Estimar o que carrega no início da sessão (perfil do ENV.md se sem flags)`,
   );
   logger.info(
-    `  ${GREEN}jarvis map${NC} <nome> [--depth N]            Mapa do que um workflow, skill ou agente chama (árvore em texto)`,
+    `  ${GREEN}jarvis map${NC} <nome> [--depth N] [--reverse]   Mapa do que um workflow, skill ou agente chama (ou, com --reverse, quem o chama)`,
   );
   logger.info(
     `  ${GREEN}jarvis qa-signoff${NC} [--branch <branch>] [--max-age <horas>]   Verificar sign-off QA (usado pelo CI)`,
