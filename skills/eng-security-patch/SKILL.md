@@ -358,6 +358,12 @@ Escrito em ./.security/outputs/PATCHES/bug_NN/, ./.security/outputs/PATCHES.md, 
 Estes são rascunhos. Revise cada diff antes de aplicar.
 ```
 
+### Skills invocados durante a execução do skill
+
+| Passo | Skill | Condição |
+|-------|-------|----------|
+| — | Nenhuma — skill autocontida | — |
+
 ---
 
 ## Guard Rails

@@ -151,6 +151,12 @@ awk 'BEGIN{fm=0} /^---[[:space:]]*$/{fm++; next} fm==1 && /^name:/{n=$2} fm==1 &
 3. Edite **só a linha dessa variável** (nunca outra linha do `ENV.md`) e **releia** o `ENV.md` para confirmar o resultado
 4. Se a gravação da lista falhar (skill gravado, lista não): diga que o skill existe mas **não** está registrado e mostre a linha a acrescentar à mão. **Nunca** registre um skill que não foi gravado
 
+### Skills invocados durante a execução do skill
+
+| Passo | Skill | Condição |
+|-------|-------|----------|
+| — | Nenhuma — skill autocontida | — |
+
 ---
 
 ## Regras

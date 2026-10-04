@@ -150,6 +150,12 @@ apenas o que estiver faltando.
 Escrever ou atualizar o `specs-index.md` no Drive seguindo o template
 de Índice Global abaixo.
 
+### Skills invocados durante a execução do skill
+
+| Passo | Skill | Condição |
+|-------|-------|----------|
+| Pré-requisito — Carregar ENV.md | `/jarvis-init` | Se o `ENV.md` não existir (executado via Skill tool) |
+
 ---
 
 ## Templates
