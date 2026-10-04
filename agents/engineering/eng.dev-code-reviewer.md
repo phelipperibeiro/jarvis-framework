@@ -67,6 +67,10 @@ Avalie os testes:
 - A cobertura de testes foi mantida ou melhorada?
 - Os testes são significativos ou apenas “para cobertura”?
 
+## Skills Disponíveis
+
+Nenhuma — agente autocontido, não depende de skill
+
 ## Formato da Resposta
 Forneça uma revisão estruturada no seguinte formato:
 

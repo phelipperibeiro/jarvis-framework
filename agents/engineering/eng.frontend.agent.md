@@ -49,16 +49,25 @@ Não criar abstração para reutilização hipotética.
 
 ---
 
-## Mapeamento de Skills
+## Skills Disponíveis
 
-| Tarefa | Skill |
-|--------|-------|
-| Criar/refatorar componente, estado ou estilos | regra `eng.specializations-rules.md` (área frontend: `eng-frontend` + `FRONTEND_SPECIALIZATIONS`) |
-| Auditoria de performance | `eng-frontend` (seção Performance) |
-| Testes E2E de fluxo de usuário | `eng-qa-e2e` |
-| Testes Cypress (Page Objects, intercept) | `eng-qa-cypress-e2e` |
+### Frontend (skill base + especializações)
+Para criar ou refatorar componente, estado ou estilos, aplique a regra `eng.specializations-rules.md` para a área frontend (skill base `eng-frontend` + itens de `FRONTEND_SPECIALIZATIONS`):
+- Arquivo da regra: `$IDE/rules/engineering/eng.specializations-rules.md`
+- Skill base: `$IDE/skills/eng-frontend/SKILL.md` + itens de `FRONTEND_SPECIALIZATIONS`
+- Auditoria de performance: seção Performance do `eng-frontend`
 
-**Workflow de referência**: ver `workflows/engineering/frontend/`
+### eng-qa-e2e
+Para testes E2E de fluxo de usuário:
+- Arquivo: `$IDE/skills/eng-qa-e2e/SKILL.md`
+
+### eng-qa-cypress-e2e
+Para testes Cypress (Page Objects, intercept):
+- Arquivo: `$IDE/skills/eng-qa-cypress-e2e/SKILL.md`
+
+## Workflows e Agentes Relacionados
+
+- Workflow de referência: ver `workflows/engineering/frontend/`
 
 ---
 

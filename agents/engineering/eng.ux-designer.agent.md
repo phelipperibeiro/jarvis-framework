@@ -53,6 +53,10 @@ de implementação. Classificar feedback por impacto × esforço.
 
 ---
 
+## Skills Disponíveis
+
+Nenhuma — agente autocontido, não depende de skill
+
 ## Mapeamento de Atividades
 
 | Atividade | Quando usar |

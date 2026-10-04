@@ -70,10 +70,29 @@ Não use quando já existe uma spec (use `/prod.spec.clarify`) ou quando o escop
 - Uma **lacuna crítica nunca** resulta em `proceed`: o veredito é `investigate_more`
 - Quando a viabilidade técnica depende de bibliotecas, APIs ou serviços, consulte a documentação atual (por exemplo via Context7) em vez de responder de memória
 
-## Apoio de skills (apoio, nunca a fonte da decisão)
+## Skills Disponíveis
 
-- **Sempre:** busca em `$PROD_DOCS`; `jarvis-docs-central` quando `CENTRAL_DOCS_REPO` estiver configurado; `jarvis-context-detect` para calibrar a profundidade da entrevista
-- **Só com a confirmação do usuário:** `eng-backend-arch-c4` (arquitetura atual) e `eng-security-cybersecurity` (quando a ideia envolve autenticação, dados pessoais ou fluxo financeiro). São skills de engenharia: pergunte antes de consultá-las, e o que retornarem entra no discovery como **suposição a validar**, não como fato
+As skills são apoio, nunca a fonte da decisão. A busca em `$PROD_DOCS` não é uma skill: é feita sempre, antes de perguntar.
+
+### jarvis-docs-central
+Para buscar documentação do produto no repositório central, quando `CENTRAL_DOCS_REPO` estiver configurado:
+- Arquivo: `$IDE/skills/jarvis-docs-central/SKILL.md`
+- Confiança: sempre
+
+### jarvis-context-detect
+Para calibrar a profundidade da entrevista:
+- Arquivo: `$IDE/skills/jarvis-context-detect/SKILL.md`
+- Confiança: sempre
+
+### eng-backend-arch-c4
+Para consultar a arquitetura atual:
+- Arquivo: `$IDE/skills/eng-backend-arch-c4/SKILL.md`
+- Confiança: só com a confirmação do usuário (skill de engenharia: pergunte antes de consultá-la; o que ela retornar entra no discovery como **suposição a validar**, não como fato)
+
+### eng-security-cybersecurity
+Para quando a ideia envolve autenticação, dados pessoais ou fluxo financeiro:
+- Arquivo: `$IDE/skills/eng-security-cybersecurity/SKILL.md`
+- Confiança: só com a confirmação do usuário (skill de engenharia: pergunte antes de consultá-la; o que ela retornar entra no discovery como **suposição a validar**, não como fato)
 
 ## Restrições
 

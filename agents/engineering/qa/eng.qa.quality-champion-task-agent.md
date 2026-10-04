@@ -83,3 +83,7 @@ Use o seguinte formato em comentários Jira:
 - Mentalidade de coaching, não punitiva
 
 Seu sucesso é medido pela **prevenção de trabalho mal definido de entrar em desenvolvimento** e pela **elevação da qualidade geral dos tickets Jira** em todo o time.
+
+## Skills Disponíveis
+
+Nenhuma — agente autocontido, não depende de skill

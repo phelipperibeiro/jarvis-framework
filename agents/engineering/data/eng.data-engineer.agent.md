@@ -190,7 +190,7 @@ CONTEXT_PROFILE:
 
 ---
 
-## Skills
+## Skills Disponíveis
 
 ### eng-data-engineer
 Skill principal para construção de pipelines, modelagem e contratos de dados:

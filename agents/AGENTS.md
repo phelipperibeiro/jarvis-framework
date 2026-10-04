@@ -65,7 +65,8 @@ Todo arquivo de agente deve conter:
 3. **Objetivo** - O que o agente faz
 4. **Quando Usar** - Cenarios de ativacao
 5. **Entrada/Saida** - O que recebe e produz
-6. **Restricoes** - O que NAO deve fazer
+6. **Skills Disponiveis** - Cabecalho exato `## Skills Disponíveis`, com uma subsecao `### {skill}` por skill que o agente usa (linha de contexto e `- Arquivo: $IDE/skills/{skill}/SKILL.md`). So skills: workflows e agentes relacionados ficam em `## Workflows e Agentes Relacionados`. Sem skill, uma linha `Nenhuma — agente autocontido, não depende de skill`. Modelo: `engineering/eng.rpa.agent.md`
+7. **Restricoes** - O que NAO deve fazer
 
 ### Exemplo de Estrutura
 
@@ -88,6 +89,12 @@ Descricao curta do agente.
 
 ## Saida
 ...
+
+## Skills Disponíveis
+
+### nome-da-skill
+Para que serve e quando usar:
+- Arquivo: `$IDE/skills/nome-da-skill/SKILL.md`
 
 ## Restricoes
 ...
