@@ -1,9 +1,6 @@
 # README
 
-Este diretório contém **agentes especializados** organizados por domínio.
-
-**Agentes ativos:** Usados automaticamente pelos workflows
-**Agentes arquivados:** Disponíveis para uso especializado quando necessário
+Este diretório contém **agentes especializados** organizados por domínio, usados automaticamente pelos workflows.
 
 ---
 
@@ -11,7 +8,7 @@ Este diretório contém **agentes especializados** organizados por domínio.
 
 ```
 agents/
-├── engineering/                  # ⚙️ Agentes do domínio de Engenharia (ATIVOS)
+├── engineering/                  # ⚙️ Agentes do domínio de Engenharia
 │   ├── eng.agent.md              # Agent principal de engenharia
 │   ├── eng.bug-hunter.md         # Caça e análise de bugs
 │   ├── eng.dev-code-reviewer.md  # Code reviewer
@@ -21,24 +18,19 @@ agents/
 │   ├── eng.ux-designer.agent.md  # Especialista UX/UI: heurísticas, jornada, microcopy
 │   ├── data/                     # Data Engineering (1 agent)
 │   │   └── eng.data-engineer.agent.md
-│   └── qa/                       # QA específico de engenharia (6 agents)
-├── product/                      # 🎯 Agentes do domínio de Produto (ATIVOS)
-│   ├── prod.pm-checker.md        # Product Manager checker
-│   └── prod.discovery-interviewer.md  # Entrevistador de discovery
-└── archive/                      # 📦 Biblioteca de agentes arquivados
-    └── product/                  # Product WIP (5)
+│   └── qa/                       # QA específico de engenharia (5 agents)
+└── product/                      # 🎯 Agentes do domínio de Produto
+    ├── prod.pm-checker.md        # Product Manager checker
+    └── prod.discovery-interviewer.md  # Entrevistador de discovery
 ```
 
-**📊 Total:**
-- **17 agents ativos** (prontos para uso)
-  - Engineering main: 8 (6 main + 1 data + subpasta qa)
-  - QA: 6
-  - Product: 2
-- **5 agents arquivados** (uso especializado quando necessário)
+**📊 Total: 16 agents**
+- Engineering: 14 (8 main + 1 data + 5 QA)
+- Product: 2
 
 ---
 
-## ⚙️ 1. Engenharia (15 agents)
+## ⚙️ 1. Engenharia (14 agents)
 
 **Pasta**: `engineering/`
 
@@ -60,14 +52,13 @@ Agentes específicos para fluxos e regras do domínio de Engenharia.
 
 - `eng.data-engineer.agent.md` - `@eng.data-engineer` - Pipelines ETL/ELT, contratos de dados, qualidade (HEPHAESTUS)
 
-### QA Agents (6)
+### QA Agents (5)
 **Subpasta**: `engineering/qa/`
 
 - `eng.qa.quality-champion-task-agent.md` - `@eng.qa.quality-champion-task-agent`
 - `eng.qa.test-planner.md` - `@eng.qa.test-planner`
-- `eng.qa.testing-engineer.md` - `@eng.qa.testing-engineer` _(stack primária: Cypress + TypeScript)_
+- `eng.qa.testing-engineer.md` - `@eng.qa.testing-engineer` _(stack primária: Cypress + TypeScript — inclui domínio e debugging Cypress)_
 - `eng.qa.test-architect.md` - `@eng.qa.test-architect`
-- `eng.qa.cypress-specialist.md` - `@eng.qa.cypress-specialist` — Page Objects, Custom Commands, CI, debugging
 - `eng.qa.quality-strategist.md` - `@eng.qa.quality-strategist` — priorização de esforço, risco de feature, distribuição QA/dev
 
 ---
@@ -83,57 +74,16 @@ Agentes específicos para fluxos e validações do domínio de Produto.
 
 ---
 
-## 📦 3. Agentes Arquivados
-
-**Pasta**: `archive/`
-
-**Total:** 9 agentes especializados para uso quando necessário
-
-⚠️ **Importante:** Estes agentes estão **desativados por padrão** para simplificar o onboarding.
-
-**Quando usar:**
-- ✅ Caso de uso específico e bem definido
-- ✅ Necessidade de especialização profunda
-- ✅ Agents ativos não cobrem a necessidade
-
-**📖 [Ver guia completo →](archive/README.md)**
-
-### Categorias disponíveis:
-
-| Categoria | Agents | Exemplos |
-|-----------|--------|----------|
-| 🏗️ **Arquitetura & Design** | 2 | frontend-architect, ux-ui-design-expert |
-| 💻 **Implementação** | 2 | react-developer, frontend-react-specialist |
-| 🎯 **Produto WIP** | 5 | prod.wip.collect, prod.wip.refine, prod.wip.spec.breakdown, etc. |
-
-**Como ativar:** Ver `archive/README.md` para instruções detalhadas
-
----
-
 ## 📊 Distribuição dos Agentes
-
-### Agentes Ativos (9)
 
 | Domínio | Agentes | Uso |
 |---------|---------|-----|
-| ⚙️ **Engineering** | 4 | Agent principal, bug hunter, code review, docs |
-| 🧪 **QA** (sub-eng) | 6 | Test planning, testing, quality gate, Cypress specialist, quality strategist |
+| ⚙️ **Engineering** (main) | 8 | Agent principal, bug hunter, code review, docs, RPA, frontend, UX, cybersecurity |
+| 🧪 **QA** (sub-eng) | 5 | Test planning, testing (+Cypress), test architect, quality champion, quality strategist |
 | 📊 **Data** (sub-eng) | 1 | Pipelines, contratos de dados, qualidade |
-| 🎯 **Product** | 1 | PM checker |
+| 🎯 **Product** | 2 | PM checker, discovery interviewer |
 
-**Total ativos:** 13 agents
-
-### Agentes Arquivados (9)
-
-| Categoria | Agentes | Quando usar |
-|-----------|---------|-------------|
-| 🏗️ **Arquitetura** | 2 | Frontend architecture, UX/UI design |
-| 💻 **Implementação** | 2 | React especializado |
-| 🎯 **Produto WIP** | 5 | Product workflows em desenvolvimento |
-
-**Total arquivados:** 9 agents
-
-**📖 Detalhes completos:** `archive/README.md`
+**Total: 16 agents**
 
 ---
 
@@ -182,22 +132,6 @@ Os agentes ativos ativam automaticamente baseado no contexto dos workflows:
 # → @eng.qa.quality-champion-task-agent valida qualidade
 ```
 
-### Uso de Agents Arquivados
-
-Agents arquivados precisam ser invocados explicitamente:
-
-```bash
-# Opção 1: Invocar pontualmente
-"Use o agent backend-architect (agents/archive/architecture-design/backend-architect.md)
-para revisar a arquitetura de microservices"
-
-# Opção 2: Ativar permanentemente
-mv agents/archive/architecture-design/backend-architect.md agents/engineering/
-
-# Opção 3: Criar skill customizado que usa o agent arquivado
-# (passos em "Criando um Novo Skill", no skills/AGENTS.md)
-```
-
 ### Invocação Manual
 
 Você também pode invocar agentes manualmente usando `@`:
@@ -207,10 +141,9 @@ Você também pode invocar agentes manualmente usando `@`:
 @eng.qa.test-planner "analisar cobertura de testes da branch"
 
 # Múltiplos agentes em paralelo
-@backend-architect @database-architect "design de API para sistema multi-tenant"
+@eng.frontend.agent @eng.ux-designer.agent "revisar fluxo de checkout"
 
 # Agentes especializados
-@lovable-frontend-prompt-generator
 @eng.qa.testing-engineer
 ```
 
@@ -223,7 +156,7 @@ Você também pode invocar agentes manualmente usando `@`:
    └─> /eng.start, /eng.plan → @eng.agent coordena
 
 2. 💻 IMPLEMENTAÇÃO
-   └─> /eng.work → @eng.agent (+ @react-developer se archived ativado)
+   └─> /eng.work → @eng.agent
 
 3. 🧪 TESTES
    └─> @eng.qa.test-planner, @eng.qa.testing-engineer, @eng.qa.test-architect
@@ -277,31 +210,5 @@ Você também pode invocar agentes manualmente usando `@`:
 
 ---
 
----
-
-## 🎯 Recomendação de Uso
-
-### Para times PEQUENOS (< 5 devs):
-```
-✅ Use apenas agents ativos (9 agents)
-❌ Mantenha arquivados sem ativar
-```
-
-### Para times MÉDIOS (5-15 devs):
-```
-✅ Use agents ativos
-⚠️  Ative 1-2 agents arquivados SE necessário
-```
-
-### Para times GRANDES (> 15 devs):
-```
-✅ Use agents ativos
-✅ Ative agents arquivados por especialização/squad
-```
-
----
-
-**Última atualização**: 2026-04-26
-**Agents ativos:** 13 (Engineering: 5 main + 6 QA + 1 Data, Product: 1)
-**Agents arquivados:** 9 (Architecture: 2, Implementation: 2, Product WIP: 5)
-**Total:** 22 agents
+**Última atualização**: 2026-10-04
+**Agents ativos:** 16 (Engineering: 8 main + 5 QA + 1 Data, Product: 2)

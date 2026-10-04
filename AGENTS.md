@@ -21,8 +21,8 @@ prompts/
 │   ├── MCPs.md                   # Integracoes MCP
 │   ├── LEGACY_PROJECTS.md        # Guia para projetos legados
 │   │
-│   ├── agents/                   # 17 ativos + 5 arquivados
-│   │   ├── engineering/          # Agentes de engenharia (15 ativos: 8 main + 6 QA + 1 Data)
+│   ├── agents/                   # 16 agentes ativos
+│   │   ├── engineering/          # Agentes de engenharia (14 ativos: 8 main + 5 QA + 1 Data)
 │   │   │   ├── eng.agent.md
 │   │   │   ├── eng.cybersecurity.agent.md  # Cybersecurity e AppSec (SENTINEL)
 │   │   │   ├── eng.bug-hunter.md
@@ -33,14 +33,10 @@ prompts/
 │   │   │   ├── eng.rpa.agent.md   # Agente RPA/Scraping (ARACHNE) — skill técnica
 │   │   │   ├── data/             # 1 agente de Data
 │   │   │   │   └── eng.data-engineer.agent.md
-│   │   │   └── qa/               # 6 agentes de QA
-│   │   ├── product/              # Agentes de produto (2 ativos)
-│   │   │   ├── prod.pm-checker.md
-│   │   │   └── prod.discovery-interviewer.md
-│   │   └── archive/              # Agentes arquivados (uso especializado)
-│   │       ├── architecture-design/   # 2 agentes
-│   │       ├── implementation/        # 2 agentes
-│   │       └── product/               # 5 agentes (WIP)
+│   │   │   └── qa/               # 5 agentes de QA
+│   │   └── product/              # Agentes de produto (2 ativos)
+│   │       ├── prod.pm-checker.md
+│   │       └── prod.discovery-interviewer.md
 │   │
 │   ├── workflows/                # Templates de execucao
 │   │   ├── engineering/          # 25 workflows de engenharia
@@ -376,21 +372,11 @@ Quando um agente atua em tema com skill correspondente, o skill e a fonte de ver
 - `eng.qa.testing-engineer.md` - Implementacao de testes
 - `eng.qa.test-architect.md` - Arquitetura de testes
 - `eng.qa.quality-champion-task-agent.md` - Qualidade de tickets
-- `eng.qa.cypress-specialist.md` - Page Objects, Custom Commands, CI, debugging de testes flaky
 - `eng.qa.quality-strategist.md` - Priorização de esforço QA, risco de feature, distribuição QA/dev
 
 ### Produto (Ativo)
 - `prod.pm-checker.md` - Validacao de requisitos
 - `prod.discovery-interviewer.md` - Entrevistador de discovery: investiga uma ideia sem chutar e gera um rascunho estruturado
-
-### Arquivados
-Disponiveis em `$IDE/agents/archive/` organizados por categoria.
-Uso especializado quando necessário.
-
-**Categorias:**
-- Product WIP (5): prod.wip.collect, prod.wip.refine, prod.wip.spec.breakdown, etc.
-
-📖 **Ver detalhes:** `agents/archive/README.md` para lista completa e instruções de ativação.
 
 ---
 

@@ -28,14 +28,11 @@ agents/
 │       ├── eng.qa.testing-engineer.md
 │       ├── eng.qa.test-architect.md
 │       ├── eng.qa.quality-champion-task-agent.md
-│       ├── eng.qa.cypress-specialist.md
 │       └── eng.qa.quality-strategist.md
 └── product/
     ├── prod.pm-checker.md
     └── prod.discovery-interviewer.md
 ```
-
-Agentes arquivados (WIP / especializados) podem existir em `archive/` em layouts com IDE completa; neste clone a árvore ativa está sob `engineering/` e `product/`.
 
 ## No ciclo de vida
 

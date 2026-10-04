@@ -83,7 +83,7 @@ Skills existentes e planejadas do framework Jarvis.
 
 ### `eng-global-task-comment` ✅
 - **Trigger**: comentários técnicos em cards do task manager
-- **Escopo**: Jira/Linear/GitHub/Asana via adapter; alias `eng-global-jira-comment`
+- **Escopo**: Jira/Linear/GitHub/Asana via adapter
 - **Status**: `criado`
 
 ---
@@ -297,13 +297,13 @@ Removidas: `checkin`, `checkout`, `daily`, `task-log`, `send-priority`, `sent-pr
 
 | Categoria | Criados | Planejados |
 |-----------|---------|------------|
-| Engenharia | 18 | 8 |
+| Engenharia | 17 | 8 |
 | Engenharia de Dados | 5 | 0 |
 | QA | 13 | 0 |
 | Produto | 4 | 0 |
 | Daily Ritual | 6 | 0 |
 | Utilitários | 8 | 0 |
-| **Total** | **54** | **8** |
+| **Total** | **53** | **8** |
 
 ---
 

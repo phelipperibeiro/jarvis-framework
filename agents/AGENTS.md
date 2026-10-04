@@ -14,7 +14,7 @@ A pasta `agents/` contem **definicoes de agentes especializados** que atuam no f
 
 ```
 agents/
-├── engineering/           # Agentes ativos de engenharia (15 agents)
+├── engineering/           # Agentes ativos de engenharia (14 agents)
 │   ├── eng.agent.md
 │   ├── eng.bug-hunter.md
 │   ├── eng.cybersecurity.agent.md
@@ -25,20 +25,15 @@ agents/
 │   ├── eng.ux-designer.agent.md
 │   ├── data/              # Agentes de Data (1 agent)
 │   │   └── eng.data-engineer.agent.md
-│   └── qa/                # Agentes de QA (6 agents)
+│   └── qa/                # Agentes de QA (5 agents)
 │       ├── eng.qa.test-planner.md
 │       ├── eng.qa.testing-engineer.md
 │       ├── eng.qa.test-architect.md
 │       ├── eng.qa.quality-champion-task-agent.md
-│       ├── eng.qa.cypress-specialist.md
 │       └── eng.qa.quality-strategist.md
-├── product/               # Agentes ativos de produto (2 agents)
-│   ├── prod.pm-checker.md
-│   └── prod.discovery-interviewer.md
-└── archive/              # Biblioteca de agentes arquivados (9 agents)
-    ├── architecture-design/  # 2 agents
-    ├── implementation/       # 2 agents
-    └── product/              # 5 agents
+└── product/               # Agentes ativos de produto (2 agents)
+    ├── prod.pm-checker.md
+    └── prod.discovery-interviewer.md
 ```
 
 ---
@@ -50,7 +45,7 @@ agents/
 | Engenharia | `eng.{componente}.md` | `eng.agent.md`, `eng.docs-writer.md` |
 | QA | `eng.qa.{componente}.md` | `eng.qa.test-planner.md` |
 | Produto | `prod.{componente}.md` | `prod.pm-checker.md` |
-| Generico | `{nome-descritivo}.md` | `backend-architect.md` |
+| Generico | `{nome-descritivo}.md` | `meu-agente-customizado.md` |
 
 ---
 
@@ -130,7 +125,7 @@ Para que serve e quando usar:
 
 ```bash
 @eng.qa.test-planner "analisar cobertura"
-@backend-architect "design de API"
+@eng.data-engineer "design de contrato de dados"
 @eng.dev-code-reviewer "revisar PR #123"
 ```
 
@@ -182,16 +177,10 @@ ENABLE_CDD=true
 
 ---
 
-## Agentes Ativos vs Arquivados
+## Agentes Ativos
 
-### Ativos (em uso regular)
-- `engineering/` - Agentes de engenharia (15 agents: 8 main + 6 QA + 1 Data)
+- `engineering/` - Agentes de engenharia (14 agents: 8 main + 5 QA + 1 Data)
 - `product/` - Agentes de produto (2 agents)
-
-### Arquivados (biblioteca de referência)
-- `archive/` - Agentes genéricos organizados por área funcional (11 agents)
-- Podem ser ativados manualmente quando necessário
-- Servem como referência para criar novos agentes
 
 ---
 
@@ -199,10 +188,10 @@ ENABLE_CDD=true
 
 ```
 1. ARQUITETURA
-   └─> @backend-architect, @frontend-architect
+   └─> @eng.agent coordena
 
 2. IMPLEMENTACAO
-   └─> @backend-python-specialist, @react-developer
+   └─> @eng.agent, @eng.frontend.agent (se a feature envolver UI)
 
 3. TESTES
    └─> @eng.qa.test-planner, @eng.qa.testing-engineer

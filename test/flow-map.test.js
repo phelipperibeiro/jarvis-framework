@@ -131,7 +131,7 @@ test("framework real: índice sem duplicados e todos os artefatos declaram chama
   const { items, duplicates } = buildIndex(root);
   assert.deepEqual(duplicates, []);
   const porTipo = (t) => [...items.values()].filter((i) => i.type === t).length;
-  assert.ok(porTipo("workflow") >= 46 && porTipo("skill") >= 50 && porTipo("agent") >= 17);
+  assert.ok(porTipo("workflow") >= 46 && porTipo("skill") >= 49 && porTipo("agent") >= 16);
   const semDeclaracao = [...items.values()].filter(
     (i) => !parseDeclaration(i.type, readFileSync(join(root, i.path), "utf-8")).declared,
   );
