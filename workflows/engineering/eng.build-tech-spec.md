@@ -799,34 +799,7 @@ Para cada subtarefa no plano:
 
 #### 7.2 Estrutura da Descrição no Jira
 
-```markdown
-## Descrição
-
-{Descrição técnica detalhada}
-
-## Arquivos a Modificar/Criar
-
-- `path/to/file1.py` - [Modificação] - {Descrição}
-- `path/to/file2.tsx` - [Criação] - {Descrição}
-
-## Critérios de Aceitação
-
-- [ ] {Critério 1}
-- [ ] {Critério 2}
-
-## Testes Requeridos
-
-- [ ] Teste unitário: {descrição}
-- [ ] Teste de integração: {descrição}
-
-## Dependências
-
-{SUBTASK-XXX / Nenhuma}
-
-## Referência
-
-Tech Spec: [Link para tech-spec.md]
-```
+Use o formato **Descrição da subtarefa no Jira** de `$IDE/templates/engineering/tech-spec-delivery-template.md` (seções: Descrição, Arquivos a Modificar/Criar, Critérios de Aceitação, Testes Requeridos, Dependências, Referência).
 
 #### 7.3 Criação no Jira
 
@@ -845,18 +818,7 @@ Tech Spec: [Link para tech-spec.md]
 
 Adicione comentário na história original (STORY-XXX) com:
 
-```
-Tech Spec criada: [Link para tech-spec.md]
-
-Subtarefas criadas:
-- SUBTASK-001: {Nome}
-- SUBTASK-002: {Nome}
-- SUBTASK-003: {Nome}
-...
-
-Total de subtarefas: {X}
-Estimativa total: {Y horas}
-```
+Use o formato **Comentário na história original** de `$IDE/templates/engineering/tech-spec-delivery-template.md`.
 
 ---
 
@@ -885,34 +847,7 @@ Valide que:
 
 Forneça ao usuário:
 
-```
-✅ Tech Spec criada com sucesso!
-
-📄 Documento Local: $SESSIONS_DIR/eng/{feature-name}/tech-spec.md
-📎 Anexada no Jira: {STORY-XXX}
-
-📋 Resumo:
-- História: {STORY-XXX} - {Título}
-- Fases: {X fases}
-- Subtarefas: {Y subtarefas}
-- Estimativa total: {Z horas}
-
-🔗 Subtarefas criadas no Jira:
-- SUBTASK-001: {Nome} (P0, 6h)
-- SUBTASK-002: {Nome} (P1, 4h)
-- SUBTASK-003: {Nome} (P1, 8h)
-...
-
-⚠️ Riscos Principais:
-- {Risco 1}
-- {Risco 2}
-
-📌 Próximos Passos Sugeridos:
-1. Revisar e aprovar a Tech Spec
-2. Atribuir subtarefas ao time
-3. Iniciar desenvolvimento pela Fase 1
-4. Monitorar progresso e atualizar plan.md
-```
+Use o formato **Mensagem de entrega** de `$IDE/templates/engineering/tech-spec-delivery-template.md`; um exemplo preenchido está na seção **Exemplo de output final** do mesmo arquivo.
 
 ---
 
@@ -978,46 +913,13 @@ Forneça ao usuário:
 ### Templates
 
 - `templates/engineering/tech-spec-template.md` - Template de Tech Spec
+- `templates/engineering/tech-spec-delivery-template.md` - Formatos de entrega (descrição da subtarefa no Jira, comentário na história, mensagem de entrega, exemplo e fluxo resumido)
 
 ---
 
 ## Fluxo Resumido
 
-```
-┌─────────────────────────────────────────────────────────┐
-│ 0. DETECÇÃO DO TIPO                                     │
-│    └─ Épico ou História? (inferir ou perguntar)        │
-└─────────────────────────────────────────────────────────┘
-                          ↓
-┌─────────────────────────────────────────────────────────┐
-│ 1. ENTENDIMENTO                                         │
-│    └─ Ler card, fazer perguntas, validar contexto      │
-└─────────────────────────────────────────────────────────┘
-                          ↓
-           ┌──────────────┴──────────────┐
-           ▼                             ▼
-   ┌───────────────┐             ┌───────────────┐
-   │    ÉPICO      │             │   HISTÓRIA    │
-   ├───────────────┤             ├───────────────┤
-   │ 2A. Investig. │             │ 2B. Investig. │
-   │    arquit.    │             │    codebase   │
-   ├───────────────┤             ├───────────────┤
-   │ 3A. Proposta  │             │ 2.5B. Compl.  │
-   │    arquit.    │             ├───────────────┤
-   ├───────────────┤             │ 3B. Proposta  │
-   │ 4A. Doc       │             ├───────────────┤
-   │ tech-spec-    │             │ 4B. Subtaref. │
-   │ arch.md       │             ├───────────────┤
-   └───────────────┘             │ 5B. Riscos    │
-                                 ├───────────────┤
-                                 │ 6B. Doc       │
-                                 │ tech-spec.md  │
-                                 ├───────────────┤
-                                 │ 7B. $TASK_MGR │
-                                 ├───────────────┤
-                                 │ 8B. Entrega   │
-                                 └───────────────┘
-```
+O diagrama do fluxo (épico x história, fases 0 a 8) está na seção **Fluxo resumido** de `$IDE/templates/engineering/tech-spec-delivery-template.md`.
 
 ---
 
@@ -1067,48 +969,7 @@ Forneça ao usuário:
 
 ## Exemplo de Output Final
 
-```markdown
-✅ Tech Spec para STORY-456 criada com sucesso!
-
-📄 **Documento Local**: $SESSIONS_DIR/eng/story-456/tech-spec.md
-📎 **Anexado no Jira**: STORY-456
-
-📊 **Resumo**:
-
-- **História**: STORY-456 - Implementar autenticação de usuários
-- **Fases**: 3 fases (Backend, Frontend, Testes)
-- **Subtarefas**: 5 subtarefas
-- **Estimativa total**: 26 horas
-
-🔗 **Subtarefas criadas no Jira**:
-
-- SUBTASK-101: [BACKEND] Criar endpoint POST /api/auth/register (P0, 6h)
-- SUBTASK-102: [BACKEND] Criar endpoint POST /api/auth/login (P0, 6h)
-- SUBTASK-103: [BACKEND] Criar endpoint POST /api/auth/logout (P1, 4h)
-- SUBTASK-104: [FRONTEND] Criar tela de login integrada à API (P1, 6h)
-- SUBTASK-105: [QA] Testes E2E do fluxo de autenticação (P2, 4h)
-
-⚠️ **Riscos Principais**:
-
-- JWT secret precisa estar em variável de ambiente
-- Performance de bcrypt pode impactar tempo de login (mitigado com salt rounds = 10)
-
-📐 **Decisões Arquiteturais**:
-
-- Escolhido JWT em vez de sessões (stateless, escalável)
-- Bcrypt para hash de senhas (padrão da indústria)
-- Rate limiting em login (proteção contra brute force)
-
-📌 **Próximos Passos**:
-
-1. ✅ Revisar tech spec (aguardando sua aprovação)
-2. Atribuir SUBTASK-101 a 103 para desenvolvedor backend
-3. Atribuir SUBTASK-104 para desenvolvedor frontend
-4. Iniciar pelo backend - SUBTASK-101 e 102
-5. Configurar variáveis de ambiente em staging/prod
-
-🎯 **Pronto para iniciar desenvolvimento!**
-```
+Veja o exemplo preenchido na seção **Exemplo de output final** de `$IDE/templates/engineering/tech-spec-delivery-template.md`.
 
 ---
 
