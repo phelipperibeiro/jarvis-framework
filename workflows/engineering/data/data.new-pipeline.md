@@ -38,6 +38,16 @@ seguindo as convenções definidas em `$IDE/rules/engineering/data/data-rules.md
   - Arquivo: `$IDE/agents/engineering/eng.docs-writer.md`
   - Quando usar: pipelines de alta criticidade ou que precisam de documentação de suporte além do template padrão.
 
+### Skills invocados durante o workflow
+
+| Passo | Skill | Condição |
+|-------|-------|----------|
+| Agentes recomendados | `eng.data-engineer.agent` (agente) | Sempre — agente primário que conduz todo o workflow |
+| Pré-verificação — Fonte nova ou existente? | `/eng-data-onboard` | Se a fonte nunca foi ingerida antes (pipeline totalmente novo); depois volta a este workflow |
+| Agentes recomendados | `eng.dev-code-reviewer` (agente) | Se o pipeline tiver lógica de transformação complexa ou antes de qualquer push ao repositório de pipelines |
+| Agentes recomendados | `eng.qa.test-planner` (agente) | Se o pipeline for gold com múltiplos casos de uso, dados sensíveis ou SLA rigoroso (apoio à Expectation Suite) |
+| Agentes recomendados | `eng.docs-writer` (agente) | Se o pipeline for de alta criticidade ou precisar de documentação além do template (diagramas, runbook, troubleshooting) |
+
 ---
 
 ## Entrada

@@ -17,6 +17,14 @@ priorizando a **arquitetura observada no código do repositório**, usando o tem
 - regras de engenharia em `$IDE/rules/engineering/eng-rules.md`
 - identidade em `$IDE/agents/engineering/eng.agent.md`
 
+### Skills invocados durante o workflow
+
+| Passo | Skill | Condição |
+|-------|-------|----------|
+| Objetivo | `eng.agent` (agente) | Sempre — identidade do workflow (alinhamento com `eng.agent.md`) |
+| Passo 1 – Verificar PRD | `/jarvis-docs-central` (via `jarvis docs sync --silent`) | Se `CENTRAL_DOCS_REPO` estiver definido no ENV.md |
+| Passo 7 – Publicar no Central Docs | `/jarvis-docs-central` (via `jarvis docs publish --tipo ard`) | Se `CENTRAL_DOCS_REPO` estiver definido, o ARD estiver aprovado e o usuário aceitar publicar |
+
 ---
 
 ## Passo 0 – Definir se é novo ARD ou iteração
