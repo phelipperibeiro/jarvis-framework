@@ -336,7 +336,7 @@ Link para docs existentes?         → references/
 
 ### Skill grande com temas separaveis: roteador + references/
 
-O corpo do `SKILL.md` e carregado inteiro ao invocar a skill. Quando a skill tem **3 ou mais temas que se usam isoladamente** (por exemplo guards, testes, troubleshooting), mantenha no `SKILL.md` so o que vale sempre (objetivo, quando usar, padroes criticos, arvore de decisao, regras, checklist, a tabela de skills invocados) e uma tabela "Referencias" (Tema | Quando ler | Arquivo); cada tema vai para `references/{n}-{tema}.md`. Modelo: `skills/eng-backend/`. Ja seguem o modelo: `eng-backend-nestjs`, `eng-scraper`, `eng-security-cybersecurity`, `eng-backend-rabbitmq`, `eng-frontend-microfrontend` e `eng-frontend-design-system`.
+O corpo do `SKILL.md` e carregado inteiro ao invocar a skill. Quando a skill tem **3 ou mais temas que se usam isoladamente** (por exemplo guards, testes, troubleshooting), mantenha no `SKILL.md` so o que vale sempre (objetivo, quando usar, padroes criticos, arvore de decisao, regras, checklist, a tabela de skills invocados) e uma tabela "Referencias" (Tema | Quando ler | Arquivo); cada tema vai para `references/{n}-{tema}.md`. Modelo: `skills/eng-backend/`. Ja seguem o modelo: `eng-backend-nestjs`, `eng-scraper`, `eng-security-cybersecurity`, `eng-backend-rabbitmq`, `eng-frontend-microfrontend`, `eng-frontend-design-system` e `eng-qa-bug-report` (so os temas de apoio: adapters de task manager, exemplos e bug-to-test; o fluxo por modos fica no `SKILL.md`).
 
 Nao converta procedimento sequencial (passo 1, 2, 3 que se le de ponta a ponta) nem skill pequena (menos de ~8 KB): nao ha tema para pular, so mais arquivos para ler.
 
