@@ -157,6 +157,14 @@ Para cada projeto:
 - Corresponder ao idioma do usuário
 - Inserir novas atualizações ANTES do conteúdo antigo (cronologia reversa)
 
+### Skills invocados durante a execução do skill
+
+| Passo | Skill | Condição |
+|-------|-------|----------|
+| — | Nenhuma — skill autocontida | — |
+
+Se o usuário usa Obsidian, a skill pode usar skills ou MCP de manipulação de notas disponíveis no ambiente; nenhum é nomeado neste arquivo.
+
 ## Regras Críticas
 
 ### NUNCA:

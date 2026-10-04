@@ -586,6 +586,12 @@ async function checkForChanges(url: string, storePath: string) {
 }
 ```
 
+### Skills invocados durante a execução do skill
+
+| Passo | Skill | Condição |
+|-------|-------|----------|
+| — | Nenhuma — skill autocontida | — |
+
 ---
 
 ## Regras

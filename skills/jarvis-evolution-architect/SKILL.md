@@ -358,6 +358,12 @@ Recomendação arquitetural
 - Vídeos
 - Opiniões sem fonte
 
+### Skills invocados durante a execução do skill
+
+| Passo | Skill | Condição |
+|-------|-------|----------|
+| — | Nenhuma — skill autocontida | — |
+
 ---
 
 ## 🎯 Entrada Típica
