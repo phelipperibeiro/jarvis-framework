@@ -25,7 +25,7 @@ Esta skill permite:
 CENTRAL_DOCS_REPO=https://gitlab.com/org/group/central-docs.git
 CENTRAL_DOCS_REF=main
 CENTRAL_DOCS_TARGET_BRANCH=dev
-SQUAD=squad-driver
+SQUAD=core
 WORKSPACE=meu-workspace
 ```
 
@@ -60,9 +60,9 @@ jarvis docs publish \
 
 # Publicar PRD
 jarvis docs publish \
-  --file ./docs/product/prd-gestao-condutores.md \
+  --file ./docs/product/prd-gestao-carteiras.md \
   --tipo prd \
-  --feature gestao-condutores
+  --feature gestao-carteiras
 
 # Publicar Swagger/OpenAPI (YAML)
 jarvis docs publish \
@@ -75,7 +75,7 @@ jarvis docs publish \
   --file ./docs/engineering/ard-api-wallet.md \
   --tipo ard \
   --feature api-wallet-auth-jwt \
-  --squad squad-driver \
+  --squad core \
   --workspace meu-workspace
 ```
 
@@ -102,16 +102,16 @@ central-docs/
 
 ```
 central-docs/
-└── drivers/
+└── core/
     ├── index.md
     ├── product/
-    │   └── gestao-de-condutores/
-    │       ├── prd-gestao-condutores.md
-    │       └── frd-gestao-condutores-onboarding.md
+    │   └── gestao-de-carteiras/
+    │       ├── prd-gestao-carteiras.md
+    │       └── frd-gestao-carteiras-onboarding.md
     └── engineering/
-        └── drivers-api/
-            ├── ard-drivers-api.md
-            └── rfc-drivers-api-idempotencia.md
+        └── api-wallet/
+            ├── ard-api-wallet.md
+            └── rfc-api-wallet-idempotencia.md
 ```
 
 ## Formato do index.md
@@ -119,19 +119,19 @@ central-docs/
 O `index.md` fica na raiz do squad (`{squad}/index.md`) e lista todos os documentos organizados por área e produto:
 
 ```markdown
-# squad-driver
+# core
 
 ## product
 
-### gestao-de-condutores
-- [prd-gestao-condutores.md](product/gestao-de-condutores/prd-gestao-condutores.md) | v1.2.0 | in_progress | jira: DRV-001 | tags: condutores,onboarding
-- [frd-gestao-condutores-onboarding.md](product/gestao-de-condutores/frd-gestao-condutores-onboarding.md) | v1.0.0 | in_review | jira: DRV-123 | tags: onboarding,cadastro
+### gestao-de-carteiras
+- [prd-gestao-carteiras.md](product/gestao-de-carteiras/prd-gestao-carteiras.md) | v1.2.0 | in_progress | jira: WAL-001 | tags: carteiras,onboarding
+- [frd-gestao-carteiras-onboarding.md](product/gestao-de-carteiras/frd-gestao-carteiras-onboarding.md) | v1.0.0 | in_review | jira: WAL-123 | tags: onboarding,cadastro
 
 ## engineering
 
-### drivers-api
-- [ard-drivers-api.md](engineering/drivers-api/ard-drivers-api.md) | v2.1 | Finalizada | tags: arquitetura,rest,api
-- [rfc-drivers-api-idempotencia.md](engineering/drivers-api/rfc-drivers-api-idempotencia.md) | Accepted | tags: idempotencia,redis
+### api-wallet
+- [ard-api-wallet.md](engineering/api-wallet/ard-api-wallet.md) | v2.1 | Finalizada | tags: arquitetura,rest,api
+- [rfc-api-wallet-idempotencia.md](engineering/api-wallet/rfc-api-wallet-idempotencia.md) | Accepted | tags: idempotencia,redis
 ```
 
 ## Frontmatter Obrigatório
@@ -141,11 +141,11 @@ O `index.md` fica na raiz do squad (`{squad}/index.md`) e lista todos os documen
 ```yaml
 ---
 id: PRD-001
-name: Gestão de Condutores
+name: Gestão de Carteiras
 version: 1.2.0
 status: in_progress
-task_link: https://jira.com/DRV-001
-related_repo: drivers-api,drivers-worker
+task_link: https://jira.com/WAL-001
+related_repo: api-wallet,wallet-worker
 ---
 ```
 
@@ -199,7 +199,7 @@ Detecta docs desatualizados e oferece publicação.
 ### Arquivo não encontrado
 
 ```
-❌ Arquivo não encontrado no central-docs: squad-driver/index.md
+❌ Arquivo não encontrado no central-docs: core/index.md
 ```
 
 **Solução:** Verificar se o squad existe no central-docs ou criar o `index.md` do squad.
@@ -280,7 +280,7 @@ jarvis docs sync
 
 ```bash
 # 1. Criar ARD localmente
-cat > docs/engineering/ard-drivers-api-auth.md << EOF
+cat > docs/engineering/ard-api-wallet-auth.md << EOF
 ---
 Status: Proposta
 Data: 2026-03-10
@@ -295,12 +295,12 @@ EOF
 
 # 2. Publicar
 jarvis docs publish \
-  --file docs/engineering/ard-drivers-api-auth.md \
+  --file docs/engineering/ard-api-wallet-auth.md \
   --tipo ard \
-  --feature drivers-api-auth
+  --feature api-wallet-auth
 
 # 3. Resultado
-# ✅ MR criado: docs/squad-driver/engineering/drivers-api/ard-drivers-api-auth → dev
+# ✅ MR criado: docs/core/engineering/api-wallet/ard-api-wallet-auth → dev
 # URL: https://gitlab.com/.../merge_requests/42
 ```
 

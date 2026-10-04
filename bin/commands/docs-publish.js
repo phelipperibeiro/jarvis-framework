@@ -45,7 +45,7 @@ export async function docsPublish(flags = {}) {
     console.error('    --file ./docs/engineering/ard-api-wallet.md \\')
     console.error('    --tipo ard \\')
     console.error('    --feature api-wallet-auth-jwt \\')
-    console.error('    --squad squad-driver \\')
+    console.error('    --squad core \\')
     console.error('    --workspace meu-workspace')
     process.exit(1)
   }
@@ -101,11 +101,11 @@ export async function docsPublish(flags = {}) {
     console.error('❌ SQUAD ou WORKSPACE não definidos')
     console.error('\nOpções:')
     console.error('  1. Definir no ENV.md:')
-    console.error('     SQUAD=squad-driver')
+    console.error('     SQUAD=core')
     console.error('     WORKSPACE=meu-workspace')
     console.error('')
     console.error('  2. Passar via flags:')
-    console.error('     --squad squad-driver --workspace meu-workspace')
+    console.error('     --squad core --workspace meu-workspace')
     process.exit(1)
   }
   

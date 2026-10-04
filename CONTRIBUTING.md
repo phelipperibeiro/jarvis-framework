@@ -1,6 +1,6 @@
 # Contributing Guide
 
-Obrigado por contribuir com o **spoiler-framework**.
+Obrigado por contribuir com o **jarvis-framework**.
 
 Este documento define as convenções utilizadas no projeto para manter um fluxo de desenvolvimento consistente, facilitar code reviews e preservar um histórico Git organizado.
 

@@ -19,7 +19,7 @@ Aplicável sempre que um robô novo for implementado, um bug estrutural for reso
 #### Localização
 
 - Sempre criar em `docs/engineering/robots/{robot-tag}-robot.md`
-- Exemplos: `docs/engineering/robots/ba-robot.md`, `docs/engineering/robots/sp-robot.md`
+- Exemplos: `docs/engineering/robots/consulta-orgao-robot.md`, `docs/engineering/robots/extrator-dados-robot.md`
 
 #### Conteúdo obrigatório
 
@@ -30,8 +30,8 @@ Todo arquivo `{robot-tag}-robot.md` deve conter:
 | **Visão Geral** | O que o robô coleta e o que **não** coleta (limitações por design) |
 | **Fluxo de Execução** | Sequência de chamadas HTTP com URLs completas de cada etapa |
 | **Fontes de Dados** | Cada fonte (PDF, HTML, API) com mapeamento de campos/colunas |
-| **Campos Extraídos** | Tabela por `situation` (ex: IMPOSTA vs AGUARDANDO IMPOSICAO) — quais campos existem em cada uma e a fonte |
-| **Limitações Conhecidas** | Campos indisponíveis na fonte do DETRAN/órgão — documentar por que não é possível extrair |
+| **Campos Extraídos** | Tabela por `situation` (ex: CONCLUIDO vs PENDENTE) — quais campos existem em cada uma e a fonte |
+| **Limitações Conhecidas** | Campos indisponíveis na fonte do sistema/órgão externo — documentar por que não é possível extrair |
 | **Histórico de Bugs** | Bugs resolvidos com referência ao Jira key, sintoma, causa e fix aplicado |
 | **Checklist de Troubleshooting** | Tabela: sintoma → causa provável → ação |
 
@@ -39,7 +39,7 @@ Todo arquivo `{robot-tag}-robot.md` deve conter:
 
 - Ao implementar um robô novo
 - Ao resolver qualquer bug estrutural (ex: campo retornando vazio, matching falho)
-- Ao fazer descobertas relevantes sobre o comportamento do site-alvo (ex: estrutura de colunas HTML, campos disponíveis por situação de multa)
+- Ao fazer descobertas relevantes sobre o comportamento do site-alvo (ex: estrutura de colunas HTML, campos disponíveis por situação do registro)
 - Sempre referenciar o Jira key no histórico de bugs
 
 ### Proibido
