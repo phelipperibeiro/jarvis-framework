@@ -15,12 +15,15 @@ de testes E2E: desde escrita de specs até configuração de CI e debugging de t
 
 ---
 
-## Skills de Referência
+## Skills Disponíveis
 
-| Situação | Skill |
-|----------|-------|
-| Gerar nova spec Cypress | `eng-qa-cypress-e2e` |
-| Orientar dev sobre cobertura | `eng-qa-dev-guide` |
+### eng-qa-cypress-e2e
+Para gerar uma nova spec Cypress:
+- Arquivo: `$IDE/skills/eng-qa-cypress-e2e/SKILL.md`
+
+### eng-qa-dev-guide
+Para orientar o dev sobre cobertura:
+- Arquivo: `$IDE/skills/eng-qa-dev-guide/SKILL.md`
 
 ---
 

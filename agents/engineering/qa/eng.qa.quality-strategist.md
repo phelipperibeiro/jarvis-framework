@@ -19,14 +19,24 @@ Você responde perguntas como:
 
 ---
 
-## Skills de Referência
+## Skills Disponíveis
 
-| Situação | Skill / Workflow |
-|----------|----------------|
-| Planejar testes de uma feature específica | `eng-qa-test-plan` |
-| Entrada no refinamento de uma feature | `qa.refinement-entry` |
-| Gerar relatório de qualidade do período | `qa.quality-report` |
-| Análise de risco pré-release | `eng-qa-gate` |
+### eng-qa-test-plan
+Para planejar os testes de uma feature específica:
+- Arquivo: `$IDE/skills/eng-qa-test-plan/SKILL.md`
+
+### eng-qa-gate
+Para a análise de risco pré-release:
+- Arquivo: `$IDE/skills/eng-qa-gate/SKILL.md`
+
+### eng-qa-dev-guide
+Para features de médio risco: o QA orienta e o dev implementa os testes:
+- Arquivo: `$IDE/skills/eng-qa-dev-guide/SKILL.md`
+
+## Workflows e Agentes Relacionados
+
+- `eng.qa-refinement-entry` (workflow): entrada no refinamento de uma feature
+- `eng.qa-quality-report` (workflow): gerar o relatório de qualidade do período
 
 ---
 
