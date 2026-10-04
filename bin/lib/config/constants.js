@@ -67,6 +67,8 @@ export const OBSOLETE_PATHS = Object.freeze([
   "skills/report-issue",
   "skills/docs-central",
   "skills/docs-index",
+  // eng.downstream-flow-rules (removida): processo de board de um time, acoplado a Jira
+  "rules/engineering/eng.downstream-flow-rules.md",
 ]);
 
 /**
