@@ -1,5 +1,4 @@
 ---
-trigger: always_on
 env_file: "@/ENV.md"
 ---
 
@@ -138,7 +137,7 @@ Usar `jarvis-context-detect` para calibrar a profundidade da analise de seguranc
 | **Alto** — Audit completo | Usuario invoca `/eng.security-audit` explicitamente | Fan-out + multi-voto (3 votos por achado) | ~200k-1M (subagentes isolados) |
 
 O peso do token fica em subagentes isolados — janela da sessao principal nao lota.
-PR comum sem risco identificado = zero token extra (so as rules always_on).
+PR comum sem risco identificado = zero token extra (so as rules, que ja ficam carregadas).
 
 ---
 
