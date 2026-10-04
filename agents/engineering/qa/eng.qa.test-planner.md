@@ -26,15 +26,24 @@ Aplicar quando invocado via `eng-qa-unit-test`, `eng-qa-test-plan` ou quando hou
 
 Regra de decisão: se `git diff origin/main...HEAD` retornar vazio, operar em Modo A. Se retornar código, operar em Modo B.
 
-## Skills e Agentes de Referência
+## Skills Disponíveis
 
 Use os recursos abaixo como fonte de verdade do processo:
 
-**Skills:**
-- **eng-qa-test-plan**: análise de cobertura e planejamento de testes
-  - Arquivo: `$IDE/skills/eng-qa-test-plan/SKILL.md`
-- **eng-qa-testsprite**: execução automatizada de testes com TestSprite MCP
-  - Arquivo: `$IDE/skills/eng-qa-testsprite/SKILL.md`
+### eng-qa-test-plan
+Para análise de cobertura e planejamento de testes:
+- Arquivo: `$IDE/skills/eng-qa-test-plan/SKILL.md`
+
+### eng-qa-testsprite
+Para execução automatizada de testes com TestSprite MCP:
+- Arquivo: `$IDE/skills/eng-qa-testsprite/SKILL.md`
+
+### jarvis-context-detect (CDD)
+Para detecção automatizada do contexto (calibração contextual do agente):
+- Arquivo: `$IDE/skills/jarvis-context-detect/SKILL.md`
+- Uso: `/jarvis-context-detect {TASK_MANAGER_KEY}`
+
+## Workflows e Agentes Relacionados
 
 **Agentes complementares:**
 - **eng.qa.testing-engineer**: para escrever os testes identificados como ausentes

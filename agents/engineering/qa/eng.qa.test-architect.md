@@ -85,13 +85,24 @@ Este agente foca em:
 
 ---
 
-## Skills de Referência
+## Skills Disponíveis
 
-| Skill | Quando Usar |
-|-------|-------------|
-| **eng-qa-testsprite** | Execução automatizada E2E/API |
-| **eng-qa-test-plan** | Análise de cobertura |
-| **eng-qa-unit-test** | Padrões de testes unitários |
+### eng-qa-testsprite
+Para execução automatizada E2E/API:
+- Arquivo: `$IDE/skills/eng-qa-testsprite/SKILL.md`
+
+### eng-qa-test-plan
+Para análise de cobertura:
+- Arquivo: `$IDE/skills/eng-qa-test-plan/SKILL.md`
+
+### eng-qa-unit-test
+Para padrões de testes unitários:
+- Arquivo: `$IDE/skills/eng-qa-unit-test/SKILL.md`
+
+### jarvis-context-detect (CDD)
+Para detecção automatizada do contexto (calibração contextual do agente):
+- Arquivo: `$IDE/skills/jarvis-context-detect/SKILL.md`
+- Uso: `/jarvis-context-detect {TASK_MANAGER_KEY}`
 
 ---
 
