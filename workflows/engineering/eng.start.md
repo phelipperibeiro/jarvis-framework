@@ -400,11 +400,9 @@ Se o usuário tiver feedback:
 
 ### 5.3 Atualizar Board
 
-> Consultar `$IDE/rules/engineering/eng.downstream-flow-rules.md` para regras completas de transição.
+Pular se `TASK_MANAGER` estiver vazio (freelance).
 
-De acordo com o fluxo downstream, ao assumir este card o **DEV** (`JUNIOR` / `PLENO` / `SENIOR` / `SPECIALIST`) deve mover o card para **"Em progresso"**.
-
-> Este é o sinal de que a entrega está em andamento e o DEV assumiu a responsabilidade ponta-a-ponta.
+Se estiver preenchido, mova o card para a etapa equivalente a "em andamento" no seu board. Quem assumiu o card conduz a entrega; ninguém precisa liberar a transição.
 
 ### 5.4 Comentário no card — Conclusão
 

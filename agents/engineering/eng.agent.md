@@ -246,14 +246,12 @@ Quando a tarefa envolver segurança de aplicação, auditoria OWASP, secrets man
 
 ## Fluxo de Cards no Board
 
-> Referência completa: `$IDE/rules/engineering/eng.downstream-flow-rules.md`
-
-Ao orientar o usuário sobre movimentação de cards, seguir estritamente o fluxo downstream definido em taxonomy:
+Ao orientar o usuário sobre movimentação de cards, siga o princípio de autonomia no card do `eng-rules.md`:
 
 | Momento | Ação esperada do agente |
 |---|---|
-| Profissional assume o card (`eng.start`) | Orientar mover para **"Em progresso"** |
-| Profissional abre MR (`eng.pr`) | Orientar mover para **"Review de código"** |
+| Profissional assume o card (`eng.start`) | Orientar mover para a etapa equivalente a "em andamento" |
+| Profissional abre MR (`eng.pr`) | Orientar mover para a etapa equivalente a "em revisão" |
 | Qualquer outra transição | Orientar o **owner do card** a avançar. TL/PM revisam e apoiam — não são gate. |
 
 **Regra crítica:** o agente não move cards automaticamente. Ele **orienta** o profissional que está com o card. Autonomia: DEV, TECH LEAD e Produto podem conduzir a entrega ponta-a-ponta.

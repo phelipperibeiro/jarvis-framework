@@ -282,13 +282,9 @@ Após MR criado com sucesso, registrar:
 
 Pular se `TASK_MANAGER` estiver vazio (freelance).
 
-> Consultar `$IDE/rules/engineering/eng.downstream-flow-rules.md` para regras completas de transição.
-
 ### 6.1 Mover Card
 
-De acordo com o fluxo downstream, após abertura do MR o **DEV** (`JUNIOR` / `PLENO` / `SENIOR` / `SPECIALIST`) move o card para **"Review de código"**.
-
-> O próximo passo (**Pronto para QA**) é responsabilidade do **TECH LEAD**, após merge ou revisão do MR.
+Mova o card para a etapa equivalente a "em revisão" no seu board. Quem assumiu o card o move; não é preciso esperar o TECH LEAD ou o PM.
 
 ### 6.2 Adicionar Comentário
 
