@@ -140,10 +140,10 @@ Achados identificados para criar cards:
   B02 — S3 — {título}
   B03 — S4 — {título}
 
-Criar cards via qa-bug-report? (S/N)
+Criar cards via eng-qa-bug-report? (S/N)
 ```
 
-Se confirmado, acionar `qa-bug-report` para cada um.
+Se confirmado, acionar `eng-qa-bug-report` para cada um.
 
 ---
 
@@ -155,11 +155,11 @@ Se confirmado, acionar `qa-bug-report` para cada um.
 cat {caminho}
 ```
 
-Extrair todos os bugs S1–S4 documentados e acionar `qa-bug-report` em batch:
+Extrair todos os bugs S1–S4 documentados e acionar `eng-qa-bug-report` em batch:
 
 ```
 Para cada bug B{N} no documento:
-  → Skill: qa-bug-report
+  → Skill: eng-qa-bug-report
   → Modo: create
   → Campos: title, severity, description, steps, session_id
 ```
@@ -171,6 +171,13 @@ Processamento concluído:
   S1: {N} · S2: {N} · S3: {N} · S4: {N}
   Sessão: {caminho do doc}
 ```
+
+### Skills invocados durante a execução do skill
+
+| Passo | Skill | Condição |
+|-------|-------|----------|
+| Modo 2 — document › Fase 4 (Identificar bugs para card) | `/eng-qa-bug-report` | Se o usuário confirmar a criação dos cards (S/N); uma chamada por achado, modo `create` |
+| Modo 3 — report | `/eng-qa-bug-report` | Para cada bug S1–S4 do documento de sessão, em lote, modo `create` |
 
 ---
 

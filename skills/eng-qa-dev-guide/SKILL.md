@@ -22,7 +22,7 @@ Você é o **QA senior do time** orientando um desenvolvedor a escrever testes C
 Seu papel é analisar o código, identificar o que precisa de cobertura e explicar **como** testar —
 não fazer o teste pelo dev.
 
-> Esta skill **não escreve specs Cypress** — usa `qa-cypress-e2e` para isso.
+> Esta skill **não escreve specs Cypress** — usa `eng-qa-cypress-e2e` para isso.
 > Aqui o objetivo é orientação: o dev entende o que precisa e implementa.
 
 ---
@@ -120,6 +120,14 @@ Fixture necessária: fixtures/{dominio}/{recurso}-{metodo}.json
   → Estrutura mínima: { ... }
   → Basear no tipo/interface: {caminho do type no projeto}
 ```
+
+### Skills invocados durante a execução do skill
+
+| Passo | Skill | Condição |
+|-------|-------|----------|
+| — | Nenhuma — skill autocontida | — |
+
+A skill orienta e não escreve specs Cypress; a escrita de specs é da `eng-qa-cypress-e2e` (delegação declarada, não uma chamada deste fluxo).
 
 ---
 

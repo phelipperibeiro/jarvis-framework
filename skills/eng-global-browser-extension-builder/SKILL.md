@@ -294,6 +294,12 @@ Firefox:
 6. Enviar para revisão (1-3 dias úteis)
 ```
 
+### Skills invocados durante a execução do skill
+
+| Passo | Skill | Condição |
+|-------|-------|----------|
+| — | Nenhuma — skill autocontida | — |
+
 ---
 
 ## Anti-Padrões

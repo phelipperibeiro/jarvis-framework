@@ -137,6 +137,12 @@ Se um padrão de ação se repete em mais de um test file ou é complexo:
 - Registrar em `support/commands.ts`
 - Tipar em `support/index.d.ts`
 
+### Skills invocados durante a execução do skill
+
+| Passo | Skill | Condição |
+|-------|-------|----------|
+| — | Nenhuma — skill autocontida | — |
+
 ---
 
 ## Fase 4 — Output
