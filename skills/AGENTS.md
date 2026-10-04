@@ -23,8 +23,6 @@ skills/
 │   └── SKILL.md
 ├── eng-global-task-comment/     # Comentário no card (Jira/Linear/GitHub Issues/Asana)
 │   └── SKILL.md
-├── eng-global-jira-comment/     # Alias → eng-global-task-comment
-│   └── SKILL.md
 ├── jarvis-list-specializations/ # Lista especializações de stack instaladas e registradas
 │   └── SKILL.md
 ├── jarvis-evolution-architect/ # Mentor de arquitetura: analisa e recomenda a evolução do próprio Jarvis (SDD, CDD, Agentic SE)
