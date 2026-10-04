@@ -17,6 +17,7 @@ workflows/
 │   ├── prod.spec.discovery.md    # Investigação inicial de uma ideia (rascunho)
 │   ├── prod.spec.prd.md          # Documento de Requisitos de Produto
 │   ├── prod.spec.frd.md          # Documento de Requisitos Funcionais
+│   ├── prod.spec.ard.md          # ARD a partir do produto
 │   ├── prod.spec.breakdown.md    # Quebra em versões / épicos / histórias
 │   ├── prod.spec.epic.md         # Épicos
 │   ├── prod.spec.issue.md        # Issues (stories, tasks, bugs)
@@ -74,6 +75,7 @@ workflows/
 | `prod.spec.discovery.md` | Investigar uma ideia inicial (problema, requisitos e viabilidade) e gerar um rascunho |
 | `prod.spec.prd.md` | Criar/editar Documento de Requisitos de Produto |
 | `prod.spec.frd.md` | Criar/editar Documento de Requisitos Funcionais |
+| `prod.spec.ard.md` | Levantar requisitos arquiteturais com o PM e conduzir o ARD |
 | `prod.spec.breakdown.md` | Quebrar spec grande em versões, épicos e histórias |
 | `prod.spec.epic.md` | Criar/editar épicos |
 | `prod.spec.issue.md` | Criar/editar issues (stories, tasks, bugs) |

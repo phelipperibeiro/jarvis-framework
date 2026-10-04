@@ -15,6 +15,7 @@ Comando “estou perdido”: [`/prod.spec`](./prod.spec.md).
 | Tenho só uma ideia e não sei se vale a pena | [`prod.spec.discovery`](./prod.spec.discovery.md) — investigação inicial (rascunho) |
 | Preciso do “quê / por quê” do produto ou iniciativa | [`prod.spec.prd`](./prod.spec.prd.md) — Documento de Requisitos de Produto |
 | Preciso detalhar comportamento de uma feature | [`prod.spec.frd`](./prod.spec.frd.md) — Documento de Requisitos Funcionais |
+| Preciso deixar claro para a engenharia o que a arquitetura precisa atender | [`prod.spec.ard`](./prod.spec.ard.md) — ARD, a partir do produto |
 | A spec ficou grande demais | [`prod.spec.breakdown`](./prod.spec.breakdown.md) |
 | Há ambiguidades / furos | [`prod.spec.clarify`](./prod.spec.clarify.md) |
 | Preciso agrupar várias histórias sob um tema | [`prod.spec.epic`](./prod.spec.epic.md) |
@@ -40,6 +41,9 @@ O que você precisa agora?
 │
 ├─ Detalhar comportamento, regras e aceite de UMA feature
 │  └─ prod.spec.frd   (Documento de Requisitos Funcionais)
+│
+├─ Registrar o que a arquitetura precisa atender (requisitos arquiteturais)
+│  └─ prod.spec.ard   (ARD; o documento é de engenharia)
 │
 ├─ Tirar dúvidas ou preencher buracos numa spec que JÁ existe
 │  └─ prod.spec.clarify
@@ -91,6 +95,15 @@ O que você precisa agora?
 | **Resultado esperado** | `frd-…md` na pasta do documento macro pai |
 | **Próximo passo** | `clarify` → `issue` (ou `breakdown`/`epic` se ainda for grande) |
 | **Exemplo** | “Detalhar aceitar convite por e-mail (expirado, usuário novo, já logado).” |
+
+### `prod.spec.ard` — ARD a partir do produto
+
+| | |
+|--|--|
+| **Problema que resolve** | A engenharia precisa do ARD, mas ninguém registrou o que a arquitetura tem de atender (volumes, prazos legais, integrações) |
+| **Resultado esperado** | Resumo dos requisitos arquiteturais confirmado e um ARD aberto pelo `/eng.create-ard`, em `docs/engineering/ARD/` |
+| **Próximo passo** | Revisão do ARD pela engenharia → `/eng.start` |
+| **Exemplo** | “Checkout com Pix: 2 mil pedidos por hora no pico, integração com o banco parceiro, LGPD.” |
 
 ### `prod.spec.breakdown` — quebra em fatias
 

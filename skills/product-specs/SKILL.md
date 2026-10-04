@@ -21,6 +21,7 @@ Esta skill é só a **porta de entrada** das especificações de produto: ela **
 | Investigar uma ideia inicial | `/prod.spec.discovery` | `$IDE/$FLOWS_FOLDER/prod.spec.discovery.md` |
 | PRD (Documento de Requisitos de Produto) | `/prod.spec.prd` | `$IDE/$FLOWS_FOLDER/prod.spec.prd.md` |
 | FRD (Documento de Requisitos Funcionais) | `/prod.spec.frd` | `$IDE/$FLOWS_FOLDER/prod.spec.frd.md` |
+| ARD (requisitos arquiteturais a partir do produto) | `/prod.spec.ard` | `$IDE/$FLOWS_FOLDER/prod.spec.ard.md` |
 | Épico | `/prod.spec.epic` | `$IDE/$FLOWS_FOLDER/prod.spec.epic.md` |
 | História, tarefa ou bug | `/prod.spec.issue` | `$IDE/$FLOWS_FOLDER/prod.spec.issue.md` |
 | Esclarecer uma especificação | `/prod.spec.clarify` | `$IDE/$FLOWS_FOLDER/prod.spec.clarify.md` |

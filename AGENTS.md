@@ -46,7 +46,7 @@ prompts/
 │   │   ├── engineering/          # 25 workflows de engenharia
 │   │   │   ├── data/             # 2 workflows de dados (data.new-pipeline, data.contract)
 │   │   │   └── frontend/         # 3 workflows de frontend (component, review, perf-audit)
-│   │   └── product/              # 9 workflows de produto
+│   │   └── product/              # 10 workflows de produto
 │   │
 │   ├── skills/                   # Skills (todos com metadata.area)
 │   │   ├── jarvis-context-detect/

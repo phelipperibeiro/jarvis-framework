@@ -29,7 +29,7 @@ Estas instruções ajudam a orientar o usuário que deseja começar a construir 
 | Instruções › Uso adequado dos comandos | `/prod.spec.discovery` | Se o usuário só tem uma ideia inicial (investigar problema, requisitos e viabilidade antes de especificar) |
 | Instruções › Uso adequado dos comandos | `/prod.spec.prd` | Se o pedido for um PRD |
 | Instruções › Uso adequado dos comandos | `/prod.spec.frd` | Se o pedido for um FRD |
-| Instruções › Uso adequado dos comandos | `/prod.spec.ard` | Se o pedido for um ARD — referência quebrada: não existe o workflow `prod.spec.ard` (confirmar renomeação/remoção) |
+| Instruções › Uso adequado dos comandos | `/prod.spec.ard` | Se o pedido for registrar os requisitos de arquitetura (ARD) a partir de uma especificação de produto |
 | Instruções › Uso adequado dos comandos | `/prod.spec.issue` | Se o pedido for uma issue (história, tarefa ou bug) |
 | Instruções › Uso adequado dos comandos | `/prod.spec.clarify` | Para clarificar e revisar qualquer tipo de especificação |
 | Instruções › Uso adequado dos comandos | `/prod.spec.breakdown` | Para quebrar uma especificação grande em fatias (versões, épicos, histórias) |
@@ -59,7 +59,7 @@ Estas instruções ajudam a orientar o usuário que deseja começar a construir 
   - Para investigar uma ideia inicial (problema, requisitos e viabilidade) antes de especificar, use `$PROD_FLOWS/prod.spec.discovery.md`. Se o usuário só tem uma ideia, oriente para o discovery em vez de abrir um PRD com dados presumidos
   - Para PRD use as instruções em `$PROD_FLOWS/prod.spec.prd.md`
   - Para FRD use as instruções em `$PROD_FLOWS/prod.spec.frd.md`
-  - Para ARD use as instruções em `$PROD_FLOWS/prod.spec.ard.md`
+  - Para ARD use as instruções em `$PROD_FLOWS/prod.spec.ard.md` (o ARD é um documento de engenharia: este comando levanta os requisitos com o PM e conduz o `eng.create-ard`)
   - Para Issue use as instruções em `$PROD_FLOWS/prod.spec.issue.md`
   - Para clarificar e revisar qualquer tipo de especificação, use as instruções em `$PROD_FLOWS/prod.spec.clarify.md`
   - Para quebrar uma especificação grande em fatias (versões / épicos / histórias), use `$PROD_FLOWS/prod.spec.breakdown.md`
