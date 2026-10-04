@@ -34,6 +34,17 @@ Antes de executar este workflow:
 
 > 📁 **Padrão de pasta**: `{TASK_MANAGER_KEY}` é o ID do card em **lowercase** (ex: `TASK-123` → `task-123`)
 
+### Skills invocados durante o workflow
+
+| Passo | Skill | Condição |
+|-------|-------|----------|
+| Cabeçalho (agente) | `eng.agent` (agente) | Sempre — identidade do workflow |
+| Fase 0.5: Comentário no card — Início | `/eng-global-task-comment` | Se `TASK_MANAGER` estiver preenchido (freelance pula) |
+| Fase 0 › 0.1 Herdar Contexto da Sessão | `/jarvis-context-detect` | Se `ENABLE_CDD=true` e o `context.md` não existir |
+| Fase 2: Pesquisa no Codebase | `repoprompt` (MCP: `search`, `read_selected_files`) | Para buscar e ler arquivos relevantes do codebase |
+| Fase 2: Pesquisa no Codebase (se necessário) | `context7` (MCP) | Se for preciso consultar a documentação de bibliotecas |
+| Comentário no card — Conclusão | `/eng-global-task-comment` | Se `TASK_MANAGER` estiver preenchido, após validar o plano com o usuário (freelance pula) |
+
 ---
 
 ## Fase 0.5: Comentário no card — Início

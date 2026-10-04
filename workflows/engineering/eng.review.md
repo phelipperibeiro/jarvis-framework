@@ -36,6 +36,19 @@ apontando riscos, gaps e melhorias, sempre respeitando `$IDE/rules/engineering/e
   - Arquivo: `$IDE/agents/engineering/eng.ux-designer.agent.md`
   - Quando usar: PR que introduz nova feature de UI ou altera fluxo de usuário existente.
 
+### Skills invocados durante o workflow
+
+| Passo | Skill | Condição |
+|-------|-------|----------|
+| Skills recomendados | `/eng-qa-test-plan` | Se a revisão envolver mudanças de código (revisar cobertura de testes da branch e gaps) |
+| Skills recomendados | `/eng-backend` (via `eng.specializations-rules.md`) | Se a revisão envolver código de backend (endpoints, autenticação, workers, banco de dados); a regra também carrega as especializações de `BACKEND_SPECIALIZATIONS` |
+| Skills recomendados | `/eng-frontend` (via `eng.specializations-rules.md`) | Se a revisão envolver código de frontend (componentes, estado, estilos, performance de UI, acessibilidade); a regra também carrega as especializações de `FRONTEND_SPECIALIZATIONS` |
+| Skills recomendados | `especialização de arquitetura registrada em BACKEND_SPECIALIZATIONS` | Se houver mudança arquitetural relevante que exija atualizar diagramas e existir essa especialização registrada; sem ela, descrever a mudança no documento de arquitetura |
+| Passo 6 › Validação com TestSprite (opcional) | `/eng-qa-testsprite` | Se o projeto estiver rodando localmente (`/eng-qa-testsprite diff`) |
+| Passo 6 › Análise de Cobertura (opcional) | `eng.qa.test-planner` (agente) | Se a revisão identificar problemas de cobertura que exijam análise mais profunda |
+| Agentes recomendados | `eng.frontend.agent` (agente) | Se o PR tiver mudanças significativas de interface ou componentes |
+| Agentes recomendados | `eng.ux-designer.agent` (agente) | Se o PR introduzir nova feature de UI ou alterar fluxo de usuário existente |
+
 ---
 
 ## Passo 1 – Entender o objetivo da mudança

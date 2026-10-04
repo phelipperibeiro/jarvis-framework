@@ -33,6 +33,30 @@ Estamos nos aproximando de finalizar o trabalho nesta branch e nos preparar para
 #$ARGUMENTS
 </arguments>
 
+### Skills invocados durante o workflow
+
+| Passo | Skill | Condição |
+|-------|-------|----------|
+| Skills recomendados | `/eng-qa-test-plan` | Para avaliar cobertura de testes e identificar gaps antes do PR |
+| Skills recomendados | `/eng-global-docs-write` | Para atualizar a documentação com base nas mudanças da branch |
+| Skills recomendados | `/jarvis-docs-index` | Se for necessário atualizar o índice de documentação |
+| Skills recomendados | `/eng-devops-performance-engineer` | Se a feature tiver requisitos não-funcionais de latência, throughput ou escalabilidade |
+| Skills recomendados | `/eng-backend` e `/eng-frontend` (via `eng.specializations-rules.md`) | Para validar código de backend (endpoints, autenticação, workers) ou de frontend (componentes, performance de UI, WCAG 2.1 AA); a regra também carrega as especializações registradas no ENV.md |
+| Skills recomendados | `/eng-security-cybersecurity` | Se a branch tocar em auth, sessions, inputs, CORS, CSP, permissões ou adicionar dependências novas |
+| Fase 0.5: Comentário no card — Início | `/eng-global-task-comment` | Se `TASK_MANAGER` estiver preenchido (freelance pula) |
+| Gate 0: Verificar Documentação Central | `/jarvis-docs-central` (via `jarvis docs publish --tipo ard`) | Se `CENTRAL_DOCS_REPO` estiver configurado, houver mudança arquitetural, o ARD estiver desatualizado ou novo e o usuário aceitar publicar |
+| Gates › item 1 | `prod.pm-checker` (agente) | Sempre — verificar alinhamento da branch com os docs de produto e engenharia |
+| Gates › item 2 | `eng.dev-code-reviewer` (agente) | Sempre — revisar o código antes de lançar |
+| Gates › item 3 | `eng.qa.test-planner` (agente) | Sempre — identificar gaps de cobertura de testes na branch |
+| Gates › item 4 | `eng.qa.testing-engineer` (agente) | Se o test-planner identificar gaps críticos (escrever os testes faltantes) |
+| Gates › item 5 | `eng.qa.test-architect` (agente) | Se a feature tiver requisitos não-funcionais (no `architecture.md` ou explícitos na task) |
+| Gates › item 6 | `/eng-qa-testsprite` | Sempre — `testScope=diff`, com `type=frontend` e/ou `type=backend` conforme o projeto |
+| Gates › item 7 | `eng.frontend.agent` (agente) | Se a branch tiver mudanças de interface (componentes, estilos, estado) |
+| Gates › item 8 | `eng.ux-designer.agent` (agente) | Se a branch introduzir nova feature de UI ou alterar fluxo de usuário |
+| Gates › item 9 | `eng.docs-writer` (agente) | Sempre — atualizar a documentação do projeto |
+| Gates › item 10 | `/eng.security-review` | Se a branch tocar em auth, sessions, inputs de usuário, CORS, CSP, permissões ou adicionar endpoints públicos |
+| Comentário no card — Conclusão | `/eng-global-task-comment` | Se `TASK_MANAGER` estiver preenchido, com o status final (freelance pula) |
+
 ## Fase 0.5: Comentário no card — Início
 
 Pular se `TASK_MANAGER` estiver vazio (freelance).
