@@ -713,6 +713,13 @@ echo "$REPORT_CONTENT" > "$output_file"
 echo "✅ Relatório gerado: $output_file"
 ```
 
+### Skills invocados durante a execução do skill
+
+| Passo | Skill | Condição |
+|-------|-------|----------|
+| Fluxo de Trabalho › Modo `create` › 0. Verificar Duplicatas | `/triage-issue` (skill externo `atlassian:triage-issue`) | Se `$TASK_MANAGER` estiver configurado e o skill estiver disponível; senão a busca é direta via MCP (não é skill) |
+| Bug-to-Test (pós-criação) | `/eng-qa-cypress-e2e` | Se o usuário responder **[S] Gerar agora** à oferta de teste de regressão |
+
 ---
 
 ## Formato de Saída
@@ -1063,7 +1070,7 @@ Recomendado: previne que o bug retorne após o fix.
 
 ### Se "Gerar agora"
 
-Invocar Skill tool: `qa-cypress-e2e` passando como entrada:
+Invocar Skill tool: `eng-qa-cypress-e2e` passando como entrada:
 - Título do bug como nome do fluxo
 - Passos de reprodução como sequência de ações
 - Comportamento esperado vs. atual como asserções
