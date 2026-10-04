@@ -141,6 +141,8 @@ Feedback ao usuario.
 
 A tabela `### Skills invocados durante o workflow` lista o que o workflow dispara no proprio fluxo: skills, outros workflows, agentes e MCP/CLI citados pelo nome (nao vale ferramenta interna como `Read`/`Grep`, nem "proximos passos" ou pre-requisito pedido ao usuario). Uma linha por referencia, com a condicao real. Fica logo depois da secao de recursos/dependencias (ou, sem ela, depois do titulo e da descricao). Sem chamadas: uma linha `Nenhuma — workflow autocontido`. Modelo: `engineering/eng.debug.md`.
 
+O `jarvis map` e a verificação do `npm run test:comandos` leem **só** a tabela (e, nos agentes, as seções `## Skills Disponíveis` e `## Workflows e Agentes Relacionados`): uma chamada que existir apenas no texto corrido não aparece no mapa, e um nome citado na tabela que não existir faz o teste falhar. Mantenha a tabela em dia ao alterar o artefato.
+
 ---
 
 ## Fases de Desenvolvimento

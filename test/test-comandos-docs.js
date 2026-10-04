@@ -3,6 +3,7 @@
 import { readFileSync, readdirSync, existsSync, statSync } from 'node:fs';
 import { join, dirname, normalize, basename } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { buildGraph, findBrokenReferences } from '../bin/lib/flow-map/tree.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const abs = (...p) => join(root, ...p);
@@ -51,6 +52,11 @@ for (const f of paginas) {
     if (!existsSync(destino)) erros.push(`link quebrado em ${f.replace(root + '/', '')}: ${m[1]}`);
   }
 }
+
+// Nomes citados nas tabelas de chamadas (workflows, skills e agentes) precisam existir.
+const { errors: referencias, warnings: avisos } = findBrokenReferences(buildGraph(root));
+for (const r of referencias) erros.push(`${r.file}: cita "${r.name}", que ${r.reason}`);
+for (const a of avisos) console.warn(`  aviso: ${a.file}: "${a.name}" (${a.reason})`);
 
 if (erros.length) {
   console.error(`✗ ${erros.length} problema(s) nos guias de comandos:\n`);

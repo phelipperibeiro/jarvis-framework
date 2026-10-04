@@ -11,7 +11,7 @@
     "prepublishOnly": "echo 'Publishing jarvis-framework...'",
     "publish:gitlab": "npm publish",
     "test:comandos": "node test/test-comandos-docs.js",
-    "test:filtro": "node --test test/profile-filter.test.js test/token-report.test.js"
+    "test:filtro": "node --test test/profile-filter.test.js test/token-report.test.js test/flow-map.test.js"
   },
   "files": [
     "bin/",

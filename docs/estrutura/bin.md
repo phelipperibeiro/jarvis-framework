@@ -21,9 +21,11 @@ bin/
 │   ├── docs-publish.js     # jarvis docs publish
 │   ├── install-rtk.js      # jarvis install-rtk
 │   ├── tokens.js           # jarvis tokens
+│   ├── map.js              # jarvis map
 │   └── qa-signoff.js       # jarvis qa-signoff (CI)
 └── lib/
     ├── core/               # sync-engine, scanner, profile-filter, token-report
+    ├── flow-map/           # índice, leitor das tabelas de chamadas, árvore e saída do jarvis map
     ├── config/             # IDEs, constants (SYNC_DIRS, LOCK_FILE)
     ├── vcs/                # adapters GitLab/GitHub/Bitbucket
     ├── tasks/              # comentários em boards
@@ -42,6 +44,7 @@ bin/
 | `jarvis docs sync\|publish` | Integração com repo central de docs |
 | `jarvis install-rtk` | rustup (se preciso) + `cargo install rtk` |
 | `jarvis tokens` | Estima o que carrega no início da sessão para um perfil (rules, `AGENTS.md`, frontmatter dos skills, `warm-up`) |
+| `jarvis map <nome>` | Árvore em texto do que um workflow, skill ou agente chama (`--reverse`: quem o chama; `--depth N`) |
 | `jarvis qa-signoff` | Gate de QA para CI |
 | `jarvis --version` | Lê `package.json` |
 

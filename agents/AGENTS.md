@@ -66,6 +66,7 @@ Todo arquivo de agente deve conter:
 4. **Quando Usar** - Cenarios de ativacao
 5. **Entrada/Saida** - O que recebe e produz
 6. **Skills Disponiveis** - Cabecalho exato `## Skills Disponíveis`, com uma subsecao `### {skill}` por skill que o agente usa (linha de contexto e `- Arquivo: $IDE/skills/{skill}/SKILL.md`). So skills: workflows e agentes relacionados ficam em `## Workflows e Agentes Relacionados`. Sem skill, uma linha `Nenhuma — agente autocontido, não depende de skill`. Modelo: `engineering/eng.rpa.agent.md`
+   O `jarvis map` e o `npm run test:comandos` leem so essa tabela (e, nos agentes, `## Skills Disponíveis` e `## Workflows e Agentes Relacionados`): chamada que existir so no texto corrido nao aparece no mapa, e nome citado que nao existir faz o teste falhar.
 7. **Restricoes** - O que NAO deve fazer
 
 ### Exemplo de Estrutura
