@@ -191,17 +191,17 @@ CONTEXT_PROFILE:
   - Priorize:
     - `$IDE/workflows/engineering/eng.debug.md` (Resolution Mode)
     - `$IDE/workflows/engineering/eng.bug-audit.md` (Audit Mode)
-    - `$IDE/skills/bug-report/SKILL.md` (geração de relatórios)
+    - `$IDE/skills/eng-qa-bug-report/SKILL.md` (geração de relatórios)
   - Não acione workflows de outros domínios sem autorização explícita do usuário
 
 ---
 
-## Skills
+## Skills Disponíveis
 
-### bug-report
+### eng-qa-bug-report
 Para geração de relatórios estruturados de bugs encontrados:
-- Arquivo: `$IDE/skills/bug-report/SKILL.md`
-- Uso: `/bug-report [modo] [argumentos]`
+- Arquivo: `$IDE/skills/eng-qa-bug-report/SKILL.md`
+- Uso: `/eng-qa-bug-report [modo] [argumentos]`
 - Integração com Jira para criação automática de cards
 
 ### jarvis-context-detect (CDD)
@@ -217,6 +217,11 @@ Para rastreamento automático de bugs em arquitetura de microsserviços, use a e
 - Ativado pelo `eng.debug` (Passo 2.5) quando o bug é suspeito de cruzar serviços
 - Mapeia cadeia de chamadas HTTP + AMQP, analisa contratos em cada boundary e rankeia hipóteses por risco
 - Sem a especialização registrada, siga a investigação cross-service manualmente
+
+### eng-security-cybersecurity
+Quando o bug tiver impacto de segurança (injection, auth bypass, data exposure), como referência na escalação ao SENTINEL:
+- Arquivo: `$IDE/skills/eng-security-cybersecurity/SKILL.md`
+- Agente dedicado: `$IDE/agents/engineering/eng.cybersecurity.agent.md` (SENTINEL)
 
 ---
 

@@ -167,7 +167,7 @@ Identifique palavras-chave na mensagem do usuário para ajuste imediato:
   - testes a serem rodados
   - pontos que precisam de validação do usuário
  
-## Skills
+## Skills Disponíveis
 
 ### jarvis-context-detect (CDD)
 Para detecção automática de contexto de tarefas:

@@ -227,7 +227,7 @@ CONTEXT_PROFILE:
 
 ---
 
-## Skills
+## Skills Disponíveis
 
 ### eng-security-cybersecurity
 Playbook operacional de seguranca — fonte de verdade para padroes, checklists e exemplos:
