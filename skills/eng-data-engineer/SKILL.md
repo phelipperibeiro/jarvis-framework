@@ -128,15 +128,24 @@ Antes de expor dados para outra squad, criar um contrato de dados documentando: 
 
 Dependendo do argumento recebido em `$ARGUMENTS`, este skill roteia para o playbook especializado:
 
-| Argumento | Skill especializada | Quando usar |
-|-----------|--------------------|----|
-| `onboard`, `nova-fonte`, `primeira-ingestão` | `eng-data-onboard` | Integrar uma fonte de dados pela primeira vez |
-| `debug`, `falha`, `diagnóstico`, `pipeline-quebrado` | `eng-data-debug` | Investigar falha, queda de volume ou dado incorreto |
-| `dashboard`, `bi`, `query-analitica` | `eng-data-bi` | Criar dashboard, otimizar query ou compartilhar dados |
-| `dag`, `orquestração`, `schedule` | `eng-data-orchestrator` | Criar ou manter DAGs, retry, alertas, troubleshooting |
-
 > Se o argumento se encaixar em um dos casos acima, invocar a skill correspondente e seguir seu fluxo.
 > Se não se encaixar, continuar neste skill com os fluxos abaixo.
+
+### Skills invocados durante a execução do skill
+
+| Passo | Skill | Condição |
+|-------|-------|----------|
+| Argumento: `onboard`, `nova-fonte`, `primeira-ingestão` | `/eng-data-onboard` | Se o argumento for um destes (roteamento mutuamente exclusivo: no máximo uma das 4 skills é invocada) |
+| Argumento: `debug`, `falha`, `diagnóstico`, `pipeline-quebrado` | `/eng-data-debug` | Se o argumento for um destes (mutuamente exclusivo) |
+| Argumento: `dashboard`, `bi`, `query-analitica`; Fluxos de Trabalho › Dashboard | `/eng-data-bi` | Se o argumento for um destes (mutuamente exclusivo) ou ao executar o fluxo de Dashboard |
+| Argumento: `dag`, `orquestração`, `schedule` | `/eng-data-orchestrator` | Se o argumento for um destes (mutuamente exclusivo) |
+
+Quando usar cada uma:
+
+- `/eng-data-onboard`: integrar uma fonte de dados pela primeira vez
+- `/eng-data-debug`: investigar falha, queda de volume ou dado incorreto
+- `/eng-data-bi`: criar dashboard, otimizar query ou compartilhar dados
+- `/eng-data-orchestrator`: criar ou manter DAGs, retry, alertas, troubleshooting
 
 ---
 
