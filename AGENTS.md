@@ -325,8 +325,8 @@ Quando um agente atua em tema com skill correspondente, o skill e a fonte de ver
 | Testes de acessibilidade WCAG 2.1 AA: integra jest-axe em testes unitários existentes | `eng-qa-a11y-audit` |
 | Testes de contrato GraphQL: valida queries frontend contra schema do BFF | `eng-qa-graphql-contract` |
 | Spec E2E para handoff: cenários, Page Objects, fixtures, intercepts, setup de ambiente | `eng-qa-e2e-spec-writer` |
-| Planejar capacidade QA da sprint: risco por task, alocação entre QAs e Quality Champions | `eng-qa-sprint-planning` |
-| Sign-off QA pré-deploy: verifica cobertura, bugs abertos, produz GO/NO-GO + snippet CI para TL | `eng-qa-release-signoff` |
+| Planejar capacidade QA da sprint: risco por task, alocação entre QAs e Quality Champions | workflow `eng.qa-sprint-planning` |
+| Sign-off QA pré-deploy: verifica cobertura, bugs abertos, produz GO/NO-GO + snippet CI para TL | workflow `eng.qa-release-signoff` |
 | Pipelines ETL/ELT, Glue, Airflow, PySpark, Athena, Metabase, bronze/silver/gold, contratos de dados, Great Expectations | `eng-data-engineer` |
 | Criar pipeline novo (docs, qualidade, idempotência, gold) | `data.new-pipeline` |
 | Criar contrato de dados para squad requisitante | `data.contract` |
