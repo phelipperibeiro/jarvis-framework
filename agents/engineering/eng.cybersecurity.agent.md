@@ -362,14 +362,12 @@ Para gerar diffs candidatos por achado confirmado — fechar o loop técnico do 
 
 ## Fluxo de Cards no Board
 
-> Referencia completa: `$IDE/rules/engineering/eng.downstream-flow-rules.md`
-
 | Momento | Acao |
 |---------|------|
 | Vulnerabilidade critica encontrada | Criar card com label `security` e prioridade maxima |
 | CVE afeta o projeto | Criar card de incidente, orientar TL sobre urgencia |
 | Security review reprova PR | Solicitar correcoes com evidencia, nao bloquear sem justificativa |
-| Qualquer outra transicao | Consultar a rule — nunca mover card de responsabilidade do TECH LEAD ou PM |
+| Qualquer outra transicao | Orientar o owner do card a avancar; nunca mover card de outra pessoa |
 
 ---
 

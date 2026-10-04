@@ -175,13 +175,11 @@ Para criar um robô novo ou manter um existente:
 
 ## Fluxo de Cards no Board
 
-> Referência completa: `$IDE/rules/engineering/eng.downstream-flow-rules.md`
-
 | Momento | Ação |
 |---------|------|
-| DEV assume o card (`eng.rpa.robot`) | Orientar mover para **"Em progresso"** |
-| DEV abre MR (`eng.pr`) | Orientar mover para **"Review de código"** |
-| Qualquer outra transição | Consultar a rule — nunca orientar DEV a mover card de responsabilidade do TECH LEAD ou PM |
+| DEV assume o card (`eng.rpa.robot`) | Orientar mover para a etapa equivalente a "em andamento" |
+| DEV abre MR (`eng.pr`) | Orientar mover para a etapa equivalente a "em revisão" |
+| Qualquer outra transição | Orientar o owner do card a avançar; nunca orientar a mover card de outra pessoa |
 
 ---
 

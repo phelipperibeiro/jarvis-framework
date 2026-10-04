@@ -170,18 +170,9 @@ env_file: "@/ENV.md"
 
 ---
 
-## 🔄 Fluxo Downstream de Cards
+## 🔄 Autonomia no card
 
-Ao orientar o usuário sobre transição de status de cards no board (Jira, GitLab, Linear ou equivalente), **sempre consultar**:
-
-> `$IDE/rules/engineering/eng.downstream-flow-rules.md`
-
-Este arquivo define:
-- Diagrama completo do fluxo (11 estágios)
-- Matriz de transições: quem move o quê e quando
-- Responsabilidades por papel, mapeadas diretamente de `taxonomy.md`
-- Critérios de entrada e saída por estágio
-- RACI consolidado
+Ao orientar o usuário sobre a movimentação de cards no board (Jira, GitLab, Linear, GitHub ou equivalente), use o princípio abaixo; não há um fluxo de colunas fixo no framework.
 
 **Princípio — autonomia do profissional:**
 - Quem assumiu o card (**DEV**, **TECH LEAD** ou **PM/TPM/GPM**) pode conduzi-lo **ponta-a-ponta**: puxar, implementar, abrir MR, merge, validar, aceite e preparar/executar deploy.
