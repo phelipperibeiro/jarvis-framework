@@ -1,5 +1,4 @@
 ---
-trigger: always_on
 env_file: "@/ENV.md"
 ---
 

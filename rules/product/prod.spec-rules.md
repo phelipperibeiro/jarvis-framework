@@ -1,7 +1,3 @@
----
-trigger: always_on
----
-
 > **Applies to:** HUB: all | POSITION: all | AREA: PRODUCT | SQUAD: all
 
 # Regras de Escrita de Especificação de Produto

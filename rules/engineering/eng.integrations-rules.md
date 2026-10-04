@@ -1,7 +1,3 @@
----
-trigger: always_on
----
-
 > **Applies to:** HUB: all | POSITION: all | AREA: all | SQUAD: all
 
 # Integrações — vendors via ENV
