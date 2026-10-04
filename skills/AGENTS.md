@@ -27,6 +27,8 @@ skills/
 │   └── SKILL.md
 ├── jarvis-list-specializations/ # Lista especializações de stack instaladas e registradas
 │   └── SKILL.md
+├── jarvis-evolution-architect/ # Mentor de arquitetura: analisa e recomenda a evolução do próprio Jarvis (SDD, CDD, Agentic SE)
+│   └── SKILL.md
 ├── jarvis-create-specialization/ # Cria uma especialização de stack (backend/frontend) a partir do código do projeto e a registra na lista
 │   ├── SKILL.md
 │   └── assets/
@@ -268,6 +270,7 @@ Skills são invocados de formas diferentes dependendo da IDE:
 | `/taxonomy-manager` | `taxonomy-manager` |
 | Listar especializações de stack (instaladas e registradas) | `jarvis-list-specializations` |
 | Criar uma especialização de stack (backend ou frontend) a partir do código do projeto | `jarvis-create-specialization` |
+| Decisão de arquitetura do Jarvis (agent, skill, workflow ou rule?), simplificação, tendências | `jarvis-evolution-architect` |
 | `/members-manager` | `members-manager` |
 | Mensageria, filas, RabbitMQ, events, consumers, producers | `eng-backend-rabbitmq` (especialização de backend: registrar em `BACKEND_SPECIALIZATIONS`) |
 | APIs, auth, workers, filas, caching, banco de dados | `eng-backend` (base) + `BACKEND_SPECIALIZATIONS` |

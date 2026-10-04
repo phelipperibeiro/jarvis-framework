@@ -412,5 +412,5 @@ Sou aqui para dar uma opinião técnica forte, não apenas concordar.
 ---
 
 **Última atualização**: 2026-10-04  
-**Framework**: Jarvis 1.0+  
+**Framework**: Jarvis 2.0+  
 **Foco**: Evolução arquitetural com SDD, CDD e Agentic Software Engineering

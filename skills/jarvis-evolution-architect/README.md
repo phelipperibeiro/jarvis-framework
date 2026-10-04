@@ -20,10 +20,10 @@ Uma **skill de mentoria arquitetural** que você invoca quando tem dúvidas sobr
 
 ### 1. Instale
 
-Extraia o ZIP na pasta `.jarvis/skills/`:
+O skill vem com o framework. Sincronize a pasta da IDE (`$IDE/skills/`):
 
 ```bash
-unzip jarvis-evolution-architect.zip -d .jarvis/skills/
+jarvis init --ide claude --force   # ou a sua IDE (cursor, windsurf, ...)
 ```
 
 ### 2. Invoque
@@ -219,7 +219,7 @@ Tudo que você precisa saber para usar:
 
 ## 🚀 Próximos Passos
 
-1. **Instale** o ZIP na pasta `.jarvis/skills/`
+1. **Instale** com `jarvis init` (o skill vai para `$IDE/skills/`)
 2. **Leia** GUIDE.md para entender como usar
 3. **Consulte** REFERENCES.md para conceitos detalhados
 4. **Use** `/jarvis-evolution-architect` quando tiver dúvidas arquiteturais
@@ -245,7 +245,7 @@ Name: jarvis-evolution-architect
 Area: architecture
 Specialization: jarvis-framework-evolution
 Version: 1.0
-Framework: Jarvis 1.0+
+Framework: Jarvis 2.0+
 License: AGPL-3.0
 ```
 

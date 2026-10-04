@@ -4,13 +4,11 @@
 
 ### Instalação
 
-Coloque a pasta na estrutura do seu Jarvis:
+O skill vem com o framework. Sincronize a pasta da IDE (`$IDE/skills/`):
 
 ```bash
-cp -r jarvis-evolution-architect/ .jarvis/skills/
+jarvis init --ide claude --force   # ou a sua IDE (cursor, windsurf, ...)
 ```
-
-Ou extraia o ZIP dentro de `.jarvis/skills/`.
 
 ### Invocação
 
@@ -354,4 +352,4 @@ Se a skill não responder bem:
 
 **Última atualização**: 2026-10-04  
 **Versão**: 1.0  
-**Framework**: Jarvis 1.0+
+**Framework**: Jarvis 2.0+
