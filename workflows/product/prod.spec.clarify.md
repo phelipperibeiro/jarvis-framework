@@ -21,6 +21,12 @@ Utilize o que o usuário fornecer analisar em:
 #$ARGUMENTS
 </requirement>
 
+### Skills invocados durante o workflow
+
+| Passo | Skill | Condição |
+|-------|-------|----------|
+| — | Nenhuma — workflow autocontido | — |
+
 Etapas de execução:
 
 1. Carregue o arquivo atual da spec. Realize uma varredura estruturada de ambiguidades e cobertura usando esta taxonomia. Para cada categoria, marque o status: Claro / Parcial / Ausente. Produza um mapa de cobertura interno usado para priorização (não divulgue o mapa bruto a menos que nenhuma pergunta seja feita). Analise o arquivo da spec e realize uma cobertura apenas com os itens que estão incluídos na especificação do usuário.

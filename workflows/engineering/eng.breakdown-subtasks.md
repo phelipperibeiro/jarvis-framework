@@ -15,6 +15,12 @@ Você receberá uma Tech Spec completa e deve quebrá-la em subtarefas **EXTREMA
 #$ARGUMENTS
 </input>
 
+### Skills invocados durante o workflow
+
+| Passo | Skill | Condição |
+|-------|-------|----------|
+| — | Nenhuma — workflow autocontido | — |
+
 ---
 
 ## Fase 1: Análise Profunda da Tech Spec

@@ -23,6 +23,13 @@ Além disso, quando houver campo `Versão` no RFC, aplicar obrigatoriamente:
 
 - `$IDE/rules/engineering/eng.bump-rules.md`
 
+### Skills invocados durante o workflow
+
+| Passo | Skill | Condição |
+|-------|-------|----------|
+| Passo 0.6 – Buscar Documentação Relacionada no Central Docs | `/jarvis-docs-central` (via `jarvis docs sync --silent`) | Se `CENTRAL_DOCS_REPO` estiver definido no ENV.md |
+| Passo 7 – Publicar no Central Docs | `/jarvis-docs-central` (via `jarvis docs publish --tipo rfc`) | Se `CENTRAL_DOCS_REPO` estiver definido **e** o usuário aprovar o RFC e responder "Sim, publicar agora" |
+
 ---
 
 ## Passo 0 – Definir se é novo RFC ou iteração
