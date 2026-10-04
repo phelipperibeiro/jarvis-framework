@@ -80,6 +80,8 @@ Cada arquivo de rule declara para quais perfis se aplica via bloco `applies_to`,
 
 **Ao criar uma nova rule**, definir o bloco `applies_to` é obrigatório. Sem ele, a rule é tratada como universal — o que pode ser indesejado para rules domain-specific.
 
+**Não declarar `trigger:` no frontmatter.** O Claude Code ignora o campo e carrega toda rule da pasta (sem `paths`) no início da sessão. Quem filtra a rule por perfil é o bloco `applies_to`.
+
 ---
 
 ## Estrutura de um Arquivo de Regras
