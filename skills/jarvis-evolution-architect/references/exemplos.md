@@ -59,7 +59,7 @@ Problema real. Mas a solução não é uma nova skill, é uma **regra arquitetur
 **O Que Eu Mudaria:**
 Em vez de skill:
 1. Criar uma **Rule** que define "Minimal Context Principle"
-2. Documentar em REFERENCES.md quando usar contexto e quando não
+2. Documentar em `lentes-e-conceitos.md` quando usar contexto e quando não
 3. Adicionar checklist na skill de spec para "contextos mínimos necessários"
 
 **Como Eu Faria:**

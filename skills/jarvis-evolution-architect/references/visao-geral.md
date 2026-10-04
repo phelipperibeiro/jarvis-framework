@@ -129,11 +129,11 @@ Minha Recomendação:
 
 | Arquivo | Descrição |
 |---------|-----------|
-| **SKILL.md** | Definição técnica da skill (role, comportamento, lentes) |
-| **GUIDE.md** | Como usar (invocação, quando usar, exemplos) |
-| **EXAMPLES.md** | Exemplos reais de conversas |
-| **REFERENCES.md** | Documentação detalhada (SDD, CDD, Agentic SE) |
-| **README.md** | Este arquivo |
+| **SKILL.md** (`../SKILL.md`) | Definição técnica da skill (role, comportamento, lentes) |
+| **guia-de-uso.md** | Como usar (invocação, quando usar, exemplos) |
+| **exemplos.md** | Exemplos reais de conversas |
+| **lentes-e-conceitos.md** | Documentação detalhada (SDD, CDD, Agentic SE) |
+| **visao-geral.md** | Este arquivo |
 
 ---
 
@@ -189,7 +189,7 @@ Skill: "Pesquisa necessária. [análise de tendência]"
 
 ## 📚 Recursos Inclusos
 
-### REFERENCES.md
+### lentes-e-conceitos.md
 Documentação completa de:
 - SDD (Spec-Driven Development)
 - CDD (Context-Driven Development)
@@ -199,7 +199,7 @@ Documentação completa de:
 - Preferência evolutiva
 - Princípios de proteção
 
-### EXAMPLES.md
+### exemplos.md
 5 exemplos reais:
 1. Nova Feature - Spec Reviewer Agent
 2. Simplificação - Context Optimizer
@@ -207,7 +207,7 @@ Documentação completa de:
 4. Discovery - Skills Organization
 5. Arquitetura - Agents vs Workflows
 
-### GUIDE.md
+### guia-de-uso.md
 Tudo que você precisa saber para usar:
 - Como invocar
 - Lentes de análise
@@ -220,10 +220,10 @@ Tudo que você precisa saber para usar:
 ## 🚀 Próximos Passos
 
 1. **Instale** com `jarvis init` (o skill vai para `$IDE/skills/`)
-2. **Leia** GUIDE.md para entender como usar
-3. **Consulte** REFERENCES.md para conceitos detalhados
+2. **Leia** `guia-de-uso.md` para entender como usar
+3. **Consulte** `lentes-e-conceitos.md` para conceitos detalhados
 4. **Use** `/jarvis-evolution-architect` quando tiver dúvidas arquiteturais
-5. **Veja** EXAMPLES.md para padrões de conversa
+5. **Veja** `exemplos.md` para padrões de conversa
 
 ---
 
@@ -253,24 +253,16 @@ License: AGPL-3.0
 
 ## 🔗 Integração com Jarvis
 
-A skill está pronta para integrar no Jarvis Framework padrão:
+O skill faz parte do framework e vai para a pasta da IDE com o `jarvis init`:
 
 ```
-.jarvis/
-├── skills/
-│   ├── jarvis-evolution-architect/
-│   │   ├── SKILL.md
-│   │   ├── GUIDE.md
-│   │   ├── EXAMPLES.md
-│   │   ├── REFERENCES.md
-│   │   └── README.md
-│   ├── eng-*
-│   ├── qa-*
-│   └── ...
-├── agents/
-├── workflows/
-├── rules/
-└── templates/
+$IDE/skills/jarvis-evolution-architect/
+├── SKILL.md
+└── references/
+    ├── visao-geral.md
+    ├── guia-de-uso.md
+    ├── exemplos.md
+    └── lentes-e-conceitos.md
 ```
 
 ---

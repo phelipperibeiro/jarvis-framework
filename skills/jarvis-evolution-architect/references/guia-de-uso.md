@@ -345,8 +345,8 @@ Se a skill não responder bem:
 ## 🔗 Referências Internas
 
 - **SKILL.md** - Definição técnica da skill
-- **REFERENCES.md** - Documentação detalhada das lentes
-- **EXAMPLES.md** - Exemplos de conversas reais
+- **lentes-e-conceitos.md** - Documentação detalhada das lentes
+- **exemplos.md** - Exemplos de conversas reais
 
 ---
 
