@@ -20,50 +20,12 @@ evitando leitura desnecessária de arquivos e economizando tokens.
 |-------|-------|----------|
 | Passo 0.5 › 2. Para cada tecnologia identificada | `context7` (MCP: `resolve-library-id`, `query-docs`) | Se houver variável de stack com valor no ENV.md (uma consulta por tecnologia identificada); sem variável de stack, pula silenciosamente |
 | Passo 2 — Sincronizar Documentação Central | `/jarvis-docs-central` | Se `CENTRAL_DOCS_REPO` estiver configurado no ENV.md (Modo 1: Buscar Docs, via Skill tool) |
-| Passo 4 › Menu TECH LEAD › opção A | `/eng.start` | Se `POSITION=TECH LEAD` e `AREA=ENGINEERING` (menu dedicado) e o usuário escolher a opção A |
-| Passo 4 › Menu TECH LEAD › opção B | `/eng.debug` | Se `POSITION=TECH LEAD` e `AREA=ENGINEERING` (menu dedicado) e o usuário escolher a opção B |
-| Passo 4 › Menu TECH LEAD › opção C | `/eng.create-ard` | Se `POSITION=TECH LEAD` e `AREA=ENGINEERING` (menu dedicado) e o usuário escolher a opção C |
-| Passo 4 › Menu TECH LEAD › opção D | `/eng.create-ard-from-code` | Se `POSITION=TECH LEAD` e `AREA=ENGINEERING` (menu dedicado) e o usuário escolher a opção D |
-| Passo 4 › Menu TECH LEAD › opção E | `/eng.create-rfc` | Se `POSITION=TECH LEAD` e `AREA=ENGINEERING` (menu dedicado) e o usuário escolher a opção E |
-| Passo 4 › Menu TECH LEAD › opção F | `/eng.build-tech-spec` | Se `POSITION=TECH LEAD` e `AREA=ENGINEERING` (menu dedicado) e o usuário escolher a opção F |
-| Passo 4 › Menu TECH LEAD › opção G | `/eng.review` | Se `POSITION=TECH LEAD` e `AREA=ENGINEERING` (menu dedicado) e o usuário escolher a opção G |
-| Passo 4 › Menu TECH LEAD › opção H | `/eng.docs` | Se `POSITION=TECH LEAD` e `AREA=ENGINEERING` (menu dedicado) e o usuário escolher a opção H |
-| Passo 4 › Menu TECH LEAD › opção I | `/eng.security-audit` | Se `POSITION=TECH LEAD` e `AREA=ENGINEERING` (menu dedicado) e o usuário escolher a opção I |
-| Passo 4 › Menu TECH LEAD › opção J | `/eng.security-review` | Se `POSITION=TECH LEAD` e `AREA=ENGINEERING` (menu dedicado) e o usuário escolher a opção J |
-| Passo 4 › Menu TECH LEAD › opção K | `/eng.security-incident` | Se `POSITION=TECH LEAD` e `AREA=ENGINEERING` (menu dedicado) e o usuário escolher a opção K |
-| Passo 4 › Menu CTO › opção A | `/eng.security-audit` | Se `POSITION` for CTO ou equivalente (menu dedicado, para qualquer `AREA`) e o usuário escolher a opção A |
-| Passo 4 › Menu CTO › opção B | `/eng.security-incident` | Se `POSITION` for CTO ou equivalente (menu dedicado, para qualquer `AREA`) e o usuário escolher a opção B |
-| Passo 4 › Menu CTO › opção C | `/eng.review` | Se `POSITION` for CTO ou equivalente (menu dedicado, para qualquer `AREA`) e o usuário escolher a opção C |
-| Passo 4 › Menu CTO › opção D | `/eng.create-ard` | Se `POSITION` for CTO ou equivalente (menu dedicado, para qualquer `AREA`) e o usuário escolher a opção D |
-| Passo 4 › Menu CTO › opção E | `/eng.create-rfc` | Se `POSITION` for CTO ou equivalente (menu dedicado, para qualquer `AREA`) e o usuário escolher a opção E |
-| Passo 4 › Menu CTO › opção F | `/eng.build-tech-spec` | Se `POSITION` for CTO ou equivalente (menu dedicado, para qualquer `AREA`) e o usuário escolher a opção F |
-| Passo 4 › Menu ENGINEERING + DATA › opção A | `/data.new-pipeline` | Se `AREA=ENGINEERING` e `HUB=DATA` e o usuário escolher a opção A |
-| Passo 4 › Menu ENGINEERING + DATA › opção B | `/eng-data-onboard` | Se `AREA=ENGINEERING` e `HUB=DATA` e o usuário escolher a opção B |
-| Passo 4 › Menu ENGINEERING + DATA › opção C | `/eng-data-debug` | Se `AREA=ENGINEERING` e `HUB=DATA` e o usuário escolher a opção C |
-| Passo 4 › Menu ENGINEERING + DATA › opção D | `/eng-data-bi` | Se `AREA=ENGINEERING` e `HUB=DATA` e o usuário escolher a opção D |
-| Passo 4 › Menu ENGINEERING + DATA › opção E | `/eng-data-orchestrator` | Se `AREA=ENGINEERING` e `HUB=DATA` e o usuário escolher a opção E |
-| Passo 4 › Menu ENGINEERING + DATA › opção F | `/data.contract` | Se `AREA=ENGINEERING` e `HUB=DATA` e o usuário escolher a opção F |
-| Passo 4 › Menu ENGINEERING + QA › opção A | `/eng.qa-refinement-entry` | Se `AREA=ENGINEERING` e (`HUB=QA` ou Quality Champion) e o usuário escolher a opção A |
-| Passo 4 › Menu ENGINEERING + QA › opção B | `/eng.qa-e2e-test-generation` | Se `AREA=ENGINEERING` e (`HUB=QA` ou Quality Champion) e o usuário escolher a opção B |
-| Passo 4 › Menu ENGINEERING + QA › opção C | `/eng.qa-exploratory-session` | Se `AREA=ENGINEERING` e (`HUB=QA` ou Quality Champion) e o usuário escolher a opção C |
-| Passo 4 › Menu ENGINEERING + QA › opção D | `/eng.qa-quality-gate-validation` | Se `AREA=ENGINEERING` e (`HUB=QA` ou Quality Champion) e o usuário escolher a opção D |
-| Passo 4 › Menu ENGINEERING + QA › opção E | `/eng.qa-quality-report` | Se `AREA=ENGINEERING` e (`HUB=QA` ou Quality Champion) e o usuário escolher a opção E |
-| Passo 4 › Menu ENGINEERING + QA › opção F | `/eng.qa-dev-quality-guide` | Se `AREA=ENGINEERING` e (`HUB=QA` ou Quality Champion) e o usuário escolher a opção F |
-| Passo 4 › Menu ENGINEERING + QA › opção G | `/eng.qa-sprint-planning` | Se `AREA=ENGINEERING` e (`HUB=QA` ou Quality Champion) e o usuário escolher a opção G |
-| Passo 4 › Menu ENGINEERING + QA › opção H | `/eng.qa-release-signoff` | Se `AREA=ENGINEERING` e (`HUB=QA` ou Quality Champion) e o usuário escolher a opção H |
-| Passo 4 › Menu ENGINEERING (qualquer HUB) › opção A | `/eng.start` | Se `AREA=ENGINEERING` (qualquer HUB, sem menu mais específico) e o usuário escolher a opção A |
-| Passo 4 › Menu ENGINEERING (qualquer HUB) › opção B | `/eng.debug` | Se `AREA=ENGINEERING` (qualquer HUB, sem menu mais específico) e o usuário escolher a opção B |
-| Passo 4 › Menu ENGINEERING (qualquer HUB) › opção C | `/eng.create-ard` | Se `AREA=ENGINEERING` (qualquer HUB, sem menu mais específico) e o usuário escolher a opção C |
-| Passo 4 › Menu ENGINEERING (qualquer HUB) › opção D | `/eng.create-ard-from-code` | Se `AREA=ENGINEERING` (qualquer HUB, sem menu mais específico) e o usuário escolher a opção D |
-| Passo 4 › Menu ENGINEERING (qualquer HUB) › opção E | `/eng.create-rfc` | Se `AREA=ENGINEERING` (qualquer HUB, sem menu mais específico) e o usuário escolher a opção E |
-| Passo 4 › Menu ENGINEERING (qualquer HUB) › opção F | `/eng.build-tech-spec` | Se `AREA=ENGINEERING` (qualquer HUB, sem menu mais específico) e o usuário escolher a opção F |
-| Passo 4 › Menu ENGINEERING (qualquer HUB) › opção G | `/eng.review` | Se `AREA=ENGINEERING` (qualquer HUB, sem menu mais específico) e o usuário escolher a opção G |
-| Passo 4 › Menu ENGINEERING (qualquer HUB) › opção H | `/eng.docs` | Se `AREA=ENGINEERING` (qualquer HUB, sem menu mais específico) e o usuário escolher a opção H |
-| Passo 4 › Menu ENGINEERING (qualquer HUB) › opção I | `/eng.rpa.robot` | Se `AREA=ENGINEERING` (qualquer HUB, sem menu mais específico) e o usuário escolher a opção I |
-| Passo 4 › Menu PRODUCT › opção A | `/prod.spec.prd` | Se `AREA=PRODUCT` (ou `POSITION` PM/TPM/GPM em `AREA=ENGINEERING`) e o usuário escolher a opção A |
-| Passo 4 › Menu PRODUCT › opção B | `/prod.spec.frd` | Se `AREA=PRODUCT` (ou `POSITION` PM/TPM/GPM em `AREA=ENGINEERING`) e o usuário escolher a opção B |
-| Passo 4 › Menu PRODUCT › opção C | `/prod.spec.issue` | Se `AREA=PRODUCT` (ou `POSITION` PM/TPM/GPM em `AREA=ENGINEERING`) e o usuário escolher a opção C |
-| Passo 4 › Menu PRODUCT › opção D | `/prod.spec.epic` | Se `AREA=PRODUCT` (ou `POSITION` PM/TPM/GPM em `AREA=ENGINEERING`) e o usuário escolher a opção D |
+| Passo 4 › Menu TECH LEAD › opções A a K | `/eng.start`, `/eng.debug`, `/eng.create-ard`, `/eng.create-ard-from-code`, `/eng.create-rfc`, `/eng.build-tech-spec`, `/eng.review`, `/eng.docs`, `/eng.security-audit`, `/eng.security-review`, `/eng.security-incident` | Se `POSITION=TECH LEAD` e `AREA=ENGINEERING` (menu dedicado) e o usuário escolher uma das opções (cada opção chama o workflow correspondente, na ordem do menu e do roteamento do Passo 4; `Outro` não chama workflow) |
+| Passo 4 › Menu CTO › opções A a F | `/eng.security-audit`, `/eng.security-incident`, `/eng.review`, `/eng.create-ard`, `/eng.create-rfc`, `/eng.build-tech-spec` | Se `POSITION` for CTO ou equivalente (menu dedicado, para qualquer `AREA`) e o usuário escolher uma das opções (cada opção chama o workflow correspondente, na ordem do menu e do roteamento do Passo 4; `Outro` não chama workflow) |
+| Passo 4 › Menu ENGINEERING + DATA › opções A a F | `/data.new-pipeline`, `/eng-data-onboard`, `/eng-data-debug`, `/eng-data-bi`, `/eng-data-orchestrator`, `/data.contract` | Se `AREA=ENGINEERING` e `HUB=DATA` e o usuário escolher uma das opções (cada opção chama o workflow correspondente, na ordem do menu e do roteamento do Passo 4; `Outro` não chama workflow) |
+| Passo 4 › Menu ENGINEERING + QA › opções A a H | `/eng.qa-refinement-entry`, `/eng.qa-e2e-test-generation`, `/eng.qa-exploratory-session`, `/eng.qa-quality-gate-validation`, `/eng.qa-quality-report`, `/eng.qa-dev-quality-guide`, `/eng.qa-sprint-planning`, `/eng.qa-release-signoff` | Se `AREA=ENGINEERING` e (`HUB=QA` ou Quality Champion) e o usuário escolher uma das opções (cada opção chama o workflow correspondente, na ordem do menu e do roteamento do Passo 4; `Outro` não chama workflow) |
+| Passo 4 › Menu ENGINEERING (qualquer HUB) › opções A a I | `/eng.start`, `/eng.debug`, `/eng.create-ard`, `/eng.create-ard-from-code`, `/eng.create-rfc`, `/eng.build-tech-spec`, `/eng.review`, `/eng.docs`, `/eng.rpa.robot` | Se `AREA=ENGINEERING` (qualquer HUB, sem menu mais específico) e o usuário escolher uma das opções (cada opção chama o workflow correspondente, na ordem do menu e do roteamento do Passo 4; `Outro` não chama workflow) |
+| Passo 4 › Menu PRODUCT › opções A a D | `/prod.spec.prd`, `/prod.spec.frd`, `/prod.spec.issue`, `/prod.spec.epic` | Se `AREA=PRODUCT` (ou `POSITION` PM/TPM/GPM em `AREA=ENGINEERING`) e o usuário escolher uma das opções (cada opção chama o workflow correspondente, na ordem do menu e do roteamento do Passo 4; `Outro` não chama workflow) |
 | Passo 4 › Menu genérico › opção B | `/eng.docs` | Se `AREA` não tiver menu próprio (menu genérico) e o usuário escolher a opção B (se existir; senão criar diretamente) |
 | Integração com CDD | `/jarvis-context-detect` | Se `ENABLE_CDD=true` no ENV.md, depois de o usuário selecionar a opção do menu e antes de iniciar o workflow escolhido |
 
