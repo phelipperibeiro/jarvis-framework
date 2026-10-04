@@ -23,6 +23,14 @@ especialização registrada em `FRONTEND_SPECIALIZATIONS` e o código existente 
 
 **Antes de revisar**, aplique a regra `$IDE/rules/engineering/eng.specializations-rules.md` para a área **frontend**: ela carrega o skill base `eng-frontend` e as especializações registradas. Se o PR tiver exigências que você não consegue verificar sem conhecer a stack, diga isso na revisão em vez de presumir.
 
+### Skills invocados durante o workflow
+
+| Passo | Skill | Condição |
+|-------|-------|----------|
+| Contexto (antes de começar) | `/eng-frontend` (via `eng.specializations-rules.md`) | Sempre — a regra carrega o skill base da área frontend |
+| Contexto (antes de começar) | `skills em FRONTEND_SPECIALIZATIONS` (um por item da lista) | Se houver especialização registrada em `FRONTEND_SPECIALIZATIONS` no ENV.md; lista vazia: só o skill base |
+| Checklist de Revisão (especializações) | `skill de cada especialização registrada` | Para cada especialização em `FRONTEND_SPECIALIZATIONS`, aplicar o checklist de revisão do próprio skill; sem especialização, a seção não se aplica |
+
 ---
 
 ## Como usar

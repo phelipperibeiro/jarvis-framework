@@ -15,6 +15,13 @@ relatório de qualidade em markdown pronto para publicar.
 > 📤 **Template**: `$IDE/templates/engineering/qa/qa.quality-report-template.md`
 > 🔧 **Skill**: `eng-qa-quality-report`
 
+### Skills invocados durante o workflow
+
+| Passo | Skill | Condição |
+|-------|-------|----------|
+| Execução | `/eng-qa-quality-report` | Sempre — invocado via Skill tool |
+| Publicação no Central Docs (condicional) | `/jarvis-docs-central` (via `jarvis docs publish --tipo qa-report`) | Se `CENTRAL_DOCS_REPO` estiver configurado, o relatório tiver frontmatter válido (period, squad, version) e o usuário aceitar publicar |
+
 ---
 
 ## Entrada

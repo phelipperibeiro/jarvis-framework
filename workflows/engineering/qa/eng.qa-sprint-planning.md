@@ -12,6 +12,12 @@ model_justification: Análise de risco multi-task e alocação de capacidade req
 
 Planejamento de capacidade QA para a sprint: avalia risco de cada task, considera QAs e Quality Champions disponíveis, e produz um plano de alocação baseado em critérios de risco.
 
+### Skills invocados durante o workflow
+
+| Passo | Skill | Condição |
+|-------|-------|----------|
+| Fase 2 — Análise de Risco | `eng.qa.quality-strategist` (agente) | Sempre — avalia o risco, a cobertura ideal e a justificativa de cada task da sprint |
+
 ## Entrada
 
 ```
