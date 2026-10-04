@@ -24,7 +24,7 @@ skills/
 ├── product-specs/ (porta de entrada), product-specs-update/, product-roadmap-report/
 ├── taxonomy-manager/
 ├── jarvis-report-issue/
-└── … (~50 skills)
+└── … (49 skills; todos com `metadata.area`)
 ```
 
 Inventário atual (pastas): rode `ls skills` ou `jarvis list` após o pacote instalado.
@@ -66,5 +66,6 @@ Todo skill tem `metadata.area` (`qa`, `data`, `ai`, `frontend`, `backend`, `secu
 | `jarvis-init` | Cria ENV; Context7 obrigatório; Jira **não** bloqueia; freelance OK; passo opcional **adicionar as stacks** (detecta a stack do workspace e registra ou cria a especialização) |
 | `eng-global-task-comment` | Comenta no board conforme `TASK_MANAGER` |
 | `jarvis-report-issue` | Abre issue no `JARVIS_PROJECT` |
+| `jarvis-list-specializations` | Lista as especializações instaladas (backend e frontend) e se estão registradas nas listas do `ENV.md`; só lê |
 | `jarvis-create-specialization` | Cria o skill de uma stack (backend ou frontend) a partir do código do projeto, mostra para revisão e o registra na lista da área |
 | `taxonomy-manager` | Mantém `taxonomy.md` |

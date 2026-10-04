@@ -21,13 +21,15 @@ prompts/
 │   ├── MCPs.md                   # Integracoes MCP
 │   ├── LEGACY_PROJECTS.md        # Guia para projetos legados
 │   │
-│   ├── agents/                   # 18 ativos + 5 arquivados
-│   │   ├── engineering/          # Agentes de engenharia (14 ativos: 7 main + 6 QA + 1 Data)
+│   ├── agents/                   # 17 ativos + 5 arquivados
+│   │   ├── engineering/          # Agentes de engenharia (15 ativos: 8 main + 6 QA + 1 Data)
 │   │   │   ├── eng.agent.md
 │   │   │   ├── eng.cybersecurity.agent.md  # Cybersecurity e AppSec (SENTINEL)
 │   │   │   ├── eng.bug-hunter.md
 │   │   │   ├── eng.dev-code-reviewer.md
 │   │   │   ├── eng.docs-writer.md
+│   │   │   ├── eng.frontend.agent.md
+│   │   │   ├── eng.ux-designer.agent.md
 │   │   │   ├── eng.rpa.agent.md   # Agente RPA/Scraping (ARACHNE) — skill técnica
 │   │   │   ├── data/             # 1 agente de Data
 │   │   │   │   └── eng.data-engineer.agent.md
@@ -44,7 +46,7 @@ prompts/
 │   │   ├── engineering/          # 25 workflows de engenharia
 │   │   │   ├── data/             # 2 workflows de dados (data.new-pipeline, data.contract)
 │   │   │   └── frontend/         # 3 workflows de frontend (component, review, perf-audit)
-│   │   └── product/              # 7 workflows de produto
+│   │   └── product/              # 9 workflows de produto
 │   │
 │   ├── skills/                   # Skills (todos com metadata.area)
 │   │   ├── claude-plugin-creator/

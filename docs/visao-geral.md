@@ -133,6 +133,10 @@ Estado do framework **não** fica em `~/.jarvis/` neste fork (exceto restos lega
 
 Fonte de verdade do perfil no projeto. Criado só via `/jarvis-init` a partir de [templates/ENV-template.md](./estrutura/templates.md). Sem ENV, workflows de eng não têm contexto confiável.
 
+### Especializações de stack
+
+O Jarvis é **neutro de stack**: `eng-backend` e `eng-frontend` guardam o que vale em qualquer linguagem, e cada projeto registra as **especializações** da sua stack em `BACKEND_SPECIALIZATIONS` e `FRONTEND_SPECIALIZATIONS` (no `ENV.md`). Todo skill tem `metadata.area` (e, nas especializações, `metadata.stack`), e um skill sem área reconhecida bloqueia os `eng.*`. O `/jarvis-init` oferece o passo "adicionar as stacks" e o `/jarvis-create-specialization` cria uma especialização a partir do código. Detalhes: [especializacoes-de-stack.md](./especializacoes-de-stack.md).
+
 ### Taxonomia
 
 [taxonomy.md](./estrutura/raiz.md#taxonomymd) define opções de `SQUAD`, `HUB`, `AREA`, `POSITION`. O init valida contra ela. Customizar com `/taxonomy`.
@@ -235,7 +239,7 @@ Detalhe da rule: `rules/rtk-rules.md`. Comentários: `templates/ENV-template.md`
 2. Reinstall do pacote (`npm install -g` / `--save-dev` / link)  
 3. `which jarvis` + `jarvis --version`  
 4. No workspace: `jarvis init` (espelha `.$IDE/`)  
-5. `/jarvis-init` → **Upgrade (C)** só se houver chaves novas no template  
+5. `/jarvis-init` → **Upgrade (C)** só se houver chaves novas no template (obrigatório ao vir de uma versão anterior à 2.0: acrescenta as listas de especializações)  
 
 `ENV.md` e `.jarvis/sessions/` **não** são sobrescritos pelo sync de assets.
 

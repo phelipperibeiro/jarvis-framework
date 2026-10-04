@@ -48,6 +48,7 @@ Inclui (entre outros):
 - `SQUAD`, `HUB`, `AREA`, `POSITION`
 - Pastas IDE (`FLOWS_FOLDER`, `SESSIONS_DIR`, …)
 - Task manager (vazio = freelance), VCS, chat, DB, broker, observabilidade…
+- `BACKEND_SPECIALIZATIONS` e `FRONTEND_SPECIALIZATIONS` (seção "Especializações de stack"): listas de nomes de skill, separadas por vírgula, que os `eng.*` carregam junto da skill base; precisam **existir**, mesmo vazias (ver [especializações de stack](../especializacoes-de-stack.md))
 - `JARVIS_PROJECT`, `CENTRAL_DOCS_*`
 - `RTK_ENABLED`
 - Bloco `DATA_*` (só se `HUB=DATA`)
