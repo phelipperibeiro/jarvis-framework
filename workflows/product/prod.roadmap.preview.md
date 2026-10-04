@@ -32,6 +32,15 @@ Ler os squads em `taxonomy.md` (seção Squads). Não hardcodar times.
 
 Se o projeto tiver wiki de status report, usar URLs informadas pelo usuário ou variáveis do `ENV.md` — nunca uma tabela fixa de squads.
 
+### Skills invocados durante o workflow
+
+| Passo | Skill | Condição |
+|-------|-------|----------|
+| Regras | `MCP do $TASK_MANAGER` | Se houver MCP disponível relacionado ao `$TASK_MANAGER` do usuário |
+| Regras | `/jarvis-docs-central` | Se as documentações do projeto não estiverem disponíveis localmente (via Skill tool) |
+| Regras | `/product-roadmap-report` | Sempre — via Skill tool, para trazer as informações do roadmap |
+| Status Reports por Squad / Dicas de Ferramenta | `MCP da Atlassian` (ex.: `Atlassian:searchJiraIssuesUsingJql`) | Para buscar os dados do roadmap no Jira, com o JQL ou o filtro salvo informado pelo usuário |
+
 ## Formato de Períodos de Referência
 
 Nós usamos Quadrimestres como período de Referência. Então, quando o usuário falar quarter, entenda que é referente a quatro meses no ano, e não apenas 3. Como o padrão abaixo:

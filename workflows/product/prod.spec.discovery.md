@@ -39,6 +39,16 @@ O comando e o agente seguem obrigatoriamente `$PROD_RULES` (`prod-rules.md`):
 - Perguntas: use o `AskUserQuestion` se estiver disponível; senão, o formato de tabela do `prod-rules.md`. **Uma pergunta por vez**
 - Confirmar com o usuário o caminho e o nome antes de salvar arquivo
 
+### Skills invocados durante o workflow
+
+| Passo | Skill | Condição |
+|-------|-------|----------|
+| Regras do framework / Passo 4 — A entrevista | `prod.discovery-interviewer` (agente) | Sempre — conduz a entrevista, e o comando segue a postura dele |
+| Passo 2 — Reconhecer o projeto | `/jarvis-docs-central` | Se `CENTRAL_DOCS_REPO` estiver configurado |
+| Passo 2 — Reconhecer o projeto | `/jarvis-context-detect` | Para calibrar a profundidade da entrevista |
+| Passo 2 — Reconhecer o projeto | `/eng-backend-arch-c4` | Só com a confirmação do usuário; o retorno é tratado como suposição a validar |
+| Passo 2 — Reconhecer o projeto | `/eng-security-cybersecurity` | Só com a confirmação do usuário; o retorno é tratado como suposição a validar |
+
 ## Passo 0 — Entender o que foi pedido
 
 1. **Sem `$ARGUMENTS`:** pergunte qual é a ideia antes de qualquer outra coisa.

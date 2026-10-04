@@ -45,6 +45,12 @@ Este command invoca o skill `taxonomy-manager` para operações CRUD seguras:
 /taxonomy validate
 ```
 
+### Skills invocados durante o workflow
+
+| Passo | Skill | Condição |
+|-------|-------|----------|
+| Sintaxe (`Skill("taxonomy-manager", "$ARGUMENTS")`) | `/taxonomy-manager` | Sempre — o comando delega as operações CRUD à skill; referência quebrada: não existe `skills/taxonomy-manager/` (confirmar renomeação/remoção) |
+
 ## Sintaxe
 
 ```
