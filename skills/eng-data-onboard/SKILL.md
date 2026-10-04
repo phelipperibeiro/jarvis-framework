@@ -288,7 +288,7 @@ Se a Fase 1 identificou campos sensíveis (CPF, dados bancários, localização,
 
 | Campo sensível | Tratamento em bronze | Tratamento em silver/gold |
 |---|---|---|
-| CPF / RG / CNH | Manter no bronze com acesso IAM restrito | Mascarar: `SHA256(cpf)` ou remover |
+| CPF / RG | Manter no bronze com acesso IAM restrito | Mascarar: `SHA256(cpf)` ou remover |
 | Dados bancários | Manter no bronze com acesso IAM restrito | Remover ou mascarar |
 | Localização em tempo real | Manter no bronze com acesso IAM restrito | Agregar (ex: cidade, estado) |
 | Telefone / Endereço | Manter no bronze com acesso IAM restrito | Remover se não necessário |

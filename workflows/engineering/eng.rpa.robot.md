@@ -46,14 +46,14 @@ Formato esperado: `new {TASK_MANAGER_KEY}` ou `update {TASK_MANAGER_KEY}`
 
 1. **Modo**: criar robô novo (`new`) ou atualizar/manter robô existente (`update`)?
 2. **Card**: qual o ID da tarefa no board? (ex: RPA-123)
-3. **[se `new`]** Qual o tag do serviço? (ex: `ba`, `sp`, `mg`) — será usado como `{robot-tag}`
+3. **[se `new`]** Qual o tag do serviço? (ex: `consulta-orgao`, `extrator-dados`) — será usado como `{robot-tag}`
 4. **[se `update`]** Qual robô será mantido? Listar opções:
    ```bash
    ls docs/engineering/robots/
    ```
    Apresentar a lista e pedir que o dev escolha.
 
-> O `{robot-tag}` é o nome do serviço do robô em kebab-case (ex: `ba` → `ba-robot.md`).
+> O `{robot-tag}` é o nome do serviço do robô em kebab-case (ex: `consulta-orgao` → `consulta-orgao-robot.md`).
 > Nunca usar nomes de sistemas externos hardcodados como tag.
 
 ---

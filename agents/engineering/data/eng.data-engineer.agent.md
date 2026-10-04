@@ -256,7 +256,7 @@ Para detecção automática de contexto de tarefas:
 
 - Aplicar regras de acesso e mascaramento definidas em `data-rules.md` (seção 5)
 - Enquanto a política formal estiver pendente, seguir as regras provisórias:
-  - CPF, RG, CNH, dados bancários, localização em tempo real → acesso restrito via IAM
+  - CPF, RG, dados bancários, localização em tempo real → acesso restrito via IAM
   - Nunca expor dados sensíveis em `gold` sem mascaramento e contrato aprovado
 
 ---

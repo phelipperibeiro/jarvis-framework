@@ -27,7 +27,7 @@ Um fluxo único que usa o ciclo normal de engenharia (`eng.plan`, `eng.work`, `e
 /eng.rpa.robot update {TASK_MANAGER_KEY}
 ```
 
-Se faltar informação, ele pergunta nesta ordem: o modo, o card, o **tag do serviço** (`ba`, `sp`, `mg`...) quando for novo, ou qual robô manter (listando `docs/engineering/robots/`) quando for atualização. O tag é o nome do serviço em kebab-case, e **nunca** o nome hardcoded de um sistema externo.
+Se faltar informação, ele pergunta nesta ordem: o modo, o card, o **tag do serviço** (`consulta-orgao`, `extrator-dados`...) quando for novo, ou qual robô manter (listando `docs/engineering/robots/`) quando for atualização. O tag é o nome do serviço em kebab-case, e **nunca** o nome hardcoded de um sistema externo.
 
 ## Como funciona
 

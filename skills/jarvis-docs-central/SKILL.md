@@ -302,7 +302,7 @@ URL: {url do MR/PR retornada pelo adapter}
 - Inventar metadados (version, status, id)
 - Editar `{SQUAD}/index.md` manualmente — sempre via `build-index.sh`
 - Usar path em campos `related_*` — sempre basename apenas
-- Usar formato `squad-driver` — sempre ALL-CAPS-COM-HIFEN: `MEU-SQUAD`
+- Usar squad em minúsculas (ex: `core`) — sempre ALL-CAPS-COM-HIFEN: `MEU-SQUAD`
 - Criar subpastas `engineering/index.md` ou `product/index.md` (não existem neste repo)
 
 ### Sempre
