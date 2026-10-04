@@ -209,6 +209,7 @@ jarvis logout                                       # Remover auth.json legado (
 jarvis init                                         # Bootstrap do framework no projeto
 jarvis list                                         # Listar agents, skills e workflows
 jarvis install-rtk                                  # Instalar RTK (token killer — economia 60-90% em tokens de shell)
+jarvis tokens    [--hub X --position Y --area Z --squad W] [--rtk] [--json]   # Estimar o que carrega no início da sessão (perfil do ENV.md se sem flags)
 ```
 
 Quando atuar em um projeto alvo, detectar comandos em:

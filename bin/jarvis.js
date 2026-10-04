@@ -12,6 +12,7 @@ import { docsSync } from "./commands/docs-sync.js";
 import { docsPublish } from "./commands/docs-publish.js"
 import { qaSignoff } from "./commands/qa-signoff.js";
 import { installRtk } from "./commands/install-rtk.js";
+import { tokens } from "./commands/tokens.js";
 import { formatIDEsList } from "./lib/config/ide-config.js";
 import { showBanner, BLUE, GREEN, YELLOW, DIM, NC } from "./lib/utils/ui.js";
 import { logger } from "./lib/utils/logger.js";
@@ -62,6 +63,9 @@ function help() {
   );
   logger.info(
     `  ${GREEN}jarvis install-rtk${NC}                      Instalar RTK (token killer — economia 60-90%)`,
+  );
+  logger.info(
+    `  ${GREEN}jarvis tokens${NC} [--hub <h> --position <p> --area <a> --squad <s>] [--rtk] [--json]   Estimar o que carrega no início da sessão (perfil do ENV.md se sem flags)`,
   );
   logger.info(
     `  ${GREEN}jarvis qa-signoff${NC} [--branch <branch>] [--max-age <horas>]   Verificar sign-off QA (usado pelo CI)`,
@@ -142,6 +146,7 @@ const commands = {
   },
   "install-rtk": () => installRtk(flags),
   "qa-signoff": () => qaSignoff(flags),
+  tokens: () => tokens(flags),
   "--version": () => logger.info(getVersion()),
   "-v": () => logger.info(getVersion()),
   "--help": () => help(),

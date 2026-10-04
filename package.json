@@ -10,7 +10,8 @@
     "postinstall": "node bin/postinstall.js",
     "prepublishOnly": "echo 'Publishing jarvis-framework...'",
     "publish:gitlab": "npm publish",
-    "test:comandos": "node test/test-comandos-docs.js"
+    "test:comandos": "node test/test-comandos-docs.js",
+    "test:filtro": "node --test test/profile-filter.test.js test/token-report.test.js"
   },
   "files": [
     "bin/",
