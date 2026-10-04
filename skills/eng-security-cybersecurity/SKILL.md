@@ -649,4 +649,4 @@ Proximo passo: {corrigir criticos / revisar relatorio / rodar SAST no CI}
 - **Auth e RBAC**: Ver skill `eng-backend` para implementacao de autenticacao
 - **Guards e pipes NestJS**: Ver skill `eng-backend-nestjs` para middleware de seguranca
 - **Frontend XSS**: Ver skill `eng-frontend` para CSP e sanitizacao no client
-- **Supply chain**: Ver skill `eng-infrastructure` (futuro) para hardening de CI/CD
+- **Supply chain**: hardening de CI/CD segue este skill e as regras do projeto (ainda não há skill específico de infraestrutura)

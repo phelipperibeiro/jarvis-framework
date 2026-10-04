@@ -2,7 +2,7 @@
 name: eng-qa-exploratory
 description: >
   Conduz sessões de teste exploratório estruturadas: define charter, gera roteiro baseado
-  em risco, registra achados no template padrão e aciona qa-bug-report para cada bug encontrado.
+  em risco, registra achados no template padrão e aciona eng-qa-bug-report para cada bug encontrado.
   Pressupõe que eng.qa.exploratory-session-rules.md foi carregado pelo warm-up (HUB=QA).
   Trigger: Use quando o QA precisar conduzir ou documentar uma sessão de teste exploratório.
 license: AGPL-3.0
@@ -31,17 +31,17 @@ completa dos achados.
 
 ### Modo 1: `plan` — Planejar sessão (antes de executar)
 ```
-/qa-exploratory plan [feature ou módulo]
+/eng-qa-exploratory plan [feature ou módulo]
 ```
 
 ### Modo 2: `document` — Documentar sessão já realizada
 ```
-/qa-exploratory document [feature] [achados em linguagem natural]
+/eng-qa-exploratory document [feature] [achados em linguagem natural]
 ```
 
 ### Modo 3: `report` — Processar doc de sessão e criar bug cards
 ```
-/qa-exploratory report [caminho do documento de sessão]
+/eng-qa-exploratory report [caminho do documento de sessão]
 ```
 
 **Se não receber modo**, perguntar qual dos três o QA deseja executar.
@@ -91,7 +91,7 @@ Exibir o documento gerado e perguntar:
 ```
 Documento de sessão criado: {caminho}
 Você pode executar a sessão e depois rodar:
-  /qa-exploratory document {caminho}
+  /eng-qa-exploratory document {caminho}
 para registrar os achados.
 ```
 

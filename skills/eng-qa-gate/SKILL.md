@@ -26,9 +26,9 @@ Garantir que toda tech spec atenda aos padrões de qualidade estabelecidos antes
 ### Exemplos de Uso
 
 ```
-/qa-gate PROJ-123
-/qa-gate ./sessions/PROJ-123/tech-spec.md
-/qa-gate $SESSIONS_DIR/eng/TECH-456/tech-spec.md
+/eng-qa-gate PROJ-123
+/eng-qa-gate ./sessions/PROJ-123/tech-spec.md
+/eng-qa-gate $SESSIONS_DIR/eng/TECH-456/tech-spec.md
 ```
 
 ### Validação de Entrada
@@ -38,7 +38,7 @@ Garantir que toda tech spec atenda aos padrões de qualidade estabelecidos antes
 ```
 Se $ARGUMENTS está vazio:
   → Exibir: "⚠️ Argumento obrigatório. Informe o card-id ou caminho do arquivo."
-  → Exibir: "Uso: /qa-gate [card-id ou caminho-do-arquivo]"
+  → Exibir: "Uso: /eng-qa-gate [card-id ou caminho-do-arquivo]"
   → Encerrar execução
 ```
 
@@ -59,7 +59,7 @@ Senão:
 ## Recursos
 
 - **Template de Tech Spec**: `$IDE/templates/engineering/tech-spec-template.md`
-- **Checklist de Validação**: `$IDE/skills/qa-gate/assets/checklist-validacao.md`
+- **Checklist de Validação**: `$IDE/skills/eng-qa-gate/assets/checklist-validacao.md`
 - **Saída**: `$SESSIONS_DIR/eng/{card-id}/qa-gate-report.md`
 
 ---

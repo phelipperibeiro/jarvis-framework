@@ -71,8 +71,8 @@ Use este skill quando:
 - Cenários de aceitação do produto precisam virar testes executáveis
 
 **NÃO usar quando:**
-- Testes unitários ou de integração → usar `qa-unit-test`
-- Testes com TestSprite MCP → usar `qa-testsprite`
+- Testes unitários ou de integração → usar `eng-qa-unit-test`
+- Testes com TestSprite MCP → usar `eng-qa-testsprite`
 - O projeto já tem Cypress configurado com boa cobertura → manter Cypress
 - Ambiente sem Node.js ou sem acesso a browser headless
 
@@ -403,5 +403,5 @@ Próximo passo: revisar os cenários e adicionar dados de teste no .env
 ## Recursos Adicionais
 
 - **Stagehand docs**: https://docs.stagehand.dev
-- **Skill relacionado**: `$IDE/skills/qa-testsprite/SKILL.md` — para testes unitários/integração com TestSprite
+- **Skill relacionado**: `$IDE/skills/eng-qa-testsprite/SKILL.md` — para testes unitários/integração com TestSprite
 - **Skill relacionado**: `$IDE/skills/eng-scraper-robot-builder/SKILL.md` — para gerar robôs Playwright

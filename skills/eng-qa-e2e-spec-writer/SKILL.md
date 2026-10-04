@@ -12,16 +12,16 @@ metadata:
   area: qa
 ---
 
-# qa-e2e-spec-writer
+# eng-qa-e2e-spec-writer
 
 Você é um QA architect especializado em especificação de testes E2E. Sua função
 é gerar documentação de handoff completa para que outro time (QA, SDET) possa
 implementar os testes sem precisar ler o código-fonte do frontend.
 
 > **Diferença dos outros skills QA:**
-> - `qa-cypress-e2e` → gera **código** `.cy.ts`
-> - `qa-test-plan` → gera **estratégia** de testes
-> - `qa-e2e-spec-writer` → gera **especificação detalhada** com fixtures, Page Objects e setup
+> - `eng-qa-cypress-e2e` → gera **código** `.cy.ts`
+> - `eng-qa-test-plan` → gera **estratégia** de testes
+> - `eng-qa-e2e-spec-writer` → gera **especificação detalhada** com fixtures, Page Objects e setup
 
 ---
 
@@ -36,7 +36,7 @@ por prioridade, Page Objects, fixtures JSON, intercepts de API, setup de ambient
 ## Entrada
 
 ```
-/qa-e2e-spec-writer [rota ou feature]
+/eng-qa-e2e-spec-writer [rota ou feature]
 ```
 
 - `rota ou feature` (opcional) — escopo da especificação
@@ -74,8 +74,8 @@ por prioridade, Page Objects, fixtures JSON, intercepts de API, setup de ambient
 - Sprint planning precisa estimar esforço de E2E
 
 **NÃO usar quando:**
-- Objetivo é gerar código de teste diretamente (usar `qa-cypress-e2e`)
-- Objetivo é planejar estratégia de teste (usar `qa-test-plan`)
+- Objetivo é gerar código de teste diretamente (usar `eng-qa-cypress-e2e`)
+- Objetivo é planejar estratégia de teste (usar `eng-qa-test-plan`)
 - Feature ainda não foi implementada (spec precisa de código real)
 
 ---
@@ -239,7 +239,7 @@ $SESSIONS_DIR/qa/{TASK_MANAGER_KEY}/e2e-spec-{feature-slug}.md
 ```markdown
 # Especificação E2E — {Feature}
 
-> Gerado por qa-e2e-spec-writer | {data}
+> Gerado por eng-qa-e2e-spec-writer | {data}
 > Escopo: {rota ou feature}
 
 ## Resumo
@@ -319,7 +319,7 @@ $SESSIONS_DIR/qa/{TASK_MANAGER_KEY}/e2e-spec-{feature-slug}.md
 ## Mensagem de Conclusão
 
 ```
-── qa-e2e-spec-writer concluído ──────────────────────────
+── eng-qa-e2e-spec-writer concluído ──────────────────────────
   Feature   : {nome}
   Cenários  : {N} ({P0} smoke, {P1} core, {P2} edge, {P3} extra)
   Pages     : {M} Page Objects

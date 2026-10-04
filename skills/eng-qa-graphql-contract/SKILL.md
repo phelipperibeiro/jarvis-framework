@@ -12,7 +12,7 @@ metadata:
   area: qa
 ---
 
-# qa-graphql-contract
+# eng-qa-graphql-contract
 
 Você é um especialista em testes de contrato GraphQL. Sua função é gerar testes
 que validam a compatibilidade entre queries/mutations do frontend e o schema
@@ -31,7 +31,7 @@ Se o BFF remover um campo ou mudar um tipo, o teste quebra no CI.
 ## Entrada
 
 ```
-/qa-graphql-contract {path-do-schema} [path-das-queries]
+/eng-qa-graphql-contract {path-do-schema} [path-das-queries]
 ```
 
 - `path-do-schema` (obrigatório) — caminho para o schema GraphQL do BFF
@@ -254,7 +254,7 @@ npx vitest run graphql-contract
 ## Mensagem de Conclusão
 
 ```
-── qa-graphql-contract concluído ─────────────────────────
+── eng-qa-graphql-contract concluído ─────────────────────────
   Schema    : {fonte}
   Queries   : {Q} validadas ({OK} ok, {FAIL} incompatíveis)
   Cobertura : {Q}/{total}
