@@ -23,5 +23,6 @@ Corrigir bugs sem alterar feature pretendida.
 Pequenas melhorias de performance.
 Atualizações de documentação ou mudanças de metadata.
 
-Altere a versão no pyproject.toml.
-Então, execute `uv sync --all-extras` para regenerar o lock file.
+Altere a versão em `package.json`.
+Então, execute `npm install` para regenerar o `package-lock.json`.
+Adicione uma entrada em `CHANGELOG.md` para a nova versão, seguindo o formato [Keep a Changelog](https://keepachangelog.com/).

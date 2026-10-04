@@ -4,7 +4,7 @@ Define a estrutura organizacional, vocabulário e configurações do framework J
 > **📝 Como usar**: Este arquivo define as opções válidas para variáveis do ENV.md.
 > Edite este arquivo para customizar as opções da sua organização antes de instalar o framework.
 >
-> **Domínio de Email**: Configure `DOMAIN:` para validar emails corporativos (ex: `DOMAIN: suaempresa.com.br`)
+> **Domínio de Email**: ver seção "Domain" abaixo.
 
 ---
 
@@ -165,26 +165,14 @@ DOMAIN:
 
 ## 🌐 Domain (Domínio de Email Corporativo)
 
-Define o domínio de email corporativo para validação e padronização de emails.
+Define o domínio de email corporativo para validação e padronização de emails. A instrução `DOMAIN:` fica numa única linha, logo após a seção Areas (ver acima) — não repita essa linha em outro lugar deste arquivo.
 
-**ADICIONAR APENAS UMA LINHA APÓS AREAS:**
-
-```markdown
-DOMAIN:
-```
-
-### Como Funciona
 - Todos os emails devem terminar com `@DOMAIN`
 - Usado na validação de ENV.md durante `/jarvis-init`
 - Garante que apenas emails corporativos sejam registrados
 - Exemplo: `pedro@domain.com.br`, `ana@domain.com.br`
 
-### Para Open Source (Sem Restrição)
-Deixe em branco ou remova a linha:
-
-```markdown
-DOMAIN:
-```
+**Para open source, sem restrição**: deixe a linha em branco (`DOMAIN:`) ou remova-a.
 
 ---
 

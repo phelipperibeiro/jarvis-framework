@@ -284,61 +284,7 @@ Quando um agente atua em tema com skill correspondente, o skill e a fonte de ver
 
 ### Mapeamento
 
-| Comando/Workflow | Skill |
-|------------------|-------|
-| `/warm-up` | `jarvis-docs-central` (sync) |
-| `eng.start` | `jarvis-docs-central` (buscar PRD/ARD) |
-| `eng.docs` | `eng-global-docs-write`, `jarvis-docs-index` |
-| `eng.pre-pr` | `eng-qa-test-plan`, `eng-global-docs-write`, `jarvis-docs-central` (detectar docs) |
-| `eng.pr` | `eng-global-pr` (MR/PR via `VERSION_CONTROL`) |
-| Comentário no card | `eng-global-task-comment` |
-| Listar especializações de stack (instaladas e registradas) | `jarvis-list-specializations` |
-| Criar uma especialização de stack (backend ou frontend) a partir do código do projeto | `jarvis-create-specialization` |
-| Decisão de arquitetura do Jarvis (agent, skill, workflow ou rule?), simplificação, tendências | `jarvis-evolution-architect` |
-| `jarvis docs sync` | `jarvis-docs-central` |
-| `jarvis docs publish` | `jarvis-docs-central` |
-| QA validation | `eng-qa-gate` |
-| Arquitetura C4 | `eng-backend-arch-c4` |
-| Inicializacao | `jarvis-init` |
-| Testes unitarios | `eng-qa-unit-test` |
-| Testes TestSprite | `eng-qa-testsprite` |
-| Mensageria / RabbitMQ | `eng-backend-rabbitmq` (especialização de backend) |
-| APIs, auth, workers, caching | `eng-backend` (base) + `BACKEND_SPECIALIZATIONS` |
-| Componentes, UI, frontend | `eng-frontend` (base) + `FRONTEND_SPECIALIZATIONS` |
-| Micro frontend, Module Federation, shell/remote | `eng-frontend-microfrontend` (especialização de frontend) |
-| Design system, tokens, CVA, Storybook, versionamento | `eng-frontend-design-system` (especialização de frontend) |
-| Revisão de PR frontend (tipagem, a11y, tokens, itens da stack) | `eng.frontend-review` |
-| Auditoria de performance frontend (Core Web Vitals, pacote entregue) | `eng.frontend-perf-audit` |
-| Framework NestJS (módulos, DI, guards) | `eng-backend-nestjs` (especialização de backend) |
-| Web scraping, Puppeteer, ETL | `eng-scraper` |
-| Converter fluxo manual (produto/dev) em robô Playwright via Stagehand | `eng-scraper-robot-builder` |
-| Criar ou manter robô RPA (ciclo completo) | `eng.rpa.robot` |
-| Testes E2E em linguagem natural, fluxos de usuário, regressão de UI, smoke tests pós-deploy | `eng-qa-e2e` |
-| Gerar specs Cypress + TypeScript (Page Objects, data-testid, cy.intercept, fixtures) | `eng-qa-cypress-e2e` |
-| Sessão de teste exploratório (charter, roteiro de risco, achados, bug cards) | `eng-qa-exploratory` |
-| Orientar dev sobre cobertura de testes Cypress sem escrever o teste | `eng-qa-dev-guide` |
-| Consolidar sessões exploratórias, bugs e quality gates e gerar relatório de qualidade por sprint/release | `eng-qa-quality-report` |
-| Testes de acessibilidade WCAG 2.1 AA: integra jest-axe em testes unitários existentes | `eng-qa-a11y-audit` |
-| Testes de contrato GraphQL: valida queries frontend contra schema do BFF | `eng-qa-graphql-contract` |
-| Spec E2E para handoff: cenários, Page Objects, fixtures, intercepts, setup de ambiente | `eng-qa-e2e-spec-writer` |
-| Planejar capacidade QA da sprint: risco por task, alocação entre QAs e Quality Champions | workflow `eng.qa-sprint-planning` |
-| Sign-off QA pré-deploy: verifica cobertura, bugs abertos, produz GO/NO-GO + snippet CI para TL | workflow `eng.qa-release-signoff` |
-| Pipelines ETL/ELT, Glue, Airflow, PySpark, Athena, Metabase, bronze/silver/gold, contratos de dados, Great Expectations | `eng-data-engineer` |
-| Criar pipeline novo (docs, qualidade, idempotência, gold) | `data.new-pipeline` |
-| Criar contrato de dados para squad requisitante | `data.contract` |
-| Dashboards BI, queries SQL analíticas, compartilhamento com squads | `eng-data-bi` |
-| Diagnóstico de falhas em pipelines por camada (fonte→bronze→silver→gold) | `eng-data-debug` |
-| Onboarding de fonte nova: schema discovery, bronze, Expectation Suite, doc | `eng-data-onboard` |
-| Criar/manter DAGs, retry strategies, alertas, troubleshooting de orquestração | `eng-data-orchestrator` |
-| Documentação central (GitLab/GitHub/Bitbucket) | `jarvis-docs-central` |
-| Bug cross-service (HTTP + AMQP) | `eng-backend-microservices-trace` |
-| Auditoria de segurança OWASP, secrets, supply chain, headers, compliance | `eng-security-cybersecurity` |
-| Resposta a incidentes de segurança, CVEs, vulnerabilidades | `eng.security-incident` |
-| Review de segurança em PRs (gate pré-merge) | `eng.security-review` |
-| Pipeline defensivo completo: threat-model → audit → triage → patch (fluxo guiado) | `eng.security-pipeline` |
-| Produzir threat model estruturado do projeto (bootstrap/interview) | `eng-security-threat-model` |
-| Deduplicar, verificar com multi-voto e rankear achados de segurança | `eng-security-triage` |
-| Gerar diffs candidatos para achados confirmados de segurança (fechar o loop do triage) | `eng-security-patch` |
+Tabela completa de mapeamento comando/trigger → skill: ver `$IDE/skills/AGENTS.md`, seção "Mapeamento Comando → Skill".
 
 ---
 
@@ -354,29 +300,7 @@ Quando um agente atua em tema com skill correspondente, o skill e a fonte de ver
 
 ## 8) Agentes Disponiveis
 
-### Engenharia (Ativos)
-- `eng.agent.md` - Agente principal de engenharia
-- `eng.bug-hunter.md` - Caça e análise de bugs
-- `eng.dev-code-reviewer.md` - Revisao de codigo
-- `eng.docs-writer.md` - Documentacao tecnica
-- `eng.rpa.agent.md` - Automação e scraping RPA (ARACHNE) — robôs resilientes, análise de sistemas externos
-- `eng.frontend.agent.md` - Especialista frontend (neutro de stack): UI, estado, performance, a11y
-- `eng.ux-designer.agent.md` - Especialista UX/UI: auditoria heurística, fluxos, microcopy, arquitetura de informação
-- `eng.cybersecurity.agent.md` - Especialista em cybersecurity e AppSec (SENTINEL) — OWASP Top 10, secrets, supply chain, incident response
-
-### Data (Ativo)
-- `data/eng.data-engineer.agent.md` - Engenharia de dados: pipelines, contratos, qualidade (HEPHAESTUS)
-
-### QA (Ativos)
-- `eng.qa.test-planner.md` - Planejamento de testes
-- `eng.qa.testing-engineer.md` - Implementacao de testes
-- `eng.qa.test-architect.md` - Arquitetura de testes
-- `eng.qa.quality-champion-task-agent.md` - Qualidade de tickets
-- `eng.qa.quality-strategist.md` - Priorização de esforço QA, risco de feature, distribuição QA/dev
-
-### Produto (Ativo)
-- `prod.pm-checker.md` - Validacao de requisitos
-- `prod.discovery-interviewer.md` - Entrevistador de discovery: investiga uma ideia sem chutar e gera um rascunho estruturado
+Lista completa de agentes: ver `$IDE/agents/README.md`.
 
 ---
 
