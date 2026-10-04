@@ -22,7 +22,6 @@ skills/
 ├── eng-security-cybersecurity/, eng-security-threat-model/, eng-security-*
 ├── eng-rpa via eng-scraper*, eng-scraper-robot-builder
 ├── product-specs/ (porta de entrada), product-specs-update/, product-roadmap-report/
-├── taxonomy-manager/
 ├── jarvis-report-issue/
 └── … (49 skills; todos com `metadata.area`)
 ```
@@ -69,4 +68,3 @@ Todo skill tem `metadata.area` (`qa`, `data`, `ai`, `frontend`, `backend`, `secu
 | `jarvis-list-specializations` | Lista as especializações instaladas (backend e frontend) e se estão registradas nas listas do `ENV.md`; só lê |
 | `jarvis-evolution-architect` | Mentor de arquitetura para a evolução do próprio Jarvis: questiona designs (agent, skill, workflow ou rule?), identifica gaps e recomenda com opinião técnica; só lê e pesquisa |
 | `jarvis-create-specialization` | Cria o skill de uma stack (backend ou frontend) a partir do código do projeto, mostra para revisão e o registra na lista da área |
-| `taxonomy-manager` | Mantém `taxonomy.md` |

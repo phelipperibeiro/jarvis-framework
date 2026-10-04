@@ -78,7 +78,7 @@ A versão exibida no banner do `jarvis init` e em `jarvis --version` **vem daqui
 
 ## `taxonomy.md`
 
-**Fonte de verdade** das opções organizacionais usadas pelo `/jarvis-init` e pelo skill `taxonomy-manager`.
+**Fonte de verdade** das opções organizacionais usadas pelo `/jarvis-init` e gerenciadas pelo `/taxonomy`.
 
 Seções:
 

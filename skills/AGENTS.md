@@ -268,7 +268,6 @@ Skills são invocados de formas diferentes dependendo da IDE:
 | `/eng.pr` | `eng-global-pr` |
 | QA validation | `eng-qa-gate` |
 | Criar skill | `skill-creator` |
-| `/taxonomy-manager` | `taxonomy-manager` |
 | Listar especializações de stack (instaladas e registradas) | `jarvis-list-specializations` |
 | Criar uma especialização de stack (backend ou frontend) a partir do código do projeto | `jarvis-create-specialization` |
 | Decisão de arquitetura do Jarvis (agent, skill, workflow ou rule?), simplificação, tendências | `jarvis-evolution-architect` |

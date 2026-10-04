@@ -79,7 +79,6 @@ prompts/
 │   │   ├── eng-qa-testsprite/
 │   │   ├── eng-qa-unit-test/
 │   │   ├── skill-creator/
-│   │   ├── taxonomy-manager/
 │   │   ├── workflow-creator/
 │   │   ├── jarvis-report-issue/          # Auto-report de bugs no repo do Jarvis (GitLab/GitHub/Bitbucket)
 │   │   ├── eng-global-task-comment/      # Comentário no card (Jira/Linear/GitHub/Asana)
@@ -305,7 +304,6 @@ Quando um agente atua em tema com skill correspondente, o skill e a fonte de ver
 | Inicializacao | `jarvis-init` |
 | Testes unitarios | `eng-qa-unit-test` |
 | Testes TestSprite | `eng-qa-testsprite` |
-| Taxonomia | `taxonomy-manager` |
 | Mensageria / RabbitMQ | `eng-backend-rabbitmq` (especialização de backend) |
 | APIs, auth, workers, caching | `eng-backend` (base) + `BACKEND_SPECIALIZATIONS` |
 | Componentes, UI, frontend | `eng-frontend` (base) + `FRONTEND_SPECIALIZATIONS` |
