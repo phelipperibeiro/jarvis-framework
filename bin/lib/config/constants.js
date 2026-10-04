@@ -19,6 +19,7 @@ export const SYNC_DIRS = Object.freeze([
   "workflows",
   "templates",
   "rules",
+  "rules-on-demand",
   "scripts",
 ]);
 
@@ -69,6 +70,14 @@ export const OBSOLETE_PATHS = Object.freeze([
   "skills/docs-index",
   // eng.downstream-flow-rules (removida): processo de board de um time, acoplado a Jira
   "rules/engineering/eng.downstream-flow-rules.md",
+  // rules de uma etapa só: saíram de rules/ (carregada no início) para rules-on-demand/ (lida pelo workflow)
+  "rules/engineering/eng.start-rules.md",
+  "rules/engineering/eng.plan-rules.md",
+  "rules/engineering/eng.work-rules.md",
+  "rules/engineering/eng.pr-rules.md",
+  "rules/engineering/eng.pre-pr-rules.md",
+  "rules/engineering/eng.tech-spec-rules.md",
+  "rules/engineering/eng.breakdown-subtasks-rules.md",
 ]);
 
 /**

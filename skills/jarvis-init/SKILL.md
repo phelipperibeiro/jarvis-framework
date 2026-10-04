@@ -908,13 +908,13 @@ Se não existir na raiz do projeto:
 
 **Executar após gravar o ENV.md** (nos fluxos create, update B e upgrade C).
 
-Objetivo: garantir que `$IDE/rules/` contenha apenas as rules relevantes para o perfil do usuário, reduzindo tokens carregados em sessão.
+Objetivo: garantir que `$IDE/rules/` e `$IDE/rules-on-demand/` contenham apenas as rules relevantes para o perfil do usuário, reduzindo tokens carregados em sessão. A pasta `rules/` é carregada no início da sessão; a `rules-on-demand/` guarda as rules de uma etapa só, que cada workflow lê quando precisa (o Claude Code não a carrega sozinho). O filtro é o mesmo nas duas pastas, e `bin/lib/core/profile-filter.js` o espelha em JS (usado por `jarvis tokens`): ao mudar a lógica aqui, mude lá e em `rules/AGENTS.md`.
 
 **Passos:**
 
 ```
 1. Ler HUB, POSITION, AREA, SQUAD do ENV.md recém-gravado
-2. Listar todos os arquivos .md em rules/ (recursivo, exceto AGENTS.md)
+2. Para cada uma das duas pastas (rules/ e rules-on-demand/), listar todos os arquivos .md (recursivo, exceto AGENTS.md)
 3. Para cada arquivo:
    a. Ler o bloco `> **Applies to:**` (primeira ocorrência no arquivo)
    b. Se o bloco não existir → tratar como universal → copiar sempre
@@ -922,8 +922,8 @@ Objetivo: garantir que `$IDE/rules/` contenha apenas as rules relevantes para o 
    d. **Condição especial RTK**: se o arquivo for `rtk-rules.md`,
       copiar APENAS se `RTK_ENABLED=true` no ENV.md
       (mesmo que o perfil bata, RTK é opt-in)
-   e. Se bate com o perfil → copiar para $IDE/rules/ (preservando subpastas)
-   f. Se não bate → deletar de $IDE/rules/ se existir lá
+   e. Se bate com o perfil → copiar para a mesma pasta em $IDE/ (rules/ → $IDE/rules/, rules-on-demand/ → $IDE/rules-on-demand/), preservando subpastas
+   f. Se não bate → deletar de $IDE/ se existir lá
 4. Exibir resumo ao usuário
 ```
 
@@ -976,8 +976,9 @@ function parseAppliesTo(fileContent) {
 ```bash
 # Exemplo: rules/engineering/qa/eng.qa.quality-gate-scoring-rules.md
 # Destino: $IDE/rules/engineering/qa/eng.qa.quality-gate-scoring-rules.md
-mkdir -p "$IDE/rules/$(dirname $relPath)"
-cp "rules/$relPath" "$IDE/rules/$relPath"
+# (o mesmo vale para rules-on-demand/ → $IDE/rules-on-demand/)
+mkdir -p "$IDE/$pasta/$(dirname $relPath)"
+cp "$pasta/$relPath" "$IDE/$pasta/$relPath"   # $pasta = rules ou rules-on-demand
 ```
 
 **Saída para o usuário:**
@@ -986,7 +987,7 @@ cp "rules/$relPath" "$IDE/rules/$relPath"
 🔍 Sincronizando rules para o perfil: HUB={HUB} | POSITION={POSITION} | AREA={AREA} | SQUAD={SQUAD}
 
 ✅ Rules sincronizadas:
-   Copiadas : N arquivos
+   Copiadas : N arquivos (rules/: N | rules-on-demand/: N)
    Removidas: N arquivos (não batem com o perfil)
    Universais: N arquivos (sem applies_to — sempre copiadas)
 ```

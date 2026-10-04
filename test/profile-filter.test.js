@@ -86,13 +86,13 @@ test("listRulesForProfile: AGENTS.md nunca é filtrado, rtk é opt-in, sem bloco
   }
 });
 
-// Números do architecture.md (seção 1.1), calculados sobre o rules/ real e sem RTK.
-// Eles mudam quando uma rule é adicionada, movida ou editada: atualize junto com a linha de base.
+// Linha de base de rules/ para 4 perfis, sem RTK (architecture.md, seção 1.1), já sem as 7 rules de etapa
+// (92.260 B), movidas para rules-on-demand/ na etapa 2 da #54. Mudam quando uma rule é adicionada, movida ou editada.
 const BASE = [
-  ["FULLCYCLE/GENERALIST/ENGINEERING/CORE", profile("FULLCYCLE", "GENERALIST", "ENGINEERING"), 25, 202016],
-  ["BACKEND/SENIOR/ENGINEERING/CORE", profile("BACKEND", "SENIOR", "ENGINEERING"), 18, 153955],
-  ["FRONTEND/PLENO/ENGINEERING/CORE", profile("FRONTEND", "PLENO", "ENGINEERING"), 18, 154800],
-  ["QA/QA-ENGINEER/ENGINEERING/CORE", profile("QA", "QA-ENGINEER", "ENGINEERING"), 21, 168177],
+  ["FULLCYCLE/GENERALIST/ENGINEERING/CORE", profile("FULLCYCLE", "GENERALIST", "ENGINEERING"), 18, 109756],
+  ["BACKEND/SENIOR/ENGINEERING/CORE", profile("BACKEND", "SENIOR", "ENGINEERING"), 11, 61695],
+  ["FRONTEND/PLENO/ENGINEERING/CORE", profile("FRONTEND", "PLENO", "ENGINEERING"), 11, 62540],
+  ["QA/QA-ENGINEER/ENGINEERING/CORE", profile("QA", "QA-ENGINEER", "ENGINEERING"), 14, 75917],
 ];
 
 for (const [nome, p, arquivos, bytes] of BASE) {
