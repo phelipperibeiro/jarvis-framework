@@ -49,7 +49,6 @@ prompts/
 │   │   └── product/              # 9 workflows de produto
 │   │
 │   ├── skills/                   # Skills (todos com metadata.area)
-│   │   ├── claude-plugin-creator/
 │   │   ├── jarvis-context-detect/
 │   │   ├── jarvis-docs-index/
 │   │   ├── eng-ai-engineer/
@@ -78,8 +77,6 @@ prompts/
 │   │   ├── eng-qa-test-plan/
 │   │   ├── eng-qa-testsprite/
 │   │   ├── eng-qa-unit-test/
-│   │   ├── skill-creator/
-│   │   ├── workflow-creator/
 │   │   ├── jarvis-report-issue/          # Auto-report de bugs no repo do Jarvis (GitLab/GitHub/Bitbucket)
 │   │   ├── eng-global-task-comment/      # Comentário no card (Jira/Linear/GitHub/Asana)
 │   │   ├── jarvis-list-specializations/ # Lista especializações de stack instaladas e registradas

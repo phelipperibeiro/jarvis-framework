@@ -23,7 +23,7 @@ skills/
 ├── eng-rpa via eng-scraper*, eng-scraper-robot-builder
 ├── product-specs/ (porta de entrada), product-specs-update/, product-roadmap-report/
 ├── jarvis-report-issue/
-└── … (49 skills; todos com `metadata.area`)
+└── … (50 skills; todos com `metadata.area`)
 ```
 
 Inventário atual (pastas): rode `ls skills` ou `jarvis list` após o pacote instalado.

@@ -194,8 +194,8 @@ para revisar a arquitetura de microservices"
 # Opção 2: Ativar permanentemente
 mv agents/archive/architecture-design/backend-architect.md agents/engineering/
 
-# Opção 3: Criar skill customizado
-/skill-creator  # criar skill que usa agent arquivado
+# Opção 3: Criar skill customizado que usa o agent arquivado
+# (passos em "Criando um Novo Skill", no skills/AGENTS.md)
 ```
 
 ### Invocação Manual

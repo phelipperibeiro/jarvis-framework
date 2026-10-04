@@ -4,7 +4,7 @@ Lista de membros da organização com suas posições, squads e identificadores.
 
 > **Formato**: `Nome Completo | email | posição | slack_user_id`
 > **Squads válidos**: definidos em `taxonomy.md`
-> Preencha via `/members-manager` ou edite esta tabela.
+> Edite esta tabela para cadastrar os membros.
 
 ---
 
