@@ -22,6 +22,15 @@ Guiar o SENTINEL pelo pipeline defensivo completo de segurança, encadeando os 4
 - Onboarding de segurança em projeto sem histórico de audit
 - Quando o usuário pede "auditar segurança", "pipeline completo" ou "fechar o loop"
 
+### Skills invocados durante o workflow
+
+| Passo | Skill | Condição |
+|-------|-------|----------|
+| Passo 2 › Estágio 1 — Threat Model | `/eng-security-threat-model` | Se o estágio 1 for selecionado no menu de entrada (modo bootstrap, interview ou bootstrap-then-interview, escolhido pelo usuário) |
+| Passo 2 › Estágio 2 — Security Audit | `/eng.security-audit` | Se o estágio 2 for selecionado no menu de entrada (usa o `THREAT_MODEL.md` como contexto, se existir) |
+| Passo 2 › Estágio 3 — Triage | `/eng-security-triage` | Se o estágio 3 for selecionado no menu de entrada (entrada: `security-findings.json`) |
+| Passo 2 › Estágio 4 — Patch | `/eng-security-patch` | Se o estágio 4 for selecionado no menu de entrada (entrada: `triage.json`) |
+
 ---
 
 ## Passo 0 — Detectar estado do pipeline

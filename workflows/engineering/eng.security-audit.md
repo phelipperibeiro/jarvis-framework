@@ -55,6 +55,13 @@ Onde [escopo] pode ser:
 - Foco especifico: --focus=owasp|secrets|supply-chain|headers|compliance
 ```
 
+### Skills invocados durante o workflow
+
+| Passo | Skill | Condição |
+|-------|-------|----------|
+| Fase 0 – Analise de Contexto (CDD) | `/jarvis-context-detect` | Se existir uma sessão ativa (e `ENABLE_CDD=true` no ENV.md) |
+| Fase 3 – Analysis (OWASP Top 10) | `/eng-security-cybersecurity` | Sempre — como referência de padrões para cada vetor relevante |
+
 ---
 
 ## Fase 0 – Analise de Contexto (CDD)

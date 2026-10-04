@@ -16,6 +16,22 @@ Workflow unificado para criação (`new`) ou manutenção (`update`) de robôs d
 > 📋 **Docs**: `$IDE/rules/engineering/eng.docs-scraping-rules.md`
 > 🤖 **Agente**: ARACHNE (`$IDE/agents/engineering/eng.rpa.agent.md`)
 
+### Skills invocados durante o workflow
+
+| Passo | Skill | Condição |
+|-------|-------|----------|
+| Cabeçalho (agente) | `eng.rpa.agent` (agente) | Sempre — agente ARACHNE do workflow |
+| Fase 0 — Setup | `/jarvis-context-detect` | Se `ENABLE_CDD=true` no ENV.md |
+| Modo `new` › Exploração do sistema-alvo | `Playwright MCP` | Se o MCP Playwright estiver disponível na sessão (com `MAX_AI_EXECUTION_PERCENTAGE=100`, escolhido automaticamente; senão o dev escolhe a ferramenta) |
+| Modo `new` › Exploração do sistema-alvo | `/eng-scraper-robot-builder` | Se o fluxo for descrito em linguagem natural com seletores desconhecidos (com MAX=100: só se o MCP estiver indisponível) |
+| Modo `new` › Fase N1 — escolha da ferramenta do robô | `/eng-scraper-robot-builder` | Se o fluxo for descrito em linguagem natural e os seletores forem desconhecidos (Stagehand) |
+| Modo `new` › Fase N2 — Plano de Execução | `/eng.plan` | Sempre no modo `new`, depois de o `architecture.md` ser aprovado |
+| Modo `new` › Fase N3 — Implementação | `/eng.work` | Sempre no modo `new`, depois do plano |
+| Modo `new` › Fase N4 — Documentação | `/jarvis-docs-index` | Sempre, após criar o `{robot-tag}-robot.md` |
+| Modo `new` › Fase N5 — Pre-PR e PR | `/eng.pre-pr` | Sempre no modo `new`, ao final da implementação |
+| Modo `new` › Fase N5 — Pre-PR e PR | `/eng.pr` | Sempre no modo `new`, depois do pre-PR |
+| Modo `update` › Fase U2 (se a mudança envolve o sistema-alvo) | `Playwright MCP` | Se o MCP Playwright estiver disponível na sessão |
+
 ---
 
 ## Entrada
