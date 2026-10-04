@@ -2,7 +2,7 @@
 description: Inicia o planejamento de uma tarefa criando o architecture.md
 auto_execution_mode: 3
 agent: "$IDE/agents/engineering/eng.agent.md"
-rules_file: "$IDE/rules/engineering/eng.start-rules.md"
+rules_file: "$IDE/rules-on-demand/engineering/eng.start-rules.md"
 template_file: "$IDE/templates/engineering/architecture-template.md"
 recommended_model: claude-sonnet-4-20250514
 model_tier: high
@@ -13,7 +13,7 @@ model_justification: Requer análise arquitetural profunda, investigação de co
 
 Este comando inicia o **planejamento** de uma nova feature.
 
-> 📋 **Rules**: `$IDE/rules/engineering/eng.start-rules.md`
+> 📋 **Rules**: `$IDE/rules-on-demand/engineering/eng.start-rules.md` — **antes de começar, leia esse arquivo e siga-o**: ele não é carregado automaticamente no início da sessão.
 > 📤 **Template**: `$IDE/templates/engineering/architecture-template.md`
 
 > ⚠️ **IMPORTANTE**: Este workflow é APENAS para planejamento e documentação.

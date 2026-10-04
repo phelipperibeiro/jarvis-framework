@@ -2,7 +2,7 @@
 description: Validação de segurança para realizar um pull request ou merge request
 auto_execution_mode: 3
 env_file: "@/ENV.md"
-rules_file: "$IDE/rules/engineering/eng.pre-pr-rules.md"
+rules_file: "$IDE/rules-on-demand/engineering/eng.pre-pr-rules.md"
 recommended_model: claude-sonnet-4-20250514
 model_tier: high
 model_justification: Revisão multi-agente requer coordenação, análise de código, validação de testes e verificação de conformidade
@@ -11,6 +11,8 @@ model_justification: Revisão multi-agente requer coordenação, análise de có
 # pre-pr
 
 Estamos nos aproximando de finalizar o trabalho nesta branch e nos preparar para um solicitação de integração. Agora, é hora de fazer verificações finais e limpezas para assegurar que estamos alinhados com nossos convenções e objetivos.
+
+> 📋 **Rules**: `$IDE/rules-on-demand/engineering/eng.pre-pr-rules.md` — **antes de começar, leia esse arquivo e siga-o**: ele não é carregado automaticamente no início da sessão.
 
 ## Skills recomendados
 

@@ -2,7 +2,7 @@
 description: Criação de branch, commit e merge request (MR)
 auto_execution_mode: 3
 agent: "$IDE/agents/engineering/eng.agent.md"
-rules_file: "$IDE/rules/engineering/eng.pr-rules.md"
+rules_file: "$IDE/rules-on-demand/engineering/eng.pr-rules.md"
 template_file: "$IDE/templates/engineering/PR-template.md"
 recommended_model: claude-sonnet-4-20250514
 model_tier: medium
@@ -13,7 +13,7 @@ model_justification: Operações Git e preenchimento de templates são tarefas e
 
 Este comando cria a **branch, commita as alterações e abre um Merge Request**.
 
-> 📋 **Rules**: `$IDE/rules/engineering/eng.pr-rules.md`
+> 📋 **Rules**: `$IDE/rules-on-demand/engineering/eng.pr-rules.md` — **antes de começar, leia esse arquivo e siga-o**: ele não é carregado automaticamente no início da sessão.
 > 📤 **Template**: `$IDE/templates/engineering/PR-template.md`
 
 ## Skills recomendados

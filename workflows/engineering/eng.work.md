@@ -2,7 +2,7 @@
 description: Fluxo de implementação de código (commit por fase, SEM push nem PRs)
 auto_execution_mode: 3
 agent: "$IDE/agents/engineering/eng.agent.md"
-rules_file: "$IDE/rules/engineering/eng.work-rules.md"
+rules_file: "$IDE/rules-on-demand/engineering/eng.work-rules.md"
 template_file: "$IDE/templates/engineering/work-progress-template.md"
 recommended_model: claude-sonnet-4-20250514
 model_tier: very_high
@@ -13,7 +13,7 @@ model_justification: Implementação de código requer máxima precisão, entend
 
 Este comando executa a **implementação de código** seguindo o plano de execução.
 
-> 📋 **Rules**: `$IDE/rules/engineering/eng.work-rules.md`
+> 📋 **Rules**: `$IDE/rules-on-demand/engineering/eng.work-rules.md` — **antes de começar, leia esse arquivo e siga-o**: ele não é carregado automaticamente no início da sessão.
 > 📤 **Template**: `$IDE/templates/engineering/work-progress-template.md`
 
 > ⚠️ **IMPORTANTE**: Este workflow é para codificação com commits incrementais por fase.

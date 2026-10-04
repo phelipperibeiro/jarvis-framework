@@ -2,7 +2,7 @@
 description: Planejamento de execução faseada para a feature
 auto_execution_mode: 3
 agent: "$IDE/agents/engineering/eng.agent.md"
-rules_file: "$IDE/rules/engineering/eng.plan-rules.md"
+rules_file: "$IDE/rules-on-demand/engineering/eng.plan-rules.md"
 template_file: "$IDE/templates/engineering/plan-template.md"
 recommended_model: claude-sonnet-4-20250514
 model_tier: high
@@ -12,6 +12,8 @@ model_justification: Planejamento detalhado requer decomposição de tarefas com
 # Engineer Plan
 
 Este workflow cria um **plano de execução detalhado e faseado** para implementar a feature de forma incremental.
+
+> 📋 **Rules**: `$IDE/rules-on-demand/engineering/eng.plan-rules.md` — **antes de começar, leia esse arquivo e siga-o**: ele não é carregado automaticamente no início da sessão.
 
 ---
 
@@ -218,7 +220,7 @@ Após a validação do plano com o humano, informar:
 
 ## Regras Importantes
 
-- ⚠️ **Consulte** as regras completas em `$IDE/rules/engineering/eng.plan-rules.md`
+- ⚠️ **Consulte** as regras completas em `$IDE/rules-on-demand/engineering/eng.plan-rules.md`
 - ⏱️ **Fases de ~1 hora** - Não criar fases maiores
 - 🔄 **Incremental** - Cada fase deve entregar valor testável
 - 🗣️ **Validar** - Sempre confirmar o plano com o humano antes de prosseguir
