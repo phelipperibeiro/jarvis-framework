@@ -156,6 +156,12 @@ Refatorar ou revisar código?                → tema 12 (qualidade de código)
 4. **Testar**: cobrir o comportamento, os estados de erro e os casos limite
 5. **Validar**: percorrer o checklist de conclusão abaixo
 
+### Skills invocados durante a execução do skill
+
+| Passo | Skill | Condição |
+|-------|-------|----------|
+| — | Nenhuma — skill autocontida | — |
+
 ---
 
 ## Base Universal

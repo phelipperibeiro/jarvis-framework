@@ -360,6 +360,12 @@ airflow dags backfill <dag_id> \
 > ⚠️ Usar `backfill` com `catchup=False` configurado pode não ter o efeito esperado.
 > Verificar a configuração do DAG antes de reprocessar histórico.
 
+### Skills invocados durante a execução do skill
+
+| Passo | Skill | Condição |
+|-------|-------|----------|
+| — | Nenhuma — skill autocontida | — |
+
 ---
 
 ## Boas Práticas

@@ -205,6 +205,12 @@ Sempre avaliar tradeoffs antes de escolher modelo:
 - Plano de rollout gradual com métricas de avaliação
 - Documentar comportamento do sistema de IA
 
+### Skills invocados durante a execução do skill
+
+| Passo | Skill | Condição |
+|-------|-------|----------|
+| — | Nenhuma — skill autocontida | — |
+
 ---
 
 ## Comportamentos Esperados

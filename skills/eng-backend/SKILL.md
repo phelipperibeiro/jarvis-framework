@@ -154,6 +154,12 @@ Depurar um problema?                   → tema 12 (erros e logging)
 4. **Testar**: cobrir o caso feliz, os casos de erro e os limites
 5. **Validar**: percorrer o checklist de conclusão abaixo
 
+### Skills invocados durante a execução do skill
+
+| Passo | Skill | Condição |
+|-------|-------|----------|
+| — | Nenhuma — skill autocontida | — |
+
 ---
 
 ## Base Universal

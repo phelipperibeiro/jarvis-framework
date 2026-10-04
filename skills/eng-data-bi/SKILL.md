@@ -150,6 +150,12 @@ Se existir `$IDE/rules/engineering/data/data-rules.md`, ler e aplicar as conven�
 3. **Registrar o compartilhamento**
    - Anotar no contrato de dados quem está consumindo
 
+### Skills invocados durante a execução do skill
+
+| Passo | Skill | Condição |
+|-------|-------|----------|
+| — | Nenhuma — skill autocontida | — |
+
 ---
 
 ## Boas Práticas de Performance

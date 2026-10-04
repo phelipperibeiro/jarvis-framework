@@ -281,6 +281,12 @@ curl -s -X DELETE -u "$AUTH" \
   "$MB_URL/queues/%2F/{nome-fila}/contents"
 ```
 
+### Skills invocados durante a execução do skill
+
+| Passo | Skill | Condição |
+|-------|-------|----------|
+| — | Nenhuma — skill autocontida | — |
+
 ---
 
 ## Referência de Endpoints
