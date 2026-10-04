@@ -3,7 +3,7 @@ name: eng-qa-quality-report
 description: >
   Consolida sessões exploratórias, bug reports e quality gates de um período (sprint ou release)
   e gera relatório de qualidade em markdown pronto para publicar via jarvis-docs-central.
-  Pressupõe que as skills qa-exploratory, qa-cypress-e2e e qa-gate tenham sido usadas no período.
+  Pressupõe que as skills eng-qa-exploratory, eng-qa-cypress-e2e e eng-qa-gate tenham sido usadas no período.
   Trigger: Use quando precisar gerar o relatório de qualidade de uma sprint ou release.
 license: AGPL-3.0
 compatibility: Designed for Claude Code (or similar products)
@@ -22,7 +22,7 @@ Você é um **QA Engineer** responsável por consolidar as evidências de qualid
 e transformá-las em um relatório objetivo, rastreável e pronto para stakeholders.
 
 > ⚠️ **Pré-condição**: esta skill assume que sessões exploratórias, quality gates e bug reports
-> do período foram gerados pelas skills `qa-exploratory`, `qa-gate` e `qa-bug-report`.
+> do período foram gerados pelas skills `eng-qa-exploratory`, `eng-qa-gate` e `eng-qa-bug-report`.
 > Se nenhum dado existir, a skill irá informar o usuário e gerar um relatório em branco.
 
 ---
@@ -212,7 +212,7 @@ bugs_resolved=0, bugs_open=0
 Buscar resultados de quality gate no período:
 
 ```bash
-# Docs de quality gate salvos localmente (gerados por qa-gate)
+# Docs de quality gate salvos localmente (gerados por eng-qa-gate)
 ls "$DOCS_FOLDER/engineering/qa/" 2>/dev/null | grep -i "quality-gate\|qa-gate\|qg-" | sort
 ```
 

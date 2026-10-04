@@ -17,6 +17,7 @@ workflows/
 │   ├── prod.spec.discovery.md    # Investigação inicial de uma ideia (rascunho)
 │   ├── prod.spec.prd.md          # Documento de Requisitos de Produto
 │   ├── prod.spec.frd.md          # Documento de Requisitos Funcionais
+│   ├── prod.spec.ard.md          # ARD a partir do produto
 │   ├── prod.spec.breakdown.md    # Quebra em versões / épicos / histórias
 │   ├── prod.spec.epic.md         # Épicos
 │   ├── prod.spec.issue.md        # Issues (stories, tasks, bugs)
@@ -44,14 +45,14 @@ workflows/
     │   ├── eng.frontend-review.md        # Revisão de PR frontend (TS, tokens, a11y, MFE)
     │   └── eng.frontend-perf-audit.md    # Auditoria Core Web Vitals e bundle
     └── qa/
-        ├── eng-qa-quality-gate-validation.md
-        ├── eng-qa-e2e-test-generation.md
-        ├── eng-qa-exploratory-session.md
-        ├── eng-qa-dev-quality-guide.md
-        ├── eng-qa-quality-report.md
-        ├── eng-qa-refinement-entry.md
-        ├── eng-qa-release-signoff.md
-        └── eng-qa-sprint-planning.md
+        ├── eng.qa-quality-gate-validation.md
+        ├── eng.qa-e2e-test-generation.md
+        ├── eng.qa-exploratory-session.md
+        ├── eng.qa-dev-quality-guide.md
+        ├── eng.qa-quality-report.md
+        ├── eng.qa-refinement-entry.md
+        ├── eng.qa-release-signoff.md
+        └── eng.qa-sprint-planning.md
 ```
 
 ---
@@ -74,6 +75,7 @@ workflows/
 | `prod.spec.discovery.md` | Investigar uma ideia inicial (problema, requisitos e viabilidade) e gerar um rascunho |
 | `prod.spec.prd.md` | Criar/editar Documento de Requisitos de Produto |
 | `prod.spec.frd.md` | Criar/editar Documento de Requisitos Funcionais |
+| `prod.spec.ard.md` | Levantar requisitos arquiteturais com o PM e conduzir o ARD |
 | `prod.spec.breakdown.md` | Quebrar spec grande em versões, épicos e histórias |
 | `prod.spec.epic.md` | Criar/editar épicos |
 | `prod.spec.issue.md` | Criar/editar issues (stories, tasks, bugs) |
@@ -104,14 +106,14 @@ workflows/
 | `eng.frontend-component.md` | Criar ou refatorar componente frontend com qualidade (design system vs remote, a11y, testes) |
 | `eng.frontend-review.md` | Revisão de código específica para PRs frontend (TypeScript, tokens, a11y, MFE) |
 | `eng.frontend-perf-audit.md` | Auditoria de performance frontend (Core Web Vitals, bundle, diagnóstico por métrica) |
-| `eng-qa-quality-gate-validation.md` | Validação de quality gate de um ticket |
-| `eng-qa-e2e-test-generation.md` | Geração de testes E2E Cypress para uma feature |
-| `eng-qa-exploratory-session.md` | Conduzir sessão de teste exploratório |
-| `eng-qa-dev-quality-guide.md` | Orientar dev a escrever seus próprios testes Cypress |
-| `eng-qa-quality-report.md` | Relatório de qualidade consolidado por sprint/release |
-| `eng-qa-refinement-entry.md` | Entrada do QA no refinement de tickets |
-| `eng-qa-release-signoff.md` | Sign-off QA pré-deploy (GO/NO-GO) |
-| `eng-qa-sprint-planning.md` | Planejamento de capacidade QA por sprint |
+| `eng.qa-quality-gate-validation.md` | Validação de quality gate de um ticket |
+| `eng.qa-e2e-test-generation.md` | Geração de testes E2E Cypress para uma feature |
+| `eng.qa-exploratory-session.md` | Conduzir sessão de teste exploratório |
+| `eng.qa-dev-quality-guide.md` | Orientar dev a escrever seus próprios testes Cypress |
+| `eng.qa-quality-report.md` | Relatório de qualidade consolidado por sprint/release |
+| `eng.qa-refinement-entry.md` | Entrada do QA no refinement de tickets |
+| `eng.qa-release-signoff.md` | Sign-off QA pré-deploy (GO/NO-GO) |
+| `eng.qa-sprint-planning.md` | Planejamento de capacidade QA por sprint |
 
 ---
 

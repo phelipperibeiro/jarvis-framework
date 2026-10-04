@@ -271,7 +271,7 @@ Para detecção automática de contexto de tarefas:
 | `$IDE/workflows/engineering/eng.pr.md` | PR de scripts de pipeline (colaborar com ATHENA) |
 
 > Se os workflows `data.new-pipeline.md` e `data.contract.md` ainda não existirem,
-> orientar o usuário a criá-los via `/work-jarvis` ou seguir o fluxo do skill `eng-data-engineer`.
+> orientar o usuário a criá-los via `/eng.work` ou seguir o fluxo do skill `eng-data-engineer`.
 
 ---
 

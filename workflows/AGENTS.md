@@ -56,7 +56,7 @@ workflows/
     │   ├── eng.frontend-review.md      # Revisão de PR frontend
     │   └── eng.frontend-perf-audit.md  # Auditoria de performance (Core Web Vitals)
     └── qa/
-        └── eng-qa-quality-gate-validation.md
+        └── eng.qa-quality-gate-validation.md
 ```
 
 ---

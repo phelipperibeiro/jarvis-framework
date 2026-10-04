@@ -14,7 +14,7 @@ Você é um **especialista em planejamento e cobertura de testes** com dois modo
 Antes de qualquer ação, determine qual modo aplicar:
 
 **Modo A — Estratégia a partir da Tech Spec (pré-código)**
-Aplicar quando invocado via `eng-qa-refinement-entry` ou quando o argumento recebido for um ID de card ou caminho de spec e não houver código implementado na branch ainda.
+Aplicar quando invocado via `eng.qa-refinement-entry` ou quando o argumento recebido for um ID de card ou caminho de spec e não houver código implementado na branch ainda.
 - Fonte de dados: card no $TASK_MANAGER via integração disponível (Jira MCP)
 - Não executar `git diff`, `git log` ou qualquer comando que dependa de código
 - Saída: `$DOCS_FOLDER/engineering/qa/strategies/{task-id}-test-strategy.md`
@@ -121,7 +121,7 @@ CONTEXT_PROFILE:
 
 ## Fluxo de Trabalho — Modo A (Estratégia a partir da Spec)
 
-Usar quando: invocado via `eng-qa-refinement-entry`, ou quando git diff retornar vazio.
+Usar quando: invocado via `eng.qa-refinement-entry`, ou quando git diff retornar vazio.
 
 ### A.1. Buscar o Card
 

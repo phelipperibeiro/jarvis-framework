@@ -14,6 +14,7 @@ Fonte: `workflows/product/`. Guia didático: [produto/README.md](./produto/READM
 | [`/prod.spec.discovery`](./produto/prod.spec.discovery.md) | Investigação inicial de uma ideia: entrevista sobre o problema, os requisitos e a viabilidade, e gera um rascunho estruturado | [workflow](../workflows/product/prod.spec.discovery.md) |
 | [`/prod.spec.prd`](./produto/prod.spec.prd.md) | Cria ou altera um PRD (Documento de Requisitos de Produto) | [workflow](../workflows/product/prod.spec.prd.md) |
 | [`/prod.spec.frd`](./produto/prod.spec.frd.md) | Cria um FRD (Documento de Requisitos Funcionais) de uma feature | [workflow](../workflows/product/prod.spec.frd.md) |
+| [`/prod.spec.ard`](./produto/prod.spec.ard.md) | Abre o ARD a partir de um PRD ou FRD, levantando os requisitos arquiteturais com o PM | [workflow](../workflows/product/prod.spec.ard.md) |
 | [`/prod.spec.epic`](./produto/prod.spec.epic.md) | Cria um épico que agrupa histórias e tarefas | [workflow](../workflows/product/prod.spec.epic.md) |
 | [`/prod.spec.issue`](./produto/prod.spec.issue.md) | Cria issues: histórias de usuário, tarefas técnicas e bugs | [workflow](../workflows/product/prod.spec.issue.md) |
 | [`/prod.spec.breakdown`](./produto/prod.spec.breakdown.md) | Quebra uma spec grande em fatias (versões, épicos e histórias) | [workflow](../workflows/product/prod.spec.breakdown.md) |

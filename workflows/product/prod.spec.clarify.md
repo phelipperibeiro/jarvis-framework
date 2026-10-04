@@ -169,13 +169,13 @@ Para cada categoria com status Parcial ou Ausente, adicione uma oportunidade de 
    - Caminho para a spec atualizada.
    - Seções tocadas (liste os nomes).
    - Tabela de resumo de cobertura listando cada categoria da taxonomia com Status: Resolvido (era Parcial/Ausente e foi tratada), Adiado (excede a cota de perguntas ou melhor tratar no planejamento), Claro (já estava suficiente), Pendente (ainda Parcial/Ausente mas de baixo impacto).
-   - Se restarem itens Pendentes ou Adiados, recomende prosseguir para `/product/prod.spec.plan.md` ou rodar `/product/prod.spec.clarify.md` novamente após o planejamento.
+   - Se restarem itens Pendentes ou Adiados, recomende prosseguir para `/prod.spec.breakdown` ou rodar `/prod.spec.clarify` novamente após o planejamento.
    - Próximo comando sugerido.
 
 Regras de comportamento:
 
 - Se nenhuma ambiguidade significativa for encontrada (ou se todas as perguntas potenciais forem de baixo impacto), responda: “Nenhuma ambiguidade crítica detectada que valha esclarecimento formal.” e sugira prosseguir.
-- Se o arquivo da spec estiver ausente, instrua o usuário a rodar `/product/prod.spec.md` primeiro (não crie uma nova spec aqui).
+- Se o arquivo da spec estiver ausente, instrua o usuário a rodar `/prod.spec` primeiro (não crie uma nova spec aqui).
 - Nunca exceda 5 perguntas feitas no total (reformulações de uma mesma pergunta não contam como novas).
 - Evite perguntas especulativas sobre stack tecnológica, a menos que a ausência bloqueie a clareza funcional.
 - Respeite sinais de encerramento antecipado do usuário (“stop”, “done”, “proceed”).

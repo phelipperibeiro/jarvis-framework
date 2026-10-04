@@ -32,10 +32,10 @@ Criar e manter documentação de arquitetura usando os 4 níveis do C4:
 **Exemplos de uso:**
 
 ```
-/arch-c4 context                    # Criar/Atualizar diagrama de contexto
-/arch-c4 container                  # Criar/Atualizar diagrama de containers
-/arch-c4 component api-backend      # Detalhar componentes de um container
-/arch-c4 code user-service          # Diagrama de código (raro)
+/eng-backend-arch-c4 context                    # Criar/Atualizar diagrama de contexto
+/eng-backend-arch-c4 container                  # Criar/Atualizar diagrama de containers
+/eng-backend-arch-c4 component api-backend      # Detalhar componentes de um container
+/eng-backend-arch-c4 code user-service          # Diagrama de código (raro)
 ```
 
 ## Recursos

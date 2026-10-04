@@ -221,10 +221,6 @@ Removidas: `checkin`, `checkout`, `daily`, `task-log`, `send-priority`, `sent-pr
 - **Trigger**: auto-report de bugs no framework Jarvis via GitLab API
 - **Status**: `criado`
 
-### `skill-creator` ✅
-- **Trigger**: criação de novos skills
-- **Status**: `criado`
-
 ### `jarvis-docs-index` / `jarvis-docs-central` / `jarvis-context-detect` ✅
 - **Trigger**: indexação de docs, sync com repo central, detecção de contexto
 - **Status**: `criado`

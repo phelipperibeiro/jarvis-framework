@@ -46,10 +46,9 @@ prompts/
 │   │   ├── engineering/          # 25 workflows de engenharia
 │   │   │   ├── data/             # 2 workflows de dados (data.new-pipeline, data.contract)
 │   │   │   └── frontend/         # 3 workflows de frontend (component, review, perf-audit)
-│   │   └── product/              # 9 workflows de produto
+│   │   └── product/              # 10 workflows de produto
 │   │
 │   ├── skills/                   # Skills (todos com metadata.area)
-│   │   ├── claude-plugin-creator/
 │   │   ├── jarvis-context-detect/
 │   │   ├── jarvis-docs-index/
 │   │   ├── eng-ai-engineer/
@@ -78,9 +77,6 @@ prompts/
 │   │   ├── eng-qa-test-plan/
 │   │   ├── eng-qa-testsprite/
 │   │   ├── eng-qa-unit-test/
-│   │   ├── skill-creator/
-│   │   ├── taxonomy-manager/
-│   │   ├── workflow-creator/
 │   │   ├── jarvis-report-issue/          # Auto-report de bugs no repo do Jarvis (GitLab/GitHub/Bitbucket)
 │   │   ├── eng-global-task-comment/      # Comentário no card (Jira/Linear/GitHub/Asana)
 │   │   ├── jarvis-list-specializations/ # Lista especializações de stack instaladas e registradas
@@ -305,7 +301,6 @@ Quando um agente atua em tema com skill correspondente, o skill e a fonte de ver
 | Inicializacao | `jarvis-init` |
 | Testes unitarios | `eng-qa-unit-test` |
 | Testes TestSprite | `eng-qa-testsprite` |
-| Taxonomia | `taxonomy-manager` |
 | Mensageria / RabbitMQ | `eng-backend-rabbitmq` (especialização de backend) |
 | APIs, auth, workers, caching | `eng-backend` (base) + `BACKEND_SPECIALIZATIONS` |
 | Componentes, UI, frontend | `eng-frontend` (base) + `FRONTEND_SPECIALIZATIONS` |
@@ -325,8 +320,8 @@ Quando um agente atua em tema com skill correspondente, o skill e a fonte de ver
 | Testes de acessibilidade WCAG 2.1 AA: integra jest-axe em testes unitários existentes | `eng-qa-a11y-audit` |
 | Testes de contrato GraphQL: valida queries frontend contra schema do BFF | `eng-qa-graphql-contract` |
 | Spec E2E para handoff: cenários, Page Objects, fixtures, intercepts, setup de ambiente | `eng-qa-e2e-spec-writer` |
-| Planejar capacidade QA da sprint: risco por task, alocação entre QAs e Quality Champions | `eng-qa-sprint-planning` |
-| Sign-off QA pré-deploy: verifica cobertura, bugs abertos, produz GO/NO-GO + snippet CI para TL | `eng-qa-release-signoff` |
+| Planejar capacidade QA da sprint: risco por task, alocação entre QAs e Quality Champions | workflow `eng.qa-sprint-planning` |
+| Sign-off QA pré-deploy: verifica cobertura, bugs abertos, produz GO/NO-GO + snippet CI para TL | workflow `eng.qa-release-signoff` |
 | Pipelines ETL/ELT, Glue, Airflow, PySpark, Athena, Metabase, bronze/silver/gold, contratos de dados, Great Expectations | `eng-data-engineer` |
 | Criar pipeline novo (docs, qualidade, idempotência, gold) | `data.new-pipeline` |
 | Criar contrato de dados para squad requisitante | `data.contract` |

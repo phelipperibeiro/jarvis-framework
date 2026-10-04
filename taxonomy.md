@@ -215,7 +215,7 @@ prefix: design
 Área de Design, UX e pesquisa com usuários
 ```
 
-> Use `/taxonomy-manager add` para adicionar opções com validação automática.
+> Use `/taxonomy add` para adicionar opções com validação automática.
 
 ---
 

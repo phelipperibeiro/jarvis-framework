@@ -6,9 +6,9 @@ description: Gerencia o arquivo taxonomy.md de forma segura (CRUD de opções or
 
 Gerencia o arquivo `taxonomy.md` que define as opções válidas para SQUAD, HUB, POSITION e AREA.
 
-## Uso
+Este workflow é **autônomo**: as instruções para as operações abaixo estão aqui, sem depender de nenhum skill.
 
-Este command invoca o skill `taxonomy-manager` para operações CRUD seguras:
+## Uso
 
 ### Listar opções
 
@@ -49,12 +49,12 @@ Este command invoca o skill `taxonomy-manager` para operações CRUD seguras:
 
 | Passo | Skill | Condição |
 |-------|-------|----------|
-| Sintaxe (`Skill("taxonomy-manager", "$ARGUMENTS")`) | `/taxonomy-manager` | Sempre — o comando delega as operações CRUD à skill; referência quebrada: não existe `skills/taxonomy-manager/` (confirmar renomeação/remoção) |
+| — | Nenhuma — workflow autocontido | — |
 
 ## Sintaxe
 
 ```
-Skill("taxonomy-manager", "$ARGUMENTS")
+/taxonomy <operação> [<CATEGORIA>] [<NOME>] [<DESCRIÇÃO>]
 ```
 
 Onde `$ARGUMENTS` é um dos formatos:
@@ -63,6 +63,52 @@ Onde `$ARGUMENTS` é um dos formatos:
 - `update <CATEGORIA> <NOME> <NOVA_DESCRIÇÃO>`
 - `remove <CATEGORIA> <NOME>`
 - `validate`
+
+`<CATEGORIA>` é `SQUADS`, `HUBS`, `POSITIONS` ou `AREAS`. Sem argumentos ou com uma operação desconhecida, mostre a sintaxe acima e pergunte o que a pessoa quer fazer.
+
+## Como executar cada operação
+
+O arquivo é o `taxonomy.md` da raiz do framework (ou do workspace). Cada categoria é uma seção `## ...` (Squads, Hubs, Positions, Areas) e cada opção é um título `### NOME`, seguido de linhas de descrição. Em `SQUADS`, a opção também pode ter linhas de metadados (`channel_id:`, `board_code:`, `modules:`); em `AREAS`, a linha `prefix:`. A seção `Domain` (`DOMAIN:`) não é uma categoria de opções.
+
+### Regras comuns (antes de qualquer alteração)
+
+1. **Ler** o `taxonomy.md` inteiro e localizar a seção da categoria. Se a categoria não existir, informe e liste as categorias válidas.
+2. **Validar o nome** (em `add`): MAIÚSCULAS, sem espaços (use `-` ou `_` para separar palavras), sem duplicar uma opção que já existe na categoria.
+3. **Fazer backup** antes de gravar: copie o `taxonomy.md` para `.jarvis/backups/taxonomy-{AAAAMMDD-HHMMSS}.md` (a pasta `.jarvis/` não é versionada). Se não for possível gravar o backup, **pare** e avise, sem alterar o arquivo.
+4. **Mostrar o que vai mudar** (a seção antes e depois) e **pedir confirmação** antes de gravar em `add`, `update` e `remove`.
+5. **Preservar a estrutura markdown**: não reordenar nem reescrever outras seções; alterar só a opção pedida.
+
+### `list <CATEGORIA>`
+
+Mostre cada opção da categoria com a primeira linha da descrição, em tabela. Não altera nada.
+
+### `add <CATEGORIA> <NOME> <DESCRIÇÃO>`
+
+1. Aplique as regras comuns.
+2. Acrescente, no fim da seção da categoria (antes do `---` que a encerra), um bloco `### NOME` com a descrição.
+3. Em `SQUADS`, pergunte se a pessoa quer preencher `channel_id`, `board_code` e `modules`; sem resposta, deixe-os vazios como nas outras squads.
+4. Em `AREAS`, peça o `prefix` (letras minúsculas, sem espaços) e **avise** que as áreas do framework são `ENGINEERING` e `PRODUCT`: adicionar outra área exige um menu correspondente no `warm-up` e só deve ser feito com confirmação explícita.
+
+### `update <CATEGORIA> <NOME> <NOVA_DESCRIÇÃO>`
+
+1. A opção deve existir; se não, informe e sugira nomes parecidos.
+2. Substitua só as linhas de descrição da opção (mantendo `prefix:` e metadados), depois de mostrar o antes e o depois e pedir confirmação.
+
+### `remove <CATEGORIA> <NOME>`
+
+1. A opção deve existir; se não, informe e sugira nomes parecidos.
+2. **Ação destrutiva:** leia o `$IDE/ENV.md`; se o valor de `SQUAD`, `HUB`, `POSITION` ou `AREA` for a opção a remover, **avise** que o `ENV.md` ficará inválido e peça confirmação explícita.
+3. Remova o bloco `### NOME` e suas linhas, sem tocar nas outras opções, depois de mostrar o que será removido e pedir confirmação.
+
+### `validate`
+
+Não altera nada. Verifique e reporte, por categoria:
+- a seção existe e tem ao menos uma opção;
+- todo nome está em MAIÚSCULAS e sem espaços, sem duplicata;
+- toda opção de `AREAS` tem `prefix:`;
+- a estrutura markdown está íntegra (títulos `##` e `###`, separadores `---`).
+
+Termine com um resumo (`✅ válido` ou a lista de problemas, com a linha de cada um).
 
 ## Exemplos
 
@@ -83,9 +129,9 @@ Onde `$ARGUMENTS` é um dos formatos:
 
 ## Segurança
 
-✅ Backup automático antes de modificações
+✅ Backup antes de modificações (`.jarvis/backups/`)
 ✅ Validação de formato (MAIÚSCULAS, sem espaços)
-✅ Confirmação para ações destrutivas
+✅ Confirmação para ações destrutivas e antes de gravar
 ✅ Preservação da estrutura markdown
 
 ## Após Modificações
@@ -95,4 +141,4 @@ Depois de adicionar/remover opções:
 2. Não é necessário reiniciar o Claude ou a IDE
 3. Projetos existentes continuam funcionando
 
-> **Documentação completa**: Ver `.claude/skills/taxonomy-manager/SKILL.md`
+> **Referência**: o formato das seções está descrito no próprio `taxonomy.md` ("Como Adicionar Novas Opções").

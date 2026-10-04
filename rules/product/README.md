@@ -15,6 +15,7 @@ Documentação didática (termos por extenso, exemplos, quando usar cada comando
 | `/prod.spec.discovery` | [prod.spec.discovery.md](../../docs/produto/prod.spec.discovery.md) |
 | `/prod.spec.prd` | [prod.spec.prd.md](../../docs/produto/prod.spec.prd.md) |
 | `/prod.spec.frd` | [prod.spec.frd.md](../../docs/produto/prod.spec.frd.md) |
+| `/prod.spec.ard` | [prod.spec.ard.md](../../docs/produto/prod.spec.ard.md) |
 | `/prod.spec.breakdown` | [prod.spec.breakdown.md](../../docs/produto/prod.spec.breakdown.md) |
 | `/prod.spec.clarify` | [prod.spec.clarify.md](../../docs/produto/prod.spec.clarify.md) |
 | `/prod.spec.epic` | [prod.spec.epic.md](../../docs/produto/prod.spec.epic.md) |

@@ -122,7 +122,7 @@ skills/
     └── SKILL.md
 ```
 
-> Pastas listadas acima refletem skills com `SKILL.md` neste repo. Não invente `skill-creator` / `taxonomy-manager` / `members-manager` se a pasta não existir.
+> Pastas listadas acima refletem skills com `SKILL.md` neste repo. Não cite uma skill que não tenha pasta em `skills/`.
 
 ---
 
@@ -267,12 +267,9 @@ Skills são invocados de formas diferentes dependendo da IDE:
 | `/eng.pre-pr` | `eng-qa-test-plan` |
 | `/eng.pr` | `eng-global-pr` |
 | QA validation | `eng-qa-gate` |
-| Criar skill | `skill-creator` |
-| `/taxonomy-manager` | `taxonomy-manager` |
 | Listar especializações de stack (instaladas e registradas) | `jarvis-list-specializations` |
 | Criar uma especialização de stack (backend ou frontend) a partir do código do projeto | `jarvis-create-specialization` |
 | Decisão de arquitetura do Jarvis (agent, skill, workflow ou rule?), simplificação, tendências | `jarvis-evolution-architect` |
-| `/members-manager` | `members-manager` |
 | Mensageria, filas, RabbitMQ, events, consumers, producers | `eng-backend-rabbitmq` (especialização de backend: registrar em `BACKEND_SPECIALIZATIONS`) |
 | APIs, auth, workers, filas, caching, banco de dados | `eng-backend` (base) + `BACKEND_SPECIALIZATIONS` |
 | Componentes, UI, estado, estilos, performance, acessibilidade | `eng-frontend` (base) + `FRONTEND_SPECIALIZATIONS` |
@@ -294,19 +291,13 @@ Skills são invocados de formas diferentes dependendo da IDE:
 
 ## Criando um Novo Skill
 
-Use o skill-creator:
-
-```bash
-/skill-creator meu-novo-skill
-```
-
-Ou manualmente:
+Não há um gerador de skills: a criação é manual.
 
 1. Escolher a **área** e o nome no padrão `<prefixo>-<área>-<nome>` (ver "Áreas e nomes")
-2. Criar pasta: `skills/{nome}/`
-3. Copiar template: `skills/skill-creator/assets/SKILL-template.md`
-4. Preencher todos os placeholders, **inclusive `metadata.area`** (e `metadata.stack` se for especialização)
-5. Validar estrutura: `name` igual ao nome da pasta e área reconhecida
+2. Criar a pasta `skills/{nome}/` com um `SKILL.md`, usando como modelo um skill existente de porte parecido (por exemplo, `eng-qa-gate` para um skill de fluxo, `eng-backend-nestjs` para uma especialização)
+3. Preencher o frontmatter ("Frontmatter Obrigatorio"), **inclusive `metadata.area`** (e `metadata.stack` se for especialização), e as "Secoes Obrigatorias de um SKILL.md", incluindo a tabela `Skills invocados durante a execução do skill`
+4. Validar estrutura: `name` igual ao nome da pasta e área reconhecida
+5. Registrar o skill no `SKILLS-ROADMAP.md` e, se houver comando associado, na tabela "Mapeamento Comando → Skill"
 
 ---
 
@@ -347,8 +338,7 @@ Link para docs existentes?         → references/
 
 ## Referencias
 
-- `skill-creator/SKILL.md` - Skill para criar skills
-- `skill-creator/assets/SKILL-template.md` - Template padrao
+- `SKILLS-ROADMAP.md` - Skills existentes e planejadas
 - `../agents/` - Agentes que usam skills
 - `../workflows/` - Workflows relacionados
 - `../rules/` - Regras que skills implementam

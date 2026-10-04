@@ -429,7 +429,7 @@ Como você quer continuar?
 A: Mapear estratégia de testes para uma feature (qa.refinement-entry)
 B: Gerar testes E2E para uma feature (qa.e2e-test-generation)
 C: Sessão de teste exploratório (qa.exploratory-session)
-D: Validar quality gate de uma spec (eng-qa-quality-gate-validation)
+D: Validar quality gate de uma spec (eng.qa-quality-gate-validation)
 E: Gerar relatório de qualidade (qa.quality-report)
 F: Orientar dev sobre cobertura de testes (qa.dev-quality-guide)
 G: Planejar capacidade QA da sprint (qa.sprint-planning)
@@ -438,14 +438,14 @@ I: Outro
 ```
 
 Roteamento:
-- A → `$FLOWS_FOLDER/engineering/qa/eng-qa-refinement-entry.md`
-- B → `$FLOWS_FOLDER/engineering/qa/eng-qa-e2e-test-generation.md`
-- C → `$FLOWS_FOLDER/engineering/qa/eng-qa-exploratory-session.md`
-- D → `$FLOWS_FOLDER/engineering/qa/eng-qa-quality-gate-validation.md`
-- E → `$FLOWS_FOLDER/engineering/qa/eng-qa-quality-report.md`
-- F → `$FLOWS_FOLDER/engineering/qa/eng-qa-dev-quality-guide.md`
-- G → `$FLOWS_FOLDER/engineering/qa/eng-qa-sprint-planning.md`
-- H → `$FLOWS_FOLDER/engineering/qa/eng-qa-release-signoff.md`
+- A → `$FLOWS_FOLDER/engineering/qa/eng.qa-refinement-entry.md`
+- B → `$FLOWS_FOLDER/engineering/qa/eng.qa-e2e-test-generation.md`
+- C → `$FLOWS_FOLDER/engineering/qa/eng.qa-exploratory-session.md`
+- D → `$FLOWS_FOLDER/engineering/qa/eng.qa-quality-gate-validation.md`
+- E → `$FLOWS_FOLDER/engineering/qa/eng.qa-quality-report.md`
+- F → `$FLOWS_FOLDER/engineering/qa/eng.qa-dev-quality-guide.md`
+- G → `$FLOWS_FOLDER/engineering/qa/eng.qa-sprint-planning.md`
+- H → `$FLOWS_FOLDER/engineering/qa/eng.qa-release-signoff.md`
 - I → perguntar e rotear dinamicamente
 
 ---

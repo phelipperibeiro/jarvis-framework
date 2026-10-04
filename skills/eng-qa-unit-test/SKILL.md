@@ -57,7 +57,7 @@ Use esta skill quando:
 ```
 Se $ARGUMENTS está vazio:
   → Exibir: "⚠️ Argumento obrigatório. Informe o caminho do arquivo."
-  → Exibir: "Uso: /qa-unit-test [caminho-do-arquivo]"
+  → Exibir: "Uso: /eng-qa-unit-test [caminho-do-arquivo]"
   → Encerrar execução
 ```
 

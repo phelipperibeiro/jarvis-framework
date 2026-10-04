@@ -46,6 +46,7 @@ O `discovery` vem **antes** do topo: é um rascunho para decidir se vale especif
 | `/prod.spec.discovery` | [prod.spec.discovery.md](./prod.spec.discovery.md) | Só tem uma ideia e quer investigá-la antes     |
 | `/prod.spec.prd`       | [prod.spec.prd.md](./prod.spec.prd.md)             | Precisa do documento macro de produto         |
 | `/prod.spec.frd`       | [prod.spec.frd.md](./prod.spec.frd.md)             | Precisa detalhar comportamento de uma feature |
+| `/prod.spec.ard`       | [prod.spec.ard.md](./prod.spec.ard.md)             | A engenharia precisa dos requisitos de arquitetura |
 | `/prod.spec.breakdown` | [prod.spec.breakdown.md](./prod.spec.breakdown.md) | Precisa fatiar uma spec grande                |
 | `/prod.spec.clarify`   | [prod.spec.clarify.md](./prod.spec.clarify.md)     | A spec está ambígua antes de planejar código  |
 | `/prod.spec.epic`      | [prod.spec.epic.md](./prod.spec.epic.md)           | Precisa agrupar várias histórias sob um tema  |
@@ -101,6 +102,7 @@ Siglas podem aparecer **entre parênteses na primeira menção** de cada página
     → /prod.spec.prd
     → /prod.spec.clarify
     → /prod.spec.frd        (feature a feature)
+    → /prod.spec.ard        (se a engenharia precisa dos requisitos de arquitetura)
     → /prod.spec.breakdown  (se ainda estiver grande)
     → /prod.spec.epic
     → /prod.spec.issue

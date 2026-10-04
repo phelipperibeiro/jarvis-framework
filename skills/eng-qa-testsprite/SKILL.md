@@ -27,7 +27,7 @@ Automatizar a geração e execução de testes para projetos frontend e backend,
 
 ## Recursos
 
-- **Referência (local)**: `$IDE/skills/qa-testsprite/references/testsprite-mcp.md`
+- **Referência (local)**: `$IDE/skills/eng-qa-testsprite/references/testsprite-mcp.md`
 - **Documentação oficial (backup)**: https://docs.testsprite.com/mcp/getting-started/overview
 - **Saída**: Relatório de testes em markdown + scripts de teste gerados pelo TestSprite
 
@@ -54,7 +54,7 @@ Use este skill quando:
 
 **NÃO usar quando:**
 - Projeto não tem frontend/backend suportado
-- Necessitar apenas de testes unitários simples (use qa-unit-test)
+- Necessitar apenas de testes unitários simples (use eng-qa-unit-test)
 - Ambiente local não está configurado para rodar o projeto
 
 ---
@@ -256,7 +256,7 @@ Verificar relatório gerado e apresentar resumo ao usuário.
 ### Tipo de projeto não suportado
 - Exibir: "⚠️ Framework não suportado pelo TestSprite"
 - Listar frameworks suportados
-- Sugerir alternativas (qa-unit-test)
+- Sugerir alternativas (eng-qa-unit-test)
 
 ### Testes falharam
 - Apresentar resumo dos testes que falharam
@@ -325,7 +325,7 @@ Próximo passo: Revisar relatório em testsprite_tests/
 
 ## Recursos Adicionais
 
-- **Referência (local)**: `$IDE/skills/qa-testsprite/references/testsprite-mcp.md`
+- **Referência (local)**: `$IDE/skills/eng-qa-testsprite/references/testsprite-mcp.md`
 - **Documentação oficial (backup)**: https://docs.testsprite.com/mcp/getting-started/overview
 - **Frameworks suportados**:
   - Frontend: React, Vue, Angular, Svelte, Next.js, Vite, vanilla JS/TS

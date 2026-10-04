@@ -30,7 +30,7 @@ Facilitar a documentação e rastreamento de bugs encontrados durante:
 ### 1. **create** - Criar card único no $TASK_MANAGER
 
 ```bash
-/bug-report create \
+/eng-qa-bug-report create \
   --title="Título do bug" \
   --category="BUG-CRÍTICO" \
   --severity="P0" \
@@ -42,13 +42,13 @@ Facilitar a documentação e rastreamento de bugs encontrados durante:
 ### 2. **batch** - Criar múltiplos cards a partir de relatório
 
 ```bash
-/bug-report batch --from-audit="./sessions/bug-audit-20260208/bug-audit-report.md"
+/eng-qa-bug-report batch --from-audit="./sessions/bug-audit-20260208/bug-audit-report.md"
 ```
 
 ### 3. **generate-report** - Gerar apenas relatório (sem criar cards)
 
 ```bash
-/bug-report generate-report \
+/eng-qa-bug-report generate-report \
   --bugs="./bugs-list.json" \
   --output="./sessions/bug-report.md"
 ```
@@ -602,7 +602,7 @@ while IFS= read -r problem; do
   # ... extrair outros campos
 
   # Criar card usando modo create
-  /bug-report create \
+  /eng-qa-bug-report create \
     --title="$title" \
     --category="$category" \
     --location="$location" \
@@ -985,7 +985,7 @@ NOTION)
 ### Exemplo 1: Criar card único (BUG-ALTO — todos os campos P1 obrigatórios)
 
 ```bash
-/bug-report create \
+/eng-qa-bug-report create \
   --title="[auth] Token expirado retorna 500 ao invés de 401" \
   --category="BUG-ALTO" \
   --severity="P1" \
@@ -1007,7 +1007,7 @@ NOTION)
 ### Exemplo 2: Criar cards em batch
 
 ```bash
-/bug-report batch \
+/eng-qa-bug-report batch \
   --from-audit="./sessions/bug-audit-20260208/bug-audit-report.md" \
   --priority-filter="P0,P1"
 ```
@@ -1015,7 +1015,7 @@ NOTION)
 ### Exemplo 3: Gerar relatório
 
 ```bash
-/bug-report generate-report \
+/eng-qa-bug-report generate-report \
   --bugs="./sessions/bugs-found.json" \
   --output="./sessions/consolidated-bug-report.md" \
   --format="markdown"

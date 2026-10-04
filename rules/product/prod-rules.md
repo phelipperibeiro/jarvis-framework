@@ -98,6 +98,7 @@ Sempre siga as instruções de acordo com as relações abaixo.
 - `$PROD_FLOWS/prod.spec.discovery.md` — Investigação inicial de uma ideia (rascunho estruturado; não define tarefas) → [docs/produto/prod.spec.discovery.md](../../docs/produto/prod.spec.discovery.md)
 - `$PROD_FLOWS/prod.spec.prd.md` — Documento de Requisitos de Produto (*Product Requirements Document*) → [docs/produto/prod.spec.prd.md](../../docs/produto/prod.spec.prd.md)
 - `$PROD_FLOWS/prod.spec.frd.md` — Documento de Requisitos Funcionais (*Functional Requirements Document*) → [docs/produto/prod.spec.frd.md](../../docs/produto/prod.spec.frd.md)
+- `$PROD_FLOWS/prod.spec.ard.md` — ARD a partir do produto (requisitos arquiteturais com o PM; conduz o `eng.create-ard`) → [docs/produto/prod.spec.ard.md](../../docs/produto/prod.spec.ard.md)
 - `$PROD_FLOWS/prod.spec.breakdown.md` — Quebra de especificação grande em fatias → [docs/produto/prod.spec.breakdown.md](../../docs/produto/prod.spec.breakdown.md)
 - `$PROD_FLOWS/prod.spec.clarify.md` — Esclarecimento de ambiguidades na spec → [docs/produto/prod.spec.clarify.md](../../docs/produto/prod.spec.clarify.md)
 - `$PROD_FLOWS/prod.spec.epic.md` — Épico (agrupador de histórias/tarefas) → [docs/produto/prod.spec.epic.md](../../docs/produto/prod.spec.epic.md)

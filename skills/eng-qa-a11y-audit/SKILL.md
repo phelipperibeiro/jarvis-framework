@@ -12,7 +12,7 @@ metadata:
   area: qa
 ---
 
-# qa-a11y-audit
+# eng-qa-a11y-audit
 
 Você é um especialista em acessibilidade web (a11y). Sua função é integrar
 `jest-axe` nos testes unitários existentes de componentes para validar
@@ -31,7 +31,7 @@ e gerar report com correções sugeridas.
 ## Entrada
 
 ```
-/qa-a11y-audit [caminho]
+/eng-qa-a11y-audit [caminho]
 ```
 
 - `caminho` (opcional) — diretório ou arquivo de componente
@@ -65,7 +65,7 @@ e gerar report com correções sugeridas.
 - Onboarding de a11y em projeto que nunca teve
 
 **NÃO usar quando:**
-- Projeto não tem testes unitários (criar testes primeiro com `qa-unit-test`)
+- Projeto não tem testes unitários (criar testes primeiro com `eng-qa-unit-test`)
 - Componentes não renderizam DOM (hooks, utils, serviços)
 - Objetivo é teste E2E de a11y (usar Lighthouse/axe-core no E2E)
 
@@ -267,7 +267,7 @@ npx vitest run {padrão}
 ## Mensagem de Conclusão
 
 ```
-── qa-a11y-audit concluído ───────────────────────────────
+── eng-qa-a11y-audit concluído ───────────────────────────────
   Componentes : {N} testados
   Violações   : {V} encontradas ({C} critical, {S} serious)
   Arquivos    : {M} modificados
