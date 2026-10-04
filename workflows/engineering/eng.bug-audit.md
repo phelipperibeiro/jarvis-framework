@@ -463,12 +463,12 @@ echo "✅ Relatório gerado em: $SESSIONS_DIR/eng/bug-audit-$(date +%Y%m%d-%H%M%
 
 ## Fase 5 – Ticketing (Criação de Cards no Task Manager)
 
-### 5.1 Usar Skill bug-report
+### 5.1 Usar Skill eng-qa-bug-report
 
 Para cada problema P0 e P1:
 
 ```bash
-/bug-report create \
+/eng-qa-bug-report create \
   --title="{título do bug}" \
   --category="{categoria}" \
   --severity="{P0|P1|P2|P3}" \

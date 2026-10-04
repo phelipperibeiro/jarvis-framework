@@ -427,7 +427,7 @@ Quando fizer sentido, recomendar:
 Para cada melhoria estrutural identificada, criar um card de débito técnico:
 
 ```
-/bug-report create \
+/eng-qa-bug-report create \
   --title="[{serviço}] {descrição da melhoria}" \
   --category="DÉBITO-TÉCNICO" \
   --location="{arquivo:linha relevante}" \
