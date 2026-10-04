@@ -1,47 +1,50 @@
 ---
 name: eng.frontend-rules
 description: >
-  Padrões obrigatórios para devs com HUB: FRONTEND — componentes, TypeScript,
-  acessibilidade, performance, micro frontend e design system.
+  Padrões obrigatórios para devs com HUB: FRONTEND, neutros de stack — componentes,
+  tipagem, acessibilidade, performance, testes, arquiteturas distribuídas e tokens de design.
+  O que depende da stack vem das especializações registradas em FRONTEND_SPECIALIZATIONS.
 author: jarvis-team
-version: "1.0"
+version: "1.1"
 ---
 
 > **Applies to:** HUB: FRONTEND | POSITION: all | AREA: ENGINEERING | SQUAD: all
 
 # Regras de Engenharia Frontend
 
+> **Neutras de stack.** Estas regras valem para qualquer framework ou linguagem de frontend. Onde uma regra depende da stack (como se busca dados, como se organiza um módulo, qual ferramenta de teste usar), siga a **especialização registrada** em `FRONTEND_SPECIALIZATIONS` no `ENV.md` e o código existente do projeto. Sem especialização registrada, **pergunte** em vez de presumir uma stack. Ver `eng.specializations-rules.md`.
+
 ---
 
 ## 1. Componentes
 
 ### Estrutura obrigatória
-- Todo componente deve ter props tipadas com TypeScript — `any` é proibido sem justificativa documentada
-- Props obrigatórias devem ser declaradas sem `?`; opcionais com `?` e valor default explícito
+- Toda entrada de um componente (props, parâmetros ou atributos) é **tipada ou documentada**; tipo genérico solto (`any` ou equivalente) é proibido sem justificativa documentada
+- Entradas obrigatórias são declaradas como obrigatórias; opcionais têm valor default explícito
 - Componentes com mais de uma responsabilidade devem ser divididos (Single Responsibility)
-- Lógica de negócio não pertence ao componente de UI — usar hooks ou camada de serviço
+- Lógica de negócio não pertence ao componente de UI — usar a camada de lógica ou de serviço que o projeto adota
 
 ### Nomenclatura
-- Componentes: `PascalCase` (`UserCard`, `ProductTable`)
-- Hooks: `use` + `PascalCase` (`useUserData`, `useProductFilters`)
-- Arquivos de componente: `PascalCase.tsx` (`UserCard.tsx`)
-- Arquivos de hook: `camelCase.ts` (`useUserData.ts`)
+- Seguir a convenção de nomes **do projeto** (e da especialização registrada) para componentes, funções de lógica reutilizável e arquivos
+- Manter o padrão consistente: um mesmo tipo de arquivo, um mesmo estilo de nome
 
 ### Checklist mínimo por componente
-- [ ] Props tipadas (TypeScript)
+- [ ] Entradas tipadas ou documentadas
 - [ ] Estados visuais: normal, hover, focus, disabled, loading, erro, vazio
-- [ ] Semântica HTML correta (não usar `<div>` para botões, links ou listas)
-- [ ] Responsivo (mobile-first com breakpoints do design system)
-- [ ] Testável sem DOM real (lógica isolada em hooks)
+- [ ] Semântica HTML correta (não usar um contêiner genérico para botões, links ou listas)
+- [ ] Responsivo (mobile-first, nos tamanhos de tela do projeto)
+- [ ] Testável sem depender de um navegador real (lógica isolada da apresentação)
 
 ---
 
-## 2. TypeScript
+## 2. Tipagem e contratos
 
-- `strict: true` obrigatório em `tsconfig.json`
-- Proibido: `as any`, `@ts-ignore` sem comentário explicativo, `!` (non-null assertion) sem verificação prévia
-- Types vs Interfaces: usar `interface` para objetos de domínio, `type` para uniões e utilitários
-- Exportar tipos públicos de componentes (`export type { ButtonProps }`)
+Aplica-se quando a linguagem do projeto tem tipagem estática ou contratos explícitos.
+
+- O **modo estrito** de verificação do projeto fica ligado e não é relaxado
+- Proibido: tipo genérico solto, supressão de verificação de tipos sem comentário explicativo e asserção de "não nulo" sem verificação prévia
+- Modelar objetos de domínio de forma explícita e unir ou derivar tipos com os recursos da linguagem
+- Exportar o contrato público dos componentes, quando a linguagem permite
 
 ---
 
@@ -49,12 +52,12 @@ version: "1.0"
 
 - Semântica HTML nativa antes de ARIA (`<button>`, `<nav>`, `<main>`, `<article>`)
 - Todos os elementos interativos são navegáveis por teclado
-- Contraste mínimo: 4.5:1 para texto normal, 3:1 para texto grande e elementos UI
-- Imagens informativas têm `alt` descritivo; decorativas têm `alt=""`
-- Modais usam `role="dialog"`, `aria-modal="true"`, `aria-labelledby` e focus trap
-- Formulários: todo `<input>` tem `<label>` associado via `htmlFor` ou `aria-label`
+- Contraste mínimo: 4.5:1 para texto normal, 3:1 para texto grande e elementos de interface
+- Imagens informativas têm texto alternativo descritivo; decorativas têm texto alternativo vazio
+- Modais usam `role="dialog"`, `aria-modal="true"`, `aria-labelledby` e prendem o foco
+- Formulários: todo campo tem rótulo associado
 - Erros de formulário: exibidos com `role="alert"` ou `aria-live="polite"`
-- Screen reader: testar com VoiceOver (Mac) ou NVDA (Windows) em features críticas
+- Leitor de tela: testar com VoiceOver (Mac) ou NVDA (Windows) em features críticas
 
 ---
 
@@ -66,59 +69,56 @@ version: "1.0"
 - INP (Interaction to Next Paint): < 200ms
 
 ### Práticas obrigatórias
-- Imagens sempre com `width` e `height` definidos para evitar CLS
-- Componentes pesados com `lazy()` + `<Suspense fallback>`
-- Dependências novas: avaliar impacto no bundle antes de instalar (`bundlephobia.com`)
-- Sem `useEffect` para buscar dados — usar React Query / TanStack Query ou Server Components
-- Memoização apenas quando necessário e comprovado com profiler (não premature optimization)
+- Imagens sempre com largura e altura definidas, para evitar CLS
+- Carregamento tardio de componentes pesados, com o recurso que a stack oferece, e um substituto visual com o mesmo tamanho enquanto carrega
+- Dependências novas: avaliar o impacto no tamanho do pacote final antes de instalar
+- Busca de dados pela camada que o projeto adota para isso (conforme a especialização), e não por efeitos soltos no componente de apresentação
+- Otimização de renderização apenas quando necessária e **comprovada com medição** (não otimização prematura)
 
 ---
 
 ## 5. Testes
 
-- **Testing Library**: queries por acessibilidade primeiro (`getByRole`, `getByLabelText`)
-- **Proibido**: `getByTestId` como primeira opção (usar só quando sem alternativa acessível)
-- **Cobertura mínima**: fluxos críticos de usuário (happy path + estado de erro)
-- **Vitest**: unitários para lógica pura, hooks e utilitários
-- **Playwright / Cypress**: E2E para fluxos de usuário completos (login, checkout, etc.)
-- Mocks de módulos externos devem estar em `__mocks__/` ou `*.mock.ts`
+- **Consultas por acessibilidade primeiro** (por papel e por rótulo): focar no que o usuário vê e faz, não em detalhes de implementação
+- **Proibido** usar identificador de teste como primeira opção (só quando não houver alternativa acessível)
+- **Cobertura mínima:** fluxos críticos de usuário (caminho feliz e estado de erro)
+- **Testes unitários** para lógica pura e utilitários, com a ferramenta que o projeto já usa
+- **Testes de ponta a ponta** para fluxos completos de usuário (login, checkout etc.), com a ferramenta que o projeto já usa
+- Substitutos de módulos externos ficam num lugar previsível do projeto (por exemplo, uma pasta de mocks)
 
 ### Ferramentas disponíveis no framework
 
-- **TestSprite** (`/eng-qa-testsprite`): se o TestSprite estiver instalado no projeto, usá-lo para geração
-  e execução de testes de componente e E2E — ele gera planos de teste e código automaticamente.
+- **TestSprite** (`/eng-qa-testsprite`): se estiver instalado no projeto, usá-lo para gerar e executar testes de componente e de ponta a ponta — ele gera planos de teste e código automaticamente.
   Verificar: `ls node_modules/@testsprite 2>/dev/null || cat package.json | grep testsprite`
-
-- **Stagehand** (`/eng-scraper-robot-builder`, `/eng-qa-e2e`): para testes E2E em linguagem natural
-  ou automação de fluxos de usuário complexos, o Stagehand permite descrever o fluxo em português
-  e gera os steps Playwright automaticamente.
+- **Stagehand** (`/eng-scraper-robot-builder`, `/eng-qa-e2e`): para testes de ponta a ponta em linguagem natural ou automação de fluxos complexos, descrevendo o fluxo em português.
   Verificar: `cat package.json | grep stagehand`
 
-> Quando qualquer dessas ferramentas estiver disponível no projeto, **preferir sobre a implementação
-> manual** — reduz custo de manutenção e aumenta cobertura mais rapidamente.
+> Quando qualquer dessas ferramentas estiver disponível no projeto, **preferir sobre a implementação manual** — reduz o custo de manutenção e aumenta a cobertura mais rápido.
 
 ---
 
-## 6. Micro Frontend
+## 6. Arquiteturas distribuídas (se o projeto divide o frontend em partes)
 
-- Todo remote deve ser versionado e publicado com URL de fallback definida
-- Contratos de interface entre shell e remotes são declarados em tipos TypeScript compartilhados
-- Nenhum remote depende diretamente de outro remote — comunicação via shell ou event bus
-- Shared dependencies declaradas explicitamente no `ModuleFederationPlugin` com `singleton: true`
-- Cada remote deve funcionar em modo standalone (sem shell) para desenvolvimento local
-- Testes de integração entre shell e remote são obrigatórios para cada ponto de montagem
-- Versionamento: breaking changes no contrato de um remote exigem bump de versão major
+Aplica-se somente se o projeto divide o frontend em partes carregadas separadamente (por exemplo, uma aplicação principal que carrega módulos independentes). O detalhe da arquitetura em uso vem da especialização registrada. Princípios que valem em qualquer variante:
+
+- Cada módulo é **versionado e publicado** com uma alternativa definida quando não carrega
+- Os contratos de interface entre a aplicação principal e os módulos são declarados de forma explícita e compartilhada
+- Nenhum módulo depende diretamente de outro: a comunicação passa pela aplicação principal ou por um barramento de eventos
+- Dependências compartilhadas são declaradas explicitamente, para não serem carregadas em duplicidade
+- Cada módulo deve funcionar de forma isolada, para desenvolvimento local
+- Testes de integração entre a aplicação principal e cada módulo são obrigatórios em cada ponto de montagem
+- Mudança que quebra o contrato de um módulo exige aumento de versão **major**
 
 ---
 
-## 7. Design System
+## 7. Tokens de design e componentes compartilhados
 
-- Cores, tipografia, espaçamentos e breakpoints vêm **exclusivamente** dos tokens do design system
-- Proibido hardcodar valores de cor, fonte ou espaçamento fora dos tokens
-- Novos componentes de UI são criados no design system antes de serem usados nos remotes
-- Variantes de componente usam `cva` (class-variance-authority) como padrão
-- Componentes públicos do design system têm story no Storybook antes de serem liberados
-- Alterações na API pública de um componente (props) seguem semver
+- Cores, tipografia, espaçamentos e tamanhos de tela vêm **exclusivamente** dos tokens de design do projeto (quando o projeto tem)
+- Proibido fixar valores de cor, fonte ou espaçamento fora dos tokens
+- Novos componentes reutilizáveis nascem na biblioteca de componentes compartilhados do projeto (se existir) antes de serem usados nos módulos
+- Variantes de componente seguem o padrão que o projeto já usa
+- Componentes públicos da biblioteca compartilhada têm documentação visual antes de serem liberados, quando o projeto usa um catálogo de componentes
+- Alterações na interface pública de um componente seguem o versionamento semântico
 
 ---
 
@@ -126,22 +126,23 @@ version: "1.0"
 
 Ao revisar PR de frontend, verificar:
 
-- [ ] TypeScript sem `any` ou `@ts-ignore` injustificado
+- [ ] Tipagem sem tipo genérico solto nem supressões injustificadas (quando a linguagem tem tipagem)
 - [ ] Nenhuma lógica de negócio em componente de UI
 - [ ] Acessibilidade: semântica HTML, ARIA correto, navegação por teclado
-- [ ] Performance: sem re-renders desnecessários, lazy loading aplicado quando cabível
-- [ ] Tokens do design system usados (sem valores hardcodados)
-- [ ] Testes cobrem happy path e estado de erro
-- [ ] Responsividade verificada em mobile e desktop
-- [ ] Se micro frontend: contrato de interface atualizado, remote funciona standalone
+- [ ] Performance: sem renderizações desnecessárias comprovadas, carregamento tardio aplicado quando cabível
+- [ ] Tokens de design do projeto usados (sem valores fixos)
+- [ ] Testes cobrem o caminho feliz e o estado de erro
+- [ ] Responsividade verificada em celular e desktop
+- [ ] Se arquitetura distribuída: contrato de interface atualizado e módulo funciona de forma isolada
+- [ ] Itens exigidos pelas especializações registradas atendidos
 
 ---
 
 ## 9. Proibições Absolutas
 
-- `document.querySelector` / manipulação direta do DOM em contexto React
+- Manipulação direta do DOM fora do mecanismo que o framework do projeto prevê para isso
 - `!important` em CSS sem comentário explicativo
-- Fetch direto em componente de UI (usar hooks, queries ou Server Actions)
-- Importar de outro remote diretamente (rompe o isolamento do micro frontend)
-- Hardcodar tokens de design (cores, espaçamentos, fontes) fora do sistema de tokens
-- `console.log` em código commitado (usar logger estruturado ou remover)
+- Busca de dados direto no componente de apresentação (usar a camada que o projeto adota)
+- Importar diretamente de outro módulo de uma arquitetura distribuída (rompe o isolamento)
+- Fixar tokens de design (cores, espaçamentos, fontes) fora do sistema de tokens
+- Log de depuração (`console.log` ou equivalente) em código commitado (usar logger estruturado ou remover)
