@@ -26,10 +26,10 @@ function parseFrontmatter(content) {
 function extractDeps(content) {
   const deps = { rules: [], templates: [], skills: [], agents: [] };
 
-  const ruleFile = content.match(/rules_file:\s*"?\$IDE\/rules\/(.+?)\.md"?/);
+  const ruleFile = content.match(/rules_file:\s*"?\$IDE\/rules(?:-on-demand)?\/(.+?)\.md"?/);
   if (ruleFile) deps.rules.push(ruleFile[1]);
 
-  for (const m of content.matchAll(/rules\/([\w./-]+)\.md/g)) {
+  for (const m of content.matchAll(/rules(?:-on-demand)?\/([\w./-]+)\.md/g)) {
     if (!deps.rules.includes(m[1])) deps.rules.push(m[1]);
   }
 

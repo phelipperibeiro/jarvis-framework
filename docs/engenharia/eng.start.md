@@ -1,6 +1,6 @@
 # `/eng.start` — iniciar uma tarefa
 
-Workflow: `workflows/engineering/eng.start.md` · Regras: `rules/engineering/eng.start-rules.md`
+Workflow: `workflows/engineering/eng.start.md` · Regras: `rules-on-demand/engineering/eng.start-rules.md`
 
 ## Em uma frase
 

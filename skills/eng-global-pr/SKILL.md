@@ -29,7 +29,7 @@ Criar branch, commitar alterações e abrir um MR (GitLab) ou PR (GitHub/Bitbuck
 ## Recursos
 
 - **Template**: `$IDE/templates/engineering/PR-template.md`
-- **Regras**: `$IDE/rules/engineering/eng.pr-rules.md`
+- **Regras**: `$IDE/rules-on-demand/engineering/eng.pr-rules.md`
 - **Workflow**: `$IDE/workflows/engineering/eng.pr.md`
 
 ---

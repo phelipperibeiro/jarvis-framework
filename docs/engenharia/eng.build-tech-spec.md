@@ -1,6 +1,6 @@
 # `/eng.build-tech-spec` — Tech Spec a partir de um card
 
-Workflow: `workflows/engineering/eng.build-tech-spec.md` · Regras: `rules/engineering/eng.tech-spec-rules.md` · Template: `templates/engineering/tech-spec-template.md`
+Workflow: `workflows/engineering/eng.build-tech-spec.md` · Regras: `rules-on-demand/engineering/eng.tech-spec-rules.md` · Template: `templates/engineering/tech-spec-template.md`
 
 ## Em uma frase
 

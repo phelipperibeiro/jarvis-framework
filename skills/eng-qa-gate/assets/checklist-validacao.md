@@ -288,4 +288,4 @@ Fazer o login funcionar.
 ## Referências
 
 - Template completo: `$IDE/templates/engineering/tech-spec-template.md`
-- Regras de Tech Spec: `$IDE/rules/engineering/eng.tech-spec-rules.md`
+- Regras de Tech Spec: `$IDE/rules-on-demand/engineering/eng.tech-spec-rules.md`

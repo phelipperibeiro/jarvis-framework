@@ -2,7 +2,7 @@
 description: Criação de Tech Spec a partir de história do Jira
 auto_execution_mode: 3
 recommended_model: claude-sonnet-4-20250514
-rules_file: $IDE/rules/engineering/eng.tech-spec-rules.md
+rules_file: $IDE/rules-on-demand/engineering/eng.tech-spec-rules.md
 template_file: $IDE/templates/engineering/tech-spec-template.md
 model_tier: very_high
 model_justification: Tech Spec requer análise profunda de requisitos, decisões arquiteturais, decomposição de tarefas e documentação técnica detalhada
@@ -32,6 +32,8 @@ Para criar Tech Specs, entre em contato com seu Tech Lead.
 ```
 
 **Somente se `POSITION=TECH LEAD`**, prossiga com o workflow abaixo.
+
+> 📋 **Rules**: `$IDE/rules-on-demand/engineering/eng.tech-spec-rules.md` — **antes de começar, leia esse arquivo e siga-o**: ele não é carregado automaticamente no início da sessão.
 
 ---
 

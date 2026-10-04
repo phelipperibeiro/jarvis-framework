@@ -1,6 +1,6 @@
 # `/eng.breakdown-subtasks` — quebrar a Tech Spec em subtarefas
 
-Workflow: `workflows/engineering/eng.breakdown-subtasks.md` · Regras: `rules/engineering/eng.breakdown-subtasks-rules.md`
+Workflow: `workflows/engineering/eng.breakdown-subtasks.md` · Regras: `rules-on-demand/engineering/eng.breakdown-subtasks-rules.md`
 
 ## Em uma frase
 

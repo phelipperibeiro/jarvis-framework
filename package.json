@@ -20,6 +20,7 @@
     "workflows/",
     "templates/",
     "rules/",
+    "rules-on-demand/",
     "taxonomy.md",
     "members.md",
     "AGENTS.md",

@@ -13,21 +13,30 @@ A pasta `rules/` contem **regras e diretrizes** que governam o comportamento do 
 ## Estrutura
 
 ```
-rules/
+rules/                        # Sempre carregadas no início da sessão
 ├── engineering/              # Regras de engenharia
 │   ├── eng-rules.md          # Regras gerais de engenharia
-│   ├── eng.start-rules.md    # Regras para /eng.start
-│   ├── eng.plan-rules.md     # Regras para /eng.plan
-│   ├── eng.work-rules.md     # Regras para /eng.work
-│   ├── eng.pr-rules.md       # Regras para /eng.pr
 │   ├── eng.bump-rules.md     # Regras para versionamento
-│   ├── eng.tech-spec-rules.md # Regras para tech specs
 │   ├── eng.specializations-rules.md # Carregamento de especializações por stack
 │   ├── eng.skills-rules.md       # Área obrigatória nos skills e aviso de skill inexistente
 │   └── qa/                   # Regras de QA
 └── product/                  # Regras de produto
     └── prod-rules.md    # Regras de especificacao
+
+rules-on-demand/              # Lidas pelo workflow que as usa (não carregadas no início)
+└── engineering/
+    ├── eng.start-rules.md    # Regras para /eng.start
+    ├── eng.plan-rules.md     # Regras para /eng.plan
+    ├── eng.work-rules.md     # Regras para /eng.work
+    ├── eng.pre-pr-rules.md   # Regras para /eng.pre-pr
+    ├── eng.pr-rules.md       # Regras para /eng.pr
+    ├── eng.tech-spec-rules.md # Regras para tech specs
+    └── eng.breakdown-subtasks-rules.md # Regras para o breakdown de subtarefas
 ```
+
+### `rules/` x `rules-on-demand/`
+
+O Claude Code carrega tudo de `.claude/rules/` no início da sessão: `rules/` fica só com o que vale sempre. Rule de uma etapa só (um comando) vai para `rules-on-demand/`, e o workflow manda lê-la (`rules_file` + "antes de começar, leia..."). O `Applies to` e o filtro por perfil valem nas duas. Efeito: `jarvis tokens`.
 
 ---
 
@@ -36,7 +45,7 @@ rules/
 ```
 1. .windsurf/rules / .cursor/rules  (mais alta)
 2. rules/engineering/eng-rules.md
-3. rules/engineering/eng.{comando}-rules.md
+3. rules-on-demand/engineering/eng.{comando}-rules.md
 4. rules/product/prod-rules.md (mais baixa)
 ```
 
