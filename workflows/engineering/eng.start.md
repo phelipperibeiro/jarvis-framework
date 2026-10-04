@@ -20,6 +20,24 @@ Este comando inicia o **planejamento** de uma nova feature.
 > **NÃO execute código, NÃO crie arquivos de código, NÃO faça commits.**
 > O único artefato a ser criado é o `architecture.md`.
 
+### Skills invocados durante o workflow
+
+| Passo | Skill | Condição |
+|-------|-------|----------|
+| Cabeçalho (agente) | `eng.agent` (agente) | Sempre — identidade do workflow |
+| Fase 0.1: Análise de Contexto (CDD) | `/jarvis-context-detect` | Se `ENABLE_CDD=true` no ENV.md (execução obrigatória antes da Fase 1); `ENABLE_CDD=false` pula |
+| Fase 0.5: Comentário no card — Início | `/eng-global-task-comment` | Se `TASK_MANAGER` estiver preenchido (freelance pula) |
+| Fase 2.2: Buscar Documentação Central | `/jarvis-docs-central` | Se `CENTRAL_DOCS_REPO` estiver configurado no ENV.md (buscar PRD, ARD e RFCs relacionados) |
+| Fase 3.4: Estratégia de Testes | `eng.qa.test-architect` (agente) | Se a feature tiver requisitos de performance ou segurança (APIs públicas, dados sensíveis, alta carga ou requisitos não-funcionais explícitos) |
+| Fase 3.4: Estratégia de Testes | `/eng-devops-performance-engineer` | Se a feature tiver requisitos de performance (latência, throughput, escalabilidade) |
+| Fase 3.4: Estratégia de Testes | `/eng-ai-engineer` | Se a feature envolver IA (LLM, RAG, agentes, chatbots, embeddings) |
+| Fase 3.4: Estratégia de Testes | `/eng-frontend` (via `eng.specializations-rules.md`) | Se a feature envolver interface ou componentes frontend; a regra também carrega as especializações de `FRONTEND_SPECIALIZATIONS` |
+| Fase 3.4: Estratégia de Testes | `/eng-backend` (via `eng.specializations-rules.md`) | Se a feature envolver APIs, autenticação ou workers backend; a regra também carrega as especializações de `BACKEND_SPECIALIZATIONS` |
+| Fase 3.4: Estratégia de Testes | `/eng-data-engineer` | Se a feature envolver engenharia de dados (pipelines ETL/ELT, Glue, Airflow, contratos de dados, camadas bronze/silver/gold) |
+| Fase 3.4: Estratégia de Testes | `/eng-scraper` | Se a feature envolver extração de dados ou scraping |
+| Fase 3.4: Estratégia de Testes | `/eng-security-cybersecurity` | Se a feature envolver autenticação, autorização, inputs de usuário, dados sensíveis ou endpoints públicos |
+| Fase 5.4: Comentário no card — Conclusão | `/eng-global-task-comment` | Se `TASK_MANAGER` estiver preenchido, após o usuário aprovar o `architecture.md` (freelance pula) |
+
 ---
 
 ## Entrada

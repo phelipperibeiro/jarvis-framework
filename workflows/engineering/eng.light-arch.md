@@ -11,6 +11,13 @@ model_justification: Design arquitetural requer análise de codebase, padrões e
 
 Este é o comando para disparar o início do desenho de estrutura arquitetural para uma feature.
 
+### Skills invocados durante o workflow
+
+| Passo | Skill | Condição |
+|-------|-------|----------|
+| Arquitetura (dicas) e Pesquisa | `context7` (MCP) | Se for necessário consultar melhores práticas ou a documentação de uma biblioteca; não adivinhar |
+| Pesquisa | `Perplexity` (MCP) | Se não houver certeza de como uma biblioteca específica funciona |
+
 ## Exame
 
 1. Passe pelos cards, pais e filhos se necessário, e construa um entendimento inicial do que precisa ser construído. Pense cuidadosamente sobre o que é solicitado, certifique-se de que entende exatamente:

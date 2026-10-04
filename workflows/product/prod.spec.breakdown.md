@@ -42,6 +42,16 @@ Utilize o `$ARGUMENTS` como ponto de partida (caminho da spec, nome da feature o
 2. Se não houver spec pai: ofereça criar com `$PROD_FLOWS/prod.spec.prd.md` ou `$PROD_FLOWS/prod.spec.frd.md`. Não invente escopo do zero sem confirmação.
 3. Se a spec estiver cheia de “talvez” / “depois a gente vê”: sugira clarify antes; só continue se o usuário assumir o risco.
 
+### Skills invocados durante o workflow
+
+| Passo | Skill | Condição |
+|-------|-------|----------|
+| Pré-requisitos (item 2) | `/prod.spec.prd` | Se não houver spec pai e o usuário aceitar criar o PRD |
+| Pré-requisitos (item 2) | `/prod.spec.frd` | Se não houver spec pai e o usuário aceitar criar o FRD |
+| Busca no Central Docs (condicional) | `/jarvis-docs-central` (via `jarvis docs sync --silent`) | Se `CENTRAL_DOCS_REPO` estiver no ENV.md (best-effort) |
+| Resultado esperado (materialização) | `/prod.spec.epic` | Se o usuário aprovar criar os arquivos de épico a partir do breakdown (nunca automaticamente) |
+| Resultado esperado (materialização) | `/prod.spec.issue` | Se o usuário aprovar criar os arquivos de história ou tarefa a partir do breakdown (nunca automaticamente) |
+
 ## Template
 
 O artefato de breakdown segue o template `$PROD_TEMPLATES/prod-breakdown-template.md`.

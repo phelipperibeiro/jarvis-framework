@@ -14,6 +14,12 @@ usando os padrões do projeto. Não escreve o teste — guia e valida.
 > 📋 **Rules**: `$IDE/rules/engineering/qa/eng.qa.cypress-standards-rules.md`
 > 🔧 **Skill**: `eng-qa-dev-guide`
 
+### Skills invocados durante o workflow
+
+| Passo | Skill | Condição |
+|-------|-------|----------|
+| Execução | `/eng-qa-dev-guide` | Sempre — invocado via Skill tool |
+
 ---
 
 ## Entrada

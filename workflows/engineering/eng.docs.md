@@ -17,6 +17,15 @@ Quando a solicitação for diretamente sobre escrita/atualização de documenta�
 
 Quando a solicitação for sobre organização/índice de documentação, use o skill `$IDE/skills/jarvis-docs-index/SKILL.md`.
 
+### Skills invocados durante o workflow
+
+| Passo | Skill | Condição |
+|-------|-------|----------|
+| Skills recomendados | `/eng-global-docs-write` | Se a solicitação for diretamente sobre escrita ou atualização de documentação |
+| Skills recomendados | `/jarvis-docs-index` | Se a solicitação for sobre organização ou índice de documentação |
+| Passo 1 — Ativar o contexto de Engenharia | `eng.agent` (agente) | Sempre |
+| Passo 2 — Ativar o agente de documentação | `eng.docs-writer` (agente) | Sempre |
+
 O assistente deve:
 
 1. Ativar o contexto de Engenharia:

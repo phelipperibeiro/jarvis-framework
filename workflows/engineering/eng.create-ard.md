@@ -20,6 +20,14 @@ usando o template `$IDE/templates/engineering/ARD-template.md`, sempre alinhado 
 - regras de versionamento em `$IDE/rules/engineering/eng.bump-rules.md`
 - identidade em `$IDE/agents/engineering/eng.agent.md`
 
+### Skills invocados durante o workflow
+
+| Passo | Skill | Condição |
+|-------|-------|----------|
+| Objetivo | `eng.agent` (agente) | Sempre — identidade do workflow (alinhamento com `eng.agent.md`) |
+| Passo 1.1.1 – Buscar PRD no Central Docs | `/jarvis-docs-central` (via `jarvis docs sync --silent`) | Se `CENTRAL_DOCS_REPO` estiver definido no ENV.md |
+| Passo 8 – Publicar no Central Docs | `/jarvis-docs-central` (via `jarvis docs publish --tipo ard`) | Se `CENTRAL_DOCS_REPO` estiver definido, o ARD estiver aprovado e o usuário aceitar publicar |
+
 ---
 
 ## Passo 0 – Definir se é novo ARD ou iteração

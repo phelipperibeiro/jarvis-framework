@@ -9,3 +9,9 @@ model_justification: Listagem simples de ferramentas, não requer raciocínio co
 # all-tools
 
 Liste todas as ferramentas disponíveis detalhadas em seu prompt da plataforma. Exiba-as em marcadores. Mostre-as em formato de assinatura de função TypeScript e inclua o propósito da ferramenta como sufixo.
+
+### Skills invocados durante o workflow
+
+| Passo | Skill | Condição |
+|-------|-------|----------|
+| — | Nenhuma — workflow autocontido | — |

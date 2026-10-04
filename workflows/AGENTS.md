@@ -112,6 +112,12 @@ O que este workflow faz.
 - Validar ENV.md
 - Outros requisitos
 
+### Skills invocados durante o workflow
+
+| Passo | Skill | Condição |
+|-------|-------|----------|
+| Fase 1 | `/nome-da-skill` | Condição real do texto do workflow |
+
 ## Entrada
 - `$ARGUMENTS` - Descricao
 - Outros inputs
@@ -132,6 +138,8 @@ Artefatos gerados.
 ## Mensagem de Conclusao
 Feedback ao usuario.
 ```
+
+A tabela `### Skills invocados durante o workflow` lista o que o workflow dispara no proprio fluxo: skills, outros workflows, agentes e MCP/CLI citados pelo nome (nao vale ferramenta interna como `Read`/`Grep`, nem "proximos passos" ou pre-requisito pedido ao usuario). Uma linha por referencia, com a condicao real. Fica logo depois da secao de recursos/dependencias (ou, sem ela, depois do titulo e da descricao). Sem chamadas: uma linha `Nenhuma — workflow autocontido`. Modelo: `engineering/eng.debug.md`.
 
 ---
 
@@ -221,7 +229,7 @@ Workflows de engenharia seguem fases restritas:
 
 1. Identificar necessidade (verificar existentes)
 2. Criar command em `commands/`
-3. Criar workflow seguindo estrutura padrao
+3. Criar workflow seguindo estrutura padrao, incluindo a tabela `Skills invocados durante o workflow`
 4. Definir restricoes de fase (se engenharia)
 5. Vincular a templates (se aplicavel)
 6. Atualizar README.md

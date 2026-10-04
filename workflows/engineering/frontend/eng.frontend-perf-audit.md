@@ -23,6 +23,14 @@ projeto e das especializações registradas em `FRONTEND_SPECIALIZATIONS`.
 
 **Antes de começar**, aplique a regra `$IDE/rules/engineering/eng.specializations-rules.md` para a área **frontend**: ela carrega o skill base `eng-frontend` e as especializações registradas. Onde este workflow disser "conforme a especialização", siga o skill da especialização; sem especialização registrada, **pergunte ao usuário** qual ferramenta o projeto usa, em vez de presumir uma.
 
+### Skills invocados durante o workflow
+
+| Passo | Skill | Condição |
+|-------|-------|----------|
+| Contexto (antes de começar) | `/eng-frontend` (via `eng.specializations-rules.md`) | Sempre — a regra carrega o skill base da área frontend |
+| Contexto (antes de começar) | `skills em FRONTEND_SPECIALIZATIONS` (um por item da lista) | Se houver especialização registrada em `FRONTEND_SPECIALIZATIONS` no ENV.md; lista vazia: só o skill base |
+| Fase 3 — Otimizações (arquitetura distribuída) | `skill da especialização registrada` | Se o projeto dividir o frontend em módulos carregados separadamente (siga o skill da especialização registrada) |
+
 ---
 
 ## Fase 1 — Coleta de Dados (antes de otimizar)

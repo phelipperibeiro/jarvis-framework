@@ -48,6 +48,12 @@ Onde [referencia] pode ser:
 - Card do $TASK_MANAGER: TASK-1234
 ```
 
+### Skills invocados durante o workflow
+
+| Passo | Skill | Condição |
+|-------|-------|----------|
+| Fase 4 – Remediation › 4.1 Implementar correcao | `/eng-security-cybersecurity` | Sempre — como referência de padrões seguros ao implementar a correção |
+
 ---
 
 ## Fase 1 – Triage

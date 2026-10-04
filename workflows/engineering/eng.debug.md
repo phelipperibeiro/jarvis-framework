@@ -38,7 +38,7 @@ sempre respeitando `$IDE/rules/engineering/eng-rules.md`.
 | Passo 1.5 | `Read` / `Grep` / `Glob` (leitura do repo) | **Sempre** — obrigatório antes de formular hipóteses |
 | Passo 2.5 | `/eng-backend-microservices-trace` | Se bug suspeito de cruzar serviços **e** a especialização estiver registrada em `BACKEND_SPECIALIZATIONS` |
 | Passo 6 | `/eng-qa-unit-test` | Para criar teste de regressão da correção |
-| Passo 7 | `/bug-report create` | Para cada débito técnico ou melhoria identificada |
+| Passo 7 | `/eng-qa-bug-report create` | Para cada débito técnico ou melhoria identificada |
 | Conclusão | `mcp__claude_ai_Atlassian__addCommentToJiraIssue` | Sempre — atualizar o card com findings |
 
 ### Próximos workflows (pós-debug)

@@ -33,6 +33,14 @@ Utilize o `$ARGUMENTS` que o usuário passar como ponto de partida e para entend
 - Ter um breakdown existente é importante, mas opcional. Questione o usuário se ele deseja criar um breakdown (siga o fluxo de trabalho `prod.spec.breakdown.md`) ou se ele deseja criar um épico independente de especificações anteriores ou para projetos que já estão em andamento
 - Compreensão de alto nível da abordagem técnica
 
+### Skills invocados durante o workflow
+
+| Passo | Skill | Condição |
+|-------|-------|----------|
+| Busca no Central Docs (condicional) | `/jarvis-docs-central` (via `jarvis docs sync --silent`) | Se `CENTRAL_DOCS_REPO` estiver definido no ENV.md, antes de criar o épico |
+| Próximas etapas | `/prod.spec.issue` | Depois de criar o épico, se o usuário quiser escrever as histórias ou tarefas relacionadas |
+| Publicação no Central Docs (condicional) | `/jarvis-docs-central` (via `jarvis docs publish --tipo epic`) | Se `CENTRAL_DOCS_REPO` estiver definido, o épico estiver salvo e aprovado e o usuário responder "Sim, publicar agora" |
+
 ## Resultado final
 - Por padrão, use o modelo `$PROD_TEMPLATES/prod-epic-template.md` integralmente
 - Siga a estrutura do modelo exatamente como definida, não pule passos, a não ser que o usuário solicite explicitamente

@@ -23,6 +23,13 @@ antes da codificação começar. A entrada é sempre a especificação do card �
 **Regra obrigatória para o agente**: não executar `git diff` neste contexto.
 A fonte de verdade é o conteúdo do card no $TASK_MANAGER, lido via integração disponível (ex: Jira MCP).
 
+### Skills invocados durante o workflow
+
+| Passo | Skill | Condição |
+|-------|-------|----------|
+| Execução (Modo A) | `eng.qa.test-planner` (agente) | Sempre — opera em Modo A, estratégia a partir da tech spec |
+| Execução | `Jira MCP` (referência a confirmar) | Para ler o card do `$TASK_MANAGER` por "integração disponível (ex.: Jira MCP)"; o texto não indica a ferramenta exata |
+
 ---
 
 ## Entrada

@@ -37,6 +37,14 @@ seguindo as convenções definidas em `$IDE/rules/engineering/data/data-rules.md
   - Arquivo: `$IDE/agents/engineering/eng.docs-writer.md`
   - Quando usar: contratos de domínios com muitos termos de negócio (financeiro, operacional, BI).
 
+### Skills invocados durante o workflow
+
+| Passo | Skill | Condição |
+|-------|-------|----------|
+| Agentes recomendados | `eng.data-engineer.agent` (agente) | Sempre — agente primário que conduz todo o workflow |
+| Agentes recomendados | `prod.pm-checker` (agente) | Se o caso de uso vier de uma solicitação de produto (analytics/BI) ou houver ambiguidade sobre o que a squad precisa |
+| Agentes recomendados | `eng.docs-writer` (agente) | Se o contrato for de domínio com muitos termos de negócio (financeiro, operacional, BI) |
+
 ---
 
 ## Entrada

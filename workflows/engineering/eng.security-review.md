@@ -41,6 +41,12 @@ Onde [referencia-do-pr] pode ser:
 - Branch: feature/nova-auth
 ```
 
+### Skills invocados durante o workflow
+
+| Passo | Skill | Condição |
+|-------|-------|----------|
+| — | Nenhuma — workflow autocontido | — |
+
 ---
 
 ## Fase 1 – Scope

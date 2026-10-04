@@ -16,6 +16,14 @@ e criando cards de bug via `eng-qa-bug-report` ao final.
 > 📤 **Template**: `$IDE/templates/engineering/qa/qa.exploratory-session-template.md`
 > 🔧 **Skill**: `eng-qa-exploratory`
 
+### Skills invocados durante o workflow
+
+| Passo | Skill | Condição |
+|-------|-------|----------|
+| Execução | `/eng-qa-exploratory` | Sempre — invocado via Skill tool (modos `plan`, `document` e `report`) |
+| Execução (modo `document`) | `/eng-qa-bug-report` | Para os bugs S1–S4 identificados na sessão (acionado pela skill `eng-qa-exploratory`) |
+| Execução (modo `report`) | `/eng-qa-bug-report` | Para criar em lote os cards de bug do documento de sessão (acionado pela skill `eng-qa-exploratory`) |
+
 ---
 
 ## Entrada

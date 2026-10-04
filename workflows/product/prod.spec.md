@@ -21,6 +21,20 @@ Estas instruções ajudam a orientar o usuário que deseja começar a construir 
 - Quando precisar criar novos ou editar épicos, issues, tasks, stories e bugs
 - Quando precisar de orientação sobre o tipo de documentação a ser gerada
 
+### Skills invocados durante o workflow
+
+| Passo | Skill | Condição |
+|-------|-------|----------|
+| Instruções › Projeto existente ou novo | `/prod.spec.prd` | Se for projeto novo, ou projeto existente sem documentação e o usuário quiser criar o PRD inicial |
+| Instruções › Uso adequado dos comandos | `/prod.spec.discovery` | Se o usuário só tem uma ideia inicial (investigar problema, requisitos e viabilidade antes de especificar) |
+| Instruções › Uso adequado dos comandos | `/prod.spec.prd` | Se o pedido for um PRD |
+| Instruções › Uso adequado dos comandos | `/prod.spec.frd` | Se o pedido for um FRD |
+| Instruções › Uso adequado dos comandos | `/prod.spec.ard` | Se o pedido for um ARD — referência quebrada: não existe o workflow `prod.spec.ard` (confirmar renomeação/remoção) |
+| Instruções › Uso adequado dos comandos | `/prod.spec.issue` | Se o pedido for uma issue (história, tarefa ou bug) |
+| Instruções › Uso adequado dos comandos | `/prod.spec.clarify` | Para clarificar e revisar qualquer tipo de especificação |
+| Instruções › Uso adequado dos comandos | `/prod.spec.breakdown` | Para quebrar uma especificação grande em fatias (versões, épicos, histórias) |
+| Instruções › Uso adequado dos comandos | `/prod.spec.epic` | Se o pedido for criar épicos |
+
 ## Instruções
 
 - **Sessões de produto**: rascunhos WIP em `$SESSIONS_DIR/prod/{TASK_MANAGER_KEY}/`. A spec canônica fica em `$PROD_DOCS` (não substituir).

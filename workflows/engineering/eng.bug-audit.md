@@ -57,6 +57,13 @@ Onde [escopo] pode ser:
 - Por tecnologia: --tech=react
 ```
 
+### Skills invocados durante o workflow
+
+| Passo | Skill | Condição |
+|-------|-------|----------|
+| Fase 0 – Análise de Contexto (CDD) | `/jarvis-context-detect` | Se existir uma sessão ativa (e `ENABLE_CDD=true` no ENV.md) |
+| Fase 5 – Ticketing › 5.1 | `/eng-qa-bug-report create` | Para cada problema P0 e P1 encontrado no audit |
+
 ---
 
 ## Fase 0 – Análise de Contexto (CDD)

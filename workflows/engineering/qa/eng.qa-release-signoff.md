@@ -22,6 +22,12 @@ Sign-off QA antes de um deploy. Verifica cobertura de testes, sessões explorat�
 
 Aceita: nome da branch (padrão: branch atual via `git branch --show-current`).
 
+### Skills invocados durante o workflow
+
+| Passo | Skill | Condição |
+|-------|-------|----------|
+| — | Nenhuma — workflow autocontido | — |
+
 ---
 
 ## Fase 0 — Identificar branch e mudanças

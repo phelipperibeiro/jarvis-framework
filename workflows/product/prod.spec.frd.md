@@ -26,6 +26,13 @@ Utilize o `$ARGUMENTS` que o usuário passar como ponto de partida e para entend
 - Para documentar critérios de aceitação claros e testáveis
 - Para descrever o funcionamento detalhado da feature a partir do comportamento do usuário, de especificações de produto e de design
 
+### Skills invocados durante o workflow
+
+| Passo | Skill | Condição |
+|-------|-------|----------|
+| Busca no Central Docs (condicional) | `/jarvis-docs-central` (via `jarvis docs sync --silent`) | Se `CENTRAL_DOCS_REPO` estiver definido no ENV.md |
+| Publicação no Central Docs (condicional) | `/jarvis-docs-central` (via `jarvis docs publish --tipo frd`) | Se `CENTRAL_DOCS_REPO` estiver definido, o FRD estiver salvo e aprovado e o usuário responder "Sim, publicar agora" |
+
 ## Princípios Fundamentais
 1. **Sempre use o template** `$PROD_TEMPLATES/prod-frd-template.md` para o output final
 2. **Nunca crie o arquivo final com suposições não validadas** — sempre confirme sugestões primeiro

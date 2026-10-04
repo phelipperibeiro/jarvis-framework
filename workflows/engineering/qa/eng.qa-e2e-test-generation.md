@@ -15,6 +15,12 @@ Gera testes E2E Cypress + TypeScript para uma feature a partir de spec, task ou 
 > 📤 **Template**: `$IDE/templates/engineering/qa/qa.cypress-test-template.md`
 > 🔧 **Skill**: `eng-qa-cypress-e2e`
 
+### Skills invocados durante o workflow
+
+| Passo | Skill | Condição |
+|-------|-------|----------|
+| Execução | `/eng-qa-cypress-e2e` | Sempre — invocado via Skill tool |
+
 ---
 
 ## Entrada

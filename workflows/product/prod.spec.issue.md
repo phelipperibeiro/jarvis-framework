@@ -35,6 +35,12 @@ Um grupo de histórias de um mesmo assunto podem formar um épico.
 - Referências de design (para histórias de usuário)
 - Quaisquer restrições técnicas ou requisitos relevantes
 
+### Skills invocados durante o workflow
+
+| Passo | Skill | Condição |
+|-------|-------|----------|
+| Estrutura da Issue (salvar no `$TASK_MANAGER`) | `/eng-global-task-comment` (e adapter do vendor) | Se o usuário pedir para salvar no `$TASK_MANAGER` e `TASK_MANAGER`, token e URL estiverem no ENV.md; freelance ou sem token/URL: não usar, salvar só o markdown local |
+
 ## Resultado Final
 - Siga a estrutura exata do template `$PROD_TEMPLATES/prod-issue-template.md`
 - Convenção de nomenclatura: `{issue_type}-{id}-{issue_name}.md` (ex: story-123-fluxo-lembrar-senha.md)

@@ -25,6 +25,13 @@ Utilize o `$ARGUMENTS` que o usuário passar como ponto de partida e para entend
 - Quando documentação abrangente é necessária
 - Como fonte única de verdade para o desenvolvimento do produto e base para derivar histórias e tarefas
 
+### Skills invocados durante o workflow
+
+| Passo | Skill | Condição |
+|-------|-------|----------|
+| Busca no Central Docs (condicional) | `/jarvis-docs-central` (via `jarvis docs sync --silent`) | Se `CENTRAL_DOCS_REPO` estiver definido no ENV.md (iteração de PRD existente) |
+| Publicação no Central Docs (condicional) | `/jarvis-docs-central` (via `jarvis docs publish --tipo prd`) | Se `CENTRAL_DOCS_REPO` estiver definido, o PRD estiver salvo e aprovado e o usuário responder "Sim, publicar agora" |
+
 ## Princípios Fundamentais
 1. **Sempre use o template** `$PROD_TEMPLATES/prod-prd-template.md` para o output final
 2. **Nunca crie o arquivo final com suposições não validadas** — sempre confirme sugestões primeiro
