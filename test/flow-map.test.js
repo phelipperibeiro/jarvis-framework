@@ -7,6 +7,9 @@ import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { buildIndex } from "../bin/lib/flow-map/index.js";
 import { parseDeclaration, classifyCell, splitCells } from "../bin/lib/flow-map/parse.js";
+import { buildGraph, forwardTree, suggest } from "../bin/lib/flow-map/tree.js";
+import { renderTree, summarizeCondition } from "../bin/lib/flow-map/render.js";
+import { runMap } from "../bin/commands/map.js";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -130,4 +133,174 @@ test("framework real: índice sem duplicados e todos os artefatos declaram chama
     (i) => !parseDeclaration(i.type, readFileSync(join(root, i.path), "utf-8")).declared,
   );
   assert.deepEqual(semDeclaracao.map((i) => i.name), []);
+});
+
+// ---------- árvore, saída e comando ----------
+
+const skillTable = (rows) =>
+  `# S\n\n### Skills invocados durante a execução do skill\n\n| Passo | Skill | Condição |\n|-------|-------|----------|\n${rows.join("\n")}\n`;
+
+/** Framework de exemplo: ciclo, menu, repetição, CLI, MCP, quebrada, autocontido, sem declaração. */
+function frameworkDeExemplo() {
+  const dir = mkdtempSync(join(tmpdir(), "jarvis-map-"));
+  const w = (rel, text) => {
+    mkdirSync(dirname(join(dir, rel)), { recursive: true });
+    writeFileSync(join(dir, rel), text);
+  };
+  w("workflows/engineering/w-main.md", wf([
+    "| Fase 1 | `/s-a` | Se `X=1` |",
+    "| Fase 2 | `/s-c` e `/s-e` | Se o usuário escolher |",
+    "| Fase 3 | `ag-x` (agente) | Sempre |",
+    "| Fase 4 | `jarvis docs sync` (CLI do Jarvis) | Se houver docs |",
+    "| Fase 5 | `context7` (MCP: `query-docs`) | Para pesquisar |",
+    "| Fase 6 | `/nao-existe` | Quando der |",
+    "| Fase 7 | `Jira MCP` (referência a confirmar) | Se Jira |",
+    "| Fase 8 | `/s-d` | Sempre |",
+  ]));
+  w("workflows/engineering/w-solo.md", wf(["| — | Nenhuma — workflow autocontido | — |"]));
+  w("workflows/engineering/w-deep.md", wf(["| 1 | `/s-1` | Sempre |"]));
+  for (const [a, b] of [["s-1", "s-2"], ["s-2", "s-3"], ["s-3", "s-4"], ["s-4", "s-5"]]) {
+    w(`skills/${a}/SKILL.md`, skillTable([`| 1 | \`/${b}\` | Sempre |`]));
+  }
+  w("skills/s-5/SKILL.md", skillTable(["| — | Nenhuma — skill autocontida | — |"]));
+  w("skills/s-a/SKILL.md", skillTable(["| 1 | `/s-b` | Sempre |"]));
+  w("skills/s-b/SKILL.md", skillTable(["| 1 | `/s-a` | Sempre |"]));
+  w("skills/s-c/SKILL.md", skillTable(["| — | Nenhuma — skill autocontida | — |"]));
+  w("skills/s-e/SKILL.md", skillTable(["| 1 | `/s-c` | Se precisar |"]));
+  w("skills/s-d/SKILL.md", "# Sem tabela\n");
+  w("agents/engineering/ag-x.md", "## Skills Disponíveis\n\n### s-c\nPara tarefas simples:\n- Arquivo: `$IDE/skills/s-c/SKILL.md`\n");
+  return dir;
+}
+
+const find = (node, name) => {
+  if (node.name === name) return node;
+  for (const c of node.children) {
+    const r = find(c, name);
+    if (r) return r;
+  }
+  return null;
+};
+
+test("forwardTree: menu, CLI, MCP, quebrada, a confirmar, agente e sem declaração", () => {
+  const dir = frameworkDeExemplo();
+  try {
+    const tree = forwardTree(buildGraph(dir), "w-main");
+    const kinds = Object.fromEntries(tree.children.map((c) => [c.name, c.kind]));
+    assert.equal(kinds["s-a"], "skill");
+    assert.equal(kinds["menu (2 opções)"], "menu");
+    assert.equal(kinds["ag-x"], "agent");
+    assert.equal(kinds["jarvis docs sync"], "cli");
+    assert.equal(kinds["context7"], "mcp");
+    assert.equal(kinds["nao-existe"], "broken");
+    assert.equal(kinds["Jira MCP"], "unresolved");
+    assert.equal(tree.children.find((c) => c.name === "s-a").condicao, "Se `X=1`");
+    assert.deepEqual(tree.children.find((c) => c.kind === "menu").children.map((c) => c.name), ["s-c", "s-e"]);
+    assert.equal(find(tree, "s-d").status, "undeclared");
+    assert.equal(find(tree, "Jira MCP").marker, "a confirmar");
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("forwardTree: ciclo e repetição", () => {
+  const dir = frameworkDeExemplo();
+  try {
+    const tree = forwardTree(buildGraph(dir), "w-main");
+    const sb = find(tree, "s-b");
+    assert.equal(sb.children[0].name, "s-a");
+    assert.equal(sb.children[0].status, "cycle");
+    // s-c aparece no menu (expandido) e de novo no agente (já mapeado)
+    const scs = [];
+    (function collect(n) { if (n.name === "s-c") scs.push(n); n.children.forEach(collect); })(tree);
+    assert.equal(scs.length >= 2, true);
+    assert.equal(scs.filter((n) => n.status === "seen").length >= 1, true);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("forwardTree: profundidade, autocontido", () => {
+  const dir = frameworkDeExemplo();
+  try {
+    const graph = buildGraph(dir);
+    const limited = forwardTree(graph, "w-deep", { depth: 2 });
+    assert.equal(find(limited, "s-2").status, "truncated");
+    assert.equal(find(limited, "s-3"), null);
+    const full = forwardTree(graph, "w-deep");
+    assert.equal(find(full, "s-4").status, "truncated"); // nível 4 é o último; s-5 fica de fora
+    assert.equal(forwardTree(graph, "w-solo").status, "selfContained");
+    assert.equal(forwardTree(graph, "s-d").status, "undeclared");
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("renderTree: conectores, condição e notas", () => {
+  const dir = frameworkDeExemplo();
+  try {
+    const lines = renderTree(forwardTree(buildGraph(dir), "w-main"));
+    assert.equal(lines[0], "w-main [workflow]");
+    assert.match(lines.find((l) => l.includes("s-a [skill]")), /^├── s-a \[skill\]  \(se X=1\)$/);
+    assert.ok(lines.some((l) => l.startsWith("└── ") && l.includes("s-d")));
+    assert.ok(lines.some((l) => l.includes("jarvis docs sync [CLI]")));
+    assert.ok(lines.some((l) => l.includes("context7 [MCP]")));
+    assert.ok(lines.some((l) => l.includes("nao-existe [?]") && l.includes("referência quebrada")));
+    assert.ok(lines.some((l) => l.includes("referência a confirmar")));
+    assert.ok(lines.some((l) => l.includes("ciclo: já mapeado acima")));
+    assert.deepEqual(renderTree(forwardTree(buildGraph(dir), "w-solo")), [
+      "w-solo [workflow]",
+      "└── (autocontido: não chama nenhum outro item)",
+    ]);
+    assert.ok(renderTree(forwardTree(buildGraph(dir), "s-d")).join("\n").includes("sem declaração de chamadas"));
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("summarizeCondition: sem crases, minúscula e limite", () => {
+  assert.equal(summarizeCondition("Se `ENABLE_CDD=true` no ENV.md"), "se ENABLE_CDD=true no ENV.md");
+  assert.equal(summarizeCondition("—"), "");
+  assert.ok(summarizeCondition("x".repeat(200)).length <= 90);
+  assert.ok(summarizeCondition("x".repeat(200)).endsWith("…"));
+});
+
+test("suggest: prefixo, trecho e erro de digitação", () => {
+  const items = new Map(["eng.start", "eng.plan", "eng-qa-gate", "warm-up"].map((n) => [n, {}]));
+  assert.deepEqual(suggest(items, "eng.sta"), ["eng.start"]);
+  assert.ok(suggest(items, "warmup").includes("warm-up"));
+  assert.deepEqual(suggest(items, "zzzzzzzzzz"), []);
+});
+
+test("runMap: uso, profundidade inválida, nome inexistente com sugestões e sucesso", () => {
+  const dir = frameworkDeExemplo();
+  try {
+    assert.equal(runMap(undefined, {}, dir).code, 1);
+    assert.equal(runMap("w-main", { depth: "abc" }, dir).code, 1);
+    assert.equal(runMap("w-main", { depth: "0" }, dir).code, 1);
+    const missing = runMap("w-mai", {}, dir);
+    assert.equal(missing.code, 1);
+    assert.ok(missing.lines.join("\n").includes("w-main"));
+    const ok = runMap("w-main", { depth: "3" }, dir);
+    assert.equal(ok.code, 0);
+    assert.equal(ok.lines[0], "w-main [workflow]");
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("framework real: eng.start, warm-up, eng-qa-gate e eng.agent mapeiam", () => {
+  const start = runMap("eng.start", {}, root);
+  assert.equal(start.code, 0);
+  const startText = start.lines.join("\n");
+  assert.match(startText, /jarvis-context-detect \[skill\]  \(se ENABLE_CDD=true/);
+  assert.match(startText, /via eng\.specializations-rules\.md/);
+
+  const warm = runMap("warm-up", {}, root);
+  assert.equal(warm.code, 0);
+  assert.ok(warm.lines.filter((l) => l.includes("menu (")).length >= 6);
+
+  assert.equal(runMap("eng-qa-gate", {}, root).code, 0);
+  const agent = runMap("eng.agent", {}, root);
+  assert.equal(agent.code, 0);
+  assert.ok(agent.lines.some((l) => l.includes("disponível")));
 });
