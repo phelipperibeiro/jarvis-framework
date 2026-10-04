@@ -69,7 +69,7 @@ Definido no ENV pelo `/jarvis-init`.
 /eng.pr     → branch + commit + MR/PR
 ```
 
-Restrições de fase estão nas **rules** espelhadas (`eng.start-rules.md`, `eng.work-rules.md`, …).
+Restrições de fase estão nas **rules** de etapa (`eng.start-rules.md`, `eng.work-rules.md`, …), em `rules-on-demand/`: cada workflow manda ler a sua no início.
 
 ## No ciclo de vida
 

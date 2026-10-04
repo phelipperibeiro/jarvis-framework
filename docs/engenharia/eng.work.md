@@ -1,6 +1,6 @@
 # `/eng.work` — implementar o plano
 
-Workflow: `workflows/engineering/eng.work.md` · Regras: `rules/engineering/eng.work-rules.md`
+Workflow: `workflows/engineering/eng.work.md` · Regras: `rules-on-demand/engineering/eng.work-rules.md`
 
 ## Em uma frase
 

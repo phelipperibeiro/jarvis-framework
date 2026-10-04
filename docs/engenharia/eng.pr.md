@@ -1,6 +1,6 @@
 # `/eng.pr` — abrir o merge request
 
-Workflow: `workflows/engineering/eng.pr.md` · Regras: `rules/engineering/eng.pr-rules.md`
+Workflow: `workflows/engineering/eng.pr.md` · Regras: `rules-on-demand/engineering/eng.pr-rules.md`
 
 ## Em uma frase
 

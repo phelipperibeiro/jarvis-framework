@@ -9,6 +9,7 @@ Como o Jarvis está **montado** no disco: o que cada peça é, o que entra no pa
 │  Repo do framework (este clone)                             │
 │                                                             │
 │  agents/ skills/ workflows/ rules/ templates/  + taxonomy   │
+│  rules-on-demand/                                           │
 │            │                                                │
 │            │  jarvis init --ide cursor                     │
 │            ▼                                                │
@@ -20,10 +21,10 @@ Como o Jarvis está **montado** no disco: o que cada peça é, o que entra no pa
 
 1. Você desenvolve/versiona o **framework** neste repo.
 2. `npm install -g` / `npm link` registra o CLI `jarvis` (lê assets de `bin/` + pastas do pacote).
-3. No **workspace** do projeto, `jarvis init` **copia** agents, skills, workflows, rules, templates (+ taxonomy, AGENTS, members) para `.$IDE/`.
+3. No **workspace** do projeto, `jarvis init` **copia** agents, skills, workflows, rules, rules-on-demand, templates (+ taxonomy, AGENTS, members) para `.$IDE/`.
 4. No chat, `/jarvis-init` cria o `ENV.md` e filtra rules pelo perfil.
 
-O que o npm publica (campo `files` do `package.json`): `bin/`, `agents/`, `skills/`, `workflows/`, `templates/`, `rules/`, `taxonomy.md`, `members.md`, `AGENTS.md`, `README.md`.  
+O que o npm publica (campo `files` do `package.json`): `bin/`, `agents/`, `skills/`, `workflows/`, `templates/`, `rules/`, `rules-on-demand/`, `taxonomy.md`, `members.md`, `AGENTS.md`, `README.md`.  
 **Não** entra no pacote: `docs/`, `issues/`, `node_modules/`, `.git/`, etc. (docs ficam no GitHub para leitura humana).
 
 ## Índice das subpáginas
@@ -49,6 +50,7 @@ O que o npm publica (campo `files` do `package.json`): `bin/`, `agents/`, `skill
 | `issues/` | [issues.md](./issues.md) |
 | `node_modules/` | [node_modules.md](./node_modules.md) |
 | `rules/` | [rules.md](./rules.md) |
+| `rules-on-demand/` | [rules.md](./rules.md) |
 | `skills/` | [skills.md](./skills.md) |
 | `templates/` | [templates.md](./templates.md) |
 | `workflows/` | [workflows.md](./workflows.md) |

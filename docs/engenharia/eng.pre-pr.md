@@ -1,6 +1,6 @@
 # `/eng.pre-pr` — validar antes do PR
 
-Workflow: `workflows/engineering/eng.pre-pr.md` · Regras: `rules/engineering/eng.pre-pr-rules.md`
+Workflow: `workflows/engineering/eng.pre-pr.md` · Regras: `rules-on-demand/engineering/eng.pre-pr-rules.md`
 
 ## Em uma frase
 

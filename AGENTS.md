@@ -93,6 +93,8 @@ prompts/
 │   │   │   └── frontend/         # eng.frontend-rules.md (HUB: FRONTEND)
 │   │   └── product/              # prod-rules.md (AREA=PRODUCT)
 │   │
+│   ├── rules-on-demand/          # Rules de uma etapa so (start, plan, work, pre-pr, pr, tech-spec, breakdown): o workflow manda ler
+│   │
 │   ├── scripts/                  # Scripts utilitarios
 │   └── docs/                     # Documentacao adicional
 │
@@ -228,7 +230,8 @@ Quando atuar em um projeto alvo, detectar comandos em:
 1. `.windsurfrules` / `.cursorrules` - Regras globais do framework
 2. `$IDE/ENV.md` - Contexto do ambiente
 3. `$IDE/JARVIS.md` - Guia principal de uso
-4. `$IDE/rules/` - Regras especificas por dominio
+4. `$IDE/rules/` - Regras especificas por dominio (carregadas no inicio)
+   `$IDE/rules-on-demand/` - Regras de uma etapa so, lidas pelo workflow
 5. `$IDE/agents/` - Definicoes de agentes
 6. `$IDE/skills/` - Playbooks operacionais
 7. `$IDE/workflows/` - Templates de execucao
@@ -400,6 +403,7 @@ Uso especializado quando necessário.
 - `$IDE/skills/AGENTS.md` - Skills disponiveis
 - `$IDE/rules/engineering/` - Regras de engenharia
 - `$IDE/rules/product/` - Regras de produto
+- `$IDE/rules-on-demand/engineering/` - Regras de etapa (lidas pelo workflow)
 
 ---
 

@@ -42,7 +42,7 @@ Sempre siga as instruções de acordo com as relações abaixo:
 
 ### Regras
 
-- **import `$IDE/rules/engineering/eng.tech-spec-rules.md`**: Regras específicas de tech spec (este arquivo)
+- **import `$IDE/rules-on-demand/engineering/eng.tech-spec-rules.md`**: Regras específicas de tech spec (este arquivo)
 
 ---
 

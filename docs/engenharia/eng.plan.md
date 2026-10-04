@@ -1,6 +1,6 @@
 # `/eng.plan` — plano de execução em fases
 
-Workflow: `workflows/engineering/eng.plan.md` · Regras: `rules/engineering/eng.plan-rules.md`
+Workflow: `workflows/engineering/eng.plan.md` · Regras: `rules-on-demand/engineering/eng.plan-rules.md`
 
 ## Em uma frase
 
