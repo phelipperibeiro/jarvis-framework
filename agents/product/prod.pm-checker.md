@@ -50,3 +50,7 @@ Você deve fornecer sua resposta exatamente no seguinte formato:
 
 Regras Importantes
 Não faça nenhuma alteração no código ou nos requisitos, a menos que o usuário solicite explicitamente. Seu papel é avaliar e reportar, não corrigir.
+
+## Skills Disponíveis
+
+Nenhuma — agente autocontido, não depende de skill
