@@ -145,8 +145,8 @@ O CI (`.gitlab-ci.yml`) **falha** se o `index.md` commitado divergir do que o sc
 ```bash
 jarvis docs sync
 
-# Internamente executa:
-bash bin/lib/docs/fetch-file.sh "${SQUAD}/index.md" "${CENTRAL_DOCS_REF}"
+# Internamente chama fetchFile() de bin/lib/docs/fetch-file.js, equivalente a:
+jarvis docs fetch "${SQUAD}/index.md" "${CENTRAL_DOCS_REF}"
 ```
 
 **Passo 1.b — Fallback: navegar árvore (quando index.md não existe)**
@@ -180,8 +180,8 @@ Com base no contexto da tarefa (`TASK_MANAGER_KEY`, tags, descrição):
 **Passo 3 — Buscar arquivos identificados**
 
 ```bash
-bash bin/lib/docs/fetch-file.sh "${SQUAD}/product/${WORKSPACE}/prd-feature.md" "main"
-bash bin/lib/docs/fetch-file.sh "${SQUAD}/engineering/${WORKSPACE}/ard-feature.md" "main"
+jarvis docs fetch "${SQUAD}/product/${WORKSPACE}/prd-feature.md" "main"
+jarvis docs fetch "${SQUAD}/engineering/${WORKSPACE}/ard-feature.md" "main"
 ```
 
 **Passo 4 — Retornar resultado**

@@ -23,7 +23,11 @@ bin/
     │   └── comment.js         # Adapter de task manager (jira/linear/github/asana) — mesmo padrão
     ├── config/                # ide-config.js (fonte de verdade de IDEs), constants.js
     ├── core/                  # scanner.js, sync-engine.js, profile-filter.js, token-report.js
-    ├── docs/                  # validate-frontmatter.js (validação de docs PRD/FRD/ARD/RFC)
+    ├── docs/                  # central-docs: fetch/publish + validação de frontmatter
+    │   ├── validate-frontmatter.js  # Valida/extrai frontmatter de PRD/FRD/ARD/RFC
+    │   ├── redis-cache.js      # Cache best-effort via `redis-cli` (get/setex/del)
+    │   ├── fetch-file.js       # fetchFile() — usado por `docs sync`/`docs fetch` e por publish-file.js
+    │   └── publish-file.js     # publishFile() — usado por `docs publish`
     ├── utils/                 # logger.js, ui.js, paths.js, frontmatter.js, git-parser.js, npmrc-parser.js
     ├── flow-map/              # `jarvis map` — grafo de chamadas entre workflows/skills/agents
     ├── auth/                  # session.js (auth.json legado, hoje só `jarvis logout` o lê)
@@ -127,8 +131,11 @@ Os 3 arquivos mais críticos sem cobertura até pouco tempo atrás (`env-loader.
 - **`env-loader.js`** (e `flow-map.test.js`, mais antigo): `mkdtempSync(join(tmpdir(), "jarvis-..."))` monta um workspace fake com `.{ide}/ENV.md`, roda a função contra ele, `rmSync` no `finally`.
 - **`sync-engine.js`**: `getFrameworkRoot()` (`utils/paths.js`) já tem um escape hatch — `process.env.JARVIS_ROOT`, se definido e existir, vence sobre o framework real. O teste aponta `JARVIS_ROOT` para um fixture mínimo (`agents/`, `skills/`, etc. com 1 arquivo cada) em vez de sincronizar o framework inteiro.
 - **`vcs/api.js`**: usa `mock.method(globalThis, "fetch", ...)` do `node:test` pra controlar a resposta por vendor, sem mockar o módulo nem tocar rede real. **Atenção**: toda função de rede chama `getVcsToken()` antes do fetch — fixe `GITLAB_TOKEN`/`GITHUB_TOKEN`/`BITBUCKET_TOKEN` via env var no teste (ver `withEnv` em `vcs-api.test.js`), senão o resultado depende do que a máquina que roda o teste tiver em `.npmrc`/`gh auth`.
+- **`docs/fetch-file.js`/`docs/publish-file.js`**: mesmo mock de `fetch`. `redis-cli` (chamado por `docs/redis-cache.js`) **não dá pra mockar** — é um módulo nativo (`node:child_process`) não configurável, `mock.method` lança `TypeError: Cannot redefine property`. Como pode haver um `redis-cli` de verdade instalado (com ou sem servidor acessível) na máquina que roda o teste, cada teste usa uma chave de cache única (`docs:${randomUUID()}...`) em vez de mockar o cache — garante cache-miss determinístico sem depender do estado de nenhum Redis real.
 
-Ao escrever um teste novo para um arquivo que toca `fs`/rede, prefira um desses 3 padrões a mockar o módulo inteiro ou refatorar pra injeção de dependência — nenhum dos arquivos acima precisou mudar uma linha de lógica para ganhar teste.
+**Armadilha com `async`**: o helper `withEnv(vars, fn)` (repetido nos 3 arquivos acima) precisa de `return **await** fn()`, não `return fn()`, dentro do `try`. Sem o `await`, o `finally` que restaura a env var roda assim que `fn()` retorna uma Promise pendente — ou seja, **antes** da função terminar. Isso só não quebra quando a leitura da env var acontece antes do primeiro `await` de `fn` (ex: `fetchRawFile` lê o token antes do seu próprio `fetch`); quebra silenciosamente em qualquer função com mais de um `await` no meio do caminho (ex: `publishFile`, que busca o `index.md` antes de chegar no commit, que é onde o token é lido).
+
+Ao escrever um teste novo para um arquivo que toca `fs`/rede, prefira um desses padrões a mockar o módulo inteiro ou refatorar pra injeção de dependência — nenhum dos arquivos acima precisou mudar uma linha de lógica de produção para ganhar teste.
 
 ## Lint e formatação
 

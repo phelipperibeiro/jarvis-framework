@@ -30,6 +30,7 @@ import { runCreateMerge } from "../vcs/create-merge.js";
 import { runCreateIssue } from "../vcs/create-issue.js";
 import { runFetchRaw } from "../vcs/fetch-raw.js";
 import { runComment } from "../tasks/comment.js";
+import { fetchFile } from "../docs/fetch-file.js";
 import { formatIDEsList } from "../config/ide-config.js";
 import { showBanner } from "../utils/ui.js";
 import { withEnvOptions, withLogOptions } from "./shared-options.js";
@@ -114,6 +115,22 @@ export function buildProgram() {
     "Sincronizar docs do central-docs (usado por /warm-up)"
   );
   withEnvOptions(withLogOptions(docsSyncCmd)).action((options) => docsSync(toLegacyFlags(options)));
+
+  cmd(docs, "fetch")
+    .description(
+      "Buscar um arquivo do central-docs, com cache Redis best-effort (lê CENTRAL_DOCS_REPO do ambiente)"
+    )
+    .argument("<file-path>", "Path do arquivo dentro do repo central-docs")
+    .argument("[ref]", "Branch/ref", "main")
+    .action(async (filePath, ref) => {
+      try {
+        const content = await fetchFile(filePath, ref);
+        process.stdout.write(content);
+      } catch (error) {
+        console.error(error.message);
+        process.exit(error.code === 404 ? 2 : 1);
+      }
+    });
 
   const docsPublishCmd = cmd(docs, "publish")
     .description("Publicar documento no central-docs (branch + MR/PR)")

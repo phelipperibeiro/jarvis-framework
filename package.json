@@ -11,7 +11,7 @@
     "prepublishOnly": "echo 'Publishing jarvis-framework...'",
     "publish:gitlab": "npm publish",
     "test:comandos": "node test/comandos-docs.test.js",
-    "test:filtro": "node --test test/profile-filter.test.js test/token-report.test.js test/flow-map.test.js test/env-loader.test.js test/sync-engine.test.js test/vcs-api.test.js",
+    "test:filtro": "node --test test/profile-filter.test.js test/token-report.test.js test/flow-map.test.js test/env-loader.test.js test/sync-engine.test.js test/vcs-api.test.js test/fetch-file.test.js test/publish-file.test.js",
     "lint": "eslint bin/ test/",
     "lint:fix": "eslint bin/ test/ --fix",
     "format": "prettier --write bin/ test/",

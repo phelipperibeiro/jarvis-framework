@@ -23,7 +23,13 @@ import {
   mergeRequestPath,
 } from "../bin/lib/vcs/api.js";
 
-function withEnv(vars, fn) {
+// `await fn()` (não `return fn()`): o `finally` só pode restaurar a env var
+// depois que a promise resolver, senão uma função com mais de um `await`
+// antes de ler a variável perderia o valor antes da leitura real acontecer
+// (achado ao reusar este helper em publish-file.test.js, onde isso de fato
+// acontecia — `publishFile` busca o index.md antes de chegar no commit, que
+// é onde o token é lido).
+async function withEnv(vars, fn) {
   const prev = {};
   for (const [k, v] of Object.entries(vars)) {
     prev[k] = process.env[k];
@@ -31,7 +37,7 @@ function withEnv(vars, fn) {
     else process.env[k] = v;
   }
   try {
-    return fn();
+    return await fn();
   } finally {
     for (const [k, v] of Object.entries(prev)) {
       if (v === undefined) delete process.env[k];

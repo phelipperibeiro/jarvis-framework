@@ -1,14 +1,7 @@
 import { loadEnv, resolveEnvPath } from "../lib/env-loader.js";
-import { promisify } from "node:util";
-import { exec } from "node:child_process";
 import { existsSync } from "node:fs";
-import { join, dirname } from "node:path";
-import { fileURLToPath } from "node:url";
+import { publishFile } from "../lib/docs/publish-file.js";
 import { logger, configureFromFlags } from "../lib/utils/logger.js";
-
-const execAsync = promisify(exec);
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
 
 /**
  * Publica documento no central-docs via GitLab API (branch + MR)
@@ -113,54 +106,22 @@ export async function docsPublish(flags = {}) {
     process.exit(1);
   }
 
-  // Verificar se script publish-file.sh existe
-  // Usar path relativo ao módulo, não ao cwd do usuário
-  const publishScript = join(__dirname, "../lib/docs/publish-file.sh");
-  if (!existsSync(publishScript)) {
-    logger.error("❌ Script não encontrado:", publishScript);
-    process.exit(1);
-  }
-
   logger.info(`📤 Publicando ${tipo.toUpperCase()} ${feature}...\n`);
 
   try {
-    // Exportar variáveis de ambiente para o script bash
-    const envVars = {
-      ...process.env,
-      CENTRAL_DOCS_REPO: env.CENTRAL_DOCS_REPO,
-      CENTRAL_DOCS_TARGET_BRANCH: env.CENTRAL_DOCS_TARGET_BRANCH || "dev",
-      CENTRAL_DOCS_CACHE_TTL: env.CENTRAL_DOCS_CACHE_TTL || "3600",
-      SQUAD_OVERRIDE: squad,
-      WORKSPACE_OVERRIDE: workspace,
-    };
-
-    const { stdout, stderr } = await execAsync(
-      `bash "${publishScript}" "${file}" "${tipo}" "${feature}"`,
-      {
-        env: envVars,
-        maxBuffer: 10 * 1024 * 1024, // 10MB buffer para output grande
-      }
-    );
-
-    // Exibir output do script
-    if (stdout) {
-      logger.info(stdout);
-    }
-
-    if (stderr) {
-      logger.warn("⚠️  Avisos:", stderr);
-    }
+    await publishFile({
+      localFile: file,
+      tipo,
+      feature,
+      squad,
+      workspace,
+      repo: env.CENTRAL_DOCS_REPO,
+      targetBranch: env.CENTRAL_DOCS_TARGET_BRANCH || "dev",
+      cacheTtl: env.CENTRAL_DOCS_CACHE_TTL || "3600",
+    });
   } catch (error) {
     logger.error("\n❌ Erro ao publicar documento\n");
-
-    // Exibir output de erro do script
-    if (error.stdout) {
-      logger.info(error.stdout);
-    }
-
-    if (error.stderr) {
-      logger.error(error.stderr);
-    }
+    logger.error(error.message);
 
     // Dicas de troubleshooting
     logger.error("\n💡 Troubleshooting:\n");
