@@ -404,4 +404,4 @@ Próximo passo: revisar os cenários e adicionar dados de teste no .env
 
 - **Stagehand docs**: https://docs.stagehand.dev
 - **Skill relacionado**: `$IDE/skills/eng-qa-testsprite/SKILL.md` — para testes unitários/integração com TestSprite
-- **Skill relacionado**: `$IDE/skills/eng-scraper-robot-builder/SKILL.md` — para gerar robôs Playwright
+- **Skill relacionado**: `$IDE/skills/eng-automation-robot-builder/SKILL.md` — para gerar robôs Playwright

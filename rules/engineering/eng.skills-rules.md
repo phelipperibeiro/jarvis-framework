@@ -10,7 +10,7 @@ Garantir que todo skill instalado tenha uma área reconhecida e avisar a pessoa,
 
 Vale para todo comando `eng.*` e seus agentes, **ao iniciar**. A pasta de skills considerada é `$IDE/skills/`.
 
-**Áreas reconhecidas:** `qa`, `data`, `ai`, `frontend`, `backend`, `security`, `scraper`, `devops`, `global`, `product`.
+**Áreas reconhecidas:** `qa`, `data`, `ai`, `frontend`, `backend`, `security`, `automation`, `devops`, `global`, `product`.
 
 ## Regras
 

@@ -225,6 +225,6 @@ com justificativa explícita. Exceções recorrentes devem ser propostas como at
 ## Referências
 
 - `$IDE/rules/engineering/eng.docs-scraping-rules.md` — padrão de documentação de robôs
-- `$IDE/skills/eng-scraper/SKILL.md` — skill de scraping (Puppeteer, Playwright, ETL)
-- `$IDE/skills/eng-scraper-robot-builder/SKILL.md` — skill de automação via Stagehand
+- `$IDE/skills/eng-automation/SKILL.md` — skill de scraping (Puppeteer, Playwright, ETL)
+- `$IDE/skills/eng-automation-robot-builder/SKILL.md` — skill de automação via Stagehand
 - `$IDE/agents/engineering/eng.rpa.agent.md` — agente especializado RPA (ARACHNE)

@@ -1,6 +1,6 @@
 # Playwright, Cheerio e parsing de PDFs
 
-> Parte do skill `eng-scraper`. Leia este arquivo quando a tarefa exigir Playwright, scraping de HTML estático com Cheerio ou extração de PDFs.
+> Parte do skill `eng-automation`. Leia este arquivo quando a tarefa exigir Playwright, scraping de HTML estático com Cheerio ou extração de PDFs.
 
 ### Playwright — Alternativa (quando necessário)
 

@@ -23,8 +23,8 @@ Workflow unificado para criação (`new`) ou manutenção (`update`) de robôs d
 | Cabeçalho (agente) | `eng.rpa.agent` (agente) | Sempre — agente ARACHNE do workflow |
 | Fase 0 — Setup | `/jarvis-context-detect` | Se `ENABLE_CDD=true` no ENV.md |
 | Modo `new` › Exploração do sistema-alvo | `Playwright MCP` | Se o MCP Playwright estiver disponível na sessão (com `MAX_AI_EXECUTION_PERCENTAGE=100`, escolhido automaticamente; senão o dev escolhe a ferramenta) |
-| Modo `new` › Exploração do sistema-alvo | `/eng-scraper-robot-builder` | Se o fluxo for descrito em linguagem natural com seletores desconhecidos (com MAX=100: só se o MCP estiver indisponível) |
-| Modo `new` › Fase N1 — escolha da ferramenta do robô | `/eng-scraper-robot-builder` | Se o fluxo for descrito em linguagem natural e os seletores forem desconhecidos (Stagehand) |
+| Modo `new` › Exploração do sistema-alvo | `/eng-automation-robot-builder` | Se o fluxo for descrito em linguagem natural com seletores desconhecidos (com MAX=100: só se o MCP estiver indisponível) |
+| Modo `new` › Fase N1 — escolha da ferramenta do robô | `/eng-automation-robot-builder` | Se o fluxo for descrito em linguagem natural e os seletores forem desconhecidos (Stagehand) |
 | Modo `new` › Fase N2 — Plano de Execução | `/eng.plan` | Sempre no modo `new`, depois de o `architecture.md` ser aprovado |
 | Modo `new` › Fase N3 — Implementação | `/eng.work` | Sempre no modo `new`, depois do plano |
 | Modo `new` › Fase N4 — Documentação | `/jarvis-docs-index` | Sempre, após criar o `{robot-tag}-robot.md` |
@@ -100,7 +100,7 @@ echo "$(date -u +"%Y-%m-%dT%H:%M:%SZ")" > $SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/.
 > |----------|-----------|
 > | MCP Playwright disponível na sessão | **Playwright MCP** — navega e inspeciona direto da IDE sem sair do contexto |
 > | Dev quer demonstrar o fluxo manualmente | **Playwright CLI** — `npx playwright codegen {url}` grava as interações e sugere seletores |
-> | Fluxo descrito em linguagem natural, seletores desconhecidos | **Stagehand** (`/eng-scraper-robot-builder`) — usa `observe()` para descobrir seletores via IA |
+> | Fluxo descrito em linguagem natural, seletores desconhecidos | **Stagehand** (`/eng-automation-robot-builder`) — usa `observe()` para descobrir seletores via IA |
 >
 > **Escolha da ferramenta:**
 > - **Padrão** — perguntar ao dev qual ferramenta prefere usar para explorar o sistema-alvo
@@ -152,7 +152,7 @@ Ordem de investigação:
 | Cheerio + axios | HTML estático sem JS relevante |
 | Puppeteer ou Playwright | Renderização JS obrigatória, sem API HTTP viável |
 | Puppeteer stealth | Anti-bot agressivo (Cloudflare, fingerprinting) |
-| `/eng-scraper-robot-builder` (Stagehand) | Fluxo descrito em linguagem natural, seletores desconhecidos |
+| `/eng-automation-robot-builder` (Stagehand) | Fluxo descrito em linguagem natural, seletores desconhecidos |
 
 > ⚠️ **Captchas e proxies**: verificar se a infraestrutura anti-bot já existe no projeto (serviço de resolução de captcha, pool de proxies) — esses recursos são **pré-requisito compartilhado**, não devem ser implementados do zero por robô. Se não existirem, escalar para o TL antes de prosseguir.
 

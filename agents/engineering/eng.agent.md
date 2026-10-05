@@ -194,14 +194,14 @@ Quando a tarefa envolver **backend** (APIs, autenticação, workers e jobs assí
 - Workflows relacionados: `eng.start` (arquitetura), `eng.work` (implementação), `eng.debug` (troubleshooting)
 - Para ver o que está instalado e registrado: `/jarvis-list-specializations`
 
-### eng-scraper
+### eng-automation
 Quando a tarefa envolver web scraping, extração de dados de páginas web, automação de browser com Puppeteer, parsing de HTML/XML/PDF, pipelines ETL leves ou monitoramento de mudanças em sites:
-- Arquivo: `$IDE/skills/eng-scraper/SKILL.md`
+- Arquivo: `$IDE/skills/eng-automation/SKILL.md`
 - Workflows relacionados: `eng.work` (implementação de scrapers)
 
-### eng-scraper-robot-builder
+### eng-automation-robot-builder
 Quando o produto ou dev descrever um fluxo manual em linguagem natural que precisa virar automação (robô), ou quando for necessário criar um script Playwright sem conhecer seletores do site. Usa Stagehand para exploração e `observe()` para descoberta de seletores — o output final é Playwright TypeScript puro, sem dependência de LLM em runtime:
-- Arquivo: `$IDE/skills/eng-scraper-robot-builder/SKILL.md`
+- Arquivo: `$IDE/skills/eng-automation-robot-builder/SKILL.md`
 - Workflows relacionados: `eng.work` (criação de scripts de automação)
 
 ### eng-qa-e2e

@@ -1,24 +1,28 @@
 ---
-name: eng-scraper
+name: eng-automation
 description: >
-  Especialista em web scraping, extração de dados, automação de browser e parsing de HTML/XML/PDF.
-  Domina Puppeteer (principal), Playwright, Cheerio, anti-bot e pipelines ETL leves com NestJS e TypeScript.
-  Trigger: Use para web scraping, headless browser, parsing de HTML/XML, extração de dados ou automação de navegação.
+  Skill base de automação, válida para qualquer stack ou ferramenta: RPA (robôs,
+  automação de browser e de fluxos de trabalho) e Web (scraping, crawling, parsing
+  de HTML/XML/PDF). Domina Puppeteer (principal), Playwright, Cheerio, anti-bot e
+  pipelines ETL leves. Pode ser complementada por especializações registradas em
+  AUTOMATION_SPECIALIZATIONS (ex: construção de robôs via Stagehand).
+  Trigger: Use para web scraping, RPA, automação de browser, parsing de HTML/XML,
+  extração de dados ou automação de fluxos de trabalho.
 license: AGPL-3.0
 compatibility: Designed for Claude Code (or similar products)
 allowed-tools: Read Write Edit Grep Glob Bash
 metadata:
   author: jarvis-team
-  version: "1.0"
-  area: scraper
+  version: "2.0"
+  area: automation
 # Campos Claude Code-specific (não fazem parte da spec oficial agentskills.io):
 argument-hint: "[url|site|tarefa] [contexto]"
 disable-model-invocation: false
 ---
 
-# Eng Scraper - Especialista em Extração de Dados
+# Eng Automation - Skill Base de Automação (RPA + Web)
 
-Você é um **especialista em web scraping e extração de dados** com domínio em browsers headless, parsing de conteúdo, contorno de mecanismos anti-bot e construção de pipelines de dados resilientes.
+Você é um **especialista em automação**, com domínio dos princípios que valem para qualquer stack — RPA (robôs, automação de browser e de fluxos de trabalho) e Web (scraping, crawling, parsing de conteúdo, contorno de mecanismos anti-bot). Pode ser complementado por skills especializados (ex: construção de robôs via Stagehand) registrados em `AUTOMATION_SPECIALIZATIONS`.
 
 ## Objetivo
 

@@ -28,8 +28,8 @@ Este comando executa a **implementação de código** seguindo o plano de execu�
 | Fase 0.5: Comentário no card — Início | `/eng-global-task-comment` | Se `TASK_MANAGER` estiver preenchido (freelance pula) |
 | Fase 3 › 3.1 Implementar Código (skill de domínio) | `/eng-frontend` (via `eng.specializations-rules.md`) | Se o domínio da feature for frontend (componentes, UI, estado, estilos, bundle, a11y); a regra também carrega `FRONTEND_SPECIALIZATIONS` |
 | Fase 3 › 3.1 Implementar Código (skill de domínio) | `/eng-backend` (via `eng.specializations-rules.md`) | Se o domínio da feature for backend (endpoints, auth, workers, filas, cache, banco, integrações); a regra também carrega `BACKEND_SPECIALIZATIONS` |
-| Fase 3 › 3.1 Implementar Código (skill de domínio) | `/eng-scraper` | Se o domínio da feature for scraping, extração de dados, ETL ou parsing |
-| Fase 3 › 3.1 Implementar Código (skill de domínio) | `/eng-scraper-robot-builder` | Se a tarefa for converter um fluxo manual em Playwright via Stagehand, sem seletores conhecidos |
+| Fase 3 › 3.1 Implementar Código (skill de domínio) | `/eng-automation` | Se o domínio da feature for RPA, scraping, extração de dados, ETL ou parsing |
+| Fase 3 › 3.1 Implementar Código (skill de domínio) | `/eng-automation-robot-builder` | Se a tarefa for converter um fluxo manual em Playwright via Stagehand, sem seletores conhecidos |
 | Fase 3 › 3.3.1 Identificar Gaps de Teste | `eng.qa.test-planner` (agente) | Sempre, depois de implementar o código da fase |
 | Fase 3 › 3.3.2 Implementar Testes Faltantes (Opção A) | `eng.qa.testing-engineer` (agente) | Se o test-planner identificar gaps e a estratégia do `architecture.md` seção 6.5 indicar testes manuais (unitário/integração) |
 | Fase 3 › 3.3.2 Implementar Testes Faltantes (Opção B) | `/eng-qa-testsprite` | Se a estratégia do `architecture.md` seção 6.5 indicar TestSprite (`testScope=diff`) |
@@ -232,8 +232,8 @@ Se o usuário tiver sugestões, ajuste o plano.
 |---------|-------------|-------|
 | Frontend | componentes, UI, estado, estilos, bundle, a11y | regra [eng.specializations-rules.md]($IDE/rules/engineering/eng.specializations-rules.md) (área frontend: `eng-frontend` + `FRONTEND_SPECIALIZATIONS`) |
 | Backend | endpoints, auth, workers, filas, cache, banco, integrações | regra [eng.specializations-rules.md]($IDE/rules/engineering/eng.specializations-rules.md) (área backend: `eng-backend` + `BACKEND_SPECIALIZATIONS`) |
-| Scraping | web scraping, Puppeteer, extração de dados, ETL, parsing | [eng-scraper]($IDE/skills/eng-scraper/SKILL.md) |
-| Robô / automação | converter fluxo manual em Playwright via Stagehand, sem seletores conhecidos | [eng-scraper-robot-builder]($IDE/skills/eng-scraper-robot-builder/SKILL.md) |
+| RPA & Scraping | RPA, web scraping, Puppeteer, extração de dados, ETL, parsing | [eng-automation]($IDE/skills/eng-automation/SKILL.md) |
+| Robô / automação | converter fluxo manual em Playwright via Stagehand, sem seletores conhecidos | [eng-automation-robot-builder]($IDE/skills/eng-automation-robot-builder/SKILL.md) |
 
 Para cada tarefa da fase:
 

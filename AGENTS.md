@@ -61,7 +61,7 @@ prompts/
 │   │   ├── eng-global-pr/
 │   │   ├── eng-backend-rabbitmq/          # Mensageria RabbitMQ
 │   │   ├── eng-data-engineer/     # Pipelines ETL/ELT, Athena, MySQL, Metabase, contratos de dados
-│   │   ├── eng-scraper/           # Web scraping, Puppeteer, ETL
+│   │   ├── eng-automation/           # Web scraping, Puppeteer, ETL
 │   │   ├── jarvis-init/
 │   │   ├── product-specs/
 │   │   ├── product-specs-update/

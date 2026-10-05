@@ -1,6 +1,6 @@
 # Técnicas Anti-Bot
 
-> Parte do skill `eng-scraper`. Leia este arquivo quando o site bloquear requests (403/429, captcha, fingerprint).
+> Parte do skill `eng-automation`. Leia este arquivo quando o site bloquear requests (403/429, captcha, fingerprint).
 
 ### Técnicas Anti-Bot
 
