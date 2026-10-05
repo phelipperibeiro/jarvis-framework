@@ -107,7 +107,7 @@ if (fileURLToPath(import.meta.url) === process.argv[1]) {
    - Registrar com `cmd(program, "meu-comando")` (ou `cmd(parentExistente, "nome")` se for subcomando de um grupo como `docs`/`vcs`/`tasks`).
    - Declarar as opções/positionals com `.option()`/`.argument()`. Usar `withEnvOptions()`/`withLogOptions()` de `shared-options.js` se o comando precisar de `--ide`/`--env-file` ou `--quiet`/`--verbose`/`--silent`.
    - No `.action()`, chamar `toLegacyFlags(options, extra)` se a função usa o formato antigo de flags, ou passar `options` quase direto se for um comando novo sem lógica legada (ver os 4 de `vcs`/`tasks` como exemplo).
-3. Rodar manualmente o comando novo e **todos os outros** (não há suíte automatizada de CLI end-to-end — só `test/test-comandos-docs.js`, que valida a documentação dos workflows/skills, não o comportamento do CLI em si). Checklist mínimo: `--help` do comando novo, caminho feliz, caminho de erro (flag/argumento faltando).
+3. Rodar manualmente o comando novo e **todos os outros** (não há suíte automatizada de CLI end-to-end — só `test/comandos-docs.test.js`, que valida a documentação dos workflows/skills, não o comportamento do CLI em si). Checklist mínimo: `--help` do comando novo, caminho feliz, caminho de erro (flag/argumento faltando).
 4. `npm run lint && npm run test:comandos && npm run test:filtro` antes de comitar.
 
 ## Variáveis de ambiente lidas diretamente (fora do ENV.md)
@@ -117,8 +117,18 @@ if (fileURLToPath(import.meta.url) === process.argv[1]) {
 ## Testes
 
 - `npm run test:comandos` — valida que toda referência a comando/skill nos workflows e skills existe de fato (não testa o CLI em runtime).
-- `npm run test:filtro` — testes unitários de `profile-filter.js`, `token-report.js`, `flow-map`.
-- Não há teste automatizado de ponta a ponta do CLI (`jarvis <comando>` real). Qualquer mudança em `program.js` ou em `bin/commands/*.js` precisa de validação manual dos comandos afetados.
+- `npm run test:filtro` — testes unitários de `profile-filter.js`, `token-report.js`, `flow-map`, `env-loader.js`, `sync-engine.js` e `vcs/api.js`.
+- Não há teste automatizado de ponta a ponta do CLI (`jarvis <comando>` real) — a camada de dispatch (`program.js`, `bin/commands/*.js`) não é cobrida pelos testes unitários. Qualquer mudança ali precisa de validação manual dos comandos afetados.
+
+### Como testar código que lê `fs`/rede sem mockar módulo
+
+Os 3 arquivos mais críticos sem cobertura até pouco tempo atrás (`env-loader.js`, `sync-engine.js`, `vcs/api.js`) tocam filesystem real ou rede real — nenhum foi refatorado para isso, cada um usou o hook que já existia:
+
+- **`env-loader.js`** (e `flow-map.test.js`, mais antigo): `mkdtempSync(join(tmpdir(), "jarvis-..."))` monta um workspace fake com `.{ide}/ENV.md`, roda a função contra ele, `rmSync` no `finally`.
+- **`sync-engine.js`**: `getFrameworkRoot()` (`utils/paths.js`) já tem um escape hatch — `process.env.JARVIS_ROOT`, se definido e existir, vence sobre o framework real. O teste aponta `JARVIS_ROOT` para um fixture mínimo (`agents/`, `skills/`, etc. com 1 arquivo cada) em vez de sincronizar o framework inteiro.
+- **`vcs/api.js`**: usa `mock.method(globalThis, "fetch", ...)` do `node:test` pra controlar a resposta por vendor, sem mockar o módulo nem tocar rede real. **Atenção**: toda função de rede chama `getVcsToken()` antes do fetch — fixe `GITLAB_TOKEN`/`GITHUB_TOKEN`/`BITBUCKET_TOKEN` via env var no teste (ver `withEnv` em `vcs-api.test.js`), senão o resultado depende do que a máquina que roda o teste tiver em `.npmrc`/`gh auth`.
+
+Ao escrever um teste novo para um arquivo que toca `fs`/rede, prefira um desses 3 padrões a mockar o módulo inteiro ou refatorar pra injeção de dependência — nenhum dos arquivos acima precisou mudar uma linha de lógica para ganhar teste.
 
 ## Lint e formatação
 
