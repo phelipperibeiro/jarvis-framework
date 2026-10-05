@@ -113,16 +113,41 @@ test("listRulesForProfile: AGENTS.md nunca é filtrado, rtk é opt-in, sem bloco
 // #80 (rename eng-scraper/área scraper -> eng-automation/área automation): deltas variam por
 // perfil porque eng.rpa-rules.md (HUB: BACKEND) e eng.frontend-rules.md (HUB: FRONTEND) mudaram
 // quantidades diferentes de bytes, e cada perfil carrega um subconjunto diferente de rules.
+// +1020 B em cada perfil na #63 (eng.specializations-rules.md estendida pra 6 áreas +
+// eng-rules.md validando as 4 variáveis novas — as duas são universais, por isso o delta
+// é igual nos 4 perfis, diferente do caso da #80 acima).
+// +12 B em cada perfil na introdução da área `platform` (eng.skills-rules.md: lista de
+// áreas reconhecidas ganhou "platform" — rule universal, delta igual nos 4 perfis).
+// Consolidação de QA em eng-qa/eng-qa-planner (2026-10-05): removidas 3 rules de QA
+// (eng.qa.exploratory-session-rules.md, eng.qa.quality-gate-scoring-rules.md,
+// eng.qa.tech-spec-validation-criteria-rules.md) — -3 arquivos em FULLCYCLE e QA (que
+// carregam rules de HUB:QA); eng.qa.cypress-standards-rules.md (HUB:QA) teve só uma linha
+// trocada; eng.frontend-rules.md (HUB:FRONTEND) e eng.rpa-rules.md (HUB:BACKEND) tiveram
+// trechos de TestSprite/eng-qa-* reescritos — por isso BACKEND e FRONTEND mantêm a
+// contagem de arquivos mas mudam de bytes, cada um no seu próprio delta.
+// +201 B em cada perfil ao wirear PLATFORM_SPECIALIZATIONS (eng.specializations-rules.md
+// ganhou a área platform + eng-rules.md validando a variável nova — as duas são
+// universais, delta igual nos 4 perfis).
+// Descontinuação da área security (2026-10-05): eng-security-rules.md, eng-rules.md,
+// eng.skills-rules.md e eng.specializations-rules.md (todas universais) tiveram trechos
+// reescritos — nenhuma rule foi removida, só o conteúdo mudou de tamanho, por isso a
+// contagem de arquivos não muda e o delta de bytes é igual nos 4 perfis.
+// Remoção do eng-automation-robot-builder (2026-10-05): eng.rpa-rules.md (HUB: BACKEND) e
+// eng.frontend-rules.md (HUB: FRONTEND) perderam a referência ao Stagehand — cada um no seu
+// próprio delta; QA não carrega nenhuma das duas, por isso fica inalterado.
+// Consolidação de data em eng-data (2026-10-05): eng.specializations-rules.md trocou
+// `eng-data-engineer` por `eng-data` na tabela de skill base — rule universal, delta igual
+// nos 4 perfis.
 const BASE = [
   [
     "FULLCYCLE/GENERALIST/ENGINEERING/CORE",
     profile("FULLCYCLE", "GENERALIST", "ENGINEERING"),
-    18,
-    110643,
+    15,
+    97274,
   ],
-  ["BACKEND/SENIOR/ENGINEERING/CORE", profile("BACKEND", "SENIOR", "ENGINEERING"), 11, 62579],
-  ["FRONTEND/PLENO/ENGINEERING/CORE", profile("FRONTEND", "PLENO", "ENGINEERING"), 11, 63421],
-  ["QA/QA-ENGINEER/ENGINEERING/CORE", profile("QA", "QA-ENGINEER", "ENGINEERING"), 14, 76795],
+  ["BACKEND/SENIOR/ENGINEERING/CORE", profile("BACKEND", "SENIOR", "ENGINEERING"), 11, 64004],
+  ["FRONTEND/PLENO/ENGINEERING/CORE", profile("FRONTEND", "PLENO", "ENGINEERING"), 11, 64540],
+  ["QA/QA-ENGINEER/ENGINEERING/CORE", profile("QA", "QA-ENGINEER", "ENGINEERING"), 11, 63776],
 ];
 
 for (const [nome, p, arquivos, bytes] of BASE) {

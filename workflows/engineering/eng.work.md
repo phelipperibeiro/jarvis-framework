@@ -28,11 +28,11 @@ Este comando executa a **implementação de código** seguindo o plano de execu�
 | Fase 0.5: Comentário no card — Início | `/eng-global-task-comment` | Se `TASK_MANAGER` estiver preenchido (freelance pula) |
 | Fase 3 › 3.1 Implementar Código (skill de domínio) | `/eng-frontend` (via `eng.specializations-rules.md`) | Se o domínio da feature for frontend (componentes, UI, estado, estilos, bundle, a11y); a regra também carrega `FRONTEND_SPECIALIZATIONS` |
 | Fase 3 › 3.1 Implementar Código (skill de domínio) | `/eng-backend` (via `eng.specializations-rules.md`) | Se o domínio da feature for backend (endpoints, auth, workers, filas, cache, banco, integrações); a regra também carrega `BACKEND_SPECIALIZATIONS` |
-| Fase 3 › 3.1 Implementar Código (skill de domínio) | `/eng-automation` | Se o domínio da feature for RPA, scraping, extração de dados, ETL ou parsing |
-| Fase 3 › 3.1 Implementar Código (skill de domínio) | `/eng-automation-robot-builder` | Se a tarefa for converter um fluxo manual em Playwright via Stagehand, sem seletores conhecidos |
+| Fase 3 › 3.1 Implementar Código (skill de domínio) | `/eng-automation` (via `eng.specializations-rules.md`) | Se o domínio da feature for RPA, scraping, extração de dados, ETL ou parsing; a regra também carrega `AUTOMATION_SPECIALIZATIONS` |
+| Fase 3 › 3.1 Implementar Código (skill de domínio) | `/eng-platform` (via `eng.specializations-rules.md`) | Se o domínio da feature for infraestrutura (IaC, contêineres, CI/CD, observabilidade, SRE, custo); a regra também carrega `PLATFORM_SPECIALIZATIONS` |
 | Fase 3 › 3.3.1 Identificar Gaps de Teste | `eng.qa.test-planner` (agente) | Sempre, depois de implementar o código da fase |
 | Fase 3 › 3.3.2 Implementar Testes Faltantes (Opção A) | `eng.qa.testing-engineer` (agente) | Se o test-planner identificar gaps e a estratégia do `architecture.md` seção 6.5 indicar testes manuais (unitário/integração) |
-| Fase 3 › 3.3.2 Implementar Testes Faltantes (Opção B) | `/eng-qa-testsprite` | Se a estratégia do `architecture.md` seção 6.5 indicar TestSprite (`testScope=diff`) |
+| Fase 3 › 3.3.2 Implementar Testes Faltantes (Opção B) | `/eng-qa` | Se a estratégia do `architecture.md` seção 6.5 indicar uma especialização registrada em `QA_SPECIALIZATIONS` |
 | Fase 6 › 6.2 Se Todas as Fases Foram Concluídas | `/eng-global-task-comment` | Se `TASK_MANAGER` estiver preenchido e todas as fases estiverem concluídas (freelance pula) |
 
 ---
@@ -232,8 +232,8 @@ Se o usuário tiver sugestões, ajuste o plano.
 |---------|-------------|-------|
 | Frontend | componentes, UI, estado, estilos, bundle, a11y | regra [eng.specializations-rules.md]($IDE/rules/engineering/eng.specializations-rules.md) (área frontend: `eng-frontend` + `FRONTEND_SPECIALIZATIONS`) |
 | Backend | endpoints, auth, workers, filas, cache, banco, integrações | regra [eng.specializations-rules.md]($IDE/rules/engineering/eng.specializations-rules.md) (área backend: `eng-backend` + `BACKEND_SPECIALIZATIONS`) |
-| RPA & Scraping | RPA, web scraping, Puppeteer, extração de dados, ETL, parsing | [eng-automation]($IDE/skills/eng-automation/SKILL.md) |
-| Robô / automação | converter fluxo manual em Playwright via Stagehand, sem seletores conhecidos | [eng-automation-robot-builder]($IDE/skills/eng-automation-robot-builder/SKILL.md) |
+| Automation (RPA & Web) | RPA, web scraping, Puppeteer, extração de dados, ETL, parsing | regra [eng.specializations-rules.md]($IDE/rules/engineering/eng.specializations-rules.md) (área automation: `eng-automation` + `AUTOMATION_SPECIALIZATIONS`) |
+| Platform (infra) | IaC, contêineres/orquestração, pipeline de CI/CD, observabilidade, SRE, custo de nuvem | regra [eng.specializations-rules.md]($IDE/rules/engineering/eng.specializations-rules.md) (área platform: `eng-platform` + `PLATFORM_SPECIALIZATIONS`) |
 
 Para cada tarefa da fase:
 
@@ -291,25 +291,17 @@ Invoque o agente [eng.qa.testing-engineer]($IDE/agents/engineering/qa/eng.qa.tes
 - Seguir padrões de teste do projeto (Jest, Vitest, pytest, etc.)
 - Garantir cobertura mínima definida na estratégia
 
-**Opção B: Testes automatizados via TestSprite**
+**Opção B: Especialização registrada em QA_SPECIALIZATIONS**
 
-Se a estratégia de testes (definida pelo `test-architect` no `eng.start`) indicar uso de TestSprite, execute o skill [eng-qa-testsprite]($IDE/skills/eng-qa-testsprite/SKILL.md) com `testScope=diff`:
-
-- Gera testes automaticamente para o código implementado
-- Executa e valida cobertura
-- Suporta: E2E, API, integração, frontend, backend
-- Ideal para fluxos complexos ou quando velocidade é prioridade
+Se a estratégia de testes (definida pelo `test-architect` no `eng.start`) indicar uma ferramenta de geração/execução automatizada, use a especialização registrada em `QA_SPECIALIZATIONS` (via a base [eng-qa]($IDE/skills/eng-qa/SKILL.md)) para o escopo do diff da fase.
 
 **Quando usar cada opção:**
 
 | Cenário | Usar |
 |---------|------|
 | Testes unitários de funções/classes | testing-engineer |
-| Testes de API/endpoints | eng-qa-testsprite ou testing-engineer |
-| Testes E2E de fluxos de usuário | eng-qa-testsprite |
-| Testes de integração complexos | eng-qa-testsprite |
-| Projeto sem TestSprite configurado | testing-engineer |
-| Projeto sem TestSprite configurado | testing-engineer |
+| Fluxo com ferramenta automatizada já registrada em `QA_SPECIALIZATIONS` | a especialização registrada |
+| Sem especialização registrada | testing-engineer |
 
 > ⚠️ **Importante**: Consulte `architecture.md` seção 6.5 para ver qual abordagem foi definida pelo test-architect.
 
@@ -325,7 +317,7 @@ npm test # ou comando do projeto
 npm run test:coverage # se disponível
 ```
 
-> 💡 **Fluxo**: Implementa código → test-planner (gaps) → testing-engineer OU eng-qa-testsprite (implementa) → valida
+> 💡 **Fluxo**: Implementa código → test-planner (gaps) → testing-engineer OU especialização de `QA_SPECIALIZATIONS` (implementa) → valida
 
 ---
 

@@ -32,86 +32,44 @@ skills/
 │   └── assets/
 ├── eng-backend/          # Base neutra de backend (APIs, auth, workers, dados); especializações por stack se somam a ele
 │   └── SKILL.md
-├── eng-frontend/         # Base neutra de frontend (componentes, estado, performance UI, acessibilidade); especializações se somam a ele
-│   └── SKILL.md
-├── eng-frontend-microfrontend/    # Module Federation, shell/remote, contratos de interface, event bus
-│   └── SKILL.md
-├── eng-frontend-design-system/    # Tokens semânticos, CVA, Storybook, versionamento, auditoria visual
-│   └── SKILL.md
+├── eng-frontend/         # Base neutra de frontend (componentes, estado, performance UI, acessibilidade, design system/tokens, micro frontend); especializações se somam a ele
+│   ├── SKILL.md
+│   └── references/
+├── eng-qa/               # Base neutra de QA (estratégia, design de casos, automação, não funcionais, gestão de defeitos); especializações em QA_SPECIALIZATIONS se somam a ela
+│   ├── SKILL.md
+│   └── references/
 ├── eng-backend-nestjs/           # Framework NestJS: módulos, DI, guards, interceptors, pipes, Passport/JWT
 │   └── SKILL.md
 ├── eng-backend-rabbitmq/         # Mensageria RabbitMQ (HTTP API, codigo, arquitetura, troubleshooting)
 │   └── SKILL.md
-├── eng-security-cybersecurity/    # Segurança de aplicações: OWASP Top 10, secrets, supply chain, headers, SAST, compliance
-│   └── SKILL.md
 ├── eng-backend-microservices-trace/ # Rastreamento de bugs entre serviços (HTTP + AMQP); especialização de backend
 │   └── SKILL.md
-├── eng-security-threat-model/ # Threat model estruturado do projeto (bootstrap/entrevista)
-│   └── SKILL.md
-├── eng-security-triage/ # Deduplicar, verificar e rankear achados de segurança
-│   └── SKILL.md
-├── eng-security-patch/ # Diffs candidatos para achados de segurança confirmados
-│   └── SKILL.md
-├── eng-devops-performance-engineer/ # Performance: baseline, SLIs/SLOs, load tests
-│   └── SKILL.md
-├── eng-ai-engineer/ # Features com LLM, RAG, agentes, embeddings
-│   └── SKILL.md
-├── eng-global-browser-extension-builder/ # Extensões de navegador (Manifest V3)
-│   └── SKILL.md
-├── eng-data-engineer/ # Pipelines ETL/ELT, camadas bronze/silver/gold, contratos de dados
-│   └── SKILL.md
-├── eng-data-bi/ # Dashboards BI e queries analíticas
-│   └── SKILL.md
-├── eng-data-debug/ # Diagnóstico de falhas em pipelines por camada
-│   └── SKILL.md
-├── eng-data-onboard/ # Onboarding de fonte nova de dados
-│   └── SKILL.md
-├── eng-data-orchestrator/ # DAGs, retries e alertas de orquestração
-│   └── SKILL.md
-├── eng-qa-bug-report/ # Bug reports de QA
-│   └── SKILL.md
+├── eng-platform/         # Base neutra de platform/infra (+ especializações em PLATFORM_SPECIALIZATIONS)
+│   ├── SKILL.md
+│   └── references/
+├── eng-ai/ # Base neutra de IA (ML, dados, LLM/RAG/agentes, avaliação, MLOps, governança, segurança)
+│   ├── SKILL.md
+│   └── references/
+├── eng-data/ # Base neutra de dados (pipelines, modelagem, qualidade, BI, governança) + especializações em DATA_SPECIALIZATIONS
+│   ├── SKILL.md
+│   └── references/
 ├── product-specs/ # Porta de entrada de especificação de produto
 │   └── SKILL.md
 ├── product-specs-update/ # Sincroniza especificações de produto
 │   └── SKILL.md
 ├── product-roadmap-report/ # Relatório de status do roadmap
 │   └── SKILL.md
-├── eng-automation/          # Base de RPA + Web scraping: Puppeteer, Cheerio, anti-bot, pipelines ETL
-│   └── SKILL.md
-├── eng-automation-robot-builder/ # Converte fluxo manual (linguagem natural) em robô Playwright via Stagehand
-│   └── SKILL.md
+├── eng-automation/          # Base neutra de automação (RPA, web, APIs, extração, ingestão) + especializações em AUTOMATION_SPECIALIZATIONS
+│   ├── SKILL.md
+│   └── references/
 ├── jarvis-docs-index/           # Indexacao de documentos
 │   └── SKILL.md
 ├── jarvis-init/         # Inicializacao do framework (/jarvis-init), com o passo opcional de adicionar as stacks
 │   ├── SKILL.md
 │   └── assets/
-├── eng-qa-gate/              # Quality gate validation
+├── eng-qa-planner/           # Planejamento de testes e análise de gaps de cobertura (especialização de qa: registrar em QA_SPECIALIZATIONS)
 │   ├── SKILL.md
 │   └── assets/
-├── eng-qa-test-plan/         # Planejamento de testes
-│   ├── SKILL.md
-│   └── assets/
-├── eng-qa-testsprite/        # Testes automatizados
-│   ├── SKILL.md
-│   └── assets/
-├── eng-qa-e2e/               # Testes E2E em linguagem natural com Stagehand, exportação Cypress
-│   └── SKILL.md
-├── eng-qa-cypress-e2e/       # Testes E2E Cypress + TypeScript (Page Objects, data-testid, intercept)
-│   └── SKILL.md
-├── eng-qa-exploratory/       # Sessões de teste exploratório estruturadas (charter, risco, achados)
-│   └── SKILL.md
-├── eng-qa-dev-guide/         # Orienta devs a escreverem seus próprios testes Cypress
-│   └── SKILL.md
-├── eng-qa-a11y-audit/        # Testes de acessibilidade WCAG 2.1 AA via jest-axe em testes unitários existentes
-│   └── SKILL.md
-├── eng-qa-graphql-contract/  # Testes de contrato GraphQL: queries frontend vs schema do BFF
-│   └── SKILL.md
-├── eng-qa-e2e-spec-writer/   # Gera spec E2E de handoff (doc, não código): cenários, Page Objects, fixtures
-│   └── SKILL.md
-├── eng-qa-quality-report/    # Consolida sessões, bugs e quality gates e gera relatório de qualidade por período
-│   └── SKILL.md
-├── eng-qa-unit-test/         # Testes unitarios
-│   └── SKILL.md
 ├── jarvis-report-issue/         # Reportar bug no próprio Jarvis (JARVIS_PROJECT)
 │   └── SKILL.md
 ├── jarvis-context-detect/       # Detecta contexto do projeto/tarefa
@@ -178,9 +136,9 @@ metadata:
 | `qa` | Testes, quality gates, relatórios de qualidade |
 | `data` | Pipelines, qualidade e contratos de dados |
 | `ai` | Features com modelos de IA |
-| `security` | Segurança de aplicações |
 | `automation` | RPA (robôs, automação de browser e de fluxos de trabalho) e Web (scraping, crawling, parsing) |
 | `devops` | Performance, infraestrutura, entrega |
+| `platform` | Platform/infraestrutura: sistemas, redes, cloud, IaC, contêineres, CI/CD, observabilidade, SRE, segurança de infra, FinOps |
 | `global` | Skills transversais de engenharia e do próprio framework |
 | `product` | Especificação de produto |
 
@@ -192,18 +150,20 @@ O nome tem a forma `<prefixo>-<área>-<nome>`; **só os dois primeiros segmentos
 
 | Tipo | Padrão | Exemplos |
 |------|--------|----------|
-| Engenharia por área | `eng-<área>-<nome>` | `eng-qa-gate`, `eng-data-engineer`, `eng-security-cybersecurity` |
+| Engenharia por área | `eng-<área>-<nome>` | `eng-qa-planner` |
 | Skill base de backend/frontend | `eng-backend`, `eng-frontend` | — |
-| Especialização de stack | `eng-<backend\|frontend>-<stack>` | `eng-backend-nestjs`, `eng-frontend-design-system` |
+| Skill base de outra área | `eng-<área>` | `eng-platform`, `eng-qa`, `eng-ai`, `eng-data` |
+| Especialização de stack | `eng-<backend\|frontend>-<stack>` | `eng-backend-nestjs` |
 | Engenharia global | `eng-global-<nome>` | `eng-global-pr`, `eng-global-docs-write` |
 | Produto | `product-<nome>` | `product-specs`, `product-specs-update` |
 | Transversal do framework | `jarvis-<nome>` (`area: global`) | `jarvis-init`, `jarvis-docs-central` |
 
 ### Skill base, especialização e `stack`
 
-- **Base:** `area: backend` ou `frontend`, **sem** `stack`. É sempre carregado pela regra `eng.specializations-rules.md`.
-- **Especialização:** `area: backend` ou `frontend`, **com** `metadata.stack` (o sufixo do nome). Só é carregada quando o projeto a registra em `BACKEND_SPECIALIZATIONS` ou `FRONTEND_SPECIALIZATIONS` no `ENV.md`.
-- Demais áreas não têm lista e não usam `stack`.
+- **Base com especializações wireadas:** `area: backend`, `frontend`, `qa`, `data`, `automation` ou `platform`, **sem** `stack`. É sempre carregado pela regra `eng.specializations-rules.md`, que também carrega as especializações registradas em `BACKEND_SPECIALIZATIONS`, `FRONTEND_SPECIALIZATIONS`, `QA_SPECIALIZATIONS`, `DATA_SPECIALIZATIONS`, `AUTOMATION_SPECIALIZATIONS` ou `PLATFORM_SPECIALIZATIONS`.
+- **Especialização de backend/frontend:** `area: backend` ou `frontend`, **com** `metadata.stack` (o sufixo do nome). Só é carregada quando o projeto a registra em `BACKEND_SPECIALIZATIONS` ou `FRONTEND_SPECIALIZATIONS` no `ENV.md`.
+- **Especialização de qa/data/automation/platform:** `area` correspondente, **sem** `metadata.stack` (o campo é só pra backend/frontend). Só é carregada quando o projeto a registra na variável da área no `ENV.md` (ex: `eng-qa-planner` em `QA_SPECIALIZATIONS`; uma skill de Terraform/Kubernetes/provedor em `PLATFORM_SPECIALIZATIONS`).
+- A área `ai` ainda não tem lista (sem `AI_SPECIALIZATIONS` até que apareça necessidade real).
 
 ---
 
@@ -265,55 +225,33 @@ Skills são invocados de formas diferentes dependendo da IDE:
 | `/warm-up` | `jarvis-docs-central` (sync) |
 | `eng.start` | `jarvis-docs-central` (buscar PRD/ARD) |
 | `/eng.docs` | `eng-global-docs-write`, `jarvis-docs-index` |
-| `/eng.pre-pr` | `eng-qa-test-plan`, `eng-global-docs-write`, `jarvis-docs-central` (detectar docs) |
+| `/eng.pre-pr` | `eng-qa-planner`, `eng-global-docs-write`, `jarvis-docs-central` (detectar docs) |
 | `/eng.pr` | `eng-global-pr` |
 | Comentário no card | `eng-global-task-comment` |
 | `jarvis docs sync` | `jarvis-docs-central` |
 | `jarvis docs publish` | `jarvis-docs-central` |
-| QA validation | `eng-qa-gate` |
 | Arquitetura C4 | `eng-backend-arch-c4` |
-| Testes unitarios | `eng-qa-unit-test` |
-| Testes TestSprite | `eng-qa-testsprite` |
 | Listar especializações de stack (instaladas e registradas) | `jarvis-list-specializations` |
 | Criar uma especialização de stack (backend ou frontend) a partir do código do projeto | `jarvis-create-specialization` |
 | Decisão de arquitetura do Jarvis (agent, skill, workflow ou rule?), simplificação, tendências | `jarvis-evolution-architect` |
 | Mensageria, filas, RabbitMQ, events, consumers, producers | `eng-backend-rabbitmq` (especialização de backend: registrar em `BACKEND_SPECIALIZATIONS`) |
 | APIs, auth, workers, filas, caching, banco de dados | `eng-backend` (base) + `BACKEND_SPECIALIZATIONS` |
-| Componentes, UI, estado, estilos, performance, acessibilidade | `eng-frontend` (base) + `FRONTEND_SPECIALIZATIONS` |
-| Micro frontend, Module Federation, shell/remote, contratos de interface | `eng-frontend-microfrontend` (especialização de frontend) |
-| Design system, tokens, CVA, Storybook, versionamento de componentes | `eng-frontend-design-system` (especialização de frontend) |
+| Componentes, UI, estado, estilos, performance, acessibilidade, design system/tokens, micro frontend | `eng-frontend` (base) + `FRONTEND_SPECIALIZATIONS` |
+| Sistemas, redes, cloud, IaC, contêineres, CI/CD, observabilidade, SRE, segurança de infra, FinOps | `eng-platform` (base) + `PLATFORM_SPECIALIZATIONS` |
+| Estratégia de testes, design de casos, cobertura, automação, não funcionais, gestão de defeitos | `eng-qa` (base) + `QA_SPECIALIZATIONS` |
+| Planejamento de testes e análise de gaps de cobertura da branch atual | `eng-qa-planner` (especialização de qa: registrar em `QA_SPECIALIZATIONS`) |
 | Revisão de PR frontend (tipagem, a11y, tokens, itens da stack) | `eng.frontend-review` |
 | Auditoria de performance frontend (Core Web Vitals, pacote entregue) | `eng.frontend-perf-audit` |
 | Módulos NestJS, DI, guards, interceptors, pipes, Passport/JWT | `eng-backend-nestjs` (especialização de backend) |
-| RPA, web scraping, Puppeteer, extração de dados, parsing, ETL | `eng-automation` |
-| Converter fluxo manual (produto/dev) em robô Playwright via Stagehand | `eng-automation-robot-builder` |
+| RPA, web scraping, Puppeteer, extração de dados, parsing, ETL | `eng-automation` (base) + `AUTOMATION_SPECIALIZATIONS` |
 | Criar robô RPA novo ou manter existente (new|update + card) | `eng.rpa.robot` (workflow) |
-| Testes E2E em linguagem natural, fluxos de usuário, regressão de UI, smoke tests pós-deploy | `eng-qa-e2e` |
-| Gerar specs Cypress + TypeScript para fluxos de usuário | `eng-qa-cypress-e2e` |
-| Sessão de teste exploratório estruturada (charter, risco, achados, bug cards) | `eng-qa-exploratory` |
-| Orientar dev sobre cobertura Cypress sem escrever o teste | `eng-qa-dev-guide` |
-| Consolidar sessões exploratórias, bugs e quality gates e gerar relatório de qualidade por sprint/release | `eng-qa-quality-report` |
-| Testes de acessibilidade WCAG 2.1 AA: integra jest-axe em testes unitários existentes | `eng-qa-a11y-audit` |
-| Testes de contrato GraphQL: valida queries frontend contra schema do BFF | `eng-qa-graphql-contract` |
-| Spec E2E para handoff: cenários priorizados, Page Objects, fixtures, intercepts, setup | `eng-qa-e2e-spec-writer` |
 | Planejar capacidade QA da sprint: risco por task, alocação entre QAs e Quality Champions | workflow `eng.qa-sprint-planning` |
 | Sign-off QA pré-deploy: verifica cobertura, bugs abertos, produz GO/NO-GO + snippet CI para TL | workflow `eng.qa-release-signoff` |
-| Pipelines ETL/ELT, Glue, Airflow, PySpark, Athena, Metabase, bronze/silver/gold, contratos de dados, Great Expectations | `eng-data-engineer` |
+| Pipelines ETL/ELT, modelagem, qualidade, BI/dashboards, governança, onboarding de fonte, orquestração | `eng-data` (base) + `DATA_SPECIALIZATIONS` |
 | Criar pipeline novo (docs, qualidade, idempotência, gold) | `data.new-pipeline` |
 | Criar contrato de dados para squad requisitante | `data.contract` |
-| Dashboards BI, queries SQL analíticas, compartilhamento com squads | `eng-data-bi` |
-| Diagnóstico de falhas em pipelines por camada (fonte→bronze→silver→gold) | `eng-data-debug` |
-| Onboarding de fonte nova: schema discovery, bronze, Expectation Suite, doc | `eng-data-onboard` |
-| Criar/manter DAGs, retry strategies, alertas, troubleshooting de orquestração | `eng-data-orchestrator` |
 | Documentação central (GitLab/GitHub/Bitbucket) | `jarvis-docs-central` |
 | Bug cross-service (HTTP + AMQP) | `eng-backend-microservices-trace` |
-| Segurança de aplicações: OWASP Top 10, secrets, sanitização, headers, supply chain, compliance | `eng-security-cybersecurity` |
-| Resposta a incidentes de segurança, CVEs, vulnerabilidades | `eng.security-incident` |
-| Review de segurança em PRs (gate pré-merge) | `eng.security-review` |
-| Pipeline defensivo completo: threat-model → audit → triage → patch (fluxo guiado) | `eng.security-pipeline` |
-| Produzir threat model estruturado do projeto (bootstrap/interview) | `eng-security-threat-model` |
-| Deduplicar, verificar com multi-voto e rankear achados de segurança | `eng-security-triage` |
-| Gerar diffs candidatos para achados confirmados de segurança (fechar o loop do triage) | `eng-security-patch` |
 
 ---
 
@@ -322,7 +260,7 @@ Skills são invocados de formas diferentes dependendo da IDE:
 Não há um gerador de skills: a criação é manual.
 
 1. Escolher a **área** e o nome no padrão `<prefixo>-<área>-<nome>` (ver "Áreas e nomes")
-2. Criar a pasta `skills/{nome}/` com um `SKILL.md`, usando como modelo um skill existente de porte parecido (por exemplo, `eng-qa-gate` para um skill de fluxo, `eng-backend-nestjs` para uma especialização)
+2. Criar a pasta `skills/{nome}/` com um `SKILL.md`, usando como modelo um skill existente de porte parecido (por exemplo, `eng-qa-planner` para um skill de fluxo, `eng-backend-nestjs` para uma especialização)
 3. Preencher o frontmatter ("Frontmatter Obrigatorio"), **inclusive `metadata.area`** (e `metadata.stack` se for especialização), e as "Secoes Obrigatorias de um SKILL.md", incluindo a tabela `Skills invocados durante a execução do skill`
 4. Validar estrutura: `name` igual ao nome da pasta e área reconhecida
 5. Registrar o skill no `SKILLS-ROADMAP.md` e, se houver comando associado, na tabela "Mapeamento Comando → Skill"
@@ -364,7 +302,7 @@ Link para docs existentes?         → references/
 
 ### Skill grande com temas separaveis: roteador + references/
 
-O corpo do `SKILL.md` e carregado inteiro ao invocar a skill. Quando a skill tem **3 ou mais temas que se usam isoladamente** (por exemplo guards, testes, troubleshooting), mantenha no `SKILL.md` so o que vale sempre (objetivo, quando usar, padroes criticos, arvore de decisao, regras, checklist, a tabela de skills invocados) e uma tabela "Referencias" (Tema | Quando ler | Arquivo); cada tema vai para `references/{n}-{tema}.md`. Modelo: `skills/eng-backend/`. Ja seguem o modelo: `eng-backend-nestjs`, `eng-automation`, `eng-security-cybersecurity`, `eng-backend-rabbitmq`, `eng-frontend-microfrontend`, `eng-frontend-design-system` e `eng-qa-bug-report` (so os temas de apoio: adapters de task manager, exemplos e bug-to-test; o fluxo por modos fica no `SKILL.md`).
+O corpo do `SKILL.md` e carregado inteiro ao invocar a skill. Quando a skill tem **3 ou mais temas que se usam isoladamente** (por exemplo guards, testes, troubleshooting), mantenha no `SKILL.md` so o que vale sempre (objetivo, quando usar, padroes criticos, arvore de decisao, regras, checklist, a tabela de skills invocados) e uma tabela "Referencias" (Tema | Quando ler | Arquivo); cada tema vai para `references/{n}-{tema}.md`. Modelo: `skills/eng-backend/`. Ja seguem o modelo: `eng-backend-nestjs`, `eng-automation`, `eng-backend-rabbitmq`, `eng-platform`, `eng-qa`, `eng-ai`, `eng-data` e `eng-frontend`.
 
 Nao converta procedimento sequencial (passo 1, 2, 3 que se le de ponta a ponta) nem skill pequena (menos de ~8 KB): nao ha tema para pular, so mais arquivos para ler.
 
@@ -379,4 +317,4 @@ Nao converta procedimento sequencial (passo 1, 2, 3 que se le de ponta a ponta) 
 
 ---
 
-**Ultima atualizacao**: 2026-03-10
+**Ultima atualizacao**: 2026-10-05

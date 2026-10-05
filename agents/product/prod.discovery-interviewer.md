@@ -89,9 +89,9 @@ Para consultar a arquitetura atual:
 - Arquivo: `$IDE/skills/eng-backend-arch-c4/SKILL.md`
 - Confiança: só com a confirmação do usuário (skill de engenharia: pergunte antes de consultá-la; o que ela retornar entra no discovery como **suposição a validar**, não como fato)
 
-### eng-security-cybersecurity
-Para quando a ideia envolve autenticação, dados pessoais ou fluxo financeiro:
-- Arquivo: `$IDE/skills/eng-security-cybersecurity/SKILL.md`
+### eng-platform
+Para quando a ideia envolve infraestrutura, dados pessoais ou fluxo financeiro com risco de segurança/privacidade:
+- Arquivo: `$IDE/skills/eng-platform/SKILL.md` (temas 9 e 13)
 - Confiança: só com a confirmação do usuário (skill de engenharia: pergunte antes de consultá-la; o que ela retornar entra no discovery como **suposição a validar**, não como fato)
 
 ## Restrições

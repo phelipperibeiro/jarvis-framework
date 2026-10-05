@@ -234,7 +234,7 @@ Fluxo correto:
 3. Se `HUB≠DATA`: remover o bloco DATA_* inteiro
 4. Garantir `SESSIONS_DIR=.jarvis/sessions` e `JARVIS_PROJECT=https://github.com/phelipperibeiro/jarvis-framework` (ou URL que o usuário informar)
 5. Escrever `$IDE/ENV.md` com o restante do template (incluindo variáveis vazias)
-6. As chaves `BACKEND_SPECIALIZATIONS` e `FRONTEND_SPECIALIZATIONS` ficam **vazias**: não são perguntadas aqui. O registro de especializações é feito no **passo 9 (adicionar as stacks)**, ou depois, a qualquer momento: consulta com `jarvis-list-specializations` e criação com `jarvis-create-specialization`.
+6. As 6 chaves de especialização ficam **vazias**, exceto `QA_SPECIALIZATIONS`, que vem com `eng-qa-planner` (único hoje, pré-registrado por padrão — ver `templates/ENV-template.md`): não são perguntadas aqui. O registro/ajuste é feito no **passo 9 (adicionar as stacks)**, ou depois, a qualquer momento: consulta com `jarvis-list-specializations` e criação com `jarvis-create-specialization` (só backend/frontend).
 
 ### 3. Coletar Variáveis Obrigatórias
 
@@ -1000,13 +1000,13 @@ cp "$pasta/$relPath" "$IDE/$pasta/$relPath"   # $pasta = rules ou rules-on-deman
 
 Oferecido sempre que o `ENV.md` fica pronto: criação, atualização, **Upgrade (C)** e o caso "já atualizado". **Não** é oferecido ao cancelar (D). A pessoa pode **pular**; ao pular, as listas ficam como estão e o projeto usa só a skill base.
 
-Trata **somente backend e frontend**. O passo:
+A **detecção de stack por código e a criação de skill novo** (sub-passos 9.4-9.6) tratam **somente backend e frontend** — são as únicas áreas com universo de stack aberto (qualquer linguagem/framework novo). **Listar o que já está instalado e registrar direto** (sub-passo 9.3) vale para as **6 áreas** com especialização (backend, frontend, qa, data, automation, platform): essas 4 últimas têm um conjunto fixo de skills pré-construídos, sem detecção por código nem criação — só listar e registrar (ver `architecture.md` da #63, Decisão 3.5). O passo:
 
-1. Confere que `BACKEND_SPECIALIZATIONS` e `FRONTEND_SPECIALIZATIONS` existem (acrescenta vazias se faltarem)
-2. Lista as especializações instaladas, registradas ou não, e deixa registrar uma direto
-3. **Lê** o workspace (a análise **só lê**: não altera arquivos do projeto nem as listas), identifica as stacks de backend e de frontend, inclusive de vários projetos, e **mostra o que encontrou antes de sugerir**
-4. Para cada stack, sugere **registrar o skill que já existe** (mesmo `area` e `stack`) ou **criar um novo** com `/jarvis-create-specialization {área} {stack}`; a pessoa escolhe, e o que não aceita não muda
-5. Mostra um resumo das listas e do que foi registrado ou criado
+1. Confere que as 6 variáveis de especialização existem (acrescenta vazias as que faltarem)
+2. Lista as especializações instaladas de todas as 6 áreas, registradas ou não, e deixa registrar qualquer uma direto
+3. **Lê** o workspace (a análise **só lê**: não altera arquivos do projeto nem as listas), identifica as stacks de backend e de frontend, inclusive de vários projetos, e **mostra o que encontrou antes de sugerir** (só essas 2 áreas)
+4. Para cada stack de backend/frontend, sugere **registrar o skill que já existe** (mesmo `area` e `stack`) ou **criar um novo** com `/jarvis-create-specialization {área} {stack}`; a pessoa escolhe, e o que não aceita não muda
+5. Mostra um resumo das 6 listas e do que foi registrado ou criado
 
 O tempo de ~10 minutos é referência, não limite. Nunca leia `.env*`, chaves ou credenciais.
 
@@ -1032,7 +1032,7 @@ O tempo de ~10 minutos é referência, não limite. Nunca leia `.env*`, chaves o
 - Usuário: {USER}
 - Cargo: {POSITION}
 - Limite AI: {MAX_AI_EXECUTION_PERCENTAGE}%
-- Especializações: {BACKEND_SPECIALIZATIONS e FRONTEND_SPECIALIZATIONS, ou "só skill base"}
+- Especializações: {as 6 variáveis registradas, ou "só skill base" por área}
 - CDD: habilitado
 - JARVIS_PROJECT: {JARVIS_PROJECT}
 

@@ -22,9 +22,8 @@ prompts/
 │   ├── LEGACY_PROJECTS.md        # Guia para projetos legados
 │   │
 │   ├── agents/                   # 16 agentes ativos
-│   │   ├── engineering/          # Agentes de engenharia (14 ativos: 8 main + 5 QA + 1 Data)
+│   │   ├── engineering/          # Agentes de engenharia (13 ativos: 7 main + 5 QA + 1 Data)
 │   │   │   ├── eng.agent.md
-│   │   │   ├── eng.cybersecurity.agent.md  # Cybersecurity e AppSec (SENTINEL)
 │   │   │   ├── eng.bug-hunter.md
 │   │   │   ├── eng.dev-code-reviewer.md
 │   │   │   ├── eng.docs-writer.md
@@ -47,32 +46,22 @@ prompts/
 │   ├── skills/                   # Skills (todos com metadata.area)
 │   │   ├── jarvis-context-detect/
 │   │   ├── jarvis-docs-index/
-│   │   ├── eng-ai-engineer/
+│   │   ├── eng-ai/
 │   │   ├── eng-backend-arch-c4/
 │   │   ├── eng-backend/           # Base neutra de backend (+ especializações em BACKEND_SPECIALIZATIONS)
 │   │   ├── eng-backend-microservices-trace/          # Rastreamento de bugs cross-service (HTTP + AMQP)
-│   │   ├── eng-global-browser-extension-builder/
 │   │   ├── eng-global-docs-write/
-│   │   ├── eng-frontend/          # Base neutra de frontend (+ especializações em FRONTEND_SPECIALIZATIONS)
-│   │   ├── eng-frontend-microfrontend/     # Module Federation, shell/remote, contratos, event bus
-│   │   ├── eng-frontend-design-system/     # Tokens, CVA, Storybook, versionamento, auditoria visual
+│   │   ├── eng-frontend/          # Base neutra de frontend (design system/tokens e micro frontend inclusos; + especializações em FRONTEND_SPECIALIZATIONS)
 │   │   ├── eng-backend-nestjs/            # Framework NestJS: módulos, DI, guards, interceptors
-│   │   ├── eng-devops-performance-engineer/
 │   │   ├── eng-global-pr/
 │   │   ├── eng-backend-rabbitmq/          # Mensageria RabbitMQ
-│   │   ├── eng-data-engineer/     # Pipelines ETL/ELT, Athena, MySQL, Metabase, contratos de dados
+│   │   ├── eng-data/              # Base neutra de dados (+ especializações em DATA_SPECIALIZATIONS)
 │   │   ├── eng-automation/           # Web scraping, Puppeteer, ETL
 │   │   ├── jarvis-init/
 │   │   ├── product-specs/
 │   │   ├── product-specs-update/
-│   │   ├── eng-qa-bug-report/
-│   │   ├── eng-qa-cypress-e2e/          # Testes E2E Cypress + TypeScript (Page Objects, data-testid, intercept)
-│   │   ├── eng-qa-dev-guide/            # Orienta devs a escreverem seus próprios testes Cypress
-│   │   ├── eng-qa-exploratory/          # Sessões de teste exploratório estruturadas
-│   │   ├── eng-qa-gate/
-│   │   ├── eng-qa-test-plan/
-│   │   ├── eng-qa-testsprite/
-│   │   ├── eng-qa-unit-test/
+│   │   ├── eng-qa/                 # Base neutra de QA (+ especializações em QA_SPECIALIZATIONS)
+│   │   ├── eng-qa-planner/         # Planejamento de testes e análise de gaps de cobertura
 │   │   ├── jarvis-report-issue/          # Auto-report de bugs no repo do Jarvis (GitLab/GitHub/Bitbucket)
 │   │   ├── eng-global-task-comment/      # Comentário no card (Jira/Linear/GitHub/Asana)
 │   │   ├── jarvis-list-specializations/ # Lista especializações de stack instaladas e registradas

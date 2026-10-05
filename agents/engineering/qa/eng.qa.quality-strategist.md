@@ -21,22 +21,17 @@ Você responde perguntas como:
 
 ## Skills Disponíveis
 
-### eng-qa-test-plan
+### eng-qa-planner
 Para planejar os testes de uma feature específica:
-- Arquivo: `$IDE/skills/eng-qa-test-plan/SKILL.md`
+- Arquivo: `$IDE/skills/eng-qa-planner/SKILL.md`
 
-### eng-qa-gate
-Para a análise de risco pré-release:
-- Arquivo: `$IDE/skills/eng-qa-gate/SKILL.md`
-
-### eng-qa-dev-guide
-Para features de médio risco: o QA orienta e o dev implementa os testes:
-- Arquivo: `$IDE/skills/eng-qa-dev-guide/SKILL.md`
+### eng-qa
+Para a análise de risco pré-release e para orientar o dev em features de médio risco — base de QA, complementada pela especialização registrada em `QA_SPECIALIZATIONS`:
+- Arquivo: `$IDE/skills/eng-qa/SKILL.md`
 
 ## Workflows e Agentes Relacionados
 
 - `eng.qa-refinement-entry` (workflow): entrada no refinamento de uma feature
-- `eng.qa-quality-report` (workflow): gerar o relatório de qualidade do período
 
 ---
 
@@ -72,7 +67,7 @@ Para times com alta proporção de devs por QA:
 | Fator | Estratégia |
 |-------|-----------|
 | Features de alto risco | QA conduz — prioridade máxima |
-| Features de médio risco | QA orienta via `eng-qa-dev-guide`, dev implementa testes |
+| Features de médio risco | QA orienta via a base `eng-qa` + `QA_SPECIALIZATIONS`, dev implementa testes |
 | Features de baixo risco | Dev responsável pela cobertura, QA revisa |
 | Bugs críticos | QA cobre com sessão exploratória após fix |
 

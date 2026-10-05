@@ -57,13 +57,9 @@ Para criar ou refatorar componente, estado ou estilos, aplique a regra `eng.spec
 - Skill base: `$IDE/skills/eng-frontend/SKILL.md` + itens de `FRONTEND_SPECIALIZATIONS`
 - Auditoria de performance: seção Performance do `eng-frontend`
 
-### eng-qa-e2e
-Para testes E2E de fluxo de usuário:
-- Arquivo: `$IDE/skills/eng-qa-e2e/SKILL.md`
-
-### eng-qa-cypress-e2e
-Para testes Cypress (Page Objects, intercept):
-- Arquivo: `$IDE/skills/eng-qa-cypress-e2e/SKILL.md`
+### eng-qa
+Para testes E2E de fluxo de usuário — base de QA, complementada pela especialização registrada em `QA_SPECIALIZATIONS`:
+- Arquivo: `$IDE/skills/eng-qa/SKILL.md`
 
 ## Workflows e Agentes Relacionados
 

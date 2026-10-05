@@ -20,7 +20,6 @@ Revisa uma solução técnica, um ARD, um PR ou um trecho de código, apontando 
 
 - Validação final antes de abrir o PR da própria branch → [`eng.pre-pr`](./eng.pre-pr.md)
 - PR de frontend com checklist aprofundado (tipagem, tokens, a11y, itens da stack) → [`eng.frontend-review`](./eng.frontend-review.md)
-- Revisão específica de segurança → [`eng.security-review`](./eng.security-review.md)
 
 ## Como funciona
 

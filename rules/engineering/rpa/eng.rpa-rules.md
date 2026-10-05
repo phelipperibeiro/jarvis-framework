@@ -174,17 +174,13 @@ Documentar o resultado no `{robot-tag}-robot.md` na seção de Visão Geral.
 - Executar manualmente antes do PR em ambiente com acesso ao sistema-alvo
 - Não incluir no pipeline de CI sem ambiente controlado
 
-### TestSprite (recomendado para fluxos de UI)
+### Validação E2E (recomendada para fluxos de UI)
 
-Quando o robô interage com interface visual (browser headless), usar o skill `eng-qa-testsprite` para gerar e executar testes do fluxo de automação:
-
-```
-/eng-qa-testsprite
-```
+Quando o robô interage com interface visual (browser headless), usar a especialização de testes automatizados registrada em `QA_SPECIALIZATIONS` (via a base `eng-qa`) para gerar e executar testes do fluxo de automação:
 
 - Útil para validar que o fluxo completo (login → navegação → extração) continua funcionando após mudanças
 - Complementa os testes unitários com validação end-to-end contra o sistema-alvo em ambiente controlado
-- Referência: `$IDE/skills/eng-qa-testsprite/SKILL.md`
+- Referência: `$IDE/skills/eng-qa/SKILL.md`
 
 ---
 
@@ -225,6 +221,5 @@ com justificativa explícita. Exceções recorrentes devem ser propostas como at
 ## Referências
 
 - `$IDE/rules/engineering/eng.docs-scraping-rules.md` — padrão de documentação de robôs
-- `$IDE/skills/eng-automation/SKILL.md` — skill de scraping (Puppeteer, Playwright, ETL)
-- `$IDE/skills/eng-automation-robot-builder/SKILL.md` — skill de automação via Stagehand
+- `$IDE/skills/eng-automation/SKILL.md` — skill base de automação (+ especializações em `AUTOMATION_SPECIALIZATIONS`)
 - `$IDE/agents/engineering/eng.rpa.agent.md` — agente especializado RPA (ARACHNE)

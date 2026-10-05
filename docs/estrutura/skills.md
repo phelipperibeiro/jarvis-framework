@@ -17,13 +17,13 @@ skills/
 ├── jarvis-docs-central/              # sync/publish docs centrais
 ├── eng-backend/, eng-frontend/, eng-backend-nestjs/, …
 ├── eng-global-pr/, eng-global-docs-write/, eng-global-task-comment/
-├── eng-qa-*                   # família QA (cypress, gate, exploratory, …)
-├── eng-data-*                 # família Data
-├── eng-security-cybersecurity/, eng-security-threat-model/, eng-security-*
-├── eng-rpa via eng-automation*, eng-automation-robot-builder
+├── eng-qa/, eng-qa-planner/    # base de QA + especializações em QA_SPECIALIZATIONS
+├── eng-data/                   # base de dados (+ especializações em DATA_SPECIALIZATIONS)
+├── eng-platform/               # base de platform/infra (+ segurança) em PLATFORM_SPECIALIZATIONS
+├── eng-rpa via eng-automation (base) + AUTOMATION_SPECIALIZATIONS
 ├── product-specs/ (porta de entrada), product-specs-update/, product-roadmap-report/
 ├── jarvis-report-issue/
-└── … (50 skills; todos com `metadata.area`)
+└── … (skills restantes; todos com `metadata.area`)
 ```
 
 Inventário atual (pastas): rode `ls skills` ou `jarvis list` após o pacote instalado.
@@ -50,7 +50,7 @@ Mapa comando → skill: ver tabela em `AGENTS.md` (raiz) e `skills/AGENTS.md`.
 
 ## Áreas e nomes
 
-Todo skill tem `metadata.area` (`qa`, `data`, `ai`, `frontend`, `backend`, `security`, `automation`, `devops`, `global` ou `product`) e um nome no padrão `<prefixo>-<área>-<nome>`: `eng-<área>-...` para engenharia, `eng-global-...` para engenharia global, `product-...` para produto e `jarvis-...` para os transversais do framework. Especializações de backend e frontend também têm `metadata.stack` e só são carregadas quando registradas no `ENV.md`. Skill sem área reconhecida bloqueia os comandos `eng.*`. Detalhes em `skills/AGENTS.md`.
+Todo skill tem `metadata.area` (`qa`, `data`, `ai`, `frontend`, `backend`, `automation`, `devops`, `platform`, `global` ou `product`) e um nome no padrão `<prefixo>-<área>-<nome>`: `eng-<área>-...` para engenharia, `eng-global-...` para engenharia global, `product-...` para produto e `jarvis-...` para os transversais do framework. Especializações de backend e frontend também têm `metadata.stack` e só são carregadas quando registradas no `ENV.md`. Skill sem área reconhecida bloqueia os comandos `eng.*`. Detalhes em `skills/AGENTS.md`.
 
 ## No ciclo de vida
 

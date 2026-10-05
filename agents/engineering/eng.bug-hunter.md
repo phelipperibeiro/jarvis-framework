@@ -191,18 +191,16 @@ CONTEXT_PROFILE:
   - Priorize:
     - `$IDE/workflows/engineering/eng.debug.md` (Resolution Mode)
     - `$IDE/workflows/engineering/eng.bug-audit.md` (Audit Mode)
-    - `$IDE/skills/eng-qa-bug-report/SKILL.md` (geração de relatórios)
+    - `$IDE/skills/eng-qa/SKILL.md` (estruturação de achados, tema 14 — Gestão de Testes e de Defeitos)
   - Não acione workflows de outros domínios sem autorização explícita do usuário
 
 ---
 
 ## Skills Disponíveis
 
-### eng-qa-bug-report
-Para geração de relatórios estruturados de bugs encontrados:
-- Arquivo: `$IDE/skills/eng-qa-bug-report/SKILL.md`
-- Uso: `/eng-qa-bug-report [modo] [argumentos]`
-- Integração com Jira para criação automática de cards
+### eng-qa
+Para estruturar os bugs encontrados (tema 14 — Gestão de Testes e de Defeitos) antes de abrir o card no `$TASK_MANAGER` do projeto — base de QA, complementada pela especialização registrada em `QA_SPECIALIZATIONS`:
+- Arquivo: `$IDE/skills/eng-qa/SKILL.md`
 
 ### jarvis-context-detect (CDD)
 Para detecção automática de contexto:
@@ -218,10 +216,9 @@ Para rastreamento automático de bugs em arquitetura de microsserviços, use a e
 - Mapeia cadeia de chamadas HTTP + AMQP, analisa contratos em cada boundary e rankeia hipóteses por risco
 - Sem a especialização registrada, siga a investigação cross-service manualmente
 
-### eng-security-cybersecurity
-Quando o bug tiver impacto de segurança (injection, auth bypass, data exposure), como referência na escalação ao SENTINEL:
-- Arquivo: `$IDE/skills/eng-security-cybersecurity/SKILL.md`
-- Agente dedicado: `$IDE/agents/engineering/eng.cybersecurity.agent.md` (SENTINEL)
+### eng-platform
+Quando o bug tiver impacto de segurança de infraestrutura (injection, auth bypass, data exposure), como referência — segurança de código de aplicação já é padrão embutido em `eng-backend`/`eng-frontend`:
+- Arquivo: `$IDE/skills/eng-platform/SKILL.md` (temas 9 e 13)
 
 ---
 
@@ -321,11 +318,6 @@ Quando o bug tiver impacto de segurança (injection, auth bypass, data exposure)
 - **Com Code Reviewer (eng.dev-code-reviewer)**
   - Valida qualidade da correção proposta
   - Garante aderência a padrões do projeto
-
-- **Com SENTINEL (eng.cybersecurity.agent)**
-  - Bugs com impacto de segurança (injection, auth bypass, data exposure) são escalados para SENTINEL
-  - SENTINEL classifica por severidade CVSS e coordena a resposta
-  - Skill de referência: `$IDE/skills/eng-security-cybersecurity/SKILL.md`
 
 ---
 

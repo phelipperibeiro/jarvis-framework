@@ -47,7 +47,7 @@ O comando e o agente seguem obrigatoriamente `$PROD_RULES` (`prod-rules.md`):
 | Passo 2 — Reconhecer o projeto | `/jarvis-docs-central` | Se `CENTRAL_DOCS_REPO` estiver configurado |
 | Passo 2 — Reconhecer o projeto | `/jarvis-context-detect` | Para calibrar a profundidade da entrevista |
 | Passo 2 — Reconhecer o projeto | `/eng-backend-arch-c4` | Só com a confirmação do usuário; o retorno é tratado como suposição a validar |
-| Passo 2 — Reconhecer o projeto | `/eng-security-cybersecurity` | Só com a confirmação do usuário; o retorno é tratado como suposição a validar |
+| Passo 2 — Reconhecer o projeto | `/eng-platform` + `PLATFORM_SPECIALIZATIONS` | Só com a confirmação do usuário; o retorno é tratado como suposição a validar |
 
 ## Passo 0 — Entender o que foi pedido
 
@@ -72,7 +72,7 @@ Antes de perguntar, consulte o que já existe:
 - O código e os últimos commits, quando ajudarem a embasar a viabilidade
 - `jarvis-docs-central`, se `CENTRAL_DOCS_REPO` estiver configurado
 - `jarvis-context-detect`, para calibrar a profundidade da entrevista
-- `eng-backend-arch-c4` e `eng-security-cybersecurity` são skills de engenharia: só consulte **com a confirmação do usuário**, e trate o retorno como **suposição a validar**, não como fato
+- `eng-backend-arch-c4` e `eng-platform` (+ `PLATFORM_SPECIALIZATIONS`) são skills de engenharia: só consulte **com a confirmação do usuário**, e trate o retorno como **suposição a validar**, não como fato
 
 ## Passo 3 — Criar o arquivo
 

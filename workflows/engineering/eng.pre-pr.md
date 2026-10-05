@@ -16,20 +16,16 @@ Estamos nos aproximando de finalizar o trabalho nesta branch e nos preparar para
 
 ## Skills recomendados
 
-- **eng-qa-test-plan**: para avaliar cobertura de testes e identificar gaps antes do PR.
-  - Arquivo: `$IDE/skills/eng-qa-test-plan/SKILL.md`
-- **eng-qa-testsprite**: para executar testes automatizados e validar cobertura com TestSprite MCP.
-  - Arquivo: `$IDE/skills/eng-qa-testsprite/SKILL.md`
+- **eng-qa-planner**: para avaliar cobertura de testes e identificar gaps antes do PR — se a especialização estiver registrada em `QA_SPECIALIZATIONS` (ver `$IDE/rules/engineering/eng.specializations-rules.md`). Sem ela, use a base `eng-qa` diretamente.
+  - Arquivo: `$IDE/skills/eng-qa-planner/SKILL.md`
 - **eng-global-docs-write**: para atualizar documentação baseada nas mudanças da branch.
   - Arquivo: `$IDE/skills/eng-global-docs-write/SKILL.md`
 - **jarvis-docs-index**: para atualizar o índice de documentação quando necessário.
   - Arquivo: `$IDE/skills/jarvis-docs-index/SKILL.md`
-- **eng-devops-performance-engineer**: para validar thresholds de performance e analisar regressões quando a feature tiver requisitos não-funcionais de latência, throughput ou escalabilidade.
-  - Arquivo: `$IDE/skills/eng-devops-performance-engineer/SKILL.md`
+- **eng-platform** + a especialização registrada em `PLATFORM_SPECIALIZATIONS` (se houver uma): para validar thresholds de performance e analisar regressões quando a feature tiver requisitos não-funcionais de latência, throughput ou escalabilidade (temas 14, 15 e 16).
+  - Arquivo: `$IDE/skills/eng-platform/SKILL.md`
 - **Skills de backend e frontend**: para validar código de backend (endpoints, autenticação, workers) ou de frontend (componentes, performance de UI e acessibilidade WCAG 2.1 AA), aplique a regra `$IDE/rules/engineering/eng.specializations-rules.md` para a área envolvida: ela carrega o skill base e as especializações registradas no `ENV.md`.
   - Arquivo da regra: `$IDE/rules/engineering/eng.specializations-rules.md`
-- **eng-security-cybersecurity**: quando a branch tocar em auth, sessions, inputs, CORS, CSP, permissões ou adicionar dependências novas.
-  - Arquivo: `$IDE/skills/eng-security-cybersecurity/SKILL.md`
 
 <arguments>
 #$ARGUMENTS
@@ -39,12 +35,11 @@ Estamos nos aproximando de finalizar o trabalho nesta branch e nos preparar para
 
 | Passo | Skill | Condição |
 |-------|-------|----------|
-| Skills recomendados | `/eng-qa-test-plan` | Para avaliar cobertura de testes e identificar gaps antes do PR |
+| Skills recomendados | `/eng-qa-planner` | Se a especialização estiver registrada em `QA_SPECIALIZATIONS`; sem ela, usar a base `/eng-qa` diretamente |
 | Skills recomendados | `/eng-global-docs-write` | Para atualizar a documentação com base nas mudanças da branch |
 | Skills recomendados | `/jarvis-docs-index` | Se for necessário atualizar o índice de documentação |
-| Skills recomendados | `/eng-devops-performance-engineer` | Se a feature tiver requisitos não-funcionais de latência, throughput ou escalabilidade |
+| Skills recomendados | `/eng-platform` + `PLATFORM_SPECIALIZATIONS` | Se a feature tiver requisitos não-funcionais de latência, throughput ou escalabilidade |
 | Skills recomendados | `/eng-backend` e `/eng-frontend` (via `eng.specializations-rules.md`) | Para validar código de backend (endpoints, autenticação, workers) ou de frontend (componentes, performance de UI, WCAG 2.1 AA); a regra também carrega as especializações registradas no ENV.md |
-| Skills recomendados | `/eng-security-cybersecurity` | Se a branch tocar em auth, sessions, inputs, CORS, CSP, permissões ou adicionar dependências novas |
 | Fase 0.5: Comentário no card — Início | `/eng-global-task-comment` | Se `TASK_MANAGER` estiver preenchido (freelance pula) |
 | Gate 0: Verificar Documentação Central | `/jarvis-docs-central` (via `jarvis docs publish --tipo ard`) | Se `CENTRAL_DOCS_REPO` estiver configurado, houver mudança arquitetural, o ARD estiver desatualizado ou novo e o usuário aceitar publicar |
 | Gates › item 1 | `prod.pm-checker` (agente) | Sempre — verificar alinhamento da branch com os docs de produto e engenharia |
@@ -52,11 +47,11 @@ Estamos nos aproximando de finalizar o trabalho nesta branch e nos preparar para
 | Gates › item 3 | `eng.qa.test-planner` (agente) | Sempre — identificar gaps de cobertura de testes na branch |
 | Gates › item 4 | `eng.qa.testing-engineer` (agente) | Se o test-planner identificar gaps críticos (escrever os testes faltantes) |
 | Gates › item 5 | `eng.qa.test-architect` (agente) | Se a feature tiver requisitos não-funcionais (no `architecture.md` ou explícitos na task) |
-| Gates › item 6 | `/eng-qa-testsprite` | Sempre — `testScope=diff`, com `type=frontend` e/ou `type=backend` conforme o projeto |
+| Gates › item 6 | `/eng-qa` + `QA_SPECIALIZATIONS` | Sempre — frontend e/ou backend conforme o projeto |
 | Gates › item 7 | `eng.frontend.agent` (agente) | Se a branch tiver mudanças de interface (componentes, estilos, estado) |
 | Gates › item 8 | `eng.ux-designer.agent` (agente) | Se a branch introduzir nova feature de UI ou alterar fluxo de usuário |
 | Gates › item 9 | `eng.docs-writer` (agente) | Sempre — atualizar a documentação do projeto |
-| Gates › item 10 | `/eng.security-review` | Se a branch tocar em auth, sessions, inputs de usuário, CORS, CSP, permissões ou adicionar endpoints públicos |
+| Gates › item 10 | Nenhuma — checklist inline | Se a branch tocar em auth, sessions, inputs de usuário, CORS, CSP, permissões ou adicionar endpoints públicos |
 | Comentário no card — Conclusão | `/eng-global-task-comment` | Se `TASK_MANAGER` estiver preenchido, com o status final (freelance pula) |
 
 ## Fase 0.5: Comentário no card — Início
@@ -119,10 +114,7 @@ git diff main...HEAD | grep -E "(class|interface|schema|migration|config)" || tr
    - Testes de performance executados e dentro dos thresholds
    - Testes de segurança passando (RBAC, injection, etc.)
    - Quality gates configurados corretamente
-6. Execute o skill [eng-qa-testsprite]($IDE/skills/eng-qa-testsprite/SKILL.md) com `testScope=diff` para validar testes automatizados nas mudanças da branch.
-   - Se o projeto tiver frontend: execute com `type=frontend`
-   - Se o projeto tiver backend: execute com `type=backend`
-   - Se tiver ambos: execute os dois tipos sequencialmente
+6. Use a base [eng-qa]($IDE/skills/eng-qa/SKILL.md) (ou a especialização registrada em `QA_SPECIALIZATIONS`, se houver uma) para validar testes automatizados nas mudanças da branch, frontend e/ou backend conforme o projeto.
 7. **Se a branch tiver mudanças de interface** (componentes, estilos, estado), invoque o agente [eng.frontend.agent]($IDE/agents/engineering/eng.frontend.agent.md) para validar:
    - Tipagem forte (quando a linguagem tem), tokens de design do projeto usados, acessibilidade WCAG 2.1 AA
    - Aplicar as exigências das especializações de frontend registradas (ver `eng.specializations-rules.md`)
@@ -130,7 +122,7 @@ git diff main...HEAD | grep -E "(class|interface|schema|migration|config)" || tr
    - Empty states, loading states e mensagens de erro em linguagem humana
    - Consistência com padrões visuais existentes no produto
 9. Invoque o agente [eng.docs-writer]($IDE/agents/engineering/eng.docs-writer.md) para atualizar a documentação do projeto.
-10. **Se a branch tocar em auth, sessions, inputs de usuário, CORS, CSP, permissões ou adicionar endpoints públicos**, executar o workflow [eng.security-review]($IDE/workflows/engineering/eng.security-review.md) como gate de segurança:
+10. **Se a branch tocar em auth, sessions, inputs de usuário, CORS, CSP, permissões ou adicionar endpoints públicos**, aplicar o gate de segurança (os padrões de segurança da base [eng-backend]($IDE/skills/eng-backend/SKILL.md) + `BACKEND_SPECIALIZATIONS` / [eng-frontend]($IDE/skills/eng-frontend/SKILL.md) + `FRONTEND_SPECIALIZATIONS` e, para infraestrutura, do [eng-platform]($IDE/skills/eng-platform/SKILL.md) + `PLATFORM_SPECIALIZATIONS` servem de referência):
    - Revisar sanitização de inputs e queries parametrizadas
    - Verificar auth guards em endpoints novos
    - Validar headers de segurança e configurações de CORS
@@ -143,7 +135,7 @@ Você também precisará lidar com todo o feedback que esses agentes fornecerem 
 ## Checklist final (obrigatório)
 
 - [ ] Não existem bloqueadores abertos (segurança/bugs críticos).
-- [ ] Testes e validações relevantes foram executados e passaram (com evidências via eng-qa-testsprite ou manual).
+- [ ] Testes e validações relevantes foram executados e passaram (com evidências automatizadas ou manuais).
 - [ ] Cobertura de testes para mudanças da branch foi avaliada (e gaps críticos tratados ou justificados).
 - [ ] Documentação foi revisada/atualizada (listar arquivos alterados) ou foi explicitado por que não foi necessário.
 - [ ] Riscos conhecidos e trade-offs foram registrados (e follow-ups criados quando aplicável).

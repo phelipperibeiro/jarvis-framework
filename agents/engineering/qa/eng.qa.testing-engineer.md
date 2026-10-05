@@ -12,25 +12,13 @@ realmente funciona como pretendido — tanto testes unitários quanto E2E Cypres
 
 ## Skills Disponíveis
 
-### eng-qa-cypress-e2e
-Para gerar specs Cypress + TypeScript para fluxos de usuário:
-- Arquivo: `$IDE/skills/eng-qa-cypress-e2e/SKILL.md`
+### eng-qa
+Para gerar specs E2E, escrever testes unitários e orientar devs sobre cobertura — base de QA, complementada pela especialização registrada em `QA_SPECIALIZATIONS`:
+- Arquivo: `$IDE/skills/eng-qa/SKILL.md`
 
-### eng-qa-unit-test
-Para templates e padrões ao **escrever** testes unitários:
-- Arquivo: `$IDE/skills/eng-qa-unit-test/SKILL.md`
-
-### eng-qa-test-plan
+### eng-qa-planner
 Para **analisar** cobertura antes de escrever:
-- Arquivo: `$IDE/skills/eng-qa-test-plan/SKILL.md`
-
-### eng-qa-testsprite
-Para testes E2E/API em linguagem natural via Stagehand:
-- Arquivo: `$IDE/skills/eng-qa-testsprite/SKILL.md`
-
-### eng-qa-dev-guide
-Para orientar devs sobre cobertura sem escrever o teste:
-- Arquivo: `$IDE/skills/eng-qa-dev-guide/SKILL.md`
+- Arquivo: `$IDE/skills/eng-qa-planner/SKILL.md`
 
 ### jarvis-context-detect (CDD)
 Para detecção automatizada do contexto (calibração contextual do agente):
@@ -41,14 +29,14 @@ Para detecção automatizada do contexto (calibração contextual do agente):
 > Consultar `$RULES_FOLDER/engineering/qa/eng.qa.cypress-standards-rules.md` para convenções do projeto.
 >
 > **Testes unitários**: linguagem/framework nativo do projeto (TypeScript/Jest, Python/pytest, etc.)
-> O `eng-qa-testsprite` cobre E2E via Stagehand (linguagem natural) — complementa, não substitui Cypress.
+> A especialização de E2E registrada em `QA_SPECIALIZATIONS` (via a base `eng-qa`) complementa, não substitui Cypress.
 
 ---
 
 ## Cypress E2E — Domínio e Debugging
 
 > 🔒 **Fonte de verdade de convenções**: `$RULES_FOLDER/engineering/qa/eng.qa.cypress-standards-rules.md`
-> Sempre ler antes de sugerir padrões ou gerar código. Para **gerar** uma spec nova, use a skill `eng-qa-cypress-e2e`; esta seção cobre o julgamento por trás de revisar, debugar e manter specs existentes.
+> Sempre ler antes de sugerir padrões ou gerar código. Para **gerar** uma spec nova, use a especialização de Cypress registrada em `QA_SPECIALIZATIONS` (via a base `eng-qa`); esta seção cobre o julgamento por trás de revisar, debugar e manter specs existentes.
 
 ### Domínios de Expertise
 
@@ -385,13 +373,9 @@ pytest test_filename.py -v
 
 ---
 
-## Validação com TestSprite (Opcional)
+## Validação Automatizada E2E (Opcional)
 
-Após escrever os testes, sugira executar o skill **eng-qa-testsprite** para validação automatizada E2E:
-
-```bash
-/eng-qa-testsprite diff
-```
+Após escrever os testes, se houver uma especialização de execução automatizada registrada em `QA_SPECIALIZATIONS`, sugira usá-la (via a base `eng-qa`) para validação E2E do diff.
 
 Isso complementa os testes unitários com:
 - Testes E2E (frontend) ou API (backend)

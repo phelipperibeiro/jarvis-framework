@@ -20,16 +20,12 @@ Este comando cria a **branch, commita as alterações e abre um Merge Request**.
 
 - **pr**: siga o playbook do skill para padronizar branch, commits e MR.
   - Arquivo: `$IDE/skills/eng-global-pr/SKILL.md`
-- **eng-qa-test-plan**: se precisar validar lacunas de testes antes de abrir o MR.
-  - Arquivo: `$IDE/skills/eng-qa-test-plan/SKILL.md`
-- **eng-qa-testsprite**: para executar testes automatizados E2E/API antes de abrir o MR.
-  - Arquivo: `$IDE/skills/eng-qa-testsprite/SKILL.md`
-- **eng-qa-e2e**: para validar fluxos de usuário críticos com testes E2E em linguagem natural antes de abrir o MR.
-  - Arquivo: `$IDE/skills/eng-qa-e2e/SKILL.md`
+- **eng-qa-planner**: se precisar validar lacunas de testes antes de abrir o MR — se a especialização estiver registrada em `QA_SPECIALIZATIONS`. Sem ela, use a base `eng-qa` diretamente.
+  - Arquivo: `$IDE/skills/eng-qa-planner/SKILL.md`
+- **eng-qa** + a especialização registrada em `QA_SPECIALIZATIONS` (se houver uma): para validar fluxos de usuário críticos ou executar testes automatizados antes de abrir o MR.
+  - Arquivo: `$IDE/skills/eng-qa/SKILL.md`
 - **eng-global-docs-write**: se houver necessidade de atualizar documentação junto do PR.
   - Arquivo: `$IDE/skills/eng-global-docs-write/SKILL.md`
-- **eng-security-cybersecurity**: se o PR toca em auth, inputs, APIs públicas ou permissões — adicionar label `security` ao MR.
-  - Arquivo: `$IDE/skills/eng-security-cybersecurity/SKILL.md`
 
 ## Agentes recomendados (opcional)
 
@@ -43,11 +39,9 @@ Este comando cria a **branch, commita as alterações e abre um Merge Request**.
 |-------|-------|----------|
 | Cabeçalho (agente) | `eng.agent` (agente) | Sempre — identidade do workflow |
 | Skills recomendados | `/eng-global-pr` | Sempre — seguir o playbook do skill para padronizar branch, commits e MR |
-| Skills recomendados | `/eng-qa-test-plan` | Se for preciso validar lacunas de testes antes de abrir o MR |
-| Fase 1 › 1.4 Executar Testes Automatizados (Opcional) | `/eng-qa-testsprite` | Se o projeto estiver rodando localmente (`/eng-qa-testsprite diff`); passo opcional, recomendado em mudanças significativas |
-| Skills recomendados | `/eng-qa-e2e` | Se for preciso validar fluxos de usuário críticos com testes E2E em linguagem natural antes de abrir o MR |
+| Skills recomendados | `/eng-qa-planner` | Se for preciso validar lacunas de testes antes de abrir o MR **e** a especialização estiver registrada em `QA_SPECIALIZATIONS` |
+| Fase 1 › 1.4 Executar Testes Automatizados (Opcional) | `/eng-qa` + `QA_SPECIALIZATIONS` | Passo opcional, recomendado em mudanças significativas |
 | Skills recomendados | `/eng-global-docs-write` | Se houver necessidade de atualizar documentação junto do PR |
-| Skills recomendados | `/eng-security-cybersecurity` | Se o PR tocar em auth, inputs, APIs públicas ou permissões (adicionar label `security` ao MR) |
 | Agentes recomendados (opcional) | `eng.qa.test-planner` (agente) | Se houver dúvidas sobre cobertura de testes ou mudanças significativas |
 | Fase 0.5: Comentário no card — Início | `/eng-global-task-comment` | Se `TASK_MANAGER` estiver preenchido (freelance pula) |
 | Fase 4 › 4.2 Criar MR/PR via adapter | `jarvis vcs create-merge` (CLI do Jarvis) | Sempre — abre o MR/PR conforme `VERSION_CONTROL` ou o host do `origin` |
@@ -109,19 +103,7 @@ npm run build  # ou comando do projeto
 
 ### 1.4 Executar Testes Automatizados (Opcional)
 
-Se o projeto estiver rodando localmente, execute o skill **eng-qa-testsprite** para validação completa:
-
-```
-/eng-qa-testsprite diff
-```
-
-Isso irá:
-
-- Gerar plano de testes para as mudanças recentes (diff)
-- Executar testes E2E (frontend) ou API (backend)
-- Gerar relatório em `testsprite_tests/`
-
-> **Observação**: o comportamento exato de "diff" pode variar (staged vs uncommitted). Se necessário, valide com o usuário qual estado do Git deve ser considerado antes de executar.
+Para mudanças significativas, use a base [eng-qa](../../skills/eng-qa/SKILL.md) (ou a especialização registrada em `QA_SPECIALIZATIONS`, se houver uma) para validar os cenários afetados pelo diff antes de abrir o MR.
 
 > **Nota**: Este passo é opcional mas recomendado para mudanças significativas.
 

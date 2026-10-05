@@ -22,24 +22,16 @@ Skills existentes e planejadas do framework Jarvis.
 - **Status**: `criado`
 
 ### `eng-automation` ✅
-- **Trigger**: web scraping, extração de dados, automação de browser, parsing HTML/XML
-- **Escopo**: Puppeteer, Cheerio, anti-bot, rate limiting, pipelines ETL light
+- **Trigger**: RPA, web scraping, automação de browser, automação de APIs, extração e ingestão de dados
+- **Escopo**: base neutra de automação (16 temas: fundamentos, aquisição, navegador, scraping/crawling, APIs, webhooks, RPA, extração estruturada/documentos, ingestão, anti-bot, rate limiting, agendamento, retentativa, credenciais, observabilidade) — especializações em `AUTOMATION_SPECIALIZATIONS` se somam a ela
 - **Status**: `criado`
 
-### `eng-automation-robot-builder` ✅
-- **Trigger**: converter fluxo manual em robô Playwright via Stagehand
-- **Escopo**: exploração com `act()`/`observe()`, geração de script Playwright TypeScript
-- **Status**: `criado`
+> `eng-automation-robot-builder` (conversão de fluxo manual em robô Playwright via Stagehand) foi
+> removido em 2026-10-05 — resumo em `skills/automation-skills-deleted.md`.
 
-### `eng-frontend-design-system` ✅
-- **Trigger**: tokens, CVA, Storybook, versionamento de componentes, auditoria visual
-- **Escopo**: design tokens, variantes com `cva`, componentes reutilizáveis, changelog de UI
-- **Status**: `criado`
-
-### `eng-frontend-microfrontend` ✅
-- **Trigger**: Module Federation, shell/remote, contratos de interface, event bus
-- **Escopo**: Webpack MF, standalone/integrado, shared dependencies, versionamento
-- **Status**: `criado`
+> `eng-frontend-design-system` e `eng-frontend-microfrontend` foram removidos em 2026-10-05 — os
+> princípios agnósticos (tokens semânticos, contrato de props, shell/remote, dependência singleton)
+> entraram na base `eng-frontend` (temas 13 e 14). Resumo em `skills/frontend-skills-deleted.md`.
 
 ### `eng-backend-rabbitmq` ✅
 - **Trigger**: mensageria, filas, events, consumers, producers, DLX
@@ -51,24 +43,18 @@ Skills existentes e planejadas do framework Jarvis.
 - **Escopo**: correlation ID, tracing distribuído, diagnóstico de falhas entre microsserviços
 - **Status**: `criado`
 
-### `eng-devops-performance-engineer` ✅
-- **Trigger**: performance, latência, throughput, profiling, otimização
-- **Escopo**: Core Web Vitals, bundle analysis, lazy loading, caching, memory leaks
-- **Status**: `criado`
+> `eng-devops-performance-engineer` (performance, profiling, load testing, caching) foi removido em
+> 2026-10-05 — os temas de profiling, testes de carga/chaos engineering e cache multi-camada
+> entraram no `eng-platform` (temas 14, 15, 16). Resumo em `skills/devops-skills-deleted.md`.
 
 ### `eng-backend-arch-c4` ✅
 - **Trigger**: arquitetura C4, diagramas de contexto/container/componente
 - **Escopo**: modelagem C4, documentação arquitetural, decisões de design
 - **Status**: `criado`
 
-### `eng-ai-engineer` ✅
-- **Trigger**: IA aplicada, chatbots, agents, n8n, LLMs
-- **Escopo**: integração de LLMs, prompts, RAG, automação com IA
-- **Status**: `criado`
-
-### `eng-global-browser-extension-builder` ✅
-- **Trigger**: extensões de navegador, Chrome extensions, content scripts
-- **Escopo**: manifest v3, background workers, content scripts, popup UI
+### `eng-ai` ✅
+- **Trigger**: IA aplicada, LLM, RAG, agentes, chatbots, ML, avaliação, MLOps
+- **Escopo**: base neutra de IA (12 temas: fundamentos de ML, matemática/estatística, dados para IA, deep learning/fundacionais, LLMs/chatbots/agentes/RAG, avaliação/experimentação, engenharia de sistemas de IA, MLOps, produto de IA, arquitetura de soluções de IA, governança, segurança/IA responsável)
 - **Status**: `criado`
 
 ### `eng-global-pr` ✅
@@ -90,99 +76,33 @@ Skills existentes e planejadas do framework Jarvis.
 
 ## Skills Criadas — Engenharia de Dados
 
-### `eng-data-engineer` ✅
-- **Trigger**: pipelines ETL/ELT, contratos de dados, qualidade
-- **Escopo**: Glue, Airflow, PySpark, Athena, Metabase, bronze/silver/gold, Great Expectations
+### `eng-data` ✅
+- **Trigger**: pipelines ETL/ELT, modelagem, qualidade, BI/dashboards, governança, onboarding de fonte, orquestração
+- **Escopo**: base neutra de dados (12 temas: fundamentos, modelagem, bancos de dados, arquitetura, pipelines/integração, qualidade, governança/metadados, estatística/análise, analytics/BI, ciência de dados, DataOps/plataforma, segurança/privacidade) — especializações em `DATA_SPECIALIZATIONS` se somam a ela
 - **Status**: `criado`
 
-### `eng-data-bi` ✅
-- **Trigger**: dashboards BI, queries SQL analíticas
-- **Escopo**: Metabase, queries analíticas, compartilhamento com squads
-- **Status**: `criado`
-
-### `eng-data-debug` ✅
-- **Trigger**: diagnóstico de falhas em pipelines por camada
-- **Escopo**: fonte → bronze → silver → gold, troubleshooting
-- **Status**: `criado`
-
-### `eng-data-onboard` ✅
-- **Trigger**: onboarding de fonte nova
-- **Escopo**: schema discovery, bronze, Expectation Suite, documentação
-- **Status**: `criado`
-
-### `eng-data-orchestrator` ✅
-- **Trigger**: DAGs, retry strategies, alertas, troubleshooting de orquestração
-- **Escopo**: Airflow, Glue scheduler, monitoramento
-- **Status**: `criado`
+> Os antigos `eng-data-engineer`, `eng-data-bi`, `eng-data-debug`, `eng-data-onboard` e
+> `eng-data-orchestrator` foram removidos em 2026-10-05 — resumo em `skills/data-skills-deleted.md`.
 
 ---
 
 ## Skills Criadas — QA
 
-### `eng-qa-gate` ✅
-- **Trigger**: quality gate validation
-- **Escopo**: critérios de aceite, bloqueio/aprovação de entrega
+### `eng-qa` ✅
+- **Trigger**: estratégia de testes, design de casos, cobertura, automação, não funcionais, gestão de defeitos
+- **Escopo**: base neutra de QA (15 temas: fundamentos, estratégia, design de casos, manual/exploratório, automação, API/contrato, interface/mobile, performance, confiabilidade, segurança, acessibilidade, dados de teste, gestão de defeitos, arquitetura de QA) — especializações em `QA_SPECIALIZATIONS` se somam a ela
 - **Status**: `criado`
 
-### `eng-qa-test-plan` ✅
+### `eng-qa-planner` ✅
 - **Trigger**: planejamento de testes
-- **Escopo**: estratégia de testes, cobertura, priorização
+- **Escopo**: análise de gaps de cobertura na branch atual, priorização — especialização de qa (registrar em `QA_SPECIALIZATIONS`)
 - **Status**: `criado`
 
-### `eng-qa-unit-test` ✅
-- **Trigger**: testes unitários
-- **Escopo**: Jest, Vitest, Testing Library, mocks, assertions
-- **Status**: `criado`
-
-### `eng-qa-e2e` ✅
-- **Trigger**: testes E2E em linguagem natural, regressão de UI
-- **Escopo**: Stagehand `act()`/`extract()`/`observe()`, exportação Cypress
-- **Status**: `criado`
-
-### `eng-qa-cypress-e2e` ✅
-- **Trigger**: specs Cypress + TypeScript
-- **Escopo**: Page Objects, `data-testid`, `cy.intercept`, fixtures, CI
-- **Status**: `criado`
-
-### `eng-qa-exploratory` ✅
-- **Trigger**: sessões de teste exploratório
-- **Escopo**: charter, roteiro de risco, achados, bug cards
-- **Status**: `criado`
-
-### `eng-qa-dev-guide` ✅
-- **Trigger**: orientar dev sobre cobertura de testes
-- **Escopo**: guia Cypress sem escrever código, Quality Champion
-- **Status**: `criado`
-
-### `eng-qa-bug-report` ✅
-- **Trigger**: reporte de bugs
-- **Escopo**: descrição, reprodução, impacto, classificação
-- **Status**: `criado`
-
-### `eng-qa-quality-report` ✅
-- **Trigger**: relatório de qualidade por sprint/release
-- **Escopo**: consolida sessões, bugs, quality gates
-- **Status**: `criado`
-
-### `eng-qa-testsprite` ✅
-- **Trigger**: testes automatizados via TestSprite
-- **Escopo**: geração automática de testes, integração MCP
-- **Status**: `criado`
-
-### `eng-qa-a11y-audit` ✅
-- **Trigger**: testes de acessibilidade WCAG 2.1 AA
-- **Escopo**: jest-axe em testes unitários existentes, report com fix sugerido
-- **Status**: `criado` (v1.5.0)
-
-### `eng-qa-graphql-contract` ✅
-- **Trigger**: testes de contrato GraphQL frontend vs BFF
-- **Escopo**: validar queries/mutations contra schema, cobertura reversa
-- **Status**: `criado` (v1.5.0)
-
-### `eng-qa-e2e-spec-writer` ✅
-- **Trigger**: spec E2E para handoff (documentação, não código)
-- **Escopo**: cenários priorizados, Page Objects, fixtures, intercepts, setup
-- **Status**: `criado` (v1.5.0)
+> Os demais skills de QA (gate, unit-test, e2e, cypress-e2e, exploratory, dev-guide, bug-report,
+> quality-report, testsprite, a11y-audit, graphql-contract, e2e-spec-writer) foram removidos em
+> 2026-10-05 — a área QA ficou só com a base (`eng-qa`) e a especialização de planejamento
+> (`eng-qa-planner`), e outras especializações entram conforme a necessidade. Resumo de 3 linhas
+> de cada um em `skills/qa-skills-deleted.md`.
 
 ---
 
@@ -234,15 +154,17 @@ Removidas: `checkin`, `checkout`, `daily`, `task-log`, `send-priority`, `sent-pr
 - **Escopo**: PostgreSQL, MySQL, Prisma, TypeORM, EXPLAIN ANALYZE, transações, NoSQL
 - **Status**: `planejado`
 
-### `eng-infrastructure`
-- **Trigger**: CI/CD, containers, cloud, IaC, observabilidade, deploy
-- **Escopo**: Docker, Kubernetes, GitHub Actions, Terraform, AWS/GCP, logs/métricas/tracing
-- **Status**: `planejado`
-
-### `eng-security-cybersecurity` ✅
-- **Trigger**: segurança de aplicação, OWASP, hardening, secrets, supply chain, compliance
-- **Escopo**: OWASP Top 10, secrets management, sanitização, headers de segurança, SAST, supply chain, LGPD/GDPR
+### `eng-platform` ✅
+- **Trigger**: CI/CD, containers, cloud, IaC, observabilidade, SRE, segurança de infra, FinOps, deploy
+- **Escopo**: base neutra de platform/infra (sistemas, redes, cloud, IaC, orquestração, CI/CD, observabilidade, confiabilidade, segurança de infra, resiliência, DevEx, custos) — unifica o que antes seria `eng-infrastructure` e a parte de infra de `devops`/`security`
 - **Status**: `criado`
+
+> A área `security` (skill base `eng-security-cybersecurity` + `eng-security-threat-model`,
+> `eng-security-triage`, `eng-security-patch`) foi descontinuada em 2026-10-05. Segurança de código
+> de aplicação já é padrão embutido em `eng-backend`/`eng-frontend`; segurança de infraestrutura e
+> fundamentos de segurança da informação entram no `eng-platform` (temas 9 e 13) ou em uma
+> especialização registrada em `PLATFORM_SPECIALIZATIONS`. Resumo de 3 linhas de cada skill
+> removido em `skills/security-skills-deleted.md`.
 
 ### `eng-ui`
 - **Trigger**: padrões de UI, layouts, responsividade, grids, animações
@@ -278,12 +200,9 @@ Removidas: `checkin`, `checkout`, `daily`, `task-log`, `send-priority`, `sent-pr
 | 1 | `eng-frontend` | ✅ criado | Alta demanda, dois contextos (React + PHP/Blade) |
 | 2 | `eng-backend` | ✅ criado | APIs, auth, workers RabbitMQ — core do produto |
 | 3 | `eng-backend-nestjs` | ✅ criado | Framework principal — DI, guards, Passport/JWT |
-| 4 | `eng-automation` | ✅ criado | Puppeteer como primário, ETL pipelines NestJS |
-| 6 | `eng-frontend-design-system` | ✅ criado | Tokens, CVA, Storybook, versionamento |
-| 7 | `eng-frontend-microfrontend` | ✅ criado | Module Federation, shell/remote |
+| 4 | `eng-automation` | ✅ criado | Base neutra de RPA, web e automação de APIs |
 | 8 | `eng-database` | planejado | Área densa com muitos anti-patterns críticos |
-| 9 | `eng-security-cybersecurity` | ✅ criado | Transversal — impacta todas as outras áreas |
-| 10 | `eng-infrastructure` | planejado | Necessário para squads com CI/CD próprio |
+| 9 | `eng-platform` | ✅ criado | Base de platform/infra — CI/CD, cloud, IaC, observabilidade, SRE, segurança |
 | 11 | `eng-back-for-frontend` | planejado | BFF, GraphQL gateway — demanda crescente |
 | 12 | `eng-ui` | planejado | Nicho — criar sob demanda |
 | 13 | `eng-ux` | planejado | Nicho — criar sob demanda |
@@ -297,14 +216,14 @@ Removidas: `checkin`, `checkout`, `daily`, `task-log`, `send-priority`, `sent-pr
 
 | Categoria | Criados | Planejados |
 |-----------|---------|------------|
-| Engenharia | 17 | 8 |
-| Engenharia de Dados | 5 | 0 |
-| QA | 13 | 0 |
+| Engenharia | 12 | 7 |
+| Engenharia de Dados | 1 | 0 |
+| QA | 2 | 0 |
 | Produto | 4 | 0 |
 | Daily Ritual | 6 | 0 |
 | Utilitários | 8 | 0 |
-| **Total** | **53** | **8** |
+| **Total** | **33** | **7** |
 
 ---
 
-**Última atualização**: 2026-05-30
+**Última atualização**: 2026-10-05

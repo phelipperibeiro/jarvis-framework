@@ -14,10 +14,9 @@ A pasta `agents/` contem **definicoes de agentes especializados** que atuam no f
 
 ```
 agents/
-├── engineering/           # Agentes ativos de engenharia (14 agents)
+├── engineering/           # Agentes ativos de engenharia (13 agents)
 │   ├── eng.agent.md
 │   ├── eng.bug-hunter.md
-│   ├── eng.cybersecurity.agent.md
 │   ├── eng.dev-code-reviewer.md
 │   ├── eng.docs-writer.md
 │   ├── eng.frontend.agent.md

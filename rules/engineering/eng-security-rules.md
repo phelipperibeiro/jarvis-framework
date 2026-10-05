@@ -7,7 +7,10 @@ env_file: "@/ENV.md"
 # Regras de Seguranca para Engenharia
 
 Regras de seguranca aplicaveis a todo o fluxo de engenharia — do planejamento ao merge.
-Toda implementacao deve seguir estas regras por padrao, sem necessidade de invocar o skill `eng-security-cybersecurity` explicitamente.
+Toda implementacao deve seguir estas regras por padrao. Seguranca de codigo de aplicacao ja e
+padrao embutido nas bases `eng-backend`/`eng-frontend`; seguranca de infraestrutura e fundamentos
+de seguranca da informacao (risco, ameacas, identidade, resposta a incidente, GRC, privacidade)
+ficam no `eng-platform` (temas 9 e 13).
 
 ---
 
@@ -103,21 +106,22 @@ O agente DEVE incluir no checklist de pre-PR as seguintes verificacoes de segura
 
 Se o PR toca em areas sensiveis (auth, sessions, RBAC, CORS, CSP, permissoes), o agente DEVE:
 1. Adicionar label `security` ao PR
-2. Recomendar ao usuario executar `/eng.security-review` antes do merge
+2. Seguir o gate de seguranca inline do `eng.pre-pr` (sanitizacao, auth guards, headers, secrets scan, `npm audit`) antes do merge
 
 ---
 
 ## Fase: eng.pr (Merge)
 
-- PRs com label `security` devem ter review de seguranca aprovado (manual ou via `/eng.security-review`)
+- PRs com label `security` devem ter review de seguranca aprovado manualmente antes do merge
 - Nunca aprovar PR com secret detectado no diff — sem excecoes
 - Se o PR adiciona endpoint publico, documentar justificativa no description do PR
 
 ---
 
-## Fronteira Read-Only (Analise de Seguranca)
+## Analise Read-Only de Seguranca
 
-Os skills de seguranca (`eng-security-threat-model`, `eng.security-audit`, `eng-security-triage`) operam em **modo estatico apenas**:
+Qualquer analise de ameacas, auditoria ou investigacao de seguranca feita pelo agente opera em
+**modo estatico apenas**:
 
 - Leem codigo-fonte, historico git e relatorios fornecidos pelo usuario
 - **Nunca** executam, buildam, fuzzam ou modificam o codigo-alvo
@@ -130,11 +134,11 @@ Os skills de seguranca (`eng-security-threat-model`, `eng.security-audit`, `eng-
 
 Usar `jarvis-context-detect` para calibrar a profundidade da analise de seguranca:
 
-| Nivel de risco | Criterio | Estrategia | Tokens (estimado) |
-|---|---|---|---|
-| **Baixo** — PR comum | Logica de negocio sem superficie sensivel | Single-pass, sem fan-out | ~15k (main thread) |
-| **Medio** — PR sensivel | Toca auth, sessions, RBAC, CORS, CSP, PII, fluxo financeiro, criptografia | Fan-out por area + single-vote | ~80k (subagentes isolados) |
-| **Alto** — Audit completo | Usuario invoca `/eng.security-audit` explicitamente | Fan-out + multi-voto (3 votos por achado) | ~200k-1M (subagentes isolados) |
+| Nivel de risco | Criterio | Estrategia |
+|---|---|---|
+| **Baixo** — PR comum | Logica de negocio sem superficie sensivel | Single-pass, sem fan-out |
+| **Medio** — PR sensivel | Toca auth, sessions, RBAC, CORS, CSP, PII, fluxo financeiro, criptografia | Fan-out por area + single-vote |
+| **Alto** — Auditoria completa | Usuario pede uma auditoria dedicada do projeto | Fan-out + multi-voto (3 votos por achado) |
 
 O peso do token fica em subagentes isolados — janela da sessao principal nao lota.
 PR comum sem risco identificado = zero token extra (so as rules, que ja ficam carregadas).
@@ -149,22 +153,20 @@ As regras acima se aplicam a TODOS os engenheiros. A responsabilidade escala com
 |----------|---------------------------|
 | JUNIOR, PLENO | Seguir as regras. Em duvida de seguranca, consultar senior/TL — nao bloqueia a entrega se o risco for registrado |
 | SENIOR, SPECIALIST | Seguir + revisar seguranca de PRs do squad quando solicitado |
-| TECH LEAD, HEAD | Seguir + garantir que `/eng.security-review` foi executado em PRs com label `security`. Decidir se escala incidente |
+| TECH LEAD, HEAD | Seguir + garantir que o gate de seguranca do `eng.pre-pr` foi seguido em PRs com label `security`. Decidir se escala incidente |
 | CTO | Seguir + visao de compliance (LGPD/GDPR) e risco organizacional. Aprovar excecoes de seguranca |
 
 ---
 
-## Quando escalar para o agente SENTINEL
+## Quando o risco excede estas regras
 
-O agente de engenharia (ATHENA) deve recomendar o uso do agente SENTINEL (`eng.cybersecurity.agent.md`) quando:
+O agente de engenharia (ATHENA) deve sinalizar explicitamente ao usuario e pedir revisao humana quando:
 
 - Vulnerabilidade conhecida (CVE) afeta uma dependencia do projeto
-- Auditoria de seguranca completa e solicitada
+- Auditoria de seguranca completa e solicitada (sem skill dedicado hoje — se for recorrente, considere criar uma especializacao em `PLATFORM_SPECIALIZATIONS`)
 - Incidente de seguranca em producao
 - Feature envolve fluxo financeiro, PII ou auth complexa (OAuth, MFA)
 - Duvida sobre impacto de seguranca que excede o escopo das regras acima
-
-> O skill `/eng-security-cybersecurity` pode ser invocado diretamente para consulta rapida sem ativar o agente completo.
 
 ---
 

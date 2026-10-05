@@ -43,7 +43,7 @@ seguindo as convenções definidas em `$IDE/rules/engineering/data/data-rules.md
 | Passo | Skill | Condição |
 |-------|-------|----------|
 | Agentes recomendados | `eng.data-engineer.agent` (agente) | Sempre — agente primário que conduz todo o workflow |
-| Pré-verificação — Fonte nova ou existente? | `/eng-data-onboard` | Se a fonte nunca foi ingerida antes (pipeline totalmente novo); depois volta a este workflow |
+| Pré-verificação — Fonte nova ou existente? | `/eng-data` | Se a fonte nunca foi ingerida antes (pipeline totalmente novo); depois volta a este workflow |
 | Agentes recomendados | `eng.dev-code-reviewer` (agente) | Se o pipeline tiver lógica de transformação complexa ou antes de qualquer push ao repositório de pipelines |
 | Agentes recomendados | `eng.qa.test-planner` (agente) | Se o pipeline for gold com múltiplos casos de uso, dados sensíveis ou SLA rigoroso (apoio à Expectation Suite) |
 | Agentes recomendados | `eng.docs-writer` (agente) | Se o pipeline for de alta criticidade ou precisar de documentação além do template (diagramas, runbook, troubleshooting) |
@@ -71,10 +71,11 @@ seguindo as convenções definidas em `$IDE/rules/engineering/data/data-rules.md
 
 > Antes de iniciar, verificar se já há dados desta fonte em bronze.
 
-**Se a fonte nunca foi ingerida antes** (pipeline totalmente novo):
-→ Executar `eng-data-onboard` primeiro para fazer schema discovery, amostragem e criar a camada bronze.
-→ Arquivo: `$IDE/skills/eng-data-onboard/SKILL.md`
-→ Voltar para este workflow após o bronze estar validado (Fases 3–5 do onboard concluídas).
+**Se a fonte nunca foi ingerida antes** (pipeline totalmente novo), usar a base [eng-data]($IDE/skills/eng-data/SKILL.md) (tema 1 — Fundamentos, tema 5 — Pipelines e Integração) para:
+1. Entender a fonte (nome, tipo, frequência, volume, owner, campos disponíveis e sensíveis, SLA)
+2. Fazer schema discovery e amostragem
+3. Criar a camada bronze e uma Expectation Suite mínima (tema 6 — Qualidade de Dados)
+→ Voltar para este workflow (Fase 1 abaixo) depois do bronze estar validado.
 
 **Se a fonte já existe em bronze** → continuar diretamente com a Fase 1 abaixo.
 

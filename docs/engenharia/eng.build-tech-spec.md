@@ -49,4 +49,4 @@ Investigação técnica do codebase, **avaliação de complexidade**, proposta a
 
 ## Próximo passo típico
 
-[`eng.breakdown-subtasks`](./eng.breakdown-subtasks.md) → [`eng.qa-quality-gate-validation`](./eng.qa-quality-gate-validation.md) → [`eng.start`](./eng.start.md) em cada subtarefa
+[`eng.breakdown-subtasks`](./eng.breakdown-subtasks.md) → [`eng.start`](./eng.start.md) em cada subtarefa

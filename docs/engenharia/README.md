@@ -53,22 +53,8 @@ Os comandos de frontend e de backend são **neutros de stack**: carregam a skill
 | Comando | Em uma frase |
 |---|---|
 | [`eng.qa-refinement-entry`](./eng.qa-refinement-entry.md) | Estratégia de testes a partir da spec, antes do código |
-| [`eng.qa-quality-gate-validation`](./eng.qa-quality-gate-validation.md) | Quality gate da tech spec |
-| [`eng.qa-e2e-test-generation`](./eng.qa-e2e-test-generation.md) | Gera testes E2E em Cypress |
-| [`eng.qa-dev-quality-guide`](./eng.qa-dev-quality-guide.md) | Orienta o dev sobre os testes que ele deve escrever |
-| [`eng.qa-exploratory-session`](./eng.qa-exploratory-session.md) | Sessão de teste exploratório |
 | [`eng.qa-sprint-planning`](./eng.qa-sprint-planning.md) | Capacidade de QA da sprint, por risco |
 | [`eng.qa-release-signoff`](./eng.qa-release-signoff.md) | GO ou NO-GO antes do deploy |
-| [`eng.qa-quality-report`](./eng.qa-quality-report.md) | Relatório de qualidade da sprint ou release |
-
-## Segurança
-
-| Comando | Em uma frase |
-|---|---|
-| [`eng.security-audit`](./eng.security-audit.md) | Auditoria proativa (OWASP, secrets, supply chain) |
-| [`eng.security-review`](./eng.security-review.md) | Review de segurança de um PR |
-| [`eng.security-incident`](./eng.security-incident.md) | Resposta a incidente: contenção, correção e post-mortem |
-| [`eng.security-pipeline`](./eng.security-pipeline.md) | Threat model, audit, triage e patch em um fluxo |
 
 ## Fluxos especializados
 
@@ -81,5 +67,4 @@ Os comandos de frontend e de backend são **neutros de stack**: carregam a skill
 - Vai desenvolver uma feature nova → [`eng.start`](./eng.start.md)
 - Tem um bug para investigar → [`eng.debug`](./eng.debug.md)
 - Quer revisar um PR → [`eng.review`](./eng.review.md) (ou [`eng.frontend-review`](./eng.frontend-review.md) se for interface)
-- Algo de segurança → [`eng.security-review`](./eng.security-review.md) para um PR, [`eng.security-incident`](./eng.security-incident.md) para um incidente
 - Precisa de uma decisão de arquitetura → [`eng.light-arch`](./eng.light-arch.md), [`eng.create-ard`](./eng.create-ard.md) ou [`eng.create-rfc`](./eng.create-rfc.md)

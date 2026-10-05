@@ -36,7 +36,7 @@ O comando percorre "gates". Alguns sempre rodam, outros só quando a branch pede
 | Revisão de interface: TypeScript, tokens, acessibilidade (`eng.frontend.agent`) | Se houver mudança de UI |
 | Usabilidade: estados vazios, carregando, mensagens de erro (`eng.ux-designer`) | Se houver nova feature de UI ou mudança de fluxo |
 | Atualização de documentação (`eng.docs-writer`) | Sempre |
-| Revisão de segurança ([`eng.security-review`](./eng.security-review.md)) | Se tocar auth, sessões, inputs, CORS, CSP, permissões ou endpoints públicos |
+| Revisão de segurança (checklist inline: sanitização, auth guards, headers, secrets, `npm audit`) | Se tocar auth, sessões, inputs, CORS, CSP, permissões ou endpoints públicos |
 
 Se algum gate levar a mudança de código, o comando **repete** a revisão técnica e os testes.
 

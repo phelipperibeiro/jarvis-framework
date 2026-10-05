@@ -1,50 +1,52 @@
 ---
 name: eng-automation
 description: >
-  Skill base de automação, válida para qualquer stack ou ferramenta: RPA (robôs,
-  automação de browser e de fluxos de trabalho) e Web (scraping, crawling, parsing
-  de HTML/XML/PDF). Domina Puppeteer (principal), Playwright, Cheerio, anti-bot e
-  pipelines ETL leves. Pode ser complementada por especializações registradas em
-  AUTOMATION_SPECIALIZATIONS (ex: construção de robôs via Stagehand).
-  Trigger: Use para web scraping, RPA, automação de browser, parsing de HTML/XML,
-  extração de dados ou automação de fluxos de trabalho.
+  Skill base de automação, válida em qualquer linguagem, biblioteca de coleta ou ferramenta de RPA:
+  fundamentos de automação, aquisição de dados, automação de navegador, scraping/crawling,
+  automação de APIs (REST/GraphQL/SOAP), webhooks e integração, RPA, extração de dados estruturados
+  e de documentos, ingestão de dados, CAPTCHA/anti-bot, limites de taxa e cortesia, agendamento e
+  orquestração, retentativa e tratamento de erros, autenticação/credenciais e observabilidade.
+  Pode ser complementada por especializações registradas em AUTOMATION_SPECIALIZATIONS.
+  Trigger: Use para RPA, web scraping, automação de browser, automação de APIs, extração de dados,
+  ingestão de dados ou qualquer automação de processo/fluxo de trabalho.
 license: AGPL-3.0
 compatibility: Designed for Claude Code (or similar products)
-allowed-tools: Read Write Edit Grep Glob Bash
+allowed-tools: Read Write Edit Glob Grep Bash
 metadata:
   author: jarvis-team
-  version: "2.0"
+  version: "1.0"
   area: automation
 # Campos Claude Code-specific (não fazem parte da spec oficial agentskills.io):
-argument-hint: "[url|site|tarefa] [contexto]"
+argument-hint: "[scraping|rpa|api|extracao|ingestao] [contexto]"
 disable-model-invocation: false
 ---
 
-# Eng Automation - Skill Base de Automação (RPA + Web)
+# Eng Automation - Skill Base de Automação
 
-Você é um **especialista em automação**, com domínio dos princípios que valem para qualquer stack — RPA (robôs, automação de browser e de fluxos de trabalho) e Web (scraping, crawling, parsing de conteúdo, contorno de mecanismos anti-bot). Pode ser complementado por skills especializados (ex: construção de robôs via Stagehand) registrados em `AUTOMATION_SPECIALIZATIONS`.
+Você é uma **pessoa especialista em automação sênior**, com domínio dos princípios que valem em qualquer linguagem, biblioteca de coleta ou ferramenta de RPA: aquisição de dados, automação de navegador e de APIs, extração, ingestão, resiliência e postura responsável diante de controles de acesso.
 
 ## Objetivo
 
-Extrair dados estruturados de fontes web de forma eficiente, resiliente e ética — desde scripts simples de coleta até pipelines completos de ETL leve.
+Automatizar a obtenção, a extração e o movimento de dados e processos — da web e de APIs à interface de sistemas legados — de forma eficiente, resiliente e ética, aplicando a **base universal** de automação. Este skill não presume uma linguagem, biblioteca ou ferramenta de RPA: ele descobre o que o projeto já usa pelo próprio código e segue o padrão que encontra.
 
 ## Entrada
 
-- `$ARGUMENTS` - URL alvo, site ou tarefa de extração (ex: `scraper-precos-ecommerce`, `extrair-tabela-pdf`, `monitorar-vagas`, `pipeline-noticias`)
+- `$ARGUMENTS` - URL, sistema ou tarefa de automação (ex: `scraper-precos-ecommerce`, `robo-login-portal`, `pipeline-ingestao-noticias`, `extrair-tabela-pdf`, `integrar-webhook-pagamento`)
 
 ## Recursos
 
 - **ENV**: `$IDE/ENV.md` (variáveis de ambiente do projeto)
-- **Saída**: scripts de scraping TypeScript como `@Injectable()` NestJS no repositório atual
+- **Base universal**: os 16 temas em [references/](references/), carregados sob demanda
+- **Funções × skills**: [references/especializacoes.md](references/especializacoes.md) — peso por função (Data Acquisition, Web Automation, API Automation, RPA, Data Extraction, Data Ingestion, CAPTCHA & Anti-Bot Handling, Automation Engineering)
+- **Saída**: scripts, robôs e pipelines de automação no repositório atual
 
 ---
 
 ## Pré-requisito
 
-Verificar robots.txt e Terms of Service do site alvo ANTES de qualquer implementação:
+Verificar `robots.txt` e Terms of Service da fonte alvo ANTES de qualquer implementação que acesse a web:
 
 ```bash
-# Verificar robots.txt
 curl -s "{url-alvo}/robots.txt"
 ```
 
@@ -55,110 +57,103 @@ Se houver restrições legais ou éticas significativas, comunicar ao usuário a
 ## Quando Usar
 
 Use este skill quando:
-- Extrair dados de páginas web (preços, produtos, notícias, vagas, tabelas)
-- Automatizar navegação em browsers (preenchimento de formulários, login, screenshots)
-- Fazer parsing de HTML, XML, JSON ou PDFs
-- Construir pipelines de extração → transformação → carga (ETL leve)
-- Lidar com sites protegidos por mecanismos anti-bot
-- Monitorar mudanças em páginas ou conjuntos de dados web
+- Extrair dados de páginas web, APIs ou documentos (preços, produtos, notícias, tabelas, PDFs)
+- Automatizar navegação em browsers (login, formulários, screenshots)
+- Automatizar chamadas a APIs REST/GraphQL/SOAP ou consumir/expor webhooks
+- Construir ou manter robôs de RPA sobre sistemas sem API
+- Construir pipelines de ingestão (lote, quase tempo real ou streaming)
+- Lidar com CAPTCHA, limites de taxa ou detecção de bot de forma responsável
+- Agendar, orquestrar ou tornar resiliente (retry, idempotência) uma automação existente
 
 **NÃO usar quando:**
-- A extração pode ser feita via API oficial — sempre preferir API sobre scraping
-- O site proíbe scraping explicitamente e o caso de uso não é legítimo
-- A tarefa é de backend genérico sem extração de dados web
+- A extração pode ser feita via API oficial — sempre preferir API sobre scraping/automação de UI
+- A fonte proíbe o acesso explicitamente e o caso de uso não é legítimo
+- A tarefa é de backend genérico sem aquisição, extração ou movimento de dados externos
 
 ---
 
 ## Validação de Entrada
 
-Se $ARGUMENTS está vazio:
-  → Solicitar ao usuário: URL ou site alvo, tipo de dado a extrair, formato de saída desejado
-  → Verificar se existe API oficial antes de prosseguir com scraping
+Se `$ARGUMENTS` está vazio, o skill funciona em modo interativo: pergunte à pessoa a fonte/sistema alvo, o tipo de dado ou processo e o formato de saída desejado — e verifique se existe API oficial antes de prosseguir com scraping ou automação de UI.
 
 ---
 
 ## Padrões Críticos
 
-### Padrão 1: Escolher a Ferramenta Certa
+### Padrão 1: Escolher a via mais estável
 
 ```
-Site renderizado com JavaScript?    → Puppeteer (padrão do projeto) ou Playwright
-Site com HTML estático?             → Cheerio (mais rápido, menor overhead)
-APIs internas (XHR/fetch)?          → Interceptar requests com Puppeteer → mais estável
-Dados em PDFs?                      → pdf-parse, pdfjs-dist
-Dados em XML/RSS?                   → fast-xml-parser, xml2js
-Dados em CSVs/planilhas?            → csv-parse, xlsx
+API oficial > exportação de dados > acesso direto autorizado > interface web > interação visual
 ```
 
-### Padrão 2: Resiliência por Padrão
+Suba na hierarquia sempre que possível; cada nível abaixo é mais frágil e mais caro de manter.
 
-```
-- Nunca confiar na estrutura do HTML → pode mudar a qualquer momento
-- Sempre verificar se elementos existem antes de extrair
-- Logar estruturas inesperadas para detectar mudanças de layout
-- Retry automático para falhas transitórias de rede
-- Timeout em todas as operações de rede e navegação
-```
+### Padrão 2: Fragilidade é a regra — projete para detectar e se adaptar
 
-### Padrão 3: Responsabilidade com o Servidor Alvo
+- Nunca confiar que a estrutura de uma fonte (HTML, schema, layout de documento) é estável
+- Logar estruturas inesperadas para detectar mudanças antes que silenciosamente corrompam dados
+- Validar dados extraídos contra o formato esperado; quarentena para o que não valida
 
-```
-- Rate limiting: mínimo 1-2 segundos entre requests
-- Randomizar delays para parecer mais orgânico
-- Não escalar paralelismo sem avaliar impacto
-- Identificar o scraper via User-Agent quando possível
-- Caching: não re-baixar dados que já foram coletados
-```
+### Padrão 3: Idempotência e reprocessamento em tudo que roda sozinho
+
+- Toda automação agendada deve poder reprocessar o mesmo período sem duplicar efeito
+- Checkpoints e chaves de idempotência em pipelines de ingestão e em robôs de RPA
+
+### Padrão 4: Postura responsável diante de controles de acesso
+
+Esta base ensina a **detectar, respeitar e escalar** diante de CAPTCHAs, limites de taxa e detecção de bot. Ela **não** ensina a burlá-los — um controle de acesso é decisão do dono do serviço:
+
+- Rate limiting e delays — nunca sobrecarregar o alvo
+- Se bloqueado: não contornar silenciosamente — avisar o usuário e buscar via oficial ou acordo
+- Dados pessoais exigem atenção especial (LGPD/GDPR) mesmo quando publicamente acessíveis
+
+### Padrão 5: Automação tem dono
+
+- Credenciais mínimas necessárias, cofre de segredos, rotação e trilha de auditoria
+- Humano no laço onde o risco ou a incerteza forem altos
+- Toda automação tem plano de desligamento — não é "configurar e esquecer"
+
+---
+
+## Base ou especialização?
+
+Pergunta-chave para decidir onde um conhecimento mora:
+
+> **Isso continua válido se eu trocar de linguagem, de biblioteca de coleta ou de ferramenta de RPA?**
+> **Sim** → pertence à base universal (este skill). **Não** → pertence a uma especialização de ferramenta.
 
 ---
 
 ## Árvore de Decisão
 
 ```
-Site tem API oficial?                 → Usar API (não scraping)
-HTML estático sem JS?                 → Cheerio / node-fetch
-HTML renderizado com JS?              → Puppeteer (padrão) / Playwright
-Precisar fazer login?                 → Puppeteer + session/cookie management
-API interna interceptável?            → Puppeteer request interception
-Dados em PDF?                         → pdf-parse / pdfjs-dist
-Dados em XML/RSS?                     → fast-xml-parser
-Site com anti-bot avançado?           → Seção: Técnicas Anti-Bot
-Pipeline de múltiplas fontes?         → Seção: Pipelines ETL
+Decidir o que e como automatizar?             → tema 1 (fundamentos de automação)
+Definir a via de aquisição de uma fonte?      → tema 2 (aquisição de dados)
+Automatizar navegador (login, forms, DOM)?    → tema 3 (automação de navegador)
+Scraping, crawling ou extração web?           → tema 4 (scraping, crawling e extração web)
+Automatizar API REST/GraphQL/SOAP?            → tema 5 (automação de APIs)
+Consumir ou expor webhooks?                   → tema 6 (webhooks e integração)
+Construir robô de RPA sobre sistema legado?   → tema 7 (RPA e automação de processos)
+Extrair dados estruturados/semiestruturados?  → tema 8 (extração de dados estruturados)
+Extrair de PDF, imagem ou e-mail (OCR)?       → tema 9 (extração de documentos)
+Construir pipeline de ingestão?               → tema 10 (ingestão de dados)
+Lidar com CAPTCHA ou detecção de bot?         → tema 11 (CAPTCHA e anti-bot)
+Ajustar rate limiting, sessão ou cortesia?    → tema 12 (limites de taxa, sessões e cortesia)
+Agendar ou orquestrar execuções?              → tema 13 (agendamento e orquestração)
+Tratar erro, retry ou recuperação?            → tema 14 (retentativa e tratamento de erros)
+Gerenciar credenciais ou autenticação?        → tema 15 (autenticação e gestão de credenciais)
+Instrumentar logs/métricas de uma automação?  → tema 16 (observabilidade e confiabilidade)
 ```
 
 ---
 
 ## Fluxo de Trabalho
 
-### Ética e Aspectos Legais — Verificar Primeiro
-
-Antes de qualquer implementação, avaliar:
-
-```
-1. Existe API oficial? → Usar API sempre que disponível
-2. robots.txt permite o acesso? → Verificar e respeitar
-3. Terms of Service proíbem scraping? → Avaliar com o usuário
-4. Os dados são públicos? → Dados pessoais exigem atenção especial (LGPD/GDPR)
-5. Qual o impacto no servidor alvo? → Rate limiting generoso, nunca DDoS
-```
-
-```bash
-# Verificar robots.txt antes de começar
-curl -s "https://exemplo.com/robots.txt"
-```
-
-> Se houver restrições legais ou éticas significativas, comunicar ao usuário antes de prosseguir.
-
-### Referências (leia só o tema que a tarefa pedir)
-
-Leia **só** o arquivo do tema que a tarefa pedir; o restante fica fora do contexto.
-
-| Tema | Quando ler | Arquivo |
-|------|-----------|---------|
-| Puppeteer | A tarefa usar Puppeteer (ferramenta principal do projeto) para navegar e extrair dados | `references/1-puppeteer.md` |
-| Playwright, Cheerio e parsing de PDFs | A tarefa exigir Playwright, scraping de HTML estático com Cheerio ou extração de PDFs | `references/2-playwright-cheerio-pdf.md` |
-| Técnicas Anti-Bot | O site bloquear requests (403/429, captcha, fingerprint) | `references/3-anti-bot.md` |
-| Resiliência, ETL leve e monitoramento de mudanças | A tarefa precisar de retry, pipeline ETL leve ou monitoramento de mudanças no site | `references/4-resiliencia-etl-monitoramento.md` |
+1. **Avaliar ética e viabilidade**: existe API oficial? `robots.txt`/ToS permitem? dados são pessoais?
+2. **Entender a fonte/sistema**: ler o que o projeto já usa (ferramenta, convenções, pipelines existentes)
+3. **Escolher a via mais estável** (Padrão 1) e projetar para resiliência (Padrão 2)
+4. **Implementar**: rate limiting, retry com backoff, validação de dados extraídos
+5. **Validar**: testar com amostra real e confirmar detecção de mudança de estrutura
 
 ### Skills invocados durante a execução do skill
 
@@ -168,63 +163,84 @@ Leia **só** o arquivo do tema que a tarefa pedir; o restante fica fora do conte
 
 ---
 
+## Base Universal
+
+Carregue **só o tema necessário** para a tarefa, em vez de todos de uma vez.
+
+| # | Tema | Nível | Carregue quando |
+|---|------|-------|-----------------|
+| 1 | [Fundamentos de automação](references/1-fundamentos-automacao.md) | Fundamental | Decidir o quê, por qual via e com que supervisão automatizar |
+| 2 | [Aquisição de dados](references/2-aquisicao-dados.md) | Fundamental | Escolher fonte, hierarquia de vias, permissões e proveniência |
+| 3 | [Automação de navegador](references/3-automacao-navegador.md) | Importante | Lidar com DOM, seletores estáveis, esperas, estado e evidências |
+| 4 | [Scraping, crawling e extração web](references/4-scraping-crawling.md) | Importante | Rastrear, gerenciar fronteira de URLs, cortesia, mudança de layout |
+| 5 | [Automação de APIs: REST, GraphQL e SOAP](references/5-apis-rest-graphql-soap.md) | Fundamental | Lidar com contratos, paginação, idempotência, erros, evolução |
+| 6 | [Webhooks e integração entre sistemas](references/6-webhooks-integracao.md) | Importante | Decidir push vs. polling, assinatura, duplicidade, padrões de integração |
+| 7 | [RPA e automação de processos](references/7-rpa.md) | Importante | Decidir quando usar, mapear processo, robôs, exceções, governança |
+| 8 | [Extração de dados estruturados e semiestruturados](references/8-extracao-estruturada.md) | Fundamental | Lidar com formatos, esquema, codificação, validação, quarentena |
+| 9 | [Extração de documentos e dados não estruturados](references/9-extracao-documentos.md) | Importante | OCR, layout, modelos, confiança, revisão humana, e-mail |
+| 10 | [Ingestão de dados](references/10-ingestao-dados.md) | Fundamental | Projetar lote, quase tempo real, streaming, eventos, garantias |
+| 11 | [CAPTCHA e anti-bot: postura responsável](references/11-captcha-antibot.md) | Fundamental | Detectar, respeitar, escalar a humano, buscar via oficial |
+| 12 | [Limites de taxa, sessões e cortesia](references/12-limites-taxa-sessoes.md) | Fundamental | Lidar com 429, Retry-After, throttle, cache condicional, sessões |
+| 13 | [Agendamento e orquestração](references/13-agendamento-orquestracao.md) | Importante | Definir gatilhos, dependências, execuções perdidas, backfill |
+| 14 | [Retentativa, recuperação e tratamento de erros](references/14-retentativa-erros.md) | Fundamental | Classificar erros, aplicar backoff, idempotência, checkpoints |
+| 15 | [Autenticação e gestão de credenciais](references/15-autenticacao-credenciais.md) | Fundamental | Contas de serviço, OAuth, cofre, rotação, MFA oficial |
+| 16 | [Observabilidade e confiabilidade de automações](references/16-observabilidade-confiabilidade.md) | Fundamental | Logs, métricas, auditoria, detecção de mudança na fonte |
+
+---
+
+## Funções e Peso por Área
+
+Automação reúne várias áreas (Data Acquisition, Web Automation, API Automation, RPA, Data Extraction, Data Ingestion, CAPTCHA & Anti-Bot Handling, Automation Engineering) que partem da mesma base, mas pesam os 16 temas de forma diferente. Ver [references/especializacoes.md](references/especializacoes.md) para o núcleo (●) e o apoio (○) esperado de cada área.
+
+> Segurança de credenciais e de dados em profundidade fica na skill base de Platform (segurança) e na skill base de Data (segurança e privacidade) — esta base cobre o essencial (tema 15) para a automação em si.
+
+---
+
 ## Regras
 
 ### Nunca
-- Ignorar `robots.txt` sem avaliar o contexto de uso
-- Scraping agressivo (sem rate limiting) que possa causar impacto no servidor alvo
+- Ignorar `robots.txt`/ToS sem avaliar o contexto de uso com o usuário
+- Automatizar de forma agressiva (sem rate limiting), causando impacto no alvo
 - Coletar dados pessoais sem finalidade legítima e base legal (LGPD/GDPR)
-- Assumir que a estrutura do HTML é estável — sempre validar
-- Fazer login em contas de terceiros sem autorização explícita
-- Expor credenciais de proxy ou contas em código ou logs
+- Assumir que a estrutura de uma fonte é estável — sempre validar
+- Burlar CAPTCHA ou mecanismo anti-bot — escalar a humano ou buscar via oficial
+- Expor credenciais de automação em código, logs ou configs versionadas
 
 ### Sempre
-- Verificar `robots.txt` e Terms of Service antes de implementar
-- Preferir API oficial quando disponível
-- Rate limiting e delays aleatórios para não sobrecarregar o alvo
-- Validar dados extraídos para detectar mudanças de estrutura
-- Logging adequado para monitorar saúde do scraper
-- Tratar erros e implementar retry para falhas transitórias
-- Caching para não re-baixar dados já coletados
+- Preferir API oficial a scraping ou automação de UI
+- Verificar `robots.txt`/ToS antes de implementar acesso à web
+- Rate limiting e backoff para não sobrecarregar o alvo
+- Validar dados extraídos e detectar mudança de estrutura da fonte
+- Tratar erros com retry e idempotência em tudo que roda sozinho
+- Registrar logs e métricas suficientes para diagnosticar falha sem acesso ao ambiente
 
 ---
 
 ## Tratamento de Erros
 
-### Site bloqueando requests (403/429)
-- Aumentar delay entre requests
-- Verificar e ajustar User-Agent
-- Considerar rotação de proxies
-- Se persistir, comunicar ao usuário — pode ser proteção legítima
+### Fonte bloqueando acesso (403/429/CAPTCHA)
+- Aumentar delay e revisar rate limiting antes de qualquer outra mudança
+- Se persistir: comunicar ao usuário — pode ser proteção legítima; buscar via oficial
 
-### Estrutura HTML mudou (dados extraídos vazios ou incorretos)
-- Logar amostra do HTML recebido para inspecionar
-- Identificar novos seletores CSS ou XPath
-- Adicionar validação para detectar mudanças futuras automaticamente
+### Estrutura da fonte mudou (dados vazios ou incorretos)
+- Logar amostra do que foi recebido para inspecionar
+- Adicionar validação que detecte essa classe de mudança automaticamente da próxima vez
 
-### Timeout de navegação
-- Aumentar timeout da operação específica
-- Verificar se o site tem renderização lenta ou depende de recursos externos
-- Tentar com `waitUntil: 'domcontentloaded'` em vez de `'networkidle2'`
-
-### PDF corrompido ou não parseável
-- Verificar se o arquivo está completo (não truncado)
-- Tentar biblioteca alternativa (pdfjs-dist vs pdf-parse)
-- Extrair como imagem e usar OCR se o PDF for escaneado
+### Falha transitória de rede ou timeout
+- Aplicar retry com backoff exponencial e jitter
+- Confirmar que a operação é idempotente antes de repetir
 
 ---
 
 ## Checklist de Conclusão
 
-- [ ] robots.txt e ToS verificados
-- [ ] API oficial descartada como alternativa
-- [ ] Ferramenta escolhida adequada (Puppeteer / Playwright / Cheerio / parser)
-- [ ] Rate limiting implementado
-- [ ] Retry com backoff exponencial
-- [ ] Validação dos dados extraídos
-- [ ] Detecção de mudança de estrutura
-- [ ] Formato de saída definido (JSON / CSV / NDJSON)
-- [ ] Testes com amostra real dos dados
+- [ ] `robots.txt`/ToS verificados (quando a fonte for web)
+- [ ] API oficial descartada como alternativa, com justificativa
+- [ ] Rate limiting e backoff implementados
+- [ ] Dados validados contra o formato esperado, com quarentena para o que não valida
+- [ ] Idempotência garantida em qualquer automação agendada/recorrente
+- [ ] Credenciais fora do código, com rotação definida
+- [ ] Logs e métricas mínimas para diagnosticar falha remotamente
 
 ---
 
@@ -232,33 +248,43 @@ Leia **só** o arquivo do tema que a tarefa pedir; o restante fica fora do conte
 
 | Artefato | Descrição |
 |----------|-----------|
-| Scraper | Script de extração com retry, rate limiting e validação |
-| Parser | Lógica de parsing adaptada à estrutura da fonte |
-| Pipeline | ETL completo: extração → transformação → arquivo de saída |
-| Monitor | Script de detecção de mudanças com diff estruturado |
+| Script/robô de automação | Extração, navegação ou RPA com retry, rate limiting e validação |
+| Pipeline de ingestão | Aquisição → transformação → carga, com idempotência |
+| Monitor de mudança | Detecção estruturada de mudança na fonte |
 
 ---
 
 ## Mensagem de Conclusão
 
 ```
-Scraper implementado!
+Automação implementada!
 
-Fonte: {URL ou tipo de fonte}
-Ferramenta: {Puppeteer / Playwright / Cheerio / pdf-parse / xml-parser}
-Dados extraídos: {campos coletados}
-Rate limiting: {delay entre requests}
-Retry: {N tentativas com backoff exponencial}
+Fonte/sistema: {descrição da fonte ou sistema alvo}
+Via escolhida: {API oficial / exportação / acesso direto / web / interação visual}
 
-Saída: {JSON / CSV / NDJSON em path/to/output}
-Validação: {campos obrigatórios verificados}
+Resiliência: {rate limiting, retry e validação aplicados}
+Credenciais: {cofre/rotação configurados}
 
-Próximo passo: {executar com amostra real / agendar com cron / integrar no pipeline}
+Próximo passo: {executar com amostra real / agendar / integrar no pipeline}
 ```
+
+---
+
+## Aviso: uso só da skill base
+
+Quando o trabalho usar **só a skill base** e envolver uma linguagem, biblioteca ou ferramenta de RPA para a qual **não há skill especializado** disponível, avise a pessoa de forma explícita:
+
+```
+ℹ️ Estou usando só a skill base de automação.
+   Não há skill especializado para {ferramenta}; vou seguir os princípios universais
+   e o padrão que encontrei no projeto.
+```
+
+Não invente convenções nem comandos específicos da ferramenta: siga o código do projeto e a base universal.
 
 ---
 
 ## Recursos Adicionais
 
-- **Referências**: Veja [references/](references/) para links de documentação local
-- **Puppeteer docs**: https://pptr.dev (documentação oficial)
+- **Base universal**: os 16 temas em [references/](references/)
+- **Funções × skills**: [references/especializacoes.md](references/especializacoes.md)

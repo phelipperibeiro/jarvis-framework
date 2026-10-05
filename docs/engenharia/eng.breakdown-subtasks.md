@@ -48,4 +48,4 @@ Por isso, "só o enum", "só o repository" ou "só o DTO" **não são subtarefas
 
 ## Próximo passo típico
 
-[`eng.qa-quality-gate-validation`](./eng.qa-quality-gate-validation.md) e depois [`eng.start`](./eng.start.md) em cada subtarefa
+[`eng.start`](./eng.start.md) em cada subtarefa

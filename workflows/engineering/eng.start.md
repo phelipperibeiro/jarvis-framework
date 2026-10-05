@@ -29,13 +29,13 @@ Este comando inicia o **planejamento** de uma nova feature.
 | Fase 0.5: Comentário no card — Início | `/eng-global-task-comment` | Se `TASK_MANAGER` estiver preenchido (freelance pula) |
 | Fase 2.2: Buscar Documentação Central | `/jarvis-docs-central` | Se `CENTRAL_DOCS_REPO` estiver configurado no ENV.md (buscar PRD, ARD e RFCs relacionados) |
 | Fase 3.4: Estratégia de Testes | `eng.qa.test-architect` (agente) | Se a feature tiver requisitos de performance ou segurança (APIs públicas, dados sensíveis, alta carga ou requisitos não-funcionais explícitos) |
-| Fase 3.4: Estratégia de Testes | `/eng-devops-performance-engineer` | Se a feature tiver requisitos de performance (latência, throughput, escalabilidade) |
-| Fase 3.4: Estratégia de Testes | `/eng-ai-engineer` | Se a feature envolver IA (LLM, RAG, agentes, chatbots, embeddings) |
+| Fase 3.4: Estratégia de Testes | `/eng-platform` | Se a feature tiver requisitos de performance (latência, throughput, escalabilidade) |
+| Fase 3.4: Estratégia de Testes | `/eng-ai` | Se a feature envolver IA (LLM, RAG, agentes, chatbots, embeddings) |
 | Fase 3.4: Estratégia de Testes | `/eng-frontend` (via `eng.specializations-rules.md`) | Se a feature envolver interface ou componentes frontend; a regra também carrega as especializações de `FRONTEND_SPECIALIZATIONS` |
 | Fase 3.4: Estratégia de Testes | `/eng-backend` (via `eng.specializations-rules.md`) | Se a feature envolver APIs, autenticação ou workers backend; a regra também carrega as especializações de `BACKEND_SPECIALIZATIONS` |
-| Fase 3.4: Estratégia de Testes | `/eng-data-engineer` | Se a feature envolver engenharia de dados (pipelines ETL/ELT, Glue, Airflow, contratos de dados, camadas bronze/silver/gold) |
-| Fase 3.4: Estratégia de Testes | `/eng-automation` | Se a feature envolver extração de dados ou scraping |
-| Fase 3.4: Estratégia de Testes | `/eng-security-cybersecurity` | Se a feature envolver autenticação, autorização, inputs de usuário, dados sensíveis ou endpoints públicos |
+| Fase 3.4: Estratégia de Testes | `/eng-data` (via `eng.specializations-rules.md`) | Se a feature envolver engenharia de dados (pipelines ETL/ELT, Glue, Airflow, contratos de dados, camadas bronze/silver/gold); a regra também carrega as especializações de `DATA_SPECIALIZATIONS` |
+| Fase 3.4: Estratégia de Testes | `/eng-automation` (via `eng.specializations-rules.md`) | Se a feature envolver RPA ou extração de dados/scraping; a regra também carrega as especializações de `AUTOMATION_SPECIALIZATIONS` |
+| Fase 3.4: Estratégia de Testes | `/eng-platform` (via `eng.specializations-rules.md`) | Se a feature envolver infraestrutura (IaC, contêineres, CI/CD, observabilidade, SRE, custo); a regra também carrega as especializações de `PLATFORM_SPECIALIZATIONS` |
 | Fase 5.4: Comentário no card — Conclusão | `/eng-global-task-comment` | Se `TASK_MANAGER` estiver preenchido, após o usuário aprovar o `architecture.md` (freelance pula) |
 
 ---
@@ -312,12 +312,12 @@ Documente:
 
 > ⚠️ **Quando executar**: Features que envolvam APIs públicas, processamento de dados sensíveis, alta carga esperada ou requisitos não-funcionais explícitos.
 
-**Se a feature tiver requisitos de performance** (latência, throughput, escalabilidade), use o skill [eng-devops-performance-engineer]($IDE/skills/eng-devops-performance-engineer/SKILL.md) para:
+**Se a feature tiver requisitos de performance** (latência, throughput, escalabilidade), use a base [eng-platform]($IDE/skills/eng-platform/SKILL.md) (temas 14 — Profiling, 15 — Testes de Carga e Chaos Engineering, 16 — Cache Multi-Camada) para:
 - Estabelecer baseline de métricas antes de implementar
 - Definir thresholds e SLIs/SLOs da feature
 - Planejar load tests com cenários realistas
 
-**Se a feature envolver IA** (LLM, RAG, agentes, chatbots, embeddings), use o skill [eng-ai-engineer]($IDE/skills/eng-ai-engineer/SKILL.md) para:
+**Se a feature envolver IA** (LLM, RAG, agentes, chatbots, embeddings), use o skill [eng-ai]($IDE/skills/eng-ai/SKILL.md) para:
 - Projetar a arquitetura de IA com fluxo de dados e seleção de modelo
 - Definir estratégias de cache, custo e guardrails de segurança
 - Planejar observabilidade e métricas de avaliação do sistema de IA
@@ -334,22 +334,27 @@ Documente:
 - Arquitetar workers, filas e integrações com retry/circuit breaker
 - Seguir o que cada especialização registrada pedir para a stack do projeto
 
-**Se a feature envolver engenharia de dados** (pipelines ETL/ELT, modelagem dimensional, ingestão em S3/Athena, jobs AWS Glue, DAGs Airflow, contratos de dados, Great Expectations, camadas bronze/silver/gold), use o skill [eng-data-engineer]($IDE/skills/eng-data-engineer/SKILL.md) para:
+**Se a feature envolver engenharia de dados** (pipelines ETL/ELT, modelagem dimensional, ingestão em S3/Athena, jobs AWS Glue, DAGs Airflow, contratos de dados, Great Expectations, camadas bronze/silver/gold), aplique a regra [eng.specializations-rules.md]($IDE/rules/engineering/eng.specializations-rules.md) para a área **data**: ela carrega o skill base [eng-data]($IDE/skills/eng-data/SKILL.md) mais as especializações registradas em `DATA_SPECIALIZATIONS`, e então:
 - Definir a arquitetura Medallion da feature (bronze → silver → gold)
 - Planejar Expectation Suite obrigatória e checks de qualidade
 - Documentar pipeline com `data-pipeline-template.md` antes de implementar
 - Garantir idempotência e nomenclatura padronizada
 
-**Se a feature envolver RPA ou extração de dados** (web scraping, Puppeteer, parsing, ETL, automação de browser/fluxos de trabalho), use o skill [eng-automation]($IDE/skills/eng-automation/SKILL.md) para:
+**Se a feature envolver RPA ou extração de dados** (web scraping, Puppeteer, parsing, ETL, automação de browser/fluxos de trabalho), aplique a regra [eng.specializations-rules.md]($IDE/rules/engineering/eng.specializations-rules.md) para a área **automation**: ela carrega o skill base [eng-automation]($IDE/skills/eng-automation/SKILL.md) mais as especializações registradas em `AUTOMATION_SPECIALIZATIONS`, e então:
 - Avaliar viabilidade ética e legal (robots.txt, ToS)
-- Definir ferramenta e arquitetura do scraper
+- Definir ferramenta e arquitetura do robô/scraper
 - Planejar resiliência, rate limiting e formato de saída
 
-**Se a feature envolver autenticação, autorização, inputs de usuário, dados sensíveis ou endpoints públicos**, use o skill [eng-security-cybersecurity]($IDE/skills/eng-security-cybersecurity/SKILL.md) para:
+**Se a feature envolver autenticação, autorização, inputs de usuário, dados sensíveis ou endpoints públicos**, use os padrões de segurança já embutidos na base de domínio ([eng-backend]($IDE/skills/eng-backend/SKILL.md) tema 10, [eng-frontend]($IDE/skills/eng-frontend/SKILL.md)) ou, para infraestrutura, no [eng-platform]($IDE/skills/eng-platform/SKILL.md) (temas 9 e 13), e então:
 - Mapear superfície de ataque e dados sensíveis (PII, financeiros)
 - Definir modelo de auth e RBAC adequado
 - Planejar estratégia de sanitização de inputs
 - Documentar vetores de risco na seção de segurança do `architecture.md`
+
+**Se a feature envolver infraestrutura** (provisionamento, IaC, contêineres/orquestração, pipeline de CI/CD, observabilidade, confiabilidade/SRE ou custo de nuvem), aplique a regra [eng.specializations-rules.md]($IDE/rules/engineering/eng.specializations-rules.md) para a área **platform**: ela carrega o skill base [eng-platform]($IDE/skills/eng-platform/SKILL.md) mais as especializações registradas em `PLATFORM_SPECIALIZATIONS`, e então:
+- Definir provedor, orquestrador e ferramenta de IaC a usar (ou já em uso no projeto)
+- Planejar observabilidade mínima (métricas, logs, traces) e SLO/SLI quando a mudança afetar confiabilidade
+- Estimar custo e revisar segurança de infraestrutura (menor privilégio, segredos) antes de provisionar
 
 Documente a estratégia de testes no `architecture.md` na seção apropriada.
 

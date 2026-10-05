@@ -3,10 +3,10 @@ name: eng-frontend
 description: >
   Skill base de desenvolvimento frontend para a plataforma web, válida em qualquer framework:
   HTML semântico, CSS e design responsivo, JavaScript e DOM, estado e componentes, UI e UX,
-  acessibilidade, performance, APIs do navegador, testes e segurança do cliente.
-  Pode ser complementada por skills especializados de uma stack.
+  acessibilidade, performance, APIs do navegador, testes, segurança do cliente, design system/tokens
+  e arquitetura de micro frontend. Pode ser complementada por skills especializados de uma stack.
   Trigger: Use para componentes, interface, estado, bundle, renderização, Core Web Vitals,
-  acessibilidade (WCAG), design system, testes de interface ou frontend em geral.
+  acessibilidade (WCAG), design system, micro frontend, testes de interface ou frontend em geral.
 license: AGPL-3.0
 compatibility: Designed for Claude Code (or similar products)
 allowed-tools: Read Write Edit Glob Grep Bash
@@ -34,7 +34,7 @@ Construir interfaces corretas, performáticas e acessíveis, com foco em qualida
 ## Recursos
 
 - **ENV**: `$IDE/ENV.md` (variáveis e configurações do projeto)
-- **Base universal**: os 12 temas em [references/](references/), carregados sob demanda
+- **Base universal**: os 14 temas em [references/](references/), carregados sob demanda
 - **Saída**: código e testes no repositório atual
 
 ---
@@ -59,6 +59,7 @@ Use este skill quando:
 - Otimizar o desempenho da interface (carregamento, renderização, Core Web Vitals)
 - Revisar ou implementar acessibilidade (WCAG, ARIA, semântica, teclado)
 - Construir ou evoluir um design system (componentes e tokens)
+- Projetar ou integrar uma arquitetura de micro frontend (shell/remote, contratos, shared deps)
 - Escrever testes de interface e tratar a segurança do lado do cliente
 
 **NÃO usar quando:**
@@ -144,6 +145,8 @@ Usar um recurso nativo do navegador?        → tema 9 (APIs do navegador)
 Escrever testes?                            → tema 10 (testes)
 Entrada de dados, cookies ou terceiros?     → tema 11 (segurança do cliente)
 Refatorar ou revisar código?                → tema 12 (qualidade de código)
+Definir token, variante ou versionar componente público? → tema 13 (design system e tokens)
+Integrar remote/shell ou contrato entre apps?            → tema 14 (arquitetura de micro frontend)
 ```
 
 ---
@@ -182,6 +185,8 @@ Carregue **só o tema necessário** para a tarefa, em vez de todos de uma vez.
 | 10 | [Testes](references/10-testes.md) | Fundamental | Definir a estratégia e a qualidade dos testes |
 | 11 | [Segurança do cliente](references/11-seguranca.md) | Fundamental | Evitar XSS, CSRF e tratar armazenamento, CORS e dependências |
 | 12 | [Qualidade de código](references/12-qualidade-codigo.md) | Fundamental | Refatorar, revisar código e documentar |
+| 13 | [Design system e tokens](references/13-design-system.md) | Importante | Criar/versionar componente público, definir token semântico ou auditar consistência visual |
+| 14 | [Arquitetura de micro frontend](references/14-microfrontend.md) | Importante | Criar remote, integrar ao shell, definir contrato de interface ou resolver shared deps |
 
 ---
 
@@ -194,6 +199,8 @@ Carregue **só o tema necessário** para a tarefa, em vez de todos de uma vez.
 - Fazer requisições diretamente em componentes de UI quando o projeto tem uma camada de dados
 - Contornar o sistema de tipos do projeto sem justificativa
 - Esquecer os casos limite (lista vazia, falha de rede)
+- Hardcodar cor, espaçamento ou fonte fora dos tokens do design system
+- Importar diretamente de outro micro frontend (rompe o isolamento) ou compartilhar estado via módulo entre eles
 
 ### Sempre
 - Considerar mobile-first
@@ -279,4 +286,4 @@ Não invente convenções nem comandos específicos da tecnologia: siga o códig
 
 ## Recursos Adicionais
 
-- **Base universal**: os 12 temas em [references/](references/)
+- **Base universal**: os 14 temas em [references/](references/)

@@ -15,7 +15,6 @@ agents/
 ├── engineering/              # agentes de engenharia
 │   ├── eng.agent.md          # agente principal (ATHENA)
 │   ├── eng.bug-hunter.md
-│   ├── eng.cybersecurity.agent.md   # SENTINEL
 │   ├── eng.dev-code-reviewer.md
 │   ├── eng.docs-writer.md
 │   ├── eng.frontend.agent.md

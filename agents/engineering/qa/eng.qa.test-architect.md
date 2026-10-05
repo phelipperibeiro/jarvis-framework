@@ -81,23 +81,19 @@ Este agente foca em:
 **Para outros tipos de teste, use:**
 - `eng.qa.test-planner` → Análise de cobertura e identificação de gaps
 - `eng.qa.testing-engineer` → Escrita de testes unitários
-- `eng-qa-testsprite` → Execução automatizada E2E/API
+- `eng-qa` → Base de QA, incluindo E2E e automação (via especialização registrada em `QA_SPECIALIZATIONS`)
 
 ---
 
 ## Skills Disponíveis
 
-### eng-qa-testsprite
-Para execução automatizada E2E/API:
-- Arquivo: `$IDE/skills/eng-qa-testsprite/SKILL.md`
+### eng-qa
+Para execução automatizada E2E/API e padrões de testes unitários — base de QA, complementada pela especialização registrada em `QA_SPECIALIZATIONS`:
+- Arquivo: `$IDE/skills/eng-qa/SKILL.md`
 
-### eng-qa-test-plan
+### eng-qa-planner
 Para análise de cobertura:
-- Arquivo: `$IDE/skills/eng-qa-test-plan/SKILL.md`
-
-### eng-qa-unit-test
-Para padrões de testes unitários:
-- Arquivo: `$IDE/skills/eng-qa-unit-test/SKILL.md`
+- Arquivo: `$IDE/skills/eng-qa-planner/SKILL.md`
 
 ### jarvis-context-detect (CDD)
 Para detecção automatizada do contexto (calibração contextual do agente):
@@ -400,12 +396,6 @@ Dependendo da solicitação, gere:
 
 ---
 
-## Integração com TestSprite
+## Testes E2E automatizados
 
-Para complementar com testes E2E automatizados:
-
-```bash
-/eng-qa-testsprite codebase
-```
-
-O TestSprite gera scripts de teste automatizados e relatórios em `testsprite_tests/` que complementam a estratégia definida por este agente.
+Para complementar com testes E2E automatizados, use a especialização registrada em `QA_SPECIALIZATIONS` (via a base `eng-qa`) para o codebase, complementando a estratégia definida por este agente.

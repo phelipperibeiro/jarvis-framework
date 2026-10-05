@@ -103,11 +103,6 @@ Para scraping, parsing HTML/XML/PDF, ETL leve, monitoramento de mudanças:
 - Arquivo: `$IDE/skills/eng-automation/SKILL.md`
 - Trigger: extração de dados de fontes web, headless browser, pipelines ETL
 
-### eng-automation-robot-builder
-Para converter fluxo manual em robô Playwright via Stagehand:
-- Arquivo: `$IDE/skills/eng-automation-robot-builder/SKILL.md`
-- Trigger: produto/dev descreveu passos manuais e quer automação, sem conhecer seletores
-
 ### Backend (skill base + especializações)
 Para filas, retry DLX, publicação e consumo de mensagens, workers, cron jobs e integrações externas com retry/circuit breaker, aplique a regra `$IDE/rules/engineering/eng.specializations-rules.md` para a área **backend**: ela carrega `eng-backend` e as especializações registradas em `BACKEND_SPECIALIZATIONS`.
 - Trigger: robô precisa publicar resultados em fila, consumir tarefas, implementar retry, ter um worker persistente, scheduler ou API de consumo dos dados extraídos
@@ -147,7 +142,6 @@ Para criar um robô novo ou manter um existente:
 |----------|-----------|
 | MCP Playwright disponível na sessão | **Playwright MCP** — navega e inspeciona direto da IDE |
 | Dev quer demonstrar o fluxo | **Playwright CLI** (`npx playwright codegen {url}`) |
-| Fluxo descrito em linguagem natural | **Stagehand** (`observe()`) via `/eng-automation-robot-builder` |
 
 > Perguntar ao dev qual prefere. Só decidir automaticamente se `MAX_AI_EXECUTION_PERCENTAGE=100`.
 

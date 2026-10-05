@@ -20,7 +20,6 @@ Enquanto o [`eng.debug`](./eng.debug.md) investiga **um** bug específico, este 
 ## Quando **não** usar
 
 - Você tem um bug concreto para investigar → [`eng.debug`](./eng.debug.md)
-- Você quer auditoria de segurança → [`eng.security-audit`](./eng.security-audit.md)
 - Você quer revisar um PR → [`eng.review`](./eng.review.md)
 
 ## Como usar
