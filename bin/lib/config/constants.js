@@ -106,7 +106,7 @@ export const OPENCODE_MODEL_MAP = Object.freeze({
   "gpt-4.1": "openai/gpt-4.1",
   "gpt-4.1-mini": "openai/gpt-4.1-mini",
   "gpt-4.1-nano": "openai/gpt-4.1-nano",
-  "o3": "openai/o3",
+  o3: "openai/o3",
   "o3-mini": "openai/o3-mini",
   "o4-mini": "openai/o4-mini",
   // Google
@@ -178,4 +178,3 @@ export const KIRO_HUB_FILE_PATTERNS = Object.freeze({
   DATA: "**/*.py,**/*.sql,**/*.ipynb",
   AI: "**/*.ts,**/*.py",
 });
-

@@ -99,9 +99,11 @@ export function classifyCell(cell) {
     const token = span[1].trim();
     if (span[2]) targets.push({ kind: "agent", name: token });
     else if (token.startsWith("/")) {
-      targets.push({ kind: external ? "external" : "internal", name: token.slice(1).split(/\s+/)[0] });
-    }
-    else if (/^(jarvis|node)\s/.test(token)) targets.push({ kind: "cli", name: token });
+      targets.push({
+        kind: external ? "external" : "internal",
+        name: token.slice(1).split(/\s+/)[0],
+      });
+    } else if (/^(jarvis|node)\s/.test(token)) targets.push({ kind: "cli", name: token });
     else if (token.startsWith("mcp__")) targets.push({ kind: "mcp", name: token });
     // Read, Grep, Glob e texto livre não são chamadas a artefatos: ignorados
   }
@@ -140,7 +142,9 @@ function parseTable(text, title) {
 }
 
 function section(text, title) {
-  const m = text.match(new RegExp(`^## ${title}\\s*\\n([\\s\\S]*?)(?=\\n## |\\n---\\s*\\n|(?![\\s\\S]))`, "m"));
+  const m = text.match(
+    new RegExp(`^## ${title}\\s*\\n([\\s\\S]*?)(?=\\n## |\\n---\\s*\\n|(?![\\s\\S]))`, "m")
+  );
   return m ? m[1] : null;
 }
 
@@ -153,7 +157,9 @@ function parseAgent(text) {
     for (const block of skills.split(/^### /m).slice(1)) {
       const [heading, ...rest] = block.split("\n");
       // Um bloco pode citar mais de uma skill: uma linha por skill (nome tirado do caminho do SKILL.md).
-      const names = [...new Set([...block.matchAll(/skills\/([A-Za-z0-9._-]+)\/SKILL\.md/g)].map((m) => m[1]))];
+      const names = [
+        ...new Set([...block.matchAll(/skills\/([A-Za-z0-9._-]+)\/SKILL\.md/g)].map((m) => m[1])),
+      ];
       if (names.length === 0) {
         const token = heading.trim().split(/[\s(]/)[0];
         if (/[-.]/.test(token)) names.push(token);

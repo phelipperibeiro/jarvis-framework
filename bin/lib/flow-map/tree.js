@@ -53,7 +53,16 @@ export function forwardTree(graph, name, opts = {}) {
   const expanded = new Set([name]);
 
   function base(partial) {
-    return { passo: null, condicao: "", via: null, marker: null, available: false, status: null, children: [], ...partial };
+    return {
+      passo: null,
+      condicao: "",
+      via: null,
+      marker: null,
+      available: false,
+      status: null,
+      children: [],
+      ...partial,
+    };
   }
 
   function childrenOf(itemName, level, ancestors) {
@@ -61,12 +70,22 @@ export function forwardTree(graph, name, opts = {}) {
     const children = [];
     for (const row of d.rows) {
       if (row.targets.length === 0) continue;
-      const grouped = row.targets.filter((t) => t.kind === "internal" || t.kind === "agent").length > 1;
+      const grouped =
+        row.targets.filter((t) => t.kind === "internal" || t.kind === "agent").length > 1;
       // Em menu, a condição fica no nó do menu e não se repete em cada alvo.
-      const nodes = row.targets.map((t) => targetNode(t, grouped ? { ...row, condicao: "", via: null } : row, level + 1, ancestors));
+      const nodes = row.targets.map((t) =>
+        targetNode(t, grouped ? { ...row, condicao: "", via: null } : row, level + 1, ancestors)
+      );
       if (grouped) {
         children.push(
-          base({ name: `menu (${nodes.length} opções)`, kind: "menu", passo: row.passo, condicao: row.condicao, via: row.via, children: nodes }),
+          base({
+            name: `menu (${nodes.length} opções)`,
+            kind: "menu",
+            passo: row.passo,
+            condicao: row.condicao,
+            via: row.via,
+            children: nodes,
+          })
         );
       } else {
         children.push(...nodes);
@@ -76,13 +95,25 @@ export function forwardTree(graph, name, opts = {}) {
   }
 
   function targetNode(target, row, level, ancestors) {
-    const common = { passo: row.passo, condicao: row.condicao, via: row.via, marker: row.marker, available: row.available };
+    const common = {
+      passo: row.passo,
+      condicao: row.condicao,
+      via: row.via,
+      marker: row.marker,
+      available: row.available,
+    };
 
     if (["cli", "mcp", "external", "unresolved"].includes(target.kind)) {
       return base({ name: target.name, kind: target.kind, ...common });
     }
     const item = graph.items.get(target.name);
-    if (!item) return base({ name: target.name, kind: "broken", ...common, marker: row.marker ?? "quebrada" });
+    if (!item)
+      return base({
+        name: target.name,
+        kind: "broken",
+        ...common,
+        marker: row.marker ?? "quebrada",
+      });
 
     const node = base({ name: item.name, kind: item.type, ...common });
     if (ancestors.has(item.name)) node.status = "cycle";
@@ -132,7 +163,14 @@ export function suggest(items, name) {
   return [...items.keys()]
     .map((candidate) => {
       const c = candidate.toLowerCase();
-      const score = c.startsWith(lower) || lower.startsWith(c) ? 0 : c.includes(lower) || lower.includes(c) ? 1 : levenshtein(lower, c) <= Math.max(1, Math.floor(Math.min(lower.length, c.length) / 4)) ? 2 : null;
+      const score =
+        c.startsWith(lower) || lower.startsWith(c)
+          ? 0
+          : c.includes(lower) || lower.includes(c)
+            ? 1
+            : levenshtein(lower, c) <= Math.max(1, Math.floor(Math.min(lower.length, c.length) / 4))
+              ? 2
+              : null;
       return { candidate, score };
     })
     .filter((s) => s.score !== null)
@@ -152,7 +190,9 @@ export function reverseEdges(graph, name) {
   for (const [from, d] of graph.decl) {
     if (from === name) continue;
     for (const row of d.rows) {
-      if (row.targets.some((t) => (t.kind === "internal" || t.kind === "agent") && t.name === name)) {
+      if (
+        row.targets.some((t) => (t.kind === "internal" || t.kind === "agent") && t.name === name)
+      ) {
         edges.push({
           from,
           type: graph.items.get(from).type,
@@ -186,7 +226,12 @@ export function findBrokenReferences(graph) {
           warnings.push({ file, name: t.name, reason: `referência ${row.marker}` });
         } else if ((t.kind === "internal" || t.kind === "agent") && !graph.items.has(t.name)) {
           if (row.marker) warnings.push({ file, name: t.name, reason: `referência ${row.marker}` });
-          else errors.push({ file, name: t.name, reason: "não existe como workflow, skill ou agente" });
+          else
+            errors.push({
+              file,
+              name: t.name,
+              reason: "não existe como workflow, skill ou agente",
+            });
         }
       }
     }
@@ -195,5 +240,9 @@ export function findBrokenReferences(graph) {
 }
 
 function duplicatesOf(graph) {
-  return graph.duplicates.map((name) => ({ file: name, name, reason: "nome repetido entre os artefatos" }));
+  return graph.duplicates.map((name) => ({
+    file: name,
+    name,
+    reason: "nome repetido entre os artefatos",
+  }));
 }

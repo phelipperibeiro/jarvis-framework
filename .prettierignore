@@ -1,0 +1,14 @@
+node_modules/
+coverage/
+.jarvis/
+
+# Conteúdo do framework é prosa (markdown), não código — fora do escopo do formatter
+agents/
+skills/
+workflows/
+templates/
+rules/
+rules-on-demand/
+docs/
+trash-archived-docs/
+*.md

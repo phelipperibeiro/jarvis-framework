@@ -89,12 +89,10 @@ export async function createMergeRequest(repoUrl, opts) {
           description,
           remove_source_branch: true,
         },
-      },
+      }
     );
     if (!ok || !json?.web_url) {
-      throw new Error(
-        `Falha ao criar MR GitLab (${status}): ${JSON.stringify(json)}`,
-      );
+      throw new Error(`Falha ao criar MR GitLab (${status}): ${JSON.stringify(json)}`);
     }
     return { vendor: "gitlab", iid: json.iid, url: json.web_url };
   }
@@ -111,12 +109,10 @@ export async function createMergeRequest(repoUrl, opts) {
           base: target,
           body: description,
         },
-      },
+      }
     );
     if (!ok || !json?.html_url) {
-      throw new Error(
-        `Falha ao criar PR GitHub (${status}): ${JSON.stringify(json)}`,
-      );
+      throw new Error(`Falha ao criar PR GitHub (${status}): ${JSON.stringify(json)}`);
     }
     return { vendor: "github", iid: json.number, url: json.html_url };
   }
@@ -133,12 +129,10 @@ export async function createMergeRequest(repoUrl, opts) {
         destination: { branch: { name: target } },
         close_source_branch: true,
       },
-    },
+    }
   );
   if (!ok || !json?.links?.html?.href) {
-    throw new Error(
-      `Falha ao criar PR Bitbucket (${status}): ${JSON.stringify(json)}`,
-    );
+    throw new Error(`Falha ao criar PR Bitbucket (${status}): ${JSON.stringify(json)}`);
   }
   return {
     vendor: "bitbucket",
@@ -174,12 +168,10 @@ export async function commitFiles(repoUrl, opts) {
             encoding: "base64",
           })),
         },
-      },
+      }
     );
     if (!ok || !json?.id) {
-      throw new Error(
-        `Falha no commit GitLab (${status}): ${JSON.stringify(json)}`,
-      );
+      throw new Error(`Falha no commit GitLab (${status}): ${JSON.stringify(json)}`);
     }
     return { sha: json.id };
   }
@@ -187,22 +179,17 @@ export async function commitFiles(repoUrl, opts) {
   if (repo.vendor === "github") {
     const refRes = await request(
       `${repo.apiBase}/repos/${repo.owner}/${repo.repo}/git/ref/heads/${startBranch}`,
-      { headers },
+      { headers }
     );
     if (!refRes.ok) {
-      throw new Error(
-        `Branch ${startBranch} não encontrada no GitHub (${refRes.status})`,
-      );
+      throw new Error(`Branch ${startBranch} não encontrada no GitHub (${refRes.status})`);
     }
     const sha = refRes.json.object.sha;
-    await request(
-      `${repo.apiBase}/repos/${repo.owner}/${repo.repo}/git/refs`,
-      {
-        method: "POST",
-        headers,
-        body: { ref: `refs/heads/${branch}`, sha },
-      },
-    );
+    await request(`${repo.apiBase}/repos/${repo.owner}/${repo.repo}/git/refs`, {
+      method: "POST",
+      headers,
+      body: { ref: `refs/heads/${branch}`, sha },
+    });
     let lastSha = sha;
     for (const file of files) {
       const put = await request(
@@ -215,11 +202,11 @@ export async function commitFiles(repoUrl, opts) {
             content: file.contentBase64,
             branch,
           },
-        },
+        }
       );
       if (!put.ok) {
         throw new Error(
-          `Falha ao escrever ${file.path} no GitHub (${put.status}): ${JSON.stringify(put.json)}`,
+          `Falha ao escrever ${file.path} no GitHub (${put.status}): ${JSON.stringify(put.json)}`
         );
       }
       lastSha = put.json.commit?.sha || lastSha;
@@ -235,14 +222,11 @@ export async function commitFiles(repoUrl, opts) {
     const buf = Buffer.from(file.contentBase64, "base64");
     form.set(file.path, new Blob([buf]));
   }
-  const res = await fetch(
-    `${repo.apiBase}/repositories/${repo.owner}/${repo.repo}/src`,
-    {
-      method: "POST",
-      headers: { Authorization: `Bearer ${token}` },
-      body: form,
-    },
-  );
+  const res = await fetch(`${repo.apiBase}/repositories/${repo.owner}/${repo.repo}/src`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}` },
+    body: form,
+  });
   if (!res.ok) {
     throw new Error(`Falha no commit Bitbucket (${res.status}): ${await res.text()}`);
   }
@@ -262,7 +246,7 @@ export async function createIssue(repoUrl, opts) {
         method: "POST",
         headers,
         body: { title, description: body, labels: labels.join(",") },
-      },
+      }
     );
     if (!ok || !json?.web_url) {
       throw new Error(`Issue GitLab (${status}): ${JSON.stringify(json)}`);
@@ -277,7 +261,7 @@ export async function createIssue(repoUrl, opts) {
         method: "POST",
         headers,
         body: { title, body, labels },
-      },
+      }
     );
     if (!ok || !json?.html_url) {
       throw new Error(`Issue GitHub (${status}): ${JSON.stringify(json)}`);
@@ -291,7 +275,7 @@ export async function createIssue(repoUrl, opts) {
       method: "POST",
       headers,
       body: { title, content: { raw: body } },
-    },
+    }
   );
   if (!ok || !json?.links?.html?.href) {
     throw new Error(`Issue Bitbucket (${status}): ${JSON.stringify(json)}`);

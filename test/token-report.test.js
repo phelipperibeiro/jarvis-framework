@@ -4,14 +4,9 @@ import assert from "node:assert/strict";
 import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import {
-  estimateTokens,
-  frontmatterBytes,
-  buildReport,
-} from "../bin/lib/core/token-report.js";
+import { estimateTokens, frontmatterBytes, buildReport } from "../bin/lib/core/token-report.js";
 
-const bloco = (hub) =>
-  `> **Applies to:** HUB: ${hub} | POSITION: all | AREA: all | SQUAD: all\n`;
+const bloco = (hub) => `> **Applies to:** HUB: ${hub} | POSITION: all | AREA: all | SQUAD: all\n`;
 
 function frameworkMinimo() {
   const dir = mkdtempSync(join(tmpdir(), "jarvis-tokens-"));
@@ -24,8 +19,14 @@ function frameworkMinimo() {
   writeFileSync(join(dir, "rules", "engineering", "back.md"), bloco("BACKEND") + "y".repeat(200));
   writeFileSync(join(dir, "rules", "engineering", "front.md"), bloco("FRONTEND") + "y".repeat(300));
   writeFileSync(join(dir, "skills", "AGENTS.md"), "z".repeat(999)); // não é skill
-  writeFileSync(join(dir, "skills", "skill-a", "SKILL.md"), "---\nname: a\n---\n" + "corpo ".repeat(500));
-  writeFileSync(join(dir, "skills", "skill-b", "SKILL.md"), "sem frontmatter\n" + "corpo ".repeat(10));
+  writeFileSync(
+    join(dir, "skills", "skill-a", "SKILL.md"),
+    "---\nname: a\n---\n" + "corpo ".repeat(500)
+  );
+  writeFileSync(
+    join(dir, "skills", "skill-b", "SKILL.md"),
+    "sem frontmatter\n" + "corpo ".repeat(10)
+  );
   writeFileSync(join(dir, "workflows", "warm-up.md"), "w".repeat(400));
   writeFileSync(join(dir, "AGENTS.md"), "a".repeat(50));
   return dir;
@@ -39,7 +40,10 @@ test("estimateTokens: bytes ÷ 4, arredondado", () => {
 });
 
 test("frontmatterBytes: só o bloco entre os ---, 0 sem frontmatter", () => {
-  assert.equal(frontmatterBytes("---\nname: a\n---\ncorpo"), Buffer.byteLength("---\nname: a\n---"));
+  assert.equal(
+    frontmatterBytes("---\nname: a\n---\ncorpo"),
+    Buffer.byteLength("---\nname: a\n---")
+  );
   assert.equal(frontmatterBytes("sem frontmatter"), 0);
 });
 
@@ -75,7 +79,12 @@ test("buildReport: soma por tipo e total, respeitando o perfil", () => {
 test("buildReport: outro perfil muda só as rules", () => {
   const dir = frameworkMinimo();
   try {
-    const r = buildReport(dir, { HUB: "FRONTEND", POSITION: "PLENO", AREA: "ENGINEERING", SQUAD: "CORE" });
+    const r = buildReport(dir, {
+      HUB: "FRONTEND",
+      POSITION: "PLENO",
+      AREA: "ENGINEERING",
+      SQUAD: "CORE",
+    });
     const rules = r.categories.find((c) => c.id === "rules");
     assert.deepEqual(rules.files.map((f) => f.path).sort(), ["AGENTS.md", "engineering/front.md"]);
   } finally {
@@ -87,7 +96,12 @@ test("buildReport: framework sem warm-up nem AGENTS.md não quebra", () => {
   const dir = mkdtempSync(join(tmpdir(), "jarvis-tokens-"));
   try {
     mkdirSync(join(dir, "rules"));
-    const r = buildReport(dir, { HUB: "QA", POSITION: "SENIOR", AREA: "ENGINEERING", SQUAD: "CORE" });
+    const r = buildReport(dir, {
+      HUB: "QA",
+      POSITION: "SENIOR",
+      AREA: "ENGINEERING",
+      SQUAD: "CORE",
+    });
     assert.equal(r.total.bytes, 0);
   } finally {
     rmSync(dir, { recursive: true, force: true });

@@ -75,13 +75,23 @@ export function buildReport(root, profile, opts = {}) {
   const categories = [
     category("rules", "Rules", rules, "carregadas no início pelo Claude Code"),
     category("agents-md", "AGENTS.md", agentsMd, "instrução de projeto"),
-    category("skills-frontmatter", "Frontmatter dos skills", skills, "sempre visível; o corpo só ao invocar"),
+    category(
+      "skills-frontmatter",
+      "Frontmatter dos skills",
+      skills,
+      "sempre visível; o corpo só ao invocar"
+    ),
     category("warmup", "warm-up", warmup, "só se executado no início da sessão"),
   ];
 
   const bytes = categories.reduce((sum, c) => sum + c.bytes, 0);
   return {
-    profile: { HUB: profile.HUB, POSITION: profile.POSITION, AREA: profile.AREA, SQUAD: profile.SQUAD },
+    profile: {
+      HUB: profile.HUB,
+      POSITION: profile.POSITION,
+      AREA: profile.AREA,
+      SQUAD: profile.SQUAD,
+    },
     rtkEnabled,
     estimate: `tokens = bytes ÷ ${BYTES_PER_TOKEN} (estimativa)`,
     categories,

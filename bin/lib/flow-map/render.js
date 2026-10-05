@@ -48,7 +48,8 @@ function describe(node) {
 export function renderTree(root) {
   const lines = [describe(root)];
   if (root.status === "selfContained") lines.push("└── (autocontido: não chama nenhum outro item)");
-  else if (root.status === "undeclared") lines.push("└── (sem declaração de chamadas: o item não segue a tabela padronizada)");
+  else if (root.status === "undeclared")
+    lines.push("└── (sem declaração de chamadas: o item não segue a tabela padronizada)");
 
   function walk(node, prefix) {
     node.children.forEach((child, i) => {
@@ -80,7 +81,9 @@ export function renderReverse(name, type, edges) {
     const condition = summarizeCondition(e.condicao);
     if (condition) notes.push(condition);
     if (e.via) notes.push(`via ${e.via}`);
-    lines.push(`${i === edges.length - 1 ? "└── " : "├── "}${e.from} [${TYPE_LABEL[e.type]}]${notes.length ? `  (${notes.join("; ")})` : ""}`);
+    lines.push(
+      `${i === edges.length - 1 ? "└── " : "├── "}${e.from} [${TYPE_LABEL[e.type]}]${notes.length ? `  (${notes.join("; ")})` : ""}`
+    );
   });
   return lines;
 }

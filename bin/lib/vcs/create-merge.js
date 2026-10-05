@@ -16,14 +16,12 @@ const repoArg = arg("repo");
 
 if (!source || !target || !title) {
   console.error(
-    "Uso: create-merge.js --source <branch> --target <branch> --title <titulo> [--body-file path] [--repo url]",
+    "Uso: create-merge.js --source <branch> --target <branch> --title <titulo> [--body-file path] [--repo url]"
   );
   process.exit(1);
 }
 
-const repoUrl =
-  repoArg ||
-  execSync("git remote get-url origin", { encoding: "utf-8" }).trim();
+const repoUrl = repoArg || execSync("git remote get-url origin", { encoding: "utf-8" }).trim();
 const description = bodyFile ? readFileSync(bodyFile, "utf-8") : "";
 
 try {

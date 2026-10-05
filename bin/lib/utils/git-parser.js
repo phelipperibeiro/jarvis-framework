@@ -67,7 +67,7 @@ export function parseRepoUrl(url) {
   } catch {
     throw new Error(
       `URL inválida: ${url}\n` +
-        "Formatos: https://github.com/org/repo.git | https://gitlab.com/grupo/repo.git | https://bitbucket.org/ws/repo.git",
+        "Formatos: https://github.com/org/repo.git | https://gitlab.com/grupo/repo.git | https://bitbucket.org/ws/repo.git"
     );
   }
 
@@ -82,7 +82,7 @@ export function parseRepoUrl(url) {
   if (!vendor) {
     throw new Error(
       `Não foi possível detectar o vendor de ${host}.\n` +
-        "Defina VERSION_CONTROL=gitlab|github|bitbucket no ENV.md.",
+        "Defina VERSION_CONTROL=gitlab|github|bitbucket no ENV.md."
     );
   }
 
@@ -108,16 +108,14 @@ export function parseGitLabUrl(url) {
   const parsed = parseRepoUrl(url);
   if (parsed.vendor !== "gitlab") {
     throw new Error(
-      `URL não é GitLab (${parsed.vendor}): ${url}\n` +
-        "Use parseRepoUrl() para GitHub/Bitbucket.",
+      `URL não é GitLab (${parsed.vendor}): ${url}\n` + "Use parseRepoUrl() para GitHub/Bitbucket."
     );
   }
   return parsed;
 }
 
 export function buildApiUrl(repoUrl, endpoint) {
-  const { vendor, apiBase, projectPathEncoded, owner, repo } =
-    parseRepoUrl(repoUrl);
+  const { vendor, apiBase, projectPathEncoded, owner, repo } = parseRepoUrl(repoUrl);
   if (vendor === "gitlab") {
     return `${apiBase}/projects/${projectPathEncoded}/${endpoint}`;
   }

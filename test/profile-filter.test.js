@@ -18,8 +18,15 @@ const bloco = (hub, pos, area, squad) =>
 const profile = (HUB, POSITION, AREA, SQUAD = "CORE") => ({ HUB, POSITION, AREA, SQUAD });
 
 test("parseAppliesTo lê o bloco, com valores múltiplos", () => {
-  const r = parseAppliesTo(`---\nenv_file: x\n---\n\n${bloco("BACKEND, FRONTEND", "all", "ENGINEERING", "all")}\n\n# T`);
-  assert.deepEqual(r, { HUB: "BACKEND, FRONTEND", POSITION: "all", AREA: "ENGINEERING", SQUAD: "all" });
+  const r = parseAppliesTo(
+    `---\nenv_file: x\n---\n\n${bloco("BACKEND, FRONTEND", "all", "ENGINEERING", "all")}\n\n# T`
+  );
+  assert.deepEqual(r, {
+    HUB: "BACKEND, FRONTEND",
+    POSITION: "all",
+    AREA: "ENGINEERING",
+    SQUAD: "all",
+  });
 });
 
 test("parseAppliesTo devolve null sem bloco", () => {
@@ -50,7 +57,10 @@ test("matchesProfile: lista separada por vírgula", () => {
 
 test("matchesProfile: SQUAD diferente bloqueia, mesmo com GENERALIST e FULLCYCLE", () => {
   const a = parseAppliesTo(bloco("all", "all", "all", "CORE"));
-  assert.equal(matchesProfile(a, profile("FULLCYCLE", "GENERALIST", "ENGINEERING", "OUTRO")), false);
+  assert.equal(
+    matchesProfile(a, profile("FULLCYCLE", "GENERALIST", "ENGINEERING", "OUTRO")),
+    false
+  );
   assert.equal(matchesProfile(a, profile("FULLCYCLE", "GENERALIST", "ENGINEERING", "CORE")), true);
 });
 
@@ -72,14 +82,21 @@ test("listRulesForProfile: AGENTS.md nunca é filtrado, rtk é opt-in, sem bloco
     writeFileSync(join(dir, "AGENTS.md"), bloco("QA", "SENIOR", "PRODUCT", "OUTRO") + "\n");
     writeFileSync(join(dir, "universal.md"), "# Sem bloco\n");
     writeFileSync(join(dir, "rtk-rules.md"), bloco("all", "all", "all", "all") + "\n");
-    writeFileSync(join(dir, "engineering", "back.md"), bloco("BACKEND", "all", "all", "all") + "\n");
+    writeFileSync(
+      join(dir, "engineering", "back.md"),
+      bloco("BACKEND", "all", "all", "all") + "\n"
+    );
     writeFileSync(join(dir, "engineering", "qa.md"), bloco("QA", "all", "all", "all") + "\n");
     const p = profile("BACKEND", "SENIOR", "ENGINEERING");
 
-    const sem = listRulesForProfile(dir, p).map((r) => r.path).sort();
+    const sem = listRulesForProfile(dir, p)
+      .map((r) => r.path)
+      .sort();
     assert.deepEqual(sem, ["AGENTS.md", "engineering/back.md", "universal.md"]);
 
-    const com = listRulesForProfile(dir, p, { rtkEnabled: true }).map((r) => r.path).sort();
+    const com = listRulesForProfile(dir, p, { rtkEnabled: true })
+      .map((r) => r.path)
+      .sort();
     assert.deepEqual(com, ["AGENTS.md", "engineering/back.md", "rtk-rules.md", "universal.md"]);
   } finally {
     rmSync(dir, { recursive: true, force: true });
@@ -91,7 +108,12 @@ test("listRulesForProfile: AGENTS.md nunca é filtrado, rtk é opt-in, sem bloco
 // +26 B em cada perfil na #64 (generalização de exemplos de domínio em eng.docs-scraping-rules.md).
 // +129 B em cada perfil na #67 (eng.bump-rules.md corrigido para package.json/npm + referência ao CHANGELOG.md).
 const BASE = [
-  ["FULLCYCLE/GENERALIST/ENGINEERING/CORE", profile("FULLCYCLE", "GENERALIST", "ENGINEERING"), 18, 110602],
+  [
+    "FULLCYCLE/GENERALIST/ENGINEERING/CORE",
+    profile("FULLCYCLE", "GENERALIST", "ENGINEERING"),
+    18,
+    110602,
+  ],
   ["BACKEND/SENIOR/ENGINEERING/CORE", profile("BACKEND", "SENIOR", "ENGINEERING"), 11, 62541],
   ["FRONTEND/PLENO/ENGINEERING/CORE", profile("FRONTEND", "PLENO", "ENGINEERING"), 11, 63386],
   ["QA/QA-ENGINEER/ENGINEERING/CORE", profile("QA", "QA-ENGINEER", "ENGINEERING"), 14, 76763],
@@ -101,6 +123,9 @@ for (const [nome, p, arquivos, bytes] of BASE) {
   test(`rules reais: ${nome} recebe ${arquivos} arquivos e ${bytes} B`, () => {
     const rules = listRulesForProfile(join(root, "rules"), p);
     assert.equal(rules.length, arquivos);
-    assert.equal(rules.reduce((s, r) => s + r.bytes, 0), bytes);
+    assert.equal(
+      rules.reduce((s, r) => s + r.bytes, 0),
+      bytes
+    );
   });
 }

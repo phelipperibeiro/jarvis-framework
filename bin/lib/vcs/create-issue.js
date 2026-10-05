@@ -12,9 +12,7 @@ const bodyFile = arg("body-file");
 const repo = arg("repo");
 
 if (!title || !bodyFile || !repo) {
-  console.error(
-    "Uso: create-issue.js --repo <url-ou-path> --title <titulo> --body-file <path>",
-  );
+  console.error("Uso: create-issue.js --repo <url-ou-path> --title <titulo> --body-file <path>");
   process.exit(1);
 }
 

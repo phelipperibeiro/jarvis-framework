@@ -35,7 +35,7 @@ function parseSkillFrontmatter(content) {
   const fm = match[1];
   const name = (fm.match(/^name:\s*(.+)$/m) || [])[1]?.trim();
   // description pode ser multiline com `>`
-  const descMatch = fm.match(/^description:\s*[>|]?\n?([\s\S]*?)(?=\n\S|\n---|\Z)/m);
+  const descMatch = fm.match(/^description:\s*[>|]?\n?([\s\S]*?)(?=\n\S|\n---|Z)/m);
   const description = descMatch
     ? descMatch[1].replace(/^\s+/gm, "").replace(/\n+/g, " ").trim()
     : "";
@@ -59,8 +59,7 @@ function generateCodexOpenAIYaml(skillsDir) {
     const parsed = parseSkillFrontmatter(content);
     if (!parsed) continue;
     const yaml =
-      `name: ${parsed.name}\n` +
-      `description: "${parsed.description.replace(/"/g, '\\"')}"\n`;
+      `name: ${parsed.name}\n` + `description: "${parsed.description.replace(/"/g, '\\"')}"\n`;
     writeFileSync(yamlPath, yaml, "utf-8");
   }
 }
@@ -77,9 +76,7 @@ export function syncAssets(targetDir, ide, opts = {}) {
   for (const dir of SYNC_DIRS) {
     const src = join(frameworkRoot, dir);
     // Se for "workflows" e a IDE usa outro nome, usa o nome configurado
-    const destDirName = (dir === "workflows" && opts.workflowsFolder)
-      ? opts.workflowsFolder
-      : dir;
+    const destDirName = dir === "workflows" && opts.workflowsFolder ? opts.workflowsFolder : dir;
     const dest = join(ideDir, destDirName);
 
     if (!existsSync(src)) {
@@ -246,7 +243,8 @@ function resolveOpenCodeModel(model) {
   if (OPENCODE_MODEL_MAP[trimmed]) return OPENCODE_MODEL_MAP[trimmed];
   // Inferir provider pelo prefixo do modelo
   if (trimmed.startsWith("claude")) return `anthropic/${trimmed}`;
-  if (trimmed.startsWith("gpt") || trimmed.startsWith("o3") || trimmed.startsWith("o4")) return `openai/${trimmed}`;
+  if (trimmed.startsWith("gpt") || trimmed.startsWith("o3") || trimmed.startsWith("o4"))
+    return `openai/${trimmed}`;
   if (trimmed.startsWith("gemini")) return `google/${trimmed}`;
   // Fallback: retornar sem provider — OpenCode resolverá pelo provider padrão
   return trimmed;
@@ -370,11 +368,16 @@ function flattenDir(dir, rootDir) {
     const fullPath = join(dir, entry.name);
     if (entry.isDirectory()) {
       moved += flattenDir(fullPath, root);
-      try { rmSync(fullPath, { recursive: true, force: true }); } catch {}
+      try {
+        rmSync(fullPath, { recursive: true, force: true });
+      } catch {}
     } else if (entry.isFile() && entry.name.endsWith(".md")) {
       const dest = join(root, basename(entry.name));
       if (fullPath !== dest) {
-        try { renameSync(fullPath, dest); moved++; } catch {}
+        try {
+          renameSync(fullPath, dest);
+          moved++;
+        } catch {}
       }
     }
   }
@@ -402,9 +405,13 @@ function toKiroSteeringFile(content, inclusion, fileMatchPattern) {
 
   if (fmMatch) {
     const fm = fmMatch[1];
-    const description = (fm.match(/^description:\s*[>|]?\s*\n?([\s\S]*?)(?=\n\S|\n---|\Z)/m) || [])[1];
+    const description = (fm.match(/^description:\s*[>|]?\s*\n?([\s\S]*?)(?=\n\S|\n---|Z)/m) ||
+      [])[1];
     const descInline = (fm.match(/^description:\s*(.+)$/m) || [])[1];
-    const finalDesc = (description || descInline || "").replace(/^\s+/gm, "").replace(/\n+/g, " ").trim();
+    const finalDesc = (description || descInline || "")
+      .replace(/^\s+/gm, "")
+      .replace(/\n+/g, " ")
+      .trim();
     if (finalDesc) lines.push(`description: "${finalDesc.replace(/"/g, '\\"')}"`);
   }
 

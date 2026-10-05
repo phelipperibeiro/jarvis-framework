@@ -1,9 +1,16 @@
-import { buildGraph, forwardTree, reverseEdges, suggest, DEFAULT_DEPTH } from "../lib/flow-map/tree.js";
+import {
+  buildGraph,
+  forwardTree,
+  reverseEdges,
+  suggest,
+  DEFAULT_DEPTH,
+} from "../lib/flow-map/tree.js";
 import { renderTree, renderReverse } from "../lib/flow-map/render.js";
 import { getFrameworkRoot } from "../lib/utils/paths.js";
 import { logger } from "../lib/utils/logger.js";
 
-const USAGE = "Uso: jarvis map <nome> [--depth N] [--reverse]   (nome de um workflow, skill ou agente)";
+const USAGE =
+  "Uso: jarvis map <nome> [--depth N] [--reverse]   (nome de um workflow, skill ou agente)";
 
 /**
  * Monta a saída do mapa. Separado de `map` para ser testável.
@@ -13,12 +20,17 @@ const USAGE = "Uso: jarvis map <nome> [--depth N] [--reverse]   (nome de um work
  * @returns {{ code: number, lines: string[] }}
  */
 export function runMap(name, flags = {}, root = getFrameworkRoot()) {
-  if (!name) return { code: 1, lines: ["❌ Informe o nome de um workflow, skill ou agente.", USAGE] };
+  if (!name)
+    return { code: 1, lines: ["❌ Informe o nome de um workflow, skill ou agente.", USAGE] };
 
   let depth = DEFAULT_DEPTH;
   if (flags.depth !== undefined) {
     depth = Number.parseInt(String(flags.depth), 10);
-    if (!Number.isInteger(depth) || depth < 1) return { code: 1, lines: ["❌ --depth precisa ser um número inteiro maior que zero.", USAGE] };
+    if (!Number.isInteger(depth) || depth < 1)
+      return {
+        code: 1,
+        lines: ["❌ --depth precisa ser um número inteiro maior que zero.", USAGE],
+      };
   }
 
   const graph = buildGraph(root);
@@ -31,7 +43,10 @@ export function runMap(name, flags = {}, root = getFrameworkRoot()) {
   }
 
   if (flags.reverse) {
-    return { code: 0, lines: renderReverse(name, graph.items.get(name).type, reverseEdges(graph, name)) };
+    return {
+      code: 0,
+      lines: renderReverse(name, graph.items.get(name).type, reverseEdges(graph, name)),
+    };
   }
   return { code: 0, lines: renderTree(forwardTree(graph, name, { depth })) };
 }

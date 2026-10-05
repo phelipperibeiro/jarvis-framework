@@ -1,13 +1,5 @@
 import { discoverAll } from "../lib/core/scanner.js";
-import {
-  showBanner,
-  GREEN,
-  BLUE,
-  YELLOW,
-  CYAN,
-  DIM,
-  NC,
-} from "../lib/utils/ui.js";
+import { showBanner, GREEN, BLUE, YELLOW, CYAN, DIM, NC } from "../lib/utils/ui.js";
 import { logger } from "../lib/utils/logger.js";
 
 export async function list(flags) {
@@ -25,20 +17,15 @@ export async function list(flags) {
     logger.info(`${DIM}${"─".repeat(80)}${NC}`);
     for (const item of items) {
       const desc =
-        item.description.length > 45
-          ? item.description.slice(0, 45) + "..."
-          : item.description;
+        item.description.length > 45 ? item.description.slice(0, 45) + "..." : item.description;
       logger.info(`  ${GREEN}${item.id.padEnd(30)}${NC} ${DIM}${desc}${NC}`);
     }
     logger.info("");
   }
 
-  if (!filter || filter === "agent")
-    printSection("AGENTS", all.agents, "🤖");
-  if (!filter || filter === "skill")
-    printSection("SKILLS", all.skills, "⚡");
-  if (!filter || filter === "workflow")
-    printSection("WORKFLOWS", all.workflows, "🔄");
+  if (!filter || filter === "agent") printSection("AGENTS", all.agents, "🤖");
+  if (!filter || filter === "skill") printSection("SKILLS", all.skills, "⚡");
+  if (!filter || filter === "workflow") printSection("WORKFLOWS", all.workflows, "🔄");
 
   const total = all.agents.length + all.skills.length + all.workflows.length;
   logger.info(`${BLUE}📦 Total: ${GREEN}${total}${BLUE} prompts disponíveis${NC}`);

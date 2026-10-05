@@ -57,7 +57,10 @@ export function parseAppliesTo(content) {
 
 function axisMatches(list, value) {
   if (list.toLowerCase() === "all") return true;
-  return list.split(",").map((s) => s.trim()).includes(value);
+  return list
+    .split(",")
+    .map((s) => s.trim())
+    .includes(value);
 }
 
 /**
