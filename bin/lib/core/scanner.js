@@ -1,27 +1,7 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { getFrameworkRoot } from "../utils/paths.js";
-
-function parseFrontmatter(content) {
-  const match = content.match(/^---\s*\n([\s\S]*?)\n---/);
-  if (!match) return {};
-
-  const fm = {};
-  for (const line of match[1].split("\n")) {
-    const kv = line.match(/^(\w[\w-]*):\s*(.+)$/);
-    if (kv) {
-      let val = kv[2].trim();
-      if (
-        (val.startsWith('"') && val.endsWith('"')) ||
-        (val.startsWith("'") && val.endsWith("'"))
-      ) {
-        val = val.slice(1, -1);
-      }
-      fm[kv[1]] = val;
-    }
-  }
-  return fm;
-}
+import { parseFrontmatter } from "../utils/frontmatter.js";
 
 function extractDeps(content) {
   const deps = { rules: [], templates: [], skills: [], agents: [] };

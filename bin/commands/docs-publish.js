@@ -1,10 +1,10 @@
 import { loadEnv, resolveEnvPath } from "../lib/env-loader.js";
-import { execSync } from "node:child_process";
 import { promisify } from "node:util";
 import { exec } from "node:child_process";
 import { existsSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
+import { logger, configureFromFlags } from "../lib/utils/logger.js";
 
 const execAsync = promisify(exec);
 const __filename = fileURLToPath(import.meta.url);
@@ -22,47 +22,49 @@ const __dirname = dirname(__filename);
  * @param {string} flags.envFile - Path customizado do ENV.md
  */
 export async function docsPublish(flags = {}) {
+  configureFromFlags(flags);
+
   const { file, tipo, feature, squad: squadOverride, workspace: workspaceOverride } = flags;
 
   // Validar parâmetros obrigatórios
   if (!file || !tipo || !feature) {
-    console.error("❌ Parâmetros obrigatórios faltando\n");
-    console.error(
+    logger.error("❌ Parâmetros obrigatórios faltando\n");
+    logger.error(
       "Uso: jarvis docs publish --file <path> --tipo <prd|frd|ard|rfc|swagger|qa-report> --feature <slug> [--squad <squad>] [--workspace <workspace>]\n"
     );
-    console.error("Exemplo:");
-    console.error("  jarvis docs publish \\");
-    console.error("    --file ./docs/engineering/ard-api-wallet.md \\");
-    console.error("    --tipo ard \\");
-    console.error("    --feature api-wallet-auth-jwt");
-    console.error("");
-    console.error("  # Publicar Swagger/OpenAPI:");
-    console.error("  jarvis docs publish \\");
-    console.error("    --file ./docs/engineering/swagger/api-wallet.yaml \\");
-    console.error("    --tipo swagger \\");
-    console.error("    --feature api-wallet");
-    console.error("");
-    console.error("  # Com override de squad/workspace:");
-    console.error("  jarvis docs publish \\");
-    console.error("    --file ./docs/engineering/ard-api-wallet.md \\");
-    console.error("    --tipo ard \\");
-    console.error("    --feature api-wallet-auth-jwt \\");
-    console.error("    --squad core \\");
-    console.error("    --workspace meu-workspace");
+    logger.error("Exemplo:");
+    logger.error("  jarvis docs publish \\");
+    logger.error("    --file ./docs/engineering/ard-api-wallet.md \\");
+    logger.error("    --tipo ard \\");
+    logger.error("    --feature api-wallet-auth-jwt");
+    logger.error("");
+    logger.error("  # Publicar Swagger/OpenAPI:");
+    logger.error("  jarvis docs publish \\");
+    logger.error("    --file ./docs/engineering/swagger/api-wallet.yaml \\");
+    logger.error("    --tipo swagger \\");
+    logger.error("    --feature api-wallet");
+    logger.error("");
+    logger.error("  # Com override de squad/workspace:");
+    logger.error("  jarvis docs publish \\");
+    logger.error("    --file ./docs/engineering/ard-api-wallet.md \\");
+    logger.error("    --tipo ard \\");
+    logger.error("    --feature api-wallet-auth-jwt \\");
+    logger.error("    --squad core \\");
+    logger.error("    --workspace meu-workspace");
     process.exit(1);
   }
 
   // Validar tipo
   const validTypes = ["prd", "frd", "ard", "rfc", "swagger", "qa-report"];
   if (!validTypes.includes(tipo)) {
-    console.error(`❌ Tipo inválido: ${tipo}`);
-    console.error(`Tipos válidos: ${validTypes.join(", ")}`);
+    logger.error(`❌ Tipo inválido: ${tipo}`);
+    logger.error(`Tipos válidos: ${validTypes.join(", ")}`);
     process.exit(1);
   }
 
   // Validar se arquivo existe
   if (!existsSync(file)) {
-    console.error(`❌ Arquivo não encontrado: ${file}`);
+    logger.error(`❌ Arquivo não encontrado: ${file}`);
     process.exit(1);
   }
 
@@ -74,7 +76,7 @@ export async function docsPublish(flags = {}) {
     const resolved = resolveEnvPath(cwd, flags);
     envPath = resolved.path;
   } catch (error) {
-    console.error("❌ Erro ao resolver ENV.md:", error.message);
+    logger.error("❌ Erro ao resolver ENV.md:", error.message);
     process.exit(1);
   }
 
@@ -83,15 +85,15 @@ export async function docsPublish(flags = {}) {
   try {
     env = loadEnv(cwd, envPath);
   } catch (error) {
-    console.error("❌ Erro ao carregar ENV.md:", error.message);
+    logger.error("❌ Erro ao carregar ENV.md:", error.message);
     process.exit(1);
   }
 
   // Verificar se central-docs está configurado
   if (!env.CENTRAL_DOCS_REPO) {
-    console.error("❌ CENTRAL_DOCS_REPO não configurado no ENV.md");
-    console.error("\nConfigure a URL do repositório central:");
-    console.error("  CENTRAL_DOCS_REPO=https://gitlab.com/org/central-docs.git");
+    logger.error("❌ CENTRAL_DOCS_REPO não configurado no ENV.md");
+    logger.error("\nConfigure a URL do repositório central:");
+    logger.error("  CENTRAL_DOCS_REPO=https://gitlab.com/org/central-docs.git");
     process.exit(1);
   }
 
@@ -100,14 +102,14 @@ export async function docsPublish(flags = {}) {
   const workspace = workspaceOverride || env.WORKSPACE;
 
   if (!squad || !workspace) {
-    console.error("❌ SQUAD ou WORKSPACE não definidos");
-    console.error("\nOpções:");
-    console.error("  1. Definir no ENV.md:");
-    console.error("     SQUAD=core");
-    console.error("     WORKSPACE=meu-workspace");
-    console.error("");
-    console.error("  2. Passar via flags:");
-    console.error("     --squad core --workspace meu-workspace");
+    logger.error("❌ SQUAD ou WORKSPACE não definidos");
+    logger.error("\nOpções:");
+    logger.error("  1. Definir no ENV.md:");
+    logger.error("     SQUAD=core");
+    logger.error("     WORKSPACE=meu-workspace");
+    logger.error("");
+    logger.error("  2. Passar via flags:");
+    logger.error("     --squad core --workspace meu-workspace");
     process.exit(1);
   }
 
@@ -115,11 +117,11 @@ export async function docsPublish(flags = {}) {
   // Usar path relativo ao módulo, não ao cwd do usuário
   const publishScript = join(__dirname, "../lib/docs/publish-file.sh");
   if (!existsSync(publishScript)) {
-    console.error("❌ Script não encontrado:", publishScript);
+    logger.error("❌ Script não encontrado:", publishScript);
     process.exit(1);
   }
 
-  console.log(`📤 Publicando ${tipo.toUpperCase()} ${feature}...\n`);
+  logger.info(`📤 Publicando ${tipo.toUpperCase()} ${feature}...\n`);
 
   try {
     // Exportar variáveis de ambiente para o script bash
@@ -142,43 +144,43 @@ export async function docsPublish(flags = {}) {
 
     // Exibir output do script
     if (stdout) {
-      console.log(stdout);
+      logger.info(stdout);
     }
 
     if (stderr) {
-      console.warn("⚠️  Avisos:", stderr);
+      logger.warn("⚠️  Avisos:", stderr);
     }
   } catch (error) {
-    console.error("\n❌ Erro ao publicar documento\n");
+    logger.error("\n❌ Erro ao publicar documento\n");
 
     // Exibir output de erro do script
     if (error.stdout) {
-      console.log(error.stdout);
+      logger.info(error.stdout);
     }
 
     if (error.stderr) {
-      console.error(error.stderr);
+      logger.error(error.stderr);
     }
 
     // Dicas de troubleshooting
-    console.error("\n💡 Troubleshooting:\n");
+    logger.error("\n💡 Troubleshooting:\n");
 
     if (error.message.includes("Token GitLab")) {
-      console.error("1. Configure o token GitLab no .npmrc:");
-      console.error("   //gitlab.com/api/v4/packages/npm/:_authToken=seu-token\n");
+      logger.error("1. Configure o token GitLab no .npmrc:");
+      logger.error("   //gitlab.com/api/v4/packages/npm/:_authToken=seu-token\n");
     }
 
     if (error.message.includes("Campos obrigatórios")) {
-      console.error("2. Verifique o frontmatter do documento:");
-      console.error(`   Tipo ${tipo} requer campos específicos no YAML\n`);
+      logger.error("2. Verifique o frontmatter do documento:");
+      logger.error(`   Tipo ${tipo} requer campos específicos no YAML\n`);
     }
 
     if (error.message.includes("401") || error.message.includes("403")) {
-      console.error("4. Verifique permissões no GitLab:");
-      console.error("   Token precisa de scopes: api, read_api, write_repository\n");
+      logger.error("4. Verifique permissões no GitLab:");
+      logger.error("   Token precisa de scopes: api, read_api, write_repository\n");
     }
 
-    console.error("Para mais detalhes, execute com --verbose");
+    logger.error("Para mais detalhes, execute com --verbose");
 
     process.exit(1);
   }

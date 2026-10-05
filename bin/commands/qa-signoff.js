@@ -1,6 +1,7 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { loadEnv, resolveEnvPath } from "../lib/env-loader.js";
+import { extractFrontmatterBlock } from "../lib/utils/frontmatter.js";
 import { GREEN, RED, YELLOW, DIM, NC } from "../lib/utils/ui.js";
 import { logger } from "../lib/utils/logger.js";
 
@@ -73,13 +74,11 @@ export async function qaSignoff(flags = {}) {
   const content = readFileSync(filePath, "utf-8");
 
   // Extrair frontmatter
-  const frontmatterMatch = content.match(/^---\n([\s\S]*?)\n---/);
-  if (!frontmatterMatch) {
+  const frontmatter = extractFrontmatterBlock(content);
+  if (frontmatter === null) {
     logger.error(`${RED}❌ Sign-off inválido: frontmatter ausente em ${latestFile}${NC}`);
     process.exit(1);
   }
-
-  const frontmatter = frontmatterMatch[1];
   const statusMatch = frontmatter.match(/^status:\s*(.+)$/m);
   const dateMatch = frontmatter.match(/^date:\s*(.+)$/m);
 
