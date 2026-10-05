@@ -227,10 +227,13 @@ bin/
     ├── utils/
     │   ├── npmrc-parser.js    # Extrai token do .npmrc
     │   └── git-parser.js      # Parseia URL GitLab
+    ├── vcs/
+    │   └── api.js             # fetchRawFile/createMergeRequest/commitFiles — GitLab/GitHub/Bitbucket
     └── docs/
         ├── validate-frontmatter.js  # Valida YAML
-        ├── fetch-file.sh      # Busca via API (cache redis-cli opcional)
-        └── publish-file.sh    # Publica via API + MR
+        ├── redis-cache.js     # Cache best-effort via redis-cli (get/setex/del)
+        ├── fetch-file.js      # Busca via vcs/api.js — CLI: jarvis docs fetch
+        └── publish-file.js    # Publica via vcs/api.js + MR — CLI: jarvis docs publish
 ```
 
 ### Fluxo de Publicação

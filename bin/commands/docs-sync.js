@@ -1,14 +1,6 @@
 import { loadEnv, resolveEnvPath } from "../lib/env-loader.js";
-import { exec } from "node:child_process";
-import { promisify } from "node:util";
-import { existsSync } from "node:fs";
-import { join, dirname } from "node:path";
-import { fileURLToPath } from "node:url";
+import { fetchFile } from "../lib/docs/fetch-file.js";
 import { logger, configureFromFlags } from "../lib/utils/logger.js";
-
-const execAsync = promisify(exec);
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
 
 /**
  * Sincroniza documentação do central-docs
@@ -59,43 +51,28 @@ export async function docsSync(flags = {}) {
 
   logger.info(`🔄 Sincronizando docs do squad ${SQUAD}...`);
 
-  // Verificar se script fetch-file.sh existe
-  // Usar path relativo ao módulo, não ao cwd do usuário
-  const fetchScript = join(__dirname, "../lib/docs/fetch-file.sh");
-  if (!existsSync(fetchScript)) {
-    logger.error("❌ Script não encontrado:", fetchScript);
-    process.exit(1);
-  }
-
   // Buscar index.md do squad
   const indexPath = `${SQUAD}/index.md`;
 
   try {
-    // Exportar variáveis de ambiente para o script bash
-    const envVars = {
-      ...process.env,
-      CENTRAL_DOCS_REPO: env.CENTRAL_DOCS_REPO,
-      CENTRAL_DOCS_CACHE_TTL: env.CENTRAL_DOCS_CACHE_TTL || "3600",
-    };
-
-    const { stdout, stderr } = await execAsync(
-      `bash "${fetchScript}" "${indexPath}" "${CENTRAL_DOCS_REF}"`,
-      { env: envVars }
-    );
+    const content = await fetchFile(indexPath, CENTRAL_DOCS_REF, {
+      repo: env.CENTRAL_DOCS_REPO,
+      cacheTtl: env.CENTRAL_DOCS_CACHE_TTL || "3600",
+    });
 
     logger.info("✅ Docs sincronizados");
 
-    if (stdout) {
+    if (content) {
       logger.debug("\n📄 Conteúdo do index.md:\n");
-      logger.debug(stdout);
+      logger.debug(content);
     }
 
     // Parsear index.md para contar documentos
-    if (stdout) {
-      const prdCount = (stdout.match(/\[prd-.*\.md\]/g) || []).length;
-      const frdCount = (stdout.match(/\[frd-.*\.md\]/g) || []).length;
-      const ardCount = (stdout.match(/\[ard-.*\.md\]/g) || []).length;
-      const rfcCount = (stdout.match(/\[rfc-.*\.md\]/g) || []).length;
+    if (content) {
+      const prdCount = (content.match(/\[prd-.*\.md\]/g) || []).length;
+      const frdCount = (content.match(/\[frd-.*\.md\]/g) || []).length;
+      const ardCount = (content.match(/\[ard-.*\.md\]/g) || []).length;
+      const rfcCount = (content.match(/\[rfc-.*\.md\]/g) || []).length;
 
       const total = prdCount + frdCount + ardCount + rfcCount;
 
@@ -106,10 +83,6 @@ export async function docsSync(flags = {}) {
         if (ardCount > 0) logger.info(`   - ${ardCount} ARD(s)`);
         if (rfcCount > 0) logger.info(`   - ${rfcCount} RFC(s)`);
       }
-    }
-
-    if (stderr) {
-      logger.warn("⚠️  Avisos:", stderr);
     }
   } catch (error) {
     logger.error("❌ Erro ao sincronizar docs:", error.message);
