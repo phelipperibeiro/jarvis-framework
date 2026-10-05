@@ -12,6 +12,7 @@ import { execSync } from "node:child_process";
 import { join, relative, basename } from "node:path";
 import { getFrameworkRoot } from "../utils/paths.js";
 import { getIDEFolder } from "../config/ide-config.js";
+import { extractFrontmatterBlock } from "../utils/frontmatter.js";
 import {
   SYNC_DIRS,
   SYNC_ROOT_FILES,
@@ -30,9 +31,8 @@ import {
  * @returns {{ name: string, description: string } | null}
  */
 function parseSkillFrontmatter(content) {
-  const match = content.match(/^---\n([\s\S]*?)\n---/);
-  if (!match) return null;
-  const fm = match[1];
+  const fm = extractFrontmatterBlock(content);
+  if (fm === null) return null;
   const name = (fm.match(/^name:\s*(.+)$/m) || [])[1]?.trim();
   // description pode ser multiline com `>`
   const descMatch = fm.match(/^description:\s*[>|]?\n?([\s\S]*?)(?=\n\S|\n---|Z)/m);

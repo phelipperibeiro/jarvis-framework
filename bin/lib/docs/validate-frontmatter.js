@@ -1,4 +1,5 @@
 import { readFileSync } from 'node:fs'
+import { parseFrontmatter, extractFrontmatterBlock } from '../utils/frontmatter.js'
 
 /**
  * Valida frontmatter YAML de documentos (PRD, FRD, ARD, RFC)
@@ -10,11 +11,10 @@ import { readFileSync } from 'node:fs'
  */
 export function validateFrontmatter(filePath, tipo) {
   const content = readFileSync(filePath, 'utf-8')
-  
-  // Extrair frontmatter YAML (entre --- e ---)
-  const frontmatterMatch = content.match(/^---\n([\s\S]*?)\n---/)
-  
-  if (!frontmatterMatch) {
+
+  const frontmatter = extractFrontmatterBlock(content)
+
+  if (frontmatter === null) {
     throw new Error(
       `Frontmatter YAML não encontrado em ${filePath}\n` +
       'Formato esperado:\n' +
@@ -25,8 +25,7 @@ export function validateFrontmatter(filePath, tipo) {
     )
   }
 
-  const frontmatter = frontmatterMatch[1]
-  const metadata = parseFrontmatter(frontmatter)
+  const metadata = parseFrontmatter(content)
 
   // Validar campos obrigatórios por tipo
   const requiredFields = getRequiredFields(tipo)
@@ -68,34 +67,6 @@ export function validateFrontmatter(filePath, tipo) {
 }
 
 /**
- * Parseia frontmatter YAML simples (key: value)
- * 
- * @param {string} frontmatter - Conteúdo do frontmatter
- * @returns {Object} Metadados parseados
- */
-function parseFrontmatter(frontmatter) {
-  const metadata = {}
-  const lines = frontmatter.split('\n')
-
-  for (const line of lines) {
-    const trimmed = line.trim()
-    if (!trimmed || trimmed.startsWith('#')) continue
-
-    const colonIndex = trimmed.indexOf(':')
-    if (colonIndex === -1) continue
-
-    const key = trimmed.slice(0, colonIndex).trim()
-    const value = trimmed.slice(colonIndex + 1).trim()
-
-    if (key && value) {
-      metadata[key] = value
-    }
-  }
-
-  return metadata
-}
-
-/**
  * Retorna campos obrigatórios por tipo de documento
  * 
  * @param {string} tipo - Tipo do documento
@@ -121,13 +92,12 @@ function getRequiredFields(tipo) {
  */
 export function extractMetadata(filePath) {
   const content = readFileSync(filePath, 'utf-8')
-  const frontmatterMatch = content.match(/^---\n([\s\S]*?)\n---/)
-  
-  if (!frontmatterMatch) {
+
+  if (extractFrontmatterBlock(content) === null) {
     return {}
   }
 
-  const metadata = parseFrontmatter(frontmatterMatch[1])
+  const metadata = parseFrontmatter(content)
 
   // Normalizar campos (suportar variações de nomenclatura)
   const taskLink = metadata.task_link || metadata.jira

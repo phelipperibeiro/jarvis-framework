@@ -4,6 +4,7 @@ import { promisify } from "node:util";
 import { existsSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
+import { logger, configureFromFlags } from "../lib/utils/logger.js";
 
 const execAsync = promisify(exec);
 const __filename = fileURLToPath(import.meta.url);
@@ -14,11 +15,14 @@ const __dirname = dirname(__filename);
  * Executado automaticamente em /warm-up
  *
  * @param {Object} flags - Flags do comando
- * @param {boolean} flags.silent - Modo silencioso (sem output)
- * @param {boolean} flags.verbose - Modo verbose (mostra conteúdo)
+ * @param {boolean} flags.silent - Modo silencioso (nem erros aparecem)
+ * @param {boolean} flags.quiet - Só erros aparecem
+ * @param {boolean} flags.verbose - Mostra o conteúdo completo retornado
  * @param {string} flags.envFile - Path customizado do ENV.md
  */
 export async function docsSync(flags = {}) {
+  configureFromFlags(flags);
+
   const cwd = process.cwd();
 
   // Resolver path do ENV.md (suporta --ide e --env-file)
@@ -27,9 +31,7 @@ export async function docsSync(flags = {}) {
     const resolved = resolveEnvPath(cwd, flags);
     envPath = resolved.path;
   } catch (error) {
-    if (!flags.silent) {
-      console.error("❌ Erro ao resolver ENV.md:", error.message);
-    }
+    logger.error("❌ Erro ao resolver ENV.md:", error.message);
     process.exit(1);
   }
 
@@ -38,38 +40,30 @@ export async function docsSync(flags = {}) {
   try {
     env = loadEnv(cwd, envPath);
   } catch (error) {
-    if (!flags.silent) {
-      console.error("❌ Erro ao carregar ENV.md:", error.message);
-    }
+    logger.error("❌ Erro ao carregar ENV.md:", error.message);
     process.exit(1);
   }
 
   // Verificar se central-docs está configurado
   if (!env.CENTRAL_DOCS_REPO) {
-    if (!flags.silent) {
-      console.log("ℹ️  Central docs não configurado (CENTRAL_DOCS_REPO vazio)");
-    }
+    logger.info("ℹ️  Central docs não configurado (CENTRAL_DOCS_REPO vazio)");
     return;
   }
 
   const { SQUAD, WORKSPACE, CENTRAL_DOCS_REF = "main" } = env;
 
   if (!SQUAD || !WORKSPACE) {
-    if (!flags.silent) {
-      console.error("❌ SQUAD ou WORKSPACE não definidos no ENV.md");
-    }
+    logger.error("❌ SQUAD ou WORKSPACE não definidos no ENV.md");
     process.exit(1);
   }
 
-  if (!flags.silent) {
-    console.log(`🔄 Sincronizando docs do squad ${SQUAD}...`);
-  }
+  logger.info(`🔄 Sincronizando docs do squad ${SQUAD}...`);
 
   // Verificar se script fetch-file.sh existe
   // Usar path relativo ao módulo, não ao cwd do usuário
   const fetchScript = join(__dirname, "../lib/docs/fetch-file.sh");
   if (!existsSync(fetchScript)) {
-    console.error("❌ Script não encontrado:", fetchScript);
+    logger.error("❌ Script não encontrado:", fetchScript);
     process.exit(1);
   }
 
@@ -89,17 +83,15 @@ export async function docsSync(flags = {}) {
       { env: envVars }
     );
 
-    if (!flags.silent) {
-      console.log("✅ Docs sincronizados");
-    }
+    logger.info("✅ Docs sincronizados");
 
-    if (flags.verbose && stdout) {
-      console.log("\n📄 Conteúdo do index.md:\n");
-      console.log(stdout);
+    if (stdout) {
+      logger.debug("\n📄 Conteúdo do index.md:\n");
+      logger.debug(stdout);
     }
 
     // Parsear index.md para contar documentos
-    if (!flags.silent && stdout) {
+    if (stdout) {
       const prdCount = (stdout.match(/\[prd-.*\.md\]/g) || []).length;
       const frdCount = (stdout.match(/\[frd-.*\.md\]/g) || []).length;
       const ardCount = (stdout.match(/\[ard-.*\.md\]/g) || []).length;
@@ -108,29 +100,27 @@ export async function docsSync(flags = {}) {
       const total = prdCount + frdCount + ardCount + rfcCount;
 
       if (total > 0) {
-        console.log(`📊 ${total} documentos disponíveis:`);
-        if (prdCount > 0) console.log(`   - ${prdCount} PRD(s)`);
-        if (frdCount > 0) console.log(`   - ${frdCount} FRD(s)`);
-        if (ardCount > 0) console.log(`   - ${ardCount} ARD(s)`);
-        if (rfcCount > 0) console.log(`   - ${rfcCount} RFC(s)`);
+        logger.info(`📊 ${total} documentos disponíveis:`);
+        if (prdCount > 0) logger.info(`   - ${prdCount} PRD(s)`);
+        if (frdCount > 0) logger.info(`   - ${frdCount} FRD(s)`);
+        if (ardCount > 0) logger.info(`   - ${ardCount} ARD(s)`);
+        if (rfcCount > 0) logger.info(`   - ${rfcCount} RFC(s)`);
       }
     }
 
-    if (stderr && !flags.silent) {
-      console.warn("⚠️  Avisos:", stderr);
+    if (stderr) {
+      logger.warn("⚠️  Avisos:", stderr);
     }
   } catch (error) {
-    if (!flags.silent) {
-      console.error("❌ Erro ao sincronizar docs:", error.message);
+    logger.error("❌ Erro ao sincronizar docs:", error.message);
 
-      // Dicas de troubleshooting
-      if (error.message.includes("Token GitLab")) {
-        console.error("\n💡 Configure o token GitLab no .npmrc:");
-        console.error("   //gitlab.com/api/v4/packages/npm/:_authToken=seu-token");
-      } else if (error.message.includes("não encontrado")) {
-        console.error("\n💡 Verifique se o squad existe no central-docs:");
-        console.error(`   ${SQUAD}/index.md`);
-      }
+    // Dicas de troubleshooting
+    if (error.message.includes("Token GitLab")) {
+      logger.error("\n💡 Configure o token GitLab no .npmrc:");
+      logger.error("   //gitlab.com/api/v4/packages/npm/:_authToken=seu-token");
+    } else if (error.message.includes("não encontrado")) {
+      logger.error("\n💡 Verifique se o squad existe no central-docs:");
+      logger.error(`   ${SQUAD}/index.md`);
     }
 
     process.exit(1);

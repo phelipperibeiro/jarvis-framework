@@ -2,17 +2,7 @@ import { readFileSync, existsSync } from "node:fs";
 
 import { join, isAbsolute, dirname, basename } from "node:path";
 
-const IDE_DIRS = {
-  windsurf: ".windsurf",
-  claude: ".claude",
-  cursor: ".cursor",
-  vscode: ".vscode",
-  codex: ".codex",
-  opencode: ".opencode",
-  gemini: ".gemini",
-};
-
-const AUTO_DETECT_ORDER = ["windsurf", "claude", "cursor", "vscode", "codex", "opencode", "gemini"];
+import { getIDEFolder, getIDEValues, isIDESupported } from "./config/ide-config.js";
 
 function* walkAncestors(start) {
   let dir = start;
@@ -25,12 +15,11 @@ function* walkAncestors(start) {
 }
 
 function envsAt(dir, ideFilter = null) {
-  const ides = ideFilter ? [ideFilter] : AUTO_DETECT_ORDER;
+  const ides = ideFilter ? [ideFilter] : getIDEValues();
   const found = [];
   for (const ide of ides) {
-    const folder = IDE_DIRS[ide];
-    if (!folder) continue;
-    const p = join(dir, folder, "ENV.md");
+    if (!isIDESupported(ide)) continue;
+    const p = join(dir, `.${getIDEFolder(ide)}`, "ENV.md");
     if (existsSync(p)) found.push({ ide, path: p, root: dir });
   }
   return found;
@@ -68,9 +57,9 @@ export function resolveEnvPath(cwd, flags = {}) {
 
   // 2. --ide (cwd e ancestrais — abre um repo filho e ainda acha o workspace)
   if (flags.ide) {
-    if (!IDE_DIRS[flags.ide]) {
+    if (!isIDESupported(flags.ide)) {
       throw new Error(
-        `IDE não suportada: "${flags.ide}"\n` + `IDEs válidas: ${Object.keys(IDE_DIRS).join(", ")}`
+        `IDE não suportada: "${flags.ide}"\n` + `IDEs válidas: ${getIDEValues().join(", ")}`
       );
     }
     for (const dir of walkAncestors(cwd)) {
@@ -102,7 +91,7 @@ export function resolveEnvPath(cwd, flags = {}) {
   }
 
   // 4. IDE env var
-  if (process.env.IDE && IDE_DIRS[process.env.IDE]) {
+  if (process.env.IDE && isIDESupported(process.env.IDE)) {
     for (const dir of walkAncestors(cwd)) {
       const found = envsAt(dir, process.env.IDE);
       if (found.length === 1) {
