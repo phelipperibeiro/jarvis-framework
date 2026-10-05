@@ -10,17 +10,7 @@ import {
   getWorkflowsFolder,
   isIDESupported,
 } from "../lib/config/ide-config.js";
-import {
-  showBanner,
-  RED,
-  GREEN,
-  BLUE,
-  YELLOW,
-  CYAN,
-  DIM,
-  BOLD,
-  NC,
-} from "../lib/utils/ui.js";
+import { showBanner, RED, GREEN, BLUE, YELLOW, CYAN, DIM, BOLD, NC } from "../lib/utils/ui.js";
 import { getPackageInfo } from "../lib/utils/paths.js";
 import { logger, configureFromFlags } from "../lib/utils/logger.js";
 
@@ -40,7 +30,9 @@ export async function init(flags) {
     if (!isIDESupported(flags.ide)) {
       logger.error(`${RED}❌ IDE inválida: ${flags.ide}${NC}`);
       logger.info(
-        `${YELLOW}IDEs disponíveis: ${IDES.filter((i) => i.supported).map((i) => i.value).join(", ")}${NC}\n`,
+        `${YELLOW}IDEs disponíveis: ${IDES.filter((i) => i.supported)
+          .map((i) => i.value)
+          .join(", ")}${NC}\n`
       );
       return;
     }
@@ -55,9 +47,7 @@ export async function init(flags) {
       if (ideObj.supported) {
         logger.info(`  ${GREEN}${index + 1}${NC}) ${ideObj.name}`);
       } else {
-        logger.info(
-          `  ${DIM}${index + 1}) ${ideObj.name} (não suportado)${NC}`,
-        );
+        logger.info(`  ${DIM}${index + 1}) ${ideObj.name} (não suportado)${NC}`);
       }
     });
     logger.info("");
@@ -69,10 +59,7 @@ export async function init(flags) {
 
     let choice;
     while (true) {
-      choice = await ask(
-        rl,
-        `${BLUE}Digite o número da sua escolha (1-${IDES.length}): ${NC}`,
-      );
+      choice = await ask(rl, `${BLUE}Digite o número da sua escolha (1-${IDES.length}): ${NC}`);
       const choiceNum = parseInt(choice, 10);
 
       if (choiceNum >= 1 && choiceNum <= IDES.length) {
@@ -80,9 +67,7 @@ export async function init(flags) {
         if (selectedIde.supported) {
           ide = selectedIde.value;
           logger.info("");
-          logger.info(
-            `${GREEN}Interface selecionada: ${selectedIde.name}${NC}`,
-          );
+          logger.info(`${GREEN}Interface selecionada: ${selectedIde.name}${NC}`);
           logger.info(`${DIM}Pasta destino: .${getIDEFolder(ide)}${NC}`);
           logger.info("");
           break;
@@ -91,7 +76,7 @@ export async function init(flags) {
         }
       } else {
         logger.info(
-          `${RED}Opção inválida. Por favor, escolha um número entre 1 e ${IDES.length}.${NC}\n`,
+          `${RED}Opção inválida. Por favor, escolha um número entre 1 e ${IDES.length}.${NC}\n`
         );
       }
     }
@@ -114,7 +99,7 @@ export async function init(flags) {
     });
     const confirm = await ask(
       rl,
-      `Deseja reinstalar? Isso irá sobrescrever a instalação existente. (s/N): `,
+      `Deseja reinstalar? Isso irá sobrescrever a instalação existente. (s/N): `
     );
     rl.close();
 
@@ -127,9 +112,7 @@ export async function init(flags) {
   }
 
   const ideConfig = getIDEConfig(ide);
-  logger.info(
-    `${BLUE}Configurando ambiente para ${ideConfig?.name}...${NC}`,
-  );
+  logger.info(`${BLUE}Configurando ambiente para ${ideConfig?.name}...${NC}`);
   logger.info("");
   const result = syncAssets(cwd, ide, {
     force: forceSync,
@@ -146,16 +129,16 @@ export async function init(flags) {
     logger.error(`${RED}  ✗ ${item}${NC}`);
   }
 
-  const jarvisRoot = join(cwd, '.jarvis');
-  for (const area of ['eng', 'prod', 'qa']) {
-    mkdirSync(join(jarvisRoot, 'sessions', area), { recursive: true });
+  const jarvisRoot = join(cwd, ".jarvis");
+  for (const area of ["eng", "prod", "qa"]) {
+    mkdirSync(join(jarvisRoot, "sessions", area), { recursive: true });
   }
-  const gitignore = join(cwd, '.gitignore');
-  const ignoreLine = '.jarvis/';
+  const gitignore = join(cwd, ".gitignore");
+  const ignoreLine = ".jarvis/";
   if (existsSync(gitignore)) {
-    const text = readFileSync(gitignore, 'utf8');
-    if (!text.split('\n').some((l) => l.trim() === ignoreLine || l.trim() === '.jarvis')) {
-      appendFileSync(gitignore, `${text.endsWith('\n') ? '' : '\n'}${ignoreLine}\n`);
+    const text = readFileSync(gitignore, "utf8");
+    if (!text.split("\n").some((l) => l.trim() === ignoreLine || l.trim() === ".jarvis")) {
+      appendFileSync(gitignore, `${text.endsWith("\n") ? "" : "\n"}${ignoreLine}\n`);
     }
   } else {
     writeFileSync(gitignore, `${ignoreLine}\n`);
@@ -165,22 +148,16 @@ export async function init(flags) {
 
   logger.info("");
   logger.info(`${GREEN}✓ Configuração concluída!${NC}`);
-  logger.info(
-    `${BOLD}${CYAN}  versão: ${pkg.name} v${pkg.version}${NC}`,
-  );
+  logger.info(`${BOLD}${CYAN}  versão: ${pkg.name} v${pkg.version}${NC}`);
   logger.info(`${DIM}  origem: ${pkg.root}${NC}`);
   logger.info(`${DIM}  pasta criada: ${ideDir}${NC}`);
   logger.info("");
 
   const all = discoverAll();
 
-  logger.info(
-    `${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}`,
-  );
+  logger.info(`${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}`);
   logger.info(`${CYAN}  🏁 PRÓXIMO PASSO${NC}`);
-  logger.info(
-    `${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}`,
-  );
+  logger.info(`${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}`);
   logger.info("");
 
   if (ide === "codex") {
@@ -213,14 +190,10 @@ export async function init(flags) {
   }
 
   logger.info("");
-  logger.info(
-    `${DIM}  Isso irá criar o arquivo ENV.md com as configurações${NC}`,
-  );
+  logger.info(`${DIM}  Isso irá criar o arquivo ENV.md com as configurações${NC}`);
   logger.info(`${DIM}  necessárias para o funcionamento do JARVIS.${NC}`);
   logger.info("");
-  logger.info(
-    `${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}`,
-  );
+  logger.info(`${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}`);
   logger.info("");
   logger.info(`${GREEN}✓ Instalação completa! 🎉${NC}`);
   logger.info("");
@@ -233,5 +206,4 @@ export async function init(flags) {
   logger.info(`${BLUE}📖 Para ver todos os prompts disponíveis:${NC}`);
   logger.info(`     ${YELLOW}jarvis list${NC}`);
   logger.info("");
-
 }

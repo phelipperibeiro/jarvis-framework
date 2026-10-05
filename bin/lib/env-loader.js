@@ -12,15 +12,7 @@ const IDE_DIRS = {
   gemini: ".gemini",
 };
 
-const AUTO_DETECT_ORDER = [
-  "windsurf",
-  "claude",
-  "cursor",
-  "vscode",
-  "codex",
-  "opencode",
-  "gemini",
-];
+const AUTO_DETECT_ORDER = ["windsurf", "claude", "cursor", "vscode", "codex", "opencode", "gemini"];
 
 function* walkAncestors(start) {
   let dir = start;
@@ -65,13 +57,10 @@ export function deriveWorkspaceName(envPath) {
 export function resolveEnvPath(cwd, flags = {}) {
   // 1. --env-file
   if (flags["env-file"]) {
-    const p = isAbsolute(flags["env-file"])
-      ? flags["env-file"]
-      : join(cwd, flags["env-file"]);
+    const p = isAbsolute(flags["env-file"]) ? flags["env-file"] : join(cwd, flags["env-file"]);
     if (!existsSync(p)) {
       throw new Error(
-        `ENV.md não encontrado: ${p}\n` +
-          `Dica: verifique o path passado em --env-file`,
+        `ENV.md não encontrado: ${p}\n` + `Dica: verifique o path passado em --env-file`
       );
     }
     return { path: p, source: "--env-file", warnings: [], root: dirname(dirname(p)) };
@@ -81,8 +70,7 @@ export function resolveEnvPath(cwd, flags = {}) {
   if (flags.ide) {
     if (!IDE_DIRS[flags.ide]) {
       throw new Error(
-        `IDE não suportada: "${flags.ide}"\n` +
-          `IDEs válidas: ${Object.keys(IDE_DIRS).join(", ")}`,
+        `IDE não suportada: "${flags.ide}"\n` + `IDEs válidas: ${Object.keys(IDE_DIRS).join(", ")}`
       );
     }
     for (const dir of walkAncestors(cwd)) {
@@ -98,7 +86,7 @@ export function resolveEnvPath(cwd, flags = {}) {
     }
     throw new Error(
       `ENV.md não encontrado para --ide ${flags.ide} a partir de ${cwd}\n` +
-        `Dica: rode jarvis init --ide ${flags.ide} na pasta do workspace`,
+        `Dica: rode jarvis init --ide ${flags.ide} na pasta do workspace`
     );
   }
 
@@ -135,7 +123,7 @@ export function resolveEnvPath(cwd, flags = {}) {
       const ides = found.map((f) => f.ide).join(" | ");
       throw new Error(
         `Múltiplos ENV.md encontrados em ${dir} (${ides}).\n` +
-          `Especifique a IDE ativa. Exemplo: --ide claude`,
+          `Especifique a IDE ativa. Exemplo: --ide claude`
       );
     }
     if (found.length === 1) {

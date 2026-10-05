@@ -111,25 +111,21 @@ function _validateIDEConfig(config) {
     throw new Error(`IDE config inválida: 'name' é obrigatório (string)`);
   }
   if (!config.value || typeof config.value !== "string") {
-    throw new Error(
-      `IDE config inválida: 'value' é obrigatório (string) para ${config.name}`,
-    );
+    throw new Error(`IDE config inválida: 'value' é obrigatório (string) para ${config.name}`);
   }
   if (typeof config.supported !== "boolean") {
-    throw new Error(
-      `IDE config inválida: 'supported' é obrigatório (boolean) para ${config.name}`,
-    );
+    throw new Error(`IDE config inválida: 'supported' é obrigatório (boolean) para ${config.name}`);
   }
   if (!config.workflowsFolder || typeof config.workflowsFolder !== "string") {
     throw new Error(
-      `IDE config inválida: 'workflowsFolder' é obrigatório (string) para ${config.name}`,
+      `IDE config inválida: 'workflowsFolder' é obrigatório (string) para ${config.name}`
     );
   }
   // Validar valores conhecidos
   const knownFolders = [DEFAULT_WORKFLOWS_FOLDER, COMMANDS_FOLDER, STEERING_FOLDER];
   if (!knownFolders.includes(config.workflowsFolder)) {
     logger.warn(
-      `⚠️  Atenção: IDE '${config.name}' usa workflowsFolder customizado: '${config.workflowsFolder}'`,
+      `⚠️  Atenção: IDE '${config.name}' usa workflowsFolder customizado: '${config.workflowsFolder}'`
     );
   }
 }

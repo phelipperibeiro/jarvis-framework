@@ -18,8 +18,7 @@ export function getFrameworkRoot() {
   }
 
   throw new Error(
-    "Could not locate framework assets.\n" +
-      "Run: npm install jarvis-framework --save-dev",
+    "Could not locate framework assets.\n" + "Run: npm install jarvis-framework --save-dev"
   );
 }
 
@@ -48,8 +47,7 @@ export function detectIDE(cwd) {
 }
 
 export function detectAllIDEs(cwd) {
-  return IDES
-    .filter((ide) => ide.supported)
+  return IDES.filter((ide) => ide.supported)
     .filter((ide) => existsSync(join(cwd, `.${ide.folderName || ide.value}`)))
     .map((ide) => ide.value);
 }

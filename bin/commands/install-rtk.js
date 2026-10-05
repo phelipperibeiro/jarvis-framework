@@ -40,7 +40,9 @@ export async function installRtk(flags) {
         return;
       } catch {}
     } else {
-      logger.info(`${YELLOW}⚠ RTK encontrado mas não é o Token Killer (Rust Type Kit detectado)${NC}`);
+      logger.info(
+        `${YELLOW}⚠ RTK encontrado mas não é o Token Killer (Rust Type Kit detectado)${NC}`
+      );
       logger.info(`${DIM}  Sobrescrevendo com Token Killer...${NC}`);
       logger.info("");
     }
@@ -95,12 +97,16 @@ export async function installRtk(flags) {
       logger.info(`${GREEN}✓ RTK instalado com sucesso: ${version}${NC}`);
       logger.info("");
       logger.info(`${YELLOW}Próximo passo:${NC}`);
-      logger.info(`  Execute ${GREEN}jarvis init${NC} (ou atualize o ENV.md) para ativar ${GREEN}RTK_ENABLED=true${NC}`);
+      logger.info(
+        `  Execute ${GREEN}jarvis init${NC} (ou atualize o ENV.md) para ativar ${GREEN}RTK_ENABLED=true${NC}`
+      );
       logger.info(`  A rule de economia de tokens será ativada automaticamente.`);
       logger.info("");
     } else {
       logger.error(`${RED}✗ RTK instalado mas não é o Token Killer${NC}`);
-      logger.info(`${DIM}  Possível conflito: crate 'rtk' no crates.io é Rust Type Kit, não Token Killer${NC}`);
+      logger.info(
+        `${DIM}  Possível conflito: crate 'rtk' no crates.io é Rust Type Kit, não Token Killer${NC}`
+      );
       logger.info(`${DIM}  Use: cargo install brokk-rtk${NC}`);
       logger.info("");
       process.exit(1);

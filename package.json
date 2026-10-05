@@ -11,7 +11,11 @@
     "prepublishOnly": "echo 'Publishing jarvis-framework...'",
     "publish:gitlab": "npm publish",
     "test:comandos": "node test/test-comandos-docs.js",
-    "test:filtro": "node --test test/profile-filter.test.js test/token-report.test.js test/flow-map.test.js"
+    "test:filtro": "node --test test/profile-filter.test.js test/token-report.test.js test/flow-map.test.js",
+    "lint": "eslint bin/ test/",
+    "lint:fix": "eslint bin/ test/ --fix",
+    "format": "prettier --write bin/ test/",
+    "format:check": "prettier --check bin/ test/"
   },
   "files": [
     "bin/",
@@ -45,11 +49,14 @@
   "bugs": {
     "url": "https://github.com/phelipperibeiro/jarvis-framework/issues"
   },
-  "dependencies": {},
   "engines": {
     "node": ">=18.0.0"
   },
   "devDependencies": {
+    "@eslint/js": "^9.39.5",
+    "eslint": "^9.39.5",
+    "eslint-config-prettier": "^10.1.8",
+    "prettier": "^3.9.9",
     "sharp": "^0.34.5"
   }
 }

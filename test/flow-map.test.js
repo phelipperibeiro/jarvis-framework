@@ -7,7 +7,13 @@ import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { buildIndex } from "../bin/lib/flow-map/index.js";
 import { parseDeclaration, classifyCell, splitCells } from "../bin/lib/flow-map/parse.js";
-import { buildGraph, forwardTree, reverseEdges, findBrokenReferences, suggest } from "../bin/lib/flow-map/tree.js";
+import {
+  buildGraph,
+  forwardTree,
+  reverseEdges,
+  findBrokenReferences,
+  suggest,
+} from "../bin/lib/flow-map/tree.js";
 import { renderTree, renderReverse, summarizeCondition } from "../bin/lib/flow-map/render.js";
 import { runMap } from "../bin/commands/map.js";
 
@@ -21,20 +27,29 @@ test("splitCells ignora | dentro de crases", () => {
 });
 
 test("classifyCell: skill/workflow, com argumentos, CLI, MCP, agente e ferramentas", () => {
-  assert.deepEqual(classifyCell("`/eng-qa-gate`").targets, [{ kind: "internal", name: "eng-qa-gate" }]);
+  assert.deepEqual(classifyCell("`/eng-qa-gate`").targets, [
+    { kind: "internal", name: "eng-qa-gate" },
+  ]);
   assert.deepEqual(classifyCell("`/jarvis-create-specialization {área} {stack}`").targets, [
     { kind: "internal", name: "jarvis-create-specialization" },
   ]);
-  assert.deepEqual(classifyCell("`jarvis docs sync` (CLI do Jarvis)").targets, [{ kind: "cli", name: "jarvis docs sync" }]);
-  assert.deepEqual(classifyCell("`context7` (MCP: `resolve-library-id`, `query-docs`)").targets, [{ kind: "mcp", name: "context7" }]);
+  assert.deepEqual(classifyCell("`jarvis docs sync` (CLI do Jarvis)").targets, [
+    { kind: "cli", name: "jarvis docs sync" },
+  ]);
+  assert.deepEqual(classifyCell("`context7` (MCP: `resolve-library-id`, `query-docs`)").targets, [
+    { kind: "mcp", name: "context7" },
+  ]);
   assert.deepEqual(classifyCell("`mcp__claude_ai_Atlassian__getJiraIssue`").targets, [
     { kind: "mcp", name: "mcp__claude_ai_Atlassian__getJiraIssue" },
   ]);
-  assert.deepEqual(classifyCell("`eng.agent` (agente)").targets, [{ kind: "agent", name: "eng.agent" }]);
-  assert.deepEqual(classifyCell("`Read` / `Grep` / `Glob` (leitura do repo)").targets, []);
-  assert.deepEqual(classifyCell("`/triage-issue` (skill externo `atlassian:triage-issue`)").targets, [
-    { kind: "external", name: "triage-issue" },
+  assert.deepEqual(classifyCell("`eng.agent` (agente)").targets, [
+    { kind: "agent", name: "eng.agent" },
   ]);
+  assert.deepEqual(classifyCell("`Read` / `Grep` / `Glob` (leitura do repo)").targets, []);
+  assert.deepEqual(
+    classifyCell("`/triage-issue` (skill externo `atlassian:triage-issue`)").targets,
+    [{ kind: "external", name: "triage-issue" }]
+  );
 });
 
 test("classifyCell: via, várias chamadas, autocontido e marcadores", () => {
@@ -45,14 +60,20 @@ test("classifyCell: via, várias chamadas, autocontido e marcadores", () => {
   const viaCli = classifyCell("`/jarvis-docs-central` (via `jarvis docs sync --silent`)");
   assert.deepEqual(viaCli.targets, [{ kind: "internal", name: "jarvis-docs-central" }]);
 
-  assert.deepEqual(classifyCell("`/eng-backend` e `/eng-frontend`").targets.map((t) => t.name), ["eng-backend", "eng-frontend"]);
+  assert.deepEqual(
+    classifyCell("`/eng-backend` e `/eng-frontend`").targets.map((t) => t.name),
+    ["eng-backend", "eng-frontend"]
+  );
   assert.equal(classifyCell("Nenhuma — workflow autocontido").selfContained, true);
   assert.equal(classifyCell("`Jira MCP` (referência a confirmar)").marker, "a confirmar");
   assert.equal(classifyCell("`/x-y` (referência quebrada)").marker, "quebrada");
 });
 
 test("parseDeclaration de workflow: passo, condição e autocontido", () => {
-  const d = parseDeclaration("workflow", wf(["| Fase 1 | `/a-b` | Se `X=1` |", "| Fase 2 | `/c-d` | Sempre |"]));
+  const d = parseDeclaration(
+    "workflow",
+    wf(["| Fase 1 | `/a-b` | Se `X=1` |", "| Fase 2 | `/c-d` | Sempre |"])
+  );
   assert.equal(d.declared, true);
   assert.equal(d.selfContained, false);
   assert.equal(d.rows.length, 2);
@@ -65,12 +86,14 @@ test("parseDeclaration de workflow: passo, condição e autocontido", () => {
 
 test("parseDeclaration: arquivo sem declaração e título dentro de bloco de código", () => {
   assert.equal(parseDeclaration("workflow", "# Sem tabela\n").declared, false);
-  const fenced = "```\n### Skills invocados durante o workflow\n| Passo | Skill | Condição |\n|--|--|--|\n| a | `/x` | y |\n```\n";
+  const fenced =
+    "```\n### Skills invocados durante o workflow\n| Passo | Skill | Condição |\n|--|--|--|\n| a | `/x` | y |\n```\n";
   assert.equal(parseDeclaration("workflow", fenced).declared, false);
 });
 
 test("parseDeclaration de skill usa o título da skill", () => {
-  const text = "### Skills invocados durante a execução do skill\n\n| Passo | Skill | Condição |\n|--|--|--|\n| 1 | `/a-b` | Sempre |\n";
+  const text =
+    "### Skills invocados durante a execução do skill\n\n| Passo | Skill | Condição |\n|--|--|--|\n| 1 | `/a-b` | Sempre |\n";
   assert.equal(parseDeclaration("skill", text).rows[0].targets[0].name, "a-b");
 });
 
@@ -98,9 +121,16 @@ test("parseDeclaration de agente: skills disponíveis e relacionados", () => {
   ].join("\n");
   const d = parseDeclaration("agent", text);
   assert.equal(d.declared, true);
-  assert.deepEqual(d.rows.map((r) => r.targets[0].name), [
-    "eng-qa-test-plan", "eng-backend", "eng-frontend", "eng.qa.testing-engineer", "eng.qa-quality-report",
-  ]);
+  assert.deepEqual(
+    d.rows.map((r) => r.targets[0].name),
+    [
+      "eng-qa-test-plan",
+      "eng-backend",
+      "eng-frontend",
+      "eng.qa.testing-engineer",
+      "eng.qa-quality-report",
+    ]
+  );
   assert.equal(d.rows[0].available, true);
   assert.equal(d.rows[0].condicao, "Para análise de cobertura");
   assert.equal(d.rows[3].available, false);
@@ -109,7 +139,8 @@ test("parseDeclaration de agente: skills disponíveis e relacionados", () => {
 test("buildIndex: workflows, skills e agentes de um framework mínimo (sem archive, README, AGENTS)", () => {
   const dir = mkdtempSync(join(tmpdir(), "jarvis-map-"));
   try {
-    for (const d of ["workflows/engineering", "skills/s-a", "agents/engineering", "agents/archive"]) mkdirSync(join(dir, d), { recursive: true });
+    for (const d of ["workflows/engineering", "skills/s-a", "agents/engineering", "agents/archive"])
+      mkdirSync(join(dir, d), { recursive: true });
     writeFileSync(join(dir, "workflows/engineering/w-a.md"), "x");
     writeFileSync(join(dir, "workflows/README.md"), "x");
     writeFileSync(join(dir, "skills/s-a/SKILL.md"), "x");
@@ -133,9 +164,12 @@ test("framework real: índice sem duplicados e todos os artefatos declaram chama
   const porTipo = (t) => [...items.values()].filter((i) => i.type === t).length;
   assert.ok(porTipo("workflow") >= 46 && porTipo("skill") >= 49 && porTipo("agent") >= 16);
   const semDeclaracao = [...items.values()].filter(
-    (i) => !parseDeclaration(i.type, readFileSync(join(root, i.path), "utf-8")).declared,
+    (i) => !parseDeclaration(i.type, readFileSync(join(root, i.path), "utf-8")).declared
   );
-  assert.deepEqual(semDeclaracao.map((i) => i.name), []);
+  assert.deepEqual(
+    semDeclaracao.map((i) => i.name),
+    []
+  );
 });
 
 // ---------- árvore, saída e comando ----------
@@ -150,19 +184,27 @@ function frameworkDeExemplo() {
     mkdirSync(dirname(join(dir, rel)), { recursive: true });
     writeFileSync(join(dir, rel), text);
   };
-  w("workflows/engineering/w-main.md", wf([
-    "| Fase 1 | `/s-a` | Se `X=1` |",
-    "| Fase 2 | `/s-c` e `/s-e` | Se o usuário escolher |",
-    "| Fase 3 | `ag-x` (agente) | Sempre |",
-    "| Fase 4 | `jarvis docs sync` (CLI do Jarvis) | Se houver docs |",
-    "| Fase 5 | `context7` (MCP: `query-docs`) | Para pesquisar |",
-    "| Fase 6 | `/nao-existe` | Quando der |",
-    "| Fase 7 | `Jira MCP` (referência a confirmar) | Se Jira |",
-    "| Fase 8 | `/s-d` | Sempre |",
-  ]));
+  w(
+    "workflows/engineering/w-main.md",
+    wf([
+      "| Fase 1 | `/s-a` | Se `X=1` |",
+      "| Fase 2 | `/s-c` e `/s-e` | Se o usuário escolher |",
+      "| Fase 3 | `ag-x` (agente) | Sempre |",
+      "| Fase 4 | `jarvis docs sync` (CLI do Jarvis) | Se houver docs |",
+      "| Fase 5 | `context7` (MCP: `query-docs`) | Para pesquisar |",
+      "| Fase 6 | `/nao-existe` | Quando der |",
+      "| Fase 7 | `Jira MCP` (referência a confirmar) | Se Jira |",
+      "| Fase 8 | `/s-d` | Sempre |",
+    ])
+  );
   w("workflows/engineering/w-solo.md", wf(["| — | Nenhuma — workflow autocontido | — |"]));
   w("workflows/engineering/w-deep.md", wf(["| 1 | `/s-1` | Sempre |"]));
-  for (const [a, b] of [["s-1", "s-2"], ["s-2", "s-3"], ["s-3", "s-4"], ["s-4", "s-5"]]) {
+  for (const [a, b] of [
+    ["s-1", "s-2"],
+    ["s-2", "s-3"],
+    ["s-3", "s-4"],
+    ["s-4", "s-5"],
+  ]) {
     w(`skills/${a}/SKILL.md`, skillTable([`| 1 | \`/${b}\` | Sempre |`]));
   }
   w("skills/s-5/SKILL.md", skillTable(["| — | Nenhuma — skill autocontida | — |"]));
@@ -171,7 +213,10 @@ function frameworkDeExemplo() {
   w("skills/s-c/SKILL.md", skillTable(["| — | Nenhuma — skill autocontida | — |"]));
   w("skills/s-e/SKILL.md", skillTable(["| 1 | `/s-c` | Se precisar |"]));
   w("skills/s-d/SKILL.md", "# Sem tabela\n");
-  w("agents/engineering/ag-x.md", "## Skills Disponíveis\n\n### s-c\nPara tarefas simples:\n- Arquivo: `$IDE/skills/s-c/SKILL.md`\n");
+  w(
+    "agents/engineering/ag-x.md",
+    "## Skills Disponíveis\n\n### s-c\nPara tarefas simples:\n- Arquivo: `$IDE/skills/s-c/SKILL.md`\n"
+  );
   return dir;
 }
 
@@ -197,7 +242,10 @@ test("forwardTree: menu, CLI, MCP, quebrada, a confirmar, agente e sem declaraç
     assert.equal(kinds["nao-existe"], "broken");
     assert.equal(kinds["Jira MCP"], "unresolved");
     assert.equal(tree.children.find((c) => c.name === "s-a").condicao, "Se `X=1`");
-    assert.deepEqual(tree.children.find((c) => c.kind === "menu").children.map((c) => c.name), ["s-c", "s-e"]);
+    assert.deepEqual(
+      tree.children.find((c) => c.kind === "menu").children.map((c) => c.name),
+      ["s-c", "s-e"]
+    );
     assert.equal(find(tree, "s-d").status, "undeclared");
     assert.equal(find(tree, "Jira MCP").marker, "a confirmar");
   } finally {
@@ -214,7 +262,10 @@ test("forwardTree: ciclo e repetição", () => {
     assert.equal(sb.children[0].status, "cycle");
     // s-c aparece no menu (expandido) e de novo no agente (já mapeado)
     const scs = [];
-    (function collect(n) { if (n.name === "s-c") scs.push(n); n.children.forEach(collect); })(tree);
+    (function collect(n) {
+      if (n.name === "s-c") scs.push(n);
+      n.children.forEach(collect);
+    })(tree);
     assert.equal(scs.length >= 2, true);
     assert.equal(scs.filter((n) => n.status === "seen").length >= 1, true);
   } finally {
@@ -243,7 +294,10 @@ test("renderTree: conectores, condição e notas", () => {
   try {
     const lines = renderTree(forwardTree(buildGraph(dir), "w-main"));
     assert.equal(lines[0], "w-main [workflow]");
-    assert.match(lines.find((l) => l.includes("s-a [skill]")), /^├── s-a \[skill\]  \(se X=1\)$/);
+    assert.match(
+      lines.find((l) => l.includes("s-a [skill]")),
+      /^├── s-a \[skill\] {2}\(se X=1\)$/
+    );
     assert.ok(lines.some((l) => l.startsWith("└── ") && l.includes("s-d")));
     assert.ok(lines.some((l) => l.includes("jarvis docs sync [CLI]")));
     assert.ok(lines.some((l) => l.includes("context7 [MCP]")));
@@ -254,14 +308,21 @@ test("renderTree: conectores, condição e notas", () => {
       "w-solo [workflow]",
       "└── (autocontido: não chama nenhum outro item)",
     ]);
-    assert.ok(renderTree(forwardTree(buildGraph(dir), "s-d")).join("\n").includes("sem declaração de chamadas"));
+    assert.ok(
+      renderTree(forwardTree(buildGraph(dir), "s-d"))
+        .join("\n")
+        .includes("sem declaração de chamadas")
+    );
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }
 });
 
 test("summarizeCondition: sem crases, minúscula e limite", () => {
-  assert.equal(summarizeCondition("Se `ENABLE_CDD=true` no ENV.md"), "se ENABLE_CDD=true no ENV.md");
+  assert.equal(
+    summarizeCondition("Se `ENABLE_CDD=true` no ENV.md"),
+    "se ENABLE_CDD=true no ENV.md"
+  );
   assert.equal(summarizeCondition("—"), "");
   assert.ok(summarizeCondition("x".repeat(200)).length <= 90);
   assert.ok(summarizeCondition("x".repeat(200)).endsWith("…"));
@@ -295,7 +356,7 @@ test("framework real: eng.start, warm-up, eng-qa-gate e eng.agent mapeiam", () =
   const start = runMap("eng.start", {}, root);
   assert.equal(start.code, 0);
   const startText = start.lines.join("\n");
-  assert.match(startText, /jarvis-context-detect \[skill\]  \(se ENABLE_CDD=true/);
+  assert.match(startText, /jarvis-context-detect \[skill\] {2}\(se ENABLE_CDD=true/);
   assert.match(startText, /via eng\.specializations-rules\.md/);
 
   const warm = runMap("warm-up", {}, root);
@@ -313,13 +374,16 @@ test("reverseEdges e renderReverse: com e sem chamadores", () => {
   try {
     const graph = buildGraph(dir);
     const edges = reverseEdges(graph, "s-c");
-    assert.deepEqual(edges.map((e) => e.from), ["ag-x", "s-e", "w-main"]);
+    assert.deepEqual(
+      edges.map((e) => e.from),
+      ["ag-x", "s-e", "w-main"]
+    );
     assert.equal(edges.find((e) => e.from === "ag-x").available, true);
     assert.equal(edges.find((e) => e.from === "w-main").passo, "Fase 2");
 
     const lines = renderReverse("s-c", "skill", edges);
     assert.equal(lines[0], "Quem chama s-c [skill]");
-    assert.match(lines[1], /^├── ag-x \[agente\]  \(disponível; /);
+    assert.match(lines[1], /^├── ag-x \[agente\] {2}\(disponível; /);
     assert.ok(lines[3].startsWith("└── w-main [workflow]  (passo: Fase 2;"));
 
     assert.deepEqual(renderReverse("w-deep", "workflow", reverseEdges(graph, "w-deep")), [
@@ -336,7 +400,10 @@ test("findBrokenReferences: erro para nome inexistente, aviso para marcado e sem
   const dir = frameworkDeExemplo();
   try {
     const { errors, warnings } = findBrokenReferences(buildGraph(dir));
-    assert.deepEqual(errors.map((e) => e.name), ["nao-existe"]);
+    assert.deepEqual(
+      errors.map((e) => e.name),
+      ["nao-existe"]
+    );
     assert.equal(errors[0].file, "workflows/engineering/w-main.md");
     assert.ok(warnings.some((w) => w.name === "Jira MCP" && /a confirmar/.test(w.reason)));
     assert.ok(warnings.some((w) => w.name === "s-d" && /sem declaração/.test(w.reason)));

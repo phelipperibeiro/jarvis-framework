@@ -5,9 +5,7 @@ import { execSync } from "node:child_process";
 
 function readNpmrcToken(hostFragment, cwd = process.cwd()) {
   const paths = [join(cwd, ".npmrc"), join(homedir(), ".npmrc")];
-  const re = new RegExp(
-    `//[^\\s]*${hostFragment.replace(".", "\\.")}[^\\s]*:_authToken=([^\\s]+)`,
-  );
+  const re = new RegExp(`//[^\\s]*${hostFragment.replace(".", "\\.")}[^\\s]*:_authToken=([^\\s]+)`);
 
   for (const path of paths) {
     if (!existsSync(path)) continue;
@@ -54,31 +52,26 @@ export function getVcsToken(vendor, cwd = process.cwd()) {
     if (token) return token;
     throw new Error(
       "Token GitHub não encontrado.\n" +
-        "Use `gh auth login`, ou defina GITHUB_TOKEN, ou //npm.pkg.github.com/:_authToken= no .npmrc.",
+        "Use `gh auth login`, ou defina GITHUB_TOKEN, ou //npm.pkg.github.com/:_authToken= no .npmrc."
     );
   }
 
   if (v === "bitbucket") {
-    const token =
-      process.env.BITBUCKET_TOKEN ||
-      readNpmrcToken("bitbucket.org", cwd);
+    const token = process.env.BITBUCKET_TOKEN || readNpmrcToken("bitbucket.org", cwd);
     if (token) return token;
     throw new Error(
-      "Token Bitbucket não encontrado.\n" +
-        "Defina BITBUCKET_TOKEN (App Password) no ambiente.",
+      "Token Bitbucket não encontrado.\n" + "Defina BITBUCKET_TOKEN (App Password) no ambiente."
     );
   }
 
   const token =
-    process.env.GITLAB_TOKEN ||
-    readNpmrcToken("gitlab.com", cwd) ||
-    readNpmrcToken("gitlab", cwd);
+    process.env.GITLAB_TOKEN || readNpmrcToken("gitlab.com", cwd) || readNpmrcToken("gitlab", cwd);
   if (token) return token;
   throw new Error(
     "Token GitLab não encontrado no .npmrc\n" +
       "Configure:\n" +
       "  //gitlab.com/api/v4/packages/npm/:_authToken=seu-token\n" +
-      "Ou GITLAB_TOKEN no ambiente.",
+      "Ou GITLAB_TOKEN no ambiente."
   );
 }
 

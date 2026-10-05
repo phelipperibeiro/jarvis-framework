@@ -33,9 +33,7 @@ function extractDeps(content) {
     if (!deps.rules.includes(m[1])) deps.rules.push(m[1]);
   }
 
-  const tplFile = content.match(
-    /template_file:\s*"?\$IDE\/templates\/(.+?)\.md"?/,
-  );
+  const tplFile = content.match(/template_file:\s*"?\$IDE\/templates\/(.+?)\.md"?/);
   if (tplFile) deps.templates.push(tplFile[1]);
 
   const agentFile = content.match(/agent:\s*"?\$IDE\/agents\/(.+?)\.md"?/);
@@ -75,11 +73,7 @@ function scanDir(dir, type) {
       continue;
     }
 
-    if (
-      !entry.name.endsWith(".md") ||
-      entry.name === "README.md" ||
-      entry.name === "AGENTS.md"
-    ) {
+    if (!entry.name.endsWith(".md") || entry.name === "README.md" || entry.name === "AGENTS.md") {
       continue;
     }
 

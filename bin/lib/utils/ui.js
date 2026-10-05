@@ -35,21 +35,15 @@ export function showBanner() {
   console.log("");
   console.log("              ──────── J . A . R . V . I . S ────────");
   console.log(NC);
-  console.log(
-    `${DIM}Framework Jarvis para desenvolvimento assistido por IA${NC}`,
-  );
+  console.log(`${DIM}Framework Jarvis para desenvolvimento assistido por IA${NC}`);
 
   try {
     const pkg = getPackageInfo();
     console.log("");
-    console.log(
-      `${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}`,
-    );
+    console.log(`${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}`);
     console.log(`${BOLD}${CYAN}  ${pkg.name}  v${pkg.version}${NC}`);
     console.log(`${DIM}  origem: ${pkg.root}${NC}`);
-    console.log(
-      `${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}`,
-    );
+    console.log(`${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}`);
   } catch {
     // banner sem versão se assets não forem encontrados
   }

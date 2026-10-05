@@ -13,9 +13,7 @@ async function commentJira(cardKey, message) {
   const token = env("TOKEN_TASK_MANAGER");
   const email = env("USER");
   if (!base || !token) {
-    throw new Error(
-      "Jira: preencha TASK_MANAGER_URL_BASE e TOKEN_TASK_MANAGER no ENV.md",
-    );
+    throw new Error("Jira: preencha TASK_MANAGER_URL_BASE e TOKEN_TASK_MANAGER no ENV.md");
   }
   const auth = email
     ? `Basic ${Buffer.from(`${email}:${token}`).toString("base64")}`
@@ -68,28 +66,24 @@ async function commentLinear(cardKey, message) {
 }
 
 async function commentGithub(cardKey, message) {
-  const token =
-    env("TOKEN_TASK_MANAGER") || env("GITHUB_TOKEN") || env("GH_TOKEN");
+  const token = env("TOKEN_TASK_MANAGER") || env("GITHUB_TOKEN") || env("GH_TOKEN");
   const base = env("TASK_MANAGER_URL_BASE").replace(/\/$/, "");
   if (!token || !base) {
     throw new Error(
-      "GitHub Issues: TASK_MANAGER_URL_BASE (https://github.com/org/repo) e TOKEN_TASK_MANAGER/GITHUB_TOKEN",
+      "GitHub Issues: TASK_MANAGER_URL_BASE (https://github.com/org/repo) e TOKEN_TASK_MANAGER/GITHUB_TOKEN"
     );
   }
   const path = new URL(base).pathname.replace(/^\/+|\/+$/g, "");
   const number = String(cardKey).replace(/^#/, "");
-  const res = await fetch(
-    `https://api.github.com/repos/${path}/issues/${number}/comments`,
-    {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        Accept: "application/vnd.github+json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ body: message }),
+  const res = await fetch(`https://api.github.com/repos/${path}/issues/${number}/comments`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: "application/vnd.github+json",
+      "Content-Type": "application/json",
     },
-  );
+    body: JSON.stringify({ body: message }),
+  });
   if (!res.ok) throw new Error(`GitHub ${res.status}: ${await res.text()}`);
 }
 
