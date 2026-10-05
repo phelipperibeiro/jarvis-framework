@@ -34,7 +34,7 @@ Este comando inicia o **planejamento** de uma nova feature.
 | Fase 3.4: Estratégia de Testes | `/eng-frontend` (via `eng.specializations-rules.md`) | Se a feature envolver interface ou componentes frontend; a regra também carrega as especializações de `FRONTEND_SPECIALIZATIONS` |
 | Fase 3.4: Estratégia de Testes | `/eng-backend` (via `eng.specializations-rules.md`) | Se a feature envolver APIs, autenticação ou workers backend; a regra também carrega as especializações de `BACKEND_SPECIALIZATIONS` |
 | Fase 3.4: Estratégia de Testes | `/eng-data-engineer` | Se a feature envolver engenharia de dados (pipelines ETL/ELT, Glue, Airflow, contratos de dados, camadas bronze/silver/gold) |
-| Fase 3.4: Estratégia de Testes | `/eng-scraper` | Se a feature envolver extração de dados ou scraping |
+| Fase 3.4: Estratégia de Testes | `/eng-automation` | Se a feature envolver extração de dados ou scraping |
 | Fase 3.4: Estratégia de Testes | `/eng-security-cybersecurity` | Se a feature envolver autenticação, autorização, inputs de usuário, dados sensíveis ou endpoints públicos |
 | Fase 5.4: Comentário no card — Conclusão | `/eng-global-task-comment` | Se `TASK_MANAGER` estiver preenchido, após o usuário aprovar o `architecture.md` (freelance pula) |
 
@@ -340,7 +340,7 @@ Documente:
 - Documentar pipeline com `data-pipeline-template.md` antes de implementar
 - Garantir idempotência e nomenclatura padronizada
 
-**Se a feature envolver extração de dados ou scraping** (web scraping, Puppeteer, parsing, ETL), use o skill [eng-scraper]($IDE/skills/eng-scraper/SKILL.md) para:
+**Se a feature envolver RPA ou extração de dados** (web scraping, Puppeteer, parsing, ETL, automação de browser/fluxos de trabalho), use o skill [eng-automation]($IDE/skills/eng-automation/SKILL.md) para:
 - Avaliar viabilidade ética e legal (robots.txt, ToS)
 - Definir ferramenta e arquitetura do scraper
 - Planejar resiliência, rate limiting e formato de saída

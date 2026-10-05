@@ -76,9 +76,9 @@ skills/
 │   └── SKILL.md
 ├── product-roadmap-report/ # Relatório de status do roadmap
 │   └── SKILL.md
-├── eng-scraper/          # Web scraping com Puppeteer, Cheerio, anti-bot, pipelines ETL
+├── eng-automation/          # Base de RPA + Web scraping: Puppeteer, Cheerio, anti-bot, pipelines ETL
 │   └── SKILL.md
-├── eng-scraper-robot-builder/ # Converte fluxo manual (linguagem natural) em robô Playwright via Stagehand
+├── eng-automation-robot-builder/ # Converte fluxo manual (linguagem natural) em robô Playwright via Stagehand
 │   └── SKILL.md
 ├── jarvis-docs-index/           # Indexacao de documentos
 │   └── SKILL.md
@@ -179,7 +179,7 @@ metadata:
 | `data` | Pipelines, qualidade e contratos de dados |
 | `ai` | Features com modelos de IA |
 | `security` | Segurança de aplicações |
-| `scraper` | Scraping e automação de robôs |
+| `automation` | RPA (robôs, automação de browser e de fluxos de trabalho) e Web (scraping, crawling, parsing) |
 | `devops` | Performance, infraestrutura, entrega |
 | `global` | Skills transversais de engenharia e do próprio framework |
 | `product` | Especificação de produto |
@@ -285,8 +285,8 @@ Skills são invocados de formas diferentes dependendo da IDE:
 | Revisão de PR frontend (tipagem, a11y, tokens, itens da stack) | `eng.frontend-review` |
 | Auditoria de performance frontend (Core Web Vitals, pacote entregue) | `eng.frontend-perf-audit` |
 | Módulos NestJS, DI, guards, interceptors, pipes, Passport/JWT | `eng-backend-nestjs` (especialização de backend) |
-| Web scraping, Puppeteer, extração de dados, parsing, ETL | `eng-scraper` |
-| Converter fluxo manual (produto/dev) em robô Playwright via Stagehand | `eng-scraper-robot-builder` |
+| RPA, web scraping, Puppeteer, extração de dados, parsing, ETL | `eng-automation` |
+| Converter fluxo manual (produto/dev) em robô Playwright via Stagehand | `eng-automation-robot-builder` |
 | Criar robô RPA novo ou manter existente (new|update + card) | `eng.rpa.robot` (workflow) |
 | Testes E2E em linguagem natural, fluxos de usuário, regressão de UI, smoke tests pós-deploy | `eng-qa-e2e` |
 | Gerar specs Cypress + TypeScript para fluxos de usuário | `eng-qa-cypress-e2e` |
@@ -364,7 +364,7 @@ Link para docs existentes?         → references/
 
 ### Skill grande com temas separaveis: roteador + references/
 
-O corpo do `SKILL.md` e carregado inteiro ao invocar a skill. Quando a skill tem **3 ou mais temas que se usam isoladamente** (por exemplo guards, testes, troubleshooting), mantenha no `SKILL.md` so o que vale sempre (objetivo, quando usar, padroes criticos, arvore de decisao, regras, checklist, a tabela de skills invocados) e uma tabela "Referencias" (Tema | Quando ler | Arquivo); cada tema vai para `references/{n}-{tema}.md`. Modelo: `skills/eng-backend/`. Ja seguem o modelo: `eng-backend-nestjs`, `eng-scraper`, `eng-security-cybersecurity`, `eng-backend-rabbitmq`, `eng-frontend-microfrontend`, `eng-frontend-design-system` e `eng-qa-bug-report` (so os temas de apoio: adapters de task manager, exemplos e bug-to-test; o fluxo por modos fica no `SKILL.md`).
+O corpo do `SKILL.md` e carregado inteiro ao invocar a skill. Quando a skill tem **3 ou mais temas que se usam isoladamente** (por exemplo guards, testes, troubleshooting), mantenha no `SKILL.md` so o que vale sempre (objetivo, quando usar, padroes criticos, arvore de decisao, regras, checklist, a tabela de skills invocados) e uma tabela "Referencias" (Tema | Quando ler | Arquivo); cada tema vai para `references/{n}-{tema}.md`. Modelo: `skills/eng-backend/`. Ja seguem o modelo: `eng-backend-nestjs`, `eng-automation`, `eng-security-cybersecurity`, `eng-backend-rabbitmq`, `eng-frontend-microfrontend`, `eng-frontend-design-system` e `eng-qa-bug-report` (so os temas de apoio: adapters de task manager, exemplos e bug-to-test; o fluxo por modos fica no `SKILL.md`).
 
 Nao converta procedimento sequencial (passo 1, 2, 3 que se le de ponta a ponta) nem skill pequena (menos de ~8 KB): nao ha tema para pular, so mais arquivos para ler.
 

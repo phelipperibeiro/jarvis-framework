@@ -1,5 +1,5 @@
 ---
-name: eng-scraper-robot-builder
+name: eng-automation-robot-builder
 description: >
   Converte descrição de passos em linguagem natural (feitos pelo produto/dev manualmente no site)
   em código Playwright TypeScript pronto para produção. Usa Stagehand para explorar a página real,
@@ -12,7 +12,7 @@ allowed-tools: Read Write Edit Grep Glob Bash
 metadata:
   author: jarvis-team
   version: "1.0"
-  area: scraper
+  area: automation
 # Campos Claude Code-specific (não fazem parte da spec oficial agentskills.io):
 argument-hint: "[url-alvo] [descrição do fluxo]"
 disable-model-invocation: false
@@ -70,9 +70,9 @@ Use este skill quando:
 - Quiser gerar um script Playwright como ponto de partida para edição
 
 **NÃO usar quando:**
-- O fluxo já tem seletores conhecidos e estáveis → usar `eng-scraper` diretamente
+- O fluxo já tem seletores conhecidos e estáveis → usar `eng-automation` diretamente
 - A automação precisa rodar em produção com LLM em runtime → avaliar `eng-qa-e2e`
-- O objetivo é extração de dados estruturados → usar `eng-scraper` com `extract()`
+- O objetivo é extração de dados estruturados → usar `eng-automation` com `extract()`
 
 ---
 
@@ -373,5 +373,5 @@ Próximo passo: executar com `npx tsx scripts/robots/{nome}.ts`
 ## Recursos Adicionais
 
 - **Stagehand docs**: https://docs.stagehand.dev
-- **Skill relacionado**: `$IDE/skills/eng-scraper/SKILL.md` — para scraping/extração de dados
+- **Skill relacionado**: `$IDE/skills/eng-automation/SKILL.md` — para scraping/extração de dados
 - **Skill relacionado**: `$IDE/skills/eng-qa-e2e/SKILL.md` — para testes E2E com linguagem natural

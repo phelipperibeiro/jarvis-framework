@@ -21,12 +21,12 @@ Skills existentes e planejadas do framework Jarvis.
 - **Escopo**: módulos, providers, middleware, ConfigModule, testes com `Test.createTestingModule`
 - **Status**: `criado`
 
-### `eng-scraper` ✅
+### `eng-automation` ✅
 - **Trigger**: web scraping, extração de dados, automação de browser, parsing HTML/XML
 - **Escopo**: Puppeteer, Cheerio, anti-bot, rate limiting, pipelines ETL light
 - **Status**: `criado`
 
-### `eng-scraper-robot-builder` ✅
+### `eng-automation-robot-builder` ✅
 - **Trigger**: converter fluxo manual em robô Playwright via Stagehand
 - **Escopo**: exploração com `act()`/`observe()`, geração de script Playwright TypeScript
 - **Status**: `criado`
@@ -278,7 +278,7 @@ Removidas: `checkin`, `checkout`, `daily`, `task-log`, `send-priority`, `sent-pr
 | 1 | `eng-frontend` | ✅ criado | Alta demanda, dois contextos (React + PHP/Blade) |
 | 2 | `eng-backend` | ✅ criado | APIs, auth, workers RabbitMQ — core do produto |
 | 3 | `eng-backend-nestjs` | ✅ criado | Framework principal — DI, guards, Passport/JWT |
-| 4 | `eng-scraper` | ✅ criado | Puppeteer como primário, ETL pipelines NestJS |
+| 4 | `eng-automation` | ✅ criado | Puppeteer como primário, ETL pipelines NestJS |
 | 6 | `eng-frontend-design-system` | ✅ criado | Tokens, CVA, Storybook, versionamento |
 | 7 | `eng-frontend-microfrontend` | ✅ criado | Module Federation, shell/remote |
 | 8 | `eng-database` | planejado | Área densa com muitos anti-patterns críticos |

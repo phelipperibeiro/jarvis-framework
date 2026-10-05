@@ -110,16 +110,19 @@ test("listRulesForProfile: AGENTS.md nunca é filtrado, rtk é opt-in, sem bloco
 // +29 B em cada perfil na #72 (eng.integrations-rules.md: referências a `node bin/lib/vcs/...`
 // trocadas por `jarvis vcs .../jarvis tasks comment`) — baseline reconstruída agora na #74,
 // que foi quando o drift apareceu (test:filtro não tinha sido re-rodado após aquele PR).
+// #80 (rename eng-scraper/área scraper -> eng-automation/área automation): deltas variam por
+// perfil porque eng.rpa-rules.md (HUB: BACKEND) e eng.frontend-rules.md (HUB: FRONTEND) mudaram
+// quantidades diferentes de bytes, e cada perfil carrega um subconjunto diferente de rules.
 const BASE = [
   [
     "FULLCYCLE/GENERALIST/ENGINEERING/CORE",
     profile("FULLCYCLE", "GENERALIST", "ENGINEERING"),
     18,
-    110631,
+    110643,
   ],
-  ["BACKEND/SENIOR/ENGINEERING/CORE", profile("BACKEND", "SENIOR", "ENGINEERING"), 11, 62570],
-  ["FRONTEND/PLENO/ENGINEERING/CORE", profile("FRONTEND", "PLENO", "ENGINEERING"), 11, 63415],
-  ["QA/QA-ENGINEER/ENGINEERING/CORE", profile("QA", "QA-ENGINEER", "ENGINEERING"), 14, 76792],
+  ["BACKEND/SENIOR/ENGINEERING/CORE", profile("BACKEND", "SENIOR", "ENGINEERING"), 11, 62579],
+  ["FRONTEND/PLENO/ENGINEERING/CORE", profile("FRONTEND", "PLENO", "ENGINEERING"), 11, 63421],
+  ["QA/QA-ENGINEER/ENGINEERING/CORE", profile("QA", "QA-ENGINEER", "ENGINEERING"), 14, 76795],
 ];
 
 for (const [nome, p, arquivos, bytes] of BASE) {

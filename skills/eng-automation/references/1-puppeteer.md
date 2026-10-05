@@ -1,6 +1,6 @@
 # Puppeteer
 
-> Parte do skill `eng-scraper`. Leia este arquivo quando a tarefa usar Puppeteer (ferramenta principal do projeto) para navegar e extrair dados.
+> Parte do skill `eng-automation`. Leia este arquivo quando a tarefa usar Puppeteer (ferramenta principal do projeto) para navegar e extrair dados.
 
 ### Puppeteer — Ferramenta Principal (padrão do projeto)
 

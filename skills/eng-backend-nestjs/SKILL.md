@@ -76,7 +76,7 @@ Use este skill quando:
 
 **NÃO usar quando:**
 - A tarefa é sobre design de APIs, paginação, RabbitMQ, caching → usar `eng-backend`
-- A tarefa envolve scraping ou extração de dados → usar `eng-scraper`
+- A tarefa envolve scraping ou extração de dados → usar `eng-automation`
 - A tarefa é puramente de banco de dados (queries, migrations, schema) → ainda não há skill específico; seguir `eng-backend`
 - Problema é de TypeScript puro (tipos, generics) → ainda não há skill específico; seguir as convenções de TypeScript do projeto
 

@@ -108,8 +108,8 @@ Quando um agente estiver atuando em um tema que possui skill correspondente, ele
 - **Consolidar sessões, bugs e quality gates e gerar relatório de qualidade por período** → `eng-qa-quality-report`.
 - **APIs, auth, workers, filas, caching, banco de dados** → regra `eng.specializations-rules.md` (área backend: `eng-backend` + `BACKEND_SPECIALIZATIONS`).
 - **Componentes, UI, estado, estilos, performance, acessibilidade** → regra `eng.specializations-rules.md` (área frontend: `eng-frontend` + `FRONTEND_SPECIALIZATIONS`).
-- **Web scraping, Puppeteer, extração de dados, ETL** → `eng-scraper`.
-- **Converter fluxo manual (produto/dev) em robô Playwright via Stagehand** → `eng-scraper-robot-builder`.
+- **Web scraping, Puppeteer, extração de dados, ETL** → `eng-automation`.
+- **Converter fluxo manual (produto/dev) em robô Playwright via Stagehand** → `eng-automation-robot-builder`.
 - **Criar ou manter robô RPA** → `eng.rpa.robot new|update {card}` (workflow).
 - **Testes E2E em linguagem natural, fluxos de usuário, smoke tests pós-deploy** → `eng-qa-e2e`.
 - **Pipelines de dados, ETL/ELT, Glue, Airflow, Athena, bronze/silver/gold, contratos de dados, Great Expectations** → `eng-data-engineer`.

@@ -80,7 +80,7 @@ Os skills de apoio abaixo viram especializações quando você os registra: `eng
 | Produto | `product-<nome>` | `product-specs` |
 | Transversal do framework | `jarvis-<nome>` | `jarvis-init`, `jarvis-create-specialization` |
 
-Áreas reconhecidas: `qa`, `data`, `ai`, `frontend`, `backend`, `security`, `scraper`, `devops`, `global` e `product`. A convenção completa está em [`skills/AGENTS.md`](../skills/AGENTS.md).
+Áreas reconhecidas: `qa`, `data`, `ai`, `frontend`, `backend`, `security`, `automation`, `devops`, `global` e `product`. A convenção completa está em [`skills/AGENTS.md`](../skills/AGENTS.md).
 
 ## Atualizando de uma versão anterior
 

@@ -1,6 +1,6 @@
 # Resiliência, ETL leve e monitoramento de mudanças
 
-> Parte do skill `eng-scraper`. Leia este arquivo quando a tarefa precisar de retry, pipeline ETL leve ou monitoramento de mudanças no site.
+> Parte do skill `eng-automation`. Leia este arquivo quando a tarefa precisar de retry, pipeline ETL leve ou monitoramento de mudanças no site.
 
 ### Resiliência e Retry
 
