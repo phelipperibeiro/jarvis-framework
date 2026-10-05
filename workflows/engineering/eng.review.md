@@ -16,10 +16,8 @@ apontando riscos, gaps e melhorias, sempre respeitando `$IDE/rules/engineering/e
 
 ## Skills recomendados
 
-- **eng-qa-test-plan**: para revisar cobertura de testes da branch e sugerir gaps (quando a revisão envolver mudanças de código).
-  - Arquivo: `$IDE/skills/eng-qa-test-plan/SKILL.md`
-- **eng-qa-testsprite**: para executar testes automatizados e validar cobertura real das mudanças.
-  - Arquivo: `$IDE/skills/eng-qa-testsprite/SKILL.md`
+- **eng-qa-planner**: para revisar cobertura de testes da branch e sugerir gaps (quando a revisão envolver mudanças de código) — se a especialização estiver registrada em `QA_SPECIALIZATIONS`. Sem ela, use a base `eng-qa` diretamente.
+  - Arquivo: `$IDE/skills/eng-qa-planner/SKILL.md`
 - **Skills de backend e frontend**: quando a revisão envolver código de backend (endpoints, autenticação, workers, banco de dados) ou de frontend (componentes, estado, estilos, performance de UI, acessibilidade), aplique a regra `$IDE/rules/engineering/eng.specializations-rules.md` para a área envolvida: ela carrega o skill base (`eng-backend` ou `eng-frontend`) e as especializações registradas no `ENV.md`.
   - Arquivo da regra: `$IDE/rules/engineering/eng.specializations-rules.md`
   - Para mudanças arquiteturais relevantes que exijam atualizar diagramas, use a especialização de arquitetura registrada em `BACKEND_SPECIALIZATIONS`, se houver; sem ela, descreva a mudança no próprio documento de arquitetura.
@@ -40,11 +38,11 @@ apontando riscos, gaps e melhorias, sempre respeitando `$IDE/rules/engineering/e
 
 | Passo | Skill | Condição |
 |-------|-------|----------|
-| Skills recomendados | `/eng-qa-test-plan` | Se a revisão envolver mudanças de código (revisar cobertura de testes da branch e gaps) |
+| Skills recomendados | `/eng-qa-planner` | Se a revisão envolver mudanças de código **e** a especialização estiver registrada em `QA_SPECIALIZATIONS` |
 | Skills recomendados | `/eng-backend` (via `eng.specializations-rules.md`) | Se a revisão envolver código de backend (endpoints, autenticação, workers, banco de dados); a regra também carrega as especializações de `BACKEND_SPECIALIZATIONS` |
 | Skills recomendados | `/eng-frontend` (via `eng.specializations-rules.md`) | Se a revisão envolver código de frontend (componentes, estado, estilos, performance de UI, acessibilidade); a regra também carrega as especializações de `FRONTEND_SPECIALIZATIONS` |
 | Skills recomendados | `especialização de arquitetura registrada em BACKEND_SPECIALIZATIONS` | Se houver mudança arquitetural relevante que exija atualizar diagramas e existir essa especialização registrada; sem ela, descrever a mudança no documento de arquitetura |
-| Passo 6 › Validação com TestSprite (opcional) | `/eng-qa-testsprite` | Se o projeto estiver rodando localmente (`/eng-qa-testsprite diff`) |
+| Passo 6 › Validação automatizada (opcional) | `/eng-qa` + `QA_SPECIALIZATIONS` | Para obter evidências de cobertura das mudanças |
 | Passo 6 › Análise de Cobertura (opcional) | `eng.qa.test-planner` (agente) | Se a revisão identificar problemas de cobertura que exijam análise mais profunda |
 | Agentes recomendados | `eng.frontend.agent` (agente) | Se o PR tiver mudanças significativas de interface ou componentes |
 | Agentes recomendados | `eng.ux-designer.agent` (agente) | Se o PR introduzir nova feature de UI ou alterar fluxo de usuário existente |
@@ -157,19 +155,15 @@ O agente irá:
 - Identificar lacunas de cobertura
 - Gerar relatório com recomendações
 
-### Validação com TestSprite (opcional)
+### Validação automatizada (opcional)
 
-Se o projeto estiver rodando localmente, execute o skill **eng-qa-testsprite** para obter evidências de cobertura:
-
-```
-/eng-qa-testsprite diff
-```
+Use a base [eng-qa](../../skills/eng-qa/SKILL.md) (ou a especialização registrada em `QA_SPECIALIZATIONS`, se houver uma) para obter evidências de cobertura.
 
 Inclua no parecer:
 
 - Resultado dos testes executados (passou/falhou)
 - Cobertura atingida vs. esperada
-- Gaps identificados pelo TestSprite
+- Gaps identificados
 
 ---
 

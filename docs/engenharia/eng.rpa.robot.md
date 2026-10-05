@@ -52,7 +52,6 @@ Se faltar informação, ele pergunta nesta ordem: o modo, o card, o **tag do ser
 | HTML estático | Cheerio com axios |
 | JS obrigatório, sem API | Puppeteer ou Playwright |
 | Anti-bot agressivo | Puppeteer stealth |
-| Fluxo em linguagem natural, seletores desconhecidos | `/eng-automation-robot-builder` (Stagehand) |
 
 Para explorar o sistema, usa o Playwright MCP, o Playwright CLI (`codegen`) ou o Stagehand. Com `MAX_AI_EXECUTION_PERCENTAGE=100`, escolhe sozinho; nos demais casos, pergunta.
 

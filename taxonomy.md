@@ -121,7 +121,7 @@ Designação secundária para devs com função parcial de qualidade dentro do s
 Não é uma posição de senioridade — o dev mantém seu cargo (JUNIOR, PLENO, SENIOR, etc.).
 Registrado no campo Posição do `members.md` junto com o cargo principal.
 - Responsável por cobertura de testes em features de baixo/médio risco do squad
-- Executa quality gates e orienta outros devs via eng-qa-dev-guide
+- Executa quality gates e orienta outros devs com a base eng-qa
 - NÃO substitui QA em features críticas, decisões de bloqueio ou sign-off de release
 - Dedicação típica: ~30% do tempo em atividades de qualidade
 - No card: apoia o QA-ENGINEER na cobertura — não toma decisões de bloqueio

@@ -40,7 +40,7 @@ Ativado quando há um pipeline para criar, ajustar ou depurar.
 - Criar suite de qualidade (Great Expectations ou equivalente)
 - Documentar com `data-pipeline-template.md`
 
-**Skill integrada**: `$IDE/skills/eng-data-engineer/SKILL.md`
+**Skill integrada**: `$IDE/skills/eng-data/SKILL.md` + `DATA_SPECIALIZATIONS`
 
 ---
 
@@ -54,7 +54,7 @@ Ativado quando uma squad solicita dados do time de Data.
 - Documentar com `data-contract-template.md`
 - Garantir que dado exposto em `gold` está no padrão Medallion
 
-**Skill integrada**: `$IDE/skills/eng-data-engineer/SKILL.md`
+**Skill integrada**: `$IDE/skills/eng-data/SKILL.md` + `DATA_SPECIALIZATIONS`
 
 ---
 
@@ -68,7 +68,7 @@ Ativado quando há suspeita de dado incorreto, queda de volume ou falha de pipel
 - Propor correção e plano de reprocessamento idempotente
 - Alertar squads afetadas com contexto claro
 
-**Skill integrada**: `$IDE/skills/eng-data-debug/SKILL.md`
+**Skill integrada**: `$IDE/skills/eng-data/SKILL.md` + `DATA_SPECIALIZATIONS`
 
 ---
 
@@ -182,7 +182,7 @@ CONTEXT_PROFILE:
   - Use **apenas** comandos, workflows e rules do domínio **ENG/engineering/data**
   - Priorize:
     - `$IDE/rules/engineering/data/data-rules.md`
-    - `$IDE/skills/eng-data-engineer/SKILL.md`
+    - `$IDE/skills/eng-data/SKILL.md` + `DATA_SPECIALIZATIONS`
     - `$IDE/templates/engineering/data-pipeline-template.md`
     - `$IDE/templates/engineering/data-contract-template.md`
   - Para workflows gerais de engenharia (`eng.start`, `eng.pr`), colaborar com ATHENA — não duplicar responsabilidade
@@ -192,35 +192,12 @@ CONTEXT_PROFILE:
 
 ## Skills Disponíveis
 
-### eng-data-engineer
-Skill principal para construção de pipelines, modelagem e contratos de dados:
-- Arquivo: `$IDE/skills/eng-data-engineer/SKILL.md`
-- Uso: `/eng-data-engineer [pipeline|modelo|query|dashboard|contrato|qualidade] [contexto]`
+### eng-data
+Skill base para pipelines, modelagem, contratos, dashboards/BI, diagnóstico, onboarding de fonte
+e orquestração — base neutra de dados, complementada pela especialização registrada em `DATA_SPECIALIZATIONS`:
+- Arquivo: `$IDE/skills/eng-data/SKILL.md`
+- Uso: `/eng-data [pipeline|modelo|query|dashboard|contrato|qualidade|orquestracao] [contexto]`
 - Fonte da stack DATA: lê variáveis `DATA_*` do `ENV.md`
-
-### eng-data-bi
-Dashboards BI, queries SQL analíticas e compartilhamento de dados com squads:
-- Arquivo: `$IDE/skills/eng-data-bi/SKILL.md`
-- Uso: `/eng-data-bi [dashboard|query|compartilhar|otimizar] [contexto]`
-- Lê `$DATA_BI_TOOL` e `$DATA_QUERY_ENGINE` do `ENV.md`
-
-### eng-data-debug
-Diagnóstico de falhas em pipelines por camada (fonte → bronze → silver → gold):
-- Arquivo: `$IDE/skills/eng-data-debug/SKILL.md`
-- Uso: `/eng-data-debug [pipeline|tabela|camada] [sintoma]`
-- Cobre: volume zero, schema mudou, falha de qualidade, dado incorreto em gold
-
-### eng-data-onboard
-Onboarding de fonte de dados nova — da amostragem ao bronze validado:
-- Arquivo: `$IDE/skills/eng-data-onboard/SKILL.md`
-- Uso: `/eng-data-onboard [nome-da-fonte] [tipo: api|db|arquivo|stream]`
-- 7 fases: entender fonte → schema discovery → doc pipeline → bronze → Expectation Suite → validar → próximos passos
-
-### eng-data-orchestrator
-Gerenciamento de DAGs e orquestração de pipelines:
-- Arquivo: `$IDE/skills/eng-data-orchestrator/SKILL.md`
-- Uso: `/eng-data-orchestrator [criar|monitorar|retry|alerta|debug] [nome-do-dag]`
-- Agnóstico ao orquestrador: adapta exemplos para `$DATA_ORCHESTRATOR` (Airflow, Prefect, Dagster, Glue Scheduler)
 
 ### jarvis-context-detect (CDD)
 Para detecção automática de contexto de tarefas:
@@ -271,7 +248,7 @@ Para detecção automática de contexto de tarefas:
 | `$IDE/workflows/engineering/eng.pr.md` | PR de scripts de pipeline (colaborar com ATHENA) |
 
 > Se os workflows `data.new-pipeline.md` e `data.contract.md` ainda não existirem,
-> orientar o usuário a criá-los via `/eng.work` ou seguir o fluxo do skill `eng-data-engineer`.
+> orientar o usuário a criá-los via `/eng.work` ou seguir o fluxo do skill `eng-data` + `DATA_SPECIALIZATIONS`.
 
 ---
 

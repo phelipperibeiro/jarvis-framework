@@ -68,13 +68,13 @@ Formato: separado por vírgula (a leitura aceita colchetes e aspas, mas o framew
 
 ## Especializações que já vêm no framework
 
-Os skills de apoio abaixo viram especializações quando você os registra: `eng-backend-nestjs`, `eng-backend-rabbitmq`, `eng-backend-arch-c4`, `eng-backend-microservices-trace`, `eng-frontend-microfrontend` e `eng-frontend-design-system`.
+Os skills de apoio abaixo viram especializações quando você os registra: `eng-backend-nestjs`, `eng-backend-rabbitmq`, `eng-backend-arch-c4` e `eng-backend-microservices-trace`.
 
 ## Nomes e áreas dos skills
 
 | Tipo | Padrão | Exemplos |
 |------|--------|----------|
-| Engenharia por área | `eng-<área>-<nome>` | `eng-qa-gate`, `eng-data-engineer` |
+| Engenharia por área | `eng-<área>-<nome>` | `eng-qa-planner` |
 | Especialização | `eng-<backend\|frontend>-<stack>` | `eng-backend-golang` |
 | Engenharia global | `eng-global-<nome>` | `eng-global-pr` |
 | Produto | `product-<nome>` | `product-specs` |

@@ -26,6 +26,14 @@ Gerar uma especialização **fiel ao código do projeto** e deixá-la ligada sem
 
 A especialização **soma-se** à skill base da área (`eng-backend` ou `eng-frontend`) e guarda só o que **depende da stack**. O que continua válido ao trocar de linguagem já está na base e não é repetido.
 
+> **Por que só backend e frontend**: essas duas áreas têm universo de stack **aberto** — qualquer
+> linguagem ou framework novo pode aparecer num projeto, então faz sentido ler o código e gerar
+> uma especialização sob demanda. QA, data, automation e platform têm um **conjunto fixo** de
+> especializações pré-construídas pelo framework (sem `metadata.stack`); registrar uma delas é
+> só listar e marcar no `ENV.md` — não há o que detectar por código nem gerar. Ver
+> `$IDE/skills/jarvis-list-specializations/SKILL.md` para listar/registrar as especializações
+> dessas 4 áreas, e o passo 9 do `/jarvis-init` para o mesmo fluxo durante o onboarding.
+
 ## Entrada
 
 - `$ARGUMENTS` - (Opcional) `[backend|frontend] [stack]`, por exemplo `backend golang`. O que faltar, pergunte (uma pergunta por vez).

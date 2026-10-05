@@ -78,6 +78,64 @@ export const OBSOLETE_PATHS = Object.freeze([
   "rules/engineering/eng.pre-pr-rules.md",
   "rules/engineering/eng.tech-spec-rules.md",
   "rules/engineering/eng.breakdown-subtasks-rules.md",
+  // Consolidação de QA (removidos): área QA ficou só com eng-qa (base) e eng-qa-planner
+  "skills/eng-qa-test-plan",
+  "skills/eng-qa-gate",
+  "skills/eng-qa-cypress-e2e",
+  "skills/eng-qa-dev-guide",
+  "skills/eng-qa-exploratory",
+  "skills/eng-qa-bug-report",
+  "skills/eng-qa-quality-report",
+  "skills/eng-qa-testsprite",
+  "skills/eng-qa-a11y-audit",
+  "skills/eng-qa-graphql-contract",
+  "skills/eng-qa-e2e-spec-writer",
+  "skills/eng-qa-e2e",
+  "skills/eng-qa-unit-test",
+  "workflows/engineering/qa/eng.qa-dev-quality-guide.md",
+  "workflows/engineering/qa/eng.qa-e2e-test-generation.md",
+  "workflows/engineering/qa/eng.qa-exploratory-session.md",
+  "workflows/engineering/qa/eng.qa-quality-gate-validation.md",
+  "workflows/engineering/qa/eng.qa-quality-report.md",
+  "rules/engineering/qa/eng.qa.exploratory-session-rules.md",
+  "rules/engineering/qa/eng.qa.quality-gate-scoring-rules.md",
+  "rules/engineering/qa/eng.qa.tech-spec-validation-criteria-rules.md",
+  "templates/engineering/qa/eng.qa.quality-gate-examples-template.md",
+  "templates/engineering/qa/eng.qa.quality-gate-report-template.md",
+  "templates/engineering/qa/qa.cypress-test-template.md",
+  "templates/engineering/qa/qa.exploratory-session-template.md",
+  "templates/engineering/qa/qa.quality-report-template.md",
+  // Descontinuação da área security (removidos): segurança de app fica em eng-backend/eng-frontend,
+  // segurança de infra e fundamentos entram em eng-platform ou em PLATFORM_SPECIALIZATIONS
+  "skills/eng-security-cybersecurity",
+  "skills/eng-security-threat-model",
+  "skills/eng-security-triage",
+  "skills/eng-security-patch",
+  "agents/engineering/eng.cybersecurity.agent.md",
+  "workflows/engineering/eng.security-review.md",
+  "workflows/engineering/eng.security-incident.md",
+  "workflows/engineering/eng.security-audit.md",
+  "workflows/engineering/eng.security-pipeline.md",
+  // eng-automation-robot-builder (removido): conversão de fluxo manual em robô Playwright
+  // via Stagehand — sem skill de substituição hoje
+  "skills/eng-automation-robot-builder",
+  // eng-ai-engineer (removido): virou a base neutra eng-ai (padrão eng-backend, com references/)
+  "skills/eng-ai-engineer",
+  // Consolidação de data (removidos): área data ficou só com a base eng-data (padrão eng-backend)
+  "skills/eng-data-engineer",
+  "skills/eng-data-bi",
+  "skills/eng-data-debug",
+  "skills/eng-data-onboard",
+  "skills/eng-data-orchestrator",
+  // eng-global-browser-extension-builder (removido): sem uso real no framework
+  "skills/eng-global-browser-extension-builder",
+  // eng-devops-performance-engineer (removido): profiling, load testing/chaos e cache
+  // multi-camada entraram no eng-platform (temas 14, 15, 16)
+  "skills/eng-devops-performance-engineer",
+  // eng-frontend-design-system e eng-frontend-microfrontend (removidos): princípios agnósticos
+  // entraram na base eng-frontend (temas 13, 14)
+  "skills/eng-frontend-design-system",
+  "skills/eng-frontend-microfrontend",
 ]);
 
 /**

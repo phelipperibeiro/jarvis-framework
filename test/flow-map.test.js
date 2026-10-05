@@ -27,8 +27,8 @@ test("splitCells ignora | dentro de crases", () => {
 });
 
 test("classifyCell: skill/workflow, com argumentos, CLI, MCP, agente e ferramentas", () => {
-  assert.deepEqual(classifyCell("`/eng-qa-gate`").targets, [
-    { kind: "internal", name: "eng-qa-gate" },
+  assert.deepEqual(classifyCell("`/eng-qa-planner`").targets, [
+    { kind: "internal", name: "eng-qa-planner" },
   ]);
   assert.deepEqual(classifyCell("`/jarvis-create-specialization {área} {stack}`").targets, [
     { kind: "internal", name: "jarvis-create-specialization" },
@@ -101,9 +101,9 @@ test("parseDeclaration de agente: skills disponíveis e relacionados", () => {
   const text = [
     "## Skills Disponíveis",
     "",
-    "### eng-qa-test-plan",
+    "### eng-qa-planner",
     "Para análise de cobertura:",
-    "- Arquivo: `$IDE/skills/eng-qa-test-plan/SKILL.md`",
+    "- Arquivo: `$IDE/skills/eng-qa-planner/SKILL.md`",
     "",
     "### Backend e frontend (skill base)",
     "Quando a tarefa envolver backend ou frontend:",
@@ -124,7 +124,7 @@ test("parseDeclaration de agente: skills disponíveis e relacionados", () => {
   assert.deepEqual(
     d.rows.map((r) => r.targets[0].name),
     [
-      "eng-qa-test-plan",
+      "eng-qa-planner",
       "eng-backend",
       "eng-frontend",
       "eng.qa.testing-engineer",
@@ -162,7 +162,7 @@ test("framework real: índice sem duplicados e todos os artefatos declaram chama
   const { items, duplicates } = buildIndex(root);
   assert.deepEqual(duplicates, []);
   const porTipo = (t) => [...items.values()].filter((i) => i.type === t).length;
-  assert.ok(porTipo("workflow") >= 46 && porTipo("skill") >= 49 && porTipo("agent") >= 16);
+  assert.ok(porTipo("workflow") >= 37 && porTipo("skill") >= 26 && porTipo("agent") >= 15);
   const semDeclaracao = [...items.values()].filter(
     (i) => !parseDeclaration(i.type, readFileSync(join(root, i.path), "utf-8")).declared
   );
@@ -329,7 +329,7 @@ test("summarizeCondition: sem crases, minúscula e limite", () => {
 });
 
 test("suggest: prefixo, trecho e erro de digitação", () => {
-  const items = new Map(["eng.start", "eng.plan", "eng-qa-gate", "warm-up"].map((n) => [n, {}]));
+  const items = new Map(["eng.start", "eng.plan", "eng-qa-planner", "warm-up"].map((n) => [n, {}]));
   assert.deepEqual(suggest(items, "eng.sta"), ["eng.start"]);
   assert.ok(suggest(items, "warmup").includes("warm-up"));
   assert.deepEqual(suggest(items, "zzzzzzzzzz"), []);
@@ -352,7 +352,7 @@ test("runMap: uso, profundidade inválida, nome inexistente com sugestões e suc
   }
 });
 
-test("framework real: eng.start, warm-up, eng-qa-gate e eng.agent mapeiam", () => {
+test("framework real: eng.start, warm-up, eng-qa-planner e eng.agent mapeiam", () => {
   const start = runMap("eng.start", {}, root);
   assert.equal(start.code, 0);
   const startText = start.lines.join("\n");
@@ -363,7 +363,7 @@ test("framework real: eng.start, warm-up, eng-qa-gate e eng.agent mapeiam", () =
   assert.equal(warm.code, 0);
   assert.ok(warm.lines.filter((l) => l.includes("menu (")).length >= 6);
 
-  assert.equal(runMap("eng-qa-gate", {}, root).code, 0);
+  assert.equal(runMap("eng-qa-planner", {}, root).code, 0);
   const agent = runMap("eng.agent", {}, root);
   assert.equal(agent.code, 0);
   assert.ok(agent.lines.some((l) => l.includes("disponível")));

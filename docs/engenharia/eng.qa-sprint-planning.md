@@ -18,7 +18,6 @@ Um plano de alocação baseado em risco. Em vez de "o QA olha tudo", ele decide 
 ## Quando **não** usar
 
 - Você quer a estratégia de testes de uma feature → [`eng.qa-refinement-entry`](./eng.qa-refinement-entry.md)
-- Você quer o relatório do que já aconteceu → [`eng.qa-quality-report`](./eng.qa-quality-report.md)
 
 ## Como funciona
 
@@ -38,7 +37,7 @@ Aceita a sprint (ID, nome ou número, como `Sprint 42`) e pergunta se você não
 |---|---|
 | Alto | QA obrigatório, não se delega a Champion |
 | Médio | QA preferencialmente; Champion se o QA estiver sobrecarregado |
-| Baixo | Champion, ou delegar ao dev com [`eng.qa-dev-quality-guide`](./eng.qa-dev-quality-guide.md) |
+| Baixo | Champion, ou delegar ao dev, orientado pela base `eng-qa` + `QA_SPECIALIZATIONS` |
 
 Se a demanda passar da capacidade, o plano sinaliza quais tasks ficam sem cobertura designada e sugere reduzir o escopo dos itens de menor risco.
 
@@ -48,4 +47,4 @@ Se a demanda passar da capacidade, o plano sinaliza quais tasks ficam sem cobert
 
 ## Próximo passo típico
 
-Executar o plano: [`eng.qa-exploratory-session`](./eng.qa-exploratory-session.md), [`eng.qa-e2e-test-generation`](./eng.qa-e2e-test-generation.md) e [`eng.qa-dev-quality-guide`](./eng.qa-dev-quality-guide.md)
+Executar o plano: implementar os cenários E2E e os exploratórios com a base [`eng-qa`](../../skills/eng-qa/SKILL.md) e a especialização registrada em `QA_SPECIALIZATIONS`, se houver uma.

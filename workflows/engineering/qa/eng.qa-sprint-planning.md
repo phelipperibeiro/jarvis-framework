@@ -82,7 +82,7 @@ Com base no risco e na capacidade mapeada na Fase 0:
 |-------|------------------|
 | Alto | QA obrigatório — não delegar a Champion |
 | Médio | QA preferencial; Champion se QA sobrecarregado |
-| Baixo | Champion ou delegar ao dev via eng-qa-dev-guide |
+| Baixo | Champion ou delegar ao dev, orientado pela base `eng-qa` + `QA_SPECIALIZATIONS` |
 
 **Detectar sobrecarga**: se demanda > capacidade total, sinalizar quais tasks ficam sem cobertura designada e sugerir redução de escopo nos itens de menor risco.
 

@@ -17,8 +17,7 @@ Lê a especificação de uma feature **antes** de existir código e gera a estra
 
 ## Quando **não** usar
 
-- O código já existe e você quer ver lacunas de cobertura → [`eng.pre-pr`](./eng.pre-pr.md) ou [`eng.qa-dev-quality-guide`](./eng.qa-dev-quality-guide.md)
-- Você quer validar se a tech spec está completa → [`eng.qa-quality-gate-validation`](./eng.qa-quality-gate-validation.md)
+- O código já existe e você quer ver lacunas de cobertura → [`eng.pre-pr`](./eng.pre-pr.md)
 
 ## Como funciona
 
@@ -36,4 +35,4 @@ Aceita o ID de uma task, o caminho de uma spec ou uma descrição da feature (e 
 
 ## Próximo passo típico
 
-[`eng.qa-e2e-test-generation`](./eng.qa-e2e-test-generation.md) para automatizar os cenários e [`eng.qa-exploratory-session`](./eng.qa-exploratory-session.md) para os exploratórios
+Implementar os cenários E2E e os exploratórios com a base [`eng-qa`](../../skills/eng-qa/SKILL.md) e a especialização registrada em `QA_SPECIALIZATIONS`, se houver uma.

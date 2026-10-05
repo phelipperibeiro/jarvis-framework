@@ -20,7 +20,7 @@ Aplicar quando invocado via `eng.qa-refinement-entry` ou quando o argumento rece
 - Saída: `$DOCS_FOLDER/engineering/qa/strategies/{task-id}-test-strategy.md`
 
 **Modo B — Análise de Cobertura (pós-código)**
-Aplicar quando invocado via `eng-qa-unit-test`, `eng-qa-test-plan` ou quando houver código implementado na branch (git diff retorna resultados).
+Aplicar quando invocado via `eng-qa`, `eng-qa-planner` ou quando houver código implementado na branch (git diff retorna resultados).
 - Fonte de dados: `git diff origin/main...HEAD`
 - Saída: `$DOCS_FOLDER/engineering/qa/{task-id}-test_coverage_branch_report.md`
 
@@ -30,13 +30,13 @@ Regra de decisão: se `git diff origin/main...HEAD` retornar vazio, operar em Mo
 
 Use os recursos abaixo como fonte de verdade do processo:
 
-### eng-qa-test-plan
+### eng-qa-planner
 Para análise de cobertura e planejamento de testes:
-- Arquivo: `$IDE/skills/eng-qa-test-plan/SKILL.md`
+- Arquivo: `$IDE/skills/eng-qa-planner/SKILL.md`
 
-### eng-qa-testsprite
-Para execução automatizada de testes com TestSprite MCP:
-- Arquivo: `$IDE/skills/eng-qa-testsprite/SKILL.md`
+### eng-qa
+Para execução automatizada de testes — base de QA, complementada pela especialização registrada em `QA_SPECIALIZATIONS`:
+- Arquivo: `$IDE/skills/eng-qa/SKILL.md`
 
 ### jarvis-context-detect (CDD)
 Para detecção automatizada do contexto (calibração contextual do agente):
@@ -284,7 +284,7 @@ Regras de formato:
 
 ## Fluxo de Trabalho — Modo B (Análise de Cobertura pós-código)
 
-Usar quando: invocado via `eng-qa-unit-test` ou `eng-qa-test-plan`, ou quando git diff retornar resultados.
+Usar quando: invocado via `eng-qa` ou `eng-qa-planner`, ou quando git diff retornar resultados.
 
 ### B.1. Analisar Mudanças da Branch
 
@@ -342,13 +342,9 @@ Determine quais testes estão faltando:
 
 ---
 
-### B.5. Validar com TestSprite (Opcional)
+### B.5. Validar com Especialização Registrada (Opcional)
 
-Se o projeto estiver rodando localmente, sugira executar o skill **eng-qa-testsprite** para validação automatizada:
-
-```
-/eng-qa-testsprite diff
-```
+Se houver uma especialização de execução/geração automatizada registrada em `QA_SPECIALIZATIONS`, sugira usá-la (via a base `eng-qa`) para validação automatizada do diff.
 
 Isso permite:
 - Gerar testes automatizados para as mudanças
@@ -482,5 +478,5 @@ Fluxo completo recomendado:
 eng.qa.test-planner (análise)
     → eng.qa.testing-engineer (escrita)
     → eng.qa.test-architect (performance/security)
-    → eng-qa-testsprite (validação E2E)
+    → eng-qa (validação E2E, via especialização de QA_SPECIALIZATIONS)
 ```

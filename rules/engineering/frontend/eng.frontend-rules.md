@@ -88,10 +88,7 @@ Aplica-se quando a linguagem do projeto tem tipagem estática ou contratos expl�
 
 ### Ferramentas disponíveis no framework
 
-- **TestSprite** (`/eng-qa-testsprite`): se estiver instalado no projeto, usá-lo para gerar e executar testes de componente e de ponta a ponta — ele gera planos de teste e código automaticamente.
-  Verificar: `ls node_modules/@testsprite 2>/dev/null || cat package.json | grep testsprite`
-- **Stagehand** (`/eng-automation-robot-builder`, `/eng-qa-e2e`): para testes de ponta a ponta em linguagem natural ou automação de fluxos complexos, descrevendo o fluxo em português.
-  Verificar: `cat package.json | grep stagehand`
+- **Especialização de testes automatizados registrada em `QA_SPECIALIZATIONS`** (via a base `/eng-qa`): se o projeto tiver uma, usá-la para gerar e executar testes de componente e de ponta a ponta.
 
 > Quando qualquer dessas ferramentas estiver disponível no projeto, **preferir sobre a implementação manual** — reduz o custo de manutenção e aumenta a cobertura mais rápido.
 

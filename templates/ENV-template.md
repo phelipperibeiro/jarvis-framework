@@ -65,12 +65,20 @@ PROD_TEMPLATES=.$IDE/$TEMPLATES_FOLDER/$PROD_FOLDER_NAME
 PROD_DOCS=$DOCS_FOLDER/$PROD_FOLDER_NAME
 
 
-# --- Especializações de stack ------------------------------------------------
+# --- Especializações por área -------------------------------------------------
 # Skills especializados que o Jarvis carrega junto com o skill base de cada área.
 # Lista de nomes de skill separados por vírgula. Ex: eng-backend-golang,eng-backend-nestjs
-# Vazio = só o skill base (eng-backend / eng-frontend). A variável precisa EXISTIR, mesmo vazia.
+# Vazio = só o skill base de cada área (eng-backend, eng-frontend, eng-qa,
+# eng-data, eng-automation, eng-platform). Toda variável precisa EXISTIR,
+# mesmo vazia — ver rules/engineering/eng.specializations-rules.md.
+# QA_SPECIALIZATIONS vem com eng-qa-planner por padrão: é a única especialização de QA hoje
+# e cobre planejamento/gap de cobertura, útil pra quase todo projeto. Remova se não quiser.
 BACKEND_SPECIALIZATIONS=
 FRONTEND_SPECIALIZATIONS=
+QA_SPECIALIZATIONS=eng-qa-planner
+DATA_SPECIALIZATIONS=
+AUTOMATION_SPECIALIZATIONS=
+PLATFORM_SPECIALIZATIONS=
 
 
 # --- Task manager (opcional) -------------------------------------------------

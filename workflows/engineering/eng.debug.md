@@ -37,8 +37,8 @@ sempre respeitando `$IDE/rules/engineering/eng-rules.md`.
 | Passo 1.0 | `mcp__claude_ai_Atlassian__getJiraIssue` | Se Jira key fornecida |
 | Passo 1.5 | `Read` / `Grep` / `Glob` (leitura do repo) | **Sempre** — obrigatório antes de formular hipóteses |
 | Passo 2.5 | `/eng-backend-microservices-trace` | Se bug suspeito de cruzar serviços **e** a especialização estiver registrada em `BACKEND_SPECIALIZATIONS` |
-| Passo 6 | `/eng-qa-unit-test` | Para criar teste de regressão da correção |
-| Passo 7 | `/eng-qa-bug-report create` | Para cada débito técnico ou melhoria identificada |
+| Passo 6 | `/eng-qa` + `QA_SPECIALIZATIONS` | Para criar teste de regressão da correção |
+| Passo 7 | `/eng-qa` + `QA_SPECIALIZATIONS` | Para estruturar cada débito técnico ou melhoria identificada antes de abrir o card |
 | Conclusão | `mcp__claude_ai_Atlassian__addCommentToJiraIssue` | Sempre — atualizar o card com findings |
 
 ### Próximos workflows (pós-debug)
@@ -383,11 +383,7 @@ Próximo passo: → eng.work {TASK_MANAGER_KEY}
 
 ### 6.1 – Criar teste de regressão
 
-Invocar o skill de testes unitários para criar o teste que reproduz o bug:
-
-```
-/eng-qa-unit-test --mode=regression --bug=”{descrição da causa raiz}” --file=”{arquivo corrigido}”
-```
+Usar a base [eng-qa](../../skills/eng-qa/SKILL.md) + a especialização registrada em `QA_SPECIALIZATIONS` (se houver uma) — tema 5, Automação de Testes — para criar o teste que reproduz o bug, seguindo o framework de testes já usado no projeto.
 
 O teste deve:
 - **Falhar** antes da correção ser aplicada (prova que reproduz o bug)
@@ -424,19 +420,7 @@ Quando fizer sentido, recomendar:
 
 ### 7.2 – Criar cards de débito técnico
 
-Para cada melhoria estrutural identificada, criar um card de débito técnico:
-
-```
-/eng-qa-bug-report create \
-  --title="[{serviço}] {descrição da melhoria}" \
-  --category="DÉBITO-TÉCNICO" \
-  --location="{arquivo:linha relevante}" \
-  --description="{por que essa melhoria é necessária}" \
-  --behavior-actual="{o que existe hoje}" \
-  --behavior-expected="{o que deveria existir}" \
-  --environment="prod" \
-  --linked-to="{TASK_MANAGER_KEY}"
-```
+Para cada melhoria estrutural identificada, estruturar o achado com a base [eng-qa](../../skills/eng-qa/SKILL.md) + a especialização registrada em `QA_SPECIALIZATIONS` (se houver uma) — tema 14, Gestão de Testes e de Defeitos — e abrir o card de débito técnico (`DÉBITO-TÉCNICO P{0-3}`) no `$TASK_MANAGER` do projeto, vinculado a `{TASK_MANAGER_KEY}`, com: localização, comportamento atual vs. esperado e ambiente.
 
 Exemplos típicos após um debug cross-service:
 - `[account] Correlation ID não propagado nas chamadas HTTP para auth` → `DÉBITO-TÉCNICO P2`

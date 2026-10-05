@@ -18,7 +18,6 @@ O aval de QA antes de publicar. O documento gerado é validado pelo CI (`jarvis 
 ## Quando **não** usar
 
 - Você quer a validação de código antes do PR → [`eng.pre-pr`](./eng.pre-pr.md)
-- Você quer o relatório de uma sprint → [`eng.qa-quality-report`](./eng.qa-quality-report.md)
 
 ## Como funciona
 

@@ -44,7 +44,6 @@ Agentes específicos para fluxos e regras do domínio de Engenharia.
 - `eng.rpa.agent.md` - `@eng.rpa` - Automação e scraping RPA (ARACHNE)
 - `eng.frontend.agent.md` - `@eng.frontend` - Especialista frontend (neutro de stack): UI, estado, performance, a11y
 - `eng.ux-designer.agent.md` - `@eng.ux-designer` - Especialista UX/UI: heurísticas Nielsen, jornada, microcopy
-- `eng.cybersecurity.agent.md` - `@eng.cybersecurity` - Especialista em cybersecurity e AppSec (SENTINEL): OWASP Top 10, secrets, supply chain, incident response
 
 
 ### Data Agents (1)
@@ -78,12 +77,12 @@ Agentes específicos para fluxos e validações do domínio de Produto.
 
 | Domínio | Agentes | Uso |
 |---------|---------|-----|
-| ⚙️ **Engineering** (main) | 8 | Agent principal, bug hunter, code review, docs, RPA, frontend, UX, cybersecurity |
+| ⚙️ **Engineering** (main) | 7 | Agent principal, bug hunter, code review, docs, RPA, frontend, UX |
 | 🧪 **QA** (sub-eng) | 5 | Test planning, testing (+Cypress), test architect, quality champion, quality strategist |
 | 📊 **Data** (sub-eng) | 1 | Pipelines, contratos de dados, qualidade |
 | 🎯 **Product** | 2 | PM checker, discovery interviewer |
 
-**Total: 16 agents**
+**Total: 15 agents**
 
 ---
 
@@ -99,20 +98,14 @@ Quando um agente estiver atuando em um tema que possui skill correspondente, ele
 ### Mapeamento recomendado (Workflows/Comandos → Skills)
 
 - **eng.docs** → `eng-global-docs-write` (principal) e `jarvis-docs-index` (quando houver índice).
-- **eng.pre-pr** → `eng-qa-test-plan` (cobertura) e `eng-global-docs-write` (docs).
+- **eng.pre-pr** → `eng-qa-planner` (cobertura) e `eng-global-docs-write` (docs).
 - **eng.pr** → `eng-global-pr`.
-- **qa-quality-gate-validation** → `eng-qa-gate`.
-- **Sessão de teste exploratório (charter, risco, achados, bug cards)** → `eng-qa-exploratory`.
-- **Gerar specs Cypress + TypeScript (Page Objects, data-testid, intercept)** → `eng-qa-cypress-e2e`.
-- **Orientar dev sobre cobertura Cypress sem escrever o teste** → `eng-qa-dev-guide`.
-- **Consolidar sessões, bugs e quality gates e gerar relatório de qualidade por período** → `eng-qa-quality-report`.
+- **Estratégia de testes, design de casos, automação, não funcionais, E2E, gestão de defeitos** → `eng-qa` (base) + `QA_SPECIALIZATIONS`.
 - **APIs, auth, workers, filas, caching, banco de dados** → regra `eng.specializations-rules.md` (área backend: `eng-backend` + `BACKEND_SPECIALIZATIONS`).
 - **Componentes, UI, estado, estilos, performance, acessibilidade** → regra `eng.specializations-rules.md` (área frontend: `eng-frontend` + `FRONTEND_SPECIALIZATIONS`).
-- **Web scraping, Puppeteer, extração de dados, ETL** → `eng-automation`.
-- **Converter fluxo manual (produto/dev) em robô Playwright via Stagehand** → `eng-automation-robot-builder`.
+- **RPA, web scraping, Puppeteer, extração de dados, ETL** → `eng-automation` (base) + `AUTOMATION_SPECIALIZATIONS`.
 - **Criar ou manter robô RPA** → `eng.rpa.robot new|update {card}` (workflow).
-- **Testes E2E em linguagem natural, fluxos de usuário, smoke tests pós-deploy** → `eng-qa-e2e`.
-- **Pipelines de dados, ETL/ELT, Glue, Airflow, Athena, bronze/silver/gold, contratos de dados, Great Expectations** → `eng-data-engineer`.
+- **Pipelines de dados, modelagem, qualidade, BI/dashboards, governança, onboarding de fonte, orquestração** → `eng-data` (base) + `DATA_SPECIALIZATIONS`.
 
 ### Ativação Automática (Agents Ativos)
 
@@ -125,11 +118,7 @@ Os agentes ativos ativam automaticamente baseado no contexto dos workflows:
 
 # Exemplo: /eng.pre-pr ativa múltiplos agentes de qualidade
 /eng.pre-pr JIRA-123
-# → @eng.dev-code-reviewer, @eng.qa.test-planner, @eng.docs-writer
-
-# Exemplo: /eng-qa-gate ativa agentes de QA
-/eng-qa-gate
-# → @eng.qa.quality-champion-task-agent valida qualidade
+# → @eng.dev-code-reviewer, @eng.qa.test-planner (base eng-qa), @eng.docs-writer
 ```
 
 ### Invocação Manual

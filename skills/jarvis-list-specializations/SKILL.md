@@ -1,9 +1,9 @@
 ---
 name: jarvis-list-specializations
 description: >
-  Lista as especializações de stack instaladas no projeto (backend e frontend), a área de cada uma
-  e se ela está registrada em BACKEND_SPECIALIZATIONS ou FRONTEND_SPECIALIZATIONS. Só lê: não altera
-  o ENV.md, as listas nem nenhum skill.
+  Lista as especializações instaladas no projeto nas 6 áreas com especialização (backend, frontend,
+  qa, data, automation, platform), a área de cada uma e se está registrada na variável
+  `{ÁREA}_SPECIALIZATIONS` correspondente. Só lê: não altera o ENV.md, as listas nem nenhum skill.
   Trigger: Use para ver quais especializações existem, quais estão registradas e quais skills estão
   sem marcação de área.
 license: AGPL-3.0
@@ -14,7 +14,7 @@ metadata:
   version: "1.0"
   area: global
 # Campos Claude Code-specific (não fazem parte da spec oficial agentskills.io):
-argument-hint: "[backend|frontend]"
+argument-hint: "[backend|frontend|qa|data|automation|platform]"
 disable-model-invocation: false
 ---
 
@@ -26,11 +26,11 @@ Mostrar, sem alterar nada, **todas as especializações instaladas** no projeto,
 
 ## Entrada
 
-- `$ARGUMENTS` - (Opcional) `backend` ou `frontend`, para listar só uma área. Vazio lista as duas.
+- `$ARGUMENTS` - (Opcional) `backend`, `frontend`, `qa`, `data`, `automation` ou `platform`, para listar só uma área. Vazio lista as 6.
 
 ## Recursos
 
-- **ENV**: `$IDE/ENV.md` (listas `BACKEND_SPECIALIZATIONS` e `FRONTEND_SPECIALIZATIONS`)
+- **ENV**: `$IDE/ENV.md` (listas `BACKEND_SPECIALIZATIONS`, `FRONTEND_SPECIALIZATIONS`, `QA_SPECIALIZATIONS`, `DATA_SPECIALIZATIONS`, `AUTOMATION_SPECIALIZATIONS`, `PLATFORM_SPECIALIZATIONS`)
 - **Skills instalados**: `$IDE/skills/*/SKILL.md` (só o frontmatter)
 - **Regra relacionada**: `$IDE/rules/engineering/eng.specializations-rules.md`
 - **Criação**: `$IDE/skills/jarvis-create-specialization/SKILL.md`
@@ -52,11 +52,15 @@ O arquivo ENV.md não existe. Execute /jarvis-init antes de continuar.
 
 ### Passo 1: Ler as listas
 
-Para cada área, leia a lista (aceita vírgula, colchetes, espaços e aspas):
+Para cada uma das 6 áreas, leia a lista (aceita vírgula, colchetes, espaços e aspas):
 
 ```bash
 grep -E '^BACKEND_SPECIALIZATIONS=' $IDE/ENV.md | cut -d= -f2- | tr -d '[]" ' | tr ',' '\n' | grep -v '^$'
 grep -E '^FRONTEND_SPECIALIZATIONS=' $IDE/ENV.md | cut -d= -f2- | tr -d '[]" ' | tr ',' '\n' | grep -v '^$'
+grep -E '^QA_SPECIALIZATIONS=' $IDE/ENV.md | cut -d= -f2- | tr -d '[]" ' | tr ',' '\n' | grep -v '^$'
+grep -E '^DATA_SPECIALIZATIONS=' $IDE/ENV.md | cut -d= -f2- | tr -d '[]" ' | tr ',' '\n' | grep -v '^$'
+grep -E '^AUTOMATION_SPECIALIZATIONS=' $IDE/ENV.md | cut -d= -f2- | tr -d '[]" ' | tr ',' '\n' | grep -v '^$'
+grep -E '^PLATFORM_SPECIALIZATIONS=' $IDE/ENV.md | cut -d= -f2- | tr -d '[]" ' | tr ',' '\n' | grep -v '^$'
 ```
 
 Se uma variável **não existir** no `ENV.md`, informe que ela falta (sem criá-la) e siga com o restante.
@@ -77,18 +81,22 @@ done
 
 ### Passo 3: Classificar
 
-| `metadata.area` | `metadata.stack` | Classificação |
-|---|---|---|
-| `backend` ou `frontend` | presente | **Especialização** da área |
-| `backend` ou `frontend` | ausente | **Skill base** da área (não é especialização) |
-| `global`, `product` ou outra | qualquer | Fora da listagem |
-| ausente | qualquer | **Pendente** (sem marcação de área) |
+As 6 áreas com especialização têm uma skill base fixa: `eng-backend`, `eng-frontend`, `eng-qa`, `eng-data`, `eng-automation`, `eng-platform`.
+
+| `metadata.area` | `metadata.stack` | `name` | Classificação |
+|---|---|---|---|
+| `backend` ou `frontend` | presente | — | **Especialização** da área |
+| `backend` ou `frontend` | ausente | — | **Skill base** da área (não é especialização) |
+| `qa`, `data`, `automation` ou `platform` | — | igual à skill base da área | **Skill base** da área |
+| `qa`, `data`, `automation` ou `platform` | — | diferente da skill base | **Especialização** da área (nunca tem `stack`) |
+| `global`, `product`, `ai`, `devops` ou outra | qualquer | — | Fora da listagem |
+| ausente | qualquer | — | **Pendente** (sem marcação de área) |
 
 ### Passo 4: Cruzar com as listas
 
-- Uma especialização está **registrada** se o `name` consta na lista da sua área.
+- Uma especialização está **registrada** se o `name` consta na lista `{ÁREA}_SPECIALIZATIONS` da sua área.
 - Um item da lista **sem skill instalado** aparece como "registrado sem skill instalado".
-- Se `$ARGUMENTS` for `backend` ou `frontend`, mostre só essa área.
+- Se `$ARGUMENTS` for uma das 6 áreas, mostre só essa área.
 
 ### Skills invocados durante a execução do skill
 
@@ -100,7 +108,7 @@ done
 
 ## Saída
 
-Por área, uma tabela:
+Por área, uma tabela (backend/frontend têm coluna "Stack"; qa/data/automation/platform não):
 
 ```
 ### Backend
@@ -110,12 +118,17 @@ Por área, uma tabela:
 | eng-backend-php | php | ➖ |
 
 Registrado sem skill instalado: eng-backend-naoexiste
+
+### QA
+| Skill | Registrada |
+|-------|------------|
+| eng-qa-planner | ✅ |
 ```
 
 Depois, os **pendentes** em uma única linha:
 
 ```
-Sem marcação de área (pendentes): eng-global-pr, eng-qa-gate, jarvis-context-detect, ...
+Sem marcação de área (pendentes): algum-skill-sem-area, outro-skill-sem-area, ...
 ```
 
 Sem nenhuma especialização instalada, diga: `Nenhuma especialização instalada.`

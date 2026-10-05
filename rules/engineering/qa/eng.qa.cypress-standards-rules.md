@@ -6,7 +6,7 @@ Convenções obrigatórias para a escrita e manutenção da suíte de testes E2E
 Estas regras são carregadas automaticamente pelo `warm-up` quando `HUB=QA`.
 
 > **Fonte de verdade**: este arquivo define o padrão para toda a sessão.
-> A skill `eng-qa-cypress-e2e` assume que estas regras foram carregadas — não as redescobre.
+> A especialização de Cypress registrada em `QA_SPECIALIZATIONS` assume que estas regras foram carregadas — não as redescobre.
 
 ---
 

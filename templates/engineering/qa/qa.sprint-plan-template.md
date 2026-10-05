@@ -30,7 +30,7 @@ status: Draft
 |------|--------|-------|-----------|-------------|------------|
 | {ID} | {título} | Alto | E2E + exploratório | {QA} | |
 | {ID} | {título} | Médio | Quality gate | {QA ou Champion} | |
-| {ID} | {título} | Baixo | Delegar ao dev | {Champion} | eng-qa-dev-guide |
+| {ID} | {título} | Baixo | Delegar ao dev | {Champion} | base eng-qa |
 
 ---
 

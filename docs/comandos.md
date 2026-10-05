@@ -63,22 +63,8 @@ Fonte: `workflows/engineering/`. Guias didáticos: [engenharia/README.md](./enge
 | Comando                           | O que faz                                           | Workflow |
 | --------------------------------- | --------------------------------------------------- | --- |
 | [`/eng.qa-refinement-entry`](./engenharia/eng.qa-refinement-entry.md) | Estratégia de testes a partir de spec, PRD ou FRD | [workflow](../workflows/engineering/qa/eng.qa-refinement-entry.md) |
-| [`/eng.qa-quality-gate-validation`](./engenharia/eng.qa-quality-gate-validation.md) | Quality gate da tech spec antes do breakdown | [workflow](../workflows/engineering/qa/eng.qa-quality-gate-validation.md) |
-| [`/eng.qa-e2e-test-generation`](./engenharia/eng.qa-e2e-test-generation.md) | Gera testes E2E Cypress | [workflow](../workflows/engineering/qa/eng.qa-e2e-test-generation.md) |
-| [`/eng.qa-dev-quality-guide`](./engenharia/eng.qa-dev-quality-guide.md) | Orienta devs sobre cobertura de testes | [workflow](../workflows/engineering/qa/eng.qa-dev-quality-guide.md) |
-| [`/eng.qa-exploratory-session`](./engenharia/eng.qa-exploratory-session.md) | Sessão de teste exploratório estruturada | [workflow](../workflows/engineering/qa/eng.qa-exploratory-session.md) |
 | [`/eng.qa-sprint-planning`](./engenharia/eng.qa-sprint-planning.md) | Capacidade de QA da sprint e distribuição por risco | [workflow](../workflows/engineering/qa/eng.qa-sprint-planning.md) |
 | [`/eng.qa-release-signoff`](./engenharia/eng.qa-release-signoff.md) | Sign-off pré-deploy (GO/NO-GO) | [workflow](../workflows/engineering/qa/eng.qa-release-signoff.md) |
-| [`/eng.qa-quality-report`](./engenharia/eng.qa-quality-report.md) | Relatório de qualidade da sprint ou release | [workflow](../workflows/engineering/qa/eng.qa-quality-report.md) |
-
-### Segurança
-
-| Comando                  | O que faz                                                | Workflow |
-| ------------------------ | -------------------------------------------------------- | --- |
-| [`/eng.security-audit`](./engenharia/eng.security-audit.md) | Auditoria (OWASP, secrets, supply chain) | [workflow](../workflows/engineering/eng.security-audit.md) |
-| [`/eng.security-review`](./engenharia/eng.security-review.md) | Review de segurança em PRs (gate pré-merge) | [workflow](../workflows/engineering/eng.security-review.md) |
-| [`/eng.security-incident`](./engenharia/eng.security-incident.md) | Resposta a incidentes (CVEs, vulnerabilidades, breaches) | [workflow](../workflows/engineering/eng.security-incident.md) |
-| [`/eng.security-pipeline`](./engenharia/eng.security-pipeline.md) | Pipeline completo: threat model, audit, triage e patch | [workflow](../workflows/engineering/eng.security-pipeline.md) |
 
 ### Fluxos especializados
 

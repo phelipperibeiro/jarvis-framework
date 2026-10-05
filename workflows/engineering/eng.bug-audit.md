@@ -62,7 +62,7 @@ Onde [escopo] pode ser:
 | Passo | Skill | Condição |
 |-------|-------|----------|
 | Fase 0 – Análise de Contexto (CDD) | `/jarvis-context-detect` | Se existir uma sessão ativa (e `ENABLE_CDD=true` no ENV.md) |
-| Fase 5 – Ticketing › 5.1 | `/eng-qa-bug-report create` | Para cada problema P0 e P1 encontrado no audit |
+| Fase 5 – Ticketing › 5.1 | `/eng-qa` + `QA_SPECIALIZATIONS` | Para estruturar cada problema P0 e P1 encontrado no audit antes de abrir o card |
 
 ---
 
@@ -463,19 +463,9 @@ echo "✅ Relatório gerado em: $SESSIONS_DIR/eng/bug-audit-$(date +%Y%m%d-%H%M%
 
 ## Fase 5 – Ticketing (Criação de Cards no Task Manager)
 
-### 5.1 Usar Skill eng-qa-bug-report
+### 5.1 Estruturar e abrir o card
 
-Para cada problema P0 e P1:
-
-```bash
-/eng-qa-bug-report create \
-  --title="{título do bug}" \
-  --category="{categoria}" \
-  --severity="{P0|P1|P2|P3}" \
-  --location="{arquivo:linha}" \
-  --description="{descrição}" \
-  --suggestion="{sugestão de correção}"
-```
+Para cada problema P0 e P1, use a base [eng-qa](../../skills/eng-qa/SKILL.md) + a especialização registrada em `QA_SPECIALIZATIONS` (se houver uma) — tema 14, Gestão de Testes e de Defeitos — para estruturar o achado, e abra o card no `$TASK_MANAGER` do projeto com a estrutura da seção 5.2.
 
 ### 5.2 Estrutura dos Cards Criados
 
@@ -576,7 +566,7 @@ Cada card deve conter:
 - **eng.debug**: Para investigar bugs específicos encontrados no audit
 - **eng.work**: Para implementar correções
 - **eng.pr**: Para submeter correções
-- **eng-qa-gate**: Para validar correções antes de merge
+- **eng.pre-pr**: Para validar correções antes de merge
 
 ---
 

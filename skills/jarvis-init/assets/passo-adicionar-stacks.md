@@ -6,7 +6,11 @@
 
 Deixar o projeto especializado em torno de 10 minutos (tempo de **referência**, não limite; o passo nunca é interrompido por passar dele), sem que a pessoa descreva a stack à mão: o framework lê o workspace, mostra as stacks que encontrou e, para cada uma, sugere registrar o skill que já existe ou criar um novo.
 
-Vale **só para backend e frontend**.
+A **detecção por código e a criação de skill novo** (9.4-9.6) valem **só para backend e frontend** —
+são as únicas áreas com universo de stack aberto. **Listar o que já está instalado e registrar
+direto** (9.3) vale para as **6 áreas** com especialização: backend, frontend, qa, data, automation
+e platform. As 4 últimas têm um conjunto fixo de skills pré-construídos (sem `metadata.stack`,
+sem detecção por manifesto, sem criador) — só listar e registrar o que a pessoa aceitar.
 
 ## Regras gerais
 
@@ -30,9 +34,10 @@ Vale **só para backend e frontend**.
 
 ## 9.1 Conferir as variáveis das listas
 
-Leia o `$IDE/ENV.md` e confirme que `BACKEND_SPECIALIZATIONS` e `FRONTEND_SPECIALIZATIONS` existem (vazias valem).
+Leia o `$IDE/ENV.md` e confirme que as **6 variáveis** existem (vazias valem):
+`BACKEND_SPECIALIZATIONS`, `FRONTEND_SPECIALIZATIONS`, `QA_SPECIALIZATIONS`, `DATA_SPECIALIZATIONS`, `AUTOMATION_SPECIALIZATIONS`, `PLATFORM_SPECIALIZATIONS`.
 
-- Se **faltar** uma delas, acrescente-a **vazia** ao final do `ENV.md` (com a mesma linha do `templates/ENV-template.md`) **antes** de oferecer o passo. Não altere nenhuma outra linha.
+- Se **faltar** alguma, acrescente-a ao final do `ENV.md` com o valor padrão do `templates/ENV-template.md` (vazia para todas, **exceto `QA_SPECIALIZATIONS=eng-qa-planner`**) **antes** de oferecer o passo. Não altere nenhuma outra linha.
 - Se existirem, siga.
 
 ## 9.2 Oferecer o passo
@@ -40,19 +45,23 @@ Leia o `$IDE/ENV.md` e confirme que `BACKEND_SPECIALIZATIONS` e `FRONTEND_SPECIA
 Pergunte, em texto:
 
 ```
-Deseja adicionar as stacks do projeto agora?
-(Leva em torno de 10 minutos como referência; só backend e frontend.)
+Deseja adicionar especializações ao projeto agora?
+(Leva em torno de 10 minutos como referência.)
 
-A: Sim, adicionar as stacks
-B: Pular (o projeto usa só a skill base; dá para adicionar depois com /jarvis-create-specialization)
+A: Sim, adicionar especializações
+B: Pular (o projeto usa só as skills base; dá para adicionar depois com
+   /jarvis-list-specializations e /jarvis-create-specialization)
 ```
 
 - **B (pular):** informe que as listas **ficam como estão** e siga para o passo 10. Nada é alterado.
 - **A:** siga para o 9.3.
 
-## 9.3 Listar as especializações instaladas
+## 9.3 Listar as especializações instaladas (6 áreas)
 
-Leia o frontmatter de cada `$IDE/skills/*/SKILL.md` (comando de comparação em [sinais-de-stack.md](sinais-de-stack.md)) e mostre as **especializações**: skills com `metadata.area` de backend ou frontend **e** `metadata.stack`, estejam ou não registradas nas listas.
+Leia o frontmatter de cada `$IDE/skills/*/SKILL.md` (comando de comparação em [sinais-de-stack.md](sinais-de-stack.md)) e mostre as **especializações das 6 áreas**, estejam ou não registradas nas listas:
+
+- Backend e frontend: skills com `metadata.area` correspondente **e** `metadata.stack`
+- QA, data, automation, platform: skills com `metadata.area` correspondente **e sem** `metadata.stack` (exceto a própria skill base da área)
 
 ```
 ### Backend
@@ -62,11 +71,27 @@ Leia o frontmatter de cada `$IDE/skills/*/SKILL.md` (comando de comparação em 
 
 ### Frontend
 (nenhuma instalada)
+
+### QA
+| Skill | Registrada |
+|-------|------------|
+| eng-qa-planner | ✅ (padrão) |
+
+### Data
+(nenhuma instalada)
+
+### Automation
+(nenhuma instalada)
+
+### Platform
+(nenhuma instalada)
 ```
 
-Pergunte: **"Quer registrar alguma delas agora, sem passar pela detecção?"** Se sim, registre pelo 9.6 e siga.
+Pergunte: **"Quer registrar alguma delas agora?"** Se sim, registre pelo 9.6 e siga.
 
-## 9.4 Detectar as stacks do workspace (só leitura)
+> Sub-passos 9.4-9.6 (detecção por código e criação de skill novo) valem **só para backend e frontend** — para QA/data/automation/platform, este sub-passo 9.3 já é o fluxo inteiro (listar + registrar).
+
+## 9.4 Detectar as stacks do workspace (só leitura, só backend/frontend)
 
 **Quais projetos analisar:**
 
@@ -112,31 +137,35 @@ Para backend / php: não há skill especializado. Sugiro criar (eng-backend-php)
 
 A pessoa escolhe quais sugestões aceitar. **O que ela não aceita não é alterado.**
 
-## 9.6 Aplicar o que foi aceito (uma stack por vez)
+## 9.6 Aplicar o que foi aceito (um item por vez)
 
-**Registrar um skill existente:**
+**Registrar um skill existente (qualquer uma das 6 áreas):**
 
-1. Leia a linha `VAR=...` da área e separe os itens (aceita colchetes, espaços e aspas):
-   `grep -E '^BACKEND_SPECIALIZATIONS=' $IDE/ENV.md | cut -d= -f2- | tr -d '[]" ' | tr ',' '\n' | grep -v '^$'`
+1. Leia a linha `{VAR}=...` da área (`BACKEND_SPECIALIZATIONS`, `FRONTEND_SPECIALIZATIONS`, `QA_SPECIALIZATIONS`, `DATA_SPECIALIZATIONS`, `AUTOMATION_SPECIALIZATIONS` ou `PLATFORM_SPECIALIZATIONS`) e separe os itens (aceita colchetes, espaços e aspas):
+   `grep -E '^{VAR}=' $IDE/ENV.md | cut -d= -f2- | tr -d '[]" ' | tr ',' '\n' | grep -v '^$'`
 2. Se o nome do skill **não está** na lista: acrescente ao **final**. Os demais itens ficam como estavam; só o formato da linha é normalizado (**separado por vírgula, sem colchetes**).
 3. Se **já está**: não duplique e avise.
 4. Edite **só a linha dessa variável** e **releia** o `ENV.md` para confirmar.
 
-**Criar um skill novo:** chame `/jarvis-create-specialization {área} {stack}`. O criador lê o projeto, mostra o skill para revisão e só grava e registra depois da confirmação da pessoa. Faça **uma stack por vez** e espere o criador terminar antes da próxima.
+**Criar um skill novo (só backend/frontend):** chame `/jarvis-create-specialization {área} {stack}`. O criador lê o projeto, mostra o skill para revisão e só grava e registra depois da confirmação da pessoa. Faça **uma stack por vez** e espere o criador terminar antes da próxima. Para QA/data/automation/platform não há criador — só registrar o que já existe (9.6, passo 1-4).
 
 ## 9.7 Resumo final
 
 Mostre o que ficou configurado:
 
 ```
-✅ Stacks configuradas
+✅ Especializações configuradas
 
 📋 BACKEND_SPECIALIZATIONS={lista atual ou "(vazia: só a skill base)"}
 📋 FRONTEND_SPECIALIZATIONS={lista atual ou "(vazia: só a skill base)"}
+📋 QA_SPECIALIZATIONS={lista atual ou "(vazia: só a skill base)"}
+📋 DATA_SPECIALIZATIONS={lista atual ou "(vazia: só a skill base)"}
+📋 AUTOMATION_SPECIALIZATIONS={lista atual ou "(vazia: só a skill base)"}
+📋 PLATFORM_SPECIALIZATIONS={lista atual ou "(vazia: só a skill base)"}
 
 Registradas: {nomes registrados agora, ou "nenhuma"}
 Criadas:     {nomes criados agora, ou "nenhuma"}
-Puladas:     {stacks que a pessoa não aceitou, ou "nenhuma"}
+Puladas:     {itens que a pessoa não aceitou, ou "nenhum"}
 
 Para acrescentar outra especialização a qualquer momento: /jarvis-create-specialization
 Para ver o que está instalado e registrado: /jarvis-list-specializations

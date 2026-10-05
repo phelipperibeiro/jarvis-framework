@@ -1,6 +1,6 @@
 > **Applies to:** HUB: all | POSITION: all | AREA: ENGINEERING | SQUAD: all
 
-# Regras de Especializações por Stack
+# Regras de Especializações por Área
 
 ## Objetivo
 
@@ -8,12 +8,25 @@ Fazer todo comando `eng.*` carregar o **skill base** da área mais as **especial
 
 ## Escopo
 
-Vale para qualquer comando `eng.*` e seus agentes, **ao iniciar um trabalho de backend** (APIs, autenticação, workers, banco de dados, servidor) **ou de frontend** (componentes, interface, estilos, estado). Se o trabalho envolve as duas áreas, aplique a regra a cada uma. Se não é de nenhuma das duas, não carregue nada.
+Vale para qualquer comando `eng.*` e seus agentes, ao iniciar um trabalho que seja claramente de uma destas áreas. Se o trabalho envolve mais de uma, aplique a regra a cada uma. Se não é de nenhuma, não carregue nada.
+
+| Área | Indicadores de quando se aplica |
+|------|----------------------------------|
+| backend | APIs, autenticação, workers, banco de dados, servidor |
+| frontend | Componentes, interface, estilos, estado |
+| qa | Testes, cobertura, quality gates, planejamento de testes |
+| data | Pipelines, ETL/ELT, modelagem, contratos de dados, qualidade de dados |
+| automation | RPA (robôs, automação de browser/fluxos de trabalho), web scraping, crawling, parsing |
+| platform | Infraestrutura, cloud, IaC, contêineres, CI/CD, observabilidade, SRE, segurança de infra, FinOps |
 
 | Área | Variável no `ENV.md` | Skill base |
 |------|----------------------|------------|
 | backend | `BACKEND_SPECIALIZATIONS` | `eng-backend` |
 | frontend | `FRONTEND_SPECIALIZATIONS` | `eng-frontend` |
+| qa | `QA_SPECIALIZATIONS` | `eng-qa` |
+| data | `DATA_SPECIALIZATIONS` | `eng-data` |
+| automation | `AUTOMATION_SPECIALIZATIONS` | `eng-automation` |
+| platform | `PLATFORM_SPECIALIZATIONS` | `eng-platform` |
 
 ## Regras
 
@@ -53,8 +66,9 @@ Vale para qualquer comando `eng.*` e seus agentes, **ao iniciar um trabalho de b
 
 ## Exceções
 
-- Áreas além de backend e frontend não têm lista (evolução futura).
-- Skills de outras áreas não passam por esta regra.
+- `ai`, `devops`, `global` e `product` ainda não têm lista — fora do escopo desta regra até que apareça necessidade real (evolução futura).
+- Skills dessas áreas não passam por esta regra.
+- A área `security` foi descontinuada (2026-10-05): não existe mais skill própria nem lista. Segurança de infraestrutura e fundamentos de segurança da informação entram em `PLATFORM_SPECIALIZATIONS`; segurança de código de aplicação já é padrão embutido em `eng-backend`/`eng-frontend`. Ver `skills/security-skills-deleted.md`.
 
 ## Referências
 

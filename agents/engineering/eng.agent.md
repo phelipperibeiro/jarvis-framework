@@ -175,17 +175,13 @@ Para detecção automática de contexto de tarefas:
 - Uso: `/jarvis-context-detect [jira-key]` ou `/jarvis-context-detect --override tipo=hotfix`
 - Chamado automaticamente pelo workflow `eng.start`
 
-### eng-devops-performance-engineer
-Quando a tarefa envolver análise ou otimização de performance, observabilidade, gargalos, latência, load testing ou escalabilidade:
-- Arquivo: `$IDE/skills/eng-devops-performance-engineer/SKILL.md`
+### eng-platform (performance)
+Quando a tarefa envolver análise ou otimização de performance, observabilidade, gargalos, latência, load testing, chaos engineering ou cache multi-camada — temas 7, 14, 15 e 16 da base de platform:
+- Arquivo: `$IDE/skills/eng-platform/SKILL.md`
 
-### eng-ai-engineer
+### eng-ai
 Quando a tarefa envolver features com LLM, sistemas RAG, agentes de IA, chatbots, embeddings, busca vetorial ou integrações com modelos de IA:
-- Arquivo: `$IDE/skills/eng-ai-engineer/SKILL.md`
-
-### eng-global-browser-extension-builder
-Quando a tarefa envolver criação ou manutenção de extensões de navegador (Chrome, Firefox, Manifest V3, content scripts, popup UI):
-- Arquivo: `$IDE/skills/eng-global-browser-extension-builder/SKILL.md`
+- Arquivo: `$IDE/skills/eng-ai/SKILL.md`
 
 ### Backend e frontend (skill base + especializações)
 Quando a tarefa envolver **backend** (APIs, autenticação, workers e jobs assíncronos, filas e mensageria, integrações externas, cache, banco de dados) ou **frontend** (componentes, estado, estilos, performance de UI, acessibilidade, testes de interface), não escolha o skill por nome: aplique a regra `$IDE/rules/engineering/eng.specializations-rules.md` para a área envolvida. Ela carrega o skill base e as especializações que o projeto registrou no `ENV.md`:
@@ -199,21 +195,15 @@ Quando a tarefa envolver web scraping, extração de dados de páginas web, auto
 - Arquivo: `$IDE/skills/eng-automation/SKILL.md`
 - Workflows relacionados: `eng.work` (implementação de scrapers)
 
-### eng-automation-robot-builder
-Quando o produto ou dev descrever um fluxo manual em linguagem natural que precisa virar automação (robô), ou quando for necessário criar um script Playwright sem conhecer seletores do site. Usa Stagehand para exploração e `observe()` para descoberta de seletores — o output final é Playwright TypeScript puro, sem dependência de LLM em runtime:
-- Arquivo: `$IDE/skills/eng-automation-robot-builder/SKILL.md`
-- Workflows relacionados: `eng.work` (criação de scripts de automação)
-
-### eng-qa-e2e
-Quando o QA precisar criar testes E2E de sistema em linguagem natural, validar fluxos completos de usuário ou gerar testes resilientes a mudanças de UI. Usa Stagehand — testes permanecem em linguagem natural (sem seletores hardcoded). Suporta exportação para Cypress quando necessário para CI/CD:
-- Arquivo: `$IDE/skills/eng-qa-e2e/SKILL.md`
+### eng-qa
+Quando precisar planejar estratégia de testes, validar fluxos completos de usuário ou cobrir testes E2E — base de QA, complementada pela especialização registrada em `QA_SPECIALIZATIONS`:
+- Arquivo: `$IDE/skills/eng-qa/SKILL.md`
 - Workflows relacionados: `eng.pr` (validação pré-PR), `eng.pre-pr` (cobertura de testes E2E)
 
-### eng-security-cybersecurity
-Quando a tarefa envolver segurança de aplicação, auditoria OWASP, secrets management, sanitização de inputs, headers de segurança (CSP, HSTS, CORS), supply chain (npm audit, lockfile), compliance (LGPD/GDPR) ou resposta a CVEs/incidentes de segurança:
-- Arquivo: `$IDE/skills/eng-security-cybersecurity/SKILL.md`
-- Agente dedicado: `$IDE/agents/engineering/eng.cybersecurity.agent.md` (SENTINEL) — para auditorias completas e incident response
-- Workflows relacionados: `eng.security-audit` (auditoria proativa), `eng.security-incident` (resposta a CVEs), `eng.security-review` (gate pré-merge)
+### eng-platform
+Quando a tarefa envolver segurança de infraestrutura, fundamentos de segurança da informação (risco, ameaças, identidade, resposta a incidente, GRC, privacidade) ou auditoria de dependências/supply chain — base de platform, complementada pela especialização registrada em `PLATFORM_SPECIALIZATIONS`:
+- Arquivo: `$IDE/skills/eng-platform/SKILL.md` (temas 9 e 13)
+- Segurança de código de aplicação (OWASP, inputs, auth) já é padrão embutido em `eng-backend`/`eng-frontend`
 
 ---
 

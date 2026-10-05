@@ -20,10 +20,10 @@ evitando leitura desnecessária de arquivos e economizando tokens.
 |-------|-------|----------|
 | Passo 0.5 › 2. Para cada tecnologia identificada | `context7` (MCP: `resolve-library-id`, `query-docs`) | Se houver variável de stack com valor no ENV.md (uma consulta por tecnologia identificada); sem variável de stack, pula silenciosamente |
 | Passo 2 — Sincronizar Documentação Central | `/jarvis-docs-central` | Se `CENTRAL_DOCS_REPO` estiver configurado no ENV.md (Modo 1: Buscar Docs, via Skill tool) |
-| Passo 4 › Menu TECH LEAD › opções A a K | `/eng.start`, `/eng.debug`, `/eng.create-ard`, `/eng.create-ard-from-code`, `/eng.create-rfc`, `/eng.build-tech-spec`, `/eng.review`, `/eng.docs`, `/eng.security-audit`, `/eng.security-review`, `/eng.security-incident` | Se `POSITION=TECH LEAD` e `AREA=ENGINEERING` (menu dedicado) e o usuário escolher uma das opções (cada opção chama o workflow correspondente, na ordem do menu e do roteamento do Passo 4; `Outro` não chama workflow) |
-| Passo 4 › Menu CTO › opções A a F | `/eng.security-audit`, `/eng.security-incident`, `/eng.review`, `/eng.create-ard`, `/eng.create-rfc`, `/eng.build-tech-spec` | Se `POSITION` for CTO ou equivalente (menu dedicado, para qualquer `AREA`) e o usuário escolher uma das opções (cada opção chama o workflow correspondente, na ordem do menu e do roteamento do Passo 4; `Outro` não chama workflow) |
-| Passo 4 › Menu ENGINEERING + DATA › opções A a F | `/data.new-pipeline`, `/eng-data-onboard`, `/eng-data-debug`, `/eng-data-bi`, `/eng-data-orchestrator`, `/data.contract` | Se `AREA=ENGINEERING` e `HUB=DATA` e o usuário escolher uma das opções (cada opção chama o workflow correspondente, na ordem do menu e do roteamento do Passo 4; `Outro` não chama workflow) |
-| Passo 4 › Menu ENGINEERING + QA › opções A a H | `/eng.qa-refinement-entry`, `/eng.qa-e2e-test-generation`, `/eng.qa-exploratory-session`, `/eng.qa-quality-gate-validation`, `/eng.qa-quality-report`, `/eng.qa-dev-quality-guide`, `/eng.qa-sprint-planning`, `/eng.qa-release-signoff` | Se `AREA=ENGINEERING` e (`HUB=QA` ou Quality Champion) e o usuário escolher uma das opções (cada opção chama o workflow correspondente, na ordem do menu e do roteamento do Passo 4; `Outro` não chama workflow) |
+| Passo 4 › Menu TECH LEAD › opções A a H | `/eng.start`, `/eng.debug`, `/eng.create-ard`, `/eng.create-ard-from-code`, `/eng.create-rfc`, `/eng.build-tech-spec`, `/eng.review`, `/eng.docs` | Se `POSITION=TECH LEAD` e `AREA=ENGINEERING` (menu dedicado) e o usuário escolher uma das opções (cada opção chama o workflow correspondente, na ordem do menu e do roteamento do Passo 4; `Outro` não chama workflow) |
+| Passo 4 › Menu CTO › opções A a D | `/eng.review`, `/eng.create-ard`, `/eng.create-rfc`, `/eng.build-tech-spec` | Se `POSITION` for CTO ou equivalente (menu dedicado, para qualquer `AREA`) e o usuário escolher uma das opções (cada opção chama o workflow correspondente, na ordem do menu e do roteamento do Passo 4; `Outro` não chama workflow) |
+| Passo 4 › Menu ENGINEERING + DATA › opções A a C | `/data.new-pipeline`, `/eng-data`, `/data.contract` | Se `AREA=ENGINEERING` e `HUB=DATA` e o usuário escolher uma das opções (cada opção chama o workflow correspondente, na ordem do menu e do roteamento do Passo 4; `Outro` não chama workflow) |
+| Passo 4 › Menu ENGINEERING + QA › opções A a C | `/eng.qa-refinement-entry`, `/eng.qa-sprint-planning`, `/eng.qa-release-signoff` | Se `AREA=ENGINEERING` e (`HUB=QA` ou Quality Champion) e o usuário escolher uma das opções (cada opção chama o workflow correspondente, na ordem do menu e do roteamento do Passo 4; `Outro` não chama workflow) |
 | Passo 4 › Menu ENGINEERING (qualquer HUB) › opções A a I | `/eng.start`, `/eng.debug`, `/eng.create-ard`, `/eng.create-ard-from-code`, `/eng.create-rfc`, `/eng.build-tech-spec`, `/eng.review`, `/eng.docs`, `/eng.rpa.robot` | Se `AREA=ENGINEERING` (qualquer HUB, sem menu mais específico) e o usuário escolher uma das opções (cada opção chama o workflow correspondente, na ordem do menu e do roteamento do Passo 4; `Outro` não chama workflow) |
 | Passo 4 › Menu PRODUCT › opções A a D | `/prod.spec.prd`, `/prod.spec.frd`, `/prod.spec.issue`, `/prod.spec.epic` | Se `AREA=PRODUCT` (ou `POSITION` PM/TPM/GPM em `AREA=ENGINEERING`) e o usuário escolher uma das opções (cada opção chama o workflow correspondente, na ordem do menu e do roteamento do Passo 4; `Outro` não chama workflow) |
 | Passo 4 › Menu genérico › opção B | `/eng.docs` | Se `AREA` não tiver menu próprio (menu genérico) e o usuário escolher a opção B (se existir; senão criar diretamente) |
@@ -279,12 +279,11 @@ O menu é determinado pelos valores de `POSITION`, `AREA` e `HUB` lidos do ENV.m
 ### Menu para POSITION=TECH LEAD (sobrepõe menu genérico de ENGINEERING)
 
 > ℹ️ Usar este menu quando `POSITION=TECH LEAD` e `AREA=ENGINEERING`.
-> O Tech Lead é responsável pelos gates de qualidade e segurança do time — workflows de segurança aparecem em destaque.
+> O Tech Lead é responsável pelos gates de qualidade do time.
 
 ```
 Como você quer continuar?
 
-── Engenharia ──────────────────────────────────────────────
 A: Iniciar sessão para codar (eng.start)
 B: Debug / Investigar problema (eng.debug)
 C: Criar ou iterar ARD (eng.create-ard)
@@ -293,11 +292,7 @@ E: Abrir ou iterar RFC (eng.create-rfc)
 F: Fazer tech spec (eng.build-tech-spec)
 G: Revisar código / PR (eng.review)
 H: Documentar (eng.docs)
-── Segurança ───────────────────────────────────────────────
-I: Auditar segurança do repositório (eng.security-audit)
-J: Revisar PR com foco em segurança (eng.security-review)
-K: Responder incidente de segurança (eng.security-incident)
-L: Outro
+I: Outro
 ```
 
 Roteamento:
@@ -309,40 +304,31 @@ Roteamento:
 - F → `$FLOWS_FOLDER/engineering/eng.build-tech-spec.md`
 - G → `$FLOWS_FOLDER/engineering/eng.review.md`
 - H → `$FLOWS_FOLDER/engineering/eng.docs.md`
-- I → `$FLOWS_FOLDER/engineering/eng.security-audit.md`
-- J → `$FLOWS_FOLDER/engineering/eng.security-review.md`
-- K → `$FLOWS_FOLDER/engineering/eng.security-incident.md`
-- L → perguntar e rotear dinamicamente
+- I → perguntar e rotear dinamicamente
 
 ---
 
 ### Menu para POSITION=CTO (sobrepõe AREA)
 
 > ℹ️ Usar este menu para qualquer `AREA` quando `POSITION` é equivalente a CTO.
-> Foco estratégico: segurança, arquitetura, risco e decisões de alto impacto — sem granularidade operacional.
+> Foco estratégico: arquitetura, risco e decisões de alto impacto — sem granularidade operacional.
 
 ```
 Como você quer continuar?
 
-── Segurança & Risco ────────────────────────────────────────
-A: Auditar segurança do repositório (eng.security-audit)
-B: Responder incidente de segurança (eng.security-incident)
-── Arquitetura & Estratégia ────────────────────────────────
-C: Revisar código / PR estratégico (eng.review)
-D: Criar ou iterar ARD (eng.create-ard)
-E: Abrir ou iterar RFC (eng.create-rfc)
-F: Fazer tech spec (eng.build-tech-spec)
-G: Outro
+A: Revisar código / PR estratégico (eng.review)
+B: Criar ou iterar ARD (eng.create-ard)
+C: Abrir ou iterar RFC (eng.create-rfc)
+D: Fazer tech spec (eng.build-tech-spec)
+E: Outro
 ```
 
 Roteamento:
-- A → `$FLOWS_FOLDER/engineering/eng.security-audit.md`
-- B → `$FLOWS_FOLDER/engineering/eng.security-incident.md`
-- C → `$FLOWS_FOLDER/engineering/eng.review.md`
-- D → `$FLOWS_FOLDER/engineering/eng.create-ard.md`
-- E → `$FLOWS_FOLDER/engineering/eng.create-rfc.md`
-- F → `$FLOWS_FOLDER/engineering/eng.build-tech-spec.md`
-- G → perguntar e rotear dinamicamente
+- A → `$FLOWS_FOLDER/engineering/eng.review.md`
+- B → `$FLOWS_FOLDER/engineering/eng.create-ard.md`
+- C → `$FLOWS_FOLDER/engineering/eng.create-rfc.md`
+- D → `$FLOWS_FOLDER/engineering/eng.build-tech-spec.md`
+- E → perguntar e rotear dinamicamente
 
 ---
 
@@ -354,22 +340,16 @@ Roteamento:
 Como você quer continuar?
 
 A: Criar pipeline novo (data.new-pipeline)
-B: Integrar fonte de dados nova (eng-data-onboard)
-C: Diagnosticar falha em pipeline (eng-data-debug)
-D: Dashboard ou query analítica (eng-data-bi)
-E: Criar ou depurar DAG / orquestração (eng-data-orchestrator)
-F: Criar contrato de dados (data.contract)
-G: Outro
+B: Trabalhar com dados — onboarding de fonte, debug, dashboard/BI ou orquestração (eng-data)
+C: Criar contrato de dados (data.contract)
+D: Outro
 ```
 
 Roteamento:
 - A → `$FLOWS_FOLDER/engineering/data/data.new-pipeline.md`
-- B → skill `eng-data-onboard`
-- C → skill `eng-data-debug`
-- D → skill `eng-data-bi`
-- E → skill `eng-data-orchestrator`
-- F → `$FLOWS_FOLDER/engineering/data/data.contract.md`
-- G → perguntar e rotear dinamicamente
+- B → skill `eng-data`
+- C → `$FLOWS_FOLDER/engineering/data/data.contract.md`
+- D → perguntar e rotear dinamicamente
 
 ---
 
@@ -389,26 +369,16 @@ Roteamento:
 Como você quer continuar?
 
 A: Mapear estratégia de testes para uma feature (qa.refinement-entry)
-B: Gerar testes E2E para uma feature (qa.e2e-test-generation)
-C: Sessão de teste exploratório (qa.exploratory-session)
-D: Validar quality gate de uma spec (eng.qa-quality-gate-validation)
-E: Gerar relatório de qualidade (qa.quality-report)
-F: Orientar dev sobre cobertura de testes (qa.dev-quality-guide)
-G: Planejar capacidade QA da sprint (qa.sprint-planning)
-H: Sign-off de release (qa.release-signoff)
-I: Outro
+B: Planejar capacidade QA da sprint (qa.sprint-planning)
+C: Sign-off de release (qa.release-signoff)
+D: Outro
 ```
 
 Roteamento:
 - A → `$FLOWS_FOLDER/engineering/qa/eng.qa-refinement-entry.md`
-- B → `$FLOWS_FOLDER/engineering/qa/eng.qa-e2e-test-generation.md`
-- C → `$FLOWS_FOLDER/engineering/qa/eng.qa-exploratory-session.md`
-- D → `$FLOWS_FOLDER/engineering/qa/eng.qa-quality-gate-validation.md`
-- E → `$FLOWS_FOLDER/engineering/qa/eng.qa-quality-report.md`
-- F → `$FLOWS_FOLDER/engineering/qa/eng.qa-dev-quality-guide.md`
-- G → `$FLOWS_FOLDER/engineering/qa/eng.qa-sprint-planning.md`
-- H → `$FLOWS_FOLDER/engineering/qa/eng.qa-release-signoff.md`
-- I → perguntar e rotear dinamicamente
+- B → `$FLOWS_FOLDER/engineering/qa/eng.qa-sprint-planning.md`
+- C → `$FLOWS_FOLDER/engineering/qa/eng.qa-release-signoff.md`
+- D → perguntar e rotear dinamicamente
 
 ---
 
@@ -479,8 +449,8 @@ Roteamento:
 
 | POSITION semântico | Ajuste no menu |
 |-------------------|----------------|
-| CTO e equivalentes | Menu estratégico com segurança em destaque — ver seção "Menu para POSITION=CTO" acima |
-| TECH LEAD em AREA=ENGINEERING | Menu completo de engenharia + workflows de segurança — ver seção "Menu para POSITION=TECH LEAD" acima |
+| CTO e equivalentes | Menu estratégico (arquitetura e risco) — ver seção "Menu para POSITION=CTO" acima |
+| TECH LEAD em AREA=ENGINEERING | Menu completo de engenharia — ver seção "Menu para POSITION=TECH LEAD" acima |
 | PM, TPM, GPM em AREA=ENGINEERING | Mostrar menu PRODUCT mesmo estando na área ENGINEERING |
 
 ---
@@ -566,3 +536,5 @@ Se `ENABLE_CDD=false` ou não definido, prossiga diretamente para o workflow.
 | 1.5 | Opção de robô RPA no menu de ENGINEERING (skill técnica, sem squad dedicado) |
 | 1.6 | Menu específico para `POSITION=TECH LEAD`: engenharia completa + workflows de segurança em destaque; Menu para `POSITION=CTO`: foco estratégico em segurança, arquitetura e risco |
 | 1.7 | **Bugfix**: menus de POSITION movidos para antes dos menus de AREA — corrige TL recebendo menu genérico sem opções de segurança; bloco de precedência explícita no início do Passo 4 |
+| 1.8 | Removidas as opções de workflow de segurança dos menus de TECH LEAD e CTO (eng.security-audit/review/incident foram descontinuados — ver `skills/security-skills-deleted.md`) |
+| 1.9 | Menu de `HUB=DATA` consolidado: `eng-data-onboard`/`eng-data-debug`/`eng-data-bi`/`eng-data-orchestrator` foram descontinuados — virou uma única opção (`eng-data`, a base nova) — ver `skills/data-skills-deleted.md` |
