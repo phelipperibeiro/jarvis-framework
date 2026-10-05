@@ -89,11 +89,12 @@ test("listRulesForProfile: AGENTS.md nunca é filtrado, rtk é opt-in, sem bloco
 // Linha de base de rules/ para 4 perfis, sem RTK (architecture.md, seção 1.1), já sem as 7 rules de etapa
 // (92.260 B), movidas para rules-on-demand/ na etapa 2 da #54 (e com o rules/AGENTS.md 691 B maior, por documentar as duas pastas). Mudam quando uma rule é adicionada, movida ou editada.
 // +26 B em cada perfil na #64 (generalização de exemplos de domínio em eng.docs-scraping-rules.md).
+// +129 B em cada perfil na #67 (eng.bump-rules.md corrigido para package.json/npm + referência ao CHANGELOG.md).
 const BASE = [
-  ["FULLCYCLE/GENERALIST/ENGINEERING/CORE", profile("FULLCYCLE", "GENERALIST", "ENGINEERING"), 18, 110473],
-  ["BACKEND/SENIOR/ENGINEERING/CORE", profile("BACKEND", "SENIOR", "ENGINEERING"), 11, 62412],
-  ["FRONTEND/PLENO/ENGINEERING/CORE", profile("FRONTEND", "PLENO", "ENGINEERING"), 11, 63257],
-  ["QA/QA-ENGINEER/ENGINEERING/CORE", profile("QA", "QA-ENGINEER", "ENGINEERING"), 14, 76634],
+  ["FULLCYCLE/GENERALIST/ENGINEERING/CORE", profile("FULLCYCLE", "GENERALIST", "ENGINEERING"), 18, 110602],
+  ["BACKEND/SENIOR/ENGINEERING/CORE", profile("BACKEND", "SENIOR", "ENGINEERING"), 11, 62541],
+  ["FRONTEND/PLENO/ENGINEERING/CORE", profile("FRONTEND", "PLENO", "ENGINEERING"), 11, 63386],
+  ["QA/QA-ENGINEER/ENGINEERING/CORE", profile("QA", "QA-ENGINEER", "ENGINEERING"), 14, 76763],
 ];
 
 for (const [nome, p, arquivos, bytes] of BASE) {

@@ -403,4 +403,4 @@ Se não existir ou for antigo, executar detecção novamente.
 ## Recursos Adicionais
 
 - **Template**: Veja [assets/context-profile-template.md](assets/context-profile-template.md)
-- **Documentação CDD**: Veja `$IDE/templates/CDD aplicado a Prompts.md`
+- **Documentação CDD**: Veja `$IDE/templates/cdd-aplicado-a-prompts.md`

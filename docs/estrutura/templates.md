@@ -10,7 +10,7 @@ Modelos Markdown que skills/workflows preenchem (ARD, RFC, tech spec, PRD, plano
 templates/
 ├── AGENTS.md
 ├── ENV-template.md              # ÚNICA fonte do ENV.md no init (fork)
-├── CDD aplicado a Prompts.md    # referência conceitual CDD
+├── cdd-aplicado-a-prompts.md    # referência conceitual CDD
 └── engineering/
     ├── AGENTS-template.md       # gera AGENTS.md do projeto alvo
     ├── ARD-template.md

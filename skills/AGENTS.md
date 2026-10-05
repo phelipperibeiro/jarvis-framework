@@ -262,10 +262,18 @@ Skills são invocados de formas diferentes dependendo da IDE:
 | Comando / Trigger | Skill |
 |-------------------|-------|
 | `/jarvis-init` | `jarvis-init` |
+| `/warm-up` | `jarvis-docs-central` (sync) |
+| `eng.start` | `jarvis-docs-central` (buscar PRD/ARD) |
 | `/eng.docs` | `eng-global-docs-write`, `jarvis-docs-index` |
-| `/eng.pre-pr` | `eng-qa-test-plan` |
+| `/eng.pre-pr` | `eng-qa-test-plan`, `eng-global-docs-write`, `jarvis-docs-central` (detectar docs) |
 | `/eng.pr` | `eng-global-pr` |
+| Comentário no card | `eng-global-task-comment` |
+| `jarvis docs sync` | `jarvis-docs-central` |
+| `jarvis docs publish` | `jarvis-docs-central` |
 | QA validation | `eng-qa-gate` |
+| Arquitetura C4 | `eng-backend-arch-c4` |
+| Testes unitarios | `eng-qa-unit-test` |
+| Testes TestSprite | `eng-qa-testsprite` |
 | Listar especializações de stack (instaladas e registradas) | `jarvis-list-specializations` |
 | Criar uma especialização de stack (backend ou frontend) a partir do código do projeto | `jarvis-create-specialization` |
 | Decisão de arquitetura do Jarvis (agent, skill, workflow ou rule?), simplificação, tendências | `jarvis-evolution-architect` |
@@ -274,9 +282,13 @@ Skills são invocados de formas diferentes dependendo da IDE:
 | Componentes, UI, estado, estilos, performance, acessibilidade | `eng-frontend` (base) + `FRONTEND_SPECIALIZATIONS` |
 | Micro frontend, Module Federation, shell/remote, contratos de interface | `eng-frontend-microfrontend` (especialização de frontend) |
 | Design system, tokens, CVA, Storybook, versionamento de componentes | `eng-frontend-design-system` (especialização de frontend) |
+| Revisão de PR frontend (tipagem, a11y, tokens, itens da stack) | `eng.frontend-review` |
+| Auditoria de performance frontend (Core Web Vitals, pacote entregue) | `eng.frontend-perf-audit` |
 | Módulos NestJS, DI, guards, interceptors, pipes, Passport/JWT | `eng-backend-nestjs` (especialização de backend) |
 | Web scraping, Puppeteer, extração de dados, parsing, ETL | `eng-scraper` |
+| Converter fluxo manual (produto/dev) em robô Playwright via Stagehand | `eng-scraper-robot-builder` |
 | Criar robô RPA novo ou manter existente (new|update + card) | `eng.rpa.robot` (workflow) |
+| Testes E2E em linguagem natural, fluxos de usuário, regressão de UI, smoke tests pós-deploy | `eng-qa-e2e` |
 | Gerar specs Cypress + TypeScript para fluxos de usuário | `eng-qa-cypress-e2e` |
 | Sessão de teste exploratório estruturada (charter, risco, achados, bug cards) | `eng-qa-exploratory` |
 | Orientar dev sobre cobertura Cypress sem escrever o teste | `eng-qa-dev-guide` |
@@ -284,7 +296,24 @@ Skills são invocados de formas diferentes dependendo da IDE:
 | Testes de acessibilidade WCAG 2.1 AA: integra jest-axe em testes unitários existentes | `eng-qa-a11y-audit` |
 | Testes de contrato GraphQL: valida queries frontend contra schema do BFF | `eng-qa-graphql-contract` |
 | Spec E2E para handoff: cenários priorizados, Page Objects, fixtures, intercepts, setup | `eng-qa-e2e-spec-writer` |
+| Planejar capacidade QA da sprint: risco por task, alocação entre QAs e Quality Champions | workflow `eng.qa-sprint-planning` |
+| Sign-off QA pré-deploy: verifica cobertura, bugs abertos, produz GO/NO-GO + snippet CI para TL | workflow `eng.qa-release-signoff` |
+| Pipelines ETL/ELT, Glue, Airflow, PySpark, Athena, Metabase, bronze/silver/gold, contratos de dados, Great Expectations | `eng-data-engineer` |
+| Criar pipeline novo (docs, qualidade, idempotência, gold) | `data.new-pipeline` |
+| Criar contrato de dados para squad requisitante | `data.contract` |
+| Dashboards BI, queries SQL analíticas, compartilhamento com squads | `eng-data-bi` |
+| Diagnóstico de falhas em pipelines por camada (fonte→bronze→silver→gold) | `eng-data-debug` |
+| Onboarding de fonte nova: schema discovery, bronze, Expectation Suite, doc | `eng-data-onboard` |
+| Criar/manter DAGs, retry strategies, alertas, troubleshooting de orquestração | `eng-data-orchestrator` |
+| Documentação central (GitLab/GitHub/Bitbucket) | `jarvis-docs-central` |
+| Bug cross-service (HTTP + AMQP) | `eng-backend-microservices-trace` |
 | Segurança de aplicações: OWASP Top 10, secrets, sanitização, headers, supply chain, compliance | `eng-security-cybersecurity` |
+| Resposta a incidentes de segurança, CVEs, vulnerabilidades | `eng.security-incident` |
+| Review de segurança em PRs (gate pré-merge) | `eng.security-review` |
+| Pipeline defensivo completo: threat-model → audit → triage → patch (fluxo guiado) | `eng.security-pipeline` |
+| Produzir threat model estruturado do projeto (bootstrap/interview) | `eng-security-threat-model` |
+| Deduplicar, verificar com multi-voto e rankear achados de segurança | `eng-security-triage` |
+| Gerar diffs candidatos para achados confirmados de segurança (fechar o loop do triage) | `eng-security-patch` |
 
 ---
 
