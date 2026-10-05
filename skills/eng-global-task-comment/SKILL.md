@@ -47,10 +47,10 @@ set -a
 eval "$(grep -E '^(TASK_MANAGER|TASK_MANAGER_URL_BASE|TOKEN_TASK_MANAGER|USER)=' $IDE/ENV.md)"
 set +a
 
-node "$JARVIS_ROOT/bin/lib/tasks/comment.js" "{TASK_MANAGER_KEY}" "{mensagem}"
+jarvis tasks comment "{TASK_MANAGER_KEY}" "{mensagem}"
 ```
 
-`$JARVIS_ROOT` = raiz do framework (ou `$(git rev-parse --show-toplevel)` se o Jarvis estiver no repo). Se o script não existir no projeto, usar o path do clone do framework.
+Se o CLI `jarvis` não estiver instalado no projeto, usar `node "$JARVIS_ROOT/bin/jarvis.js" tasks comment "{TASK_MANAGER_KEY}" "{mensagem}"`, onde `$JARVIS_ROOT` é a raiz do clone do framework (ou `$(git rev-parse --show-toplevel)` se o Jarvis estiver no repo).
 
 Exit 0 → comentário ok. Exit 2 → avisar e **não bloquear** o workflow.
 

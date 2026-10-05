@@ -1,3 +1,4 @@
+import { fileURLToPath } from "node:url";
 import { cardUrl } from "../vcs/api.js";
 
 function env(name) {
@@ -101,25 +102,35 @@ async function commentAsana(cardKey, message) {
   if (!res.ok) throw new Error(`Asana ${res.status}: ${await res.text()}`);
 }
 
-const cardKey = process.argv[2];
-const message = process.argv.slice(3).join(" ");
+/**
+ * Comenta num card do task manager configurado em TASK_MANAGER (jira/linear/github/asana).
+ * Usada por `jarvis tasks comment` e pelo skill `eng-global-task-comment`.
+ * @param {string} cardKey - Chave/ID do card (ex: `TASK-123`, ou número de issue no GitHub)
+ * @param {string} message - Texto do comentário
+ */
+export async function runComment(cardKey, message) {
+  if (!cardKey || !message) {
+    console.error("Uso: jarvis tasks comment <TASK_MANAGER_KEY> <mensagem>");
+    process.exit(1);
+  }
 
-if (!cardKey || !message) {
-  console.error("Uso: comment.js <TASK_MANAGER_KEY> <mensagem>");
-  process.exit(1);
+  const tm = taskManager();
+  try {
+    if (tm === "linear") await commentLinear(cardKey, message);
+    else if (tm === "github") await commentGithub(cardKey, message);
+    else if (tm === "asana") await commentAsana(cardKey, message);
+    else await commentJira(cardKey, message);
+
+    const url = cardUrl(tm, env("TASK_MANAGER_URL_BASE"), cardKey);
+    console.log(`💬 Comentário adicionado em ${cardKey} (${tm})`);
+    if (url !== cardKey) console.log(`   ${url}`);
+  } catch (err) {
+    console.error(`⚠️ Não foi possível comentar no card ${cardKey}: ${err.message}`);
+    process.exit(2);
+  }
 }
 
-const tm = taskManager();
-try {
-  if (tm === "linear") await commentLinear(cardKey, message);
-  else if (tm === "github") await commentGithub(cardKey, message);
-  else if (tm === "asana") await commentAsana(cardKey, message);
-  else await commentJira(cardKey, message);
-
-  const url = cardUrl(tm, env("TASK_MANAGER_URL_BASE"), cardKey);
-  console.log(`💬 Comentário adicionado em ${cardKey} (${tm})`);
-  if (url !== cardKey) console.log(`   ${url}`);
-} catch (err) {
-  console.error(`⚠️ Não foi possível comentar no card ${cardKey}: ${err.message}`);
-  process.exit(2);
+// Compatibilidade: continua funcionando como `node bin/lib/tasks/comment.js <key> <mensagem>`
+if (fileURLToPath(import.meta.url) === process.argv[1]) {
+  await runComment(process.argv[2], process.argv.slice(3).join(" "));
 }
