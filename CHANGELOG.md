@@ -6,7 +6,7 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), e o
 
 > Versões anteriores a `2.1.1` não foram documentadas retroativamente neste changelog — o histórico detalhado dessas versões continua disponível via `git log`.
 
-## [Unreleased]
+## [3.0.0] - 2026-10-05
 
 ### Added
 - Estendido o mecanismo de especialização opt-in (skill base sempre carregada + especializações registradas no `ENV.md`) para as áreas `qa`, `data`, `automation` e `platform`, no mesmo padrão já usado por `backend`/`frontend` (`QA_SPECIALIZATIONS`, `DATA_SPECIALIZATIONS`, `AUTOMATION_SPECIALIZATIONS`, `PLATFORM_SPECIALIZATIONS`) — issue [#63](https://github.com/phelipperibeiro/jarvis-framework/issues/63)
