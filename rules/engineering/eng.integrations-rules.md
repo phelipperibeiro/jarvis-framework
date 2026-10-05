@@ -8,8 +8,8 @@ O Jarvis não assume Jira, GitLab ou Slack. Leia `$IDE/ENV.md` e despache pelo a
 
 | Variável | Vendors | Adapter |
 |----------|---------|---------|
-| `TASK_MANAGER` | jira, linear, github, asana | `bin/lib/tasks/comment.js` |
-| `VERSION_CONTROL` | gitlab, github, bitbucket | `bin/lib/vcs/` |
+| `TASK_MANAGER` | jira, linear, github, asana | `jarvis tasks comment` |
+| `VERSION_CONTROL` | gitlab, github, bitbucket | `jarvis vcs create-merge` / `create-issue` / `fetch-raw` |
 | `MESSAGE_COMUNICATOR` | slack, discord, teams | runtime `communicator/` |
 
 `{TASK_MANAGER_KEY}` = id da tarefa. Com board, é o id do card. Sem board, é o número de controle do usuário.
@@ -43,7 +43,7 @@ Só se `TASK_MANAGER` estiver preenchido com um vendor. Freelance → pular.
 ## MR / PR
 
 ```
-node bin/lib/vcs/create-merge.js --source BRANCH --target BRANCH --title "..." --body-file path
+jarvis vcs create-merge --source BRANCH --target BRANCH --title "..." --body-file path
 ```
 
 Vendor pelo hostname de `git remote get-url origin` (ou `VERSION_CONTROL`).

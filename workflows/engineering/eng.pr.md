@@ -50,7 +50,7 @@ Este comando cria a **branch, commita as alterações e abre um Merge Request**.
 | Skills recomendados | `/eng-security-cybersecurity` | Se o PR tocar em auth, inputs, APIs públicas ou permissões (adicionar label `security` ao MR) |
 | Agentes recomendados (opcional) | `eng.qa.test-planner` (agente) | Se houver dúvidas sobre cobertura de testes ou mudanças significativas |
 | Fase 0.5: Comentário no card — Início | `/eng-global-task-comment` | Se `TASK_MANAGER` estiver preenchido (freelance pula) |
-| Fase 4 › 4.2 Criar MR/PR via adapter | `node bin/lib/vcs/create-merge.js` (CLI do Jarvis) | Sempre — abre o MR/PR conforme `VERSION_CONTROL` ou o host do `origin` |
+| Fase 4 › 4.2 Criar MR/PR via adapter | `jarvis vcs create-merge` (CLI do Jarvis) | Sempre — abre o MR/PR conforme `VERSION_CONTROL` ou o host do `origin` |
 | Fase 5: Comentário no card — Conclusão | `/eng-global-task-comment` | Se `TASK_MANAGER` estiver preenchido, depois de o MR ser criado (freelance pula) |
 
 ---
@@ -243,7 +243,7 @@ Preencher com a tarefa. Link do card:
 BODY_FILE=$(mktemp)
 # gravar a descrição preenchida em $BODY_FILE
 
-node bin/lib/vcs/create-merge.js \
+jarvis vcs create-merge \
   --source "${NOME_DA_BRANCH}" \
   --target "${TARGET_BRANCH}" \
   --title "${TASK_MANAGER_KEY}: ${TITULO_DA_TAREFA}" \
@@ -254,7 +254,7 @@ rm -f "$BODY_FILE"
 
 O adapter lê `git remote get-url origin` e `VERSION_CONTROL` / hostname (GitLab, GitHub, Bitbucket). Token: `.npmrc` (GitLab), `gh auth` / `GITHUB_TOKEN` (GitHub), `BITBUCKET_TOKEN` (Bitbucket).
 
-Se o script não estiver no repo alvo, usar o path do clone do framework Jarvis.
+Se o CLI `jarvis` não estiver instalado no repo alvo, usar `node {caminho-do-clone-do-jarvis}/bin/jarvis.js vcs create-merge ...`.
 
 **Erros comuns:**
 

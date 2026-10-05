@@ -114,7 +114,7 @@ BODY_FILE=$(mktemp)
 
 REPO=$(grep -E '^(JARVIS_PROJECT|JARVIS_GITLAB_PROJECT)=' $IDE/ENV.md | tail -1 | cut -d= -f2-)
 
-node bin/lib/vcs/create-issue.js \
+jarvis vcs create-issue \
   --repo "$REPO" \
   --title "$ISSUE_TITLE" \
   --body-file "$BODY_FILE"
