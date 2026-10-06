@@ -140,6 +140,12 @@ export const OBSOLETE_PATHS = Object.freeze([
   // para docs/estrutura/rules.md; rules/product/README.md era órfão, sem referências
   "rules/AGENTS.md",
   "rules/product/README.md",
+  // eng.bump-rules.md, eng.docs-scraping-rules.md e eng.rpa-rules.md (issue #86): rules de
+  // uma etapa só saíram de rules/ (carregada no início) para rules-on-demand/ (lida pelo
+  // workflow); eng.docs-scraping-rules.md foi fundida como seção 6 de eng.rpa-rules.md
+  "rules/engineering/eng.bump-rules.md",
+  "rules/engineering/eng.docs-scraping-rules.md",
+  "rules/engineering/rpa/eng.rpa-rules.md",
 ]);
 
 /**

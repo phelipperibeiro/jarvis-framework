@@ -31,7 +31,7 @@ O assistente deve:
 1. Ativar o contexto de Engenharia:
    - $IDE/agents/engineering/eng.agent.md
    - $IDE/rules/engineering/eng-rules.md
-   - $IDE/rules/engineering/eng.bump-rules.md
+   - $IDE/rules-on-demand/engineering/eng.bump-rules.md
    - $IDE/ENV.md
 
 2. Ativar o agente de documentação:

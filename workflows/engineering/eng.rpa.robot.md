@@ -2,7 +2,7 @@
 description: Ciclo de vida de um robô RPA — criar novo ou manter existente
 auto_execution_mode: 3
 agent: "$IDE/agents/engineering/eng.rpa.agent.md"
-rules_file: "$IDE/rules/engineering/rpa/eng.rpa-rules.md"
+rules_file: "$IDE/rules-on-demand/engineering/eng.rpa-rules.md"
 recommended_model: claude-sonnet-4-20250514
 model_tier: high
 model_justification: Requer análise de sistemas externos, decisões de arquitetura de robô e geração de código resiliente
@@ -12,8 +12,7 @@ model_justification: Requer análise de sistemas externos, decisões de arquitet
 
 Workflow unificado para criação (`new`) ou manutenção (`update`) de robôs de automação.
 
-> 📋 **Rules**: `$IDE/rules/engineering/rpa/eng.rpa-rules.md`
-> 📋 **Docs**: `$IDE/rules/engineering/eng.docs-scraping-rules.md`
+> 📋 **Rules**: `$IDE/rules-on-demand/engineering/eng.rpa-rules.md` (inclui o padrão de documentação de robôs na seção 6)
 > 🤖 **Agente**: ARACHNE (`$IDE/agents/engineering/eng.rpa.agent.md`)
 
 ### Skills invocados durante o workflow
@@ -204,7 +203,7 @@ Garantir durante a implementação:
 
 Criar `docs/engineering/robots/{robot-tag}-robot.md`.
 
-Seguir `$IDE/rules/engineering/eng.docs-scraping-rules.md`:
+Seguir `$IDE/rules-on-demand/engineering/eng.rpa-rules.md` (seção 6 — Documentação):
 
 | Seção | Conteúdo |
 |-------|---------|
