@@ -39,22 +39,7 @@ Este comando executa a **implementação de código** seguindo o plano de execu�
 
 ## Regra de Execução Máxima
 
-Este workflow **DEVE respeitar** o limite `MAX_AI_EXECUTION_PERCENTAGE` definido no `ENV.md`:
-
-- **Valor padrão**: Se não estiver definido, assumir **80%**
-- **Valor mínimo**: **60%** — se configurado abaixo, tratar como 60% e avisar o usuário
-- **Valor máximo**: **100%** — se configurado acima de 100, tratar como 100%
-
-**Comportamento esperado:**
-
-1. Ao iniciar, leia `MAX_AI_EXECUTION_PERCENTAGE` do `ENV.md`
-2. Conte o total de tarefas no to-do gerado pelo `eng.plan`
-3. Calcule: `tarefas_executáveis = floor(total × (MAX / 100))`
-4. Execute apenas até esse número de tarefas do to-do — ao atingir, **PARE**
-5. Reporte o que foi feito, liste o que resta e aguarde instrução explícita do usuário
-6. Nunca tente contornar ou ignorar este limite
-
-**Exemplo:** Plano com 10 tarefas e `MAX_AI_EXECUTION_PERCENTAGE=80` → IA executa as 8 primeiras tarefas do to-do, para e aguarda o humano.
+Este workflow respeita o limite `MAX_AI_EXECUTION_PERCENTAGE` do `ENV.md`, conforme `$RULES_FOLDER/engineering/eng-rules.md` (cálculo sobre o to-do do `plan.md`; ao atingir o limite, parar, reportar e aguardar o usuário).
 
 ---
 
