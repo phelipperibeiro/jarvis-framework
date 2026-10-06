@@ -141,16 +141,19 @@ test("listRulesForProfile: rtk é opt-in, sem bloco é universal, recursivo em s
 // (6.724 B) e rules/product/README.md (1.519 B) removidos — eram universais (sem bloco
 // `Applies to`, o primeiro com caso especial no código), então saem da contagem dos 4
 // perfis igualmente: -2 arquivos e -8.243 B em cada um.
+// Issue #85 (auditoria de eficiência de tokens, item P0-02, 2026-10-06): prod-rules.md
+// (AREA: all) perdeu o bloco de ENV/$IDE/isolamento já coberto por eng-rules.md — de 11.240 B
+// para 8.567 B (-2.673 B), mesmo delta nos 4 perfis; nenhum arquivo removido.
 const BASE = [
   [
     "FULLCYCLE/GENERALIST/ENGINEERING/CORE",
     profile("FULLCYCLE", "GENERALIST", "ENGINEERING"),
     13,
-    89031,
+    86358,
   ],
-  ["BACKEND/SENIOR/ENGINEERING/CORE", profile("BACKEND", "SENIOR", "ENGINEERING"), 9, 55761],
-  ["FRONTEND/PLENO/ENGINEERING/CORE", profile("FRONTEND", "PLENO", "ENGINEERING"), 9, 56297],
-  ["QA/QA-ENGINEER/ENGINEERING/CORE", profile("QA", "QA-ENGINEER", "ENGINEERING"), 9, 55533],
+  ["BACKEND/SENIOR/ENGINEERING/CORE", profile("BACKEND", "SENIOR", "ENGINEERING"), 9, 53088],
+  ["FRONTEND/PLENO/ENGINEERING/CORE", profile("FRONTEND", "PLENO", "ENGINEERING"), 9, 53624],
+  ["QA/QA-ENGINEER/ENGINEERING/CORE", profile("QA", "QA-ENGINEER", "ENGINEERING"), 9, 52860],
 ];
 
 for (const [nome, p, arquivos, bytes] of BASE) {
