@@ -136,6 +136,10 @@ export const OBSOLETE_PATHS = Object.freeze([
   // entraram na base eng-frontend (temas 13, 14)
   "skills/eng-frontend-design-system",
   "skills/eng-frontend-microfrontend",
+  // rules/AGENTS.md e rules/product/README.md (issue #84): conteúdo de autoria movido
+  // para docs/estrutura/rules.md; rules/product/README.md era órfão, sem referências
+  "rules/AGENTS.md",
+  "rules/product/README.md",
 ]);
 
 /**

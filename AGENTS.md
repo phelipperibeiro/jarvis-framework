@@ -227,7 +227,6 @@ Quando atuar em um projeto alvo, detectar comandos em:
 
 Cada pasta pode ter seu proprio AGENTS.md com instrucoes especificas:
 - `$IDE/agents/AGENTS.md` - Instrucoes sobre agentes
-- `$IDE/rules/AGENTS.md` - Instrucoes sobre regras
 - `$IDE/skills/AGENTS.md` - Instrucoes sobre skills
 - `$IDE/templates/AGENTS.md` - Instrucoes sobre templates
 - `$IDE/workflows/AGENTS.md` - Instrucoes sobre workflows

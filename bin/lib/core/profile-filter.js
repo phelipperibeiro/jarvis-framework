@@ -2,9 +2,9 @@
  * @fileoverview Filtro de rules por perfil (bloco "Applies to").
  *
  * Espelha em JS a lógica do Passo 8 ("Profile-Aware Rules Sync") do skill
- * `skills/jarvis-init/SKILL.md`, que é executada pela IA. As duas fontes da
- * regra são esse passo e a seção "Profile-Aware Rules Loading" de
- * `rules/AGENTS.md`: ao mudar uma, mude as três.
+ * `skills/jarvis-init/SKILL.md`, que é executada pela IA: ao mudar uma,
+ * mude a outra. A documentação de autoria (hierarquia, convenções, estrutura
+ * de regra) vive em `docs/estrutura/rules.md`.
  *
  * Regras:
  * - Os quatro eixos (HUB, POSITION, AREA, SQUAD) são combinados com AND.
@@ -12,7 +12,6 @@
  * - FULLCYCLE (HUB) satisfaz qualquer HUB.
  * - GENERALIST (POSITION) satisfaz qualquer POSITION e qualquer AREA.
  * - Arquivo sem bloco "Applies to" é universal.
- * - `rules/AGENTS.md` nunca é filtrado.
  * - `rtk-rules.md` só entra com RTK habilitado (opt-in).
  * @module core/profile-filter
  */
@@ -103,10 +102,6 @@ export function listRulesForProfile(rulesDir, profile, opts = {}) {
     const content = readFileSync(file, "utf-8");
     const bytes = Buffer.byteLength(content, "utf-8");
 
-    if (rel === "AGENTS.md") {
-      result.push({ path: rel, bytes });
-      continue;
-    }
     if (rel.endsWith("rtk-rules.md") && !opts.rtkEnabled) continue;
     if (matchesProfile(parseAppliesTo(content), profile)) {
       result.push({ path: rel, bytes });
