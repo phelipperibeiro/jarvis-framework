@@ -495,3 +495,101 @@ TIMEOUT_MS=5000
 
 ### Apêndice B: {Título}
 {Conteúdo adicional}
+
+---
+
+## Entrega (nota para o agente — não copiar para o documento)
+
+> Formatos usados no fim do `eng.build-tech-spec` (Fases 7 e 8). Substitua os placeholders `{...}` e mantenha-os até ter os dados reais; não invente links, estimativas nem ids. Esta seção não faz parte da Tech Spec gerada.
+
+### Descrição da subtarefa no Jira
+
+Fase 7.2 do workflow. Use este formato na descrição de cada subtarefa criada no Jira (ou entregue ao usuário para copiar e colar).
+
+```markdown
+## Descrição
+
+{Descrição técnica detalhada}
+
+## Arquivos a Modificar/Criar
+
+- `path/to/file1.py` - [Modificação] - {Descrição}
+- `path/to/file2.tsx` - [Criação] - {Descrição}
+
+## Critérios de Aceitação
+
+- [ ] {Critério 1}
+- [ ] {Critério 2}
+
+## Testes Requeridos
+
+- [ ] Teste unitário: {descrição}
+- [ ] Teste de integração: {descrição}
+
+## Dependências
+
+{SUBTASK-XXX / Nenhuma}
+
+## Referência
+
+Tech Spec: [Link para tech-spec.md]
+```
+
+### Comentário na história original
+
+Fase 7.4 do workflow. Comentário a registrar na história (STORY-XXX) depois de criar as subtarefas.
+
+```
+Tech Spec criada: [Link para tech-spec.md]
+
+Subtarefas criadas:
+- SUBTASK-001: {Nome}
+- SUBTASK-002: {Nome}
+- SUBTASK-003: {Nome}
+...
+
+Total de subtarefas: {X}
+Estimativa total: {Y horas}
+```
+
+### Mensagem de entrega
+
+Fase 8.2 do workflow. O que entregar ao usuário ao final (preenchida com os dados reais da história, por exemplo `STORY-456`, `SUBTASK-101`).
+
+```
+✅ Tech Spec criada com sucesso!
+
+📄 Documento Local: $SESSIONS_DIR/eng/{feature-name}/tech-spec.md
+📎 Anexada no Jira: {STORY-XXX}
+
+📋 Resumo:
+- História: {STORY-XXX} - {Título}
+- Fases: {X fases}
+- Subtarefas: {Y subtarefas}
+- Estimativa total: {Z horas}
+
+🔗 Subtarefas criadas no Jira:
+- SUBTASK-001: {Nome} (P0, 6h)
+- SUBTASK-002: {Nome} (P1, 4h)
+- SUBTASK-003: {Nome} (P1, 8h)
+...
+
+⚠️ Riscos Principais:
+- {Risco 1}
+- {Risco 2}
+
+📌 Próximos Passos Sugeridos:
+1. Revisar e aprovar a Tech Spec
+2. Atribuir subtarefas ao time
+3. Iniciar desenvolvimento pela Fase 1
+4. Monitorar progresso e atualizar plan.md
+```
+
+### Fluxo resumido
+
+```
+0. Tipo (épico ou história) → 1. Entendimento (+ 1.5 RFC) → bifurca:
+ÉPICO:    2A Investigação arquitetural → 3A Proposta → 4A tech-spec-arch.md
+HISTÓRIA: 2 Investigação → 2.5 Complexidade → 3 Proposta → 4 Subtarefas
+          → 5 Riscos → 6 tech-spec.md → 7 Subtarefas no Jira → 8 Entrega
+```

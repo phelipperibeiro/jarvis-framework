@@ -14,71 +14,17 @@ env_file: "@/ENV.md"
 - Toda **decisão arquitetural deve ter justificativa documentada**.
 - **Subtarefas devem ser fatias verticais completas** (endpoint inteiro, modal inteiro, tela inteira) com **mínimo 4h e máximo 1 dia** de trabalho. Nunca fatias horizontais (só enum, só repository, só factory). Se menor que 4h, agrupar com a próxima (sinal de fatia atômica). Se maior que 1 dia, quebrar em **duas fatias verticais independentes** — nunca em camadas.
 - Sempre documente **riscos e mitigações** de forma explícita.
+- Este workflow é executado por `POSITION=TECH LEAD` ou `GENERALIST` (ou quem o TL delegar); fora disso, informar e parar.
+- Exemplos bom/ruim por princípio: um curto em cada princípio abaixo; os extensos estão em `docs/engenharia/eng.build-tech-spec.md` (leitura humana, não carregada pelo workflow). A estrutura e os formatos de entrega estão em `tech-spec-template.md`.
 
 ---
 
-## Localização de Arquivos
+## Arquivos e localização
 
-> **NOTA**: Tech specs NÃO são salvas em `master-docs/`. São salvas na sessão do projeto e anexadas no Jira.
-
-Arquivos são referenciados usando `$IDE/` que resolve automaticamente para a pasta do IDE atual (`.windsurf/`, `.claude/`, `.cursor/`).
-
----
-
-## Arquivos de Instruções e Comandos
-
-Sempre siga as instruções de acordo com as relações abaixo:
-
-### Workflows de Tech Spec
-
-- **import `$IDE/workflows/engineering/eng.build-tech-spec.md`**: Criação de tech spec a partir de história do Jira
-- **import `$IDE/workflows/engineering/eng.breakdown-subtasks.md`**: Quebra de tech spec em subtarefas executáveis
-- **import `$IDE/workflows/engineering/eng.start.md`**: Início de desenvolvimento de feature (referência)
-- **import `$IDE/workflows/engineering/eng.plan.md`**: Planejamento de execução (referência)
-
-### Templates
-
-- **import `$IDE/templates/engineering/tech-spec-template.md`**: Template completo de tech spec
-
-### Regras
-
-- **import `$IDE/rules-on-demand/engineering/eng.tech-spec-rules.md`**: Regras específicas de tech spec (este arquivo)
-
----
-
-## Estrutura de Arquivos de Tech Spec
-
-### Localização
-
-Tech specs devem ser salvas na **sessão do projeto** (NÃO em master-docs):
-
-```
-$SESSION_FOLDER/{TASK_MANAGER_KEY}/tech-spec.md
-```
-
-> 📁 **Padrão**: O `TASK_MANAGER_KEY` deve ser o ID do card em **lowercase**.
-
-**Exemplos:**
-
-- `$SESSIONS_DIR/eng/task-123/tech-spec.md`
-- `$SESSIONS_DIR/eng/story-456/tech-spec.md`
-- `$SESSIONS_DIR/eng/bug-789/tech-spec.md`
-
-### Por que na sessão?
-
-1. **Anexo no Jira**: A tech spec é anexada diretamente na issue do Jira como fonte da verdade
-2. **Sessão temporária**: A sessão é usada durante o desenvolvimento e pode ser limpa depois
-3. **Evita poluição**: Não cria arquivos permanentes no repositório de código
-4. **Rastreabilidade**: O Jira é o sistema oficial de documentação de tasks
-
-### Nomenclatura
-
-- **Formato da pasta**: `{jira-key}` em **lowercase** (ex: `TASK-123` → `task-123`)
-- **Arquivo**: Sempre `tech-spec.md` ou `architecture.md`
-- **Exemplo**: `$SESSIONS_DIR/eng/task-123/tech-spec.md`
-
-> ⚠️ **IMPORTANTE**: NÃO adicione descrições ou sufixos ao nome da pasta.
-> Use **apenas** o TASK_MANAGER_KEY convertido para lowercase.
+- Workflows: `$IDE/workflows/engineering/eng.build-tech-spec.md` (criação da tech spec) e `eng.breakdown-subtasks.md` (quebra em subtarefas); `eng.start.md` e `eng.plan.md` como referência. Template: `$IDE/templates/engineering/tech-spec-template.md`. Esta rule: `$IDE/rules-on-demand/engineering/eng.tech-spec-rules.md`.
+- `$IDE/` resolve para a pasta da IDE atual (`.windsurf/`, `.claude/`, `.cursor/`).
+- A tech spec **não** vai para `master-docs/`: fica na **sessão do projeto** e é anexada no Jira, que é a fonte da verdade; a sessão é temporária e não cria arquivos permanentes no repositório de código.
+- Caminho: `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/tech-spec.md` (ou `architecture.md`), com o `TASK_MANAGER_KEY` em **lowercase** e **sem** descrições ou sufixos na pasta. Exemplos: `$SESSIONS_DIR/eng/task-123/tech-spec.md`, `$SESSIONS_DIR/eng/story-456/tech-spec.md`.
 
 ---
 
@@ -102,24 +48,7 @@ $SESSION_FOLDER/{TASK_MANAGER_KEY}/tech-spec.md
 - [ ] Cada subtarefa referencia a tech spec
 - [ ] Tech spec referencia PRD/FRD se existirem
 
-**Exemplo:**
-
-```markdown
-## ✅ Bom:
-
-related_story: STORY-123
-link_task: https://jira.empresa.com/browse/STORY-123
-related_prd: Sistema de Autenticação (link)
-
----
-
-## ❌ Ruim:
-
-related_story: história do jira
-link_task: (não preenchido)
-
----
-```
+**Exemplo:** ✅ `related_story: STORY-123` e `link_task: https://jira.empresa.com/browse/STORY-123` · ❌ `related_story: história do jira` e `link_task:` vazio.
 
 ---
 
@@ -127,34 +56,7 @@ link_task: (não preenchido)
 
 **Princípio**: Toda decisão arquitetural deve ter contexto, alternativas e justificativa.
 
-**Estrutura Obrigatória para Decisões:**
-
-```markdown
-Decisão: {Título da decisão}
-
-Contexto:
-{Por que precisamos decidir isso? Qual problema estamos resolvendo?}
-
-Opções Consideradas:
-
-- Opção A: {descrição}
-  - Prós: {vantagens}
-  - Contras: {desvantagens}
-  - Trade-offs: {o que ganhamos/perdemos}
-
-- Opção B: {descrição}
-  - Prós: {vantagens}
-  - Contras: {desvantagens}
-  - Trade-offs: {o que ganhamos/perdemos}
-
-Decisão: {Opção escolhida}
-
-Justificativa:
-{Por que escolhemos esta opção? Quais critérios usamos?}
-
-Consequências:
-{Impactos positivos e negativos desta decisão}
-```
+**Estrutura:** a de `tech-spec-template.md`, seção 2.5 (contexto, opções com prós e contras, decisão, justificativa e consequências).
 
 **Validação:**
 
@@ -163,43 +65,7 @@ Consequências:
 - [ ] Justificativa é clara e objetiva
 - [ ] Consequências (positivas e negativas) estão documentadas
 
-**Exemplo:**
-
-```markdown
-✅ Bom:
-Decisão: Armazenamento de Tokens JWT
-
-Contexto: Precisamos decidir onde armazenar tokens JWT no frontend
-para manter usuários autenticados.
-
-Opções Consideradas:
-
-- Opção A: localStorage
-  - Prós: Persistente, simples de implementar
-  - Contras: Vulnerável a XSS, não expira automaticamente
-  - Trade-offs: Conveniência vs. Segurança
-
-- Opção B: httpOnly cookies
-  - Prós: Proteção contra XSS, gerenciado pelo browser
-  - Contras: Vulnerável a CSRF (mitigável), requer backend configurado
-  - Trade-offs: Segurança vs. Complexidade
-
-Decisão: httpOnly cookies
-
-Justificativa: Segurança é prioridade P0. CSRF pode ser mitigado com
-tokens CSRF. XSS é vetor de ataque mais comum e perigoso.
-
-Consequências:
-
-- (+) Proteção robusta contra XSS
-- (+) Tokens expiram automaticamente
-- (-) Requer implementação de proteção CSRF
-- (-) Mais complexo em ambientes multi-domínio
-
-❌ Ruim:
-Decisão: Usar JWT
-Justificativa: É melhor que sessões.
-```
+**Exemplo:** ✅ "Armazenar o JWT em cookie httpOnly: segurança é P0 e o CSRF é mitigável com token CSRF", citando a alternativa `localStorage` e as consequências · ❌ "Usar JWT. É melhor que sessões."
 
 ---
 
@@ -261,49 +127,7 @@ Justificativa: É melhor que sessões.
 [ ] Um dev pode executar sem perguntas adicionais
 ```
 
-**Exemplo:**
-
-```markdown
-✅ Bom:
-
-### SUBTASK-003: Criar endpoint POST /api/users com validação de email
-
-Descrição:
-Implementar endpoint de criação de usuários que valida formato de email
-antes de persistir no banco. Retorna 400 se email inválido.
-
-Arquivos a Modificar/Criar:
-
-- `backend/routes/users.py` - [Criação] - Novo endpoint POST /api/users
-- `backend/validators/email.py` - [Criação] - Função de validação de email
-- `backend/tests/test_users.py` - [Criação] - Testes do endpoint
-
-Critérios de Aceitação:
-
-- [ ] POST /api/users aceita {name, email, password}
-- [ ] Valida formato de email com regex padrão RFC 5322
-- [ ] Retorna 400 com mensagem se email inválido
-- [ ] Retorna 201 com user criado se válido
-- [ ] Hash de senha usando bcrypt
-
-Testes Requeridos:
-
-- [ ] test_create_user_valid_email() - email válido retorna 201
-- [ ] test_create_user_invalid_email() - email inválido retorna 400
-- [ ] test_create_user_duplicate_email() - email duplicado retorna 409
-
-Dependências: SUBTASK-002 (migration users)
-Estimativa: 1.5h
-
-❌ Ruim:
-
-### SUBTASK-003: Implementar API de usuários
-
-Descrição: Criar API para gerenciar usuários
-
-Critérios: API deve funcionar
-Testes: Testar tudo
-```
+**Exemplo:** ✅ `SUBTASK-003: Criar endpoint POST /api/users com validação de email` (rota, validador e testes; 1,5h; critérios verificáveis) · ❌ `SUBTASK-003: Implementar API de usuários` (descrição "Criar API", critério "deve funcionar").
 
 ---
 
@@ -311,11 +135,7 @@ Testes: Testar tudo
 
 **Princípio**: Riscos devem ser identificados proativamente com mitigações e planos B.
 
-**Estrutura de Documentação de Riscos:**
-
-| Risco                  | Probabilidade    | Impacto          | Mitigação             | Plano B                  |
-| ---------------------- | ---------------- | ---------------- | --------------------- | ------------------------ |
-| {Descrição específica} | Alta/Média/Baixa | Alto/Médio/Baixo | {Como reduzir/evitar} | {Alternativa se ocorrer} |
+**Estrutura:** a tabela da seção 10 de `tech-spec-template.md` (risco, probabilidade, impacto, mitigação, plano B).
 
 **Categorias de Riscos Comuns:**
 
@@ -347,20 +167,7 @@ Testes: Testar tudo
 - [ ] Mitigação definida para cada risco
 - [ ] Plano B existe para riscos críticos (Alto impacto)
 
-**Exemplo:**
-
-```markdown
-✅ Bom:
-| Risco | Probabilidade | Impacto | Mitigação | Plano B |
-|-------|---------------|---------|-----------|---------|
-| API de pagamento de terceiros instável causa timeouts | Média | Alto | Implementar retry com backoff exponencial (3 tentativas). Timeout de 5s. Circuit breaker após 5 falhas. | Fila assíncrona: salvar pagamento pendente, processar em background, notificar usuário quando concluir |
-| Migration de dados falha em produção deixando DB inconsistente | Baixa | Crítico | Testar migration em cópia de prod. Criar script de rollback. Backup antes de executar. Validação pós-migration. | Script de rollback automático. Restore de backup. Feature flag para desabilitar feature. |
-
-❌ Ruim:
-| Risco | Probabilidade | Impacto | Mitigação | Plano B |
-|-------|---------------|---------|-----------|---------|
-| Algo pode dar errado | Não sei | Alto | Testar bem | Voltar atrás |
-```
+**Exemplo:** ✅ "API de pagamento instável causa timeouts | Média | Alto | retry com backoff (3 tentativas), timeout de 5s, circuit breaker | fila assíncrona" · ❌ "Algo pode dar errado | Não sei | Alto | Testar bem | Voltar atrás".
 
 ---
 
@@ -404,29 +211,7 @@ Estimativa Final = Estimativa Bruta * 1.25
 - [ ] Estimativa total inclui buffer de 25-30%
 - [ ] Estimativa total bate com expectativa da história original
 
-**Exemplo:**
-
-```markdown
-✅ Bom:
-Fase 1: Setup (3.5h)
-
-- SUBTASK-001: Instalar dependências - 0.5h
-- SUBTASK-002: Criar migration - 1h
-- SUBTASK-003: Configurar env vars - 1h
-- SUBTASK-004: Testes de setup - 1h
-
-Total Fases: 18h
-Buffer (25%): +4.5h
-Estimativa Final: 22.5h (~3 dias úteis)
-
-❌ Ruim:
-Fase 1: Setup
-
-- SUBTASK-001: Fazer setup do backend - 5h (muito grande!)
-- SUBTASK-002: Configurar coisas - ??? (sem estimativa)
-
-Total: Uns 3 dias (vago, sem quebra)
-```
+**Exemplo:** ✅ "Fases somam 18h + buffer de 25% = 22,5h (~3 dias úteis)", com cada subtarefa entre 4h e 1 dia · ❌ "Uns 3 dias", sem quebra, ou subtarefa de 5h marcada "muito grande" e sem divisão.
 
 ---
 
@@ -480,47 +265,7 @@ Total: Uns 3 dias (vago, sem quebra)
 - [ ] Scan de vulnerabilidades
 - [ ] Penetration testing básico
 
-**Exemplo:**
-
-```markdown
-✅ Bom:
-
-### Estratégia de Testes
-
-**Cobertura Alvo**: 85%
-
-**Testes Unitários** (15 testes):
-
-- `test_validate_email_valid()` - Email válido retorna True
-- `test_validate_email_invalid_format()` - Email sem @ retorna False
-- `test_validate_email_empty()` - Email vazio levanta ValueError
-- `test_hash_password()` - Senha é hasheada com bcrypt
-- `test_verify_password_correct()` - Senha correta retorna True
-- ... (mais 10 testes)
-
-**Testes de Integração** (5 testes):
-
-- `test_create_user_persists_to_db()` - User criado é salvo no DB
-- `test_create_user_duplicate_email_raises()` - Email duplicado levanta IntegrityError
-- `test_login_returns_jwt()` - Login bem-sucedido retorna JWT válido
-- ... (mais 2 testes)
-
-**Testes E2E** (3 testes):
-
-- `test_user_signup_and_login_flow()` - Signup → Login → Acessa dashboard
-- `test_password_reset_flow()` - Reset → Email → Nova senha → Login
-- `test_invalid_login_shows_error()` - Credenciais erradas → Mensagem de erro
-
-**Testes de Performance**:
-
-- Load: 100 usuários concorrentes fazendo login
-- Meta: p95 < 500ms, p99 < 1s
-- Ferramenta: k6
-
-❌ Ruim:
-Testes: Vamos testar tudo bem.
-Cobertura: O máximo possível.
-```
+**Exemplo:** ✅ "Cobertura alvo 85%: 15 unitários, 5 de integração, 3 E2E; carga de 100 usuários com p95 < 500 ms (k6)" · ❌ "Vamos testar tudo bem. Cobertura: o máximo possível."
 
 ---
 
@@ -530,36 +275,11 @@ Cobertura: O máximo possível.
 
 **Documentação Obrigatória:**
 
-**README.md:**
-
-- [ ] Atualizar se feature muda setup
-- [ ] Adicionar novas variáveis de ambiente
-- [ ] Atualizar instruções de instalação
-
-**API.md (se aplicável):**
-
-- [ ] Documentar novos endpoints
-- [ ] Especificar request/response
-- [ ] Exemplos de uso
-- [ ] Códigos de erro
-
-**ARCHITECTURE.md (se mudança arquitetural):**
-
-- [ ] Atualizar diagramas
-- [ ] Documentar novas decisões
-- [ ] Explicar trade-offs
-
-**CHANGELOG.md:**
-
-- [ ] Adicionar entry para a versão
-- [ ] Seguir formato Keep a Changelog
-
-**Comentários no Código:**
-
-- [ ] Decisões não-óbvias explicadas
-- [ ] Algoritmos complexos comentados
-- [ ] TODOs com contexto e deadline
-- [ ] Evitar comentários óbvios
+- **README.md**: atualizar se a feature muda o setup, as variáveis de ambiente ou a instalação.
+- **API.md** (se aplicável): novos endpoints, request/response, exemplos de uso e códigos de erro.
+- **ARCHITECTURE.md** (se mudança arquitetural): diagramas, novas decisões e trade-offs.
+- **CHANGELOG.md**: entrada para a versão, no formato Keep a Changelog.
+- **Comentários no código**: decisões não óbvias e algoritmos complexos explicados, TODOs com contexto e deadline, sem comentários óbvios.
 
 **Validação:**
 
@@ -568,129 +288,7 @@ Cobertura: O máximo possível.
 - [ ] Exemplos de código são válidos e testados
 - [ ] Linguagem clara e objetiva
 
-**Exemplo:**
-
-```markdown
-✅ Bom (em subtarefa):
-Critérios de Aceitação:
-
-- [ ] Código implementado e revisado
-- [ ] Testes passando
-- [ ] README.md atualizado com nova env var JWT_SECRET
-- [ ] API.md documentado com endpoint POST /auth/login
-- [ ] CHANGELOG.md atualizado
-
-❌ Ruim:
-Critérios de Aceitação:
-
-- [ ] Código pronto
-- [ ] Testes ok
-      (documentação esquecida)
-```
-
----
-
-## Formato Markdown e Estrutura
-
-### Metadados de Tech Spec
-
-Use formato YAML frontmatter:
-
-```yaml
----
-name: { nome descritivo da tech spec }
-id: { TECH-001 }
-related_story: { STORY-XXX do Jira }
-epic_related: { EPIC-XXX se existir }
-link_task: { URL da história no Jira }
-created_at: { YYYY-MM-DD }
-updated_at: { YYYY-MM-DD }
-status: { Draft, In Review, Approved, Implemented }
-author: { nome do autor }
-reviewers: { lista de revisores }
----
-```
-
-### Diagramas Mermaid
-
-Use Mermaid para visualizações:
-
-**Diagrama de Arquitetura:**
-
-```mermaid
-graph TD
-    A[Frontend] --> B[API Gateway]
-    B --> C[Auth Service]
-    B --> D[User Service]
-    C --> E[Database]
-    D --> E
-```
-
-**Diagrama de Sequência:**
-
-```mermaid
-sequenceDiagram
-    participant U as User
-    participant F as Frontend
-    participant A as API
-    participant D as Database
-
-    U->>F: Click Login
-    F->>A: POST /auth/login
-    A->>D: Validate credentials
-    D-->>A: User data
-    A-->>F: JWT token
-    F-->>U: Redirect to dashboard
-```
-
-**Diagrama de Fluxo:**
-
-```mermaid
-flowchart TD
-    Start([User submits form]) --> Validate{Valid?}
-    Validate -->|Yes| Save[Save to DB]
-    Validate -->|No| Error[Show error]
-    Save --> Success[Return 201]
-    Error --> End([End])
-    Success --> End
-```
-
-### Tabelas
-
-Use tabelas para informações estruturadas:
-
-**Componentes Afetados:**
-| Componente | Tipo de Mudança | Impacto | Prioridade |
-|------------|-----------------|---------|------------|
-| Auth Service | Modificação | Alto | P0 |
-| User API | Criação | Médio | P1 |
-
-**Riscos:**
-| Risco | Probabilidade | Impacto | Mitigação | Plano B |
-|-------|---------------|---------|-----------|---------|
-| ... | ... | ... | ... | ... |
-
-### Code Blocks
-
-Use blocos de código com linguagem especificada:
-
-```python
-# Bom
-def validate_email(email: str) -> bool:
-    """Valida formato de email usando regex."""
-    pattern = r'^[\w\.-]+@[\w\.-]+\.\w+$'
-    return re.match(pattern, email) is not None
-```
-
-### Links
-
-Use links markdown para referências:
-
-```markdown
-- [PRD: Sistema de Autenticação](../product/auth-prd.md)
-- [ADR-001: Escolha de JWT](../technical/adr/001-jwt-auth.md)
-- [História Original](https://jira.empresa.com/browse/STORY-123)
-```
+**Exemplo:** ✅ critérios "README com a env var JWT_SECRET, API.md com POST /auth/login, CHANGELOG atualizado" · ❌ critérios "Código pronto" e "Testes ok" (documentação esquecida).
 
 ---
 
@@ -727,30 +325,7 @@ Use este checklist antes de finalizar uma tech spec:
 - [ ] Sem ambiguidades críticas
 - [ ] Rastreável até história original
 
-**Subtarefas:**
-
-- [ ] Todas têm entre 4h e 1 dia de trabalho
-- [ ] Todas são fatias verticais completas (nenhuma horizontal)
-- [ ] Títulos claros e acionáveis
-- [ ] Descrições completas (O QUE, COMO, POR QUE)
-- [ ] Arquivos afetados listados
-- [ ] Critérios de aceitação testáveis
-- [ ] Testes definidos
-- [ ] Dependências mapeadas
-
-**Decisões:**
-
-- [ ] Pelo menos 2 alternativas consideradas
-- [ ] Prós e contras documentados
-- [ ] Justificativa clara
-- [ ] Consequências documentadas
-
-**Riscos:**
-
-- [ ] Pelo menos 3 riscos identificados
-- [ ] Probabilidade e impacto avaliados
-- [ ] Mitigação para cada risco
-- [ ] Plano B para riscos críticos
+**Subtarefas, decisões e riscos:** as validações do "Template de Validação" (princípio 3) e as dos princípios 2 e 4 (pelo menos 2 alternativas por decisão, pelo menos 3 riscos, mitigação para cada risco e plano B para os críticos).
 
 ---
 
@@ -825,13 +400,7 @@ Tech specs devem ser atualizadas quando:
 
 ### Versionamento
 
-Use seção de **Histórico de Revisões**:
-
-| Data       | Versão | Autor        | Mudanças                                              |
-| ---------- | ------ | ------------ | ----------------------------------------------------- |
-| 2024-01-15 | 1.0    | João Silva   | Versão inicial                                        |
-| 2024-01-20 | 1.1    | Maria Santos | Adicionado risco de performance, ajustado estimativas |
-| 2024-01-25 | 2.0    | João Silva   | Mudança arquitetural: JWT → OAuth2                    |
+Use a seção **Histórico de Revisões** do template (data, versão, autor, mudanças).
 
 ### Status do Documento
 
@@ -948,19 +517,6 @@ Riscos: Nenhum identificado.
 
 - import `$IDE/rules/product/prod-rules.md` - Regras de produto (complementar)
 - `docs/technical/adr/` - Architecture Decision Records
-
-### Ferramentas
-
-- **Mermaid**: https://mermaid.js.org/
-- **Jira**: Sistema de task management
-- **Markdown**: Formato de documentação
-
----
-
-## Exemplo Completo
-
-Ver arquivo de template:
-import `$IDE/templates/engineering/tech-spec-template.md`
 
 ---
 

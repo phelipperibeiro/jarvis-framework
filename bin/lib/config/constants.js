@@ -168,6 +168,8 @@ export const OBSOLETE_PATHS = Object.freeze([
   "templates/engineering/swagger-template.md",
   "templates/engineering/CONTACTS-template.md",
   "templates/cdd-aplicado-a-prompts.md",
+  // tech spec com um template só (issue #111): os formatos de entrega foram para o tech-spec-template.md
+  "templates/engineering/tech-spec-delivery-template.md",
 ]);
 
 /**

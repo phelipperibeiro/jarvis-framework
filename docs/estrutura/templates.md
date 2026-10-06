@@ -17,7 +17,6 @@ templates/
     ├── RFC-template.md
     ├── RFC-Playbook.md
     ├── tech-spec-template.md
-    ├── tech-spec-delivery-template.md
     ├── architecture-template.md
     ├── c4-model-template.md
     ├── plan-template.md
