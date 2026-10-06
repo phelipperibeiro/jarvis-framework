@@ -6,7 +6,7 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), e o
 
 > Versões anteriores a `2.1.1` não foram documentadas retroativamente neste changelog — o histórico detalhado dessas versões continua disponível via `git log`.
 
-## [3.1.0] - 2026-10-06
+## [3.2.0] - 2026-10-06
 
 ### Added
 - **Advisor opcional no `eng.start`** (#140): no início do comando, o usuário escolhe se quer um Advisor e com qual modelo (lista `ADVISOR_MODELS` no `ENV.md`, até 4 opções; fallback `Sonnet 5.5`). O Advisor é um subagente novo, `agents/engineering/eng.advisor.agent.md` (sem `model:` fixo, só leitura, no GitHub só consulta), aberto só na primeira questão em aberto: faz uma carga inicial do contexto (card, documentos de especificação, sessão) e responde a uma questão por mensagem. A sugestão dele é a decisão adotada; o agente principal registra tudo num comentário de auditoria na issue
