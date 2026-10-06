@@ -160,6 +160,9 @@ export const OBSOLETE_PATHS = Object.freeze([
   "skills/product-roadmap-report/README.md",
   "agents/AGENTS.md",
   "agents/README.md",
+  // product-roadmap-report (issue #91): rules/detailed-guide.md era cópia de references/detailed-guide.md
+  // (a mantida), com uma linha de plugin externo inexistente
+  "skills/product-roadmap-report/rules/detailed-guide.md",
 ]);
 
 /**
