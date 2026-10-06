@@ -141,6 +141,9 @@ test("listRulesForProfile: rtk é opt-in, sem bloco é universal, recursivo em s
 // (6.724 B) e rules/product/README.md (1.519 B) removidos — eram universais (sem bloco
 // `Applies to`, o primeiro com caso especial no código), então saem da contagem dos 4
 // perfis igualmente: -2 arquivos e -8.243 B em cada um.
+// Issue #85 (auditoria de eficiência de tokens, item P0-02, 2026-10-06): prod-rules.md
+// (AREA: all) perdeu o bloco de ENV/$IDE/isolamento já coberto por eng-rules.md — de 11.240 B
+// para 8.567 B (-2.673 B), mesmo delta nos 4 perfis; nenhum arquivo removido.
 // Issue #86 (auditoria de eficiência de tokens, item P0-03, 2026-10-06): eng.bump-rules.md,
 // eng.docs-scraping-rules.md (fundida na seção 6 de eng.rpa-rules.md) e eng.rpa-rules.md movidos
 // para rules-on-demand/. bump e docs-scraping saem dos 4 perfis; rpa só saía de BACKEND e FULLCYCLE.
@@ -150,11 +153,11 @@ const BASE = [
     "FULLCYCLE/GENERALIST/ENGINEERING/CORE",
     profile("FULLCYCLE", "GENERALIST", "ENGINEERING"),
     10,
-    77138,
+    74465,
   ],
-  ["BACKEND/SENIOR/ENGINEERING/CORE", profile("BACKEND", "SENIOR", "ENGINEERING"), 6, 43868],
-  ["FRONTEND/PLENO/ENGINEERING/CORE", profile("FRONTEND", "PLENO", "ENGINEERING"), 7, 52227],
-  ["QA/QA-ENGINEER/ENGINEERING/CORE", profile("QA", "QA-ENGINEER", "ENGINEERING"), 7, 51463],
+  ["BACKEND/SENIOR/ENGINEERING/CORE", profile("BACKEND", "SENIOR", "ENGINEERING"), 6, 41195],
+  ["FRONTEND/PLENO/ENGINEERING/CORE", profile("FRONTEND", "PLENO", "ENGINEERING"), 7, 49554],
+  ["QA/QA-ENGINEER/ENGINEERING/CORE", profile("QA", "QA-ENGINEER", "ENGINEERING"), 7, 48790],
 ];
 
 for (const [nome, p, arquivos, bytes] of BASE) {
