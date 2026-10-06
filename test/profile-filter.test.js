@@ -141,16 +141,21 @@ test("listRulesForProfile: rtk é opt-in, sem bloco é universal, recursivo em s
 // (6.724 B) e rules/product/README.md (1.519 B) removidos — eram universais (sem bloco
 // `Applies to`, o primeiro com caso especial no código), então saem da contagem dos 4
 // perfis igualmente: -2 arquivos e -8.243 B em cada um.
+// Issue #85 (auditoria de eficiência de tokens, item P0-02, 2026-10-05): removido de
+// rules/product/prod-rules.md o bloco duplicado de validação do ENV.md/$IDE/$SESSIONS_DIR/
+// isolamento, que já está em eng-rules.md — rule universal (AREA: all), por isso o delta
+// é igual nos 4 perfis mesmo nenhum deles sendo PRODUCT: -3.375 B em cada um (contagem de
+// arquivos não muda, só o tamanho do arquivo).
 const BASE = [
   [
     "FULLCYCLE/GENERALIST/ENGINEERING/CORE",
     profile("FULLCYCLE", "GENERALIST", "ENGINEERING"),
     13,
-    89031,
+    85656,
   ],
-  ["BACKEND/SENIOR/ENGINEERING/CORE", profile("BACKEND", "SENIOR", "ENGINEERING"), 9, 55761],
-  ["FRONTEND/PLENO/ENGINEERING/CORE", profile("FRONTEND", "PLENO", "ENGINEERING"), 9, 56297],
-  ["QA/QA-ENGINEER/ENGINEERING/CORE", profile("QA", "QA-ENGINEER", "ENGINEERING"), 9, 55533],
+  ["BACKEND/SENIOR/ENGINEERING/CORE", profile("BACKEND", "SENIOR", "ENGINEERING"), 9, 52386],
+  ["FRONTEND/PLENO/ENGINEERING/CORE", profile("FRONTEND", "PLENO", "ENGINEERING"), 9, 52922],
+  ["QA/QA-ENGINEER/ENGINEERING/CORE", profile("QA", "QA-ENGINEER", "ENGINEERING"), 9, 52158],
 ];
 
 for (const [nome, p, arquivos, bytes] of BASE) {
