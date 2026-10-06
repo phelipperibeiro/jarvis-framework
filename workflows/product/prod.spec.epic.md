@@ -115,48 +115,9 @@ Após a aprovação do usuário:
 1. Atualize a PRD com as alterações relacionadas ao épico
 2. Atualize o arquivo de breakdown (plan) com as alterações relacionadas ao épico
 
-## Busca no Central Docs (condicional)
+**Busca no Central Docs (condicional):** ver `$PROD_RULES/prod.spec-rules.md`. Aqui, antes de criar o épico, busca o **PRD e os épicos existentes relacionados** usando o contexto do usuário e os carrega como contexto, informando o usuário. Se não encontrar, segue o fluxo normal (sem perguntar).
 
-Se `CENTRAL_DOCS_REPO` definido no ENV.md, antes de criar o épico:
-
-- Executar busca automática no central-docs:
-  ```bash
-  jarvis docs sync --silent
-  ```
-- Buscar PRD e épicos existentes relacionados usando o contexto do usuário
-- Se PRD ou épico encontrado: carregar como contexto e informar o usuário
-- Se não encontrado: continuar com fluxo normal
-
-## Publicação no Central Docs (condicional)
-
-Após salvar o épico localmente e obter aprovação do usuário:
-
-1. Se `CENTRAL_DOCS_REPO` definido no ENV.md:
-   - Perguntar ao usuário:
-     ```
-     Deseja publicar este épico no repositório central de documentação?
-     - ( ) Sim, publicar agora
-     - ( ) Não, vou publicar depois manualmente
-     ```
-
-2. Se **Sim**:
-   - Extrair o slug do nome do arquivo (ex: `epic-123-checkout.md` → `checkout`)
-   - Executar:
-     ```bash
-     jarvis docs publish \
-       --file {caminho_do_epico} \
-       --tipo epic \
-       --feature {slug}
-     ```
-
-3. Informar resultado:
-   - ✅ Sucesso: "Épico publicado no central-docs. MR criado: [URL]"
-   - ❌ Erro: Exibir mensagem de erro e orientar troubleshooting
-
-4. Se **Não**:
-   - Informar: "Para publicar depois, execute: `jarvis docs publish --file {caminho} --tipo epic --feature {slug}`"
-
-> **Nota**: A publicação cria um Merge Request no GitLab. O épico só será visível no central-docs após aprovação e merge do MR.
+**Publicação no Central Docs (condicional):** ver `$PROD_RULES/prod.spec-rules.md`; `--tipo epic`.
 
 Utilize o que o usuário fornecer analisar em:
 <requirement>
