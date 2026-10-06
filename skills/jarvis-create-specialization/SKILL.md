@@ -241,4 +241,4 @@ Revise a seção "A validar" do skill assim que puder.
 
 - `$IDE/rules/engineering/eng.specializations-rules.md`: listas, formato e validação do nome
 - `$IDE/skills/jarvis-list-specializations/SKILL.md`: consulta do que está instalado e registrado
-- `$IDE/skills/AGENTS.md`: áreas reconhecidas e padrão de nomes
+- `skills/AGENTS.md` (repositório do Jarvis; não é instalado na IDE): áreas reconhecidas e padrão de nomes
