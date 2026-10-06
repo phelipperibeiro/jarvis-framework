@@ -18,7 +18,6 @@ workflows/
 ├── warm-up.md                      # Preparacao de sessao
 ├── warm-up@1.1.md                  # Versao alternativa
 ├── help.md                         # Guia de ajuda
-├── all-tools.md                    # Listar ferramentas
 │
 ├── docs/                           # Workflows de documentacao
 │   ├── build-product-docs.md

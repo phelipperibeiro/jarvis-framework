@@ -143,7 +143,39 @@ export const OBSOLETE_PATHS = Object.freeze([
   // para docs/estrutura/rules.md; rules/product/README.md era órfão, sem referências
   "rules/AGENTS.md",
   "rules/product/README.md",
+  // Documentação de pasta e all-tools (issue #89): deixaram de ser copiados para a IDE (ver
+  // SYNC_EXCLUDE). O nome da pasta de workflows varia por IDE (commands, workflows, steering).
+  "commands/AGENTS.md",
+  "commands/README.md",
+  "commands/all-tools.md",
+  "workflows/AGENTS.md",
+  "workflows/README.md",
+  "workflows/all-tools.md",
+  "steering/AGENTS.md",
+  "steering/README.md",
+  "steering/all-tools.md",
+  "skills/AGENTS.md",
+  "skills/SKILLS-ROADMAP.md",
+  "skills/jarvis-docs-central/README.md",
+  "skills/product-roadmap-report/README.md",
+  "agents/AGENTS.md",
+  "agents/README.md",
 ]);
+
+/**
+ * Arquivos de documentação de pasta que ficam só no repositório do framework e não são
+ * copiados para a IDE. Por pasta de `SYNC_DIRS`, expressões aplicadas ao caminho relativo
+ * (com `/`) dentro dela. `workflows/` vira `commands/` ou `steering/` conforme a IDE e é
+ * achatado depois da cópia; barrar na origem evita que um README aninhado sobrescreva outro.
+ * Em `skills/` todo `*.md` da raiz sai (skill é sempre uma pasta); em `agents/` só os nomes de
+ * documentação, porque um agent pode ficar direto na raiz da pasta.
+ * @constant {Readonly<Record<string, ReadonlyArray<RegExp>>>}
+ */
+export const SYNC_EXCLUDE = Object.freeze({
+  workflows: Object.freeze([/(^|\/)(AGENTS|README)\.md$/]),
+  skills: Object.freeze([/^[^/]+\.md$/, /^[^/]+\/README\.md$/]),
+  agents: Object.freeze([/^(AGENTS|README)\.md$/]),
+});
 
 /**
  * Arquivos da raiz que devem ser sincronizados
