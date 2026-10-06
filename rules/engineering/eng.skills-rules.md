@@ -53,4 +53,4 @@ Vale para todo comando `eng.*` e seus agentes, **ao iniciar**. A pasta de skills
 
 - `eng.specializations-rules.md`: listas de especializações e carregamento por área
 - `skills/jarvis-list-specializations/SKILL.md`: consulta do que está instalado e registrado
-- `skills/AGENTS.md`: áreas reconhecidas e padrão de nomes
+- `skills/AGENTS.md` (repositório do Jarvis; não é instalado na IDE): áreas reconhecidas e padrão de nomes

@@ -9,13 +9,14 @@ import {
   rmSync,
 } from "node:fs";
 import { execSync } from "node:child_process";
-import { join, relative, basename } from "node:path";
+import { join, relative, basename, sep } from "node:path";
 import { getFrameworkRoot } from "../utils/paths.js";
 import { getIDEFolder } from "../config/ide-config.js";
 import { extractFrontmatterBlock } from "../utils/frontmatter.js";
 import {
   SYNC_DIRS,
   SYNC_ROOT_FILES,
+  SYNC_EXCLUDE,
   OBSOLETE_PATHS,
   LOCK_FILE,
   OPENCODE_MODEL_MAP,
@@ -64,6 +65,18 @@ function generateCodexOpenAIYaml(skillsDir) {
   }
 }
 
+/**
+ * Indica se um arquivo de uma pasta de SYNC_DIRS fica de fora da cópia para a IDE
+ * (documentação de pasta, ver SYNC_EXCLUDE).
+ * @param {string} dir - Pasta de SYNC_DIRS (ex.: "workflows")
+ * @param {string} relPath - Caminho relativo à pasta, com `/` (vazio para a própria pasta)
+ * @returns {boolean}
+ */
+export function isExcludedFromSync(dir, relPath) {
+  const rules = SYNC_EXCLUDE[dir];
+  return rules ? rules.some((re) => re.test(relPath)) : false;
+}
+
 export function syncAssets(targetDir, ide, opts = {}) {
   const frameworkRoot = getFrameworkRoot();
   const ideDir = join(targetDir, `.${getIDEFolder(ide)}`);
@@ -86,7 +99,12 @@ export function syncAssets(targetDir, ide, opts = {}) {
 
     try {
       if (!opts.dryRun) {
-        cpSync(src, dest, { recursive: true, force: opts.force ?? true });
+        cpSync(src, dest, {
+          recursive: true,
+          force: opts.force ?? true,
+          filter: (srcPath) =>
+            !isExcludedFromSync(dir, relative(src, srcPath).split(sep).join("/")),
+        });
       }
       result.copied.push(`${destDirName}/`);
     } catch (err) {

@@ -10,7 +10,7 @@ import assert from "node:assert/strict";
 import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, existsSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { syncAssets } from "../bin/lib/core/sync-engine.js";
+import { syncAssets, isExcludedFromSync } from "../bin/lib/core/sync-engine.js";
 
 function withJarvisRoot(fn) {
   const root = mkdtempSync(join(tmpdir(), "jarvis-root-"));
@@ -167,4 +167,116 @@ test("syncAssets: dryRun não escreve nada no disco", () => {
     assert.ok(!existsSync(join(target, ".claude")));
     assert.ok(result.copied.length > 0); // reporta o que faria, sem fazer
   });
+});
+
+/** Arquivos de documentação de pasta (não são componentes) em cada SYNC_DIRS do fixture. */
+function addDocFiles(root) {
+  write(root, "workflows/AGENTS.md");
+  write(root, "workflows/README.md");
+  write(root, "workflows/sub/README.md");
+  write(root, "workflows/warm-up.md");
+  write(root, "skills/AGENTS.md");
+  write(root, "skills/SKILLS-ROADMAP.md");
+  write(root, "skills/test-skill/README.md");
+  write(root, "skills/test-skill/references/README.md");
+  write(root, "agents/README.md");
+  write(root, "agents/AGENTS.md");
+}
+
+test("syncAssets: AGENTS.md, README.md e roadmap não chegam à IDE; componentes continuam sendo copiados", () => {
+  withJarvisRoot((root, target) => {
+    buildMinimalFramework(root);
+    addDocFiles(root);
+
+    const result = syncAssets(target, "claude", { workflowsFolder: "commands" });
+
+    assert.equal(result.errors.length, 0, JSON.stringify(result.errors));
+    // documentação de pasta fica só no repositório
+    assert.ok(!existsSync(join(target, ".claude/commands/AGENTS.md")));
+    assert.ok(!existsSync(join(target, ".claude/commands/README.md")));
+    assert.ok(!existsSync(join(target, ".claude/skills/AGENTS.md")));
+    assert.ok(!existsSync(join(target, ".claude/skills/SKILLS-ROADMAP.md")));
+    assert.ok(!existsSync(join(target, ".claude/skills/test-skill/README.md")));
+    assert.ok(!existsSync(join(target, ".claude/agents/AGENTS.md")));
+    assert.ok(!existsSync(join(target, ".claude/agents/README.md")));
+    // componentes e conteúdo continuam
+    assert.ok(existsSync(join(target, ".claude/skills/test-skill/SKILL.md")));
+    assert.ok(existsSync(join(target, ".claude/skills/test-skill/references/README.md")));
+    assert.ok(existsSync(join(target, ".claude/agents/eng.agent.md")));
+    assert.ok(existsSync(join(target, ".claude/commands/eng.start.md")));
+    assert.ok(existsSync(join(target, ".claude/commands/warm-up.md")));
+    // SYNC_ROOT_FILES continuam, inclusive o AGENTS.md da raiz da IDE
+    assert.ok(existsSync(join(target, ".claude/taxonomy.md")));
+    assert.ok(existsSync(join(target, ".claude/AGENTS.md")));
+  });
+});
+
+test("syncAssets: instalação antiga é limpa (claude, windsurf e kiro) pelo OBSOLETE_PATHS", () => {
+  const antigos = {
+    claude: [
+      "commands/AGENTS.md",
+      "commands/README.md",
+      "commands/all-tools.md",
+      "skills/AGENTS.md",
+      "skills/SKILLS-ROADMAP.md",
+      "skills/jarvis-docs-central/README.md",
+      "skills/product-roadmap-report/README.md",
+      "agents/AGENTS.md",
+      "agents/README.md",
+    ],
+    windsurf: ["workflows/AGENTS.md", "workflows/README.md", "workflows/all-tools.md"],
+    kiro: ["steering/AGENTS.md", "steering/README.md", "steering/all-tools.md"],
+  };
+  for (const [ide, arquivos] of Object.entries(antigos)) {
+    withJarvisRoot((root, target) => {
+      buildMinimalFramework(root);
+      for (const arquivo of arquivos) write(target, `.${ide}/${arquivo}`, "antigo");
+
+      syncAssets(target, ide, {
+        workflowsFolder: ide === "claude" ? "commands" : ide === "kiro" ? "steering" : "workflows",
+      });
+
+      for (const arquivo of arquivos) {
+        assert.ok(
+          !existsSync(join(target, `.${ide}/${arquivo}`)),
+          `${ide}: ${arquivo} deveria ter sido removido`
+        );
+      }
+      assert.ok(
+        existsSync(join(target, `.${ide}/AGENTS.md`)),
+        `${ide}: AGENTS.md da raiz da IDE deve ficar`
+      );
+    });
+  }
+});
+
+test("isExcludedFromSync: só documentação de pasta fica de fora; componentes e conteúdo passam", () => {
+  const fora = [
+    ["workflows", "AGENTS.md"],
+    ["workflows", "README.md"],
+    ["workflows", "product/README.md"], // aninhado: o flatten faria colidir com o da raiz
+    ["skills", "AGENTS.md"],
+    ["skills", "SKILLS-ROADMAP.md"],
+    ["skills", "jarvis-docs-central/README.md"],
+    ["agents", "AGENTS.md"],
+    ["agents", "README.md"],
+  ];
+  const dentro = [
+    ["workflows", ""], // a própria pasta
+    ["workflows", "warm-up.md"],
+    ["workflows", "taxonomy.md"],
+    ["workflows", "engineering/eng.start.md"],
+    ["skills", ""],
+    ["skills", "eng-backend/SKILL.md"],
+    ["skills", "eng-backend/references/README.md"], // conteúdo da skill, não documentação de pasta
+    ["skills", "eng-backend/assets/template.md"],
+    ["agents", "eng.agent.md"], // agent direto na raiz de agents/ é componente
+    ["agents", "engineering/eng.agent.md"],
+    ["agents", "engineering/README.md"], // só os da raiz de agents/ saem
+    ["templates", "AGENTS.md"], // fora do escopo da #89 (follow-up na #83)
+    ["rules", "engineering/eng-rules.md"],
+  ];
+  for (const [dir, rel] of fora) assert.equal(isExcludedFromSync(dir, rel), true, `${dir}/${rel}`);
+  for (const [dir, rel] of dentro)
+    assert.equal(isExcludedFromSync(dir, rel), false, `${dir}/${rel}`);
 });

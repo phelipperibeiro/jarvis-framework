@@ -12,7 +12,6 @@ workflows/
 ├── README.md
 ├── warm-up.md                 # aquecimento de contexto
 ├── taxonomy.md                # atalho /taxonomy
-├── all-tools.md
 ├── engineering/
 │   ├── eng.start.md
 │   ├── eng.plan.md

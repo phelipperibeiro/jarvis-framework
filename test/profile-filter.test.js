@@ -148,16 +148,19 @@ test("listRulesForProfile: rtk é opt-in, sem bloco é universal, recursivo em s
 // eng.docs-scraping-rules.md (fundida na seção 6 de eng.rpa-rules.md) e eng.rpa-rules.md movidos
 // para rules-on-demand/. bump e docs-scraping saem dos 4 perfis; rpa só saía de BACKEND e FULLCYCLE.
 // FULLCYCLE -3 arquivos (-11.893 B), BACKEND -3 (-11.893 B), FRONTEND -2 (-4.070 B), QA -2 (-4.070 B).
+// Issue #89 (auditoria de eficiência de tokens, item P0-06, 2026-10-06): eng.skills-rules.md
+// (AREA: ENGINEERING, universal entre os 4 perfis) ganhou a indicação de que `skills/AGENTS.md`
+// é do repositório e não é instalado na IDE — +51 B em cada perfil, nenhum arquivo adicionado.
 const BASE = [
   [
     "FULLCYCLE/GENERALIST/ENGINEERING/CORE",
     profile("FULLCYCLE", "GENERALIST", "ENGINEERING"),
     10,
-    74465,
+    74516,
   ],
-  ["BACKEND/SENIOR/ENGINEERING/CORE", profile("BACKEND", "SENIOR", "ENGINEERING"), 6, 41195],
-  ["FRONTEND/PLENO/ENGINEERING/CORE", profile("FRONTEND", "PLENO", "ENGINEERING"), 7, 49554],
-  ["QA/QA-ENGINEER/ENGINEERING/CORE", profile("QA", "QA-ENGINEER", "ENGINEERING"), 7, 48790],
+  ["BACKEND/SENIOR/ENGINEERING/CORE", profile("BACKEND", "SENIOR", "ENGINEERING"), 6, 41246],
+  ["FRONTEND/PLENO/ENGINEERING/CORE", profile("FRONTEND", "PLENO", "ENGINEERING"), 7, 49605],
+  ["QA/QA-ENGINEER/ENGINEERING/CORE", profile("QA", "QA-ENGINEER", "ENGINEERING"), 7, 48841],
 ];
 
 for (const [nome, p, arquivos, bytes] of BASE) {

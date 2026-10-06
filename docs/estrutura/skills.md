@@ -46,7 +46,7 @@ Frontmatter comum: `name`, `description` (descoberta na IDE / Codex `openai.yaml
 | Agent | Persona |
 | Skill | Detalhe de execução |
 
-Mapa comando → skill: ver tabela em `AGENTS.md` (raiz) e `skills/AGENTS.md`.
+Mapa comando → skill: ver a tabela em `skills/AGENTS.md` (só no repositório; não é copiada para a IDE).
 
 ## Áreas e nomes
 

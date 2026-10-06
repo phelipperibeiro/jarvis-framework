@@ -225,12 +225,7 @@ Quando atuar em um projeto alvo, detectar comandos em:
 
 ### AGENTS.md Aninhados
 
-Cada pasta pode ter seu proprio AGENTS.md com instrucoes especificas:
-- `$IDE/agents/AGENTS.md` - Instrucoes sobre agentes
-- `$IDE/skills/AGENTS.md` - Instrucoes sobre skills
-- `$IDE/templates/AGENTS.md` - Instrucoes sobre templates
-- `$IDE/workflows/AGENTS.md` - Instrucoes sobre workflows
-- `$IDE/commands/AGENTS.md` - Instrucoes sobre comandos
+Cada pasta pode ter seu proprio AGENTS.md com instrucoes especificas. No repositorio do Jarvis, `agents/`, `skills/` e `workflows/` tem cada uma o seu; eles nao sao copiados para a IDE. Na IDE instalada existe apenas `$IDE/templates/AGENTS.md` (instrucoes sobre templates).
 
 **Regra**: O AGENTS.md mais proximo tem precedencia.
 
@@ -272,7 +267,7 @@ Quando um agente atua em tema com skill correspondente, o skill e a fonte de ver
 
 ### Mapeamento
 
-Tabela completa de mapeamento comando/trigger → skill: ver `$IDE/skills/AGENTS.md`, seção "Mapeamento Comando → Skill".
+Tabela completa de mapeamento comando/trigger → skill: ver `skills/AGENTS.md`, seção "Mapeamento Comando → Skill", no repositorio do Jarvis (nao e copiada para a IDE; cada skill e escolhida pela propria `description`).
 
 ---
 
@@ -288,7 +283,7 @@ Tabela completa de mapeamento comando/trigger → skill: ver `$IDE/skills/AGENTS
 
 ## 8) Agentes Disponiveis
 
-Lista completa de agentes: ver `$IDE/agents/README.md`.
+Lista completa de agentes: `jarvis list` (ou `agents/README.md`, no repositorio do Jarvis; nao e copiado para a IDE).
 
 ---
 
@@ -297,9 +292,7 @@ Lista completa de agentes: ver `$IDE/agents/README.md`.
 - `.windsurfrules` - Regras globais
 - `$IDE/README.md` - Documentacao completa
 - `$IDE/JARVIS.md` - Guia de uso
-- `$IDE/agents/README.md` - Lista de agentes
-- `$IDE/workflows/README.md` - Lista de workflows
-- `$IDE/skills/AGENTS.md` - Skills disponiveis
+- `jarvis list` - Agentes, skills e workflows instalados (os guias `agents/README.md`, `workflows/README.md` e `skills/AGENTS.md` ficam no repositorio do Jarvis)
 - `$IDE/rules/engineering/` - Regras de engenharia
 - `$IDE/rules/product/` - Regras de produto
 - `$IDE/rules-on-demand/engineering/` - Regras de etapa (lidas pelo workflow)
