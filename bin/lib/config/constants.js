@@ -150,6 +150,10 @@ export const OBSOLETE_PATHS = Object.freeze([
   "steering/skills/skill-eng-backend-rabbitmq.md",
   "rules/engineering/data/data-rules.md",
   "steering/data-rules.md",
+  // rules/AGENTS.md e rules/product/README.md (issue #84): conteúdo de autoria movido
+  // para docs/estrutura/rules.md; rules/product/README.md era órfão, sem referências
+  "rules/AGENTS.md",
+  "rules/product/README.md",
 ]);
 
 /**

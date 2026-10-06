@@ -104,11 +104,10 @@ test("matchesProfile: GENERALIST satisfaz qualquer POSITION e AREA, mas não o H
   assert.equal(matchesProfile(a, profile("BACKEND", "GENERALIST", "ENGINEERING")), false);
 });
 
-test("listRulesForProfile: AGENTS.md nunca é filtrado, rtk é opt-in, sem bloco é universal", () => {
+test("listRulesForProfile: rtk é opt-in, sem bloco é universal, recursivo em subpastas", () => {
   const dir = mkdtempSync(join(tmpdir(), "jarvis-filtro-"));
   try {
     mkdirSync(join(dir, "engineering"), { recursive: true });
-    writeFileSync(join(dir, "AGENTS.md"), bloco("QA", "SENIOR", "PRODUCT", "OUTRO") + "\n");
     writeFileSync(join(dir, "universal.md"), "# Sem bloco\n");
     writeFileSync(join(dir, "rtk-rules.md"), bloco("all", "all", "all", "all") + "\n");
     writeFileSync(
@@ -121,12 +120,12 @@ test("listRulesForProfile: AGENTS.md nunca é filtrado, rtk é opt-in, sem bloco
     const sem = listRulesForProfile(dir, p)
       .map((r) => r.path)
       .sort();
-    assert.deepEqual(sem, ["AGENTS.md", "engineering/back.md", "universal.md"]);
+    assert.deepEqual(sem, ["engineering/back.md", "universal.md"]);
 
     const com = listRulesForProfile(dir, p, { rtkEnabled: true })
       .map((r) => r.path)
       .sort();
-    assert.deepEqual(com, ["AGENTS.md", "engineering/back.md", "rtk-rules.md", "universal.md"]);
+    assert.deepEqual(com, ["engineering/back.md", "rtk-rules.md", "universal.md"]);
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }
@@ -220,16 +219,21 @@ test("listRulesForProfile: AGENTS.md nunca é filtrado, rtk é opt-in, sem bloco
 // Issue #199 (2026-10-30): +1 arquivo e +1126 B em todos os perfis — company-overlay-rules.md (994 B, universal: todo workspace tem um overlay) e a linha dela no rules/AGENTS.md (+132 B).
 // Issue #200 (2026-10-31): +136 B em todos os perfis — eng.integrations-rules.md (universal) aponta o nome da branch do freelance para a skill eng-global-branch (128 B na Fase 3, +8 B na Fase 6).
 // Issue #209 (2026-11-01): −1 arquivo e −7016 B só no FULLCYCLE — data-rules.md (HUB: DATA) removida; a base eng-data cobre o tema.
+// Issue #84 (auditoria de eficiência de tokens, item P0-01, 2026-10-05): rules/AGENTS.md
+// (6.724 B) e rules/product/README.md (1.519 B) removidos — eram universais (sem bloco
+// `Applies to`, o primeiro com caso especial no código), então saem da contagem dos 4
+// perfis igualmente: -2 arquivos e -9.165 B em cada um (eram 8.243 B no #84; o rules/AGENTS.md
+// cresceu na main até o rebase da branch sobre ela, em 2026-11-01).
 const BASE = [
   [
     "FULLCYCLE/GENERALIST/ENGINEERING/CORE",
     profile("FULLCYCLE", "GENERALIST", "ENGINEERING"),
-    15,
-    98697,
+    13,
+    89532,
   ],
-  ["BACKEND/SENIOR/ENGINEERING/CORE", profile("BACKEND", "SENIOR", "ENGINEERING"), 12, 72184],
-  ["FRONTEND/PLENO/ENGINEERING/CORE", profile("FRONTEND", "PLENO", "ENGINEERING"), 12, 72727],
-  ["QA/QA-ENGINEER/ENGINEERING/CORE", profile("QA", "QA-ENGINEER", "ENGINEERING"), 12, 71963],
+  ["BACKEND/SENIOR/ENGINEERING/CORE", profile("BACKEND", "SENIOR", "ENGINEERING"), 10, 63019],
+  ["FRONTEND/PLENO/ENGINEERING/CORE", profile("FRONTEND", "PLENO", "ENGINEERING"), 10, 63562],
+  ["QA/QA-ENGINEER/ENGINEERING/CORE", profile("QA", "QA-ENGINEER", "ENGINEERING"), 10, 62798],
 ];
 
 for (const [nome, p, arquivos, bytes] of BASE) {
