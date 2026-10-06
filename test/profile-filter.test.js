@@ -224,16 +224,20 @@ test("listRulesForProfile: rtk é opt-in, sem bloco é universal, recursivo em s
 // `Applies to`, o primeiro com caso especial no código), então saem da contagem dos 4
 // perfis igualmente: -2 arquivos e -9.165 B em cada um (eram 8.243 B no #84; o rules/AGENTS.md
 // cresceu na main até o rebase da branch sobre ela, em 2026-11-01).
+// Issue #85 (auditoria de eficiência de tokens, item P0-02, 2026-10-06): prod-rules.md
+// (AREA: all) perdeu o bloco de ENV/$IDE/isolamento já coberto por eng-rules.md — de 12.015 B
+// para 9.317 B (-2.698 B; eram -2.673 B no #85, antes do rebase sobre a main), mesmo delta nos
+// 4 perfis; nenhum arquivo removido.
 const BASE = [
   [
     "FULLCYCLE/GENERALIST/ENGINEERING/CORE",
     profile("FULLCYCLE", "GENERALIST", "ENGINEERING"),
     13,
-    89532,
+    86834,
   ],
-  ["BACKEND/SENIOR/ENGINEERING/CORE", profile("BACKEND", "SENIOR", "ENGINEERING"), 10, 63019],
-  ["FRONTEND/PLENO/ENGINEERING/CORE", profile("FRONTEND", "PLENO", "ENGINEERING"), 10, 63562],
-  ["QA/QA-ENGINEER/ENGINEERING/CORE", profile("QA", "QA-ENGINEER", "ENGINEERING"), 10, 62798],
+  ["BACKEND/SENIOR/ENGINEERING/CORE", profile("BACKEND", "SENIOR", "ENGINEERING"), 10, 60321],
+  ["FRONTEND/PLENO/ENGINEERING/CORE", profile("FRONTEND", "PLENO", "ENGINEERING"), 10, 60864],
+  ["QA/QA-ENGINEER/ENGINEERING/CORE", profile("QA", "QA-ENGINEER", "ENGINEERING"), 10, 60100],
 ];
 
 for (const [nome, p, arquivos, bytes] of BASE) {
