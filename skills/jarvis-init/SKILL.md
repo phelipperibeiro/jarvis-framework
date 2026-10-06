@@ -588,6 +588,7 @@ Nunca grave TOKEN_VERSION_CONTROL (chave removida do template).
 | `CENTRAL_DOCS_REPO` / `_REF` / `_TARGET_BRANCH` / `_REVIEWERS` / `_CACHE_TTL` | *(opcional)* | Docs centrais |
 | `SESSIONS_DIR` | `.jarvis/sessions` | Não perguntar — gravar fixo |
 | `RTK_ENABLED` | `false` (ou true se detectar `rtk`) | Token Killer |
+| `ADVISOR_MODELS` | `"Sonnet 5.5,Opus 5.5,Opus 5,Fable 5.1"` | Advisor do `eng.start` — não perguntar, gravar o padrão |
 
 #### 4.1 Detecção do RTK (Token Killer)
 

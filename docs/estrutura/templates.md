@@ -12,6 +12,7 @@ templates/
 ├── ENV-template.md              # ÚNICA fonte do ENV.md no init (fork)
 └── engineering/
     ├── AGENTS-template.md       # gera AGENTS.md do projeto alvo
+    ├── advisor-template.md      # prompts e auditoria do Advisor (eng.start)
     ├── ARD-template.md
     ├── RFC-template.md
     ├── RFC-Playbook.md

@@ -9,6 +9,7 @@ Este diretório contém **agentes especializados** organizados por domínio, usa
 ```
 agents/
 ├── engineering/                  # ⚙️ Agentes do domínio de Engenharia
+│   ├── eng.advisor.agent.md      # Advisor opcional das questões em aberto (eng.start)
 │   ├── eng.agent.md              # Agent principal de engenharia
 │   ├── eng.bug-hunter.md         # Caça e análise de bugs
 │   ├── eng.dev-code-reviewer.md  # Code reviewer
@@ -44,6 +45,7 @@ Agentes específicos para fluxos e regras do domínio de Engenharia.
 - `eng.rpa.agent.md` - `@eng.rpa` - Automação e scraping RPA (ARACHNE)
 - `eng.frontend.agent.md` - `@eng.frontend` - Especialista frontend (neutro de stack): UI, estado, performance, a11y
 - `eng.ux-designer.agent.md` - `@eng.ux-designer` - Especialista UX/UI: heurísticas Nielsen, jornada, microcopy
+- `eng.advisor.agent.md` - `@eng.advisor.agent` - Advisor opcional: orienta as questões em aberto do `eng.start` (modelo escolhido pelo usuário)
 
 
 ### Data Agents (1)

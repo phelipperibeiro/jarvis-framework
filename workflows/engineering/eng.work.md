@@ -25,7 +25,6 @@ Este comando executa a **implementação de código** seguindo o plano de execu�
 |-------|-------|----------|
 | Cabeçalho (agente) | `eng.agent` (agente) | Sempre — identidade do workflow |
 | Fase 0 › 0.1 Verificar ou Gerar Contexto da Sessão | `/jarvis-context-detect` | Se `ENABLE_CDD=true` e o `context.md` não existir (obrigatório antes da Fase 1) |
-| Fase 0.5: Comentário no card — Início | `/eng-global-task-comment` | Se `TASK_MANAGER` estiver preenchido (freelance pula) |
 | Fase 3 › 3.1 Implementar Código (skill de domínio) | `/eng-frontend` (via `eng.specializations-rules.md`) | Se o domínio da feature for frontend (componentes, UI, estado, estilos, bundle, a11y); a regra também carrega `FRONTEND_SPECIALIZATIONS` |
 | Fase 3 › 3.1 Implementar Código (skill de domínio) | `/eng-backend` (via `eng.specializations-rules.md`) | Se o domínio da feature for backend (endpoints, auth, workers, filas, cache, banco, integrações); a regra também carrega `BACKEND_SPECIALIZATIONS` |
 | Fase 3 › 3.1 Implementar Código (skill de domínio) | `/eng-automation` (via `eng.specializations-rules.md`) | Se o domínio da feature for RPA, scraping, extração de dados, ETL ou parsing; a regra também carrega `AUTOMATION_SPECIALIZATIONS` |
@@ -33,7 +32,8 @@ Este comando executa a **implementação de código** seguindo o plano de execu�
 | Fase 3 › 3.3.1 Identificar Gaps de Teste | `eng.qa.test-planner` (agente) | Sempre, depois de implementar o código da fase |
 | Fase 3 › 3.3.2 Implementar Testes Faltantes (Opção A) | `eng.qa.testing-engineer` (agente) | Se o test-planner identificar gaps e a estratégia do `architecture.md` seção 6.5 indicar testes manuais (unitário/integração) |
 | Fase 3 › 3.3.2 Implementar Testes Faltantes (Opção B) | `/eng-qa` | Se a estratégia do `architecture.md` seção 6.5 indicar uma especialização registrada em `QA_SPECIALIZATIONS` |
-| Fase 6 › 6.2 Se Todas as Fases Foram Concluídas | `/eng-global-task-comment` | Se `TASK_MANAGER` estiver preenchido e todas as fases estiverem concluídas (freelance pula) |
+| Fase 3 › 3.1 Implementar Código (exceção) | `eng.advisor.agent` (agente) | Só por exceção: questão nova em aberto, com o Advisor habilitado no `eng.start` (cabeçalho do `architecture.md`) |
+| Fase 5 › 5.4 e "Se houver bloqueio técnico" | `/eng-global-task-comment` | Se houver desvio do plano: mudança de direção, fase bloqueada ou questão nova consultada ao Advisor (freelance pula) |
 
 ---
 
@@ -137,20 +137,6 @@ Use as características do projeto detectadas:
 
 ---
 
-## Fase 0.5: Comentário no card — Início
-
-Pular se `TASK_MANAGER` estiver vazio (freelance).
-
-Antes de iniciar a implementação, registrar início:
-
-```
-/eng-global-task-comment {TASK_MANAGER_KEY} ⚙️ [Jarvis] Iniciando implementação - Fase {N} do plano
-```
-
-> Usa o skill `/eng-global-task-comment`. Não bloquear se falhar.
-
----
-
 ## Fase 1: Leitura da Sessão
 
 ### 1.1 Carregar Arquivos
@@ -234,6 +220,8 @@ Para cada tarefa da fase:
 3. **Criar testes**
    - Testes unitários para cada função/método
    - Cobrir casos de sucesso e erro
+
+**Questão nova em aberto (exceção).** O ideal é que todas as questões tenham sido levantadas no `eng.start`. Se surgir uma nova e o cabeçalho do `architecture.md` indicar um Advisor, consulte `eng.advisor.agent` com o Prompt 2 de `$IDE/templates/engineering/advisor-template.md` (refaça o Prompt 1 se o subagente não existir mais), acrescente a questão à seção 8 marcada "levantada no `eng.work`", adote a sugestão do Advisor e poste o comentário de auditoria com `/eng-global-task-comment` (é desvio do plano; cite-o no PR como lacuna do `eng.start`). Sem Advisor, pergunte ao usuário.
 
 ### 3.2 Executar Validações Locais
 
@@ -414,6 +402,8 @@ Atualize o `plan.md`:
 - **Atenção**: {ponto importante para próximas fases}
 ```
 
+Se o comentário registrar uma **mudança de direção** (desvio do plano), comente também no card com `/eng-global-task-comment`, dizendo o que mudou e por quê (freelance pula).
+
 ### 5.3 Commit da Fase (GitFlow)
 
 Após validação do usuário e atualização do `plan.md`, commitar a fase na branch atual:
@@ -479,12 +469,6 @@ Refs: TASK-123"
 
 ### 6.2 Se Todas as Fases Foram Concluídas
 
-**Comentário no card — Conclusão** (pular se freelance):
-
-```
-/eng-global-task-comment {TASK_MANAGER_KEY} ✅ [Jarvis] Implementação concluída - todas as {N} fases completadas. Commits realizados por fase.
-```
-
 ```
 🎉 TODAS AS FASES CONCLUÍDAS!
 
@@ -544,5 +528,6 @@ Refs: TASK-123"
 ### Se houver bloqueio técnico:
 
 → Documente no plan.md como `[Bloqueada 🚫]`
+→ Comente o bloqueio no card com `/eng-global-task-comment` (desvio do plano; freelance pula)
 → Explique o bloqueio ao usuário
 → Sugira alternativas se possível

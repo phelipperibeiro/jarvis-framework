@@ -44,6 +44,8 @@ O workflow **só é considerado completo** após:
 2. O usuário revisar o documento
 3. O usuário **aprovar explicitamente** para prosseguir
 
+**Exceção (Advisor):** se o usuário escolheu usar o Advisor no início do `eng.start`, as questões em aberto são decididas pela sugestão dele e o gate segue a autonomia do `context.md`: com `autonomia: alta` o `start` apresenta o resumo e segue para o `eng.plan` sem aguardar; com `média` ou `baixa`, a aprovação explícita continua obrigatória.
+
 ---
 
 ## Comportamento Esperado

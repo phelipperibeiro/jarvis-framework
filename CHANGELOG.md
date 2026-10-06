@@ -6,6 +6,19 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), e o
 
 > Versões anteriores a `2.1.1` não foram documentadas retroativamente neste changelog — o histórico detalhado dessas versões continua disponível via `git log`.
 
+## [3.2.0] - 2026-10-06
+
+### Added
+- **Advisor opcional no `eng.start`** (#140): no início do comando, o usuário escolhe se quer um Advisor e com qual modelo (lista `ADVISOR_MODELS` no `ENV.md`, até 4 opções; fallback `Sonnet 5.5`). O Advisor é um subagente novo, `agents/engineering/eng.advisor.agent.md` (sem `model:` fixo, só leitura, no GitHub só consulta), aberto só na primeira questão em aberto: faz uma carga inicial do contexto (card, documentos de especificação, sessão) e responde a uma questão por mensagem. A sugestão dele é a decisão adotada; o agente principal registra tudo num comentário de auditoria na issue
+- `templates/engineering/advisor-template.md`: Prompt 1 (carga inicial), Prompt 2 (questão em aberto) e o modelo do comentário de auditoria
+- `ADVISOR_MODELS` em `templates/ENV-template.md` (o Upgrade do `/jarvis-init` acrescenta a variável) e na tabela de opcionais do `jarvis-init`, sem pergunta na criação do `ENV.md`
+
+### Changed
+- `templates/engineering/architecture-template.md`: campo `Advisor:` no cabeçalho e a seção 8 "Questões em Aberto" reescrita (contexto, arquivos, dúvida, no mínimo 3 opções mais "4 — Outra", sugestões do agente principal e do Advisor, decisão adotada, divergência e impacto)
+- `eng.start`: a Fase 0.5 vira "Advisor (opcional)", a nova Fase 4.3 trata as questões em aberto e, com Advisor, o gate de aprovação segue a autonomia do CDD (`alta` segue sem esperar); `eng.start-rules.md` registra a exceção
+- `eng.plan` e `eng.work`: consulta ao Advisor só por exceção, quando surge uma questão nova (o ideal é levantar tudo no `eng.start`)
+- **Comentários no `TASK_MANAGER` só para eventos relevantes:** desvio do plano, auditoria do Advisor, bloqueio (pré-PR reprovado) e, uma única vez, o link do MR. Saíram os 10 comentários de início e fim de `eng.start`, `eng.plan`, `eng.work`, `eng.pre-pr` e `eng.pr` (e as duas duplicatas do link do MR no `eng.pr`); regra única em `rules/engineering/eng.integrations-rules.md`
+
 ## [3.0.0] - 2026-10-05
 
 ### Added

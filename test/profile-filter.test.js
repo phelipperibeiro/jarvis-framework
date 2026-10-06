@@ -155,16 +155,19 @@ test("listRulesForProfile: rtk é opt-in, sem bloco é universal, recursivo em s
 // (AREA: PRODUCT) ganhou 3 seções comuns dos comandos prod.spec.* (+2.131 B). Só o perfil
 // FULLCYCLE/GENERALIST do BASE a carrega (GENERALIST satisfaz qualquer AREA); BACKEND, FRONTEND e QA
 // não mudam. Em contrapartida os 4 workflows perderam ≈ 5,5 KB, lidos só quando o comando roda.
+// Issue #140 (Advisor opcional e comentários no card só para eventos relevantes, 2026-10-06):
+// eng.integrations-rules.md (universal) trocou a seção "Comentário no card" pela regra dos
+// eventos relevantes (+482 B) — delta igual nos 4 perfis, nenhum arquivo adicionado.
 const BASE = [
   [
     "FULLCYCLE/GENERALIST/ENGINEERING/CORE",
     profile("FULLCYCLE", "GENERALIST", "ENGINEERING"),
     10,
-    76647,
+    77129,
   ],
-  ["BACKEND/SENIOR/ENGINEERING/CORE", profile("BACKEND", "SENIOR", "ENGINEERING"), 6, 41246],
-  ["FRONTEND/PLENO/ENGINEERING/CORE", profile("FRONTEND", "PLENO", "ENGINEERING"), 7, 49605],
-  ["QA/QA-ENGINEER/ENGINEERING/CORE", profile("QA", "QA-ENGINEER", "ENGINEERING"), 7, 48841],
+  ["BACKEND/SENIOR/ENGINEERING/CORE", profile("BACKEND", "SENIOR", "ENGINEERING"), 6, 41728],
+  ["FRONTEND/PLENO/ENGINEERING/CORE", profile("FRONTEND", "PLENO", "ENGINEERING"), 7, 50087],
+  ["QA/QA-ENGINEER/ENGINEERING/CORE", profile("QA", "QA-ENGINEER", "ENGINEERING"), 7, 49323],
 ];
 
 for (const [nome, p, arquivos, bytes] of BASE) {

@@ -43,9 +43,8 @@ Este comando cria a **branch, commita as alterações e abre um Merge Request**.
 | Fase 1 › 1.4 Executar Testes Automatizados (Opcional) | `/eng-qa` + `QA_SPECIALIZATIONS` | Passo opcional, recomendado em mudanças significativas |
 | Skills recomendados | `/eng-global-docs-write` | Se houver necessidade de atualizar documentação junto do PR |
 | Agentes recomendados (opcional) | `eng.qa.test-planner` (agente) | Se houver dúvidas sobre cobertura de testes ou mudanças significativas |
-| Fase 0.5: Comentário no card — Início | `/eng-global-task-comment` | Se `TASK_MANAGER` estiver preenchido (freelance pula) |
 | Fase 4 › 4.2 Criar MR/PR via adapter | `jarvis vcs create-merge` (CLI do Jarvis) | Sempre — abre o MR/PR conforme `VERSION_CONTROL` ou o host do `origin` |
-| Fase 5: Comentário no card — Conclusão | `/eng-global-task-comment` | Se `TASK_MANAGER` estiver preenchido, depois de o MR ser criado (freelance pula) |
+| Fase 6 › 6.2 Link do MR | `/eng-global-task-comment` | Depois de o MR ser criado: um único comentário no card com o link do MR, seguindo o Passo 6 do skill `eng-global-pr` (freelance pula) |
 
 ---
 
@@ -64,20 +63,6 @@ Ler `TASK_MANAGER` do `$IDE/ENV.md`. Seguir `$IDE/rules/engineering/eng.integrat
 
 > A branch de destino **padrão é `dev`** (GitFlow). Só perguntar se o usuário indicar outra branch (ex: hotfix direto para `main`).
 > 💡 A branch de feature já foi criada no `eng.start`. Este workflow apenas faz push e abre o MR.
-
----
-
-## Fase 0.5: Comentário no card — Início
-
-Pular se `TASK_MANAGER` estiver vazio (freelance).
-
-Registrar início da criação do MR:
-
-```
-/eng-global-task-comment {TASK_MANAGER_KEY} 🔀 [Jarvis] Iniciando criação do Merge Request para {TARGET_BRANCH}
-```
-
-> Usa o skill `/eng-global-task-comment`. Não bloquear se falhar.
 
 ---
 
@@ -248,18 +233,6 @@ Se o CLI `jarvis` não estiver instalado no repo alvo, usar `node {caminho-do-cl
 
 ---
 
-## Fase 5: Comentário no card — Conclusão
-
-Pular se `TASK_MANAGER` estiver vazio (freelance).
-
-Após MR criado com sucesso, registrar:
-
-```
-/eng-global-task-comment {TASK_MANAGER_KEY} ✅ [Jarvis] MR criado: {TITULO_DO_MR} → {TARGET_BRANCH} | Link: {LINK_DO_MR}
-```
-
----
-
 ## Fase 6: Atualizar Board
 
 Pular se `TASK_MANAGER` estiver vazio (freelance).
@@ -268,14 +241,9 @@ Pular se `TASK_MANAGER` estiver vazio (freelance).
 
 Mova o card para a etapa equivalente a "em revisão" no seu board. Quem assumiu o card o move; não é preciso esperar o TECH LEAD ou o PM.
 
-### 6.2 Adicionar Comentário
+### 6.2 Link do MR no card
 
-Adicione um comentário no card com o link do MR:
-
-```
-MR aberto: {LINK_DO_MR}
-Branch: {NOME_DA_BRANCH}
-```
+Siga o Passo 6 do skill `eng-global-pr`: um único comentário no card, com o link e a branch. É o único comentário do `eng.pr` no card.
 
 ---
 

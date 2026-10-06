@@ -144,6 +144,16 @@ SMTP=[google, ses, sendgrid]
 RTK_ENABLED=false
 
 
+# --- Advisor (opcional) ------------------------------------------------------
+# Modelos oferecidos quando o usuário escolhe usar o Advisor no início do eng.start,
+# separados por vírgula. Até 4 viram opções da pergunta; o resto fica em "Outro".
+# Vazio ou ausente = o Advisor usa "Sonnet 5.5" (fallback).
+# Tradução para a IDE pela família (primeira palavra, em minúsculas: Sonnet → sonnet,
+# Opus → opus, Fable → fable). No Claude Code só a família é respeitada: "Opus 5.5"
+# e "Opus 5" abrem o mesmo modelo; remova um deles se quiser só opções distintas.
+ADVISOR_MODELS="Sonnet 5.5,Opus 5.5,Opus 5,Fable 5.1"
+
+
 # --- Data Engineering (só se HUB=DATA) ---------------------------------------
 # Obrigatório quando HUB=DATA. Omitir o bloco inteiro se o HUB for outro.
 DATA_ORCHESTRATOR=[airflow, prefect, dagster, glue-scheduler]
