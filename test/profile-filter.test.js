@@ -236,12 +236,17 @@ test("listRulesForProfile: rtk é opt-in, sem bloco é universal, recursivo em s
 // Issue #89 (auditoria de eficiência de tokens, item P0-06, 2026-10-06): eng.skills-rules.md
 // (AREA: ENGINEERING, universal entre os 4 perfis) ganhou a indicação de que `skills/AGENTS.md`
 // é do repositório e não é instalado na IDE — +51 B em cada perfil, nenhum arquivo adicionado.
+// Issue #105 (auditoria de eficiência de tokens, item P1-13, 2026-10-06): prod.spec-rules.md
+// (AREA: PRODUCT) ganhou 3 seções comuns dos comandos prod.spec.* (+1.523 B; eram +2.131 B no #105,
+// antes do rebase sobre a main, que já tinha enxugado a rule). Só o perfil
+// FULLCYCLE/GENERALIST do BASE a carrega (GENERALIST satisfaz qualquer AREA); BACKEND, FRONTEND e QA
+// não mudam. Em contrapartida os 4 workflows perderam ≈ 5,5 KB, lidos só quando o comando roda.
 const BASE = [
   [
     "FULLCYCLE/GENERALIST/ENGINEERING/CORE",
     profile("FULLCYCLE", "GENERALIST", "ENGINEERING"),
     10,
-    75034,
+    76557,
   ],
   ["BACKEND/SENIOR/ENGINEERING/CORE", profile("BACKEND", "SENIOR", "ENGINEERING"), 7, 48521],
   ["FRONTEND/PLENO/ENGINEERING/CORE", profile("FRONTEND", "PLENO", "ENGINEERING"), 8, 56880],

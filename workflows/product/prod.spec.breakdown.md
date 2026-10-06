@@ -64,13 +64,7 @@ Utilize o `$ARGUMENTS` como ponto de partida (caminho da spec, nome da feature o
 
 O artefato de breakdown segue o template `$PROD_TEMPLATES/prod-breakdown-template.md`.
 
-## Busca de contexto (`$PROD_DOCS` sempre; Central docs se configurado)
-
-O Documento de Requisitos de Produto / funcional vem sempre de `$PROD_DOCS`. Se `CENTRAL_DOCS_STORAGE` estiver no `ENV.md`, além disso:
-
-1. `jarvis docs sync --silent` (best-effort)
-2. Localizar no Central docs as funcionalidades já implementadas relacionadas (nome, tags, `TASK_MANAGER_KEY`); o Documento de Requisitos de Produto / funcional vem de `$PROD_DOCS`
-3. Usar como contexto; se não achar, seguir com arquivos locais em `$PROD_DOCS`
+**Busca de contexto:** ver `$PROD_RULES/prod.spec-rules.md`. Aqui, em modo best-effort, localiza em `$PROD_DOCS` o **PRD/FRD pai** (nome, tags, `TASK_MANAGER_KEY`) e, com o Central docs configurado, as funcionalidades já implementadas relacionadas; usa como contexto e, se não achar, segue com os arquivos locais (sem perguntar).
 
 ## Sessões
 

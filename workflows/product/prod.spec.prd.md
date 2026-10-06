@@ -39,37 +39,11 @@ Utilize o `$ARGUMENTS` que o usuário passar como ponto de partida e para entend
 |-------|-------|----------|
 | Busca no Central Docs (condicional) | `/jarvis-docs-central` (via `jarvis docs sync --silent`) | Se `CENTRAL_DOCS_STORAGE` estiver definido no ENV.md (PRD novo ou iteração; o PRD existente vem de `$PROD_DOCS`) |
 
-## Princípios Fundamentais
-1. **Sempre use o template** `$PROD_TEMPLATES/prod-prd-template.md` para o output final
-2. **Nunca crie o arquivo final com suposições não validadas** — sempre confirme sugestões primeiro
-3. **Seja inteligente, não robótico** — analise o contexto e proponha sugestões inteligentes, não faça perguntas vazias
+**Princípios:** ver `$PROD_RULES/prod.spec-rules.md` (Princípios dos comandos `prod.spec.*`). Template deste comando: `$PROD_TEMPLATES/prod-prd-template.md`.
 
 ---
 
-## Busca de contexto (`$PROD_DOCS` sempre; Central docs se configurado)
-
-A busca em `$PROD_DOCS` é sempre feita. A consulta ao Central docs (o que já foi implementado) só acontece se `CENTRAL_DOCS_STORAGE` estiver definido no ENV.md; vazio, pule só o `jarvis docs sync`.
-
-1. **Para iteração de PRD existente:**
-   - Consultar no Central docs as funcionalidades já implementadas relacionadas (o que existe hoje):
-     ```bash
-     jarvis docs sync --silent
-     ```
-   - Buscar o PRD relacionado em `$PROD_DOCS` (documento de trabalho; o Central docs não guarda PRD) usando:
-     - Nome/contexto do PRD fornecido pelo usuário
-     - Jira ID (se disponível)
-     - Tags semânticas
-   - Se o PRD for encontrado em `$PROD_DOCS`:
-     - Carregar automaticamente como base para iteração
-     - Informar ao usuário: "✅ PRD encontrado: [caminho]"
-     - Usar como contexto para o Gate 1 (Fluxo de Trabalho, abaixo)
-   - Se não encontrado:
-     - Perguntar ao usuário se tem PRD localmente
-     - Continuar com fluxo normal
-
-2. **Para PRD novo:**
-   - Pular a busca de PRD existente (a consulta ao Central docs, se configurado, continua)
-   - Continuar com criação normal
+**Busca de contexto:** ver `$PROD_RULES/prod.spec-rules.md`. Aqui, busca o **PRD existente** em `$PROD_DOCS` apenas na iteração de um PRD (PRD novo pula essa busca; a consulta ao Central docs, se configurado, continua). Se encontrar, carrega como base e usa como contexto para o Gate 1; se não encontrar, pergunta se o usuário tem o PRD localmente e segue o fluxo normal.
 
 ## Fluxo de Trabalho
 
@@ -177,7 +151,4 @@ Quais métricas? A) Engajamento B) Receita C) Outro
   - Se for uma spec nova:
     - Salve na pasta `$PROD_DOCS` seguindo todos os padrões de nomenclatura e estrutura de pastas já estabelecidos em `$PROD_RULES/**/*`
 
-## Central docs
-
-Este documento é um **documento de trabalho**: fica em `$PROD_DOCS`/`$ENG_DOCS` (`docs/jarvis/`) e **não** é publicado no Central docs. O Central docs registra só o que foi implementado, e quem o atualiza é o `/eng.spec-consolidate`, depois do PR da entrega.
-
+**Central docs:** documento de trabalho, não é publicado no Central docs (ver `$PROD_RULES/prod.spec-rules.md`).
