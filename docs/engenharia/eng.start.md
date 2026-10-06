@@ -26,19 +26,21 @@ Além do documento, ele prepara o ambiente: cria a **branch de feature** a parti
 ## Como funciona
 
 1. **Identifica a tarefa.** Se você não passou o `TASK_MANAGER_KEY`, ele pergunta. Sem board configurado (modo freelance), você informa um número de controle próprio
-2. **Calibra o contexto** (CDD) e confirma com você
+2. **Calibra o contexto** (CDD) e confirma com você; em seguida pergunta se você quer usar o **Advisor** nas questões em aberto e, se sim, com qual modelo (lista `ADVISOR_MODELS` do `ENV.md`)
 3. **Prepara o ambiente:** branch de feature e pasta da sessão
 4. **Entende a tarefa:** coleta informações, busca documentação central se estiver configurada e faz de 3 a 5 perguntas de clarificação
 5. **Investiga o código** (somente leitura): padrões, documentação existente e estratégia de testes
-6. **Escreve o `architecture.md`** pelo template, com componentes impactados reais, decisões justificadas, riscos com mitigação e estratégia de testes
-7. **Apresenta e itera** até você aprovar de forma explícita
-8. Lembra você de mover o card para "Em progresso" e registra o fim do planejamento no card (quando há board)
+6. **Escreve o `architecture.md`** pelo template, com componentes impactados reais, decisões justificadas, riscos com mitigação e estratégia de testes. Tudo que for diferente do código ou ambíguo no card vira uma **questão em aberto** (seção 8), com no mínimo 3 opções; com Advisor, a sugestão dele é a decisão adotada e fica registrada num comentário de auditoria na issue
+7. **Apresenta e itera** até você aprovar de forma explícita (com Advisor e autonomia alta no CDD, apresenta o resumo e segue para o `eng.plan`)
+8. Lembra você de mover o card para "Em progresso" (quando há board)
 
 ## Regras que importam
 
 - **Só planejamento:** não escreve código, não executa, não commita
 - **Nunca cria branch a partir de `main`/`master`**, sempre de `dev`
-- **Nunca avança sozinho:** só termina com aprovação explícita do documento
+- **Nunca avança sozinho:** só termina com aprovação explícita do documento, exceto com o Advisor habilitado e autonomia alta no CDD
+- **Advisor (opcional):** um subagente (`eng.advisor.agent`) com o modelo que você escolher, consultado só nas questões em aberto; os prompts e o modelo de auditoria ficam em `templates/engineering/advisor-template.md`. A lista de modelos oferecidos vem de `ADVISOR_MODELS` no `ENV.md`; no Claude Code só a família do modelo é respeitada
+- **No card, só eventos relevantes:** auditoria do Advisor (quando usado); nada de comentário de início ou fim
 - **Não assume requisitos:** distingue fato de suposição e pergunta
 - **Stack do projeto:** em trabalho de backend ou de frontend, carrega a skill base mais as **especializações** registradas no `ENV.md` (`BACKEND_SPECIALIZATIONS` e `FRONTEND_SPECIALIZATIONS`); se algum skill instalado não tem `metadata.area`, **o comando é interrompido** ([especializações de stack](../especializacoes-de-stack.md))
 - Toda feature precisa registrar em `architecture.md` os pontos de segurança (dados sensíveis, superfície de ataque, modelo de auth), ou declarar "sem superfície de segurança identificada"

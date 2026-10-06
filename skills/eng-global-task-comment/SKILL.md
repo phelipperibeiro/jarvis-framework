@@ -2,7 +2,7 @@
 name: eng-global-task-comment
 description: >
   Adiciona um comentário no card do TASK_MANAGER (Jira, Linear, GitHub Issues ou Asana).
-  Trigger: registrar progresso, início ou fim de etapa em um card.
+  Trigger: registrar no card um evento relevante: desvio do plano, auditoria do Advisor, bloqueio ou o link do MR (nunca início ou fim de etapa).
 argument-hint: "{TASK_MANAGER_KEY} {mensagem}"
 disable-model-invocation: false
 allowed-tools: Read Bash MCP

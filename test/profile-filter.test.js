@@ -138,16 +138,19 @@ test("listRulesForProfile: AGENTS.md nunca é filtrado, rtk é opt-in, sem bloco
 // Consolidação de data em eng-data (2026-10-05): eng.specializations-rules.md trocou
 // `eng-data-engineer` por `eng-data` na tabela de skill base — rule universal, delta igual
 // nos 4 perfis.
+// Issue #140 (Advisor opcional e comentários no card só para eventos relevantes, 2026-10-06):
+// eng.integrations-rules.md (universal) trocou a seção "Comentário no card" pela regra dos
+// eventos relevantes (+482 B) — delta igual nos 4 perfis, nenhum arquivo adicionado.
 const BASE = [
   [
     "FULLCYCLE/GENERALIST/ENGINEERING/CORE",
     profile("FULLCYCLE", "GENERALIST", "ENGINEERING"),
     15,
-    97274,
+    97756,
   ],
-  ["BACKEND/SENIOR/ENGINEERING/CORE", profile("BACKEND", "SENIOR", "ENGINEERING"), 11, 64004],
-  ["FRONTEND/PLENO/ENGINEERING/CORE", profile("FRONTEND", "PLENO", "ENGINEERING"), 11, 64540],
-  ["QA/QA-ENGINEER/ENGINEERING/CORE", profile("QA", "QA-ENGINEER", "ENGINEERING"), 11, 63776],
+  ["BACKEND/SENIOR/ENGINEERING/CORE", profile("BACKEND", "SENIOR", "ENGINEERING"), 11, 64486],
+  ["FRONTEND/PLENO/ENGINEERING/CORE", profile("FRONTEND", "PLENO", "ENGINEERING"), 11, 65022],
+  ["QA/QA-ENGINEER/ENGINEERING/CORE", profile("QA", "QA-ENGINEER", "ENGINEERING"), 11, 64258],
 ];
 
 for (const [nome, p, arquivos, bytes] of BASE) {

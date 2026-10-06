@@ -41,25 +41,11 @@ Antes de executar este workflow:
 | Passo | Skill | Condição |
 |-------|-------|----------|
 | Cabeçalho (agente) | `eng.agent` (agente) | Sempre — identidade do workflow |
-| Fase 0.5: Comentário no card — Início | `/eng-global-task-comment` | Se `TASK_MANAGER` estiver preenchido (freelance pula) |
 | Fase 0 › 0.1 Herdar Contexto da Sessão | `/jarvis-context-detect` | Se `ENABLE_CDD=true` e o `context.md` não existir |
 | Fase 2: Pesquisa no Codebase | `repoprompt` (MCP: `search`, `read_selected_files`) | Para buscar e ler arquivos relevantes do codebase |
 | Fase 2: Pesquisa no Codebase (se necessário) | `context7` (MCP) | Se for preciso consultar a documentação de bibliotecas |
-| Comentário no card — Conclusão | `/eng-global-task-comment` | Se `TASK_MANAGER` estiver preenchido, após validar o plano com o usuário (freelance pula) |
-
----
-
-## Fase 0.5: Comentário no card — Início
-
-Pular se `TASK_MANAGER` estiver vazio (freelance).
-
-Após confirmar que o `architecture.md` existe, registrar início do planejamento:
-
-```
-/eng-global-task-comment {TASK_MANAGER_KEY} 📋 [Jarvis] Iniciando criação do plano de execução
-```
-
-> Usa o skill `/eng-global-task-comment`. Não bloquear se falhar.
+| Fase 3: Criação do Plano (exceção) | `eng.advisor.agent` (agente) | Só por exceção: questão nova em aberto, com o Advisor habilitado no `eng.start` (cabeçalho do `architecture.md`) |
+| Fase 3: Criação do Plano (exceção) | `/eng-global-task-comment` | Só por exceção: comentário de auditoria da questão nova consultada ao Advisor (freelance pula) |
 
 ---
 
@@ -174,6 +160,8 @@ CONTEXT_PROFILE:
 
 4. **Usar** o template em `$IDE/templates/engineering/plan-template.md`
 
+**Questão nova em aberto (exceção).** O ideal é que todas as questões tenham sido levantadas no `eng.start`. Se surgir uma nova e o cabeçalho do `architecture.md` indicar um Advisor, consulte `eng.advisor.agent` com o Prompt 2 de `$IDE/templates/engineering/advisor-template.md` (refaça o Prompt 1 se o subagente não existir mais), acrescente a questão à seção 8 marcada "levantada no `eng.plan`", adote a sugestão do Advisor e poste o comentário de auditoria com `/eng-global-task-comment` (é desvio do plano; cite-o no PR como lacuna do `eng.start`). Sem Advisor, pergunte ao usuário.
+
 ### Fase 4: Validação
 
 1. **Apresentar** o plano ao humano
@@ -199,16 +187,6 @@ Com:
 - Status iniciais definidos (⏳)
 
 ---
-
-## Comentário no card — Conclusão
-
-Pular se `TASK_MANAGER` estiver vazio (freelance).
-
-Após validação do plano com o usuário, registrar conclusão:
-
-```
-/eng-global-task-comment {TASK_MANAGER_KEY} ✅ [Jarvis] Plano de execução criado e validado - {N} fases definidas. Pronto para implementação.
-```
 
 ## Próximo Passo
 

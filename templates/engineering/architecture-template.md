@@ -5,7 +5,8 @@
 
 > **Criado em:** {DATA}  
 > **Issue:** {JIRA_ISSUE_KEY}  
-> **Status:** 🔄 Em Revisão | ✅ Aprovado | ❌ Rejeitado
+> **Status:** 🔄 Em Revisão | ✅ Aprovado | ❌ Rejeitado  
+> **Advisor:** {modelo escolhido no início do eng.start} | não utilizado
 
 ---
 
@@ -245,9 +246,56 @@ graph TD
 
 ## 8. Questões em Aberto
 
-| ID  | Questão                        | Responsável | Deadline | Status   |
-| --- | ------------------------------ | ----------- | -------- | -------- |
-| Q1  | {questão ainda não respondida} | {quem}      | {data}   | 🔄 Aberta |
+> Tudo que for **diferente do código ou ambíguo no card** vira uma questão aqui, detalhada a ponto de outro agente entendê-la sem reconstruir a análise. No mínimo 3 opções, mais a **4 — Outra**.
+> **Com Advisor** (cabeçalho), a sugestão do Advisor prevalece e é a decisão adotada; o agente principal não a substitui nem contesta. **Sem Advisor**, "Sugestão do Sub-Agent (Advisor)" e "Divergência" ficam "N/A (Advisor não utilizado)", a regra em destaque é omitida e a decisão é a do usuário ao revisar o documento.
+> Questão levantada depois do `eng.start` (consulta por exceção) entra aqui, numerada em sequência, marcada "levantada no `eng.plan`" ou "no `eng.work`". Sem questão em aberto, escreva "Nenhuma" e o motivo em uma frase.
+
+| ID | Questão                      | Responsável                 | Deadline | Status                     |
+| -- | ---------------------------- | --------------------------- | -------- | -------------------------- |
+| Q1 | {resumo objetivo da questão} | {Advisor \| nome do usuário} | {— \| data} | {✅ Decidida \| 🔄 Aberta} |
+
+### Q1 — {Título da questão}
+
+**Contexto:**
+{Explicação detalhada do problema e por que a decisão é necessária.}
+
+**Arquivos/componentes envolvidos:**
+* `{arquivo/caminho}` — {relação com a questão}
+
+**Dúvida:**
+{Descrição clara e inequívoca do que precisa ser decidido.}
+
+**Opções:**
+
+**1. {Opção 1}**
+* Como funciona: {descrição}
+* Vantagens: {vantagens}
+* Desvantagens: {desvantagens}
+* Impacto: {impacto}
+
+**2. {Opção 2}** (mesmo formato)
+
+**3. {Opção 3}** (mesmo formato)
+
+**4. Outra**
+* Alternativa adicional identificada pelo Sub-Agent/Advisor, detalhada caso ele entenda que nenhuma das opções anteriores é a melhor abordagem.
+
+**Sugestão do Agente Principal (Architect):**
+{recomendação do agente principal + justificativa técnica}
+
+**Sugestão do Sub-Agent (Advisor):**
+{recomendação independente do Advisor + justificativa técnica}
+
+**Decisão adotada:**
+**{recomendação do Sub-Agent/Advisor}**
+
+> **Regra:** a recomendação do Advisor sempre prevalece e deve ser adotada na implementação, independentemente de ser igual ou diferente da recomendação do Agente Principal.
+
+**Divergência:**
+{se houver diferença entre as recomendações, explicar objetivamente por que o Advisor escolheu uma abordagem diferente.}
+
+**Impacto da decisão:**
+{consequências da decisão adotada para a arquitetura e implementação.}
 
 ---
 
