@@ -10,28 +10,9 @@ model_justification: Tech Spec requer análise profunda de requisitos, decisões
 
 # Tech Spec Generator
 
-## ⚠️ Validação de Permissão
+## Permissão
 
-**IMPORTANTE**: Este workflow só pode ser executado por usuários com `POSITION=TECH LEAD`.
-
-Antes de prosseguir, verifique:
-
-- Se a variável de ambiente `POSITION` existe
-- Se o valor é exatamente `TECH LEAD`
-
-**Se `POSITION != TECH LEAD`:**
-
-```
-❌ Acesso Negado
-
-Este workflow é restrito a Tech Leads. Você precisa ter POSITION=TECH LEAD no arquivo ENV.md para executar esta operação.
-
-Seu papel atual: {POSITION ou "não definido"}
-
-Para criar Tech Specs, entre em contato com seu Tech Lead.
-```
-
-**Somente se `POSITION=TECH LEAD`**, prossiga com o workflow abaixo.
+Quem pode executar este workflow está na rule (`eng.tech-spec-rules.md`, "Principais Regras").
 
 > 📋 **Rules**: `$IDE/rules-on-demand/engineering/eng.tech-spec-rules.md` — **antes de começar, leia esse arquivo e siga-o**: ele não é carregado automaticamente no início da sessão.
 
@@ -41,13 +22,7 @@ Você é um **arquiteto de software especializado** em transformar histórias do
 
 ## Objetivo
 
-Transformar uma história de usuário (user story) do Jira em uma **Tech Spec completa** que:
-
-1. Documenta decisões arquiteturais
-2. Detalha implementação técnica
-3. Quebra em subtarefas executáveis (fatias verticais de 4h a 1 dia)
-4. Define critérios de validação técnica
-5. Identifica riscos e dependências
+Transformar uma história de usuário (user story) do Jira em uma **Tech Spec completa**: decisões arquiteturais documentadas, implementação técnica detalhada, subtarefas executáveis (fatias verticais de 4h a 1 dia), critérios de validação técnica e riscos e dependências identificados.
 
 ### Skills invocados durante o workflow
 
@@ -104,11 +79,7 @@ B: História / Task — implementação específica, pronta para desenvolvimento
 
 ## Processo de Criação da Tech Spec
 
-### ═══════════════════════════════════════════════
-
 ### FASE 1: Entendimento Profundo
-
-### ═══════════════════════════════════════════════
 
 #### 1.1 Leitura e Análise do Card
 
@@ -124,46 +95,18 @@ B: História / Task — implementação específica, pronta para desenvolvimento
 
 #### 1.2 Contexto de Negócio
 
-Analise e documente:
-
-- **Por que**: Qual problema de negócio isso resolve?
-- **Quem**: Quais usuários/personas são impactados?
-- **Valor**: Qual valor entrega ao usuário/negócio?
-- **Épico/Iniciativa**: Como se encaixa no roadmap maior?
+Documente o **porquê** (problema de negócio), **quem** (usuários/personas impactados), o **valor** entregue e como se encaixa no épico/iniciativa maior.
 
 #### 1.3 Validação de Pré-requisitos
 
-**Para épico**, verifique se contém:
+- **Épico**: objetivo claro de negócio, escopo (o que está/não está incluído) e contexto/motivação.
+- **História**: user story clara (Como [usuário], quero [capacidade], para que [benefício]), critérios de aceitação, contexto/motivação e escopo.
 
-- [ ] Objetivo claro de negócio
-- [ ] Escopo definido (o que está/não está incluído)
-- [ ] Contexto/motivação explicado
-
-**Para história**, verifique se contém:
-
-- [ ] User story clara (Como [usuário], quero [capacidade], para que [benefício])
-- [ ] Critérios de aceitação definidos
-- [ ] Contexto/motivação explicado
-- [ ] Escopo claro (o que está/não está incluído)
-
-**Se faltar informações críticas:**
-
-- Liste o que está faltando
-- Faça perguntas ao usuário ANTES de prosseguir
-- Não assuma nada - sempre confirme
+Se faltar informação crítica, liste o que falta e pergunte ao usuário ANTES de prosseguir; não assuma nada.
 
 #### 1.4 Perguntas de Clarificação
 
-Formule **3-5 perguntas críticas** ao usuário sobre:
-
-- Ambiguidades nos requisitos
-- Premissas técnicas a validar
-- Escopo e prioridades
-- Restrições conhecidas
-- **Épico**: dependências com outros épicos ou squads
-- **História**: dependências de outras histórias
-
-**Apresente ao usuário** e aguarde respostas antes de prosseguir.
+Formule **3-5 perguntas críticas** sobre ambiguidades nos requisitos, premissas técnicas a validar, escopo e prioridades, restrições conhecidas e dependências (**épico**: outros épicos ou squads; **história**: outras histórias). **Apresente ao usuário** e aguarde as respostas antes de prosseguir.
 
 ---
 
@@ -188,44 +131,13 @@ Uma RFC é **obrigatória** se **qualquer** item abaixo for verdadeiro:
 
 #### 1.5.2 Resultado da Validação
 
-**Se pelo menos um critério for "Sim":**
+**Se pelo menos um critério for "Sim":** avise "⚠️ RFC Obrigatória", liste os critérios que se aplicam e, antes de prosseguir, verifique se já existe uma RFC relacionada (senão, sugira `/eng.create-rfc`), aguarde a RFC aprovada (status: Accepted) e vincule-a à Tech Spec. Pergunte:
 
-```
-⚠️ RFC Obrigatória
+- **A**: Criar uma RFC agora (`/eng.create-rfc`)
+- **B**: Vincular a uma RFC existente (informe o ID/caminho)
+- **C**: Prosseguir sem RFC (justifique o motivo)
 
-Esta Tech Spec atende aos critérios que exigem uma RFC:
-- {Critério 1 que se aplica}
-- {Critério 2 que se aplica}
-
-Antes de prosseguir com a Tech Spec, você deve:
-1. Verificar se já existe uma RFC relacionada
-2. Se não existir, sugerir criar uma RFC usando /eng.create-rfc
-3. Aguardar a RFC ser aprovada (status: Accepted)
-4. Vincular a RFC à Tech Spec
-
-Deseja:
-A: Criar uma RFC agora (/eng.create-rfc)
-B: Vincular a uma RFC existente (informe o ID/caminho)
-C: Prosseguir sem RFC (justifique o motivo)
-```
-
-**Se nenhum critério for "Sim":**
-
-```
-✅ RFC Não Obrigatória
-
-Esta Tech Spec não atende aos critérios que exigem uma RFC:
-- Não impacta múltiplas squads
-- Não altera arquitetura/padrões/infra
-- Não introduz dependências críticas
-- Não afeta custos recorrentes
-- Não muda SLAs/contratos
-- Não gera lock-in ou dívida técnica relevante
-- Não envolve dados sensíveis/compliance
-- Não será padrão reutilizável
-
-Prosseguindo para a Fase 2 (Investigação Técnica).
-```
+**Se nenhum critério for "Sim":** informe "✅ RFC Não Obrigatória", citando que nenhum dos 8 critérios se aplica, e siga para a Fase 2 (Investigação Técnica).
 
 #### 1.5.3 Registro na Tech Spec
 
@@ -247,53 +159,31 @@ Independente do resultado, registre na Tech Spec:
 
 ## Caminho A: Épico → Tech Spec Arquitetural
 
-### ═══════════════════════════════════════════════
-
 ### FASE 2A: Investigação Arquitetural
-
-### ═══════════════════════════════════════════════
 
 Foco em entender o sistema como um todo — não arquivos específicos, mas fronteiras e contratos.
 
 #### 2A.1 Mapeamento de Componentes Existentes
 
-- Identifique os serviços/módulos que serão impactados ou criados
-- Leia documentação de alto nível: `README.md`, `ARCHITECTURE.md`, ARDs existentes em `$DOCS_FOLDER`
-- Mapeie dependências entre serviços (não entre arquivos)
+Identifique os serviços/módulos impactados ou criados, leia a documentação de alto nível (`README.md`, `ARCHITECTURE.md`, ARDs em `$DOCS_FOLDER`) e mapeie as dependências entre serviços (não entre arquivos).
 
 #### 2A.2 Análise de Documentação de Produto
 
-- Verifique se há PRD ou FRD relacionado ao épico em `$DOCS_FOLDER` ou no $TASK_MANAGER
-- Se `CENTRAL_DOCS_REPO` configurado: buscar docs via skill `jarvis-docs-central`
+Verifique PRD ou FRD relacionado ao épico em `$DOCS_FOLDER` ou no $TASK_MANAGER; com `CENTRAL_DOCS_REPO` configurado, busque via skill `jarvis-docs-central`.
 
 #### 2A.3 Identificação de Restrições
 
-- Restrições técnicas (SLA, throughput, compliance)
-- Dependências de outros times ou squads
-- Limitações da infraestrutura atual
+Restrições técnicas (SLA, throughput, compliance), dependências de outros times ou squads e limitações da infraestrutura atual.
 
 ---
 
-### ═══════════════════════════════════════════════
-
 ### FASE 3A: Proposta Arquitetural
-
-### ═══════════════════════════════════════════════
 
 Este é o **output principal** da Tech Spec de épico.
 
 #### 3A.1 Decisões Arquiteturais
 
-Para cada decisão importante, documente pelo menos 2 alternativas (a mais simples sempre entre elas):
-
-```
-Decisão: {Título}
-├─ Contexto: {Por que precisamos decidir?}
-├─ Opção A (mais simples): {descrição, prós, contras}
-├─ Opção B: {descrição, prós, contras}
-├─ Decisão: {escolhida}
-└─ Justificativa: {por que a mais simples não é suficiente, se aplicável}
-```
+Para cada decisão importante, documente pelo menos 2 alternativas (a mais simples sempre entre elas), na estrutura da seção 2.5 do template: contexto, opções com prós e contras, decisão e justificativa (por que a mais simples não é suficiente, se aplicável).
 
 #### 3A.2 Desenho da Solução
 
@@ -312,9 +202,7 @@ Para cada novo serviço ou integração:
 
 #### 3A.4 Riscos Arquiteturais
 
-| Risco | Probabilidade | Impacto | Mitigação | Plano B |
-|-------|--------------|---------|-----------|---------|
-| {descrição} | Alta/Média/Baixa | Alto/Médio/Baixo | {mitigação} | {alternativa} |
+Documente na tabela de riscos da seção 10 do template (risco, probabilidade, impacto, mitigação, plano B).
 
 #### 3A.5 Apresentação ao Usuário
 
@@ -322,11 +210,7 @@ Apresente resumo executivo, diagramas e principais decisões. **Aguarde aprovaç
 
 ---
 
-### ═══════════════════════════════════════════════
-
 ### FASE 4A: Geração do Documento Arquitetural
-
-### ═══════════════════════════════════════════════
 
 Salve em: `$SESSIONS_DIR/eng/{epic-slug}/tech-spec-arch.md`
 
@@ -359,32 +243,11 @@ Após salvar, exiba:
 
 ## Caminho B: História → Tech Spec de Implementação
 
-### ═══════════════════════════════════════════════
-
 ### FASE 2: Investigação Técnica do Codebase
-
-### ═══════════════════════════════════════════════
 
 #### 2.1 Identificação de Componentes
 
-Use as ferramentas de busca para identificar:
-
-**Use Glob para encontrar arquivos relevantes:**
-
-- Padrões relacionados aos componentes da história
-- Exemplo: `**/*auth*`, `**/*payment*`, `**/api/**`
-
-**Use Grep para buscar código relacionado:**
-
-- Funções/classes relacionadas
-- APIs/endpoints existentes
-- Modelos de dados similares
-
-**Use Read para analisar arquivos críticos:**
-
-- Leia componentes que serão modificados
-- Entenda padrões e convenções existentes
-- Identifique dependências
+Use Glob (ex.: `**/*auth*`, `**/api/**`) para achar os arquivos ligados à história, Grep para funções, endpoints e modelos de dados similares e Read para entender os componentes que serão modificados, os padrões e as dependências.
 
 #### 2.2 Análise de Documentação Existente
 
@@ -397,14 +260,7 @@ Verifique se há documentação relevante:
 
 #### 2.3 Identificação de Padrões e Convenções
 
-Documente:
-
-- Padrões arquiteturais usados no projeto (MVC, Clean Architecture, etc.)
-- Convenções de nomenclatura
-- Estrutura de pastas
-- Frameworks e bibliotecas já utilizadas
-- Padrões de testes
-- Padrões de tratamento de erros
+Documente os padrões arquiteturais do projeto, convenções de nomenclatura, estrutura de pastas, frameworks e bibliotecas, padrões de testes e de tratamento de erros.
 
 #### 2.4 Mapeamento de Dependências
 
@@ -437,11 +293,7 @@ Identifique:
 
 ---
 
-### ═══════════════════════════════════════════════
-
 ### FASE 2.5: Avaliação de Complexidade (obrigatória)
-
-### ═══════════════════════════════════════════════
 
 Antes de propor qualquer arquitetura, classifique a feature com critérios objetivos. Isso define o nível de complexidade **permitido** na proposta.
 
@@ -475,11 +327,7 @@ Implicação para a proposta arquitetural:
 
 ---
 
-### ═══════════════════════════════════════════════
-
 ### FASE 3: Proposta Arquitetural
-
-### ═══════════════════════════════════════════════
 
 #### 3.1 Análise de Soluções Possíveis
 
@@ -487,21 +335,7 @@ Para cada decisão arquitetural importante, considere **pelo menos 2 alternativa
 
 > 📌 **Regra obrigatória**: A opção **mais simples** deve ser sempre uma das alternativas consideradas. Se não for escolhida, o descarte deve ter justificativa técnica explícita vinculada à classificação de complexidade da Fase 2.5.
 
-**Estrutura de Decisão:**
-
-```
-Decisão: {Título da decisão}
-├─ Contexto: {Por que precisamos decidir?}
-├─ Opção A (mais simples):
-│  ├─ Descrição: {Como funcionaria}
-│  ├─ Prós: {Vantagens}
-│  ├─ Contras: {Desvantagens}
-│  └─ Trade-offs: {O que ganhamos/perdemos}
-├─ Opção B:
-│  └─ {Mesma estrutura}
-├─ Decisão: {Opção escolhida}
-└─ Justificativa: {Por que escolhemos esta — e por que a mais simples não é suficiente}
-```
+Registre cada decisão na estrutura da seção 2.5 do template (contexto, opções com prós, contras e trade-offs, decisão e justificativa, incluindo por que a mais simples não é suficiente).
 
 #### 3.2 Desenho da Solução Técnica
 
@@ -529,91 +363,23 @@ Documente:
 
 #### 3.3 Seleção de Tecnologias/Bibliotecas
 
-Para cada tecnologia/biblioteca nova ou mudança:
-
-- **Nome e versão**
-- **Justificativa**: Por que usar?
-- **Alternativas consideradas**
-- **Riscos**: O que pode dar errado?
-- **Licença**: Compatível com o projeto?
-
-**Priorize bibliotecas já usadas no projeto** para manter consistência.
+Para cada tecnologia ou biblioteca nova, registre nome e versão, justificativa, alternativas, riscos e licença compatível. **Priorize bibliotecas já usadas no projeto.**
 
 #### 3.4 Apresentação da Proposta ao Usuário
 
-Apresente:
-
-1. **Resumo executivo** da solução (2-3 parágrafos)
-2. **Diagrama de arquitetura** (se criado)
-3. **Principais decisões técnicas** e justificativas
-4. **Alternativas consideradas** e por que foram descartadas
-5. **Riscos identificados** e mitigações
-
-**Aguarde aprovação do usuário antes de prosseguir.**
-
-Se o usuário pedir mudanças:
-
-- Itere sobre a proposta
-- Atualize a documentação
-- Apresente novamente
+Apresente o resumo executivo (2-3 parágrafos), o diagrama de arquitetura (se criado), as decisões técnicas e justificativas, as alternativas descartadas e os riscos com mitigações. **Aguarde aprovação do usuário antes de prosseguir**; se pedir mudanças, itere, atualize a documentação e apresente de novo.
 
 ---
 
-### ═══════════════════════════════════════════════
-
 ### FASE 4: Quebra em Subtarefas Executáveis
-
-### ═══════════════════════════════════════════════
 
 #### 4.1 Estratégia de Faseamento
 
-Divida a implementação em **fases lógicas e incrementais**:
-
-**Princípios:**
-
-- Cada fase entrega **valor testável**
-- Fases são **sequenciais** quando há dependência
-- Fases podem ser **paralelas** quando independentes
-- Entre **4 horas e 1 dia por subtarefa** (fatia vertical completa)
-
-**Exemplo de Fases:**
-
-1. **Backend/API**: endpoints completos (migration, regra de negócio, repository, testes)
-2. **Frontend/UI**: telas e modais completos (componentes, integração com API, testes)
-3. **Testes e Validação**: Testes E2E, validação de performance
+Divida a implementação em **fases lógicas e incrementais**: cada fase entrega **valor testável**, é **sequencial** quando há dependência e **paralela** quando independente, e cada subtarefa fica **entre 4 horas e 1 dia** (fatia vertical completa). Exemplo: 1. Backend/API (endpoints completos), 2. Frontend/UI (telas e modais completos, integrados à API), 3. Testes E2E e validação de performance.
 
 #### 4.2 Criação de Subtarefas
 
-Para cada subtarefa, documente:
-
-**Estrutura Obrigatória:**
-
-```
-SUBTASK-XXX: {Nome claro e acionável}
-
-Descrição:
-{Descrição técnica detalhada - O QUE fazer e COMO fazer}
-
-Arquivos a Modificar/Criar:
-- path/to/file1.py - [Modificação/Criação] - {Descrição}
-- path/to/file2.tsx - [Modificação/Criação] - {Descrição}
-
-Critérios de Aceitação Técnicos:
-- [ ] {Critério testável 1}
-- [ ] {Critério testável 2}
-- [ ] {Critério testável 3}
-
-Testes Requeridos:
-- [ ] Teste unitário: {descrição}
-- [ ] Teste de integração: {descrição}
-
-Dependências:
-{Nenhuma / SUBTASK-XXX deve estar concluída}
-
-Estimativa: {X horas}
-
-Prioridade: {P0 (crítica) / P1 (alta) / P2 (média)}
-```
+Para cada subtarefa, preencha o bloco `SUBTASK` da seção 3 do template (descrição, arquivos, critérios de aceitação técnicos, testes requeridos, dependências, estimativa e prioridade P0/P1/P2), seguindo o princípio 3 da rule.
 
 #### 4.3 Mapeamento de Dependências
 
@@ -640,19 +406,7 @@ STORY-XXX: {História original}
 
 #### 4.4 Validação da Quebra
 
-Valide que:
-
-- [ ] Cada subtarefa é **independente e completa**
-- [ ] Cada subtarefa tem **critérios claros de conclusão**
-- [ ] Subtarefas seguem **ordem lógica de dependência**
-- [ ] Estimativas são **realistas** (entre 4h e 1 dia cada)
-- [ ] Todas as subtarefas somadas **cobrem 100% da história**
-
-**Checklist de fatia vertical (obrigatório para cada subtarefa):**
-
-- [ ] Mergeada isoladamente, a aplicação **continua funcionando**?
-- [ ] A entrega é **observável** — testável, demonstrável ou verificável?
-- [ ] A subtarefa tem **implementação funcional** (não apenas contratos, interfaces ou tipos sem comportamento)?
+Valide cada subtarefa com o "Template de Validação" (princípio 3) e as validações dos princípios 3 e 5 da rule: independente e completa, critérios claros, ordem lógica de dependência, estimativa entre 4h e 1 dia, e o conjunto cobre 100% da história. Fatia vertical: mergeada isoladamente a aplicação continua funcionando, a entrega é observável e há implementação funcional (não só contratos, interfaces ou tipos).
 
 > Se qualquer item for "não" → reagrupar com a subtarefa seguinte até formar uma fatia vertical completa.
 >
@@ -661,74 +415,23 @@ Valide que:
 
 ---
 
-### ═══════════════════════════════════════════════
-
 ### FASE 5: Documentação de Riscos e Considerações
-
-### ═══════════════════════════════════════════════
 
 #### 5.1 Identificação de Riscos
 
-Para cada risco identificado, documente:
-
-| Risco                | Probabilidade    | Impacto          | Mitigação      | Plano B       |
-| -------------------- | ---------------- | ---------------- | -------------- | ------------- |
-| {Descrição do risco} | Alta/Média/Baixa | Alto/Médio/Baixo | {Como mitigar} | {Alternativa} |
-
-**Tipos de riscos comuns:**
-
-- Dependências externas instáveis
-- Performance degradada
-- Complexidade subestimada
-- Mudanças em APIs de terceiros
-- Conflitos com outras histórias em desenvolvimento
+Documente na tabela de riscos da seção 10 do template, com as categorias e a validação do princípio 4 da rule.
 
 #### 5.2 Considerações Técnicas
 
-Documente:
-
-**Segurança:**
-
-- Validação de inputs
-- Autenticação/Autorização
-- Proteção contra OWASP Top 10
-- Criptografia de dados sensíveis
-
-**Performance:**
-
-- Requisitos de latência (ex: API < 200ms no p95)
-- Requisitos de throughput (ex: X req/seg)
-- Otimizações planejadas
-- Métricas a monitorar
-
-**Escalabilidade:**
-
-- Como escala horizontalmente
-- Gargalos potenciais
-- Limitações conhecidas
-
-**Observabilidade:**
-
-- Logs necessários
-- Métricas a adicionar
-- Alertas a configurar
+Documente segurança (inputs, autenticação/autorização, OWASP Top 10, criptografia), performance (latência, throughput, otimizações, métricas), escalabilidade (escala horizontal, gargalos, limitações) e observabilidade (logs, métricas, alertas), nas seções 4.1 a 4.4 do template.
 
 #### 5.3 Casos Extremos e Erros
 
-Para cada caso extremo/erro:
-
-- **Cenário**: O que pode acontecer
-- **Comportamento esperado**: Como sistema deve reagir
-- **Solução técnica**: Como implementar
-- **Mensagem ao usuário**: O que mostrar (se aplicável)
+Para cada caso extremo ou erro, registre o cenário, o comportamento esperado, a solução técnica e a mensagem ao usuário (se aplicável).
 
 ---
 
-### ═══════════════════════════════════════════════
-
 ### FASE 6: Criação do Artefato Tech Spec
-
-### ═══════════════════════════════════════════════
 
 #### 6.1 Geração do Documento
 
@@ -743,45 +446,15 @@ Exemplo: `$SESSIONS_DIR/eng/story-123/tech-spec.md`
 
 #### 6.2 Revisão de Qualidade
 
-Valide que o documento contém:
-
-**Conteúdo Obrigatório:**
-
-- [ ] Contexto claro da história de negócio
-- [ ] Análise técnica detalhada
-- [ ] Decisões arquiteturais documentadas com justificativas
-- [ ] Plano de implementação faseado
-- [ ] Subtarefas detalhadas com critérios de aceitação
-- [ ] Riscos identificados e mitigados
-- [ ] Estratégia de testes definida
-- [ ] Considerações de segurança, performance, escalabilidade
-
-**Qualidade:**
-
-- [ ] Linguagem clara e objetiva (evite jargões sem definição)
-- [ ] Diagramas úteis e legíveis
-- [ ] Links para documentos relacionados funcionam
-- [ ] Estimativas realistas
-- [ ] Nenhuma ambiguidade crítica
+Valide o documento com o "Checklist de Revisão" da rule (conteúdo obrigatório, qualidade, subtarefas, decisões e riscos).
 
 #### 6.3 Apresentação ao Usuário
 
-Apresente ao usuário:
-
-1. **Resumo da Tech Spec** (principais pontos)
-2. **Link para o arquivo** criado
-3. **Lista de subtarefas** com estimativas
-4. **Próximos passos** sugeridos
-
-**Aguarde aprovação final do usuário.**
+Apresente o resumo da Tech Spec, o link do arquivo, a lista de subtarefas com estimativas e os próximos passos. **Aguarde aprovação final do usuário.**
 
 ---
 
-### ═══════════════════════════════════════════════
-
 ### FASE 7: Criação de Subtarefas no Jira
-
-### ═══════════════════════════════════════════════
 
 #### 7.1 Preparação para Criação
 
@@ -799,7 +472,7 @@ Para cada subtarefa no plano:
 
 #### 7.2 Estrutura da Descrição no Jira
 
-Use o formato **Descrição da subtarefa no Jira** de `$IDE/templates/engineering/tech-spec-delivery-template.md` (seções: Descrição, Arquivos a Modificar/Criar, Critérios de Aceitação, Testes Requeridos, Dependências, Referência).
+Use o formato **Entrega › Descrição da subtarefa no Jira** do template (seções: Descrição, Arquivos a Modificar/Criar, Critérios de Aceitação, Testes Requeridos, Dependências, Referência).
 
 #### 7.3 Criação no Jira
 
@@ -816,17 +489,11 @@ Use o formato **Descrição da subtarefa no Jira** de `$IDE/templates/engineerin
 
 #### 7.4 Atualização da História Original
 
-Adicione comentário na história original (STORY-XXX) com:
-
-Use o formato **Comentário na história original** de `$IDE/templates/engineering/tech-spec-delivery-template.md`.
+Adicione comentário na história original (STORY-XXX) no formato **Entrega › Comentário na história original** do template.
 
 ---
 
-### ═══════════════════════════════════════════════
-
 ### FASE 8: Validação Final e Entrega
-
-### ═══════════════════════════════════════════════
 
 #### 8.1 Checklist de Conclusão
 
@@ -845,131 +512,27 @@ Valide que:
 
 #### 8.2 Entrega ao Usuário
 
-Forneça ao usuário:
-
-Use o formato **Mensagem de entrega** de `$IDE/templates/engineering/tech-spec-delivery-template.md`; um exemplo preenchido está na seção **Exemplo de output final** do mesmo arquivo.
+Entregue ao usuário a **Entrega › Mensagem de entrega** do template.
 
 ---
 
-## Regras Importantes
+## Regras
 
-### ⚠️ Nunca Assuma - Sempre Pergunte
+- **Nunca assuma, sempre pergunte**: informação crítica faltando, mais de uma interpretação ou decisão com trade-offs → pergunte ao usuário.
+- Siga as convenções do projeto: analise o código existente antes de propor padrões novos e justifique qualquer desvio.
+- Subtarefas, estimativas, riscos, testes e documentação seguem os princípios da rule (`eng.tech-spec-rules.md`).
 
-- Se informação crítica está faltando → **pergunte ao usuário**
-- Se há múltiplas interpretações possíveis → **peça clarificação**
-- Se decisão arquitetural tem trade-offs → **discuta com usuário**
+## Templates
 
-### 🎯 Foco em Valor Testável
-
-- Cada subtarefa deve entregar algo **testável e validável**
-- Evite subtarefas genéricas como "Implementar backend"
-- Prefira subtarefas específicas como "Criar endpoint POST /api/users com validação"
-
-### 📏 Estimativas Realistas
-
-- Subtarefas devem ter **entre 4 horas e 1 dia cada**, como fatias verticais completas
-- Se maior que 1 dia → **dividir em duas fatias verticais independentes** (nunca em camadas)
-- Se menor que 4h → **agrupar com a próxima** até formar uma fatia vertical completa
-- Incluir tempo para testes e documentação
-
-### 🔗 Rastreabilidade
-
-- Toda decisão deve ter **justificativa documentada**
-- Links entre documentos devem **funcionar**
-- Referências externas devem ser **específicas** (não "veja a documentação")
-
-### 🏗️ Seguir Convenções do Projeto
-
-- Analisar código existente antes de propor novos padrões
-- Manter **consistência** com arquitetura atual
-- Justificar **qualquer desvio** de padrões estabelecidos
-
-### 📐 Princípios de Documentação
-
-- **Valor do Usuário**: Sempre explicar o "porquê"
-- **Contexto Completo**: Documento deve ser auto-contido
-- **Terminologia Consistente**: Usar mesmos termos em toda documentação
-- **Critérios Testáveis**: Evitar linguagem vaga ("rápido", "fácil")
-
----
-
-## Ferramentas e Recursos
-
-### Ferramentas de Análise de Codebase
-
-- **Glob**: Encontrar arquivos por padrão
-- **Grep**: Buscar código por regex
-- **Read**: Ler conteúdo de arquivos
-- **WebSearch**: Buscar documentação externa (se necessário)
-
-### Documentação a Consultar
-
-- `$DOCS_FOLDER/**/*.md` - Documentação geral do projeto
-- `$SESSIONS_DIR/eng/**/*.md` - Tech specs e ADRs de sessões anteriores
-- `README.md` - Visão geral do projeto
-- `ARCHITECTURE.md` - Arquitetura do sistema (se existir)
-- Anexos no Jira - PRD, FRD, ARD, RFC
-
-### Templates
-
-- `templates/engineering/tech-spec-template.md` - Template de Tech Spec
-- `templates/engineering/tech-spec-delivery-template.md` - Formatos de entrega (descrição da subtarefa no Jira, comentário na história, mensagem de entrega, exemplo e fluxo resumido)
-
----
-
-## Fluxo Resumido
-
-O diagrama do fluxo (épico x história, fases 0 a 8) está na seção **Fluxo resumido** de `$IDE/templates/engineering/tech-spec-delivery-template.md`.
-
----
+`templates/engineering/tech-spec-template.md`: estrutura da Tech Spec e, na seção final "Entrega", os formatos de entrega (descrição da subtarefa no Jira, comentário na história, mensagem de entrega e fluxo resumido).
 
 ## Tratamento de Erros
 
-### Se a história está incompleta:
-
-→ Liste o que falta e peça ao usuário para completar
-
-### Se não conseguir acessar o Jira:
-
-→ Peça ao usuário para copiar/colar o conteúdo da história
-
-### Se houver conflito com arquitetura existente:
-
-→ Apresente o conflito ao usuário e discuta antes de prosseguir
-
-### Se estimativa ficar muito alta:
-
-→ Discuta com usuário sobre reduzir escopo ou dividir em múltiplas histórias
-
-### Se houver riscos críticos sem mitigação clara:
-
-→ Sinalize ao usuário e peça orientação antes de finalizar
-
----
-
-## Boas Práticas
-
-✅ **Fazer:**
-
-- Usar diagramas Mermaid para comunicar arquitetura
-- Documentar "por que" das decisões, não só "o que"
-- Quebrar em incrementos pequenos e testáveis
-- Validar com usuário em cada fase crítica
-- Manter rastreabilidade (links, referências)
-
-❌ **Evitar:**
-
-- Assumir requisitos não explícitos
-- Criar subtarefas maiores que 1 dia ou fatias horizontais (só enum, só repository, só DTO)
-- Pular análise de riscos
-- Propor tecnologias sem justificativa
-- Documentação vaga ou genérica
-
----
-
-## Exemplo de Output Final
-
-Veja o exemplo preenchido na seção **Exemplo de output final** de `$IDE/templates/engineering/tech-spec-delivery-template.md`.
+- História incompleta → liste o que falta e peça ao usuário para completar.
+- Sem acesso ao Jira → peça ao usuário para copiar e colar o conteúdo da história.
+- Conflito com a arquitetura existente → apresente o conflito e discuta antes de prosseguir.
+- Estimativa muito alta → discuta reduzir o escopo ou dividir em várias histórias.
+- Risco crítico sem mitigação clara → sinalize ao usuário e peça orientação antes de finalizar.
 
 ---
 
