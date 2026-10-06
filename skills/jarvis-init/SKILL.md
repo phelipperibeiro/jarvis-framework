@@ -1321,11 +1321,6 @@ Bem-vindo! 🎉
 - **Detecção de IDE**: A variável `$IDE` é detectada automaticamente (`.windsurf/`, `.claude/`, `.cursor/`, `.codex/`, `.opencode/`, `.gemini/`)
 - **Nunca inventar dados**: Se informação não estiver disponível, perguntar ao usuário
 - **Nunca expor credenciais**: Tokens e senhas nunca devem ser expostos no chat
-- **MAX_AI_EXECUTION_PERCENTAGE**:
-  - Valor padrão: 100
-  - Valor mínimo: 60
-  - Intervalo válido: 60-100
-  - Valores fora do intervalo são ajustados automaticamente
 - **Segurança primeiro**: Em caso de dúvida, priorizar segurança e integridade de dados
 - **Ações destrutivas**: Nunca executar sem confirmação explícita do usuário
 
