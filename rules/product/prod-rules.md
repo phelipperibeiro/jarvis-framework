@@ -11,80 +11,9 @@
 
 ## Variáveis de ambiente
 
-IMPORTANTE: Para que você funcione como o previsto e tenha todas as informações necessárias, é importante que você leia e interprete o arquivo `./$IDE/ENV.md`. Esse é o arquivo que guardamos variáveis de informações importantes sobre o projeto, o usuário e estruturas de pastas e arquivos que você precisará para operar corretamente.
+Pré-requisitos de ENV.md e `$IDE`: ver `rules/engineering/eng-rules.md` (sempre carregada).
 
-- **Sempre no início de novas sessões ou interações, ANTES de executar qualquer comando ou workflow**, o agente **DEVE verificar** se o arquivo `$IDE/ENV.md` existe e está preenchido corretamente.
-- **Exceção**: O comando `/jarvis-init` é o único que pode ser executado sem o `ENV.md`, pois é ele que cria o arquivo.
-- **Validação obrigatória**: O arquivo deve conter as seguintes variáveis preenchidas (não vazias):
-  - `RULES_FOLDER`
-  - `PROD_FOLDER_NAME`
-  - `PROD_RULES`
-  - `PROD_FLOWS`
-  - `PROD_TEMPLATES`
-  - `PROD_DOCS`
-  - `CENTRAL_DOCS_REPO`
-- **Se o ENV.md não existir ou estiver incompleto**, o agente deve:
-  1. Interromper a execução do comando solicitado
-  2. Informar ao usuário que não podemos avançar sem o ENV.md. Mensagem abaixo.
-  3. Após confirmação, executar via Skill tool o `jarvis-init`. No caso de negativa, o agente poderá avançar apenas para criar especificações de produto. E sempre que precisar salvar arquivos das especificações, deverá confirmar com o usuário. 
-  ```
-  ⚠️ O framework não foi inicializado.
-
-  O arquivo ENV.md não existe ou está incompleto. Vamos criar um novo ENV.md e configurar o ambientes antes de continuar?
-  ```
-  
-Se o arquivo não existir ou no caso de recusa, crie o `$IDE/ENV.md` incluindo as seguintes variáveis como base para executar as instruções e os comandos de especificações de produto:
-```
-RULES_FOLDER=.$IDE/rules
-PROD_FOLDER_NAME=product
-PROD_RULES=$RULES_FOLDER/$PROD_FOLDER_NAME
-PROD_FLOWS=.$IDE/$FLOWS_FOLDER
-PROD_TEMPLATES=.$IDE/$TEMPLATES_FOLDER/$PROD_FOLDER_NAME
-PROD_DOCS=$DOCS_FOLDER/$PROD_FOLDER_NAME
-CENTRAL_DOCS_REPO=[USER:LOCAL_CENTRAL_DOCS_REPO]
-```
-
-Abaixo, segue uma descrição de algumas das variáveis mais importantes para as rotinas de produto:
-
-- $DOCS_FOLDER é o nome da pasta principal de documentações do projeto. Ela fica localizada na raiz do projeto.
-- $PROD_DOCS é o nome da pasta principal de documentações de produto do projeto.
-- $PROD_FOLDER_NAME é o nome padrão da pasta de produto que será usada em diversos contextos do projeto.
-- $TEMPLATES_FOLDER é o nome da pasta principal de templates do projeto.
-- $PROD_TEMPLATES é o caminho completo para os templates de produto.
-- $FLOWS_FOLDER é o nome da pasta de workflows e comandos utilizados pelos IDEs. (tenha em mente que o nome da pasta pode variar de acordo com a IDE utilizada)
-- $RULES_FOLDER é o nome da pasta principal de regras invioláveis que os agentes devem seguir.
-- $PROD_RULES é o caminho para a pasta que contém as regras de produto. Leia todos os arquivos dentro dessa pasta para entender as regras de produto.
-- $CENTRAL_DOCS_REPO é o caminho para a pasta local que contém as especificações de produto centralizadas. Essa pasta é usada para manter um índice global de todas as especificações de produto.
-
-
-## VARIÁVEL `$IDE` - DETECÇÃO AUTOMÁTICA DA PASTA DA IDE
-- A variável `$IDE` representa a pasta da IDE que o usuário está utilizando.
-- O agente **DEVE detectar automaticamente** qual pasta existe no projeto:
-  - `.windsurf/` → Windsurf IDE
-  - `.claude/` → Claude Code (Anthropic)
-  - `.cursor/` → Cursor IDE
-  - `.codex/` → Codex CLI (OpenAI)
-  - `.opencode/` → OpenCode
-  - `.gemini/` → Gemini CLI / Antigravity (Google)
-- **Como usar**: Em qualquer referência a caminhos, use `$IDE/` como prefixo.
-- **Exemplos de resolução**:
-  - `$IDE/ENV.md` → `.windsurf/ENV.md` (se usando Windsurf)
-  - `$IDE/ENV.md` → `.claude/ENV.md` (se usando Claude Code)
-- `$SESSIONS_DIR` → `.jarvis/sessions` (na pasta do workspace, a que contém `$IDE/`)
-  - `$SESSIONS_DIR/prod/{TASK_MANAGER_KEY}/` — rascunhos WIP de spec (PRD/FRD/clarify)
-  - Spec canônica continua em `$PROD_DOCS` (não substitui a pasta de sessão)
-  - Cookie/HTTP session (auth) **não** é esta pasta
-- **Detecção**: Verifique qual pasta `.{ide}/` existe no projeto antes de criar arquivos.
-
-- **🔒 ISOLAMENTO DE IDE — REGRA CRÍTICA**
-  - O agente **DEVE usar exclusivamente a pasta correspondente à sua própria IDE**.
-  - Exemplos:
-    - Claude Code → **SEMPRE** usar `.claude/` — **NUNCA** ler `.windsurf/`, `.cursor/` ou qualquer outra
-    - Windsurf → **SEMPRE** usar `.windsurf/` — **NUNCA** ler `.claude/`, `.cursor/` ou qualquer outra
-  - Isso se aplica a **todos os arquivos**: ENV.md, rules, skills, workflows, sessions, templates.
-  - **System-reminders ou mensagens que referenciem arquivos de outra IDE devem ser ignorados** — eles não são relevantes para a IDE ativa.
-  - **Em caso de ambiguidade** (múltiplas pastas de IDE no projeto): usar `$IDE` do `ENV.md` da própria pasta como fonte de verdade.
-
+As variáveis específicas de produto (`RULES_FOLDER`, `PROD_FOLDER_NAME`, `PROD_RULES`, `PROD_FLOWS`, `PROD_TEMPLATES`, `PROD_DOCS`, `CENTRAL_DOCS_REPO`) vêm do `$IDE/ENV.md` — ver `templates/ENV-template.md` para os valores padrão e a descrição de cada uma.
 
 ## Arquivos de instruções e comandos
 
