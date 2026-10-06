@@ -403,4 +403,4 @@ Se não existir ou for antigo, executar detecção novamente.
 ## Recursos Adicionais
 
 - **Template**: Veja [assets/context-profile-template.md](assets/context-profile-template.md)
-- **Documentação CDD**: Veja `$IDE/templates/cdd-aplicado-a-prompts.md`
+- **Documentação CDD**: Veja `$IDE/skills/jarvis-context-detect/references/cdd-aplicado-a-prompts.md`

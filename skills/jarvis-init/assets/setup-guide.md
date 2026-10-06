@@ -353,7 +353,6 @@ Após setup completo:
 
 . Ler o `README.md` para entender o projeto
 . Ler o `AGENTS.md` para instruções de agentes de IA
-. Verificar acessos em `CONTACTS.md` (raiz do projeto)
 . Pegar primeira tarefa (task manager ou controle próprio se freelance)
 . Usar `/eng.start {TASK_MANAGER_KEY}` para começar
 
