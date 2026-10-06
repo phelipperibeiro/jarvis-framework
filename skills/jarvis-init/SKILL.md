@@ -908,13 +908,13 @@ Se não existir na raiz do projeto:
 
 **Executar após gravar o ENV.md** (nos fluxos create, update B e upgrade C).
 
-Objetivo: garantir que `$IDE/rules/` e `$IDE/rules-on-demand/` contenham apenas as rules relevantes para o perfil do usuário, reduzindo tokens carregados em sessão. A pasta `rules/` é carregada no início da sessão; a `rules-on-demand/` guarda as rules de uma etapa só, que cada workflow lê quando precisa (o Claude Code não a carrega sozinho). O filtro é o mesmo nas duas pastas, e `bin/lib/core/profile-filter.js` o espelha em JS (usado por `jarvis tokens`): ao mudar a lógica aqui, mude lá e em `rules/AGENTS.md`.
+Objetivo: garantir que `$IDE/rules/` e `$IDE/rules-on-demand/` contenham apenas as rules relevantes para o perfil do usuário, reduzindo tokens carregados em sessão. A pasta `rules/` é carregada no início da sessão; a `rules-on-demand/` guarda as rules de uma etapa só, que cada workflow lê quando precisa (o Claude Code não a carrega sozinho). O filtro é o mesmo nas duas pastas, e `bin/lib/core/profile-filter.js` o espelha em JS (usado por `jarvis tokens`): ao mudar a lógica aqui, mude lá também. A documentação de autoria de rules fica em `docs/estrutura/rules.md`.
 
 **Passos:**
 
 ```
 1. Ler HUB, POSITION, AREA, SQUAD do ENV.md recém-gravado
-2. Para cada uma das duas pastas (rules/ e rules-on-demand/), listar todos os arquivos .md (recursivo, exceto AGENTS.md)
+2. Para cada uma das duas pastas (rules/ e rules-on-demand/), listar todos os arquivos .md (recursivo)
 3. Para cada arquivo:
    a. Ler o bloco `> **Applies to:**` (primeira ocorrência no arquivo)
    b. Se o bloco não existir → tratar como universal → copiar sempre
@@ -991,8 +991,6 @@ cp "$pasta/$relPath" "$IDE/$pasta/$relPath"   # $pasta = rules ou rules-on-deman
    Removidas: N arquivos (não batem com o perfil)
    Universais: N arquivos (sem applies_to — sempre copiadas)
 ```
-
-> **Nota**: `rules/AGENTS.md` é sempre copiado — nunca filtrado.
 
 ---
 

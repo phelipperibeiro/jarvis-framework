@@ -75,11 +75,10 @@ test("matchesProfile: GENERALIST satisfaz qualquer POSITION e AREA, mas não o H
   assert.equal(matchesProfile(a, profile("BACKEND", "GENERALIST", "ENGINEERING")), false);
 });
 
-test("listRulesForProfile: AGENTS.md nunca é filtrado, rtk é opt-in, sem bloco é universal", () => {
+test("listRulesForProfile: rtk é opt-in, sem bloco é universal, recursivo em subpastas", () => {
   const dir = mkdtempSync(join(tmpdir(), "jarvis-filtro-"));
   try {
     mkdirSync(join(dir, "engineering"), { recursive: true });
-    writeFileSync(join(dir, "AGENTS.md"), bloco("QA", "SENIOR", "PRODUCT", "OUTRO") + "\n");
     writeFileSync(join(dir, "universal.md"), "# Sem bloco\n");
     writeFileSync(join(dir, "rtk-rules.md"), bloco("all", "all", "all", "all") + "\n");
     writeFileSync(
@@ -92,12 +91,12 @@ test("listRulesForProfile: AGENTS.md nunca é filtrado, rtk é opt-in, sem bloco
     const sem = listRulesForProfile(dir, p)
       .map((r) => r.path)
       .sort();
-    assert.deepEqual(sem, ["AGENTS.md", "engineering/back.md", "universal.md"]);
+    assert.deepEqual(sem, ["engineering/back.md", "universal.md"]);
 
     const com = listRulesForProfile(dir, p, { rtkEnabled: true })
       .map((r) => r.path)
       .sort();
-    assert.deepEqual(com, ["AGENTS.md", "engineering/back.md", "rtk-rules.md", "universal.md"]);
+    assert.deepEqual(com, ["engineering/back.md", "rtk-rules.md", "universal.md"]);
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }
@@ -138,16 +137,20 @@ test("listRulesForProfile: AGENTS.md nunca é filtrado, rtk é opt-in, sem bloco
 // Consolidação de data em eng-data (2026-10-05): eng.specializations-rules.md trocou
 // `eng-data-engineer` por `eng-data` na tabela de skill base — rule universal, delta igual
 // nos 4 perfis.
+// Issue #84 (auditoria de eficiência de tokens, item P0-01, 2026-10-05): rules/AGENTS.md
+// (6.724 B) e rules/product/README.md (1.519 B) removidos — eram universais (sem bloco
+// `Applies to`, o primeiro com caso especial no código), então saem da contagem dos 4
+// perfis igualmente: -2 arquivos e -8.243 B em cada um.
 const BASE = [
   [
     "FULLCYCLE/GENERALIST/ENGINEERING/CORE",
     profile("FULLCYCLE", "GENERALIST", "ENGINEERING"),
-    15,
-    97274,
+    13,
+    89031,
   ],
-  ["BACKEND/SENIOR/ENGINEERING/CORE", profile("BACKEND", "SENIOR", "ENGINEERING"), 11, 64004],
-  ["FRONTEND/PLENO/ENGINEERING/CORE", profile("FRONTEND", "PLENO", "ENGINEERING"), 11, 64540],
-  ["QA/QA-ENGINEER/ENGINEERING/CORE", profile("QA", "QA-ENGINEER", "ENGINEERING"), 11, 63776],
+  ["BACKEND/SENIOR/ENGINEERING/CORE", profile("BACKEND", "SENIOR", "ENGINEERING"), 9, 55761],
+  ["FRONTEND/PLENO/ENGINEERING/CORE", profile("FRONTEND", "PLENO", "ENGINEERING"), 9, 56297],
+  ["QA/QA-ENGINEER/ENGINEERING/CORE", profile("QA", "QA-ENGINEER", "ENGINEERING"), 9, 55533],
 ];
 
 for (const [nome, p, arquivos, bytes] of BASE) {
