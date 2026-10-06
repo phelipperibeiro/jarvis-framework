@@ -209,32 +209,20 @@ git status --short               ← estado atual do repositório
 (não ler os docs em si — apenas o índice para mapear o que existe)
 ```
 
-**Regras da área:**
-```
-$RULES_FOLDER/{area}/{prefix}-rules.md
-ex: $RULES_FOLDER/engineering/eng-rules.md
-    $RULES_FOLDER/product/prod-rules.md
-```
-
-**Regras do hub (adicionar ao contexto base, se existir):**
-```
-$RULES_FOLDER/{area}/{hub}/{hub}-rules.md
-ex: $RULES_FOLDER/engineering/qa/qa-rules.md
-    $RULES_FOLDER/engineering/ai/ai-rules.md
-```
-
 **README (apenas para perfil didático ou quando não há docs/index.md):**
 ```
 README.md (raiz do projeto)      ← visão geral do projeto
 ```
 
+> As regras de área e de hub (`$RULES_FOLDER/`) já foram carregadas no início da sessão — não precisam ser relidas aqui.
+
 ### 2.3 — Exemplos de caminhos gerados (ilustrativo)
 
 | AREA | prefix | HUB | Caminhos tentados |
 |------|--------|-----|-------------------|
-| ENGINEERING | eng | QA | `docs/engineering/index.md` → `rules/engineering/eng-rules.md` → `rules/engineering/qa/qa-rules.md` |
-| ENGINEERING | eng | AI | `docs/engineering/index.md` → `rules/engineering/eng-rules.md` → `rules/engineering/ai/ai-rules.md` |
-| PRODUCT | prod | — | `docs/product/index.md` → `rules/product/prod-rules.md` |
+| ENGINEERING | eng | QA | `docs/engineering/index.md` |
+| ENGINEERING | eng | AI | `docs/engineering/index.md` |
+| PRODUCT | prod | — | `docs/product/index.md` |
 
 > **Importante**: Se um arquivo ou pasta não existir, ignore silenciosamente — não errar, não inventar.
 > Novos valores de AREA ou HUB adicionados ao taxonomy.md funcionam automaticamente sem alterar este workflow.
@@ -457,39 +445,7 @@ Roteamento:
 
 ## Passo 5 — Limite de Execução (MAX_AI_EXECUTION_PERCENTAGE)
 
-`MAX_AI_EXECUTION_PERCENTAGE` é um **limite hard de execução** — a IA para obrigatoriamente quando atinge esse percentual do plano e **sempre pergunta** antes de continuar, mesmo com valores altos.
-
-**Regra de cálculo:**
-```
-tarefas_executáveis = floor(total_tarefas × (MAX_AI_EXECUTION_PERCENTAGE / 100))
-
-ex: 10 tarefas, MAX=70  → IA executa 7, para, pergunta ao usuário
-ex: 10 tarefas, MAX=90  → IA executa 9, para, pergunta ao usuário
-ex: 10 tarefas, MAX=100 → IA executa todas, mas ainda reporta e pergunta ao final
-```
-
-**Ao atingir o limite — sempre, sem exceção:**
-1. Parar a execução imediatamente
-2. Reportar o que foi feito
-3. Listar o que resta com sugestões de como o humano pode executar
-4. Perguntar explicitamente como o usuário deseja prosseguir
-5. Nunca continuar sem resposta explícita do usuário
-
-**Tarefas restantes (acima do limite):**
-- A IA **nunca executa** as tarefas restantes de forma autônoma — nem que o usuário peça "continua tudo"
-- A IA **pode assistir**: explicar, sugerir comandos, preparar código para revisão
-- Quem executa é o humano
-
-**O nível de autonomia calibra o comportamento *dentro* do limite, mas não o substitui:**
-
-| Valor | Nível | O que muda dentro do limite |
-|-------|-------|-----------------------------|
-| ≥ 90% | alto | Executa sem pedir confirmação a cada passo |
-| 70–89% | médio | Pausa em decisões críticas antes de continuar |
-| 60–69% | baixo | Apresenta opções e aguarda aprovação a cada passo |
-| Não definido | médio | Usa 80% como padrão |
-
-Declare ao usuário: limite configurado, quantas tarefas isso representa e o que ficará para execução humana.
+A regra completa de `MAX_AI_EXECUTION_PERCENTAGE` (cálculo, comportamento ao atingir o limite e calibração por valor) está em `$RULES_FOLDER/engineering/eng-rules.md` — já carregada no início da sessão. Declare ao usuário o limite configurado, quantas tarefas isso representa e o que ficará para execução humana.
 
 ---
 
@@ -521,20 +477,3 @@ Se `ENABLE_CDD=true` no ENV.md, **após o usuário selecionar a opção do menu*
 execute `/jarvis-context-detect` antes de iniciar o workflow escolhido.
 
 Se `ENABLE_CDD=false` ou não definido, prossiga diretamente para o workflow.
-
----
-
-## Notas de Versão
-
-| Versão | Mudança |
-|--------|---------|
-| 1.0 | Leitura genérica de `$RULES_FOLDER/` e `$DOCS_FOLDER/` — sem filtro por perfil |
-| 1.1 | Carregamento seletivo por `POSITION` + `HUB`; menu adaptado; integração com CDD |
-| 1.2 | Menu específico para `AREA=ENGINEERING` + `HUB=QA` com roteamento para workflows `eng-qa-*` |
-| 1.3 | Menu QA expandido: sprint planning (G) + release sign-off (H); condição estendida para `POSITION=QUALITY_CHAMPION` |
-| 1.4 | Menu específico para `AREA=ENGINEERING` + `HUB=DATA`: pipeline novo, onboarding de fonte, debug, dashboard, contrato |
-| 1.5 | Opção de robô RPA no menu de ENGINEERING (skill técnica, sem squad dedicado) |
-| 1.6 | Menu específico para `POSITION=TECH LEAD`: engenharia completa + workflows de segurança em destaque; Menu para `POSITION=CTO`: foco estratégico em segurança, arquitetura e risco |
-| 1.7 | **Bugfix**: menus de POSITION movidos para antes dos menus de AREA — corrige TL recebendo menu genérico sem opções de segurança; bloco de precedência explícita no início do Passo 4 |
-| 1.8 | Removidas as opções de workflow de segurança dos menus de TECH LEAD e CTO (eng.security-audit/review/incident foram descontinuados — ver `skills/security-skills-deleted.md`) |
-| 1.9 | Menu de `HUB=DATA` consolidado: `eng-data-onboard`/`eng-data-debug`/`eng-data-bi`/`eng-data-orchestrator` foram descontinuados — virou uma única opção (`eng-data`, a base nova) — ver `skills/data-skills-deleted.md` |
