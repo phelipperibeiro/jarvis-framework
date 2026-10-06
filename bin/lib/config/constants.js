@@ -78,6 +78,9 @@ export const OBSOLETE_PATHS = Object.freeze([
   "rules/engineering/eng.pre-pr-rules.md",
   "rules/engineering/eng.tech-spec-rules.md",
   "rules/engineering/eng.breakdown-subtasks-rules.md",
+  "rules/engineering/eng.bump-rules.md",
+  "rules/engineering/eng.docs-scraping-rules.md",
+  "rules/engineering/rpa",
   // Consolidação de QA (removidos): área QA ficou só com eng-qa (base) e eng-qa-planner
   "skills/eng-qa-test-plan",
   "skills/eng-qa-gate",

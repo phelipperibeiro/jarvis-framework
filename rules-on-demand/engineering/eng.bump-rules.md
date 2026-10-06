@@ -1,8 +1,3 @@
----
-description: modelo de versionamento de codigo
-auto_execution_mode: 3
-env_file: "@/ENV.md"
----
 
 > **Applies to:** HUB: all | POSITION: all | AREA: ENGINEERING | SQUAD: all
 

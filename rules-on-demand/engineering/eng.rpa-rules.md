@@ -1,4 +1,4 @@
-> **Applies to:** HUB: BACKEND | POSITION: all | AREA: ENGINEERING | SQUAD: all
+> **Applies to:** HUB: all | POSITION: all | AREA: ENGINEERING | SQUAD: all
 
 # Eng RPA Rules — Padrões de Arquitetura e Código para Robôs de Automação
 
@@ -186,15 +186,50 @@ Quando o robô interage com interface visual (browser headless), usar a especial
 
 ## 6. Documentação (obrigatório ao final de cada implementação)
 
-Seguir `$IDE/rules/engineering/eng.docs-scraping-rules.md` sem exceções.
+Padrão de documentação técnica dos robôs. Vale sempre que um robô novo for implementado, um bug estrutural for resolvido ou descobertas relevantes sobre o site-alvo forem feitas.
 
-Criar ou atualizar `docs/engineering/robots/{robot-tag}-robot.md` com:
-- Visão Geral (o que coleta e o que **não** coleta)
-- Fluxo de Execução (sequência de passos com URLs)
-- Fontes de Dados e Campos Extraídos
-- Variáveis de Ambiente necessárias
-- Limitações Conhecidas
-- Histórico de Bugs
+### Localização
+
+- Sempre criar em `docs/engineering/robots/{robot-tag}-robot.md`
+- Exemplos: `docs/engineering/robots/consulta-orgao-robot.md`, `docs/engineering/robots/extrator-dados-robot.md`
+
+### Conteúdo obrigatório
+
+Todo arquivo `{robot-tag}-robot.md` deve conter:
+
+| Seção | O que documentar |
+|---|---|
+| **Visão Geral** | O que o robô coleta e o que **não** coleta (limitações por design) |
+| **Fluxo de Execução** | Sequência de chamadas HTTP com URLs completas de cada etapa |
+| **Fontes de Dados** | Cada fonte (PDF, HTML, API) com mapeamento de campos/colunas |
+| **Campos Extraídos** | Tabela por `situation` (ex: CONCLUIDO vs PENDENTE) — quais campos existem em cada uma e a fonte |
+| **Limitações Conhecidas** | Campos indisponíveis na fonte do sistema/órgão externo — documentar por que não é possível extrair |
+| **Histórico de Bugs** | Bugs resolvidos com referência ao Jira key, sintoma, causa e fix aplicado |
+| **Checklist de Troubleshooting** | Tabela: sintoma → causa provável → ação |
+
+Documentar também as variáveis de ambiente necessárias (sem os valores).
+
+### Quando atualizar
+
+- Ao implementar um robô novo
+- Ao resolver qualquer bug estrutural (ex: campo retornando vazio, matching falho)
+- Ao fazer descobertas relevantes sobre o comportamento do site-alvo (ex: estrutura de colunas HTML, campos disponíveis por situação do registro)
+- Sempre referenciar o Jira key no histórico de bugs
+
+### Proibido
+
+- ❌ Criar em `docs/robots/` — pasta incorreta, usar `docs/engineering/robots/`
+- ❌ Omitir a seção de **Limitações Conhecidas** — é fundamental para evitar que outros devs tentem implementar algo impossível
+- ❌ Omitir o **Histórico de Bugs** — descobertas custam tempo; documentar evita retrabalho
+
+### Recomendado
+
+- Chamar `/jarvis-docs-index` após criar ou atualizar qualquer `{robot-tag}-robot.md` para manter o índice atualizado
+- Incluir o índice de colunas da tabela HTML (com numeração `[0]`, `[1]`, etc.) sempre que for inspecionado via log
+
+### Exceção
+
+Nenhuma — todo robô deve ter sua documentação, independente do tamanho ou complexidade.
 
 ---
 
@@ -220,6 +255,5 @@ com justificativa explícita. Exceções recorrentes devem ser propostas como at
 
 ## Referências
 
-- `$IDE/rules/engineering/eng.docs-scraping-rules.md` — padrão de documentação de robôs
 - `$IDE/skills/eng-automation/SKILL.md` — skill base de automação (+ especializações em `AUTOMATION_SPECIALIZATIONS`)
 - `$IDE/agents/engineering/eng.rpa.agent.md` — agente especializado RPA (ARACHNE)
