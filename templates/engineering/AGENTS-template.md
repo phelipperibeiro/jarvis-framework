@@ -68,4 +68,3 @@ Se você é um agente de IA trabalhando neste projeto:
 - README.md - Visão geral do projeto para humanos
 - {IDE_FOLDER}/JARVIS.md - Guia completo do framework
 - {IDE_FOLDER}/MCPs.md - Integrações MCP disponíveis
-- CONTACTS.md - Contatos do time

@@ -124,4 +124,4 @@ Ou edite manualmente os valores acima e salve o arquivo.
 ---
 
 > Este perfil é usado automaticamente pelos workflows do Framework Jarvis.
-> Documentação: `$IDE/templates/cdd-aplicado-a-prompts.md`
+> Documentação: `$IDE/skills/jarvis-context-detect/references/cdd-aplicado-a-prompts.md`

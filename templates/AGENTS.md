@@ -15,6 +15,7 @@ A pasta `templates/` contem **modelos de documentos** usados pelo framework para
 ```
 templates/
 ├── cdd-mind-map-template.md        # Mapa de tecnologias do workspace (CDD-MIND-MAP.md; /warm-up e /jarvis-init)
+├── ENV-template.md                 # Template canonico do ENV.md (copiado pelo /jarvis-init)
 ├── warm-up-template.md             # Aquecimento por apelido ($SESSIONS_DIR/warm-ups/{apelido}/)
 ├── engineering/                    # Templates tecnicos
 │   ├── architecture-template.md    # Template de arquitetura
@@ -25,15 +26,17 @@ templates/
 │   ├── tech-spec-template.md       # Especificacao tecnica
 │   ├── tech-spec-delivery-template.md # Formatos de entrega da tech spec (Jira, mensagem final, fluxo)
 │   ├── ref-spec-template.md        # Especificação técnica de referência (Reference Spec do eng.build-tech-spec)
+│   ├── breakdown-subtasks-template.md # Subtarefa detalhada (workflow eng.breakdown-subtasks)
 │   ├── plan-template.md            # Plano de execucao
 │   ├── work-progress-template.md   # Progresso de trabalho
 │   ├── PR-template.md              # Pull Request
 │   ├── c4-model-template.md        # Diagramas C4
 │   ├── AGENTS-template.md          # Template de AGENTS.md
-│   ├── CONTACTS-template.md        # Template de contatos
+│   ├── data-pipeline-template.md   # Documentacao de pipeline de dados
+│   ├── data-contract-template.md   # Contrato de dados
 │   └── qa/                         # Templates de QA
-│       ├── test-plan-template.md
-│       └── quality-gate-template.md
+│       ├── qa.release-signoff-template.md # Sign-off QA pre-deploy (GO/NO-GO)
+│       └── qa.sprint-plan-template.md     # Planejamento de capacidade QA da sprint
 └── product/                        # Templates de produto ($PROD_TEMPLATES)
     ├── prod-prd-template.md        # Product Requirements Document
     ├── prod-frd-template.md        # Functional Requirements Document
