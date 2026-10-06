@@ -14,22 +14,25 @@ A pasta `templates/` contem **modelos de documentos** usados pelo framework para
 
 ```
 templates/
+├── ENV-template.md                 # Template canonico do ENV.md (copiado pelo /jarvis-init)
 ├── engineering/                    # Templates tecnicos
 │   ├── architecture-template.md    # Template de arquitetura
 │   ├── ARD-template.md             # Architecture Review Document
 │   ├── RFC-template.md             # Request For Comments
-│   ├── RFC-Playbook@1.0.0.md       # Playbook para RFCs
+│   ├── RFC-Playbook.md             # Playbook para RFCs
 │   ├── tech-spec-template.md       # Especificacao tecnica
 │   ├── tech-spec-delivery-template.md # Formatos de entrega da tech spec (Jira, mensagem final, fluxo)
+│   ├── breakdown-subtasks-template.md # Subtarefa detalhada (workflow eng.breakdown-subtasks)
 │   ├── plan-template.md            # Plano de execucao
 │   ├── work-progress-template.md   # Progresso de trabalho
 │   ├── PR-template.md              # Pull Request
 │   ├── c4-model-template.md        # Diagramas C4
 │   ├── AGENTS-template.md          # Template de AGENTS.md
-│   ├── CONTACTS-template.md        # Template de contatos
+│   ├── data-pipeline-template.md   # Documentacao de pipeline de dados
+│   ├── data-contract-template.md   # Contrato de dados
 │   └── qa/                         # Templates de QA
-│       ├── test-plan-template.md
-│       └── quality-gate-template.md
+│       ├── qa.release-signoff-template.md # Sign-off QA pre-deploy (GO/NO-GO)
+│       └── qa.sprint-plan-template.md     # Planejamento de capacidade QA da sprint
 └── product/                        # Templates de produto ($PROD_TEMPLATES)
     ├── prod-prd-template.md        # Product Requirements Document
     ├── prod-frd-template.md        # Functional Requirements Document

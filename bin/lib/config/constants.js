@@ -163,6 +163,11 @@ export const OBSOLETE_PATHS = Object.freeze([
   // product-roadmap-report (issue #91): rules/detailed-guide.md era cópia de references/detailed-guide.md
   // (a mantida), com uma linha de plugin externo inexistente
   "skills/product-roadmap-report/rules/detailed-guide.md",
+  // templates sem consumidor (issue #92): swagger e CONTACTS apagados; o ensaio CDD foi para
+  // skills/jarvis-context-detect/references/
+  "templates/engineering/swagger-template.md",
+  "templates/engineering/CONTACTS-template.md",
+  "templates/cdd-aplicado-a-prompts.md",
 ]);
 
 /**

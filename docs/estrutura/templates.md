@@ -10,7 +10,6 @@ Modelos Markdown que skills/workflows preenchem (ARD, RFC, tech spec, PRD, plano
 templates/
 ├── AGENTS.md
 ├── ENV-template.md              # ÚNICA fonte do ENV.md no init (fork)
-├── cdd-aplicado-a-prompts.md    # referência conceitual CDD
 └── engineering/
     ├── AGENTS-template.md       # gera AGENTS.md do projeto alvo
     ├── ARD-template.md
@@ -26,8 +25,6 @@ templates/
     ├── data-pipeline-template.md
     ├── data-contract-template.md
     ├── work-progress-template.md
-    ├── swagger-template.md
-    ├── CONTACTS-template.md
     └── qa/
         ├── qa.cypress-test-template.md
         ├── qa.exploratory-session-template.md
