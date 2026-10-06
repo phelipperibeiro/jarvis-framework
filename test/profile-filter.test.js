@@ -141,16 +141,20 @@ test("listRulesForProfile: rtk é opt-in, sem bloco é universal, recursivo em s
 // (6.724 B) e rules/product/README.md (1.519 B) removidos — eram universais (sem bloco
 // `Applies to`, o primeiro com caso especial no código), então saem da contagem dos 4
 // perfis igualmente: -2 arquivos e -8.243 B em cada um.
+// Issue #86 (auditoria de eficiência de tokens, item P0-03, 2026-10-06): eng.bump-rules.md,
+// eng.docs-scraping-rules.md (fundida na seção 6 de eng.rpa-rules.md) e eng.rpa-rules.md movidos
+// para rules-on-demand/. bump e docs-scraping saem dos 4 perfis; rpa só saía de BACKEND e FULLCYCLE.
+// FULLCYCLE -3 arquivos (-11.893 B), BACKEND -3 (-11.893 B), FRONTEND -2 (-4.070 B), QA -2 (-4.070 B).
 const BASE = [
   [
     "FULLCYCLE/GENERALIST/ENGINEERING/CORE",
     profile("FULLCYCLE", "GENERALIST", "ENGINEERING"),
-    13,
-    89031,
+    10,
+    77138,
   ],
-  ["BACKEND/SENIOR/ENGINEERING/CORE", profile("BACKEND", "SENIOR", "ENGINEERING"), 9, 55761],
-  ["FRONTEND/PLENO/ENGINEERING/CORE", profile("FRONTEND", "PLENO", "ENGINEERING"), 9, 56297],
-  ["QA/QA-ENGINEER/ENGINEERING/CORE", profile("QA", "QA-ENGINEER", "ENGINEERING"), 9, 55533],
+  ["BACKEND/SENIOR/ENGINEERING/CORE", profile("BACKEND", "SENIOR", "ENGINEERING"), 6, 43868],
+  ["FRONTEND/PLENO/ENGINEERING/CORE", profile("FRONTEND", "PLENO", "ENGINEERING"), 7, 52227],
+  ["QA/QA-ENGINEER/ENGINEERING/CORE", profile("QA", "QA-ENGINEER", "ENGINEERING"), 7, 51463],
 ];
 
 for (const [nome, p, arquivos, bytes] of BASE) {

@@ -1,6 +1,6 @@
 # `/eng.rpa.robot` — criar ou manter um robô de automação
 
-Workflow: `workflows/engineering/eng.rpa.robot.md` · Agente: `ARACHNE` (`eng.rpa.agent`) · Regras: `rules/engineering/rpa/eng.rpa-rules.md`
+Workflow: `workflows/engineering/eng.rpa.robot.md` · Agente: `ARACHNE` (`eng.rpa.agent`) · Regras: `rules-on-demand/engineering/eng.rpa-rules.md`
 
 ## Em uma frase
 
