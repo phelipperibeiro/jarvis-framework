@@ -3,7 +3,6 @@ name: prod.spec.issue
 description: Criar um especificação de issues como Histórias de Usuário, Tarefas técnicas e bugs, seguindo as melhores práticas de gestão de produto e projeto.
 auto_execution_mode: 3
 env_file: "@/ENV.md"
-recommended_model: gpt-4o
 model_tier: medium
 model_justification: Criação de issues é estruturada e segue templates, requer boa compreensão mas não raciocínio extremamente complexo
 ---
