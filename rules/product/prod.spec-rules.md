@@ -175,6 +175,37 @@ A terminologia inconsistente cria confusão. "Cliente" vs "Usuário" vs "Cliente
 - O documento novo referencia o discovery de origem no campo `related_discovery` do frontmatter.
 - Quando a informação do documento novo divergir do discovery, **avise o usuário na conversa** e crie no documento novo a seção **"Divergências"** (somente quando houver), com o que mudou e por quê, em poucas linhas.
 
+### Princípios dos comandos `prod.spec.*`
+
+Valem para os comandos que escrevem um documento (PRD, FRD, épico, issue, breakdown):
+
+1. **Sempre use o template** do documento, em `$PROD_TEMPLATES`, para o output final.
+2. **Nunca crie o arquivo final com suposições não validadas**: confirme as sugestões primeiro.
+3. **Seja inteligente, não robótico**: analise o contexto e proponha sugestões inteligentes, sem perguntas vazias.
+
+### Busca no Central Docs (condicional)
+
+Se `CENTRAL_DOCS_REPO` estiver definido no `ENV.md`, antes de começar o documento:
+
+1. Rode `jarvis docs sync --silent` (comandos e detalhes em `skills/jarvis-docs-central/SKILL.md`).
+2. Procure o documento pelo nome ou contexto informado, pelo Jira ID ou `TASK_MANAGER_KEY` e por tags semânticas.
+3. Se encontrar, informe ("✅ {tipo} encontrado no central-docs: [nome]") e use-o como base ou contexto.
+4. O que cada comando busca, quando e o que faz ao não encontrar (perguntar ou seguir) está no próprio workflow.
+
+Sem `CENTRAL_DOCS_REPO`, pule esta etapa silenciosamente.
+
+### Publicação no Central Docs (condicional)
+
+Após salvar o documento localmente e obter a aprovação do usuário:
+
+1. Se `CENTRAL_DOCS_REPO` estiver definido, pergunte: "Deseja publicar este documento no repositório central de documentação?" (Sim, publicar agora / Não, vou publicar depois manualmente).
+2. Se **Sim**: extraia o slug do nome do arquivo (ex.: `prd-wallet.md` → `wallet`) e rode `jarvis docs publish --file {caminho} --tipo {tipo} --feature {slug}`. O `{tipo}` vem do workflow.
+3. Informe o resultado: ✅ sucesso ("{Documento} publicado no central-docs. MR criado: [URL]") ou ❌ erro (exiba a mensagem e oriente o troubleshooting).
+4. Se **Não**: informe "Para publicar depois, execute: `jarvis docs publish --file {caminho} --tipo {tipo} --feature {slug}`".
+5. Se `CENTRAL_DOCS_REPO` não estiver definido: informe "Para habilitar publicação automática, configure `CENTRAL_DOCS_REPO` no ENV.md".
+
+> **Nota**: A publicação cria um Merge Request no GitLab. O documento só será visível no central-docs após aprovação e merge do MR.
+
 ## Exceções
 
 Quando o usuário pedir explicitamente outro formato ou nível de detalhe para um documento, registre a decisão no próprio documento e siga o pedido.
