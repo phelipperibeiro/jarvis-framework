@@ -20,6 +20,7 @@ Extraia informações de status do projeto de diversas fontes (reuniões, mensag
 - Lista consolidada de projetos
 
 Por favor, siga o `rules/status-report-rules.md` para obter orientações corretas e conhecer as regras principais desta skill.
+Para exemplos extensos, orientações por seção e casos de borda, consulte `references/detailed-guide.md`.
 
 ## Instruções
 Sempre interaja com o usuário no mesmo idioma que ele estiver usando.
