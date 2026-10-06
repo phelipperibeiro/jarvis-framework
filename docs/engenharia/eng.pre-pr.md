@@ -47,7 +47,7 @@ Sempre termina com:
 1. **Semáforo:** 🟢 pronto para PR, 🟡 pode abrir com ressalvas documentadas, 🔴 bloqueado (com a lista do que impede)
 2. **Bloqueadores e pendências**, com follow-ups
 3. **PR Brief** para colar no PR: o que mudou, como testar, evidências, docs atualizadas, riscos
-4. Comentário no card com o status, quando há board
+4. Comentário no card **só se a validação reprovar** (🔴 RED), com o motivo, quando há board
 5. **Espera sua permissão explícita** antes de você seguir para o `eng.pr`
 
 ## Regras que importam

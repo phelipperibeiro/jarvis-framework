@@ -26,7 +26,7 @@ Este comando inicia o **planejamento** de uma nova feature.
 |-------|-------|----------|
 | Cabeçalho (agente) | `eng.agent` (agente) | Sempre — identidade do workflow |
 | Fase 0.1: Análise de Contexto (CDD) | `/jarvis-context-detect` | Se `ENABLE_CDD=true` no ENV.md (execução obrigatória antes da Fase 1); `ENABLE_CDD=false` pula |
-| Fase 0.5: Comentário no card — Início | `/eng-global-task-comment` | Se `TASK_MANAGER` estiver preenchido (freelance pula) |
+| Fase 0.5: Advisor (opcional) | `eng.advisor.agent` (agente) | Se o usuário escolher usar o Advisor no alerta e o `architecture.md` tiver questões em aberto (aberto só na primeira questão) |
 | Fase 2.2: Buscar Documentação Central | `/jarvis-docs-central` | Se `CENTRAL_DOCS_REPO` estiver configurado no ENV.md (buscar PRD, ARD e RFCs relacionados) |
 | Fase 3.4: Estratégia de Testes | `eng.qa.test-architect` (agente) | Se a feature tiver requisitos de performance ou segurança (APIs públicas, dados sensíveis, alta carga ou requisitos não-funcionais explícitos) |
 | Fase 3.4: Estratégia de Testes | `/eng-platform` | Se a feature tiver requisitos de performance (latência, throughput, escalabilidade) |
@@ -36,7 +36,7 @@ Este comando inicia o **planejamento** de uma nova feature.
 | Fase 3.4: Estratégia de Testes | `/eng-data` (via `eng.specializations-rules.md`) | Se a feature envolver engenharia de dados (pipelines ETL/ELT, Glue, Airflow, contratos de dados, camadas bronze/silver/gold); a regra também carrega as especializações de `DATA_SPECIALIZATIONS` |
 | Fase 3.4: Estratégia de Testes | `/eng-automation` (via `eng.specializations-rules.md`) | Se a feature envolver RPA ou extração de dados/scraping; a regra também carrega as especializações de `AUTOMATION_SPECIALIZATIONS` |
 | Fase 3.4: Estratégia de Testes | `/eng-platform` (via `eng.specializations-rules.md`) | Se a feature envolver infraestrutura (IaC, contêineres, CI/CD, observabilidade, SRE, custo); a regra também carrega as especializações de `PLATFORM_SPECIALIZATIONS` |
-| Fase 5.4: Comentário no card — Conclusão | `/eng-global-task-comment` | Se `TASK_MANAGER` estiver preenchido, após o usuário aprovar o `architecture.md` (freelance pula) |
+| Fase 4.3: Questões em Aberto | `/eng-global-task-comment` | Se o Advisor foi usado e houve questões em aberto: **um** comentário de auditoria (freelance pula; o registro fica só no `architecture.md`) |
 
 ---
 
@@ -123,17 +123,13 @@ Se o usuário solicitar ajustes, re-execute com `--override`.
 
 ---
 
-## Fase 0.5: Comentário no card — Início
+## Fase 0.5: Advisor (opcional)
 
-Pular se `TASK_MANAGER` estiver vazio (freelance).
+Logo depois de obter o `TASK_MANAGER_KEY`, pergunte com `AskUserQuestion` (sem a ferramenta, use a tabela de `prod-rules.md`): **"Usar o Advisor nas questões em aberto desta tarefa?"** (**Não**, padrão / **Sim**). Com **Não**, siga como sempre e não mencione mais o Advisor.
 
-Após obter o `TASK_MANAGER_KEY`, registrar o início do planejamento:
+Com **Sim**, pergunte **"Qual modelo para o Advisor?"** com os itens de `ADVISOR_MODELS` do `ENV.md` (até 4 opções; o resto em "Outro"). Lista vazia ou ausente: use `Sonnet 5.5` sem perguntar; lista de um item: use-o sem perguntar. Traduza o nome pela família (primeira palavra em minúsculas: `sonnet`, `opus`, `fable`, `haiku`); se o modelo não for aceito pela IDE, use `sonnet` e avise em uma linha. Se a IDE não permitir escolher o modelo do subagente, avise e não faça a segunda pergunta.
 
-```
-/eng-global-task-comment {TASK_MANAGER_KEY} 🚀 [Jarvis] Iniciando planejamento - architecture.md sendo criado
-```
-
-> Usa o skill `/eng-global-task-comment` (MCP Atlassian → fallback curl). Não bloquear se falhar.
+Registre a escolha no cabeçalho do `architecture.md` (`Advisor:`). O agente `eng.advisor.agent` só é aberto na primeira questão em aberto (Fase 4.3).
 
 ---
 
@@ -382,6 +378,18 @@ Preencha **TODAS** as seções com as informações coletadas nas fases anterior
 - Use nomes de classes/funções existentes
 - Referencie código encontrado na investigação
 
+### 4.3 Questões em Aberto
+
+Levante na seção 8 **tudo** que for diferente do código ou ambíguo no card, no formato do template (é aqui que as questões devem aparecer; levantá-las depois é exceção).
+
+**Com Advisor** (Fase 0.5), use os textos de `$IDE/templates/engineering/advisor-template.md`:
+1. Na primeira questão, abra `eng.advisor.agent` em segundo plano com o modelo escolhido e envie o **Prompt 1** (carga inicial). Se ele responder que precisa de ajuda para localizar o contexto, pergunte ao usuário com `AskUserQuestion` (opção "Não há documento: siga só com o card e o código") e reenvie.
+2. Envie cada questão com o **Prompt 2**, uma por mensagem, para a mesma instância.
+3. Preencha "Sugestão do Sub-Agent (Advisor)", **"Decisão adotada" (a sugestão do Advisor, que prevalece; não a substitua nem a conteste)**, "Divergência" e "Impacto da decisão". Confira no código os fatos em que a sugestão se apoia antes de registrar.
+4. Poste **um** comentário de auditoria na issue com `/eng-global-task-comment`, no modelo do template (freelance pula).
+
+**Sem Advisor:** apresente as questões ao usuário, como sempre.
+
 ---
 
 ## Fase 5: Revisão e Aprovação
@@ -403,23 +411,15 @@ Se o usuário tiver feedback:
 - Apresente novamente
 - Continue até aprovação explícita
 
+**Com Advisor**, o gate segue a autonomia do `context.md` (CDD): `alta` → apresente o resumo e siga para o `eng.plan` sem aguardar; `média` ou `baixa` → aguarde a aprovação explícita. Sem `context.md`, use a tabela "Autonomia por POSITION" de `eng-rules.md`. Sem Advisor, nada muda.
+
 ### 5.3 Atualizar Board
 
 Pular se `TASK_MANAGER` estiver vazio (freelance).
 
 Se estiver preenchido, mova o card para a etapa equivalente a "em andamento" no seu board. Quem assumiu o card conduz a entrega; ninguém precisa liberar a transição.
 
-### 5.4 Comentário no card — Conclusão
-
-Pular se `TASK_MANAGER` estiver vazio (freelance).
-
-Registrar conclusão do planejamento:
-
-```
-/eng-global-task-comment {TASK_MANAGER_KEY} ✅ [Jarvis] Planejamento concluído - architecture.md criado. Branch: {NOME_DA_BRANCH}
-```
-
-### 5.5 Finalização
+### 5.4 Finalização
 
 Quando o usuário aprovar, informe:
 

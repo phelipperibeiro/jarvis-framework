@@ -27,7 +27,7 @@ Confere que tudo está passando, envia a branch e abre o merge request (ou pull 
 2. **Verifica a branch:** confirma a branch ativa, a branch de destino e os commits
 3. **Push** para o remote
 4. **Cria o MR/PR** com o template: descrição, link para a tarefa, mudanças, testes realizados e checklist
-5. **Registra no card** e orienta a mover para "In Review" (quando há board)
+5. **Posta o link do MR no card** (um único comentário) e orienta a mover para "In Review" (quando há board)
 6. **Processa o code review:** analisa os comentários e aplica correções
 7. **Registra métricas de lead time** e mostra a mensagem final
 8. **Limpa a sessão** (`.jarvis/sessions/eng/{TASK_MANAGER_KEY}/`), **pedindo confirmação antes**

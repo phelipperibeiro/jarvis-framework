@@ -13,6 +13,7 @@ agents/
 ├── AGENTS.md                 # regras da pasta para a IA
 ├── README.md                 # lista humana
 ├── engineering/              # agentes de engenharia
+│   ├── eng.advisor.agent.md  # Advisor opcional das questões em aberto (eng.start)
 │   ├── eng.agent.md          # agente principal (ATHENA)
 │   ├── eng.bug-hunter.md
 │   ├── eng.dev-code-reviewer.md

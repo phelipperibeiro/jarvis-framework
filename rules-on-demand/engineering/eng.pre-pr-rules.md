@@ -94,6 +94,6 @@ O workflow **deve sempre** terminar com:
    - 🟡 Yellow: pode abrir PR com ressalvas documentadas
    - 🔴 Red: bloqueado — listar o que impede o PR
 
-2. **Comentário no card** com o status final (via `/eng-global-task-comment`) — pular se freelance
+2. **Comentário no card só se a validação reprovar** (🔴 RED, bloqueio), com o motivo (via `/eng-global-task-comment`) — pular se freelance; GREEN e YELLOW não comentam
 
 3. **Aguardar permissão explícita** do usuário para prosseguir para `/eng.pr`

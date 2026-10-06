@@ -13,6 +13,7 @@ templates/
 ├── cdd-aplicado-a-prompts.md    # referência conceitual CDD
 └── engineering/
     ├── AGENTS-template.md       # gera AGENTS.md do projeto alvo
+    ├── advisor-template.md      # prompts e auditoria do Advisor (eng.start)
     ├── ARD-template.md
     ├── RFC-template.md
     ├── RFC-Playbook.md

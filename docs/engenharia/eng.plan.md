@@ -56,6 +56,8 @@ Por `MAX_AI_EXECUTION_PERCENTAGE`: de 80% para cima, plano completo validado no 
 - Fases maiores que 1 hora e tarefas vagas ("implementar a feature") não valem
 - O plano só está pronto quando você o **valida**
 - Tudo em português (pt-BR)
+- **Questão nova em aberto é exceção:** o ideal é que tudo tenha sido levantado no `eng.start`; se surgir uma e o Advisor tiver sido habilitado lá, ele é consultado, a questão entra no `architecture.md` e o comentário de auditoria vai para o card
+- Não comenta início nem fim no card
 
 ## Próximo passo típico
 

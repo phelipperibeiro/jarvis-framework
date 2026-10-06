@@ -16,6 +16,7 @@ A pasta `templates/` contem **modelos de documentos** usados pelo framework para
 templates/
 ├── engineering/                    # Templates tecnicos
 │   ├── architecture-template.md    # Template de arquitetura
+│   ├── advisor-template.md         # Prompts e auditoria do Advisor
 │   ├── ARD-template.md             # Architecture Review Document
 │   ├── RFC-template.md             # Request For Comments
 │   ├── RFC-Playbook@1.0.0.md       # Playbook para RFCs
@@ -105,6 +106,7 @@ Use chaves `{...}` para indicar campos a serem preenchidos:
 | Template | Uso | Comando |
 |----------|-----|---------|
 | `architecture-template.md` | Design arquitetural | `/eng.start` |
+| `advisor-template.md` | Prompts do Advisor e modelo de auditoria | `/eng.start` |
 | `ARD-template.md` | Revisao de arquitetura | `/eng.create-ard` |
 | `RFC-template.md` | Proposta de mudanca | `/eng.create-rfc` |
 | `tech-spec-template.md` | Especificacao tecnica | `/eng.build-tech-spec` |

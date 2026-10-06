@@ -40,7 +40,6 @@ Estamos nos aproximando de finalizar o trabalho nesta branch e nos preparar para
 | Skills recomendados | `/jarvis-docs-index` | Se for necessário atualizar o índice de documentação |
 | Skills recomendados | `/eng-platform` + `PLATFORM_SPECIALIZATIONS` | Se a feature tiver requisitos não-funcionais de latência, throughput ou escalabilidade |
 | Skills recomendados | `/eng-backend` e `/eng-frontend` (via `eng.specializations-rules.md`) | Para validar código de backend (endpoints, autenticação, workers) ou de frontend (componentes, performance de UI, WCAG 2.1 AA); a regra também carrega as especializações registradas no ENV.md |
-| Fase 0.5: Comentário no card — Início | `/eng-global-task-comment` | Se `TASK_MANAGER` estiver preenchido (freelance pula) |
 | Gate 0: Verificar Documentação Central | `/jarvis-docs-central` (via `jarvis docs publish --tipo ard`) | Se `CENTRAL_DOCS_REPO` estiver configurado, houver mudança arquitetural, o ARD estiver desatualizado ou novo e o usuário aceitar publicar |
 | Gates › item 1 | `prod.pm-checker` (agente) | Sempre — verificar alinhamento da branch com os docs de produto e engenharia |
 | Gates › item 2 | `eng.dev-code-reviewer` (agente) | Sempre — revisar o código antes de lançar |
@@ -52,21 +51,7 @@ Estamos nos aproximando de finalizar o trabalho nesta branch e nos preparar para
 | Gates › item 8 | `eng.ux-designer.agent` (agente) | Se a branch introduzir nova feature de UI ou alterar fluxo de usuário |
 | Gates › item 9 | `eng.docs-writer` (agente) | Sempre — atualizar a documentação do projeto |
 | Gates › item 10 | Nenhuma — checklist inline | Se a branch tocar em auth, sessions, inputs de usuário, CORS, CSP, permissões ou adicionar endpoints públicos |
-| Comentário no card — Conclusão | `/eng-global-task-comment` | Se `TASK_MANAGER` estiver preenchido, com o status final (freelance pula) |
-
-## Fase 0.5: Comentário no card — Início
-
-Pular se `TASK_MANAGER` estiver vazio (freelance).
-
-Ao iniciar o pre-PR, registrar:
-
-```
-/eng-global-task-comment {TASK_MANAGER_KEY} 🔍 [Jarvis] Iniciando validação pre-PR - bateria de testes e revisão de código
-```
-
-> Usa o skill `/eng-global-task-comment`. Não bloquear se falhar.
-
----
+| Saída final › 2) Bloqueadores e pendências | `/eng-global-task-comment` | Só se a validação reprovar (status RED): um comentário com o motivo (freelance pula) |
 
 ## Regras de Execução
 
@@ -150,6 +135,8 @@ Você também precisará lidar com todo o feedback que esses agentes fornecerem 
 
 ### 2) Bloqueadores e pendências
 
+Se o status for **RED** (bloqueado), comente o bloqueio e o motivo no card com `/eng-global-task-comment` (freelance pula). GREEN e YELLOW não geram comentário.
+
 - Bloqueadores:
 - Pendências aceitas (com justificativa):
 - Follow-ups (links/IDs):
@@ -161,21 +148,5 @@ Você também precisará lidar com todo o feedback que esses agentes fornecerem 
 - Evidências de testes/validações:
 - Docs atualizadas:
 - Riscos / trade-offs:
-
-## Comentário no card — Conclusão
-
-Pular se `TASK_MANAGER` estiver vazio (freelance).
-
-Após apresentar o resultado final, registrar:
-
-- Se **Green**: `✅ [Jarvis] Pre-PR concluído com status GREEN - pronto para abrir MR`
-- Se **Yellow**: `⚠️ [Jarvis] Pre-PR concluído com status YELLOW - pode abrir MR com ressalvas`
-- Se **Red**: `🚫 [Jarvis] Pre-PR concluído com status RED - bloqueadores encontrados, não abrir MR`
-
-```
-/eng-global-task-comment {TASK_MANAGER_KEY} {mensagem_status}
-```
-
----
 
 Uma vez terminado, me avise e peça minha permissão para abrir o Pull Request.
