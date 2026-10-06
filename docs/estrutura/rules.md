@@ -17,11 +17,10 @@ rules/
 │   ├── eng-security-rules.md
 │   ├── eng.specializations-rules.md # carregamento de especializações por stack
 │   ├── eng.skills-rules.md       # área obrigatória nos skills e aviso de skill inexistente
-│   ├── … (docs, bump, integrations, …)
+│   ├── … (integrations, …)
 │   ├── frontend/
 │   ├── data/
-│   ├── qa/
-│   └── rpa/
+│   └── qa/
 └── product/
     └── prod-rules.md
 
@@ -34,7 +33,9 @@ rules-on-demand/                    # lidas pelo workflow; não carregadas no in
 │   ├── eng.pr-rules.md
 │   ├── eng.tech-spec-rules.md
 │   ├── eng.transitions-rules.md
-│   └── eng.breakdown-subtasks-rules.md
+│   ├── eng.breakdown-subtasks-rules.md
+│   ├── eng.bump-rules.md
+│   └── eng.rpa-rules.md          # inclui a documentação de robôs (HUB: all)
 ├── product/
 │   └── prod.guided-rules.md        # modo Developer-Guided (só com PROD_MODE=developer-guided)
 ├── doc-links-rules.md              # links clicáveis nos documentos gerados (lida pelos comandos que gravam documentos)
