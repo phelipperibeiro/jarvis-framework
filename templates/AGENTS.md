@@ -14,8 +14,8 @@ A pasta `templates/` contem **modelos de documentos** usados pelo framework para
 
 ```
 templates/
-├── cdd-mind-map-template.md        # Mapa de tecnologias do workspace (CDD-MIND-MAP.md; /warm-up e /jarvis-init)
 ├── ENV-template.md                 # Template canonico do ENV.md (copiado pelo /jarvis-init)
+├── cdd-mind-map-template.md        # Mapa de tecnologias do workspace (CDD-MIND-MAP.md; /warm-up e /jarvis-init)
 ├── warm-up-template.md             # Aquecimento por apelido ($SESSIONS_DIR/warm-ups/{apelido}/)
 ├── engineering/                    # Templates tecnicos
 │   ├── architecture-template.md    # Template de arquitetura

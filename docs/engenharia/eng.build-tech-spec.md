@@ -58,3 +58,21 @@ Triagem (escopo, áreas e se há RFC ou ARD de origem), checagem de RFC (sem ori
 
 - **Delivery Spec:** [`eng.start`](./eng.start.md) em cada subtarefa. Se as fatias forem para pessoas diferentes ou para quem precisa de um passo a passo (ex.: time com juniores), rode antes o [`eng.breakdown-subtasks`](./eng.breakdown-subtasks.md): ele não gera a spec, só detalha cada fatia.
 - **Reference Spec:** revisar a spec com os revisores e mudar o status para `approved`; as implementações que a seguirem citam o `SPEC-###`.
+
+## Exemplos (bom e ruim por princípio)
+
+Cada princípio da rule tem um exemplo curto; aqui estão os mais completos, para consulta humana (o workflow não carrega este arquivo). Os exemplos ruins de Tech Spec genérica, decisão sem justificativa, subtarefa grande, estimativa sem base e risco ignorado estão nos "Antipadrões" da rule.
+
+**Rastreabilidade**: ✅ `related_story: STORY-123`, `link_task: https://jira.empresa.com/browse/STORY-123`, `related_prd: Sistema de Autenticação (link)` · ❌ `related_story: história do jira`, `link_task:` vazio.
+
+**Decisão justificada**: ✅ "Armazenamento de tokens JWT: opção A `localStorage` (persistente e simples, mas vulnerável a XSS e sem expiração automática); opção B cookie `httpOnly` (protege contra XSS e expira sozinho, mas exige proteção CSRF e é mais complexo em multi-domínio). Decisão: cookie `httpOnly`, porque a segurança é P0 e o CSRF é mitigável com token CSRF" · ❌ "Usar JWT. É melhor que sessões."
+
+**Subtarefa executável**: ✅ `SUBTASK-003: Criar endpoint POST /api/users com validação de email`, com descrição (retorna 400 se o email for inválido), arquivos (`routes/users.py`, `validators/email.py`, `tests/test_users.py`), critérios verificáveis (201 com o usuário criado, 400 com mensagem, senha com bcrypt), testes (`test_create_user_valid_email`, `..._invalid_email`, `..._duplicate_email` → 409), dependência `SUBTASK-002` e estimativa de 1,5h · ❌ `SUBTASK-003: Implementar API de usuários` com critério "API deve funcionar" e teste "testar tudo".
+
+**Risco com mitigação**: ✅ "Migration falha em produção e deixa o banco inconsistente | Baixa | Crítico | testar em cópia de produção, script de rollback, backup antes e validação depois | rollback automático, restore do backup e feature flag" · ❌ "Algo pode dar errado | Não sei | Alto | Testar bem | Voltar atrás".
+
+**Estimativa realista**: ✅ fases somam 18h, buffer de 25% (+4,5h), estimativa final de 22,5h (~3 dias úteis), com toda subtarefa entre 4h e 1 dia · ❌ "Uns 3 dias", sem quebra.
+
+**Estratégia de testes**: ✅ cobertura alvo de 85%; 15 unitários, 5 de integração (usuário persistido, email duplicado, login devolve JWT) e 3 E2E (cadastro e login, redefinição de senha, login inválido mostra erro); carga de 100 usuários com p95 < 500 ms e p99 < 1 s (k6) · ❌ "Vamos testar tudo bem. Cobertura: o máximo possível."
+
+**Documentação**: ✅ critérios "README com a env var `JWT_SECRET`, `API.md` com `POST /auth/login`, `CHANGELOG.md` atualizado" · ❌ critérios "Código pronto" e "Testes ok" (documentação esquecida).
