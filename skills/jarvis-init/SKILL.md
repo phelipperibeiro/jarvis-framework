@@ -195,12 +195,12 @@ Identificar qual IDE o usuário está utilizando:
 3. Ler `HUB` do ENV.md existente
 4. Se `HUB≠DATA`: excluir do diff todas as chaves `DATA_*` — não propor adicioná-las
 5. Calcular diff: chaves no template que **não existem** no ENV.md atual (respeitando exclusão de DATA_* para não-DATA)
-4. Se não houver diff:
+6. Se não houver diff:
    ```
    ✅ ENV.md já está atualizado. Nenhuma variável nova encontrada.
    ```
    Oferecer o **passo 9 (adicionar as stacks)**, que a pessoa pode pular, e então encerrar.
-5. Se houver diff, exibir prévia:
+7. Se houver diff, exibir prévia:
    ```
    🔍 Variáveis novas encontradas no template:
      + NOVA_VAR_1=
@@ -208,18 +208,19 @@ Identificar qual IDE o usuário está utilizando:
 
    Serão adicionadas ao final do ENV.md sem alterar os valores existentes.
    ```
-6. Appender as novas variáveis ao final do `ENV.md` com comentário de data:
+8. **Exceção — `PROD_MODE`:** se `PROD_MODE` estiver entre as chaves novas, faça a mesma pergunta do Passo 3 (Pergunta 8 — modo de condução) e grave a resposta no lugar do valor vazio. As demais chaves continuam sem pergunta.
+9. Appender as novas variáveis ao final do `ENV.md` com comentário de data:
    ```
    # --- Upgrade YYYY-MM-DD ---
    NOVA_VAR_1=
    NOVA_VAR_2=valor-padrão
    ```
-7. Confirmar:
+10. Confirmar:
    ```
    ✅ ENV.md atualizado! N variável(is) nova(s) adicionada(s).
    ⚠️ Preencha os valores em branco antes de usar os novos recursos.
    ```
-8. Oferecer o **passo 9 (adicionar as stacks)**, que a pessoa pode pular, e então encerrar (não continuar para o fluxo de onboarding completo).
+11. Oferecer o **passo 9 (adicionar as stacks)**, que a pessoa pode pular, e então encerrar (não continuar para o fluxo de onboarding completo).
 
 **⚠️ OBRIGATÓRIO - Criação do ENV.md**:
 
@@ -261,6 +262,7 @@ Fluxo correto:
 - **IDE** (7 opções) → mostrar em texto numerado
 - **SQUAD** (do taxonomy) → mostrar em texto numerado
 - **POSITION** (do taxonomy) → mostrar em texto numerado
+- **PROD_MODE** (2 opções: product-led, developer-guided) → AskUserQuestion, sempre perguntado e sem opção sugerida
 
 ```
 // Exemplo 1: HUB (5 opções) - MOSTRAR EM TEXTO
@@ -401,6 +403,15 @@ Pergunta 7 (opções fixas - POSITION do taxonomy - texto se >4):
 
 *[Mostrar TODAS as opções de POSITION do taxonomy.md e aguardar]*
 
+```
+Pergunta 8 (opções fixas - 2 opções - usar AskUserQuestion) — PROD_MODE:
+Como você quer que os comandos de produto (prod.*) e o eng.create-ard conduzam a conversa?
+- Product-Led: para PMs. Fluxo direto, com os termos de PM, sem explicações extras.
+- Developer-Guided: para devs e futuros PMs. Uma pergunta por vez, explicando cada termo e etapa enquanto você faz.
+```
+
+*[Perguntar **sempre**, para qualquer `AREA` e qualquer `POSITION` (inclusive `GENERALIST` e PM). **Não** marcar nenhuma opção como recomendada nem sugerir padrão por área ou cargo. Gravar `PROD_MODE=product-led` ou `PROD_MODE=developer-guided`.]*
+
 **Regras de Implementação:**
 - **Opções fixas com ≤4 opções** → usar AskUserQuestion
 - **Opções fixas com >4 opções** (HUB com DATA, IDE, SQUAD, POSITION) → mostrar em texto numerado
@@ -424,6 +435,7 @@ Pergunta 7 (opções fixas - POSITION do taxonomy - texto se >4):
 | `MAX_AI_EXECUTION_PERCENTAGE` | Limite de execução da AI | Número entre 60 e 100 |
 | `USER` | Identidade do usuário (email ou nome) | ENV.md → git `user.email` → usuário do SO. Sem login |
 | `POSITION` | Cargo do usuário | Deve estar em `taxonomy.md` → Positions. Autonomia ponta a ponta em qualquer cargo |
+| `PROD_MODE` | Modo de condução dos comandos de produto e do `eng.create-ard` | `product-led` ou `developer-guided`. Sempre perguntado, sem opção sugerida (Pergunta 8) |
 
 > **💡 Nota**:
 > - As opções para SQUAD, HUB, AREA e POSITION são definidas em `taxonomy.md` e podem ser customizadas por organização.
@@ -1234,7 +1246,10 @@ Pergunta 6: Qual o limite de execução da AI? (60-100)
 Pergunta 7: Qual seu cargo?
 [mostrar opções em texto numerado]
 
-Pergunta 8 (opcional): Usa task manager? jira/linear/github/asana ou Nenhum (freelance)
+Pergunta 8: Modo dos comandos de produto?
+[AskUserQuestion: Product-Led | Developer-Guided, sem opção sugerida]
+
+Pergunta 9 (opcional): Usa task manager? jira/linear/github/asana ou Nenhum (freelance)
 ```
 
 **Agente**: *(cria ENV.md + `.jarvis/sessions/{eng,prod,qa}`, valida Context7, cria AGENTS.md e confirma)*
@@ -1281,6 +1296,7 @@ Bem-vindo! 🎉
 - [ ] **Perguntou UMA variável POR VEZ** (nunca fez múltiplas perguntas juntas)
 - [ ] **Usou AskUserQuestion só para ≤4 opções** (AREA se aplicável — HUB com DATA vai em texto)
 - [ ] **Mostrou em texto numerado para >4 opções** (HUB, IDE, SQUAD, POSITION)
+- [ ] **Perguntou o `PROD_MODE`** (Product-Led ou Developer-Guided), sem opção sugerida, qualquer que seja a área ou o cargo
 - [ ] **Mostrou TODAS as opções disponíveis** (HUB inclui DATA; nunca omitiu)
 - [ ] **Incluiu descrição útil em cada opção** (seja AskUserQuestion ou texto)
 - [ ] **Validou respostas em texto contra lista de opções válidas**

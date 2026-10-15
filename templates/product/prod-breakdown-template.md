@@ -1,8 +1,26 @@
 ---
-name: [Name from PRD]  
+# Modelo de IA recomendado para trabalhar neste documento. Se a sessão estiver em outro,
+# o comando avisa e segue (você decide se troca). Opções: opus | sonnet | haiku
+recommended_model: opus
+
+# Nome do breakdown (o mesmo do PRD ou FRD que está sendo fatiado).
+name: [Name from PRD]
+
+# Time (squad) responsável pela entrega.
 team: [Team Name]
+
+# Em que ponto este documento está no ciclo de vida (lista em rules/product/prod-rules.md).
+# Opções: icebox | in_review | backlog | in_progress | in_production | cancelled | deprecated
+# icebox = ideia aguardando priorização | in_review = sendo estudado ou revisado | backlog = definido, aguardando implementação
+# in_progress = em desenvolvimento | in_production = em produção
+# cancelled = cancelado antes de ser entregue | deprecated = esteve em produção e foi descontinuado
+status: [um dos valores acima]
+
+# Data de criação (YYYY-MM-DD).
 created_at: [YYYY-MM-DD]
-last_updated: [YYYY-MM-DD]  
+
+# Data da última alteração (YYYY-MM-DD).
+updated_at: [YYYY-MM-DD]
 ---
 
 ## Resumo do plano detalhado (breakdown)

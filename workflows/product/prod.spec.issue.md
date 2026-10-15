@@ -3,12 +3,16 @@ name: prod.spec.issue
 description: Criar um especificação de issues como Histórias de Usuário, Tarefas técnicas e bugs, seguindo as melhores práticas de gestão de produto e projeto.
 auto_execution_mode: 3
 env_file: "@/ENV.md"
-recommended_model: gpt-4o
+recommended_model: opus
 model_tier: medium
 model_justification: Criação de issues é estruturada e segue templates, requer boa compreensão mas não raciocínio extremamente complexo
 ---
 
 # Fluxo de Criação de Issues
+
+> 🎓 **Modo de condução**: leia `PROD_MODE` no `$IDE/ENV.md`. Se for `developer-guided`, **antes de começar leia `$IDE/rules-on-demand/product/prod.guided-rules.md` e siga-o** em toda a conversa. Vazio ou `product-led`: siga este fluxo como está.
+>
+> 🤖 **Modelo**: se a IDE informar o modelo desta sessão e ele for de outra família que o `recommended_model` do documento (ou do template, se o documento for novo), avise em uma linha e siga, sem bloquear e sem repetir. Sem essa informação, não avise.
 
 Antes de iniciar, revise o arquivo de regras invioláveis em `$PROD_RULES/**/*.*`.
 

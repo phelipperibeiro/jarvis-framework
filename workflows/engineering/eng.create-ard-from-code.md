@@ -60,7 +60,7 @@ priorizando a **arquitetura observada no código do repositório**, usando o tem
 - Defina o `ARD-ID` automaticamente assim:
   - Se a pasta `$DOCS_FOLDER/engineering/ARD/` existir e houver arquivos no padrão `ARD-###-*.md`, use o maior `###` + 1.
 - Defina:
-  - `Status`
+  - `Status` (campo `status` no frontmatter: `proposed | in_progress | in_review | approved`)
   - `Caminho do arquivo` (`$DOCS_FOLDER/engineering/ARD/{ARD-ID}-{slug}.md` ou caminho fornecido para iteração)
 
 ---

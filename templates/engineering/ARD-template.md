@@ -1,3 +1,39 @@
+---
+# Modelo de IA recomendado para trabalhar neste documento. Se a sessão estiver em outro,
+# o comando avisa e segue (você decide se troca). Opções: opus | sonnet | haiku
+recommended_model: opus
+
+# Identificador único do ARD, em sequência (ex.: ARD-001). Vai no nome do arquivo.
+id: [ARD-xxx]
+
+# Título da arquitetura. Vai no título e, em kebab-case, no nome do arquivo.
+name: [Título da Arquitetura]
+
+# Versão do documento (X.Y.Z). Atualize a cada alteração.
+version: [1.0.0]
+
+# Em que ponto este ARD está no ciclo de vida.
+# Opções: proposed | in_progress | in_review | approved
+# proposed = proposta, ainda em discussão | in_progress = arquitetura em desenvolvimento
+# in_review = em validação com os revisores | approved = finalizada e aprovada
+status: [um dos valores acima]
+
+# Documentos relacionados: RFC (proposta técnica), FRD (requisitos funcionais), PRD (requisitos de produto).
+related: [RFC-xxx, FRD-xxx, PRD-xxx]
+
+# Data de criação (YYYY-MM-DD).
+created_at: [YYYY-MM-DD]
+
+# Data da última alteração (YYYY-MM-DD).
+updated_at: [YYYY-MM-DD]
+
+# Quem criou o documento (Tech Lead ou arquiteto responsável).
+created_by: [nome]
+
+# Quem editou o documento por último.
+last_editor: [nome]
+---
+
 # 🧱 ARD Template — Architecture Requirement Document
 
 **Arquivo:** /docs/engineering/ARD/ARD-xxx-nome-da-arquitetura.md
@@ -6,12 +42,9 @@
 
 ## 🏗️ ARD-[número] — [Título da Arquitetura]
 
-**Status:** Proposta / Em desenvolvimento / Em validação / Finalizada  
-**Data:** [dd/mm/yyyy]  
-**Autor:** [Tech Lead / Arquiteto responsável]  
-**Revisores:** [Chapter Leads, Eng. de Plataforma, etc.]  
-**Relacionado a:** [RFC-xxx], [FRD-xxx], [PRD-xxx]  
-**Versão:** [1.0]
+**Revisores:** [Chapter Leads, Eng. de Plataforma, etc.]
+
+> Status, versão, datas, autor e documentos relacionados ficam no frontmatter (topo do arquivo).
 
 ---
 

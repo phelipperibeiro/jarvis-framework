@@ -1,11 +1,34 @@
 ---
+# Modelo de IA recomendado para trabalhar neste documento. Se a sessão estiver em outro,
+# o comando avisa e segue (você decide se troca). Opções: opus | sonnet | haiku
+recommended_model: opus
+
+# Identificador único, em sequência (ex.: discovery-001). Vai no nome do arquivo e nos campos related_* de outros documentos.
 id: {discovery-001}
+
+# Nome curto do documento. Vai no título e, em kebab-case, no nome do arquivo.
 name: {nome dessa ideia}
-status: {in_review enquanto o rascunho existe | cancelled se o veredito for do_not_proceed}
+
+# Situação do rascunho. O discovery tem ciclo próprio (rules/product/prod-rules.md).
+# Opções: in_review | cancelled
+# in_review = rascunho em andamento ou concluído | cancelled = o veredito foi do_not_proceed
+status: {in_review | cancelled}
+
+# Recomendação do discovery: vale seguir com essa ideia? Fica vazio durante a entrevista.
+# Opções: proceed | investigate_more | do_not_proceed
+# proceed = vale especificar | investigate_more = há lacuna crítica | do_not_proceed = não seguir (status passa a cancelled)
 verdict: {vazio durante a entrevista | proceed | investigate_more | do_not_proceed}
+
+# Data de criação (YYYY-MM-DD).
 created_at: {YYYY-MM-DD}
+
+# Data da última alteração (YYYY-MM-DD).
 updated_at: {YYYY-MM-DD}
+
+# Quem criou o documento.
 created_by: {nome de quem criou esse doc}
+
+# Quem editou o documento por último.
 last_editor: {nome de quem editou por último}
 ---
 

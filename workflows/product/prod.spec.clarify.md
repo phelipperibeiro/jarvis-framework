@@ -3,12 +3,16 @@ name: prod.spec.clarify
 description: Identificar áreas subespecificadas na especificação da feature atual fazendo até 5 perguntas de esclarecimento altamente direcionadas e incorporando as respostas de volta na spec.
 auto_execution_mode: 3
 env_file: "@/ENV.md"
-recommended_model: gpt-4o
+recommended_model: opus
 model_tier: medium
 model_justification: Esclarecimento de specs requer análise estruturada e formulação de perguntas, mas segue processo bem definido
 ---
 
 ## Clarify workflow
+
+> 🎓 **Modo de condução**: leia `PROD_MODE` no `$IDE/ENV.md`. Se for `developer-guided`, **antes de começar leia `$IDE/rules-on-demand/product/prod.guided-rules.md` e siga-o** em toda a conversa. Vazio ou `product-led`: siga este fluxo como está.
+>
+> 🤖 **Modelo**: se a IDE informar o modelo desta sessão e ele for de outra família que o `recommended_model` do documento (ou do template, se o documento for novo), avise em uma linha e siga, sem bloquear e sem repetir. Sem essa informação, não avise.
 
 Detectar e reduzir ambiguidades ou pontos de decisão ausentes na especificação da feature ativa e registrar os esclarecimentos diretamente no arquivo da spec.
 

@@ -3,12 +3,16 @@ name: prod.spec.epic
 description: Fluxo de trabalho para criação de épicos que agrupam histórias de usuários e tarefas relacionadas seguindo as diretrizes do Product Spec Kit.
 auto_execution_mode: 3
 env_file: "@/ENV.md"
-recommended_model: gpt-4o
+recommended_model: opus
 model_tier: medium
 model_justification: Criação de épicos segue templates estruturados e requer compreensão de contexto de produto
 ---
 
 # Crie um fluxo de trabalho épico
+
+> 🎓 **Modo de condução**: leia `PROD_MODE` no `$IDE/ENV.md`. Se for `developer-guided`, **antes de começar leia `$IDE/rules-on-demand/product/prod.guided-rules.md` e siga-o** em toda a conversa. Vazio ou `product-led`: siga este fluxo como está.
+>
+> 🤖 **Modelo**: se a IDE informar o modelo desta sessão e ele for de outra família que o `recommended_model` do documento (ou do template, se o documento for novo), avise em uma linha e siga, sem bloquear e sem repetir. Sem essa informação, não avise.
 
 Antes de iniciar, revise o arquivo de regras invioláveis em `$PROD_RULES/**/*`. Se você não estiver familiarizado com essa variável, leia as regras diretamente na pasta `.$IDE/rules/product/**/*.*`.
 

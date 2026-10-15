@@ -64,6 +64,12 @@ PROD_FLOWS=.$IDE/$FLOWS_FOLDER
 PROD_TEMPLATES=.$IDE/$TEMPLATES_FOLDER/$PROD_FOLDER_NAME
 PROD_DOCS=$DOCS_FOLDER/$PROD_FOLDER_NAME
 
+# Modo de condução dos comandos de produto (prod.*) e do eng.create-ard.
+#   product-led      = para PMs: fluxo direto, sem explicações extras (padrão se vazio)
+#   developer-guided = para devs e futuros PMs: uma pergunta por vez, explica cada termo e etapa
+# Perguntado sempre pelo /jarvis-init. Para trocar, rode o /jarvis-init ou edite aqui.
+PROD_MODE=
+
 
 # --- Especializações por área -------------------------------------------------
 # Skills especializados que o Jarvis carrega junto com o skill base de cada área.

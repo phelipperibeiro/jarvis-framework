@@ -116,7 +116,8 @@ Em itens e especificações, utilizamos status para identificar quais etapas do 
 - backlog: Item já foi estudado, sabemos o que fazer e está aguardando priorização de implementação.
 - in_progress: Item que está em desenvolvimento.
 - in_production: Item que está em produção.
-- cancelled: Item que foi descontinuado ou cancelado.
+- cancelled: Item cancelado antes de ser entregue.
+- deprecated: Item que esteve em produção e foi descontinuado.
 
 
 ## Padrão de nomes e pastas

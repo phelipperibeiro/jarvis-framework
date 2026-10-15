@@ -3,12 +3,16 @@ name: prod.spec.ard
 description: Ponto de entrada de produto para o ARD (Architecture Requirements Document): levanta com o PM os requisitos arquiteturais em termos de produto e conduz o ARD pelo fluxo de engenharia.
 auto_execution_mode: 3
 env_file: "@/ENV.md"
-recommended_model: gpt-4o
+recommended_model: opus
 model_tier: medium
 model_justification: Levantamento estruturado de requisitos arquiteturais a partir de PRD e FRD, seguido da condução do fluxo de engenharia existente
 ---
 
 # ARD a partir do produto (Architecture Requirements Document)
+
+> 🎓 **Modo de condução**: leia `PROD_MODE` no `$IDE/ENV.md`. Se for `developer-guided`, **antes de começar leia `$IDE/rules-on-demand/product/prod.guided-rules.md` e siga-o** em toda a conversa. Vazio ou `product-led`: siga este fluxo como está.
+>
+> 🤖 **Modelo**: se a IDE informar o modelo desta sessão e ele for de outra família que o `recommended_model` do documento (ou do template, se o documento for novo), avise em uma linha e siga, sem bloquear e sem repetir. Sem essa informação, não avise.
 
 Antes de iniciar, revise o arquivo de regras invioláveis em `$PROD_RULES/**/*`. Se você não estiver familiarizado com essa variável, leia as regras diretamente na pasta `.$IDE/rules/product/**/*.*`.
 
