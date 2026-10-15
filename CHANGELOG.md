@@ -6,6 +6,20 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), e o
 
 > Versões anteriores a `2.1.1` não foram documentadas retroativamente neste changelog — o histórico detalhado dessas versões continua disponível via `git log`.
 
+## [Unreleased]
+
+### Added
+- **Modo Developer-Guided nos comandos de produto** (#146): o `/jarvis-init` sempre pergunta o modo de condução (`PROD_MODE=product-led | developer-guided`, sem opção sugerida, inclusive no Upgrade quando a chave é nova). Com `developer-guided`, os 10 comandos de `workflows/product/` e o `eng.create-ard` leem a regra sob demanda `rules-on-demand/product/prod.guided-rules.md`: uma pergunta por vez, termo de PM sempre com explicação, opções `[Sim]/[Não]/[Explicar melhor]/[Dúvida]` (a dúvida usa o "Outro" de texto livre), mentoria entre artefatos e revisão ao fechar cada documento. O documento gerado é o mesmo nos dois modos
+- **Frontmatter comentado** em todos os templates de produto e no de ARD: cada campo diz o que significa e lista todas as opções
+- **`recommended_model: opus`** nos documentos de produto e no ARD; os comandos que criam ou editam documento avisam (sem bloquear) quando a sessão está em outro modelo
+- Status `deprecated` (esteve em produção e foi descontinuado) na lista única de `rules/product/prod-rules.md`; `cancelled` passa a significar "cancelado antes de ser entregue"
+
+### Changed
+- `templates/engineering/ARD-template.md` ganhou frontmatter YAML (`status: proposed | in_progress | in_review | approved`, versão, datas, autor, relacionados); as linhas equivalentes saíram do bloco do corpo
+- `prod-breakdown-template.md`: `last_updated` → `updated_at` e campo `status` novo; `prod-epic-template.md` e `prod-issue-template.md` usam a lista única de status
+- `recommended_model` dos 11 workflows (10 de produto e `eng.create-ard`) passou a `opus` (o `prod.roadmap.preview` ganhou o campo)
+- Upgrade do `jarvis-init`: numeração dos passos corrigida (havia dois "4." e dois "5.")
+
 ## [3.2.0] - 2026-10-06
 
 ### Added

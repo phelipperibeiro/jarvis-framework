@@ -3,12 +3,16 @@ description: Fluxo de trabalho de Engenharia para criação/iteração de ARD
 globs:
   alwaysApply: false
   env_file: "@/ENV.md"
-recommended_model: claude-sonnet-4-20250514
+recommended_model: opus
 model_tier: high
 model_justification: Documentação arquitetural requer análise de requisitos, trade-offs técnicos e decisões bem fundamentadas
 ---
 
 # Workflow de Engenharia – ARD (Architecture Requirements Document)
+
+> 🎓 **Modo de condução**: leia `PROD_MODE` no `$IDE/ENV.md`. Se for `developer-guided`, **antes de começar leia `$IDE/rules-on-demand/product/prod.guided-rules.md` e siga-o** em toda a conversa. Vazio ou `product-led`: siga este fluxo como está.
+>
+> 🤖 **Modelo**: se a IDE informar o modelo desta sessão e ele for de outra família que o `recommended_model` do documento (ou do template, se o documento for novo), avise em uma linha e siga, sem bloquear e sem repetir. Sem essa informação, não avise.
 
 ## Objetivo
 
@@ -64,7 +68,7 @@ usando o template `$IDE/templates/engineering/ARD-template.md`, sempre alinhado 
   - Se a pasta `$DOCS_FOLDER/engineering/ARD/` existir e houver arquivos no padrão `ARD-###-*.md`, use o maior `###` + 1.
 - Defina o `ARD-ID` automaticamente assim:
   - Se a pasta `$DOCS_FOLDER/engineering/ARD/` existir e houver arquivos no padrão `ARD-###-*.md`, use o maior `###` + 1.
-- `Status`
+- `Status` (campo `status` no frontmatter: `proposed | in_progress | in_review | approved`)
 - `Caminho do arquivo` (`$DOCS_FOLDER/engineering/ARD/{ARD-ID}-{slug}.md` ou caminho fornecido para iteração)
 
 ---
@@ -109,7 +113,7 @@ Regras:
 3. Confirme os metadados definidos no Passo 0:
    - `ARD-ID`
    - `Título`
-   - `Status`
+   - `Status` (campo `status` no frontmatter)
    - `Caminho do arquivo` (`$DOCS_FOLDER/engineering/ARD/{ARD-ID}-{slug}.md` ou caminho fornecido para iteração)
 
 ---

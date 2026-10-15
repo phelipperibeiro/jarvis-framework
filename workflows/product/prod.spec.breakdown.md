@@ -3,12 +3,16 @@ name: prod.spec.breakdown
 description: Quebra uma especificação de produto grande (Documento de Requisitos de Produto ou Documento de Requisitos Funcionais) em fatias gerenciáveis — versões, épicos e histórias — sem perder o objetivo de valor.
 auto_execution_mode: 3
 env_file: "@/ENV.md"
-recommended_model: claude-sonnet-4-20250514
+recommended_model: opus
 model_tier: high
 model_justification: Breakdown de produto exige julgamento de valor, sequenciamento e decomposição em entregas incrementais
 ---
 
 # Quebra de especificação (breakdown)
+
+> 🎓 **Modo de condução**: leia `PROD_MODE` no `$IDE/ENV.md`. Se for `developer-guided`, **antes de começar leia `$IDE/rules-on-demand/product/prod.guided-rules.md` e siga-o** em toda a conversa. Vazio ou `product-led`: siga este fluxo como está.
+>
+> 🤖 **Modelo**: se a IDE informar o modelo desta sessão e ele for de outra família que o `recommended_model` do documento (ou do template, se o documento for novo), avise em uma linha e siga, sem bloquear e sem repetir. Sem essa informação, não avise.
 
 Este comando transforma uma especificação **grande demais para executar de uma vez** em um **plano detalhado (breakdown)**: versões / releases, épicos e esboço de histórias ou tarefas — com foco em **valor perceptível ao usuário**, não só em camadas técnicas.
 

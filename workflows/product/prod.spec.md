@@ -3,12 +3,14 @@ name: prod.spec
 description: Guia o usuário para construir especificações macro ou micro de produto, como PRDs, histórias, tarefas, RFDs e outros.
 auto_execution_mode: 3
 env_file: "@/ENV.md"
-recommended_model: claude-sonnet-4-20250514
+recommended_model: opus
 model_tier: medium
 model_justification: Especificações de produto requerem compreensão de requisitos e estruturação de documentos
 ---
 
 # Iniciar uma especificação
+
+> 🎓 **Modo de condução**: leia `PROD_MODE` no `$IDE/ENV.md`. Se for `developer-guided`, **antes de começar leia `$IDE/rules-on-demand/product/prod.guided-rules.md` e siga-o** em toda a conversa. Vazio ou `product-led`: siga este fluxo como está.
 
 Estas instruções ajudam a orientar o usuário que deseja começar a construir uma especificação. Esta especificação pode variar desde um PRD, história de usuário até tarefas. Devemos orientá-lo nessa construção de forma que a especificação, seja ela macro ou micro seja criada de acordo com as instruções e padrões do projeto.
 

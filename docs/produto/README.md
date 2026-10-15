@@ -63,6 +63,19 @@ Relacionado (roadmap): workflow `prod.roadmap.preview` — visão de planejament
 5. **Sessões** — rascunhos em `.jarvis/sessions/prod/{TASK_MANAGER_KEY}/`; a versão canônica fica em `$PROD_DOCS`.
 6. **Depois da spec** — engenharia: `/eng.start` → `/eng.plan` → `/eng.work` → `/eng.pr`.
 
+## Modo Developer-Guided (para quem está aprendendo)
+
+O `/jarvis-init` sempre pergunta como os comandos de produto (e o `/eng.create-ard`) devem conduzir a conversa. A escolha fica em `PROD_MODE` no `ENV.md`:
+
+| Modo | Para quem | Como a conversa fica |
+| --- | --- | --- |
+| `product-led` (padrão se vazio) | PMs | Direta, com os termos de PM, sem explicações extras |
+| `developer-guided` | Devs e futuros PMs | Uma pergunta por vez, cada termo explicado, opções `[Sim]`, `[Não]`, `[Explicar melhor]` e `[Dúvida]`, e uma revisão ao fechar cada documento |
+
+O modo muda **só a conversa**: o documento gerado é o mesmo nos dois. Para trocar, rode o `/jarvis-init` de novo ou edite `PROD_MODE` no `ENV.md`. As regras do modo guiado ficam em `rules-on-demand/product/prod.guided-rules.md`.
+
+Nos dois modos, o frontmatter de cada documento vem comentado (o que é cada campo e todas as opções), e o campo `recommended_model` diz qual modelo de IA usar. Se a sessão estiver em outro, o comando avisa e segue.
+
 ## Status dos itens (`$ITEM_STATUS`)
 
 | Status          | Significado                         |
@@ -72,7 +85,8 @@ Relacionado (roadmap): workflow `prod.roadmap.preview` — visão de planejament
 | `backlog`       | Pronto para priorizar implementação |
 | `in_progress`   | Em desenvolvimento                  |
 | `in_production` | Em produção                         |
-| `cancelled`     | Descontinuado                       |
+| `cancelled`     | Cancelado antes de ser entregue     |
+| `deprecated`    | Esteve em produção e foi descontinuado |
 
 ## Onde os arquivos nascem
 

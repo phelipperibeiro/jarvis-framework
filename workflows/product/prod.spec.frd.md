@@ -3,12 +3,16 @@ name: prod.spec.frd
 description: Fluxo para criação de FRD (Functional Requirements Document), que auxilia na definição detalhada dos requisitos funcionais de uma feature
 auto_execution_mode: 3
 env_file: "@/ENV.md"
-recommended_model: claude-sonnet-4-20250514
+recommended_model: opus
 model_tier: high
 model_justification: FRDs requerem análise detalhada de requisitos funcionais, comportamento de usuário e especificações técnicas
 ---
 
 # FRD - Functional Requirements Document
+
+> 🎓 **Modo de condução**: leia `PROD_MODE` no `$IDE/ENV.md`. Se for `developer-guided`, **antes de começar leia `$IDE/rules-on-demand/product/prod.guided-rules.md` e siga-o** em toda a conversa. Vazio ou `product-led`: siga este fluxo como está.
+>
+> 🤖 **Modelo**: se a IDE informar o modelo desta sessão e ele for de outra família que o `recommended_model` do documento (ou do template, se o documento for novo), avise em uma linha e siga, sem bloquear e sem repetir. Sem essa informação, não avise.
 
 Este comando tem como objetivo criar, atualizar ou editar uma FRD seguindo o template especificado e as instruções.
 

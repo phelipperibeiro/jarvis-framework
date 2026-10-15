@@ -3,12 +3,16 @@ name: prod.spec.prd
 description: Alterar ou criar um especificação de produto PRD - Product Requirement Document seguindo o template especificado, regras invioláveis, possibilitando a utilização por agentes de IA e humanos.
 auto_execution_mode: 3
 env_file: "@/ENV.md"
-recommended_model: claude-sonnet-4-20250514
+recommended_model: opus
 model_tier: high
 model_justification: PRDs requerem análise profunda de requisitos, estruturação de documentos complexos e compreensão de contexto de negócio
 ---
 
 # PRD - Product Requirement Document
+
+> 🎓 **Modo de condução**: leia `PROD_MODE` no `$IDE/ENV.md`. Se for `developer-guided`, **antes de começar leia `$IDE/rules-on-demand/product/prod.guided-rules.md` e siga-o** em toda a conversa. Vazio ou `product-led`: siga este fluxo como está.
+>
+> 🤖 **Modelo**: se a IDE informar o modelo desta sessão e ele for de outra família que o `recommended_model` do documento (ou do template, se o documento for novo), avise em uma linha e siga, sem bloquear e sem repetir. Sem essa informação, não avise.
 
 Este comando tem como objetivo criar, atualizar ou editar uma PRD seguindo o template especificado e as instruções.
 

@@ -24,14 +24,16 @@ rules/                        # Sempre carregadas no início da sessão
     └── prod-rules.md    # Regras de especificacao
 
 rules-on-demand/              # Lidas pelo workflow que as usa (não carregadas no início)
-└── engineering/
-    ├── eng.start-rules.md    # Regras para /eng.start
-    ├── eng.plan-rules.md     # Regras para /eng.plan
-    ├── eng.work-rules.md     # Regras para /eng.work
-    ├── eng.pre-pr-rules.md   # Regras para /eng.pre-pr
-    ├── eng.pr-rules.md       # Regras para /eng.pr
-    ├── eng.tech-spec-rules.md # Regras para tech specs
-    └── eng.breakdown-subtasks-rules.md # Regras para o breakdown de subtarefas
+├── engineering/
+│   ├── eng.start-rules.md    # Regras para /eng.start
+│   ├── eng.plan-rules.md     # Regras para /eng.plan
+│   ├── eng.work-rules.md     # Regras para /eng.work
+│   ├── eng.pre-pr-rules.md   # Regras para /eng.pre-pr
+│   ├── eng.pr-rules.md       # Regras para /eng.pr
+│   ├── eng.tech-spec-rules.md # Regras para tech specs
+│   └── eng.breakdown-subtasks-rules.md # Regras para o breakdown de subtarefas
+└── product/
+    └── prod.guided-rules.md  # Modo Developer-Guided (lida só com PROD_MODE=developer-guided)
 ```
 
 ### `rules/` x `rules-on-demand/`
@@ -46,7 +48,8 @@ O Claude Code carrega tudo de `.claude/rules/` no início da sessão: `rules/` f
 1. .windsurf/rules / .cursor/rules  (mais alta)
 2. rules/engineering/eng-rules.md
 3. rules-on-demand/engineering/eng.{comando}-rules.md
-4. rules/product/prod-rules.md (mais baixa)
+4. rules-on-demand/product/prod.guided-rules.md (só com PROD_MODE=developer-guided)
+5. rules/product/prod-rules.md (mais baixa)
 ```
 
 **Regra**: Regras mais especificas tem precedencia sobre regras gerais.

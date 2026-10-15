@@ -141,16 +141,20 @@ test("listRulesForProfile: AGENTS.md nunca é filtrado, rtk é opt-in, sem bloco
 // Issue #140 (Advisor opcional e comentários no card só para eventos relevantes, 2026-10-06):
 // eng.integrations-rules.md (universal) trocou a seção "Comentário no card" pela regra dos
 // eventos relevantes (+482 B) — delta igual nos 4 perfis, nenhum arquivo adicionado.
+// Issue #146 (Modo Developer-Guided, 2026-10-15): +282 B em cada perfil — rules/AGENTS.md
+// (sempre copiado) passou a mostrar rules-on-demand/product/ (+220 B) e prod-rules.md
+// (universal) ganhou o status `deprecated` (+62 B). A regra do modo guiado fica em
+// rules-on-demand/ e não entra nesta conta.
 const BASE = [
   [
     "FULLCYCLE/GENERALIST/ENGINEERING/CORE",
     profile("FULLCYCLE", "GENERALIST", "ENGINEERING"),
     15,
-    97756,
+    98038,
   ],
-  ["BACKEND/SENIOR/ENGINEERING/CORE", profile("BACKEND", "SENIOR", "ENGINEERING"), 11, 64486],
-  ["FRONTEND/PLENO/ENGINEERING/CORE", profile("FRONTEND", "PLENO", "ENGINEERING"), 11, 65022],
-  ["QA/QA-ENGINEER/ENGINEERING/CORE", profile("QA", "QA-ENGINEER", "ENGINEERING"), 11, 64258],
+  ["BACKEND/SENIOR/ENGINEERING/CORE", profile("BACKEND", "SENIOR", "ENGINEERING"), 11, 64768],
+  ["FRONTEND/PLENO/ENGINEERING/CORE", profile("FRONTEND", "PLENO", "ENGINEERING"), 11, 65304],
+  ["QA/QA-ENGINEER/ENGINEERING/CORE", profile("QA", "QA-ENGINEER", "ENGINEERING"), 11, 64540],
 ];
 
 for (const [nome, p, arquivos, bytes] of BASE) {

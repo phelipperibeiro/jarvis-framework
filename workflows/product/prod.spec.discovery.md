@@ -3,12 +3,16 @@ name: prod.spec.discovery
 description: Investigação inicial de uma ideia: entrevista o usuário sobre a ideia, o problema, os requisitos iniciais e a viabilidade, sem chutar, e registra um rascunho estruturado com veredito e próximo passo sugerido.
 auto_execution_mode: 3
 env_file: "@/ENV.md"
-recommended_model: claude-sonnet-4-20250514
+recommended_model: opus
 model_tier: high
 model_justification: Discovery exige conduzir uma entrevista adaptativa, julgar evidências e registrar hipóteses sem presumir dados
 ---
 
 # Discovery (investigação inicial de uma ideia)
+
+> 🎓 **Modo de condução**: leia `PROD_MODE` no `$IDE/ENV.md`. Se for `developer-guided`, **antes de começar leia `$IDE/rules-on-demand/product/prod.guided-rules.md` e siga-o** em toda a conversa. Vazio ou `product-led`: siga este fluxo como está.
+>
+> 🤖 **Modelo**: se a IDE informar o modelo desta sessão e ele for de outra família que o `recommended_model` do documento (ou do template, se o documento for novo), avise em uma linha e siga, sem bloquear e sem repetir. Sem essa informação, não avise.
 
 Este comando conduz uma **entrevista** para investigar uma ideia ainda crua e registrar o resultado em um **rascunho estruturado**: o problema, o que precisaria ser verdade e se parece viável.
 
