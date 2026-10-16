@@ -6,7 +6,7 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), e o
 
 > Versões anteriores a `2.1.1` não foram documentadas retroativamente neste changelog — o histórico detalhado dessas versões continua disponível via `git log`.
 
-## [Unreleased]
+## [5.2.0] - 2026-10-16
 
 ### Changed
 - **`/prod.spec.discovery` mais fluido** (#154). O fluxo agora é:
