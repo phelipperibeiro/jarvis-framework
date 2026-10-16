@@ -47,7 +47,7 @@ Formato esperado: `new {TASK_MANAGER_KEY}` ou `update {TASK_MANAGER_KEY}`
 3. **[se `new`]** Qual o tag do serviço? (ex: `consulta-orgao`, `extrator-dados`) — será usado como `{robot-tag}`
 4. **[se `update`]** Qual robô será mantido? Listar opções:
    ```bash
-   ls docs/engineering/robots/
+   ls $ENG_DOCS/robots/
    ```
    Apresentar a lista e pedir que o dev escolha.
 
@@ -204,7 +204,7 @@ Garantir durante a implementação:
 
 ### Fase N4 — Documentação
 
-Criar `docs/engineering/robots/{robot-tag}-robot.md`.
+Criar `$ENG_DOCS/robots/{robot-tag}-robot.md`.
 
 Seguir `$IDE/rules/engineering/eng.docs-scraping-rules.md`:
 
@@ -239,7 +239,7 @@ No corpo do PR incluir: link para `{robot-tag}-robot.md`, variáveis de ambiente
 Ler o documento existente do robô:
 
 ```bash
-cat docs/engineering/robots/{robot-tag}-robot.md
+cat $ENG_DOCS/robots/{robot-tag}-robot.md
 ```
 
 Extrair e apresentar ao usuário:
@@ -304,7 +304,7 @@ Para bug fixes estruturais (seletor quebrado, campo mudou de posição):
 
 ### Fase U4 — Atualizar Documentação
 
-Atualizar `docs/engineering/robots/{robot-tag}-robot.md`:
+Atualizar `$ENG_DOCS/robots/{robot-tag}-robot.md`:
 
 - **Sempre**: Histórico de Bugs (toda correção estrutural entra aqui com referência ao card)
 - **Se campos mudaram**: atualizar Fontes de Dados e Campos Extraídos
@@ -331,7 +331,7 @@ Chamar `/jarvis-docs-index` após atualizar.
   Modo     : {new | update}
   Robô     : {robot-tag}-robot
   Classe   : {RobotTag}Robot
-  Docs     : docs/engineering/robots/{robot-tag}-robot.md
+  Docs     : $ENG_DOCS/robots/{robot-tag}-robot.md
   Branch   : {TASK_MANAGER_KEY}-{robot-tag}
   PR       : (link do MR criado pelo eng.pr)
 ─────────────────────────────────────────────────────────────

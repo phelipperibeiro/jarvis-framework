@@ -279,7 +279,7 @@ O MR deve seguir o template em `$IDE/templates/engineering/PR-template.md`:
 - ✅ Verificar `git status` antes do commit
 - ✅ Usar mensagens de commit descritivas
 - ✅ Referenciar o TASK_MANAGER_KEY no commit
-- ✅ **Limpar sessão após criar MR**
+- ✅ Gerar o `pull-request.md` na sessão e publicar só com o **Sim**
 
 ---
 
@@ -316,40 +316,18 @@ Antes de considerar o PR completo:
 - [ ] Arquivos adicionados individualmente (não `git add .`)
 - [ ] Commit com mensagem padronizada
 - [ ] Commit referencia o TASK_MANAGER_KEY
-- [ ] Push realizado
-- [ ] MR criado com template preenchido
+- [ ] Push realizado (só com o Sim)
+- [ ] MR criado a partir do `pull-request.md` (só com o Sim)
 - [ ] Branch de destino correta
 - [ ] Card do Jira movido para "In Review"
 - [ ] Comentários de code review processados
-- [ ] **Sessão limpa** (`$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/` removida)
+- [ ] `pull-request.md` aprovado na sessão (e publicado, se o usuário respondeu Sim)
+- [ ] Lembrete do `/eng.spec-consolidate` na mensagem final
 
 ---
 
-## Limpeza da Sessão
+## Sessão e publicação
 
-### Por que limpar?
-
-1. **Evitar poluição**: Sessões antigas ocupam espaço e confundem
-2. **Fonte da verdade**: A documentação oficial está no Jira e no MR
-3. **Organizacão**: Manter apenas sessões ativas
-
-### O que é removido?
-
-```
-$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/
-├── architecture.md    → Removido
-├── plan.md            → Removido
-└── context.md         → Removido (se existir)
-```
-
-### Onde a documentação permanece?
-
-- **Card do Jira**: Tech spec anexada, comentários
-- **Merge Request**: Descrição, histórico de commits
-- **Código**: Comentários inline, docstrings
-
-### Comando de limpeza
-
-```bash
-rm -rf $SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/
-```
+- O texto do PR fica em **`$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/pull-request.md`**, aprovado pelo usuário.
+- **Publicar (push + MR/PR) só com o Sim** do `AskUserQuestion` "Publicar o PR agora?". Com Não, o arquivo fica na sessão e nada é enviado.
+- **A sessão nunca é apagada por este comando:** o `/eng.spec-consolidate`, que roda em seguida, precisa do `architecture.md`, do `plan.md`, do `gate-checklist.md` e do `pull-request.md`. A pessoa apaga à mão quando quiser.

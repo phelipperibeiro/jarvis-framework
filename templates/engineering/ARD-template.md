@@ -36,7 +36,7 @@ last_editor: [nome]
 
 # 🧱 ARD Template — Architecture Requirement Document
 
-**Arquivo:** /docs/engineering/ARD/ARD-xxx-nome-da-arquitetura.md
+**Arquivo:** $ENG_DOCS/ARD/ARD-xxx-nome-da-arquitetura.md
 
 ---
 

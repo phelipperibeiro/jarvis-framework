@@ -57,14 +57,19 @@ RULES_FOLDER=.$IDE/rules
 # Cookie/HTTP session (auth) NÃO é esta pasta.
 SESSIONS_DIR=.jarvis/sessions
 
+# Documentos de trabalho gerados pelos comandos (PRD, FRD, épicos, ARD, RFC, QA, swagger,
+# robôs, C4…): sempre em $DOCS_FOLDER/jarvis/, nos dois modos de trabalho, com docs/jarvis/
+# no .gitignore (o /jarvis-init garante). O que foi implementado vai para o Central docs.
+JARVIS_DOCS=$DOCS_FOLDER/jarvis
+# Engenharia: ARD/, RFC/, qa/, swagger/, openapi/, robots/, c4/
+ENG_DOCS=$JARVIS_DOCS/engineering
+
 # Pastas de produto (derivadas das de cima — em geral não precisa mexer)
-# PROD_DOCS: no projeto único (sem workspace), o /jarvis-init grava docs/jarvis/product
-# (com docs/jarvis/* no .gitignore); no modo workspace, $DOCS_FOLDER/$PROD_FOLDER_NAME.
 PROD_FOLDER_NAME=product
 PROD_RULES=$RULES_FOLDER/$PROD_FOLDER_NAME
 PROD_FLOWS=.$IDE/$FLOWS_FOLDER
 PROD_TEMPLATES=.$IDE/$TEMPLATES_FOLDER/$PROD_FOLDER_NAME
-PROD_DOCS=$DOCS_FOLDER/$PROD_FOLDER_NAME
+PROD_DOCS=$JARVIS_DOCS/$PROD_FOLDER_NAME
 
 # Modo de condução dos comandos de produto (prod.*) e do eng.create-ard.
 #   product-led      = para PMs: fluxo direto, sem explicações extras (padrão se vazio)
@@ -205,17 +210,18 @@ QA_SIGNOFF_MAX_AGE=24
 JARVIS_PROJECT=https://github.com/phelipperibeiro/jarvis-framework
 
 
-# --- Central docs (opcional) -------------------------------------------------
-# Onde fica a documentação canônica (PRD, FRD, épicos, ARD, RFC). Em branco = desligado.
+# --- Central docs -------------------------------------------------------------
+# O registro do que FOI IMPLEMENTADO: um documento completo por funcionalidade e um registro
+# por entrega, gerados pelo /eng.spec-consolidate depois de cada PR. Ligado por padrão.
 # Nunca dentro do versionamento de um repositório de código.
-#   CENTRAL_DOCS_STORAGE: filesystem (s3 e gdrive virão nas issues #144 e #145)
+#   CENTRAL_DOCS_STORAGE: filesystem (s3 e gdrive virão nas issues #144 e #145); vazio = desligado
 #   CENTRAL_DOCS_LOCATION: pasta do Central docs, relativa à pasta do workspace ou absoluta.
 #     Padrão do /jarvis-init: ./central-docs (modo workspace, no .gitignore do workspace)
-#     ou docs/jarvis/central-docs (projeto único, com docs/jarvis/* no .gitignore).
+#     ou docs/jarvis/central-docs (projeto único, coberto por docs/jarvis/ no .gitignore).
 #   Se a pasta for um clone de um repositório de documentação (tem .git): git pull antes
 #   de ler e branch + commit + push + PR ao publicar. Sem .git: grava direto na pasta.
-CENTRAL_DOCS_STORAGE=
-CENTRAL_DOCS_LOCATION=
+CENTRAL_DOCS_STORAGE=filesystem
+CENTRAL_DOCS_LOCATION=./central-docs
 # Só quando a pasta tem .git: branch lida no pull e branch base dos PRs.
 CENTRAL_DOCS_REF=main
 CENTRAL_DOCS_TARGET_BRANCH=main

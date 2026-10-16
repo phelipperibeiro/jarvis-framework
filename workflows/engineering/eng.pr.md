@@ -1,5 +1,5 @@
 ---
-description: Criação de branch, commit e merge request (MR)
+description: Gera o pull-request.md na sessão e, com o Sim do usuário, faz o push e abre o merge request (MR)
 auto_execution_mode: 3
 agent: "$IDE/agents/engineering/eng.agent.md"
 rules_file: "$IDE/rules-on-demand/engineering/eng.pr-rules.md"
@@ -43,8 +43,8 @@ Este comando cria a **branch, commita as alterações e abre um Merge Request**.
 | Fase 1 › 1.4 Executar Testes Automatizados (Opcional) | `/eng-qa` + `QA_SPECIALIZATIONS` | Passo opcional, recomendado em mudanças significativas |
 | Skills recomendados | `/eng-global-docs-write` | Se houver necessidade de atualizar documentação junto do PR |
 | Agentes recomendados (opcional) | `eng.qa.test-planner` (agente) | Se houver dúvidas sobre cobertura de testes ou mudanças significativas |
-| Fase 4 › 4.2 Criar MR/PR via adapter | `jarvis vcs create-merge` (CLI do Jarvis) | Sempre — abre o MR/PR conforme `VERSION_CONTROL` ou o host do `origin` |
-| Fase 6 › 6.2 Link do MR | `/eng-global-task-comment` | Depois de o MR ser criado: um único comentário no card com o link do MR, seguindo o Passo 6 do skill `eng-global-pr` (freelance pula) |
+| Fase 4 › 4.4 Criar MR/PR via adapter | `jarvis vcs create-merge` (CLI do Jarvis) | Só se o usuário responder **Sim** na Fase 4.3: abre o MR/PR conforme `VERSION_CONTROL` ou o host do `origin` |
+| Fase 6 › 6.2 Link do MR | `/eng-global-task-comment` | Depois de o MR ser criado (só com o Sim da 4.3): um único comentário no card com o link do MR, seguindo o Passo 6 do skill `eng-global-pr` (freelance pula) |
 
 ---
 
@@ -156,6 +156,8 @@ Refs: {TASK_MANAGER_KEY}"
 
 ## Fase 3: Push
 
+> ⚠️ O push só acontece **depois do Sim** da Fase 4.3. Esta fase descreve o comando; ele roda dentro da publicação.
+
 ### 3.1 Enviar para Remote
 
 ```bash
@@ -175,7 +177,9 @@ git log --oneline -3
 Ler `VERSION_CONTROL` do `$IDE/ENV.md` (`gitlab` | `github` | `bitbucket`).
 Use **MR** se GitLab, **PR** se GitHub/Bitbucket.
 
-### 4.1 Preparar descrição
+### 4.1 Gerar `pull-request.md` na sessão
+
+Escreva o título e a descrição do PR em **`$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/pull-request.md`** (primeira linha `# {título}`, depois o corpo). Se a sessão tiver o `gate-checklist.md` do `eng.pre-pr`, use o PR Brief e as decisões dele.
 
 Template, nesta ordem (o primeiro que existir):
 
@@ -199,21 +203,32 @@ Preencher com a tarefa. Link do card:
 
 > ⚠️ Não mencione AI, Claude ou assistentes no MR/PR.
 
-### 4.2 Criar MR/PR via adapter
+### 4.2 Revisão do texto
+
+Mostre o `pull-request.md` (título e resumo das seções) e pergunte com `AskUserQuestion`: `[Aprovar]` / `[Ajustar]`. Ajuste até a aprovação.
+
+### 4.3 Publicar? (Sim / Não)
+
+Pergunte com `AskUserQuestion` (**Sim / Não**): **"Publicar o PR agora?"**
+
+- **Não:** nada é enviado. O `pull-request.md` fica na sessão para você publicar quando quiser (à mão ou rodando o `/eng.pr` de novo). Pule para a Fase 7, com a mensagem "PR não publicado".
+- **Sim:** faça o push (Fase 3) e crie o MR/PR (4.4).
+
+### 4.4 Criar MR/PR via adapter
 
 - **Título**: `{TASK_MANAGER_KEY}: {Título da tarefa}`
 - **Branch origem**: `{NOME_DA_BRANCH}`
 - **Branch destino**: `{BRANCH_BASE}` (a `Branch base:` do `architecture.md`)
-- **Descrição**: template preenchido, gravado em arquivo temporário
+- **Descrição**: o corpo do `pull-request.md` aprovado (sem a linha do título)
 
 ```bash
 BODY_FILE=$(mktemp)
-# gravar a descrição preenchida em $BODY_FILE
+tail -n +2 $SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/pull-request.md > "$BODY_FILE"
 
 jarvis vcs create-merge \
   --source "${NOME_DA_BRANCH}" \
-  --target "${TARGET_BRANCH}" \
-  --title "${TASK_MANAGER_KEY}: ${TITULO_DA_TAREFA}" \
+  --target "${BRANCH_BASE}" \
+  --title "${TITULO_DO_PULL_REQUEST_MD}" \
   --body-file "$BODY_FILE"
 
 rm -f "$BODY_FILE"
@@ -326,64 +341,17 @@ fi
 {LEAD_TIME_MSG}
 
 📌 Próximos passos:
-1. Aguardar revisão do time
-2. Processar comentários do code review
+1. /eng.spec-consolidate {TASK_MANAGER_KEY} → registrar no Central docs o que esta entrega implementou
+2. Aguardar revisão do time e processar os comentários do code review
 3. Merge após aprovação
+
+🗂️ A sessão $SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/ não é apagada (o /eng.spec-consolidate precisa dela).
+   Remova à mão quando quiser.
 
 🔗 Links:
 - MR: {LINK_DO_MR}
 - Jira: {TASK_MANAGER_URL_BASE}/browse/{TASK_MANAGER_KEY}
 ```
-
-## Fase 8: Limpeza da Sessão
-
-### 9.1 Solicitar Confirmação
-
-Após o MR ser criado com sucesso, **solicitar confirmação do usuário**:
-
-```
-🧹 Deseja limpar a sessão?
-
-A pasta $SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/ será removida.
-A documentação permanece no Jira e no MR.
-
-Confirmar? (s/n)
-```
-
-> ⚠️ **IMPORTANTE**: Sempre pedir confirmação antes de executar comandos destrutivos.
-
-### 9.2 Remover Pasta da Sessão
-
-Se confirmado:
-
-```bash
-rm -rf $SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/
-```
-
-**Exemplo:**
-
-```bash
-rm -rf $SESSIONS_DIR/eng/task-123/
-```
-
-### 9.3 Confirmar Limpeza
-
-```
-🧹 SESSÃO LIMPA!
-
-📁 Removido: $SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/
-   - architecture.md ✅
-   - plan.md ✅
-   - context.md ✅ (se existia)
-
-ℹ️ A documentação permanece no:
-   - Card do Jira: {TASK_MANAGER_KEY}
-   - Merge Request: {LINK_DO_MR}
-```
-
-> ⚠️ **NOTA**: A documentação não é perdida! Ela está anexada no Jira e registrada no MR.
-
----
 
 ## Regras Importantes
 
@@ -403,7 +371,8 @@ rm -rf $SESSIONS_DIR/eng/task-123/
 - ✅ Criar branch no padrão `{TASK_MANAGER_KEY}-{titulo}`
 - ✅ Preencher template do MR completamente
 - ✅ Mover card para "In Review"
-- ✅ **Limpar sessão após criar MR** (`rm -rf $SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/`)
+- ✅ Gerar o `pull-request.md` na sessão e só publicar com o **Sim** (Fase 4.3)
+- ✅ **Nunca apagar a sessão:** o `/eng.spec-consolidate` precisa dela
 
 ---
 

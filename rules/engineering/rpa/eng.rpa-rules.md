@@ -188,7 +188,7 @@ Quando o robô interage com interface visual (browser headless), usar a especial
 
 Seguir `$IDE/rules/engineering/eng.docs-scraping-rules.md` sem exceções.
 
-Criar ou atualizar `docs/engineering/robots/{robot-tag}-robot.md` com:
+Criar ou atualizar `$ENG_DOCS/robots/{robot-tag}-robot.md` com:
 - Visão Geral (o que coleta e o que **não** coleta)
 - Fluxo de Execução (sequência de passos com URLs)
 - Fontes de Dados e Campos Extraídos

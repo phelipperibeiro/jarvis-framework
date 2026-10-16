@@ -28,7 +28,6 @@ Além disso, quando houver campo `Versão` no RFC, aplicar obrigatoriamente:
 | Passo | Skill | Condição |
 |-------|-------|----------|
 | Passo 0.6 – Buscar Documentação Relacionada no Central Docs | `/jarvis-docs-central` (via `jarvis docs sync --silent`) | Se `CENTRAL_DOCS_STORAGE` estiver definido no ENV.md |
-| Passo 7 – Publicar no Central Docs | `/jarvis-docs-central` (via `jarvis docs publish --tipo rfc`) | Se `CENTRAL_DOCS_STORAGE` estiver definido **e** o usuário aprovar o RFC e responder "Sim, publicar agora" |
 
 ---
 
@@ -59,11 +58,11 @@ Além disso, quando houver campo `Versão` no RFC, aplicar obrigatoriamente:
   - `Owner`
   - `Reviewers`
 - Defina o `RFC-ID` automaticamente assim:
-  - Se a pasta `$DOCS_FOLDER/engineering/RFC/` existir e houver arquivos no padrão `RFC-###-*.md`, use o maior `###` + 1.
+  - Se a pasta `$ENG_DOCS/RFC/` existir e houver arquivos no padrão `RFC-###-*.md`, use o maior `###` + 1.
   - Caso não exista ou não haja arquivos, iniciar em `RFC-001`.
 - Defina:
   - `Status` inicial = `Draft`
-  - `Caminho do arquivo` = `$DOCS_FOLDER/engineering/RFC/{RFC-ID}-{slug}.md`
+  - `Caminho do arquivo` = `$ENG_DOCS/RFC/{RFC-ID}-{slug}.md`
 
 ---
 
@@ -94,7 +93,7 @@ Regras:
 
 Se `CENTRAL_DOCS_STORAGE` definido no ENV.md:
 
-1. Executar busca automática no central-docs:
+1. Consultar no Central docs as funcionalidades já implementadas relacionadas (o que existe hoje):
    ```bash
    jarvis docs sync --silent
    ```
@@ -105,9 +104,9 @@ Se `CENTRAL_DOCS_STORAGE` definido no ENV.md:
    - Tags semânticas
 
 3. Documentos a buscar:
-   - **PRD relacionado** (para rastreabilidade e contexto de negócio)
-   - **ARD existente** (para consistência arquitetural)
-   - **RFCs anteriores** relacionados ao tema
+   - **Funcionalidades já implementadas** relacionadas (Central docs: `feature-*`)
+   - **PRD relacionado** (em `$PROD_DOCS`, para rastreabilidade e contexto de negócio)
+   - **ARD existente** e **RFCs anteriores** relacionados ao tema (em `$ENG_DOCS/ARD` e `$ENG_DOCS/RFC`)
 
 4. Se documentos encontrados:
    - Carregar automaticamente como contexto
@@ -221,30 +220,7 @@ Entregar:
 
 ---
 
-## Passo 7 – Publicar no Central Docs (condicional)
+## Central docs
 
-Se `CENTRAL_DOCS_STORAGE` definido no ENV.md **E** o usuário aprovar o RFC:
+Este documento é um **documento de trabalho**: fica em `$PROD_DOCS`/`$ENG_DOCS` (`docs/jarvis/`) e **não** é publicado no Central docs. O Central docs registra só o que foi implementado, e quem o atualiza é o `/eng.spec-consolidate`, depois do PR da entrega.
 
-1. Perguntar ao usuário:
-   ```
-   Deseja publicar este RFC no repositório central de documentação?
-   - ( ) Sim, publicar agora
-   - ( ) Não, vou publicar depois manualmente
-   ```
-
-2. Se **Sim**:
-   - Executar:
-     ```bash
-     jarvis docs publish \
-       --file {caminho_do_rfc} \
-       --tipo rfc
-     ```
-   
-3. Informar resultado:
-   - ✅ Sucesso: "RFC publicado no Central docs." (com git: "PR aberto: [URL]")
-   - ❌ Erro: Exibir mensagem de erro e orientar troubleshooting
-
-4. Se **Não**:
-   - Informar: "Para publicar depois, execute: `jarvis docs publish --file {caminho} --tipo rfc`"
-
-> **Nota**: se a pasta do Central docs for um repositório git, a publicação abre um Pull/Merge Request e o RFC só entra na branch base depois do merge. Sem git, o documento é gravado direto e o índice é regenerado.

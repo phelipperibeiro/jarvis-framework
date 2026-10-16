@@ -93,7 +93,7 @@ Com base no risco e na capacidade mapeada na Fase 0:
 Usando o template `$TEMPLATES_FOLDER/engineering/qa/qa.sprint-plan-template.md`, gerar o plano e salvar em:
 
 ```
-$DOCS_FOLDER/engineering/qa/sprints/sprint-plan-{sprint-slug}.md
+$ENG_DOCS/qa/sprints/sprint-plan-{sprint-slug}.md
 ```
 
 Exibir o plano ao usuário e perguntar se há ajustes antes de salvar.
@@ -102,5 +102,5 @@ Exibir o plano ao usuário e perguntar se há ajustes antes de salvar.
 
 ## Output
 
-- `$DOCS_FOLDER/engineering/qa/sprints/sprint-plan-{sprint-slug}.md` — plano de alocação da sprint
+- `$ENG_DOCS/qa/sprints/sprint-plan-{sprint-slug}.md` — plano de alocação da sprint
 - Pronto para compartilhar com o time ou colar no $TASK_MANAGER

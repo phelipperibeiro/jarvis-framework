@@ -221,17 +221,17 @@ Se `CENTRAL_DOCS_STORAGE` estiver configurado no ENV.md, buscar docs relacionado
 
 **Passo 1:** Identificar docs relevantes com base no Jira ID e tags do card
 
-**Passo 2:** Buscar documentos via skill jarvis-docs-central:
-- PRD relacionado (contexto de produto)
-- ARD geral do produto (arquitetura macro)
-- ARD específico do repo (se existir)
-- RFCs relevantes
+**Passo 2:** Buscar via skill jarvis-docs-central **o que já foi implementado**:
+- funcionalidades relacionadas (`feature-*`): comportamento atual, decisões, onde está no código;
+- entregas recentes dessas funcionalidades (`delivery-*`), se ajudarem.
+
+Os documentos de trabalho da tarefa (PRD, FRD, ARD, RFC) ficam em `$PROD_DOCS`/`$ENG_DOCS` (`docs/jarvis/`): leia-os de lá.
 
 **Passo 3:** Incorporar ao contexto antes de prosseguir para análise
 
 **Comportamento:**
 - Se docs encontrados → carregar e exibir resumo
-- Se não encontrados → perguntar se tem docs localmente
+- Se não encontrados → seguir com os documentos de trabalho em `docs/jarvis/` e o card
 - Se `CENTRAL_DOCS_STORAGE` vazio → pular silenciosamente
 
 ### 2.3 Análise do Requisito

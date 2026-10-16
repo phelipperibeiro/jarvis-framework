@@ -7,11 +7,11 @@ Cada guia é escrito a partir do workflow do comando em `workflows/engineering/`
 ## O ciclo principal
 
 ```
-eng.start  →  eng.plan  →  eng.work  →  eng.pre-pr  →  eng.pr
-(arquitetura)  (fases)     (código)      (validação)     (MR)
+eng.start  →  eng.plan  →  eng.work  →  eng.pre-pr  →  eng.pr  →  eng.spec-consolidate
+(arquitetura)  (fases)     (código)      (lacunas)       (MR)      (Central docs)
 ```
 
-Cada etapa só avança com a sua aprovação. O `eng.start` e o `eng.plan` só planejam, o `eng.work` implementa fase por fase e o `eng.pr` entrega.
+Cada etapa só avança com a sua aprovação. O `eng.start` e o `eng.plan` só planejam, o `eng.work` implementa fase por fase, o `eng.pr` entrega e o `eng.spec-consolidate` registra no Central docs o que foi implementado.
 
 ## Ciclo de desenvolvimento
 
@@ -22,6 +22,7 @@ Cada etapa só avança com a sua aprovação. O `eng.start` e o `eng.plan` só p
 | [`eng.work`](./eng.work.md) | Implementa o plano, fase por fase |
 | [`eng.pre-pr`](./eng.pre-pr.md) | Valida a branch e dá um semáforo antes do PR |
 | [`eng.pr`](./eng.pr.md) | Faz o push e abre o merge request |
+| [`eng.spec-consolidate`](./eng.spec-consolidate.md) | Registra no Central docs o que a entrega implementou |
 | [`eng.review`](./eng.review.md) | Revisa uma solução ou PR |
 | [`eng.debug`](./eng.debug.md) | Investiga bug ou incidente com método |
 | [`eng.bug-audit`](./eng.bug-audit.md) | Audita um projeto atrás de bugs e débito técnico |

@@ -63,7 +63,7 @@ Verificar se foi realizada sessão para a feature.
 
 **3. Quality gate**
 ```bash
-ls $DOCS_FOLDER/engineering/qa/ 2>/dev/null | grep -i "quality-gate\|qg"
+ls $ENG_DOCS/qa/ 2>/dev/null | grep -i "quality-gate\|qg"
 ```
 Verificar se a spec passou pelo quality gate antes da sprint.
 
@@ -102,7 +102,7 @@ Usar template `$TEMPLATES_FOLDER/engineering/qa/qa.release-signoff-template.md`.
 
 Salvar em:
 ```
-$DOCS_FOLDER/engineering/qa/signoffs/signoff-{branch-slug}-{YYYYMMDD}.md
+$ENG_DOCS/qa/signoffs/signoff-{branch-slug}-{YYYYMMDD}.md
 ```
 
 > O frontmatter **deve** conter `status: GO` ou `status: NO-GO` — o CLI `jarvis qa-signoff` lê este campo.
@@ -172,5 +172,5 @@ Se $MESSAGE_COMUNICATOR não estiver configurado ou o TL não tiver Slack ID em 
 
 ## Output
 
-- `$DOCS_FOLDER/engineering/qa/signoffs/signoff-{branch-slug}-{YYYYMMDD}.md` — documento de sign-off
+- `$ENG_DOCS/qa/signoffs/signoff-{branch-slug}-{YYYYMMDD}.md` — documento de sign-off
 - Snippet CI (apenas na primeira execução, se pipeline ainda não configurado)

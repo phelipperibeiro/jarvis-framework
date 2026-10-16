@@ -37,7 +37,7 @@ Atalhos:
 | 4 | Impactos, riscos e estratégia de testes |
 | 5 | Checagem final com os guard rails e lista de perguntas abertas |
 | 6 | Entrega: ARD preenchido e resumo executivo (problema, arquitetura atual, proposta, riscos e próximos passos) |
-| 7 | Publica no central docs, se configurado |
+| 7 | O ARD fica em `$ENG_DOCS/ARD/` (documento de trabalho); o Central docs é atualizado pelo `/eng.spec-consolidate` depois da entrega |
 
 ## Regras que importam
 

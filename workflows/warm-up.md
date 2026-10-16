@@ -129,14 +129,14 @@ O perfil de comunicação é derivado de `POSITION` (conforme definido no `$IDE/
 
 ## Passo 2 — Sincronizar Documentação Central (condicional)
 
-Se `CENTRAL_DOCS_STORAGE` estiver configurado no ENV.md, invocar o skill `jarvis-docs-central` via Skill tool para carregar docs do produto.
+Se `CENTRAL_DOCS_STORAGE` estiver configurado no ENV.md, invocar o skill `jarvis-docs-central` via Skill tool para carregar **o que já foi implementado** no produto (funcionalidades `feature-*` e entregas recentes `delivery-*`). Os documentos de trabalho (PRD, FRD, ARD, RFC) ficam em `docs/jarvis/` e não estão no Central docs.
 
 > ⚠️ **IMPORTANTE**: NÃO executar `jarvis docs sync` diretamente via Bash.
 > Usar sempre: **Skill tool → jarvis-docs-central (Modo 1: Buscar Docs)**
 
 O skill `jarvis-docs-central` gerencia:
-- Extração de token do `.npmrc`
-- Fallback quando `index.md` não existe (navegação por árvore)
+- O adaptador de `CENTRAL_DOCS_STORAGE` (pasta, com `git pull` quando a pasta é um clone)
+- Índice ausente (o squad ainda não tem consolidação)
 - Tratamento de erros
 
 **Invocação:**
@@ -150,17 +150,15 @@ Contexto: warm-up - sincronização inicial
 ```
 🔄 Sincronizando docs de {SQUAD}/{WORKSPACE}...
 ✅ Docs sincronizados
-📊 5 documentos disponíveis:
-   - 1 PRD(s)
-   - 1 FRD(s)
-   - 2 ARD(s)
-   - 1 RFC(s)
+📊 7 documentos disponíveis:
+   - 4 funcionalidade(s)
+   - 3 entrega(s) recente(s)
 ```
 
 **Comportamento:**
 - Se `CENTRAL_DOCS_STORAGE` vazio → pula silenciosamente
-- Se erro de token → exibe aviso mas continua
-- Se `index.md` não existe → navega estrutura do repo e lista docs disponíveis
+- Se o `git pull` falhar (pasta com git) → avisa e lê a cópia local
+- Se `index.md` não existe → avisa que o squad ainda não tem consolidação (sugere `/eng.spec-consolidate --inicial`)
 - Se erro genérico → exibe mensagem clara e continua sem bloquear
 
 Após sincronizar, exibir resumo dos documentos disponíveis:

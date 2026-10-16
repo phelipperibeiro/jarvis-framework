@@ -34,7 +34,6 @@ Utilize o `$ARGUMENTS` que o usuário passar como ponto de partida e para entend
 | Passo | Skill | Condição |
 |-------|-------|----------|
 | Busca no Central Docs (condicional) | `/jarvis-docs-central` (via `jarvis docs sync --silent`) | Se `CENTRAL_DOCS_STORAGE` estiver definido no ENV.md (iteração de PRD existente) |
-| Publicação no Central Docs (condicional) | `/jarvis-docs-central` (via `jarvis docs publish --tipo prd`) | Se `CENTRAL_DOCS_STORAGE` estiver definido, o PRD estiver salvo e aprovado e o usuário responder "Sim, publicar agora" |
 
 ## Princípios Fundamentais
 1. **Sempre use o template** `$PROD_TEMPLATES/prod-prd-template.md` para o output final
@@ -48,17 +47,17 @@ Utilize o `$ARGUMENTS` que o usuário passar como ponto de partida e para entend
 Se `CENTRAL_DOCS_STORAGE` definido no ENV.md:
 
 1. **Para iteração de PRD existente:**
-   - Executar busca automática no central-docs:
+   - Consultar no Central docs as funcionalidades já implementadas relacionadas (o que existe hoje):
      ```bash
      jarvis docs sync --silent
      ```
-   - Buscar PRD relacionado usando:
+   - Buscar o PRD relacionado em `$PROD_DOCS` (documento de trabalho; o Central docs não guarda PRD) usando:
      - Nome/contexto do PRD fornecido pelo usuário
      - Jira ID (se disponível)
      - Tags semânticas
-   - Se PRD encontrado no central-docs:
+   - Se o PRD for encontrado em `$PROD_DOCS`:
      - Carregar automaticamente como base para iteração
-     - Informar ao usuário: "✅ PRD encontrado no central-docs: [nome]"
+     - Informar ao usuário: "✅ PRD encontrado: [caminho]"
      - Usar como contexto para o Gate 1 (Fluxo de Trabalho, abaixo)
    - Se não encontrado:
      - Perguntar ao usuário se tem PRD localmente
@@ -174,35 +173,7 @@ Quais métricas? A) Engajamento B) Receita C) Outro
   - Se for uma spec nova:
     - Salve na pasta `$PROD_DOCS` seguindo todos os padrões de nomenclatura e estrutura de pastas já estabelecidos em `$PROD_RULES/**/*`
 
-## Publicação no Central Docs (condicional)
+## Central docs
 
-Após salvar o PRD localmente e obter aprovação do usuário:
-
-1. Se `CENTRAL_DOCS_STORAGE` definido no ENV.md:
-   - Perguntar ao usuário:
-     ```
-     Deseja publicar este PRD no repositório central de documentação?
-     - ( ) Sim, publicar agora
-     - ( ) Não, vou publicar depois manualmente
-     ```
-
-2. Se **Sim**:
-   - Executar:
-     ```bash
-     jarvis docs publish \
-       --file {caminho_do_prd} \
-       --tipo prd
-     ```
-
-3. Informar resultado:
-   - ✅ Sucesso: "PRD publicado no Central docs." (com git: "PR aberto: [URL]")
-   - ❌ Erro: Exibir mensagem de erro e orientar troubleshooting
-
-4. Se **Não**:
-   - Informar: "Para publicar depois, execute: `jarvis docs publish --file {caminho} --tipo prd`"
-
-5. Se `CENTRAL_DOCS_STORAGE` não estiver definido:
-   - Informar: "Para habilitar publicação automática, configure o Central docs no `/jarvis-init` (`CENTRAL_DOCS_STORAGE`)"
-
-> **Nota**: se a pasta do Central docs for um repositório git, a publicação abre um Pull/Merge Request e o PRD só entra na branch base depois do merge. Sem git, o documento é gravado direto e o índice é regenerado.
+Este documento é um **documento de trabalho**: fica em `$PROD_DOCS`/`$ENG_DOCS` (`docs/jarvis/`) e **não** é publicado no Central docs. O Central docs registra só o que foi implementado, e quem o atualiza é o `/eng.spec-consolidate`, depois do PR da entrega.
 

@@ -1,14 +1,14 @@
-# `/eng.pre-pr` — validar antes do PR
+# `/eng.pre-pr` — rever lacunas antes do PR
 
 Workflow: `workflows/engineering/eng.pre-pr.md` · Regras: `rules-on-demand/engineering/eng.pre-pr-rules.md`
 
 ## Em uma frase
 
-Faz a checagem final da branch (código, testes, documentação e segurança) e termina com um **semáforo** dizendo se já dá para abrir o PR.
+Revê a branch atrás de lacunas (produto, código, testes, segurança, documentação) e gera o **`gate-checklist.md`** na sessão, com um semáforo, para você decidir o que ajustar antes do PR.
 
 ## O que é
 
-É a revisão de qualidade que fica entre o [`eng.work`](./eng.work.md) e o [`eng.pr`](./eng.pr.md). Ela avalia **só as mudanças da sua branch** em relação à branch base e aciona agentes e skills especializados conforme o que a branch tocou.
+É a revisão de qualidade que fica entre o [`eng.work`](./eng.work.md) e o [`eng.pr`](./eng.pr.md). Ela avalia **só as mudanças da sua branch** em relação à branch base e aciona agentes e skills especializados conforme o que a branch tocou. **Ela só aponta:** não corrige código, não escreve testes, não atualiza documentação e não publica nada.
 
 ## Quando usar
 
@@ -23,32 +23,30 @@ Faz a checagem final da branch (código, testes, documentação e segurança) e 
 
 ## Como funciona
 
-O comando percorre "gates". Alguns sempre rodam, outros só quando a branch pede:
+O comando percorre "gates" de revisão. Alguns sempre rodam, outros só quando a branch pede:
 
 | Gate | Quando |
 |---|---|
-| Documentação central (ARD, RFC) | Se `CENTRAL_DOCS_STORAGE` estiver configurado |
 | Alinhamento com os docs do projeto (`prod.pm-checker`) | Sempre |
 | Revisão de código (`eng.dev-code-reviewer`) | Sempre |
-| Lacunas de cobertura de testes (`test-planner`), com testes escritos se as lacunas forem críticas | Sempre |
+| Lacunas de cobertura de testes (`test-planner`) | Sempre |
 | Requisitos não funcionais: performance, segurança, quality gates (`test-architect`) | Se a feature tiver requisitos assim |
-| Testes automatizados nas mudanças (TestSprite, frontend e/ou backend) | Sempre |
+| Testes automatizados nas mudanças (`eng-qa` + especialização registrada) | Sempre |
 | Revisão de interface: TypeScript, tokens, acessibilidade (`eng.frontend.agent`) | Se houver mudança de UI |
 | Usabilidade: estados vazios, carregando, mensagens de erro (`eng.ux-designer`) | Se houver nova feature de UI ou mudança de fluxo |
-| Atualização de documentação (`eng.docs-writer`) | Sempre |
+| Documentação desatualizada (`eng.docs-writer`, sem editar) | Sempre |
 | Revisão de segurança (checklist inline: sanitização, auth guards, headers, secrets, `npm audit`) | Se tocar auth, sessões, inputs, CORS, CSP, permissões ou endpoints públicos |
 
-Se algum gate levar a mudança de código, o comando **repete** a revisão técnica e os testes.
 
 ## O resultado
 
-Sempre termina com:
+Sempre termina com o arquivo **`$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/gate-checklist.md`**:
 
-1. **Semáforo:** 🟢 pronto para PR, 🟡 pode abrir com ressalvas documentadas, 🔴 bloqueado (com a lista do que impede)
-2. **Bloqueadores e pendências**, com follow-ups
-3. **PR Brief** para colar no PR: o que mudou, como testar, evidências, docs atualizadas, riscos
-4. Comentário no card **só se a validação reprovar** (🔴 RED), com o motivo, quando há board
-5. **Espera sua permissão explícita** antes de você seguir para o `eng.pr`
+1. **Semáforo:** 🟢 pronto para PR, 🟡 pode abrir com notas, 🔴 há bloqueadores
+2. **Lacunas por área**, cada uma com: o que é, onde (`arquivo:linha`), por que importa, sugestão, severidade e a coluna **Decisão**, que você preenche (Ajustar / Não ajustar + motivo)
+3. **Evidências** (comandos rodados e resultados) e o **PR Brief**, que o `eng.pr` aproveita
+
+Depois, pergunta **Sim / Não**: publicar o relatório, com as suas decisões, como comentário na issue/card? Sem board, ou com Não, ele fica só na sessão. E **espera sua permissão** antes do `eng.pr`.
 
 ## Regras que importam
 

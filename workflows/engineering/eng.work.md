@@ -264,7 +264,7 @@ Invoque o agente [eng.qa.test-planner]($IDE/agents/engineering/qa/eng.qa.test-pl
 - Analisar o código implementado na fase
 - Identificar funções/métodos sem cobertura de teste
 - Mapear casos de borda não cobertos
-- Gerar relatório de gaps em `$DOCS_FOLDER/engineering/qa/{task-id}-test_coverage_branch_report.md`
+- Gerar relatório de gaps em `$ENG_DOCS/qa/{task-id}-test_coverage_branch_report.md`
 
 #### 3.3.2 Implementar Testes Faltantes
 

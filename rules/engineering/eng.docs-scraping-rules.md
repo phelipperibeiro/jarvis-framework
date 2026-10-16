@@ -18,8 +18,8 @@ Aplicável sempre que um robô novo for implementado, um bug estrutural for reso
 
 #### Localização
 
-- Sempre criar em `docs/engineering/robots/{robot-tag}-robot.md`
-- Exemplos: `docs/engineering/robots/consulta-orgao-robot.md`, `docs/engineering/robots/extrator-dados-robot.md`
+- Sempre criar em `$ENG_DOCS/robots/{robot-tag}-robot.md`
+- Exemplos: `$ENG_DOCS/robots/consulta-orgao-robot.md`, `$ENG_DOCS/robots/extrator-dados-robot.md`
 
 #### Conteúdo obrigatório
 
@@ -44,7 +44,7 @@ Todo arquivo `{robot-tag}-robot.md` deve conter:
 
 ### Proibido
 
-- ❌ Criar em `docs/robots/` — pasta incorreta, usar `docs/engineering/robots/`
+- ❌ Criar em `docs/robots/` — pasta incorreta, usar `$ENG_DOCS/robots/`
 - ❌ Omitir a seção de **Limitações Conhecidas** — é fundamental para evitar que outros devs tentem implementar algo impossível
 - ❌ Omitir o **Histórico de Bugs** — descobertas custam tempo; documentar evita retrabalho
 
@@ -61,4 +61,4 @@ Nenhuma — todo robô deve ter sua documentação, independente do tamanho ou c
 
 ## Referências
 
-- `docs/engineering/robots/{robot-tag}-robot.md` — referência de implementação completa
+- `$ENG_DOCS/robots/{robot-tag}-robot.md` — referência de implementação completa

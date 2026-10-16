@@ -37,7 +37,7 @@ Com board definido, se o key não veio nos argumentos, perguntar o id do card na
 
 Só se `TASK_MANAGER` estiver preenchido com um vendor. Freelance → pular. Falha no comentário não bloqueia o workflow.
 
-Comentar **somente** em eventos relevantes: (a) **desvio do plano** (mudança de direção, fase bloqueada), (b) **auditoria do Advisor** (as questões do `architecture.md` com as opções junto da escolha), (c) **bloqueio** com valor de rastreabilidade (ex.: pré-PR reprovado), (d) **link do MR**, uma única vez. **Nunca** comentar início ou fim de etapa ("Iniciando…", "concluído…"): o acompanhamento fica no fluxo e no PR.
+Comentar **somente** em eventos relevantes: (a) **desvio do plano** (mudança de direção, fase bloqueada), (b) **auditoria do Advisor** (as questões do `architecture.md` com as opções junto da escolha), (c) **bloqueio** com valor de rastreabilidade, (d) **link do MR**, uma única vez, (e) o **`gate-checklist.md` do `eng.pre-pr`**, só se o usuário responder Sim. **Nunca** comentar início ou fim de etapa ("Iniciando…", "concluído…"): o acompanhamento fica no fluxo e no PR.
 
 ```
 /eng-global-task-comment {TASK_MANAGER_KEY} {mensagem}

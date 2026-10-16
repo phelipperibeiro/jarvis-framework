@@ -33,12 +33,13 @@ function git(args, cwd) {
 }
 
 const PRD = `---
-id: PRD-001
+id: FEAT-001
 name: Checkout
-version: 1.0.0
-status: backlog
+status: in_production
+product: loja
+updated_at: 2026-10-15
 ---
-# PRD
+# Checkout
 `;
 
 // --- getStorage ----------------------------------------------------------
@@ -99,7 +100,7 @@ test("safePath: rejeita .., caminho absoluto e vazio", () => {
 test("filesystem: publish copia, regenera o índice, e fetch/list leem do disco", async () => {
   const root = tmp();
   try {
-    const src = join(root, "prd-001-checkout.md");
+    const src = join(root, "feature-checkout.md");
     writeFileSync(src, PRD);
     const s = getStorage(
       { CENTRAL_DOCS_STORAGE: "filesystem", CENTRAL_DOCS_LOCATION: "cd" },
@@ -109,9 +110,9 @@ test("filesystem: publish copia, regenera o índice, e fetch/list leem do disco"
 
     const r = await s.publish({
       localFile: src,
-      destPath: "CORE/product/loja/prd-001-checkout.md",
+      destPath: "CORE/product/loja/feature-checkout.md",
       squad: "CORE",
-      tipo: "prd",
+      tipo: "feature",
     });
     assert.equal(r.indexPath, "CORE/index.md");
     assert.equal(r.sha, undefined);
@@ -120,15 +121,15 @@ test("filesystem: publish copia, regenera o índice, e fetch/list leem do disco"
     assert.match(index, /^# CORE/);
     assert.match(
       index,
-      /### loja\n- \[prd-001-checkout\.md\]\(product\/loja\/prd-001-checkout\.md\) \| v1\.0\.0 \| backlog \| Checkout/
+      /### loja\n- \[feature-checkout\.md\]\(product\/loja\/feature-checkout\.md\) \| in_production \| Checkout \| 2026-10-15/
     );
-    assert.match(index, /## engineering\n\n_Nenhum documento\._/);
+    assert.match(index, /## engineering\n\n> Entregas recentes\n\n_Nenhum documento\._/);
 
     assert.deepEqual(await s.list("CORE"), [
       "CORE/index.md",
-      "CORE/product/loja/prd-001-checkout.md",
+      "CORE/product/loja/feature-checkout.md",
     ]);
-    assert.equal(await s.fetch("CORE/product/loja/prd-001-checkout.md"), PRD);
+    assert.equal(await s.fetch("CORE/product/loja/feature-checkout.md"), PRD);
   } finally {
     rmSync(root, { recursive: true, force: true });
   }
@@ -163,19 +164,25 @@ test("filesystem: pasta inexistente dá erro orientando o /jarvis-init", async (
   }
 });
 
-test("renderIndex: duas publicações no mesmo produto ficam as duas no índice", () => {
+test("renderIndex: lista só feature-*/delivery-*, as duas funcionalidades e as entregas recentes", () => {
   const root = tmp();
   try {
-    write(join(root, "CORE/product/loja/prd-001-a.md"), PRD);
-    write(join(root, "CORE/product/loja/frd-001-b.md"), PRD.replace("PRD-001", "FRD-001"));
-    write(join(root, "CORE/engineering/loja/ard-001-c.md"), "sem frontmatter\n");
+    write(join(root, "CORE/product/loja/feature-a.md"), PRD);
+    write(join(root, "CORE/product/loja/feature-b.md"), PRD.replace("FEAT-001", "FEAT-002"));
+    write(join(root, "CORE/product/loja/prd-001-legado.md"), PRD); // publicado na 4.0.0: fora do índice
+    for (let d = 1; d <= 12; d++) {
+      const day = String(d).padStart(2, "0");
+      write(
+        join(root, `CORE/engineering/loja/delivery-2026-10-${day}-t-${d}.md`),
+        `---\ntask_key: T-${d}\ndate: 2026-10-${day}\n---\n`
+      );
+    }
     const idx = renderIndex(root, "CORE");
-    assert.match(idx, /\[frd-001-b\.md\]/);
-    assert.match(idx, /\[prd-001-a\.md\]/);
-    assert.match(
-      idx,
-      /## engineering\n\n### loja\n- \[ard-001-c\.md\]\(engineering\/loja\/ard-001-c\.md\)\n/
-    );
+    assert.match(idx, /\[feature-a\.md\]/);
+    assert.match(idx, /\[feature-b\.md\]/);
+    assert.doesNotMatch(idx, /prd-001-legado/);
+    assert.match(idx, /delivery-2026-10-12-t-12\.md/);
+    assert.doesNotMatch(idx, /delivery-2026-10-02-t-2\.md/, "só as 10 entregas mais recentes");
   } finally {
     rmSync(root, { recursive: true, force: true });
   }
@@ -226,7 +233,7 @@ test("git: fetch faz pull antes de ler (arquivo empurrado por outro clone aparec
 test("git: publish cria branch, commita documento + índice, faz push e abre o PR", async () => {
   const { base, origin, clone } = gitFixture();
   try {
-    const src = join(base, "prd-001-checkout.md");
+    const src = join(base, "feature-checkout.md");
     writeFileSync(src, PRD);
     const calls = [];
     const s = getStorage(
@@ -249,12 +256,12 @@ test("git: publish cria branch, commita documento + índice, faz push e abre o P
 
     const r = await s.publish({
       localFile: src,
-      destPath: "CORE/product/loja/prd-001-checkout.md",
+      destPath: "CORE/product/loja/feature-checkout.md",
       squad: "CORE",
-      tipo: "prd",
+      tipo: "feature",
     });
 
-    assert.equal(r.branch, "docs/CORE/product/loja/prd-001-checkout");
+    assert.equal(r.branch, "docs/CORE/product/loja/feature-checkout");
     assert.equal(r.mr.iid, 7);
     assert.equal(calls.length, 1);
     assert.equal(calls[0].url, origin);
@@ -262,7 +269,7 @@ test("git: publish cria branch, commita documento + índice, faz push e abre o P
     assert.match(calls[0].opts.description, /Revisores\*\*: ana/);
 
     const files = git(["ls-tree", "-r", "--name-only", r.branch], origin).split("\n");
-    assert.ok(files.includes("CORE/product/loja/prd-001-checkout.md"));
+    assert.ok(files.includes("CORE/product/loja/feature-checkout.md"));
     assert.ok(files.includes("CORE/index.md"));
     assert.equal(git(["branch", "--show-current"], clone), "main");
   } finally {
@@ -281,7 +288,7 @@ test("git: com scripts/build-index.sh no repositório, o índice vem do script",
     git(["commit", "-m", "script"], clone);
     git(["push", "origin", "main"], clone);
 
-    const src = join(base, "prd-001-x.md");
+    const src = join(base, "feature-x.md");
     writeFileSync(src, PRD);
     const s = getStorage(
       { CENTRAL_DOCS_STORAGE: "filesystem", CENTRAL_DOCS_LOCATION: clone },
@@ -289,14 +296,14 @@ test("git: com scripts/build-index.sh no repositório, o índice vem do script",
     );
     const r = await s.publish({
       localFile: src,
-      destPath: "CORE/product/p/prd-001-x.md",
+      destPath: "CORE/product/p/feature-x.md",
       squad: "CORE",
-      tipo: "prd",
+      tipo: "feature",
     });
     const index = git(["show", `${r.branch}:CORE/index.md`], clone);
     assert.equal(index, "# gerado pelo script");
     assert.ok(
-      !existsSync(join(clone, "CORE/product/p/prd-001-x.md")),
+      !existsSync(join(clone, "CORE/product/p/feature-x.md")),
       "volta para a branch base após publicar"
     );
     assert.equal(readFileSync(join(clone, "README.md"), "utf-8"), "central docs\n");

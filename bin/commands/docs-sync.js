@@ -1,7 +1,8 @@
 import { openStorageFromEnv } from "../lib/docs/fetch-file.js";
 import { logger, configureFromFlags } from "../lib/utils/logger.js";
 
-const COUNTED_TYPES = ["prd", "frd", "feat", "epic", "story", "task", "ard", "rfc"];
+const COUNTED_TYPES = ["feature", "delivery"];
+const LABELS = { feature: "funcionalidade(s)", delivery: "entrega(s) recente(s)" };
 
 /**
  * Sincroniza a documentação do Central docs (lê `{SQUAD}/index.md` pelo adaptador).
@@ -55,7 +56,7 @@ export async function docsSync(flags = {}) {
 
     if (total > 0) {
       logger.info(`📊 ${total} documentos disponíveis:`);
-      for (const [tipo, n] of counts) logger.info(`   - ${n} ${tipo.toUpperCase()}(s)`);
+      for (const [tipo, n] of counts) logger.info(`   - ${n} ${LABELS[tipo]}`);
     }
   } catch (error) {
     logger.error("❌ Erro ao sincronizar docs:", error.message);

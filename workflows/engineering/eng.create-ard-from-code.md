@@ -23,7 +23,6 @@ priorizando a **arquitetura observada no código do repositório**, usando o tem
 |-------|-------|----------|
 | Objetivo | `eng.agent` (agente) | Sempre — identidade do workflow (alinhamento com `eng.agent.md`) |
 | Passo 1 – Verificar PRD | `/jarvis-docs-central` (via `jarvis docs sync --silent`) | Se `CENTRAL_DOCS_STORAGE` estiver definido no ENV.md |
-| Passo 7 – Publicar no Central Docs | `/jarvis-docs-central` (via `jarvis docs publish --tipo ard`) | Se `CENTRAL_DOCS_STORAGE` estiver definido, o ARD estiver aprovado e o usuário aceitar publicar |
 
 ---
 
@@ -43,7 +42,7 @@ priorizando a **arquitetura observada no código do repositório**, usando o tem
 
 - Se o usuário tiver passado `edit <nome-ou-caminho>`, use isso como entrada inicial.
 - Peça o **caminho do arquivo** do ARD existente (preferencial) ou o **nome** do ARD, se ainda não tiver.
-- Se o usuário passar só o nome, confirme onde ele está (ex.: `$DOCS_FOLDER/engineering/ARD/...`).
+- Se o usuário passar só o nome, confirme onde ele está (ex.: `$ENG_DOCS/ARD/...`).
 - Leia o ARD atual e pergunte quais seções mudam (ou qual é o objetivo da iteração).
 
 3. Se for **novo ARD**:
@@ -58,10 +57,10 @@ priorizando a **arquitetura observada no código do repositório**, usando o tem
   - `Título`
   - `Slug` para o nome do arquivo (kebab-case)
 - Defina o `ARD-ID` automaticamente assim:
-  - Se a pasta `$DOCS_FOLDER/engineering/ARD/` existir e houver arquivos no padrão `ARD-###-*.md`, use o maior `###` + 1.
+  - Se a pasta `$ENG_DOCS/ARD/` existir e houver arquivos no padrão `ARD-###-*.md`, use o maior `###` + 1.
 - Defina:
   - `Status` (campo `status` no frontmatter: `proposed | in_progress | in_review | approved`)
-  - `Caminho do arquivo` (`$DOCS_FOLDER/engineering/ARD/{ARD-ID}-{slug}.md` ou caminho fornecido para iteração)
+  - `Caminho do arquivo` (`$ENG_DOCS/ARD/{ARD-ID}-{slug}.md` ou caminho fornecido para iteração)
 
 ---
 
@@ -71,20 +70,20 @@ priorizando a **arquitetura observada no código do repositório**, usando o tem
 
 Se `CENTRAL_DOCS_STORAGE` definido no ENV.md:
 
-1. Executar busca automática no central-docs:
+1. Consultar no Central docs as funcionalidades já implementadas relacionadas (o que existe hoje):
    ```bash
    jarvis docs sync --silent
    ```
 
-2. Buscar PRD relacionado usando:
+2. Buscar o PRD relacionado em `$PROD_DOCS` (documento de trabalho; o Central docs não guarda PRD) usando:
    - Título/objetivo do ARD
    - Jira ID (se disponível)
    - Tags semânticas
 
-3. Se PRD encontrado no central-docs:
+3. Se o PRD for encontrado em `$PROD_DOCS`:
    - Carregar automaticamente como contexto
    - Pular para item 2 (extração de requisitos)
-   - Informar ao usuário: "✅ PRD encontrado no central-docs: [nome]"
+   - Informar ao usuário: "✅ PRD encontrado: [caminho]"
 
 4. Se PRD não encontrado:
    - Continuar com pergunta manual (item 1.2)
@@ -122,7 +121,7 @@ Objetivo: montar um retrato fiel do que o código revela hoje.
 
 - `README.md`
 - `ENV.md`
-- `$DOCS_FOLDER/**` (especialmente `$DOCS_FOLDER/engineering/ARD/**` e docs de arquitetura existentes)
+- `$DOCS_FOLDER/**` (especialmente `$ENG_DOCS/ARD/**` e docs de arquitetura existentes)
 
 2. Identificar a stack e artefatos de build:
 
@@ -150,8 +149,8 @@ Objetivo: montar um retrato fiel do que o código revela hoje.
   >
   > **1. Buscar contrato no repositório primeiro:**
   > Procure por specs existentes nos seguintes locais:
-  > - `docs/engineering/swagger/`
-  > - `docs/engineering/openapi/`
+  > - `$ENG_DOCS/swagger/`
+  > - `$ENG_DOCS/openapi/`
   > - `**/*swagger*.{yaml,yml,json}`
   > - `**/*openapi*.{yaml,yml,json}`
   > - `**/*api-spec*.{yaml,yml,json}`
@@ -236,30 +235,7 @@ Entregar:
 
 ---
 
-## Passo 7 – Publicar no Central Docs (condicional)
+## Central docs
 
-Se `CENTRAL_DOCS_STORAGE` definido no ENV.md **E** o usuário aprovar o ARD:
+Este documento é um **documento de trabalho**: fica em `$PROD_DOCS`/`$ENG_DOCS` (`docs/jarvis/`) e **não** é publicado no Central docs. O Central docs registra só o que foi implementado, e quem o atualiza é o `/eng.spec-consolidate`, depois do PR da entrega.
 
-1. Perguntar ao usuário:
-   ```
-   Deseja publicar este ARD no repositório central de documentação?
-   - ( ) Sim, publicar agora
-   - ( ) Não, vou publicar depois manualmente
-   ```
-
-2. Se **Sim**:
-   - Executar:
-     ```bash
-     jarvis docs publish \
-       --file {caminho_do_ard} \
-       --tipo ard
-     ```
-   
-3. Informar resultado:
-   - ✅ Sucesso: "ARD publicado no Central docs." (com git: "PR aberto: [URL]")
-   - ❌ Erro: Exibir mensagem de erro e orientar troubleshooting
-
-4. Se **Não**:
-   - Informar: "Para publicar depois, execute: `jarvis docs publish --file {caminho} --tipo ard`"
-
-> **Nota**: se a pasta do Central docs for um repositório git, a publicação abre um Pull/Merge Request e o ARD só entra na branch base depois do merge. Sem git, o documento é gravado direto e o índice é regenerado.

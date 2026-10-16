@@ -39,20 +39,20 @@ PROD_FOLDER_NAME=product
 PROD_RULES=$RULES_FOLDER/$PROD_FOLDER_NAME
 PROD_FLOWS=.$IDE/$FLOWS_FOLDER
 PROD_TEMPLATES=.$IDE/$TEMPLATES_FOLDER/$PROD_FOLDER_NAME
-PROD_DOCS=$DOCS_FOLDER/$PROD_FOLDER_NAME
+PROD_DOCS=$DOCS_FOLDER/jarvis/$PROD_FOLDER_NAME
 ```
 
 Abaixo, segue uma descrição de algumas das variáveis mais importantes para as rotinas de produto:
 
 - $DOCS_FOLDER é o nome da pasta principal de documentações do projeto. Ela fica localizada na raiz do projeto.
-- $PROD_DOCS é o nome da pasta principal de documentações de produto do projeto. No projeto único (sem workspace), fica em `docs/jarvis/product`, fora do versionamento do código.
+- $PROD_DOCS é a pasta dos documentos de produto gerados pelos comandos (PRD, FRD, épicos, histórias, discovery): `$JARVIS_DOCS/product` (`docs/jarvis/product`), nos dois modos de trabalho e fora do versionamento do código. Os de engenharia ficam em `$ENG_DOCS` (`docs/jarvis/engineering`).
 - $PROD_FOLDER_NAME é o nome padrão da pasta de produto que será usada em diversos contextos do projeto.
 - $TEMPLATES_FOLDER é o nome da pasta principal de templates do projeto.
 - $PROD_TEMPLATES é o caminho completo para os templates de produto.
 - $FLOWS_FOLDER é o nome da pasta de workflows e comandos utilizados pelos IDEs. (tenha em mente que o nome da pasta pode variar de acordo com a IDE utilizada)
 - $RULES_FOLDER é o nome da pasta principal de regras invioláveis que os agentes devem seguir.
 - $PROD_RULES é o caminho para a pasta que contém as regras de produto. Leia todos os arquivos dentro dessa pasta para entender as regras de produto.
-- $CENTRAL_DOCS_STORAGE e $CENTRAL_DOCS_LOCATION configuram o Central docs (opcional): onde ficam as especificações aprovadas e o índice global de todas elas. Vazio = desligado. Hoje o único armazenamento é `filesystem` (uma pasta; se tiver `.git`, publica por PR). Leitura e publicação sempre por `jarvis docs fetch | sync | publish`.
+- $CENTRAL_DOCS_STORAGE e $CENTRAL_DOCS_LOCATION configuram o Central docs: o registro do que **foi implementado** (um documento por funcionalidade e um por entrega, gerados pelo `/eng.spec-consolidate`), com um índice global. Ligado por padrão (`filesystem`); vazio = desligado. Os documentos de trabalho (PRD, FRD, ARD, RFC) não são publicados lá. Leitura e publicação sempre por `jarvis docs fetch | sync | publish`.
 
 
 ## VARIÁVEL `$IDE` - DETECÇÃO AUTOMÁTICA DA PASTA DA IDE
