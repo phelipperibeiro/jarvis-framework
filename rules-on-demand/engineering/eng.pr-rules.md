@@ -323,6 +323,7 @@ Antes de considerar o PR completo:
 - [ ] Comentários de code review processados
 - [ ] `pull-request.md` aprovado na sessão (e publicado, se o usuário respondeu Sim)
 - [ ] Lembrete do `/eng.spec-consolidate` na mensagem final
+- [ ] `daily.md` gerado ou atualizado e aprovado (só com PR aberto), com a linha de timesheet na mensagem final
 
 ---
 
@@ -331,3 +332,17 @@ Antes de considerar o PR completo:
 - O texto do PR fica em **`$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/pull-request.md`**, aprovado pelo usuário.
 - **Publicar (push + MR/PR) só com o Sim** do `AskUserQuestion` "Publicar o PR agora?". Com Não, o arquivo fica na sessão e nada é enviado.
 - **A sessão nunca é apagada por este comando:** o `/eng.spec-consolidate`, que roda em seguida, precisa do `architecture.md`, do `plan.md`, do `gate-checklist.md` e do `pull-request.md`. A pessoa apaga à mão quando quiser.
+
+## daily.md (registro do esforço)
+
+- Gerado na Conclusão do `eng.pr`, em `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/daily.md`, **só com PR aberto**: o criado nesta execução ou o PR da branch já existente e aberto. Sem PR aberto, não gerar.
+- **Sempre perguntar a data** (hoje ou retroativa) com `AskUserQuestion`.
+- **Período de mais de um dia:** antes de contar os dias trabalhados, perguntar sobre sábado/domingo trabalhados, feriados e outros dias não trabalhados (o usuário informa as datas).
+- ***Post mortem*:** automático com `tipo: bugfix|hotfix` no `context.md` ou com mais de 1 dia trabalhado; nos outros casos, perguntar Sim/Não.
+- **Nova execução** (`daily.md` já existe): perguntar a origem da mudança.
+  - **Ajuste do próprio usuário:** focar no que foi entregue, sem citar troca de escopo nem retrabalho.
+  - **Pedido da liderança:** documentar o que mudou, quem pediu e o impacto.
+- **Formato fixo** (`templates/engineering/daily-template.md`): uma seção `## AAAA-MM-DD` com "Descrição detalhada" e "Timesheet" (uma linha).
+- **Revisão conjunta:** mostrar a descrição e a linha de timesheet juntas, com `[Aprovar]`/`[Ajustar]`; ajustar as duas juntas até aprovar.
+- **Nunca publicar** o `daily.md` e nunca incluir e-mails, tokens nem valores de variáveis.
+

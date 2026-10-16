@@ -44,7 +44,7 @@ Este comando cria a **branch, commita as alterações e abre um Merge Request**.
 | Skills recomendados | `/eng-global-docs-write` | Se houver necessidade de atualizar documentação junto do PR |
 | Agentes recomendados (opcional) | `eng.qa.test-planner` (agente) | Se houver dúvidas sobre cobertura de testes ou mudanças significativas |
 | Fase 4 › 4.4 Criar MR/PR via adapter | `jarvis vcs create-merge` (CLI do Jarvis) | Só se o usuário responder **Sim** na Fase 4.3: abre o MR/PR conforme `VERSION_CONTROL` ou o host do `origin` |
-| Fase 6 › 6.2 Link do MR | `/eng-global-task-comment` | Depois de o MR ser criado (só com o Sim da 4.3): um único comentário no card com o link do MR, seguindo o Passo 6 do skill `eng-global-pr` (freelance pula) |
+| Fase 5 › 5.2 Link do MR | `/eng-global-task-comment` | Depois de o MR ser criado (só com o Sim da 4.3): um único comentário no card com o link do MR, seguindo o Passo 6 do skill `eng-global-pr` (freelance pula) |
 
 ---
 
@@ -134,7 +134,7 @@ Branch de destino: a **`Branch base:`** do `architecture.md` (`{BRANCH_BASE}`). 
 git checkout {TASK_MANAGER_KEY}-{titulo-em-kebab-case}
 ```
 
-### 2.2 Verificar Commits da Branch
+### 2.3 Verificar Commits da Branch
 
 ```bash
 git log {BRANCH_BASE}..HEAD --oneline
@@ -211,7 +211,7 @@ Mostre o `pull-request.md` (título e resumo das seções) e pergunte com `AskUs
 
 Pergunte com `AskUserQuestion` (**Sim / Não**): **"Publicar o PR agora?"**
 
-- **Não:** nada é enviado. O `pull-request.md` fica na sessão para você publicar quando quiser (à mão ou rodando o `/eng.pr` de novo). Pule para a Fase 7, com a mensagem "PR não publicado".
+- **Não:** nada é enviado. O `pull-request.md` fica na sessão para você publicar quando quiser (à mão ou rodando o `/eng.pr` de novo). Pule para a Fase 7 (sem `daily.md`, que só existe com PR aberto), com a mensagem "PR não publicado".
 - **Sim:** faça o push (Fase 3) e crie o MR/PR (4.4).
 
 ### 4.4 Criar MR/PR via adapter
@@ -248,15 +248,15 @@ Se o CLI `jarvis` não estiver instalado no repo alvo, usar `node {caminho-do-cl
 
 ---
 
-## Fase 6: Atualizar Board
+## Fase 5: Atualizar Board
 
 Pular se `TASK_MANAGER` estiver vazio (freelance).
 
-### 6.1 Mover Card
+### 5.1 Mover Card
 
 Mova o card para a etapa equivalente a "em revisão" no seu board. Quem assumiu o card o move; não é preciso esperar o TECH LEAD ou o PM.
 
-### 6.2 Link do MR no card
+### 5.2 Link do MR no card
 
 Siga o Passo 6 do skill `eng-global-pr`: um único comentário no card, com o link e a branch. É o único comentário do `eng.pr` no card.
 
@@ -264,11 +264,11 @@ Siga o Passo 6 do skill `eng-global-pr`: um único comentário no card, com o li
 
 ## Fase 6: Processar Code Review
 
-### 7.1 Aguardar Comentários
+### 6.1 Aguardar Comentários
 
 Aguarde 3-5 minutos para a ferramenta de code review processar.
 
-### 7.2 Analisar Comentários
+### 6.2 Analisar Comentários
 
 Para cada comentário:
 
@@ -276,7 +276,7 @@ Para cada comentário:
 2. Avaliar se pode ser explicado/ignorado
 3. Apresentar ao usuário
 
-### 7.3 Aplicar Correções
+### 6.3 Aplicar Correções
 
 Se necessário:
 
@@ -291,7 +291,7 @@ git push
 
 ## Fase 7: Conclusão
 
-### 8.1 Registrar Métricas de Lead Time
+### 7.1 Registrar Métricas de Lead Time
 
 Calcule e registre o lead time (tempo desde eng.start até PR criado):
 
@@ -323,7 +323,34 @@ else
 fi
 ```
 
-### 8.2 Mensagem Final
+### 7.2 Registrar o esforço em `daily.md`
+
+Regras em `$IDE/rules-on-demand/engineering/eng.pr-rules.md` (seção "daily.md"); template em `$IDE/templates/engineering/daily-template.md`. Arquivo: `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/daily.md`, **só na sessão, nunca publicado**.
+
+1. **Há PR aberto?** Vale o criado na 4.4 ou o PR da branch que já existe e está aberto (CLI/adapter do vendor, ex.: `gh pr view --json state,number,url`). Sem PR aberto (Não na 4.3 e nenhum PR existente), **não gere** o `daily.md` e siga para a 7.3. Se não for possível confirmar, pergunte.
+2. **Data:** pergunte com `AskUserQuestion`: **"Registrar o esforço com qual data?"** → `Hoje ({AAAA-MM-DD})` | `Outra data` (o usuário digita `AAAA-MM-DD`).
+3. **Dias trabalhados** (só se o período entre a data do `.timestamp_start` e a data do registro tiver mais de um dia), uma pergunta por vez:
+   - se o período tiver sábado ou domingo: **"Você trabalhou em {datas de sábado/domingo}?"** (Sim / Não; com várias datas, pode responder por data);
+   - **"Houve feriado no período?"** → Não | Sim (o usuário informa as datas);
+   - **"Teve algum dia em que você não trabalhou no período?"** → Não | Sim (o usuário informa as datas).
+
+   Dias trabalhados = datas do período − fim de semana não trabalhado − feriados − dias não trabalhados. Registre no `worked_days` do frontmatter.
+4. ***Post mortem*:**
+   - **automático** se o `context.md` tiver `tipo: bugfix` ou `hotfix`, ou se houver **mais de 1 dia trabalhado**;
+   - nos outros casos, pergunte (**Sim / Não**): **"A tarefa exigiu investigação ou análise longa?"**
+5. **Nova execução** (o `daily.md` já existe): entenda o contexto e pergunte com `AskUserQuestion`: **"De onde veio a mudança desde o último registro?"**
+   - **Ajuste meu:** reescreva o registro **focando no que foi entregue**, sem mencionar troca de escopo nem retrabalho.
+   - **Pedido da liderança** (gerente, PM, tech lead): documente na seção "Mudança de escopo" o que mudou, quem pediu (como o usuário informar) e o impacto.
+
+   Atualize a seção da data escolhida. Se a data for nova, acrescente uma seção `## AAAA-MM-DD`.
+6. **Gerar** a descrição detalhada **e** a linha de timesheet, juntas.
+   - **Fontes:** `architecture.md`, `plan.md`, `gate-checklist.md`, `pull-request.md`, `git log {BRANCH_BASE}..HEAD`, o PR/MR e o card.
+   - **Descrição:** um parágrafo narrativo (contexto técnico, trabalho realizado, decisões), mais o *post mortem* quando couber (problema e causa raiz, investigação, solução/direcionamento), com detalhe suficiente para embasar questionamentos futuros.
+   - **Timesheet:** **uma única linha** (`{TASK_KEY} — {resumo}`).
+   - Sem e-mails, tokens nem valores de variáveis.
+7. **Revisão conjunta:** mostre a descrição e a linha de timesheet **juntas** e pergunte com `AskUserQuestion`: `[Aprovar]` / `[Ajustar]`. Com Ajustar, aplique os ajustes pontuais **nas duas** e mostre de novo, até aprovar.
+
+### 7.3 Mensagem Final
 
 ```
 ✅ MERGE REQUEST CRIADO COM SUCESSO!
@@ -339,6 +366,9 @@ fi
 - Build: ✅ OK
 
 {LEAD_TIME_MSG}
+
+📝 Daily: $SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/daily.md
+🕒 Timesheet: {LINHA_DE_TIMESHEET_APROVADA}
 
 📌 Próximos passos:
 1. /eng.spec-consolidate {TASK_MANAGER_KEY} → registrar no Central docs o que esta entrega implementou
@@ -372,6 +402,7 @@ fi
 - ✅ Preencher template do MR completamente
 - ✅ Mover card para "In Review"
 - ✅ Gerar o `pull-request.md` na sessão e só publicar com o **Sim** (Fase 4.3)
+- ✅ Com PR aberto, registrar o esforço no `daily.md` (7.2), com revisão conjunta da descrição e do timesheet
 - ✅ **Nunca apagar a sessão:** o `/eng.spec-consolidate` precisa dela
 
 ---

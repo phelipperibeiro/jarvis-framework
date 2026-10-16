@@ -6,6 +6,21 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), e o
 
 > Versões anteriores a `2.1.1` não foram documentadas retroativamente neste changelog — o histórico detalhado dessas versões continua disponível via `git log`.
 
+## [Unreleased]
+
+### Added
+- **`daily.md` no `eng.pr`** (#151): com PR aberto, a Conclusão registra o esforço em `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/daily.md`, só na sessão e nunca publicado.
+  - **Data:** pergunta hoje ou retroativa.
+  - **Dias trabalhados:** com o período em mais de um dia, pergunta antes sobre sábado/domingo trabalhados, feriados e outros dias não trabalhados.
+  - **Conteúdo:** uma descrição detalhada e auditável, com *post mortem* em `bugfix`/`hotfix`, com mais de 1 dia trabalhado ou quando confirmado, e uma linha de timesheet.
+  - **Nova execução:** atualiza conforme a origem da mudança (ajuste próprio ou pedido da liderança).
+  - **Revisão:** descrição e timesheet aprovadas juntas.
+  - **Formato:** fixo por data (`## AAAA-MM-DD`), para um comando futuro juntar os registros.
+- Template `templates/engineering/daily-template.md`
+
+### Changed
+- `eng.pr`: fases e itens renumerados em sequência (havia duas "Fase 6" e itens `7.x`/`8.x` fora da fase); a mensagem final mostra o `daily.md` e a linha de timesheet
+
 ## [5.0.0] - 2026-10-15
 
 > **Major:** o Central docs passa a guardar só o que foi implementado (`jarvis docs publish` aceita apenas `feature` e `delivery`), os documentos de trabalho mudam para `docs/jarvis/`, o `eng.pre-pr` deixa de corrigir e publicar, e o `eng.pr` deixa de apagar a sessão e só publica com Sim.
