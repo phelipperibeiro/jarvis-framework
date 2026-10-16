@@ -6,7 +6,7 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), e o
 
 > Versões anteriores a `2.1.1` não foram documentadas retroativamente neste changelog — o histórico detalhado dessas versões continua disponível via `git log`.
 
-## [Unreleased]
+## [5.0.0] - 2026-10-15
 
 > **Major:** o Central docs passa a guardar só o que foi implementado (`jarvis docs publish` aceita apenas `feature` e `delivery`), os documentos de trabalho mudam para `docs/jarvis/`, o `eng.pre-pr` deixa de corrigir e publicar, e o `eng.pr` deixa de apagar a sessão e só publica com Sim.
 
