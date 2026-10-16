@@ -8,6 +8,8 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), e o
 
 ## [5.5.0] - 2026-10-16
 
+> Primeiro release desde a 5.2.0: reúne também as mudanças de [5.3.0] e [5.4.0], que não foram publicadas separadamente.
+
 ### Added
 - **Transições do ciclo de engenharia com `AskUserQuestion`** (#161). A opção padrão de cada pergunta mantém o fluxo de sempre, com nome que diz o que acontece ("(como hoje)"), nunca "Ignorar". A regra geral fica em `rules-on-demand/engineering/eng.transitions-rules.md`. As perguntas:
   - `eng.start`, só sem Advisor: no início, como tratar as questões em aberto (no `architecture.md`, como hoje, ou uma a uma, assim que surgirem); no fim, "Aprovar o architecture.md?" (parar, seguir para o `/eng.plan` ou ajustar), que já é a aprovação. Com Advisor, nada muda;
