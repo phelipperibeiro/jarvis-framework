@@ -1,168 +1,106 @@
 ---
 name: prod.spec.discovery
-description: Investigação inicial de uma ideia: entrevista o usuário sobre a ideia, o problema, os requisitos iniciais e a viabilidade, sem chutar, e registra um rascunho estruturado com veredito e próximo passo sugerido.
+description: Investigação inicial de uma ideia: mostra primeiro o que entendeu, faz poucas perguntas de alto impacto (com recomendação), propõe abordagens e registra um rascunho com scorecard, veredito e próximo passo sugerido, sem chutar.
 auto_execution_mode: 3
 env_file: "@/ENV.md"
 recommended_model: opus
 model_tier: high
-model_justification: Discovery exige conduzir uma entrevista adaptativa, julgar evidências e registrar hipóteses sem presumir dados
+model_justification: Discovery exige separar fatos de suposições, escolher as perguntas de maior impacto e julgar evidências sem presumir dados
 ---
 
 # Discovery (investigação inicial de uma ideia)
 
-> 🎓 **Modo de condução**: leia `PROD_MODE` no `$IDE/ENV.md`. Se for `developer-guided`, **antes de começar leia `$IDE/rules-on-demand/product/prod.guided-rules.md` e siga-o** em toda a conversa. Vazio ou `product-led`: siga este fluxo como está.
+> 🎓 **Modo de condução**: leia `PROD_MODE` no `$IDE/ENV.md`. Se for `developer-guided`, **antes de começar leia `$IDE/rules-on-demand/product/prod.guided-rules.md` e siga-o** em toda a conversa. `[Explicar melhor]` e `[Dúvida]` **não contam** no orçamento de perguntas. Vazio ou `product-led`: siga este fluxo como está.
 >
 > 🤖 **Modelo**: se a IDE informar o modelo desta sessão e ele for de outra família que o `recommended_model` do documento (ou do template, se o documento for novo), avise em uma linha e siga, sem bloquear e sem repetir. Sem essa informação, não avise.
 
-Este comando conduz uma **entrevista** para investigar uma ideia ainda crua e registrar o resultado em um **rascunho estruturado**: o problema, o que precisaria ser verdade e se parece viável.
+> 🔥 **Warm-up**: se `$SESSIONS_DIR/warm-ups/` tiver aquecimentos, leia `$IDE/rules-on-demand/warm-up-consume-rules.md` e siga-o antes de começar (grava em `$SESSIONS_DIR/prod/{id do documento}/context.md`).
 
-Antes de iniciar, revise as regras invioláveis em `$PROD_RULES/**/*`.
-
-- **Agente:** `$IDE/agents/product/prod.discovery-interviewer.md` conduz a entrevista; siga a postura dele.
-- **Template:** `$PROD_TEMPLATES/prod-discovery-template.md` define a estrutura do arquivo. Siga a estrutura exata do template.
-- **Guia humano (termos por extenso):** `docs/produto/prod.spec.discovery.md`.
-
-Utilize o `$ARGUMENTS` como ponto de partida (a ideia, ou o caminho ou nome de um discovery existente para retomar):
+Investiga uma ideia crua com **poucas perguntas certas** e grava um **rascunho** em `$PROD_DOCS/discoveries/discovery-{id}-{nome}.md`, pelo template `$PROD_TEMPLATES/prod-discovery-template.md`. Postura: agente `$IDE/agents/product/prod.discovery-interviewer.md`. Guia humano: `docs/produto/prod.spec.discovery.md`. Siga `$PROD_RULES` (ENV, idioma, `AskUserQuestion` uma pergunta por vez).
 
 <requirement>
 #$ARGUMENTS
 </requirement>
 
-> 🔥 **Warm-up**: se `$SESSIONS_DIR/warm-ups/` tiver aquecimentos, leia `$IDE/rules-on-demand/warm-up-consume-rules.md` e siga-o antes de começar (grava em `$SESSIONS_DIR/prod/{id do documento}/context.md`).
-
-## O que este comando é e o que não é
-
-O discovery é um **rascunho**: registra o que se sabe, o que é hipótese e o que ainda é lacuna. Nada nele é verdade absoluta.
-
-Ele **não** gera PRD, FRD, épico, issue, tarefas, histórias, critérios de aceitação nem estimativas, e **não** escreve código. Se o usuário pedir qualquer uma dessas coisas, explique que é outra etapa e indique o comando certo (`$PROD_FLOWS/prod.spec.prd.md`, `prod.spec.frd.md`, `prod.spec.epic.md`, `prod.spec.issue.md`; para implementar, o fluxo `/eng.start`).
-
-## Regras do framework
-
-O comando e o agente seguem obrigatoriamente `$PROD_RULES` (`prod-rules.md`):
-
-- Validar o `$IDE/ENV.md` antes de começar (se estiver ausente ou incompleto, aplicar o fluxo do `prod-rules.md`)
-- Idioma: português do Brasil por padrão, ou o idioma da interação do usuário
-- Perguntas: use o `AskUserQuestion` se estiver disponível; senão, o formato de tabela do `prod-rules.md`. **Uma pergunta por vez**
-- Confirmar com o usuário o caminho e o nome antes de salvar arquivo
+**Não é** PRD, FRD, épico, issue, histórias, critérios de aceitação, estimativa nem código. Pedido disso: diga que é outra etapa e indique o comando (`/prod.spec.prd`, `frd`, `epic`, `issue`; para implementar, `/eng.start`).
 
 ### Skills invocados durante o workflow
 
 | Passo | Skill | Condição |
 |-------|-------|----------|
-| Regras do framework / Passo 4 — A entrevista | `prod.discovery-interviewer` (agente) | Sempre — conduz a entrevista, e o comando segue a postura dele |
-| Passo 2 — Reconhecer o projeto | `/jarvis-docs-central` | Se `CENTRAL_DOCS_STORAGE` estiver configurado |
-| Passo 2 — Reconhecer o projeto | `/jarvis-context-detect` | Para calibrar a profundidade da entrevista |
-| Passo 2 — Reconhecer o projeto | `/eng-backend-arch-c4` | Só com a confirmação do usuário; o retorno é tratado como suposição a validar |
-| Passo 2 — Reconhecer o projeto | `/eng-platform` + `PLATFORM_SPECIALIZATIONS` | Só com a confirmação do usuário; o retorno é tratado como suposição a validar |
+| Passo 1 — Ler em silêncio | `prod.discovery-interviewer` (agente) | Sempre — a postura da entrevista |
+| Passo 1 — Ler em silêncio | `/jarvis-docs-central` | Se `CENTRAL_DOCS_STORAGE` estiver configurado (o que já foi implementado) |
+| Passo 1 — Ler em silêncio | `/eng-backend-arch-c4` | Só com a confirmação do usuário; o retorno é suposição a validar |
+| Passo 1 — Ler em silêncio | `/eng-platform` + `PLATFORM_SPECIALIZATIONS` | Só com a confirmação do usuário; o retorno é suposição a validar |
 
-## Passo 0 — Entender o que foi pedido
+## Passo 0 — Entrada
 
-1. **Sem `$ARGUMENTS`:** pergunte qual é a ideia antes de qualquer outra coisa.
-2. **Com `$ARGUMENTS` apontando um discovery existente** (caminho ou nome): vá para a **Retomada** (Passo 1).
-3. **Com uma ideia em `$ARGUMENTS`:** use esse texto como ponto de partida e **não repita perguntas** cuja resposta já está nele. Antes de criar um arquivo novo, procure em `$PROD_DOCS/discoveries/` um discovery **parecido** (leia só o título e a seção Ideia). Se achar, avise e pergunte se o usuário quer retomar aquele ou começar um novo, sem sobrescrever nada em silêncio.
-4. Se já existir PRD ou FRD em `$PROD_DOCS` que cubra a ideia, avise qual é e pergunte se o usuário quer seguir com o discovery (por exemplo, para reavaliar) ou ir para `$PROD_FLOWS/prod.spec.clarify.md`.
+Sem ideia: pergunte qual é, antes de tudo. Caminho, nome ou id de um discovery existente: vá para a **Retomada**. Uma ideia: siga para o Passo 1.
 
-## Passo 1 — Retomada de um discovery existente
+## Passo 1 — Ler em silêncio
 
-1. Leia o arquivo inteiro.
-2. **Resuma onde parou:** temas cobertos, hipóteses de importância alta e certeza baixa, perguntas em aberto e o histórico das sessões.
-3. Continue a entrevista pelos **temas incompletos** e pelas **perguntas em aberto**, sem repetir o que já foi respondido.
-4. Acrescente uma linha ao **Histórico das sessões** e atualize `updated_at` e `last_editor`.
-5. Se o discovery está `cancelled` ou com `verdict: do_not_proceed`, avise o motivo registrado e só reabra com confirmação do usuário.
+Antes de perguntar qualquer coisa, leia: o `$ARGUMENTS`; em `$PROD_DOCS`, os PRD/FRD que já cobrem a ideia e os discoveries parecidos (só título e Entendimento/Ideia); o código e os commits, se ajudarem a viabilidade; o Central docs, se configurado. Não repita perguntas cuja resposta já está em algum desses.
 
-## Passo 2 — Reconhecer o projeto
+## Passo 2 — Entendimento (uma confirmação)
 
-Antes de perguntar, consulte o que já existe:
+Mostre **"O que entendi"** e peça **uma** confirmação:
 
-- Documentos em `$PROD_DOCS` (PRDs, FRDs e discoveries), para não duplicar o que já está especificado
-- O código e os últimos commits, quando ajudarem a embasar a viabilidade
-- `jarvis-docs-central`, se `CENTRAL_DOCS_STORAGE` estiver configurado
-- `jarvis-context-detect`, para calibrar a profundidade da entrevista
-- `eng-backend-arch-c4` e `eng-platform` (+ `PLATFORM_SPECIALIZATIONS`) são skills de engenharia: só consulte **com a confirmação do usuário**, e trate o retorno como **suposição a validar**, não como fato
+- **Dito por você** | **Suposição minha** (com a origem) | **Lacuna** (marque as críticas: mudam o veredito)
+- **Tamanho** e orçamento de perguntas:
 
-## Passo 3 — Criar o arquivo
+  | `size` | Quando | Perguntas | Próximo passo típico |
+  |---|---|---|---|
+  | `small` | Trabalho pequeno e já claro | 0–2 | `/prod.spec.issue` |
+  | `bounded` | Funcionalidade delimitada num produto existente | até 5 | `/prod.spec.frd` |
+  | `broad` | Ideia ampla, com várias entregas | até 8 | `/prod.spec.prd` e depois `/prod.spec.breakdown` |
 
-Crie o arquivo **logo no início** da entrevista, para que uma conversa interrompida possa ser retomada:
+- **Arquivo:** `discovery-{id}-{nome}.md` (id = maior número da pasta + 1, 3 dígitos; nome em kebab-case, sem acentos). Pasta inexistente: crie e comece no `001`.
+- **Avisos:** PRD/FRD que já cobre a ideia (sugira `/prod.spec.clarify`); discovery parecido.
 
-1. **Pasta:** `$PROD_DOCS/discoveries/`. Se não existir, crie-a e comece no `001`, confirmando o caminho com o usuário.
-2. **Id:** sequencial, pela listagem dos arquivos `discovery-*.md` da pasta (maior número + 1, com 3 dígitos).
-3. **Nome:** `{nome}` em kebab-case, sem acentos, derivado da ideia. Proponha e peça a confirmação do usuário.
-4. **Arquivo:** `$PROD_DOCS/discoveries/discovery-{id}-{nome}.md`, pelo template, com `status: in_review` e `verdict` vazio.
-5. **Metadados:** `created_at`, `updated_at`, `created_by` e `last_editor` (do `ENV.md`: `USER`).
+`AskUserQuestion`: **Confirmar (Recomendada)** | **Corrigir** | **Retomar o parecido** (só se houver). Ao confirmar, crie o arquivo pelo template (`status: in_review`, `verdict` vazio, `size`, datas, `created_by`/`last_editor` = `USER`) com o Entendimento e o Problema já preenchidos.
 
-## Passo 4 — A entrevista
+## Passo 3 — Perguntas de alto impacto
 
-Conduza como o agente `prod.discovery-interviewer`:
+- Pergunte **só lacunas que mudam o veredito**, da mais para a menos impactante. Nada de roteiro fixo.
+- Cada pergunta, com `AskUserQuestion`: **"Pergunta N de até M"**, **Por que importa** (uma frase), opções com a **(Recomendada)** primeiro e o motivo da recomendação.
+- **"Não sei"**: registre como lacuna e siga, sem repetir.
+- **Default razoável** (formato, padrão de mercado, comportamento comum): não pergunte; registre como **suposição explícita**.
+- Peça evidência ou aponte contradição **só** quando a resposta mudar o veredito.
+- **Teto atingido:** `AskUserQuestion` **Encerrar (Recomendada)** | **Mais perguntas**.
+- Atualize o arquivo ao fim do bloco (Entendimento, Problema, `updated_at`).
 
-1. Explique em poucas linhas que vai entrevistar, quais temas serão cobertos (ideia, problema, requisitos, viabilidade) e que o usuário pode responder "não sei" a qualquer momento.
-2. **Uma pergunta por vez.** Se o usuário não responde ou diz "não sei", não repita a pergunta: registre "não informado" e siga.
-3. Trate o roteiro abaixo como **perguntas-semente**, não como lista fixa: adapte a próxima pergunta ao que já foi respondido e priorize as de maior impacto na decisão de seguir ou não.
-4. **Aprofunde** respostas rasas ("por quê?", "para quem?", "com que frequência?", "me dá um exemplo real", "o que acontece hoje?"). Diante de uma afirmação sem evidência ("todo mundo quer"), pergunte qual é a evidência e registre se é dado, observação ou suposição.
-5. **Aponte contradições**, entre respostas ou com o que foi encontrado no projeto, e peça que o usuário resolva.
-6. **Levante o que o usuário provavelmente não considerou**: quem mais é impactado, custo de manutenção, o que acontece se der errado, a alternativa mais simples.
-7. Ao cobrir um tema, **resuma** o que entendeu e peça confirmação antes de seguir. Em seguida, **atualize o arquivo** (Passo 5).
+## Passo 4 — Abordagens
 
-### Temas e perguntas-semente
+Proponha **2–3** abordagens, sempre com **a menor coisa que funciona** e **não fazer / usar algo existente**, com prós, contras, riscos e dependências. Indique a **recomendada** e peça a confirmação numa pergunta (Concordo (Recomendada) | Prefiro outra | Ajustar).
 
-| Tema | Perguntas-semente |
-|---|---|
-| **Ideia** | O que é, em uma frase? Para quem? |
-| **Problema** | Qual é o problema (sem falar de solução)? Quem sofre com ele e em que situação? Como se resolve hoje? Que evidência existe? Por que agora? Como saberemos que funcionou? |
-| **Hipóteses** | O que precisaria ser verdade para isso funcionar? Quais dessas coisas você tem certeza e quais são palpite? Como confirmaríamos cada uma? |
-| **Viabilidade** | Valor: alguém vai querer e usar? Usabilidade: as pessoas conseguem usar? Técnica: o que já existe no projeto ajuda ou atrapalha? Negócio: custo, prazo e risco fazem sentido? |
-| **Alternativas e riscos** | E se não fizéssemos nada? Existe algo pronto que resolva? O que pode dar errado? Do que isso depende? |
+## Passo 5 — Scorecard, veredito e próximo passo
 
-## Passo 5 — Manter o arquivo
+1. **Scorecard:** Valor, Usabilidade, Técnica e Negócio → `forte`, `adequado`, `fraco` ou `desconhecido`, com uma linha de justificativa.
+2. **Veredito** (recomendação, não aprovação): `proceed` (sem lacuna crítica) · `investigate_more` (lacuna crítica aberta ou lente crítica `desconhecido`) · `do_not_proceed` (motivo; `status: cancelled`).
+3. **Próximo passo**, sempre, com o **comando pronto com o id** (ex.: `/prod.spec.frd discovery-002`). **Nunca** o execute: o usuário pode escolher outro caminho ou parar. Pelo tamanho (tabela do Passo 2); `investigate_more` → retomar este discovery pelas lacunas; lacuna crítica técnica → `/eng.light-arch` ou `/eng.create-rfc` (só sugerir); `do_not_proceed` → arquivar, mantendo o registro.
 
-- Ao fim de **cada tema**, atualize as seções correspondentes do arquivo e o `updated_at`.
-- Registre cada sessão no **Histórico das sessões** (data e o que foi coberto).
-- Na tabela de **Hipóteses**, registre sempre a **origem** (dado, observação do usuário ou suposição).
-- **Nunca** grave credenciais, tokens nem dados pessoais de clientes: o arquivo é versionado.
-- Uma entrevista interrompida deixa o arquivo com `status: in_review` e `verdict` vazio, com os temas já cobertos.
+4. Linha no **Histórico** (data, "N de até M" perguntas, lacunas pendentes).
 
-## Passo 6 — Não chute (regra inviolável)
+## Retomada
 
-- Quando faltar uma informação (público, volume, custo, prazo, restrição técnica, comportamento de usuários, estado atual do código), **não presuma**: pergunte, busque no projeto ou registre como **lacuna**.
-- Todo fato citado indica a origem (resposta do usuário, arquivo do projeto ou documentação consultada). O que não tem origem entra como **suposição a validar**.
-- Se o usuário pedir "preencha o que faltar" ou "assuma o padrão", registre o item como **suposição explícita**, nunca como fato, e não a use para sustentar o veredito.
-- Quando a viabilidade técnica depender de bibliotecas, APIs ou serviços, consulte a documentação atual (por exemplo, Context7), não a memória.
-- Uma **lacuna crítica nunca** resulta em `proceed`.
+1. Leia o arquivo **inteiro** e resuma onde parou: lacunas abertas, perguntas já usadas, veredito.
+2. `cancelled` ou `do_not_proceed`: mostre o motivo e só reabra com confirmação.
+3. **Formato antigo** (tem as seções "Hipóteses" ou "Perguntas em aberto"): converta para o template novo **no mesmo caminho** (mesmo id e nome, para os `related_discovery` continuarem válidos) e avise em uma linha. Mapeamento: Ideia → Entendimento (frase); Hipóteses → suposições (com a origem); Perguntas em aberto → lacunas; Alternativas e riscos → Abordagens; Viabilidade → Scorecard (alto/médio/baixo → forte/adequado/fraco); Histórico das sessões → Histórico. Defina o `size` no Entendimento.
+4. Siga pelo Passo 3 com o orçamento restante, depois os Passos 4 e 5.
 
-## Passo 7 — Encerrar
+## Não chute (regra inviolável)
 
-1. Quando achar que tem informação suficiente, **proponha encerrar** e pergunte se o usuário quer acrescentar algo.
-2. Complete o documento: viabilidade por lente (sinal alto, médio ou baixo, com justificativa), alternativas e riscos, perguntas em aberto e o histórico.
-3. **Veredito** (em `verdict`), sempre como **recomendação**, nunca como aprovação:
-   - `proceed`: vale especificar; sem lacuna crítica aberta
-   - `investigate_more`: há lacuna crítica; liste o que falta
-   - `do_not_proceed`: informe o motivo; mude o `status` para `cancelled`
-4. **Próximo passo sugerido**, **sempre**, qualquer que seja o veredito (comando recomendado, motivo e, se houver, alternativa). É **só uma sugestão**: mostre o **comando pronto com o id deste discovery** (por exemplo `/prod.spec.prd discovery-002`) para o usuário usá-lo como insumo, **nunca execute o comando sozinho**, e deixe claro que o usuário pode escolher outro caminho ou parar ali.
-
-### Mapa de escolha do próximo passo
-
-| O que o discovery revelou | Próximo passo sugerido |
-|---|---|
-| Ideia ampla, com várias entregas | `/prod.spec.prd` e depois `/prod.spec.breakdown` |
-| Funcionalidade delimitada dentro de um produto existente | `/prod.spec.frd` |
-| Trabalho pequeno e já claro | `/prod.spec.issue` |
-| Lacunas críticas ou veredito `investigate_more` | Retomar este discovery, com as perguntas em aberto |
-| Lacuna crítica na viabilidade técnica | Investigação técnica no fluxo de engenharia (`/eng.light-arch` ou `/eng.create-rfc`), sugerida sem acioná-la |
-| Veredito `do_not_proceed` | Arquivar a ideia, mantendo o registro |
+- Faltou informação (público, volume, custo, prazo, restrição técnica, estado do código): pergunte, busque no projeto ou registre como **lacuna**. Nunca complete com "o que costuma ser".
+- Todo fato tem origem (usuário, arquivo do projeto ou documentação). Sem origem, é **suposição**.
+- "Preencha o que faltar" ou "assuma o padrão": registre como **suposição explícita**; ela nunca sustenta o veredito.
+- Bibliotecas, APIs e serviços: consulte a documentação atual (`context7`, se o MCP estiver disponível), não a memória.
+- **Lacuna crítica nunca dá `proceed`.** Nunca grave credenciais, tokens nem dados pessoais de clientes.
 
 ## Casos extremos
 
 | Situação | O que fazer |
 |---|---|
-| Ideia vaga demais ("melhorar o sistema") | Peça um recorte mínimo (quem, qual dor, em qual fluxo); se o usuário não conseguir, o veredito é `investigate_more` |
-| Ideia grande demais (várias funcionalidades) | Sinalize no documento e recomende, no próximo passo, a decomposição (`/prod.spec.prd` e `/prod.spec.breakdown`) ou separar em discoveries menores, sem forçar |
-| Viabilidade técnica depende de conhecimento que você não tem | Registre como lacuna nas perguntas em aberto, indicando quem pode responder, sem afirmar viabilidade |
-| Pasta `discoveries/` inexistente | Crie a pasta e o arquivo `001`, confirmando o caminho |
-| Ideia já coberta por PRD ou FRD existente | Avise qual documento cobre e pergunte como seguir |
-| Discovery com `do_not_proceed` | Mantenha o arquivo como registro da decisão |
-
-## Limites
-
-- Pedido de PRD, FRD, épico ou issue: indique o comando correto, sem gerar o documento
-- Pedido de tarefas, histórias, critérios de aceitação ou estimativas: recuse, por ser outra etapa
-- Pedido de implementação: recuse; o discovery só investiga e não escreve código
-- A entrevista é sempre com o usuário que executou o comando (não entrevista terceiros)
+| Ideia vaga ("melhorar o sistema") | Peça um recorte mínimo (quem, qual dor, em qual fluxo); sem recorte, `investigate_more` |
+| Ideia grande demais | `size: broad`; sugira `/prod.spec.prd` + `/prod.spec.breakdown` ou discoveries menores |
+| Viabilidade técnica fora do seu conhecimento | Lacuna crítica, com quem pode responder; não afirme viabilidade |
+| Entrevista interrompida | O arquivo fica `in_review`, `verdict` vazio; a Retomada continua dali. A entrevista é só com quem executou o comando |
