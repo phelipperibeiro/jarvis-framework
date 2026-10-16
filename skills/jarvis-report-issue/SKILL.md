@@ -1,22 +1,35 @@
 ---
 name: jarvis-report-issue
-description: Reporta um bug no próprio framework Jarvis. A IA reflete sobre qual artefato (skill/workflow/rule) causou o erro, monta o report e abre um issue no repo do Jarvis (GitLab, GitHub ou Bitbucket, conforme VERSION_CONTROL).
-argument-hint: "[descrição opcional do problema]"
+description: Reporta um bug ou propõe uma melhoria no próprio framework Jarvis. Classifica o report (bug ou melhoria), monta o issue no formato do tipo e o abre no repo do Jarvis (GitLab, GitHub ou Bitbucket, conforme VERSION_CONTROL), com a label certa.
+argument-hint: "[descrição opcional do problema ou da melhoria]"
 disable-model-invocation: false
 allowed-tools: Read Bash Grep Glob
 license: AGPL-3.0
 metadata:
   author: jarvis-team
-  version: "1.0"
+  version: "1.1"
   area: global
 ---
 
-# jarvis-report-issue — Auto-report de bug no Framework Jarvis
+# jarvis-report-issue — Bug ou melhoria no Framework Jarvis
 
-Você é a IA que acabou de cometer ou identificar um erro causado por uma instrução do Jarvis.
-Sua tarefa é: **refletir sobre o que falhou no framework, montar o report e abrir o issue no repositório do Jarvis**.
+Você abre um issue no repositório do Jarvis: um **bug** (uma instrução do Jarvis induziu um erro) ou uma **melhoria** (funcionalidade nova ou mudança de comportamento pedida pelo usuário).
 
 O usuário não precisa preencher nada — você é o autor do report.
+
+---
+
+## Fase 0 — Classificar (obrigatória)
+
+| Tipo | Quando | Título | Label |
+|---|---|---|---|
+| **Bug** | Um skill, workflow ou rule do Jarvis induziu um erro (algo saiu diferente do que o framework promete) | `[BUG] {artefato}: {descrição curta}` | `bug` |
+| **Melhoria** | Funcionalidade nova, mudança de comportamento ou proposta de evolução | `[MELHORIA] {artefato}: {descrição curta}` | `enhancement` |
+
+Na dúvida, pergunte com `AskUserQuestion`: **"É um bug (algo do Jarvis induziu um erro) ou uma melhoria?"**, com a sua sugestão primeiro, marcada "(Recomendada)".
+
+- **Bug:** siga as Fases 1 e 2 como estão.
+- **Melhoria:** pule a Fase 1 (reflexão sobre o erro) e use o formato da Fase 2-M.
 
 ---
 
@@ -86,6 +99,45 @@ Com `ARTIFACT_STYLE=human-generated`, troque a linha por `- **Reportado por:** {
 
 ---
 
+## Fase 2-M — Montar a melhoria
+
+**Título:** `[MELHORIA] {artefato}: {descrição curta em até 80 chars}`
+
+**Corpo** (issue autossuficiente, executável sem reconstruir a conversa):
+
+```markdown
+## Contexto
+{por que a mudança importa; situação atual, com arquivos e linhas medidos}
+
+## Problema
+{o que falta ou atrapalha hoje}
+
+## Objetivo
+{o resultado esperado, em itens verificáveis}
+
+## Escopo
+**Alterar:** {arquivos e o que muda em cada um}
+**Não alterar:** {o que fica de fora}
+
+## Decisões
+{as escolhas já feitas com o usuário; o que ficou em aberto vai para "Questões em aberto", com a sugestão}
+
+## Critérios de aceite
+{comandos ou buscas verificáveis}
+
+## Entrega
+{branch base, destino do PR, `Closes #N`, idioma}
+
+## Contexto de execução
+- **Artefatos:** {caminhos}
+- **Versão do Jarvis:** {package.json → version}
+- **Reportado por:** IA, a partir do pedido do usuário
+```
+
+Antes de abrir, se o pedido tiver pontos em conflito com as regras atuais ou ambíguos, pergunte ao usuário (uma pergunta por ponto) e registre as respostas em "Decisões".
+
+---
+
 ## Fase 3 — Credenciais e repo
 
 Ler do `$IDE/ENV.md`:
@@ -119,7 +171,8 @@ REPO=$(grep -E '^(JARVIS_PROJECT|JARVIS_GITLAB_PROJECT)=' $IDE/ENV.md | tail -1 
 jarvis vcs create-issue \
   --repo "$REPO" \
   --title "$ISSUE_TITLE" \
-  --body-file "$BODY_FILE"
+  --body-file "$BODY_FILE" \
+  --label "$LABEL"   # bug (Bug) ou enhancement (Melhoria), pela Fase 0
 
 rm -f "$BODY_FILE"
 ```
@@ -159,7 +212,7 @@ Verifique token (GitLab .npmrc / gh auth / BITBUCKET_TOKEN) e JARVIS_PROJECT.
 ## Regras
 
 - **Nunca** pedir ao usuário que preencha o report — a IA preenche tudo
-- **Nunca** abrir issue sem completar a Fase 1 (reflexão obrigatória)
+- **Nunca** abrir issue sem a Fase 0 (classificação); num bug, sem a Fase 1 (reflexão)
 - **Nunca** hardcodar o repo ou token — sempre ler `JARVIS_PROJECT` do ENV.md; o adapter resolve o vendor
-- **Sempre** usar label `bug` — sem exceções
+- **Sempre** usar a label do tipo: `bug` para bug, `enhancement` para melhoria (no Bitbucket, o adapter grava como `kind`)
 - **Sempre** limpar arquivos temporários após o curl

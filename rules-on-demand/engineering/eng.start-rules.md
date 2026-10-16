@@ -42,7 +42,7 @@ O workflow **só é considerado completo** após:
 
 1. O `architecture.md` estar preenchido
 2. O usuário revisar o documento
-3. O usuário **aprovar explicitamente** para prosseguir
+3. O usuário **aprovar explicitamente** para prosseguir — sem Advisor, pela pergunta de transição "Aprovar o architecture.md?" (`eng.transitions-rules.md`)
 
 **Exceção (Advisor):** se o usuário escolheu usar o Advisor no início do `eng.start`, as questões em aberto são decididas pela sugestão dele e o gate segue a autonomia do `context.md`: com `autonomia: alta` o `start` apresenta o resumo e segue para o `eng.plan` sem aguardar; com `média` ou `baixa`, a aprovação explícita continua obrigatória.
 
@@ -92,7 +92,7 @@ O workflow **só é considerado completo** após:
 7. **Aguardar aprovação**
    - Se aprovado → Informar próximos passos
    - Se rejeitado → Iterar no documento
-   - NUNCA prosseguir automaticamente
+   - NUNCA prosseguir sem a resposta: "Aprovar e seguir para o `/eng.plan`" (pergunta de transição, `eng.transitions-rules.md`) é a aprovação para seguir; a exceção do Advisor continua valendo
 
 ---
 

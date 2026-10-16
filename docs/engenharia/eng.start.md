@@ -34,6 +34,12 @@ Além do documento, ele prepara o ambiente: pergunta **de qual branch partir** (
 7. **Apresenta e itera** até você aprovar de forma explícita (com Advisor e autonomia alta no CDD, apresenta o resumo e segue para o `eng.plan`)
 8. Lembra você de mover o card para "Em progresso" (quando há board)
 
+## Perguntas que ele faz
+
+- **Sem Advisor, no início:** "Como tratar as questões em aberto que surgirem?" → **Tratar no architecture.md (como hoje)**, para você responder ao revisar o documento, ou **Uma a uma, assim que surgirem**, para responder na hora.
+- **Sem Advisor, no fim:** "Aprovar o architecture.md?" → **Aprovar e parar aqui (como hoje)**, **Aprovar e seguir para o `/eng.plan`** ou **Ajustar o documento**. A resposta já é a sua aprovação.
+- **Com Advisor:** nada muda; o Advisor decide as questões e o fim segue a autonomia, como antes.
+
 ## Regras que importam
 
 - **Só planejamento:** não escreve código, não executa, não commita

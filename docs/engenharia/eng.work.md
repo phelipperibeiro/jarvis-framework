@@ -40,6 +40,18 @@ O comando respeita `MAX_AI_EXECUTION_PERCENTAGE` do `ENV.md` (padrão 80, mínim
 
 Exemplo: plano com 10 tarefas e `MAX=80` → a IA executa 8 e para.
 
+## Perguntas que ele faz
+
+No início, três perguntas (a primeira opção de cada é o fluxo de sempre); as respostas ficam no cabeçalho do `plan.md`, e numa retomada ele só pergunta se você mantém:
+
+| Pergunta | Opções |
+|---|---|
+| Execução | Fase a fase, com aprovação (como hoje) · Todas de uma vez ("N de M tarefas", pelo limite da IA) |
+| Commits | Um por fase (como hoje) · Um commit só ao final |
+| Depois do work | Sugerir o `/eng.pre-pr` (como hoje) · Rodar o `/eng.pre-pr` na sequência · Ir direto para o `/eng.pr` · Parar aqui |
+
+Em qualquer escolha, ele para no limite da IA, com um teste falhando ou diante de uma questão nova.
+
 ## Regras que importam
 
 - **Não faz push nem abre PR** (isso é do `eng.pr`)

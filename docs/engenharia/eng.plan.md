@@ -50,6 +50,10 @@ Todos os status começam como não iniciados (⏳). Ao longo do `eng.work` eles 
 Por cargo: `JUNIOR`/`PLENO` recebem mais detalhe e mais checkpoints; `SENIOR` e acima, fases maiores.
 Por `MAX_AI_EXECUTION_PERCENTAGE`: de 80% para cima, plano completo validado no final; de 70 a 79%, primeiro um resumo e o detalhe depois da aprovação; de 60 a 69%, cada fase é aprovada antes de ser detalhada.
 
+## Perguntas que ele faz
+
+- **No fim:** "Aprovar o plan.md?" → **Aprovar e parar aqui (como hoje)**, **Aprovar e seguir para o `/eng.work`** ou **Ajustar o plano**. A resposta já é a sua aprovação.
+
 ## Regras que importam
 
 - **Só planejamento:** não escreve código, não altera arquivos do projeto, não roda build nem testes

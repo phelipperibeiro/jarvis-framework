@@ -73,13 +73,15 @@ O `work` é **estritamente proibido** de:
 | Fazer `git push`                                   | Escrever código                                           |
 | Criar Pull Requests                                | Criar/modificar arquivos de código                        |
 | Usar `git add .`                                   | `git add` de arquivos específicos da fase                 |
-| Commitar sem aprovação do usuário na fase          | Commitar ao final da fase validada, com testes passando   |
+| Commitar sem aprovação do usuário na fase          | Commitar ao final da fase validada (ou ao final, com "Um commit só"), com testes passando |
 | Commitar com testes falhando                       | Executar testes locais                                    |
 | Mover cards no Jira                                | Ler arquivos da sessão                                    |
 | Fazer merge de branches                            | Atualizar `plan.md` com progresso                         |
 | Sugerir "vamos fazer o PR agora"                   | Validar código com o usuário                              |
 
 O commit segue o formato do workflow (`{TASK_MANAGER_KEY} {tipo}({escopo}): {descrição}`, com `Refs:`). Push e PR são responsabilidade do `eng.pr`.
+
+**Escolhas do início** (`eng.transitions-rules.md`, Fase 1.3 do workflow): execução, commits e o que vem depois. Com "Todas de uma vez", a escolha é a aprovação das fases; com "Um commit só ao final", o commit é um só, depois da última fase; com "Ir direto para o `/eng.pr`", o work termina chamando o `/eng.pr` (que faz o push e o PR, não o work).
 
 ### 2. Escopo de Atuação
 
@@ -222,11 +224,13 @@ Ao concluir uma fase, adicione na seção `### Comentários:`:
 
 ### Pontos de Pausa Obrigatórios
 
-O workflow **DEVE pausar e aguardar confirmação**:
+Com **"Fase a fase, com aprovação (como hoje)"**, o workflow **DEVE pausar e aguardar confirmação**:
 
 1. ✋ **Antes de iniciar qualquer fase**
 2. ✋ **Após completar implementação** (antes de atualizar plan.md)
 3. ✋ **Antes de iniciar próxima fase**
+
+Com **"Todas de uma vez"**, essas pausas não acontecem. **Em qualquer escolha**, o workflow para no limite do `MAX_AI_EXECUTION_PERCENTAGE`, com um teste falhando e diante de uma questão nova em aberto.
 
 ### Comunicação
 
@@ -291,9 +295,11 @@ Ao finalizar **TODAS as fases** do `plan.md`, informe:
 2. Execute os testes completos
 3. Quando estiver pronto, use `eng.pr` para criar o Pull Request
 
-⚠️ Este workflow commita por fase, mas NÃO faz push nem PR.
+⚠️ Este workflow commita (por fase ou ao final), mas NÃO faz push nem PR.
    Use `eng.pr` quando estiver pronto para submeter.
 ```
+
+Depois, siga a escolha **Depois do work** da Fase 1.3 (sugerir o `/eng.pre-pr`, chamá-lo, chamar o `/eng.pr` ou parar).
 
 ---
 

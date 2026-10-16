@@ -15,6 +15,7 @@ Este comando inicia o **planejamento** de uma nova feature.
 
 > 📋 **Rules**: `$IDE/rules-on-demand/engineering/eng.start-rules.md` — **antes de começar, leia esse arquivo e siga-o**: ele não é carregado automaticamente no início da sessão.
 > 📤 **Template**: `$IDE/templates/engineering/architecture-template.md`
+> 🔀 **Transições**: `$IDE/rules-on-demand/engineering/eng.transitions-rules.md` — perguntas de início e de fim deste comando (a opção padrão mantém o fluxo de sempre).
 
 > ⚠️ **IMPORTANTE**: Este workflow é APENAS para planejamento e documentação.
 > **NÃO execute código, NÃO crie arquivos de código, NÃO faça commits.**
@@ -129,7 +130,11 @@ Se `$SESSIONS_DIR/warm-ups/` tiver aquecimentos, leia `$IDE/rules-on-demand/warm
 
 ## Fase 0.5: Advisor (opcional)
 
-Logo depois de obter o `TASK_MANAGER_KEY`, pergunte com `AskUserQuestion` (sem a ferramenta, use a tabela de `prod-rules.md`): **"Usar o Advisor nas questões em aberto desta tarefa?"** (**Não**, padrão / **Sim**). Com **Não**, siga como sempre e não mencione mais o Advisor.
+Logo depois de obter o `TASK_MANAGER_KEY`, pergunte com `AskUserQuestion` (sem a ferramenta, use a tabela de `prod-rules.md`): **"Usar o Advisor nas questões em aberto desta tarefa?"** (**Não**, padrão / **Sim**). Com **Não**, siga como sempre e não mencione mais o Advisor. Em seguida (só sem Advisor), pergunte **"Como tratar as questões em aberto que surgirem?"**:
+- **Tratar no architecture.md (como hoje):** as questões vão para a seção 8 e você as responde ao revisar o documento.
+- **Uma a uma, assim que surgirem:** cada questão encontrada nas Fases 2 e 3 é perguntada na hora com `AskUserQuestion` (contexto em uma frase, opções e a sugestão marcada "(Recomendada)"), e entra na seção 8 já respondida.
+
+Registre a escolha no cabeçalho do `architecture.md` (`Questões em aberto:`).
 
 Com **Sim**, pergunte **"Qual modelo para o Advisor?"** com os itens de `ADVISOR_MODELS` do `ENV.md` (até 4 opções; o resto em "Outro"). Lista vazia ou ausente: use `Sonnet 5.5` sem perguntar; lista de um item: use-o sem perguntar. Traduza o nome pela família (primeira palavra em minúsculas: `sonnet`, `opus`, `fable`, `haiku`); se o modelo não for aceito pela IDE, use `sonnet` e avise em uma linha. Se a IDE não permitir escolher o modelo do subagente, avise e não faça a segunda pergunta.
 
@@ -394,7 +399,7 @@ Levante na seção 8 **tudo** que for diferente do código ou ambíguo no card, 
 3. Preencha "Sugestão do Sub-Agent (Advisor)", **"Decisão adotada" (a sugestão do Advisor, que prevalece; não a substitua nem a conteste)**, "Divergência" e "Impacto da decisão". Confira no código os fatos em que a sugestão se apoia antes de registrar.
 4. Poste **um** comentário de auditoria na issue com `/eng-global-task-comment`, no modelo do template (freelance pula).
 
-**Sem Advisor:** apresente as questões ao usuário, como sempre.
+**Sem Advisor:** com "Tratar no architecture.md (como hoje)", apresente as questões ao usuário, como sempre; com "Uma a uma", elas já foram respondidas ao surgir (registre as respostas e escreva só as que surgirem na escrita do documento).
 
 ---
 
@@ -417,6 +422,7 @@ Se o usuário tiver feedback:
 - Apresente novamente
 - Continue até aprovação explícita
 
+**Sem Advisor**, a aprovação é a pergunta de transição (`eng.transitions-rules.md`): **"Aprovar o architecture.md?"** → **Aprovar e parar aqui (como hoje)** / **Aprovar e seguir para o `/eng.plan`** / **Ajustar o documento**. Com "seguir", chame o `/eng.plan {TASK_MANAGER_KEY}` (ou mostre o comando).
 **Com Advisor**, o gate segue a autonomia do `context.md` (CDD): `alta` → apresente o resumo e siga para o `eng.plan` sem aguardar; `média` ou `baixa` → aguarde a aprovação explícita. Sem `context.md`, use a tabela "Autonomia por POSITION" de `eng-rules.md`. Sem Advisor, nada muda.
 
 ### 5.3 Atualizar Board

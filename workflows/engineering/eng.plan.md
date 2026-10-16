@@ -14,6 +14,7 @@ model_justification: Planejamento detalhado requer decomposição de tarefas com
 Este workflow cria um **plano de execução detalhado e faseado** para implementar a feature de forma incremental.
 
 > 📋 **Rules**: `$IDE/rules-on-demand/engineering/eng.plan-rules.md` — **antes de começar, leia esse arquivo e siga-o**: ele não é carregado automaticamente no início da sessão.
+> 🔀 **Transições**: `$IDE/rules-on-demand/engineering/eng.transitions-rules.md` — perguntas de início e de fim deste comando (a opção padrão mantém o fluxo de sempre).
 
 ---
 
@@ -167,7 +168,7 @@ CONTEXT_PROFILE:
 1. **Apresentar** o plano ao humano
 2. **Discutir** ajustes necessários
 3. **Atualizar** `architecture.md` se houver mudanças arquiteturais
-4. **Confirmar** antes de prosseguir
+4. **Confirmar** antes de prosseguir, com a pergunta de transição (`eng.transitions-rules.md`): **"Aprovar o plan.md?"** → **Aprovar e parar aqui (como hoje)** / **Aprovar e seguir para o `/eng.work`** / **Ajustar o plano**. Com "seguir", chame o `/eng.work {TASK_MANAGER_KEY}` (ou mostre o comando)
 
 ---
 

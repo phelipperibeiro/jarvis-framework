@@ -21,6 +21,7 @@ import {
   parseRepoUrl,
   mergeRequestPath,
 } from "../bin/lib/vcs/api.js";
+import { parseLabels } from "../bin/lib/vcs/create-issue.js";
 
 // `await fn()` (não `return fn()`): o `finally` só pode restaurar a env var
 // depois que a promise resolver, senão uma função com mais de um `await`
@@ -220,4 +221,69 @@ test("createIssue: Bitbucket — POST em issues, retorna iid/url de links.html.h
   assert.equal(result.vendor, "bitbucket");
   assert.equal(result.iid, 3);
   assert.equal(result.url, "https://bitbucket.org/w/r/issues/3");
+});
+
+// --label (#161): padrão bug; GitHub/GitLab repassam; Bitbucket vira `kind`
+function captureFetch(json) {
+  const seen = [];
+  mock.method(globalThis, "fetch", async (url, init) => {
+    seen.push({ url: String(url), body: JSON.parse(init.body) });
+    return { ok: true, status: 201, text: async () => JSON.stringify(json) };
+  });
+  return seen;
+}
+
+test("createIssue: GitHub repassa as labels; sem labels = bug", async (t) => {
+  t.after(() => mock.reset());
+  const seen = captureFetch({ number: 9, html_url: "https://github.com/o/r/issues/9" });
+  await withEnv({ GITHUB_TOKEN: "fake-token" }, async () => {
+    await createIssue("https://github.com/o/r", { title: "t", body: "b", labels: ["enhancement"] });
+    await createIssue("https://github.com/o/r", { title: "t", body: "b" });
+  });
+  assert.deepEqual(seen[0].body.labels, ["enhancement"]);
+  assert.deepEqual(seen[1].body.labels, ["bug"]);
+});
+
+test("createIssue: GitLab junta as labels por vírgula", async (t) => {
+  t.after(() => mock.reset());
+  const seen = captureFetch({ iid: 4, web_url: "https://gitlab.com/g/r/-/issues/4" });
+  await withEnv({ GITLAB_TOKEN: "fake-token" }, () =>
+    createIssue("https://gitlab.com/g/r", {
+      title: "t",
+      body: "b",
+      labels: ["enhancement", "docs"],
+    })
+  );
+  assert.equal(seen[0].body.labels, "enhancement,docs");
+});
+
+test("createIssue: Bitbucket usa kind (tipo válido ou bug)", async (t) => {
+  t.after(() => mock.reset());
+  const seen = captureFetch({
+    id: 3,
+    links: { html: { href: "https://bitbucket.org/w/r/issues/3" } },
+  });
+  await withEnv({ BITBUCKET_TOKEN: "fake-token" }, async () => {
+    await createIssue("https://bitbucket.org/w/r", {
+      title: "t",
+      body: "b",
+      labels: ["enhancement"],
+    });
+    await createIssue("https://bitbucket.org/w/r", {
+      title: "t",
+      body: "b",
+      labels: ["documentation"],
+    });
+    await createIssue("https://bitbucket.org/w/r", { title: "t", body: "b" });
+  });
+  assert.deepEqual(
+    seen.map((s) => s.body.kind),
+    ["enhancement", "bug", "bug"]
+  );
+});
+
+test("parseLabels: vírgulas e espaços; vazio = padrão", () => {
+  assert.deepEqual(parseLabels(" enhancement , docs ,"), ["enhancement", "docs"]);
+  assert.equal(parseLabels(""), undefined);
+  assert.equal(parseLabels(undefined), undefined);
 });

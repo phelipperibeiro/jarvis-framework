@@ -108,6 +108,14 @@ export async function createMergeRequest(repoUrl, opts) {
   };
 }
 
+// Tipos de issue do Bitbucket (campo `kind`; ele não tem labels livres).
+const BITBUCKET_KINDS = ["bug", "enhancement", "proposal", "task"];
+
+/**
+ * @param {string} repoUrl
+ * @param {{ title: string, body: string, labels?: string[] }} opts - `labels` padrão: ["bug"].
+ *   No Bitbucket, a primeira label vira o `kind` quando é um tipo válido; senão, `bug`.
+ */
 export async function createIssue(repoUrl, opts) {
   const { title, body, labels = ["bug"] } = opts;
   const repo = parseRepoUrl(repoUrl);
@@ -149,7 +157,11 @@ export async function createIssue(repoUrl, opts) {
     {
       method: "POST",
       headers,
-      body: { title, content: { raw: body } },
+      body: {
+        title,
+        content: { raw: body },
+        kind: BITBUCKET_KINDS.includes(labels[0]) ? labels[0] : "bug",
+      },
     }
   );
   if (!ok || !json?.links?.html?.href) {
