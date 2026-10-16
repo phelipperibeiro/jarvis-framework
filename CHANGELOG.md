@@ -6,6 +6,22 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), e o
 
 > Versões anteriores a `2.1.1` não foram documentadas retroativamente neste changelog — o histórico detalhado dessas versões continua disponível via `git log`.
 
+## [5.4.0] - 2026-10-16
+
+### Added
+- **`ARTIFACT_STYLE=ai-generated | human-generated`** (#159): estilo dos artefatos, perguntado pelo `/jarvis-init` (Pergunta 9; `ai-generated` é o padrão e o `jarvis init --upgrade` o acrescenta em ENVs antigos). Com `human-generated`:
+  - **publicado pelo Jarvis** (commit, PR/MR, comentário no card, issue): sempre sem marcas de IA ou da IDE (`Co-Authored-By` de ferramenta, "Generated with …");
+  - **documento gerado** (PRD, FRD, épico, história, discovery, ARD, RFC, tech spec, Central docs e os documentos de sessão): grava o padrão e pergunta se você quer a versão humanizada, gravada ao lado como `{nome}.public.md`. No Central docs, ela fica na sessão e não é publicada.
+- **`rules/artifact-style-rules.md`** (#159): a rule do `human-generated` (o que é publicado, a pergunta e o checklist "sem marcas de IA"). Com `ai-generated`, ela nem existe na sessão.
+- **Eixo opcional `ARTIFACT_STYLE` no `Applies to`** (#159): 5º campo (`| ARTIFACT_STYLE: human-generated`); ausente = qualquer estilo. Sem coringa: FULLCYCLE e GENERALIST não o satisfazem. Vale no `bin/lib/core/profile-filter.js`, no Passo 8 do `/jarvis-init` e no `rules/AGENTS.md`.
+- **`jarvis tokens --artifact-style`** (#159): estima o que carrega com cada estilo (lido do ENV quando falta algum eixo).
+
+### Changed
+- **`/eng.pr`** (#159): com `human-generated`, a Fase 3.0 confere os commits ainda não enviados e o `pull-request.md` antes do push, e reescreve as mensagens sem modo interativo; commit já enviado com marca não é reescrito (avisa e para).
+- `eng-global-pr`, `eng-global-task-comment`, `jarvis-report-issue` e `eng.spec-consolidate` seguem o estilo (#159).
+- Índice do Central docs ignora `*.public.md` (#159).
+- `rules/AGENTS.md`: o filtro é o Passo 8 do `/jarvis-init` (o texto dizia Passo 9).
+
 ## [5.3.0] - 2026-10-16
 
 ### Added

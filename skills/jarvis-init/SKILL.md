@@ -192,6 +192,7 @@ Identificar qual IDE o usuário está utilizando:
 
 > No terminal, rode antes `jarvis init --upgrade --ide {ide}`: ele atualiza os arquivos do framework, acrescenta as variáveis novas e move os documentos para as pastas novas (itens 1–8, 10 a 12). Aqui ficam o Central docs antigo (item 9), as pendências que ele listar e o passo das stacks.
 > **O upgrade só acrescenta chaves novas:** nenhuma chave já existente, preenchida ou não, é alterada.
+> Trocou o `ARTIFACT_STYLE` (ou HUB, POSITION, AREA, SQUAD) à mão? O Passo 8 copia ou remove as rules desse perfil.
 
 1. Ler todas as chaves do `templates/ENV-template.md`
 2. Ler todas as chaves do `$IDE/ENV.md` existente
@@ -273,6 +274,7 @@ Fluxo correto:
 - **SQUAD** (do taxonomy) → mostrar em texto numerado
 - **POSITION** (do taxonomy) → mostrar em texto numerado
 - **PROD_MODE** (2 opções: product-led, developer-guided) → AskUserQuestion, sempre perguntado e sem opção sugerida
+- **ARTIFACT_STYLE** (2 opções: ai-generated, human-generated) → AskUserQuestion, `ai-generated` primeiro
 
 ```
 // Exemplo 1: HUB (5 opções) - MOSTRAR EM TEXTO
@@ -422,6 +424,15 @@ Como você quer que os comandos de produto (prod.*) e o eng.create-ard conduzam 
 
 *[Perguntar **sempre**, para qualquer `AREA` e qualquer `POSITION` (inclusive `GENERALIST` e PM). **Não** marcar nenhuma opção como recomendada nem sugerir padrão por área ou cargo. Gravar `PROD_MODE=product-led` ou `PROD_MODE=developer-guided`.]*
 
+```
+Pergunta 9 (opções fixas - 2 opções - usar AskUserQuestion) — ARTIFACT_STYLE:
+Qual o estilo dos artefatos que o Jarvis gera (commits, PRs, comentários e documentos)?
+- AI-Generated (padrão): como hoje, com metadados, links de rastreabilidade e padrões da ferramenta.
+- Human-Generated: nada do que é publicado (commit, PR, comentário no card, issue) leva marca de IA; e todo documento gerado oferece, no fim, uma versão humanizada ({nome}.public.md) para repassar a clientes ou stakeholders.
+```
+
+*[`ai-generated` como primeira opção. Gravar `ARTIFACT_STYLE=ai-generated` ou `ARTIFACT_STYLE=human-generated`. A escolha muda as rules copiadas no Passo 8: com `human-generated`, entra `rules/artifact-style-rules.md`.]*
+
 **Regras de Implementação:**
 - **Opções fixas com ≤4 opções** → usar AskUserQuestion
 - **Opções fixas com >4 opções** (HUB com DATA, IDE, SQUAD, POSITION) → mostrar em texto numerado
@@ -446,6 +457,7 @@ Como você quer que os comandos de produto (prod.*) e o eng.create-ard conduzam 
 | `USER` | Identidade do usuário (email ou nome) | ENV.md → git `user.email` → usuário do SO. Sem login |
 | `POSITION` | Cargo do usuário | Deve estar em `taxonomy.md` → Positions. Autonomia ponta a ponta em qualquer cargo |
 | `PROD_MODE` | Modo de condução dos comandos de produto e do `eng.create-ard` | `product-led` ou `developer-guided`. Sempre perguntado, sem opção sugerida (Pergunta 8) |
+| `ARTIFACT_STYLE` | Estilo dos artefatos gerados | `ai-generated` (padrão) ou `human-generated` (Pergunta 9). No Upgrade (C), entra com `ai-generated` |
 
 > **💡 Nota**:
 > - As opções para SQUAD, HUB, AREA e POSITION são definidas em `taxonomy.md` e podem ser customizadas por organização.
@@ -760,6 +772,10 @@ HUB={valor}
 AREA={valor}
 POSITION={valor}
 
+# --- Condução e estilo ---
+PROD_MODE={product-led|developer-guided}
+ARTIFACT_STYLE={ai-generated|human-generated}
+
 # --- IDE e pastas ---
 IDE={valor}
 DOCS_FOLDER=docs
@@ -997,7 +1013,7 @@ Objetivo: garantir que `$IDE/rules/` e `$IDE/rules-on-demand/` contenham apenas 
 **Passos:**
 
 ```
-1. Ler HUB, POSITION, AREA, SQUAD do ENV.md recém-gravado
+1. Ler HUB, POSITION, AREA, SQUAD e ARTIFACT_STYLE (vazio = `ai-generated`) do ENV.md recém-gravado
 2. Para cada uma das duas pastas (rules/ e rules-on-demand/), listar todos os arquivos .md (recursivo, exceto AGENTS.md)
 3. Para cada arquivo:
    a. Ler o bloco `> **Applies to:**` (primeira ocorrência no arquivo)
@@ -1028,11 +1044,16 @@ function matchesProfile(appliesTo, profile) {
   const positionMatches = profile.POSITION === 'GENERALIST' || matches(appliesTo.POSITION, profile.POSITION)
   const areaMatches = profile.POSITION === 'GENERALIST' || matches(appliesTo.AREA, profile.AREA)
 
+  // ARTIFACT_STYLE (5º campo opcional): ausente no bloco = 'all'; perfil vazio = 'ai-generated'.
+  // Sem coringa: FULLCYCLE e GENERALIST não o satisfazem (é escolha da pessoa, não papel).
+  const styleMatches = matches(appliesTo.ARTIFACT_STYLE || 'all', profile.ARTIFACT_STYLE || 'ai-generated')
+
   return (
     hubMatches &&
     positionMatches &&
     areaMatches &&
-    matches(appliesTo.SQUAD, profile.SQUAD)
+    matches(appliesTo.SQUAD, profile.SQUAD) &&
+    styleMatches
   )
 }
 ```
@@ -1041,16 +1062,18 @@ function matchesProfile(appliesTo, profile) {
 
 ```javascript
 // Exemplo de bloco: > **Applies to:** HUB: all | POSITION: all | AREA: all | SQUAD: all
+// 5º campo opcional:  ... | SQUAD: all | ARTIFACT_STYLE: human-generated
 function parseAppliesTo(fileContent) {
   const match = fileContent.match(
-    /> \*\*Applies to:\*\* HUB: ([^|]+)\| POSITION: ([^|]+)\| AREA: ([^|]+)\| SQUAD: (.+)/
+    /> \*\*Applies to:\*\* HUB: ([^|]+)\| POSITION: ([^|]+)\| AREA: ([^|]+)\| SQUAD: ([^|\n]+)(?:\| ARTIFACT_STYLE: ([^|\n]+))?/
   )
   if (!match) return null // sem bloco = universal
   return {
-    HUB:      match[1].trim(),
-    POSITION: match[2].trim(),
-    AREA:     match[3].trim(),
-    SQUAD:    match[4].trim(),
+    HUB:            match[1].trim(),
+    POSITION:       match[2].trim(),
+    AREA:           match[3].trim(),
+    SQUAD:          match[4].trim(),
+    ARTIFACT_STYLE: (match[5] || 'all').trim(),
   }
 }
 ```
@@ -1068,7 +1091,7 @@ cp "$pasta/$relPath" "$IDE/$pasta/$relPath"   # $pasta = rules ou rules-on-deman
 **Saída para o usuário:**
 
 ```
-🔍 Sincronizando rules para o perfil: HUB={HUB} | POSITION={POSITION} | AREA={AREA} | SQUAD={SQUAD}
+🔍 Sincronizando rules para o perfil: HUB={HUB} | POSITION={POSITION} | AREA={AREA} | SQUAD={SQUAD} | ARTIFACT_STYLE={ARTIFACT_STYLE}
 
 ✅ Rules sincronizadas:
    Copiadas : N arquivos (rules/: N | rules-on-demand/: N)
@@ -1322,7 +1345,10 @@ Pergunta 7: Qual seu cargo?
 Pergunta 8: Modo dos comandos de produto?
 [AskUserQuestion: Product-Led | Developer-Guided, sem opção sugerida]
 
-Pergunta 9 (opcional): Usa task manager? jira/linear/github/asana ou Nenhum (freelance)
+Pergunta 9: Estilo dos artefatos?
+[AskUserQuestion: AI-Generated (padrão) | Human-Generated]
+
+Pergunta 10 (opcional): Usa task manager? jira/linear/github/asana ou Nenhum (freelance)
 ```
 
 **Agente**: *(cria ENV.md + `.jarvis/sessions/{eng,prod,qa}`, valida Context7, cria AGENTS.md e confirma)*
@@ -1370,6 +1396,7 @@ Bem-vindo! 🎉
 - [ ] **Usou AskUserQuestion só para ≤4 opções** (AREA se aplicável — HUB com DATA vai em texto)
 - [ ] **Mostrou em texto numerado para >4 opções** (HUB, IDE, SQUAD, POSITION)
 - [ ] **Perguntou o `PROD_MODE`** (Product-Led ou Developer-Guided), sem opção sugerida, qualquer que seja a área ou o cargo
+- [ ] **Perguntou o `ARTIFACT_STYLE`** (AI-Generated primeiro ou Human-Generated)
 - [ ] **Mostrou TODAS as opções disponíveis** (HUB inclui DATA; nunca omitiu)
 - [ ] **Incluiu descrição útil em cada opção** (seja AskUserQuestion ou texto)
 - [ ] **Validou respostas em texto contra lista de opções válidas**

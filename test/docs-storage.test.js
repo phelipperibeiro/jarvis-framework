@@ -164,6 +164,28 @@ test("filesystem: pasta inexistente dá erro orientando o /jarvis-init", async (
   }
 });
 
+test("renderIndex: ignora a versão humanizada {nome}.public.md", () => {
+  const root = tmp();
+  try {
+    write(join(root, "CORE/product/loja/feature-a.md"), PRD);
+    write(join(root, "CORE/product/loja/feature-a.public.md"), PRD);
+    write(
+      join(root, "CORE/engineering/loja/delivery-2026-10-16-t-1.md"),
+      "---\ntask_key: T-1\ndate: 2026-10-16\n---\n"
+    );
+    write(
+      join(root, "CORE/engineering/loja/delivery-2026-10-16-t-1.public.md"),
+      "---\ntask_key: T-1\ndate: 2026-10-16\n---\n"
+    );
+    const idx = renderIndex(root, "CORE");
+    assert.match(idx, /\[feature-a\.md\]/);
+    assert.match(idx, /\[delivery-2026-10-16-t-1\.md\]/);
+    assert.doesNotMatch(idx, /\.public\.md/);
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
 test("renderIndex: lista só feature-*/delivery-*, as duas funcionalidades e as entregas recentes", () => {
   const root = tmp();
   try {

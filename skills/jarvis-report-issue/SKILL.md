@@ -82,6 +82,8 @@ Com as respostas da Fase 1, monte o issue no formato abaixo.
 - **Reportado por:** IA (auto-report)
 ```
 
+Com `ARTIFACT_STYLE=human-generated`, troque a linha por `- **Reportado por:** {USER do ENV, só o nome antes do @}` e não cite IA no corpo (`rules/artifact-style-rules.md`).
+
 ---
 
 ## Fase 3 — Credenciais e repo

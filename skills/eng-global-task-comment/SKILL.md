@@ -28,6 +28,8 @@ Ler `TASK_MANAGER`, `TASK_MANAGER_URL_BASE`, `TOKEN_TASK_MANAGER` e `USER` do `$
 
 Se `TASK_MANAGER` estiver vazio, ausente ou ainda for a lista `[jira, linear, github, asana]` → **encerrar em silêncio** (freelance, sem board). Não pedir token. Não falhar o workflow.
 
+Com `ARTIFACT_STYLE=human-generated`, o comentário sai sem marcas de IA (`rules/artifact-style-rules.md`).
+
 ### 1. MCP (só Jira)
 
 Se `TASK_MANAGER=jira` e o MCP Atlassian estiver disponível:

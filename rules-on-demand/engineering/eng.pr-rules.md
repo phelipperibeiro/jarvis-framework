@@ -271,6 +271,7 @@ O MR deve seguir o template em `$IDE/templates/engineering/PR-template.md`:
 - ❌ Commitar arquivos de configuração local
 - ❌ Commitar credenciais ou tokens
 - ❌ Mencionar AI/Claude no PR
+- ❌ Com `ARTIFACT_STYLE=human-generated`: push de commit ou PR com marca de IA ou da IDE (`Co-Authored-By` de ferramenta, "Generated with …") — conferir antes (Fase 3.0 do `eng.pr`)
 - ❌ [!IMPORTANT] PUSH DIRETO PARA `main`/`dev`
 
 ### ✅ SEMPRE FAÇA

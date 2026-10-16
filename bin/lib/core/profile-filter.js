@@ -7,7 +7,9 @@
  * `rules/AGENTS.md`: ao mudar uma, mude as três.
  *
  * Regras:
- * - Os quatro eixos (HUB, POSITION, AREA, SQUAD) são combinados com AND.
+ * - Os eixos (HUB, POSITION, AREA, SQUAD e o opcional ARTIFACT_STYLE) são combinados com AND.
+ * - ARTIFACT_STYLE (5º campo, opcional): ausente no bloco = `all`; perfil sem valor =
+ *   `ai-generated`. Sem coringa: FULLCYCLE e GENERALIST não o satisfazem (é escolha da pessoa).
  * - `all` casa qualquer valor; listas são separadas por vírgula.
  * - FULLCYCLE (HUB) satisfaz qualquer HUB.
  * - GENERALIST (POSITION) satisfaz qualquer POSITION e qualquer AREA.
@@ -20,8 +22,11 @@
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { join, relative, sep } from "node:path";
 
+// SQUAD para no próximo `|`: o 5º campo (ARTIFACT_STYLE) é opcional.
 const APPLIES_TO_RE =
-  /> \*\*Applies to:\*\* HUB: ([^|]+)\| POSITION: ([^|]+)\| AREA: ([^|]+)\| SQUAD: (.+)/;
+  /> \*\*Applies to:\*\* HUB: ([^|]+)\| POSITION: ([^|]+)\| AREA: ([^|]+)\| SQUAD: ([^|\n]+)(?:\| ARTIFACT_STYLE: ([^|\n]+))?/;
+
+const DEFAULT_ARTIFACT_STYLE = "ai-generated";
 
 /**
  * @typedef {Object} AppliesTo
@@ -29,6 +34,7 @@ const APPLIES_TO_RE =
  * @property {string} POSITION
  * @property {string} AREA
  * @property {string} SQUAD
+ * @property {string} ARTIFACT_STYLE - `all` quando o bloco não traz o campo
  */
 
 /**
@@ -37,6 +43,7 @@ const APPLIES_TO_RE =
  * @property {string} POSITION
  * @property {string} AREA
  * @property {string} SQUAD
+ * @property {string} [ARTIFACT_STYLE] - vazio = `ai-generated`
  */
 
 /**
@@ -52,6 +59,7 @@ export function parseAppliesTo(content) {
     POSITION: match[2].trim(),
     AREA: match[3].trim(),
     SQUAD: match[4].trim(),
+    ARTIFACT_STYLE: (match[5] || "all").trim(),
   };
 }
 
@@ -76,7 +84,11 @@ export function matchesProfile(appliesTo, profile) {
   const position = generalist || axisMatches(appliesTo.POSITION, profile.POSITION);
   const area = generalist || axisMatches(appliesTo.AREA, profile.AREA);
   const squad = axisMatches(appliesTo.SQUAD, profile.SQUAD);
-  return hub && position && area && squad;
+  const style = axisMatches(
+    appliesTo.ARTIFACT_STYLE || "all",
+    profile.ARTIFACT_STYLE || DEFAULT_ARTIFACT_STYLE
+  );
+  return hub && position && area && squad && style;
 }
 
 function walkMarkdown(dir) {

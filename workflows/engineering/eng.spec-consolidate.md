@@ -110,6 +110,8 @@ Pergunte com `AskUserQuestion` (**Sim / Não**): **"Publicar no Central docs?"**
   (no `--inicial`, só os `feature-*`). Com o Central docs num repositório git, cada publicação abre um PR no repositório de documentação: informe as URLs.
 - **Não:** os arquivos ficam na sessão. Para publicar depois, use os mesmos comandos.
 
+Com `ARTIFACT_STYLE=human-generated`, a versão humanizada (`{nome}.public.md`) fica ao lado da consolidação, na sessão, e **não** é publicada.
+
 ## Passo 7: Mensagem final
 
 ```

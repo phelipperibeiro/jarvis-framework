@@ -91,6 +91,7 @@ export function buildReport(root, profile, opts = {}) {
       POSITION: profile.POSITION,
       AREA: profile.AREA,
       SQUAD: profile.SQUAD,
+      ARTIFACT_STYLE: profile.ARTIFACT_STYLE || "ai-generated",
     },
     rtkEnabled,
     estimate: `tokens = bytes ÷ ${BYTES_PER_TOKEN} (estimativa)`,
