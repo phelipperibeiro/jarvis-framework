@@ -32,8 +32,9 @@ rules-on-demand/              # Lidas pelo workflow que as usa (não carregadas 
 │   ├── eng.pr-rules.md       # Regras para /eng.pr
 │   ├── eng.tech-spec-rules.md # Regras para tech specs
 │   └── eng.breakdown-subtasks-rules.md # Regras para o breakdown de subtarefas
-└── product/
-    └── prod.guided-rules.md  # Modo Developer-Guided (lida só com PROD_MODE=developer-guided)
+├── product/
+│   └── prod.guided-rules.md  # Modo Developer-Guided (lida só com PROD_MODE=developer-guided)
+└── warm-up-consume-rules.md  # Consumo do /warm-up (lida pelo eng.start e pelos prod.spec* só quando há aquecimento)
 ```
 
 ### `rules/` x `rules-on-demand/`

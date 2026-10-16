@@ -25,6 +25,8 @@ Utilize o `$ARGUMENTS` que o usuário passar como ponto de partida e para entend
 #$ARGUMENTS
 </requirement>
 
+> 🔥 **Warm-up**: se `$SESSIONS_DIR/warm-ups/` tiver aquecimentos, leia `$IDE/rules-on-demand/warm-up-consume-rules.md` e siga-o antes de começar (grava em `$SESSIONS_DIR/prod/{id do documento}/context.md`).
+
 ## Quando usar
 - Depois de um PRD ou FRD aprovado, quando falta registrar os requisitos arquiteturais da iniciativa
 - Quando o PM precisa deixar claro para a engenharia o que a arquitetura precisa atender (volumes, prazos, integrações, regras de negócio com impacto técnico)

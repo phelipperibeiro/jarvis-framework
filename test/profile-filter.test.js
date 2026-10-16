@@ -155,16 +155,19 @@ test("listRulesForProfile: AGENTS.md nunca é filtrado, rtk é opt-in, sem bloco
 // (AREA ENGINEERING: $ENG_DOCS/robots) e eng.rpa-rules.md (HUB BACKEND: $ENG_DOCS/robots).
 // +222 B em FRONTEND e QA; +215 B em FULLCYCLE e BACKEND, que também carregam eng.rpa-rules.md
 // (a troca de `docs/engineering/robots` por `$ENG_DOCS/robots` encurta essa rule em 7 B).
+// Issue #153 (warm-up enxuto, 2026-10-16): +128 B em cada perfil — rules/AGENTS.md (sempre
+// copiado) passou a mostrar rules-on-demand/warm-up-consume-rules.md. A rule nova fica em
+// rules-on-demand/ e não entra nesta conta.
 const BASE = [
   [
     "FULLCYCLE/GENERALIST/ENGINEERING/CORE",
     profile("FULLCYCLE", "GENERALIST", "ENGINEERING"),
     15,
-    98514,
+    98642,
   ],
-  ["BACKEND/SENIOR/ENGINEERING/CORE", profile("BACKEND", "SENIOR", "ENGINEERING"), 11, 65244],
-  ["FRONTEND/PLENO/ENGINEERING/CORE", profile("FRONTEND", "PLENO", "ENGINEERING"), 11, 65787],
-  ["QA/QA-ENGINEER/ENGINEERING/CORE", profile("QA", "QA-ENGINEER", "ENGINEERING"), 11, 65023],
+  ["BACKEND/SENIOR/ENGINEERING/CORE", profile("BACKEND", "SENIOR", "ENGINEERING"), 11, 65372],
+  ["FRONTEND/PLENO/ENGINEERING/CORE", profile("FRONTEND", "PLENO", "ENGINEERING"), 11, 65915],
+  ["QA/QA-ENGINEER/ENGINEERING/CORE", profile("QA", "QA-ENGINEER", "ENGINEERING"), 11, 65151],
 ];
 
 for (const [nome, p, arquivos, bytes] of BASE) {

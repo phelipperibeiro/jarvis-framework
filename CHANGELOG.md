@@ -6,6 +6,34 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), e o
 
 > Versões anteriores a `2.1.1` não foram documentadas retroativamente neste changelog — o histórico detalhado dessas versões continua disponível via `git log`.
 
+## [Unreleased]
+
+### Changed
+- **`/warm-up` reescrito** (#153): passou de 537 para 123 linhas e agora é a **preparação de contexto de uma tarefa nova**. Ele carrega só o que é relevante e guarda o resultado por apelido em `$SESSIONS_DIR/warm-ups/{apelido}/warm-up.md`. Passos:
+  - **Mapa de tecnologias:** lê (ou cria) o `CDD-MIND-MAP.md`;
+  - **Repositórios e áreas:** pergunta quais repositórios aquecer e confirma as áreas, carregando só as especialidades dessas áreas, em memória (o `ENV.md` nunca muda);
+  - **Central docs:** lê só o recorte (produto ou funcionalidade) escolhido;
+  - **Entregas recentes:** os 5 últimos merges de cada repositório ativo;
+  - **Versões das ferramentas:** consulta o `context7` só com o MCP disponível, para até 5 ferramentas.
+- `/eng.start` e `/prod.spec*` oferecem os aquecimentos existentes, gravam o escolhido no `context.md` da sessão (`$SESSIONS_DIR/eng/{KEY}/` ou `$SESSIONS_DIR/prod/{id do documento}/`) e apagam a pasta do apelido
+
+### Added
+- **`CDD-MIND-MAP.md`**: o mapa de tecnologias do workspace (stack e papel de cada repositório).
+  - **Onde fica:** na raiz, ao lado do `AGENTS.md`, fora do versionamento.
+  - **Validação:** sempre com o usuário.
+  - **Criação:** pelo `/jarvis-init` (Passo 9) ou pelo primeiro `/warm-up`.
+  - **No `AGENTS.md`:** ganha uma linha que identifica o mapa como contexto de workspace.
+- `rules-on-demand/warm-up-consume-rules.md` (procedimento único de consumo do aquecimento), `templates/cdd-mind-map-template.md` e `templates/warm-up-template.md`
+
+### Removed
+- Do `/warm-up`:
+  - os 7 menus por perfil e o ajuste por `POSITION`;
+  - o perfil de comunicação (fica com o CDD);
+  - o `context7` incondicional;
+  - a releitura das rules;
+  - o passo do `MAX_AI_EXECUTION_PERCENTAGE`;
+  - as "Notas de Versão".
+
 ## [5.1.0] - 2026-10-15
 
 ### Added

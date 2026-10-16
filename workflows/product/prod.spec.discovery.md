@@ -28,6 +28,8 @@ Utilize o `$ARGUMENTS` como ponto de partida (a ideia, ou o caminho ou nome de u
 #$ARGUMENTS
 </requirement>
 
+> 🔥 **Warm-up**: se `$SESSIONS_DIR/warm-ups/` tiver aquecimentos, leia `$IDE/rules-on-demand/warm-up-consume-rules.md` e siga-o antes de começar (grava em `$SESSIONS_DIR/prod/{id do documento}/context.md`).
+
 ## O que este comando é e o que não é
 
 O discovery é um **rascunho**: registra o que se sabe, o que é hipótese e o que ainda é lacuna. Nada nele é verdade absoluta.
