@@ -40,7 +40,7 @@ Estamos nos aproximando de finalizar o trabalho nesta branch e nos preparar para
 | Skills recomendados | `/jarvis-docs-index` | Se for necessário atualizar o índice de documentação |
 | Skills recomendados | `/eng-platform` + `PLATFORM_SPECIALIZATIONS` | Se a feature tiver requisitos não-funcionais de latência, throughput ou escalabilidade |
 | Skills recomendados | `/eng-backend` e `/eng-frontend` (via `eng.specializations-rules.md`) | Para validar código de backend (endpoints, autenticação, workers) ou de frontend (componentes, performance de UI, WCAG 2.1 AA); a regra também carrega as especializações registradas no ENV.md |
-| Gate 0: Verificar Documentação Central | `/jarvis-docs-central` (via `jarvis docs publish --tipo ard`) | Se `CENTRAL_DOCS_REPO` estiver configurado, houver mudança arquitetural, o ARD estiver desatualizado ou novo e o usuário aceitar publicar |
+| Gate 0: Verificar Documentação Central | `/jarvis-docs-central` (via `jarvis docs publish --tipo ard`) | Se `CENTRAL_DOCS_STORAGE` estiver configurado, houver mudança arquitetural, o ARD estiver desatualizado ou novo e o usuário aceitar publicar |
 | Gates › item 1 | `prod.pm-checker` (agente) | Sempre — verificar alinhamento da branch com os docs de produto e engenharia |
 | Gates › item 2 | `eng.dev-code-reviewer` (agente) | Sempre — revisar o código antes de lançar |
 | Gates › item 3 | `eng.qa.test-planner` (agente) | Sempre — identificar gaps de cobertura de testes na branch |
@@ -65,7 +65,7 @@ Estamos nos aproximando de finalizar o trabalho nesta branch e nos preparar para
 
 ### Gate 0: Verificar Documentação Central (condicional)
 
-Se `CENTRAL_DOCS_REPO` estiver configurado no ENV.md:
+Se `CENTRAL_DOCS_STORAGE` estiver configurado no ENV.md:
 
 **Passo 1:** Detectar mudanças arquiteturais no diff da branch
 ```bash
@@ -77,14 +77,14 @@ git diff main...HEAD | grep -E "(class|interface|schema|migration|config)" || tr
 - Comparar com ARD do central-docs (se existir)
 - Se desatualizado ou novo:
   - Perguntar: "Publicar ARD atualizado no central-docs?"
-  - Se sim: executar `jarvis docs publish --file <path> --tipo ard --feature <slug>`
+  - Se sim: executar `jarvis docs publish --file <path> --tipo ard`
 
 **Passo 3:** Se novos contratos/APIs criados:
 - Verificar se há RFC relacionado
 - Se não: sugerir criar RFC para decisões arquiteturais
 
 **Comportamento:**
-- Se `CENTRAL_DOCS_REPO` vazio → pular silenciosamente
+- Se `CENTRAL_DOCS_STORAGE` vazio → pular silenciosamente
 - Não bloquear PR por docs desatualizados (apenas avisar)
 
 ---

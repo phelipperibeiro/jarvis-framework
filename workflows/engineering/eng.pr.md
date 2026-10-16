@@ -61,7 +61,7 @@ Ler `TASK_MANAGER` do `$IDE/ENV.md`. Seguir `$IDE/rules/engineering/eng.integrat
 - `TASK_MANAGER` vazio → *Qual o seu número de controle para esta tarefa? (ex: F-042)*
 - `TASK_MANAGER` preenchido → *Qual o id do card no {TASK_MANAGER}?*
 
-> A branch de destino **padrão é `dev`** (GitFlow). Só perguntar se o usuário indicar outra branch (ex: hotfix direto para `main`).
+> A branch de destino é a **`Branch base:`** gravada no cabeçalho do `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/architecture.md` pelo `eng.start`. Só perguntar (`main`, `dev` ou Outro) se o campo não existir.
 > 💡 A branch de feature já foi criada no `eng.start`. Este workflow apenas faz push e abre o MR.
 
 ---
@@ -122,7 +122,7 @@ A branch deve seguir o padrão `{TASK_MANAGER_KEY}-{titulo-em-kebab-case}`.
 
 ### 2.2 Confirmar Branch de Destino
 
-Branch de destino padrão: **`dev`** (GitFlow).
+Branch de destino: a **`Branch base:`** do `architecture.md` (`{BRANCH_BASE}`). Sem o campo, pergunte com `AskUserQuestion` (`main`, `dev` ou Outro); não presuma.
 
 > ⚠️ **Nunca fazer push direto para `main` ou `master`** sem confirmação explícita do usuário.
 
@@ -137,7 +137,7 @@ git checkout {TASK_MANAGER_KEY}-{titulo-em-kebab-case}
 ### 2.2 Verificar Commits da Branch
 
 ```bash
-git log dev..HEAD --oneline
+git log {BRANCH_BASE}..HEAD --oneline
 ```
 
 Deve listar os commits das fases implementadas no `eng.work`.
@@ -203,7 +203,7 @@ Preencher com a tarefa. Link do card:
 
 - **Título**: `{TASK_MANAGER_KEY}: {Título da tarefa}`
 - **Branch origem**: `{NOME_DA_BRANCH}`
-- **Branch destino**: a informada pelo usuário (`dev` / `main` / hotfix)
+- **Branch destino**: `{BRANCH_BASE}` (a `Branch base:` do `architecture.md`)
 - **Descrição**: template preenchido, gravado em arquivo temporário
 
 ```bash

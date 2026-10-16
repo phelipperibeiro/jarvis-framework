@@ -208,19 +208,20 @@ Identificar qual IDE o usuário está utilizando:
 
    Serão adicionadas ao final do ENV.md sem alterar os valores existentes.
    ```
-8. **Exceção — `PROD_MODE`:** se `PROD_MODE` estiver entre as chaves novas, faça a mesma pergunta do Passo 3 (Pergunta 8 — modo de condução) e grave a resposta no lugar do valor vazio. As demais chaves continuam sem pergunta.
-9. Appender as novas variáveis ao final do `ENV.md` com comentário de data:
+8. **Exceção — Central docs antigo:** se o `ENV.md` tiver `CENTRAL_DOCS_REPO` preenchido e não tiver `CENTRAL_DOCS_STORAGE`, propor a migração (só com confirmação): `CENTRAL_DOCS_STORAGE=filesystem`, `CENTRAL_DOCS_LOCATION` com o padrão do modo de trabalho (Passo 4, "Central docs") e `git clone {CENTRAL_DOCS_REPO} {LOCATION}`. Depois, comentar a linha antiga (`# CENTRAL_DOCS_REPO=… (migrado em YYYY-MM-DD)`) e `CENTRAL_DOCS_CACHE_TTL`. Sem confirmação, não mexe e avisa que os comandos de docs vão pedir o Upgrade.
+9. **Exceção — `PROD_MODE`:** se `PROD_MODE` estiver entre as chaves novas, faça a mesma pergunta do Passo 3 (Pergunta 8 — modo de condução) e grave a resposta no lugar do valor vazio. As demais chaves continuam sem pergunta.
+10. Appender as novas variáveis ao final do `ENV.md` com comentário de data:
    ```
    # --- Upgrade YYYY-MM-DD ---
    NOVA_VAR_1=
    NOVA_VAR_2=valor-padrão
    ```
-10. Confirmar:
+11. Confirmar:
    ```
    ✅ ENV.md atualizado! N variável(is) nova(s) adicionada(s).
    ⚠️ Preencha os valores em branco antes de usar os novos recursos.
    ```
-11. Oferecer o **passo 9 (adicionar as stacks)**, que a pessoa pode pular, e então encerrar (não continuar para o fluxo de onboarding completo).
+12. Oferecer o **passo 9 (adicionar as stacks)**, que a pessoa pode pular, e então encerrar (não continuar para o fluxo de onboarding completo).
 
 **⚠️ OBRIGATÓRIO - Criação do ENV.md**:
 
@@ -572,6 +573,20 @@ Token NÃO vai no ENV.md:
 Nunca grave TOKEN_VERSION_CONTROL (chave removida do template).
 ```
 
+**Central docs (onde fica a documentação aprovada — PRD, FRD, épicos, ARD, RFC):**
+```
+Onde fica a documentação central?
+A. Pasta local
+B. Repositório de documentação (git)
+C. Não usar → CENTRAL_DOCS_STORAGE= vazio
+```
+- **A ou B** → `CENTRAL_DOCS_STORAGE=filesystem` e `CENTRAL_DOCS_LOCATION` com o padrão do **modo de trabalho** (a pessoa pode digitar outro caminho):
+  - **modo workspace** (2+ subpastas com `.git`): `./central-docs`, e `central-docs/` no `.gitignore` do workspace;
+  - **projeto único** (só a raiz tem `.git`): `docs/jarvis/central-docs` (já coberto por `docs/jarvis/*` no `.gitignore`, ver Passo 5).
+- **A**: `mkdir -p {LOCATION}` e criar `{LOCATION}/AGENTS.md` mínimo explicando a estrutura `{SQUAD}/{product|engineering}/{produto}/` e que o `{SQUAD}/index.md` é gerado pelo `jarvis docs publish`.
+- **B**: pedir a URL do repositório e rodar `git clone {URL} {LOCATION}`. Se `{LOCATION}` já existir com `.git`, só usar. Perguntar `CENTRAL_DOCS_TARGET_BRANCH` (padrão `main`).
+- Nunca colocar o Central docs no versionamento de um repositório de código.
+
 #### Variáveis Opcionais (alinhar ao `templates/ENV-template.md`)
 
 | Variável | Valor Padrão | Descrição |
@@ -597,7 +612,8 @@ Nunca grave TOKEN_VERSION_CONTROL (chave removida do template).
 | `TEST_FOLDER` | *(vazio)* | Pasta de testes |
 | `QA_SIGNOFF_BRANCHES` / `QA_SIGNOFF_MAX_AGE` | `main,release/*` / `24` | Sign-off QA |
 | `JARVIS_PROJECT` | `https://github.com/phelipperibeiro/jarvis-framework` | Repo do framework (`/jarvis-report-issue`) |
-| `CENTRAL_DOCS_REPO` / `_REF` / `_TARGET_BRANCH` / `_REVIEWERS` / `_CACHE_TTL` | *(opcional)* | Docs centrais |
+| `CENTRAL_DOCS_STORAGE` / `_LOCATION` | *(vazio = desligado)* | Central docs: `filesystem` + pasta (padrão por modo de trabalho) |
+| `CENTRAL_DOCS_REF` / `_TARGET_BRANCH` / `_REVIEWERS` | `main` / `main` / *(vazio)* | Só quando a pasta do Central docs tem `.git` |
 | `SESSIONS_DIR` | `.jarvis/sessions` | Não perguntar — gravar fixo |
 | `RTK_ENABLED` | `false` (ou true se detectar `rtk`) | Token Killer |
 | `ADVISOR_MODELS` | `"Sonnet 5.5,Opus 5.5,Opus 5,Fable 5.1"` | Advisor do `eng.start` — não perguntar, gravar o padrão |
@@ -661,6 +677,13 @@ cat templates/ENV-template.md
 mkdir -p .jarvis/sessions/eng .jarvis/sessions/prod .jarvis/sessions/qa
 # Garantir .jarvis/ no .gitignore do workspace
 grep -qxF '.jarvis/' .gitignore 2>/dev/null || echo '.jarvis/' >> .gitignore
+
+# 8. Modo de trabalho (detectado no Passo 3, Pergunta 1):
+#    - Projeto único (só a raiz tem .git): PROD_DOCS=docs/jarvis/product e
+#      docs/jarvis/ fora do versionamento (uma docs/ já existente não é tocada):
+grep -qxF 'docs/jarvis/*' .gitignore 2>/dev/null || echo 'docs/jarvis/*' >> .gitignore
+#    - Modo workspace: PROD_DOCS=$DOCS_FOLDER/$PROD_FOLDER_NAME (padrão do template) e, se o
+#      Central docs ficar dentro do workspace: grep -qxF 'central-docs/' .gitignore || echo 'central-docs/' >> .gitignore
 ```
 
 **⚠️ REGRA CRÍTICA — Bloco DATA:**

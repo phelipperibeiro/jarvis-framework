@@ -9,7 +9,8 @@ O Jarvis não assume Jira, GitLab ou Slack. Leia `$IDE/ENV.md` e despache pelo a
 | Variável | Vendors | Adapter |
 |----------|---------|---------|
 | `TASK_MANAGER` | jira, linear, github, asana | `jarvis tasks comment` |
-| `VERSION_CONTROL` | gitlab, github, bitbucket | `jarvis vcs create-merge` / `create-issue` / `fetch-raw` |
+| `VERSION_CONTROL` | gitlab, github, bitbucket | `jarvis vcs create-merge` / `create-issue` |
+| `CENTRAL_DOCS_STORAGE` | filesystem (s3 e gdrive no futuro) | `jarvis docs fetch` / `sync` / `publish` |
 | `MESSAGE_COMUNICATOR` | slack, discord, teams | runtime `communicator/` |
 
 `{TASK_MANAGER_KEY}` = id da tarefa. Com board, é o id do card. Sem board, é o número de controle do usuário.

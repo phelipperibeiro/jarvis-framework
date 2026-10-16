@@ -22,8 +22,8 @@ priorizando a **arquitetura observada no código do repositório**, usando o tem
 | Passo | Skill | Condição |
 |-------|-------|----------|
 | Objetivo | `eng.agent` (agente) | Sempre — identidade do workflow (alinhamento com `eng.agent.md`) |
-| Passo 1 – Verificar PRD | `/jarvis-docs-central` (via `jarvis docs sync --silent`) | Se `CENTRAL_DOCS_REPO` estiver definido no ENV.md |
-| Passo 7 – Publicar no Central Docs | `/jarvis-docs-central` (via `jarvis docs publish --tipo ard`) | Se `CENTRAL_DOCS_REPO` estiver definido, o ARD estiver aprovado e o usuário aceitar publicar |
+| Passo 1 – Verificar PRD | `/jarvis-docs-central` (via `jarvis docs sync --silent`) | Se `CENTRAL_DOCS_STORAGE` estiver definido no ENV.md |
+| Passo 7 – Publicar no Central Docs | `/jarvis-docs-central` (via `jarvis docs publish --tipo ard`) | Se `CENTRAL_DOCS_STORAGE` estiver definido, o ARD estiver aprovado e o usuário aceitar publicar |
 
 ---
 
@@ -69,7 +69,7 @@ priorizando a **arquitetura observada no código do repositório**, usando o tem
 
 ### 1.1 – Buscar PRD no Central Docs (condicional)
 
-Se `CENTRAL_DOCS_REPO` definido no ENV.md:
+Se `CENTRAL_DOCS_STORAGE` definido no ENV.md:
 
 1. Executar busca automática no central-docs:
    ```bash
@@ -238,7 +238,7 @@ Entregar:
 
 ## Passo 7 – Publicar no Central Docs (condicional)
 
-Se `CENTRAL_DOCS_REPO` definido no ENV.md **E** o usuário aprovar o ARD:
+Se `CENTRAL_DOCS_STORAGE` definido no ENV.md **E** o usuário aprovar o ARD:
 
 1. Perguntar ao usuário:
    ```
@@ -248,20 +248,18 @@ Se `CENTRAL_DOCS_REPO` definido no ENV.md **E** o usuário aprovar o ARD:
    ```
 
 2. Se **Sim**:
-   - Extrair o slug do nome do arquivo (ex: `ARD-001-api-wallet-auth.md` → `api-wallet-auth`)
    - Executar:
      ```bash
      jarvis docs publish \
        --file {caminho_do_ard} \
-       --tipo ard \
-       --feature {slug}
+       --tipo ard
      ```
    
 3. Informar resultado:
-   - ✅ Sucesso: "ARD publicado no central-docs. MR criado: [URL]"
+   - ✅ Sucesso: "ARD publicado no Central docs." (com git: "PR aberto: [URL]")
    - ❌ Erro: Exibir mensagem de erro e orientar troubleshooting
 
 4. Se **Não**:
-   - Informar: "Para publicar depois, execute: `jarvis docs publish --file {caminho} --tipo ard --feature {slug}`"
+   - Informar: "Para publicar depois, execute: `jarvis docs publish --file {caminho} --tipo ard`"
 
-> **Nota**: A publicação cria um Merge Request no GitLab. O ARD só será visível no central-docs após aprovação e merge do MR.
+> **Nota**: se a pasta do Central docs for um repositório git, a publicação abre um Pull/Merge Request e o ARD só entra na branch base depois do merge. Sem git, o documento é gravado direto e o índice é regenerado.

@@ -41,9 +41,9 @@ Utilize o `$ARGUMENTS` que o usuário passar como ponto de partida e para entend
 
 | Passo | Skill | Condição |
 |-------|-------|----------|
-| Busca no Central Docs (condicional) | `/jarvis-docs-central` (via `jarvis docs sync --silent`) | Se `CENTRAL_DOCS_REPO` estiver definido no ENV.md, antes de criar o épico |
+| Busca no Central Docs (condicional) | `/jarvis-docs-central` (via `jarvis docs sync --silent`) | Se `CENTRAL_DOCS_STORAGE` estiver definido no ENV.md, antes de criar o épico |
 | Próximas etapas | `/prod.spec.issue` | Depois de criar o épico, se o usuário quiser escrever as histórias ou tarefas relacionadas |
-| Publicação no Central Docs (condicional) | `/jarvis-docs-central` (via `jarvis docs publish --tipo epic`) | Se `CENTRAL_DOCS_REPO` estiver definido, o épico estiver salvo e aprovado e o usuário responder "Sim, publicar agora" |
+| Publicação no Central Docs (condicional) | `/jarvis-docs-central` (via `jarvis docs publish --tipo epic`) | Se `CENTRAL_DOCS_STORAGE` estiver definido, o épico estiver salvo e aprovado e o usuário responder "Sim, publicar agora" |
 
 ## Resultado final
 - Por padrão, use o modelo `$PROD_TEMPLATES/prod-epic-template.md` integralmente
@@ -122,7 +122,7 @@ Após a aprovação do usuário:
 
 ## Busca no Central Docs (condicional)
 
-Se `CENTRAL_DOCS_REPO` definido no ENV.md, antes de criar o épico:
+Se `CENTRAL_DOCS_STORAGE` definido no ENV.md, antes de criar o épico:
 
 - Executar busca automática no central-docs:
   ```bash
@@ -136,7 +136,7 @@ Se `CENTRAL_DOCS_REPO` definido no ENV.md, antes de criar o épico:
 
 Após salvar o épico localmente e obter aprovação do usuário:
 
-1. Se `CENTRAL_DOCS_REPO` definido no ENV.md:
+1. Se `CENTRAL_DOCS_STORAGE` definido no ENV.md:
    - Perguntar ao usuário:
      ```
      Deseja publicar este épico no repositório central de documentação?
@@ -145,23 +145,21 @@ Após salvar o épico localmente e obter aprovação do usuário:
      ```
 
 2. Se **Sim**:
-   - Extrair o slug do nome do arquivo (ex: `epic-123-checkout.md` → `checkout`)
    - Executar:
      ```bash
      jarvis docs publish \
        --file {caminho_do_epico} \
-       --tipo epic \
-       --feature {slug}
+       --tipo epic
      ```
 
 3. Informar resultado:
-   - ✅ Sucesso: "Épico publicado no central-docs. MR criado: [URL]"
+   - ✅ Sucesso: "Épico publicado no Central docs." (com git: "PR aberto: [URL]")
    - ❌ Erro: Exibir mensagem de erro e orientar troubleshooting
 
 4. Se **Não**:
-   - Informar: "Para publicar depois, execute: `jarvis docs publish --file {caminho} --tipo epic --feature {slug}`"
+   - Informar: "Para publicar depois, execute: `jarvis docs publish --file {caminho} --tipo epic`"
 
-> **Nota**: A publicação cria um Merge Request no GitLab. O épico só será visível no central-docs após aprovação e merge do MR.
+> **Nota**: se a pasta do Central docs for um repositório git, a publicação abre um Pull/Merge Request e o épico só entra na branch base depois do merge. Sem git, o documento é gravado direto e o índice é regenerado.
 
 Utilize o que o usuário fornecer analisar em:
 <requirement>

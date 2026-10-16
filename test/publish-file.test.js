@@ -1,270 +1,136 @@
-// Testes de publishFile/resolveDestPath/insertIndexLine (publish-file.js).
+// Testes de publish-file.js (destino na estrutura única + publicação pelo adaptador).
 // Rode com: npm run test:filtro
-import { test, mock } from "node:test";
+import { test } from "node:test";
 import assert from "node:assert/strict";
-import { mkdtempSync, writeFileSync, rmSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { randomUUID } from "node:crypto";
-import { publishFile, resolveDestPath, insertIndexLine } from "../bin/lib/docs/publish-file.js";
+import { publishFile, resolveDestPath, VALID_TYPES } from "../bin/lib/docs/publish-file.js";
+import { createFilesystemStorage } from "../bin/lib/docs/storage/filesystem.js";
+import { setTestMode } from "../bin/lib/utils/logger.js";
 
-// `await fn()` (não `return fn()`) é essencial aqui: o `finally` só pode
-// restaurar o env var depois que a promise resolver — senão, numa função com
-// mais de um `await` antes de ler a env var (ex: publishFile busca o index.md
-// antes de chegar no commit, que é onde o token é lido), o valor já teria
-// sido desfeito antes da leitura real acontecer.
-async function withEnv(vars, fn) {
-  const prev = {};
-  for (const [k, v] of Object.entries(vars)) {
-    prev[k] = process.env[k];
-    if (v === undefined) delete process.env[k];
-    else process.env[k] = v;
-  }
-  try {
-    return await fn();
-  } finally {
-    for (const [k, v] of Object.entries(prev)) {
-      if (v === undefined) delete process.env[k];
-      else process.env[k] = v;
-    }
-  }
-}
+setTestMode(true);
 
-function withTempFile(content, fn) {
-  const dir = mkdtempSync(join(tmpdir(), "jarvis-publish-file-"));
-  const file = join(dir, "doc.md");
-  writeFileSync(file, content, "utf-8");
+test("VALID_TYPES: tipos de produto e de engenharia (Q2 da #143)", () => {
+  assert.deepEqual([...VALID_TYPES].sort(), [
+    "ard",
+    "epic",
+    "feat",
+    "frd",
+    "prd",
+    "qa-report",
+    "rfc",
+    "story",
+    "swagger",
+    "task",
+  ]);
+});
+
+test("resolveDestPath: usa o nome do arquivo local quando ele segue {tipo}-…", () => {
+  const r = resolveDestPath({
+    tipo: "prd",
+    squad: "CORE",
+    produto: "loja",
+    localFile: "./docs/product/prd-001-checkout.md",
+  });
+  assert.deepEqual(r, {
+    destPath: "CORE/product/loja/prd-001-checkout.md",
+    area: "product",
+    fileName: "prd-001-checkout.md",
+  });
+});
+
+test("resolveDestPath: produto e engenharia vão para a área certa", () => {
+  const area = (tipo) =>
+    resolveDestPath({ tipo, squad: "CORE", produto: "loja", localFile: `${tipo}-001-x.md` }).area;
+  for (const t of ["prd", "frd", "feat", "epic", "story", "task"])
+    assert.equal(area(t), "product", t);
+  for (const t of ["ard", "rfc", "qa-report"]) assert.equal(area(t), "engineering", t);
+});
+
+test("resolveDestPath: nome fora do padrão usa --feature (mantendo a extensão)", () => {
+  const r = resolveDestPath({
+    tipo: "swagger",
+    squad: "CORE",
+    produto: "api",
+    localFile: "./openapi.yaml",
+    feature: "wallet",
+  });
+  assert.equal(r.destPath, "CORE/engineering/api/swagger-wallet.yaml");
+});
+
+test("resolveDestPath: nome fora do padrão sem --feature lança erro orientando", () => {
+  assert.throws(
+    () => resolveDestPath({ tipo: "prd", squad: "CORE", produto: "loja", localFile: "meu-doc.md" }),
+    /--feature/
+  );
+});
+
+test("resolveDestPath: rejeita tipo inválido e segmentos com / ou ..", () => {
+  assert.throws(
+    () => resolveDestPath({ tipo: "xyz", squad: "CORE", produto: "p", localFile: "xyz-1.md" }),
+    /Tipos válidos/
+  );
+  assert.throws(
+    () => resolveDestPath({ tipo: "prd", squad: "../x", produto: "p", localFile: "prd-1.md" }),
+    /Squad inválido/
+  );
+  assert.throws(
+    () => resolveDestPath({ tipo: "prd", squad: "CORE", produto: "a/b", localFile: "prd-1.md" }),
+    /Produto inválido/
+  );
+});
+
+test("publishFile: sem adaptador (Central docs desligado) lança erro", async () => {
+  await assert.rejects(
+    () =>
+      publishFile({ storage: null, localFile: "x.md", tipo: "prd", squad: "CORE", produto: "p" }),
+    /desligado/
+  );
+});
+
+test("publishFile: frontmatter inválido lança erro antes de gravar", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "jarvis-pub-"));
   try {
-    return fn(file);
+    const file = join(dir, "prd-001-x.md");
+    writeFileSync(file, "---\nid: PRD-001\n---\n");
+    const storage = createFilesystemStorage({ location: dir });
+    await assert.rejects(
+      () => publishFile({ storage, localFile: file, tipo: "prd", squad: "CORE", produto: "p" }),
+      /Campos obrigatórios/
+    );
+    assert.equal(existsSync(join(dir, "CORE")), false);
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }
-}
-
-const ardFrontmatter = (overrides = "") =>
-  [
-    "---",
-    "Status: Em validação",
-    "Data: 2026-01-01",
-    "Autor: Dev",
-    "Versão: 1.0.0",
-    overrides,
-    "---",
-    "# Corpo do documento",
-  ]
-    .filter(Boolean)
-    .join("\n");
-
-// ---------------------------------------------------------------------------
-// resolveDestPath
-// ---------------------------------------------------------------------------
-
-test("resolveDestPath: prd/frd vão para product/, ard/rfc para engineering/", () => {
-  const base = { squad: "core", workspace: "ws", feature: "minha-feature", localFile: "x.md" };
-  assert.equal(
-    resolveDestPath({ ...base, tipo: "prd" }).destPath,
-    "core/ws/product/prd-minha-feature.md"
-  );
-  assert.equal(resolveDestPath({ ...base, tipo: "prd" }).area, "product");
-  assert.equal(
-    resolveDestPath({ ...base, tipo: "ard" }).destPath,
-    "core/ws/engineering/ARD/ard-minha-feature.md"
-  );
-  assert.equal(resolveDestPath({ ...base, tipo: "ard" }).area, "engineering");
-  assert.equal(
-    resolveDestPath({ ...base, tipo: "rfc" }).destPath,
-    "core/ws/engineering/RFC/rfc-minha-feature.md"
-  );
-  assert.equal(
-    resolveDestPath({ ...base, tipo: "qa-report" }).destPath,
-    "core/ws/engineering/qa/qa-report-minha-feature.md"
-  );
 });
 
-test("resolveDestPath: swagger detecta extensão do arquivo local (yaml/json/default .md)", () => {
-  const base = { squad: "core", workspace: "ws", feature: "api-x", tipo: "swagger" };
-  assert.equal(
-    resolveDestPath({ ...base, localFile: "./openapi.yaml" }).destPath,
-    "core/ws/engineering/swagger/api-api-x.yaml"
-  );
-  assert.equal(
-    resolveDestPath({ ...base, localFile: "./openapi.json" }).destPath,
-    "core/ws/engineering/swagger/api-api-x.json"
-  );
-  assert.equal(
-    resolveDestPath({ ...base, localFile: "./openapi-notes.md" }).destPath,
-    "core/ws/engineering/swagger/swagger-api-x.md"
-  );
-});
+test("publishFile: épico publica em product/ e entra no índice", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "jarvis-pub-"));
+  try {
+    const file = join(dir, "epic-001-pagamentos.md");
+    writeFileSync(
+      file,
+      "---\nid: EPIC-001\nname: Pagamentos\nversion: 1.0.0\nstatus: backlog\nrelated_prd: prd-001-x.md\n---\n"
+    );
+    const location = join(dir, "cd");
+    const storage = createFilesystemStorage({ location });
+    mkdirSync(location);
 
-test("resolveDestPath: tipo inválido lança erro listando os tipos válidos", () => {
-  assert.throws(
-    () => resolveDestPath({ tipo: "invalido", squad: "s", workspace: "w", feature: "f" }),
-    /Tipo inválido: invalido.*Tipos válidos/s
-  );
-});
-
-// ---------------------------------------------------------------------------
-// insertIndexLine — a correção do bug do AWK (ver architecture.md, 3.4)
-// ---------------------------------------------------------------------------
-
-test("insertIndexLine: seção com entrada colada no header não perde a entrada existente", () => {
-  const index = ["# ws", "", "## engineering", "- [ard-existing.md](...)", "", "## product"].join(
-    "\n"
-  );
-  const { content, found } = insertIndexLine(index, "engineering", "- [ard-novo.md](...)");
-  assert.equal(found, true);
-  assert.match(content, /## engineering\n- \[ard-novo\.md\]\(\.\.\.\)\n- \[ard-existing\.md\]/);
-  assert.match(content, /ard-existing\.md/); // nunca pode desaparecer
-});
-
-test("insertIndexLine: seção com linha em branco após o header também funciona", () => {
-  const index = ["# ws", "", "## engineering", "", "- [ard-existing.md](...)"].join("\n");
-  const { content } = insertIndexLine(index, "engineering", "- [ard-novo.md](...)");
-  assert.match(content, /ard-existing\.md/);
-  assert.match(content, /ard-novo\.md/);
-});
-
-test("insertIndexLine: seção inexistente é criada no final, sem perder o resto", () => {
-  const index = "# ws\n\n**Squad:** core\n";
-  const { content, found } = insertIndexLine(index, "product", "- [prd-novo.md](...)");
-  assert.equal(found, false);
-  assert.match(content, /\*\*Squad:\*\* core/);
-  assert.match(content, /## product\n- \[prd-novo\.md\]/);
-});
-
-// ---------------------------------------------------------------------------
-// publishFile — fim a fim, fetch/redis mockados
-// ---------------------------------------------------------------------------
-
-test("publishFile: sem repo lança erro antes de qualquer chamada de rede", async () => {
-  await withTempFile(ardFrontmatter(), (file) =>
-    assert.rejects(
-      () =>
-        publishFile({ localFile: file, tipo: "ard", feature: "x", squad: "core", workspace: "ws" }),
-      /CENTRAL_DOCS_REPO não configurado/
-    )
-  );
-});
-
-test("publishFile: frontmatter inválido lança erro antes de qualquer chamada de rede", async (t) => {
-  t.after(() => mock.reset());
-  let fetchCalled = false;
-  mock.method(globalThis, "fetch", async () => {
-    fetchCalled = true;
-    throw new Error("não deveria ter chamado fetch");
-  });
-
-  await withTempFile("# Documento sem frontmatter", (file) =>
-    withEnv({ GITLAB_TOKEN: "fake-token" }, () =>
-      assert.rejects(
-        () =>
-          publishFile({
-            localFile: file,
-            tipo: "ard",
-            feature: "x",
-            squad: "core",
-            workspace: "ws",
-            repo: "https://gitlab.com/g/r",
-          }),
-        /Frontmatter YAML não encontrado/
-      )
-    )
-  );
-
-  assert.equal(fetchCalled, false);
-});
-
-test("publishFile: caminho feliz GitLab — valida, cria index novo, comita e abre MR", async (t) => {
-  t.after(() => mock.reset());
-  const calls = [];
-  mock.method(globalThis, "fetch", async (url, init) => {
-    const u = String(url);
-    calls.push(u);
-    if (u.includes("/repository/files/")) {
-      // fetchFile do index.md -- simula "não encontrado" (índice ainda não existe)
-      return { status: 404, ok: false, text: async () => "" };
-    }
-    if (u.endsWith("/repository/commits")) {
-      return { status: 201, ok: true, text: async () => JSON.stringify({ id: "abc123" }) };
-    }
-    if (u.endsWith("/merge_requests")) {
-      const body = JSON.parse(init.body);
-      assert.equal(body.source_branch, `docs/core/ws/ard-${feature}`);
-      assert.equal(body.target_branch, "dev");
-      return {
-        status: 201,
-        ok: true,
-        text: async () =>
-          JSON.stringify({ iid: 7, web_url: "https://gitlab.com/g/r/-/merge_requests/7" }),
-      };
-    }
-    throw new Error(`URL inesperada no teste: ${u}`);
-  });
-
-  const feature = `feature-${randomUUID()}`;
-
-  const result = await withTempFile(ardFrontmatter(), (file) =>
-    withEnv({ GITLAB_TOKEN: "fake-token" }, () =>
-      publishFile({
-        localFile: file,
-        tipo: "ard",
-        feature,
-        squad: "core",
-        workspace: "ws",
-        repo: "https://gitlab.com/g/r",
-        targetBranch: "dev",
-      })
-    )
-  );
-
-  assert.equal(result.sha, "abc123");
-  assert.equal(result.mr.iid, 7);
-  assert.equal(result.mr.url, "https://gitlab.com/g/r/-/merge_requests/7");
-  assert.ok(calls.some((u) => u.includes("/repository/files/")));
-  assert.ok(calls.some((u) => u.endsWith("/repository/commits")));
-  assert.ok(calls.some((u) => u.endsWith("/merge_requests")));
-});
-
-test("publishFile: index.md existente é atualizado (action=update), preservando o conteúdo anterior", async (t) => {
-  t.after(() => mock.reset());
-  const existingIndex = "# ws\n\n## engineering\n- [ard-outro.md](engineering/ard-outro.md)\n";
-  let commitBody;
-  mock.method(globalThis, "fetch", async (url, init) => {
-    const u = String(url);
-    if (u.includes("/repository/files/")) {
-      return { status: 200, ok: true, text: async () => existingIndex };
-    }
-    if (u.endsWith("/repository/commits")) {
-      commitBody = JSON.parse(init.body);
-      return { status: 201, ok: true, text: async () => JSON.stringify({ id: "def456" }) };
-    }
-    if (u.endsWith("/merge_requests")) {
-      return {
-        status: 201,
-        ok: true,
-        text: async () =>
-          JSON.stringify({ iid: 8, web_url: "https://gitlab.com/g/r/-/merge_requests/8" }),
-      };
-    }
-    throw new Error(`URL inesperada: ${u}`);
-  });
-
-  await withTempFile(ardFrontmatter(), (file) =>
-    withEnv({ GITLAB_TOKEN: "fake-token" }, () =>
-      publishFile({
-        localFile: file,
-        tipo: "ard",
-        feature: `f-${randomUUID()}`,
-        squad: "core",
-        workspace: "ws",
-        repo: "https://gitlab.com/g/r",
-      })
-    )
-  );
-
-  const indexAction = commitBody.actions.find((a) => a.file_path.endsWith("index.md"));
-  assert.equal(indexAction.action, "update");
-  const decoded = Buffer.from(indexAction.content, "base64").toString("utf-8");
-  assert.match(decoded, /ard-outro\.md/); // entrada anterior preservada
+    const r = await publishFile({
+      storage,
+      localFile: file,
+      tipo: "epic",
+      squad: "CORE",
+      produto: "loja",
+    });
+    assert.equal(r.destPath, "CORE/product/loja/epic-001-pagamentos.md");
+    const index = readFileSync(join(location, "CORE", "index.md"), "utf-8");
+    assert.match(
+      index,
+      /\[epic-001-pagamentos\.md\]\(product\/loja\/epic-001-pagamentos\.md\) \| v1\.0\.0 \| backlog \| Pagamentos/
+    );
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
 });

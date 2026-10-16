@@ -36,7 +36,7 @@ Confere que tudo está passando, envia a branch e abre o merge request (ou pull 
 
 - Nome da branch: `{TASK_MANAGER_KEY}-{titulo-em-kebab-case}`
 - Commit de uma linha, começando pela chave da tarefa: `TASK-123 feat(auth): implementar autenticação JWT`
-- Destino do MR: a branch que você indicar (normalmente `develop`; `main` só para hotfix)
+- Destino do MR: a `Branch base:` escolhida no `/eng.start` (gravada no `architecture.md`); só pergunta se o campo faltar
 - **Nunca** `git add .`, push direto para `main`/`dev`, commit sem a chave da tarefa nem menção a IA no MR
 - PR que toca auth, inputs, APIs públicas ou permissões leva o label `security`
 - Nunca aprova um PR com secret no diff

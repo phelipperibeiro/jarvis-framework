@@ -145,16 +145,20 @@ test("listRulesForProfile: AGENTS.md nunca é filtrado, rtk é opt-in, sem bloco
 // (sempre copiado) passou a mostrar rules-on-demand/product/ (+220 B) e prod-rules.md
 // (universal) ganhou o status `deprecated` (+62 B). A regra do modo guiado fica em
 // rules-on-demand/ e não entra nesta conta.
+// Issue #143 (Central docs por adaptador, 2026-10-15): +261 B em cada perfil — prod-rules.md
+// (universal) trocou CENTRAL_DOCS_REPO por CENTRAL_DOCS_STORAGE/LOCATION e o PROD_DOCS do
+// projeto único; eng.integrations-rules.md (universal) tirou o `fetch-raw` e ganhou a linha
+// CENTRAL_DOCS_STORAGE. Nenhum arquivo adicionado.
 const BASE = [
   [
     "FULLCYCLE/GENERALIST/ENGINEERING/CORE",
     profile("FULLCYCLE", "GENERALIST", "ENGINEERING"),
     15,
-    98038,
+    98299,
   ],
-  ["BACKEND/SENIOR/ENGINEERING/CORE", profile("BACKEND", "SENIOR", "ENGINEERING"), 11, 64768],
-  ["FRONTEND/PLENO/ENGINEERING/CORE", profile("FRONTEND", "PLENO", "ENGINEERING"), 11, 65304],
-  ["QA/QA-ENGINEER/ENGINEERING/CORE", profile("QA", "QA-ENGINEER", "ENGINEERING"), 11, 64540],
+  ["BACKEND/SENIOR/ENGINEERING/CORE", profile("BACKEND", "SENIOR", "ENGINEERING"), 11, 65029],
+  ["FRONTEND/PLENO/ENGINEERING/CORE", profile("FRONTEND", "PLENO", "ENGINEERING"), 11, 65565],
+  ["QA/QA-ENGINEER/ENGINEERING/CORE", profile("QA", "QA-ENGINEER", "ENGINEERING"), 11, 64801],
 ];
 
 for (const [nome, p, arquivos, bytes] of BASE) {

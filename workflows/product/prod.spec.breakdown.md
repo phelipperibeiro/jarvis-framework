@@ -52,7 +52,7 @@ Utilize o `$ARGUMENTS` como ponto de partida (caminho da spec, nome da feature o
 |-------|-------|----------|
 | Pré-requisitos (item 2) | `/prod.spec.prd` | Se não houver spec pai e o usuário aceitar criar o PRD |
 | Pré-requisitos (item 2) | `/prod.spec.frd` | Se não houver spec pai e o usuário aceitar criar o FRD |
-| Busca no Central Docs (condicional) | `/jarvis-docs-central` (via `jarvis docs sync --silent`) | Se `CENTRAL_DOCS_REPO` estiver no ENV.md (best-effort) |
+| Busca no Central Docs (condicional) | `/jarvis-docs-central` (via `jarvis docs sync --silent`) | Se `CENTRAL_DOCS_STORAGE` estiver no ENV.md (best-effort) |
 | Resultado esperado (materialização) | `/prod.spec.epic` | Se o usuário aprovar criar os arquivos de épico a partir do breakdown (nunca automaticamente) |
 | Resultado esperado (materialização) | `/prod.spec.issue` | Se o usuário aprovar criar os arquivos de história ou tarefa a partir do breakdown (nunca automaticamente) |
 
@@ -62,7 +62,7 @@ O artefato de breakdown segue o template `$PROD_TEMPLATES/prod-breakdown-templat
 
 ## Busca no Central Docs (condicional)
 
-Se `CENTRAL_DOCS_REPO` estiver no `ENV.md`:
+Se `CENTRAL_DOCS_STORAGE` estiver no `ENV.md`:
 
 1. `jarvis docs sync --silent` (best-effort)
 2. Localizar Documento de Requisitos de Produto / funcional relacionado (nome, tags, `TASK_MANAGER_KEY`)

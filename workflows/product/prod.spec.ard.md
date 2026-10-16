@@ -45,7 +45,7 @@ Utilize o `$ARGUMENTS` que o usuário passar como ponto de partida e para entend
 
 | Passo | Skill | Condição |
 |-------|-------|----------|
-| Gate 1: Reconhecer o contexto | `/jarvis-docs-central` (via `jarvis docs sync --silent`) | Se `CENTRAL_DOCS_REPO` estiver definido no ENV.md e for preciso buscar o PRD ou FRD relacionado |
+| Gate 1: Reconhecer o contexto | `/jarvis-docs-central` (via `jarvis docs sync --silent`) | Se `CENTRAL_DOCS_STORAGE` estiver definido no ENV.md e for preciso buscar o PRD ou FRD relacionado |
 | Gate 4: Conduzir o ARD | `/eng.create-ard` | Sempre, depois de os requisitos serem confirmados: modo `new`, com `--prd` quando houver PRD (workflow de engenharia; o aviso de transição de domínio é dado antes) |
 
 ## Resultado final
@@ -64,7 +64,7 @@ Utilize o `$ARGUMENTS` que o usuário passar como ponto de partida e para entend
 
 ### Gate 1: Reconhecer o contexto
 1. Valide o `ENV.md` (regra geral de produto) e avise que o ARD é um documento de engenharia.
-2. Identifique o PRD ou FRD de origem em `$PROD_DOCS` (ou o caminho que o usuário informar) e leia-o. Se `CENTRAL_DOCS_REPO` estiver definido, busque no central docs o PRD ou FRD relacionado.
+2. Identifique o PRD ou FRD de origem em `$PROD_DOCS` (ou o caminho que o usuário informar) e leia-o. Se `CENTRAL_DOCS_STORAGE` estiver definido, busque no central docs o PRD ou FRD relacionado.
 3. Resuma em poucas linhas o que a especificação pede e confirme com o usuário que é essa a origem. Se `AREA` do usuário não for `ENGINEERING`, avise que o ARD seguirá o fluxo de engenharia e deve ser revisado por alguém da engenharia.
 
 ### Gate 2: Levantar os requisitos arquiteturais em termos de produto

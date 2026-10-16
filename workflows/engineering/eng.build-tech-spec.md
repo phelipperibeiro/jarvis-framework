@@ -54,7 +54,7 @@ Transformar uma história de usuário (user story) do Jira em uma **Tech Spec co
 | Passo | Skill | Condição |
 |-------|-------|----------|
 | Processo de Criação › verificação de necessidade de RFC | `/eng.create-rfc` | Se a Tech Spec atender aos critérios que exigem RFC e o usuário escolher "A: Criar uma RFC agora" |
-| Caminho A › 2A.2 Análise de Documentação de Produto | `/jarvis-docs-central` | Se `CENTRAL_DOCS_REPO` estiver configurado (buscar PRD/FRD relacionados do épico) |
+| Caminho A › 2A.2 Análise de Documentação de Produto | `/jarvis-docs-central` | Se `CENTRAL_DOCS_STORAGE` estiver configurado (buscar PRD/FRD relacionados do épico) |
 | FASE 7 › 7.3 Criação no Jira | `ferramenta MCP/API do Jira` (referência a confirmar) | Se o projeto usar Jira e houver ferramenta MCP ou API disponível; senão fornecer template para criação manual (o texto não nomeia a ferramenta) |
 
 ---
@@ -264,7 +264,7 @@ Foco em entender o sistema como um todo — não arquivos específicos, mas fron
 #### 2A.2 Análise de Documentação de Produto
 
 - Verifique se há PRD ou FRD relacionado ao épico em `$DOCS_FOLDER` ou no $TASK_MANAGER
-- Se `CENTRAL_DOCS_REPO` configurado: buscar docs via skill `jarvis-docs-central`
+- Se `CENTRAL_DOCS_STORAGE` configurado: buscar docs via skill `jarvis-docs-central`
 
 #### 2A.3 Identificação de Restrições
 

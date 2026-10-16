@@ -22,7 +22,6 @@ IMPORTANTE: Para que você funcione como o previsto e tenha todas as informaçõ
   - `PROD_FLOWS`
   - `PROD_TEMPLATES`
   - `PROD_DOCS`
-  - `CENTRAL_DOCS_REPO`
 - **Se o ENV.md não existir ou estiver incompleto**, o agente deve:
   1. Interromper a execução do comando solicitado
   2. Informar ao usuário que não podemos avançar sem o ENV.md. Mensagem abaixo.
@@ -41,20 +40,19 @@ PROD_RULES=$RULES_FOLDER/$PROD_FOLDER_NAME
 PROD_FLOWS=.$IDE/$FLOWS_FOLDER
 PROD_TEMPLATES=.$IDE/$TEMPLATES_FOLDER/$PROD_FOLDER_NAME
 PROD_DOCS=$DOCS_FOLDER/$PROD_FOLDER_NAME
-CENTRAL_DOCS_REPO=[USER:LOCAL_CENTRAL_DOCS_REPO]
 ```
 
 Abaixo, segue uma descrição de algumas das variáveis mais importantes para as rotinas de produto:
 
 - $DOCS_FOLDER é o nome da pasta principal de documentações do projeto. Ela fica localizada na raiz do projeto.
-- $PROD_DOCS é o nome da pasta principal de documentações de produto do projeto.
+- $PROD_DOCS é o nome da pasta principal de documentações de produto do projeto. No projeto único (sem workspace), fica em `docs/jarvis/product`, fora do versionamento do código.
 - $PROD_FOLDER_NAME é o nome padrão da pasta de produto que será usada em diversos contextos do projeto.
 - $TEMPLATES_FOLDER é o nome da pasta principal de templates do projeto.
 - $PROD_TEMPLATES é o caminho completo para os templates de produto.
 - $FLOWS_FOLDER é o nome da pasta de workflows e comandos utilizados pelos IDEs. (tenha em mente que o nome da pasta pode variar de acordo com a IDE utilizada)
 - $RULES_FOLDER é o nome da pasta principal de regras invioláveis que os agentes devem seguir.
 - $PROD_RULES é o caminho para a pasta que contém as regras de produto. Leia todos os arquivos dentro dessa pasta para entender as regras de produto.
-- $CENTRAL_DOCS_REPO é o caminho para a pasta local que contém as especificações de produto centralizadas. Essa pasta é usada para manter um índice global de todas as especificações de produto.
+- $CENTRAL_DOCS_STORAGE e $CENTRAL_DOCS_LOCATION configuram o Central docs (opcional): onde ficam as especificações aprovadas e o índice global de todas elas. Vazio = desligado. Hoje o único armazenamento é `filesystem` (uma pasta; se tiver `.git`, publica por PR). Leitura e publicação sempre por `jarvis docs fetch | sync | publish`.
 
 
 ## VARIÁVEL `$IDE` - DETECÇÃO AUTOMÁTICA DA PASTA DA IDE

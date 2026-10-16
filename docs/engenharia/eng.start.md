@@ -10,7 +10,7 @@ Investiga a tarefa, tira as dúvidas com você e escreve o `architecture.md`: o 
 
 É a primeira etapa do ciclo de engenharia. O comando **só planeja**. O único documento que produz é o `architecture.md`, guardado na pasta de sessão da tarefa (`.jarvis/sessions/eng/{TASK_MANAGER_KEY}/`).
 
-Além do documento, ele prepara o ambiente: cria a **branch de feature** a partir de `dev` (padrão `{TASK_MANAGER_KEY}-{titulo-em-kebab-case}`, reaproveitando a branch se você já estiver nela) e a pasta da sessão, com o `TASK_MANAGER_KEY` em minúsculas.
+Além do documento, ele prepara o ambiente: pergunta **de qual branch partir** (`main`, `dev`, a atual ou outra), cria a **branch de feature** a partir dela (padrão `{TASK_MANAGER_KEY}-{titulo-em-kebab-case}`, reaproveitando a branch se você já estiver nela) e a pasta da sessão, com o `TASK_MANAGER_KEY` em minúsculas.
 
 ## Quando usar
 
@@ -37,7 +37,7 @@ Além do documento, ele prepara o ambiente: cria a **branch de feature** a parti
 ## Regras que importam
 
 - **Só planejamento:** não escreve código, não executa, não commita
-- **Nunca cria branch a partir de `main`/`master`**, sempre de `dev`
+- **Sempre pergunta a branch base** (não presume `dev` nem `main`) e a grava no `architecture.md`; o `/eng.pr` abre o PR para ela
 - **Nunca avança sozinho:** só termina com aprovação explícita do documento, exceto com o Advisor habilitado e autonomia alta no CDD
 - **Advisor (opcional):** um subagente (`eng.advisor.agent`) com o modelo que você escolher, consultado só nas questões em aberto; os prompts e o modelo de auditoria ficam em `templates/engineering/advisor-template.md`. A lista de modelos oferecidos vem de `ADVISOR_MODELS` no `ENV.md`; no Claude Code só a família do modelo é respeitada
 - **No card, só eventos relevantes:** auditoria do Advisor (quando usado); nada de comentário de início ou fim

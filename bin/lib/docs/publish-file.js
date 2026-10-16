@@ -1,194 +1,122 @@
 /**
- * @fileoverview Publica um documento no central-docs (branch + commit + MR/PR).
- * Substitui `publish-file.sh` (removido) — chama os adapters de `vcs/api.js`
- * direto, sem subprocess, sem arquivo temporário para passar JSON/body.
+ * @fileoverview Publica um documento no Central docs pelo adaptador configurado
+ * (`CENTRAL_DOCS_STORAGE`). O destino segue a estrutura única
+ * `{SQUAD}/{product|engineering}/{produto}/{arquivo}` e o índice do squad é
+ * regenerado a cada publicação (ver `storage/build-index.js`).
  * @module docs/publish-file
  */
 
-import { readFileSync } from "node:fs";
-import { validateFrontmatter, extractMetadata } from "./validate-frontmatter.js";
-import { commitFiles, createMergeRequest } from "../vcs/api.js";
-import { fetchFile } from "./fetch-file.js";
-import { redisDel } from "./redis-cache.js";
+import { basename, extname } from "node:path";
+import { validateFrontmatter } from "./validate-frontmatter.js";
 import { logger } from "../utils/logger.js";
 
-const VALID_TYPES = ["prd", "frd", "ard", "rfc", "swagger", "qa-report"];
+/** @constant {Readonly<Record<string, "product"|"engineering">>} Área de cada tipo */
+export const AREA_BY_TYPE = Object.freeze({
+  prd: "product",
+  frd: "product",
+  feat: "product",
+  epic: "product",
+  story: "product",
+  task: "product",
+  ard: "engineering",
+  rfc: "engineering",
+  swagger: "engineering",
+  "qa-report": "engineering",
+});
 
-/**
- * @param {{ tipo: string, squad: string, workspace: string, feature: string, localFile: string }} p
- * @returns {{ destPath: string, area: "product"|"engineering" }}
- */
-export function resolveDestPath({ tipo, squad, workspace, feature, localFile }) {
-  const base = `${squad}/${workspace}`;
+/** @constant {ReadonlyArray<string>} Tipos aceitos pelo `jarvis docs publish` */
+export const VALID_TYPES = Object.freeze(Object.keys(AREA_BY_TYPE));
 
-  if (tipo === "prd" || tipo === "frd") {
-    return { destPath: `${base}/product/${tipo}-${feature}.md`, area: "product" };
-  }
-  if (tipo === "ard") {
-    return { destPath: `${base}/engineering/ARD/${tipo}-${feature}.md`, area: "engineering" };
-  }
-  if (tipo === "rfc") {
-    return { destPath: `${base}/engineering/RFC/${tipo}-${feature}.md`, area: "engineering" };
-  }
-  if (tipo === "swagger") {
-    const ext = localFile.split(".").pop().toLowerCase();
-    const swaggerExt = ext === "yaml" || ext === "yml" ? ext : ext === "json" ? "json" : null;
-    const destPath = swaggerExt
-      ? `${base}/engineering/swagger/api-${feature}.${swaggerExt}`
-      : `${base}/engineering/swagger/swagger-${feature}.md`; // default: .md (wrapper com metadados)
-    return { destPath, area: "engineering" };
-  }
-  if (tipo === "qa-report") {
-    return { destPath: `${base}/engineering/qa/qa-report-${feature}.md`, area: "engineering" };
-  }
+const SEGMENT = /^[A-Za-z0-9][A-Za-z0-9_-]*$/;
 
-  throw new Error(`Tipo inválido: ${tipo}\nTipos válidos: ${VALID_TYPES.join(", ")}`);
+function assertSegment(label, value) {
+  if (!value || !SEGMENT.test(value)) {
+    throw new Error(
+      `${label} inválido: "${value ?? ""}" (use letras, números, "-" ou "_", sem "/" nem "..")`
+    );
+  }
 }
 
 /**
- * Insere `newLine` logo após o header `## {area}` — sem nunca descartar uma
- * linha existente. O `publish-file.sh` original usava `getline` do AWK para
- * "pular" a linha seguinte ao header antes de imprimir a nova entrada; essa
- * linha pulada nunca era reimpressa, o que apagava silenciosamente a entrada
- * anterior do índice na segunda publicação numa mesma seção (reproduzido e
- * documentado em `architecture.md` desta sessão, seção 3.4).
- * @param {string} content
- * @param {"product"|"engineering"} area
- * @param {string} newLine
- * @returns {{ content: string, found: boolean }}
+ * Calcula o destino do documento no Central docs.
+ * O nome é o do arquivo local quando ele já segue `{tipo}-…` (ex: `prd-001-checkout.md`);
+ * senão vem de `--feature` (`{tipo}-{feature}.{ext}`).
+ *
+ * @param {Object} p
+ * @param {string} p.tipo
+ * @param {string} p.squad
+ * @param {string} p.produto - Padrão: WORKSPACE (o caller resolve)
+ * @param {string} p.localFile
+ * @param {string} [p.feature]
+ * @returns {{ destPath: string, area: "product"|"engineering", fileName: string }}
  */
-export function insertIndexLine(content, area, newLine) {
-  const lines = content.split("\n");
-  const headerPattern = /^## (product|engineering)\b/;
+export function resolveDestPath({ tipo, squad, produto, localFile, feature }) {
+  const area = AREA_BY_TYPE[tipo];
+  if (!area) {
+    throw new Error(`Tipo inválido: ${tipo}\nTipos válidos: ${VALID_TYPES.join(", ")}`);
+  }
+  assertSegment("Squad", squad);
+  assertSegment("Produto", produto);
 
-  for (let i = 0; i < lines.length; i++) {
-    const match = lines[i].match(headerPattern);
-    if (match && match[1] === area) {
-      lines.splice(i + 1, 0, newLine);
-      return { content: lines.join("\n"), found: true };
-    }
+  const local = basename(localFile);
+  const ext = extname(local).toLowerCase() || ".md";
+  const followsPattern = local.toLowerCase().startsWith(`${tipo}-`) && /\.(md|ya?ml|json)$/.test(ext);
+
+  let fileName;
+  if (followsPattern) {
+    fileName = local;
+  } else if (feature) {
+    assertSegment("Feature", feature);
+    fileName = `${tipo}-${feature}${ext}`;
+  } else {
+    throw new Error(
+      `O arquivo "${local}" não segue o padrão {tipo}-{id}-{nome}${ext}.\n` +
+        `Renomeie o arquivo ou informe --feature <slug>.`
+    );
   }
 
-  const trimmed = content.replace(/\n+$/, "");
-  return { content: `${trimmed}\n\n## ${area}\n${newLine}\n`, found: false };
+  return { destPath: `${squad}/${area}/${produto}/${fileName}`, area, fileName };
 }
 
 /**
  * @param {Object} opts
- * @param {string} opts.localFile - Caminho do arquivo local (ex: `./docs/engineering/ard-x.md`)
- * @param {string} opts.tipo - prd|frd|ard|rfc|swagger|qa-report
- * @param {string} opts.feature - Slug da feature (kebab-case)
- * @param {string} opts.squad - Squad (já resolvido pelo caller: override ou ENV.md)
- * @param {string} opts.workspace - Workspace (já resolvido pelo caller: override ou ENV.md)
- * @param {string} opts.repo - CENTRAL_DOCS_REPO
- * @param {string} [opts.targetBranch] - Branch base do MR/PR (padrão: "dev")
- * @param {string|number} [opts.cacheTtl] - TTL do cache do index.md em segundos (padrão: 3600)
- * @returns {Promise<{ sha: string, mr: { vendor: string, iid: number|string, url: string } }>}
+ * @param {Object} opts.storage - Adaptador (`getStorage`)
+ * @param {string} opts.localFile
+ * @param {string} opts.tipo
+ * @param {string} opts.squad
+ * @param {string} opts.produto
+ * @param {string} [opts.feature]
+ * @returns {Promise<{ destPath: string, indexPath: string, sha?: string, branch?: string, mr?: Object }>}
  */
-export async function publishFile(opts) {
-  const {
-    localFile,
-    tipo,
-    feature,
-    squad,
-    workspace,
-    repo,
-    targetBranch = "dev",
-    cacheTtl = "3600",
-  } = opts;
-
-  if (!repo) {
+export async function publishFile({ storage, localFile, tipo, squad, produto, feature }) {
+  if (!storage) {
     throw new Error(
-      "CENTRAL_DOCS_REPO não configurado no ENV.md\n\nConfigure a URL do repositório central:\n  CENTRAL_DOCS_REPO=https://gitlab.com/org/central-docs.git"
+      "Central docs desligado (CENTRAL_DOCS_STORAGE vazio). Configure-o no /jarvis-init."
     );
   }
 
-  logger.info("Validando frontmatter...");
-  validateFrontmatter(localFile, tipo);
-  logger.info("✅ Frontmatter válido");
+  const { destPath } = resolveDestPath({ tipo, squad, produto, localFile, feature });
 
-  const metadata = extractMetadata(localFile);
-  const version = metadata.version || "1.0.0";
-  const status = metadata.status || "draft";
-  const jira = metadata.jira || "";
-  const docName = metadata.name || "";
-
-  const { destPath, area } = resolveDestPath({ tipo, squad, workspace, feature, localFile });
-  const indexPath = `${squad}/${workspace}/index.md`;
-  const branchName = `docs/${squad}/${workspace}/${tipo}-${feature}`;
+  const isStructuredSwagger = tipo === "swagger" && !localFile.toLowerCase().endsWith(".md");
+  if (!isStructuredSwagger) {
+    logger.info("Validando frontmatter...");
+    validateFrontmatter(localFile, tipo);
+    logger.info("✅ Frontmatter válido");
+  }
 
   logger.info("");
   logger.info("📋 Resumo da Publicação:");
-  logger.info(`  Squad: ${squad}`);
-  logger.info(`  Workspace: ${workspace}`);
-  logger.info(`  Tipo: ${tipo}`);
-  logger.info(`  Feature: ${feature}`);
+  logger.info(`  Armazenamento: ${storage.kind}${storage.isGit ? " (git)" : ""}`);
   logger.info(`  Destino: ${destPath}`);
-  logger.info(`  Branch: ${branchName} → ${targetBranch}`);
   logger.info("");
 
-  const fileContentBase64 = readFileSync(localFile).toString("base64");
+  const result = await storage.publish({ localFile, destPath, squad, tipo });
 
-  logger.info("Buscando index.md do workspace...");
-  let indexContent = "";
-  try {
-    indexContent = await fetchFile(indexPath, targetBranch, { repo, cacheTtl });
-  } catch {
-    indexContent = "";
+  logger.info(`✅ Publicado em ${destPath}`);
+  logger.info(`🗂️  Índice regenerado: ${result.indexPath}`);
+  if (result.mr) {
+    logger.info(`🔀 Pull/Merge Request: ${result.mr.url}`);
   }
 
-  let indexAction;
-  if (!indexContent) {
-    logger.info("⚠️  index.md não encontrado, será criado");
-    indexAction = "create";
-    indexContent = `# ${workspace}\n\n**Squad:** ${squad}\n\n## ${area}\n\n`;
-  } else {
-    indexAction = "update";
-  }
-
-  let newLine = `- [${tipo}-${feature}.md](${area}/${tipo}-${feature}.md) | v${version} | ${status}`;
-  if (jira) newLine += ` | jira: ${jira}`;
-  if (docName) newLine += ` | ${docName}`;
-
-  const { content: updatedIndex } = insertIndexLine(indexContent, area, newLine);
-  const updatedIndexBase64 = Buffer.from(updatedIndex, "utf-8").toString("base64");
-
-  logger.info("Criando branch e commit...");
-  const commitResult = await commitFiles(repo, {
-    branch: branchName,
-    startBranch: targetBranch,
-    message: `docs(${squad}): add ${tipo} ${feature}`,
-    files: [
-      { path: destPath, contentBase64: fileContentBase64, action: "create" },
-      { path: indexPath, contentBase64: updatedIndexBase64, action: indexAction },
-    ],
-  });
-  logger.info(`✅ Commit criado: ${commitResult.sha}`);
-
-  logger.info("Criando Merge/Pull Request...");
-  let mrDescription = `## Documento\n\n- **Tipo**: ${tipo}\n- **Workspace**: ${workspace}\n- **Feature**: ${feature}`;
-  if (jira) mrDescription += `\n- **Card**: ${jira}`;
-  if (docName) mrDescription += `\n- **Nome**: ${docName}`;
-
-  const mr = await createMergeRequest(repo, {
-    source: branchName,
-    target: targetBranch,
-    title: `docs(${squad}): ${tipo} ${feature}`,
-    description: mrDescription,
-  });
-
-  logger.info("");
-  logger.info("✅ Merge/Pull Request criado com sucesso!");
-  logger.info("");
-  logger.info(`  #${mr.iid}: ${branchName} → ${targetBranch}`);
-  logger.info(`  URL: ${mr.url}`);
-  logger.info("");
-
-  redisDel(`docs:${indexPath}:${targetBranch}`);
-  redisDel(`docs:${indexPath}:main`);
-  logger.info("🔄 Cache Redis invalidado");
-  logger.info("");
-  logger.info("✅ Publicação concluída!");
-
-  return { sha: commitResult.sha, mr };
+  return result;
 }

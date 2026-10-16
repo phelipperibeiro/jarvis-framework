@@ -50,7 +50,7 @@ Sem esse documento (ou equivalente), épicos e histórias tendem a virar “pedi
 ## Como o framework te favorece
 
 - Padroniza pasta e nome (`prd-{id}-{slug}/…`)
-- Pode sincronizar com docs centrais se `CENTRAL_DOCS_REPO` estiver no `ENV.md`
+- Pode sincronizar com docs centrais se `CENTRAL_DOCS_STORAGE` estiver no `ENV.md`
 - Mantém o documento legível por humanos **e** por agentes na hora do `/eng.start`
 
 ## Relação com engenharia

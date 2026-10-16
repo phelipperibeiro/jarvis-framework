@@ -27,7 +27,7 @@ O comando percorre "gates". Alguns sempre rodam, outros só quando a branch pede
 
 | Gate | Quando |
 |---|---|
-| Documentação central (ARD, RFC) | Se `CENTRAL_DOCS_REPO` estiver configurado |
+| Documentação central (ARD, RFC) | Se `CENTRAL_DOCS_STORAGE` estiver configurado |
 | Alinhamento com os docs do projeto (`prod.pm-checker`) | Sempre |
 | Revisão de código (`eng.dev-code-reviewer`) | Sempre |
 | Lacunas de cobertura de testes (`test-planner`), com testes escritos se as lacunas forem críticas | Sempre |
