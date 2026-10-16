@@ -27,8 +27,8 @@ Além disso, quando houver campo `Versão` no RFC, aplicar obrigatoriamente:
 
 | Passo | Skill | Condição |
 |-------|-------|----------|
-| Passo 0.6 – Buscar Documentação Relacionada no Central Docs | `/jarvis-docs-central` (via `jarvis docs sync --silent`) | Se `CENTRAL_DOCS_REPO` estiver definido no ENV.md |
-| Passo 7 – Publicar no Central Docs | `/jarvis-docs-central` (via `jarvis docs publish --tipo rfc`) | Se `CENTRAL_DOCS_REPO` estiver definido **e** o usuário aprovar o RFC e responder "Sim, publicar agora" |
+| Passo 0.6 – Buscar Documentação Relacionada no Central Docs | `/jarvis-docs-central` (via `jarvis docs sync --silent`) | Se `CENTRAL_DOCS_STORAGE` estiver definido no ENV.md |
+| Passo 7 – Publicar no Central Docs | `/jarvis-docs-central` (via `jarvis docs publish --tipo rfc`) | Se `CENTRAL_DOCS_STORAGE` estiver definido **e** o usuário aprovar o RFC e responder "Sim, publicar agora" |
 
 ---
 
@@ -92,7 +92,7 @@ Regras:
 
 ## Passo 0.6 – Buscar Documentação Relacionada no Central Docs (condicional)
 
-Se `CENTRAL_DOCS_REPO` definido no ENV.md:
+Se `CENTRAL_DOCS_STORAGE` definido no ENV.md:
 
 1. Executar busca automática no central-docs:
    ```bash
@@ -223,7 +223,7 @@ Entregar:
 
 ## Passo 7 – Publicar no Central Docs (condicional)
 
-Se `CENTRAL_DOCS_REPO` definido no ENV.md **E** o usuário aprovar o RFC:
+Se `CENTRAL_DOCS_STORAGE` definido no ENV.md **E** o usuário aprovar o RFC:
 
 1. Perguntar ao usuário:
    ```
@@ -233,20 +233,18 @@ Se `CENTRAL_DOCS_REPO` definido no ENV.md **E** o usuário aprovar o RFC:
    ```
 
 2. Se **Sim**:
-   - Extrair o slug do nome do arquivo (ex: `RFC-001-wallet-idempotencia.md` → `wallet-idempotencia`)
    - Executar:
      ```bash
      jarvis docs publish \
        --file {caminho_do_rfc} \
-       --tipo rfc \
-       --feature {slug}
+       --tipo rfc
      ```
    
 3. Informar resultado:
-   - ✅ Sucesso: "RFC publicado no central-docs. MR criado: [URL]"
+   - ✅ Sucesso: "RFC publicado no Central docs." (com git: "PR aberto: [URL]")
    - ❌ Erro: Exibir mensagem de erro e orientar troubleshooting
 
 4. Se **Não**:
-   - Informar: "Para publicar depois, execute: `jarvis docs publish --file {caminho} --tipo rfc --feature {slug}`"
+   - Informar: "Para publicar depois, execute: `jarvis docs publish --file {caminho} --tipo rfc`"
 
-> **Nota**: A publicação cria um Merge Request no GitLab. O RFC só será visível no central-docs após aprovação e merge do MR.
+> **Nota**: se a pasta do Central docs for um repositório git, a publicação abre um Pull/Merge Request e o RFC só entra na branch base depois do merge. Sem git, o documento é gravado direto e o índice é regenerado.

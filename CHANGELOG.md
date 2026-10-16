@@ -20,6 +20,28 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), e o
 - `recommended_model` dos 11 workflows (10 de produto e `eng.create-ard`) passou a `opus` (o `prod.roadmap.preview` ganhou o campo)
 - Upgrade do `jarvis-init`: numeração dos passos corrigida (havia dois "4." e dois "5.")
 
+## [Unreleased]
+
+### Added
+- **Central docs por adaptador de armazenamento** (#143): `CENTRAL_DOCS_STORAGE` escolhe o adaptador e `CENTRAL_DOCS_LOCATION` diz onde ele guarda. Primeiro adaptador: `filesystem` (uma pasta do disco). Se a pasta tiver `.git` (clone de um repositório de documentação), o adaptador faz `git pull` antes de ler e branch + commit + push + Pull/Merge Request ao publicar (usando o `scripts/build-index.sh` do repositório, quando existir). Código em `bin/lib/docs/storage/` (`index.js`, `filesystem.js`, `build-index.js`); S3 e Google Drive ficam para #144 e #145
+- `{SQUAD}/index.md` regenerado a partir do frontmatter a cada publicação (em vez de editado), no mesmo caminho lido pelo `docs sync`
+- `jarvis docs publish`: tipos `feat`, `epic`, `story` e `task` (o `/prod.spec.epic` passa a publicar), `--produto` (padrão `WORKSPACE`) e o nome do arquivo local como nome no Central docs (`--feature` só para nome fora do padrão)
+- `/jarvis-init`: pergunta "Onde fica a documentação central?" (pasta local, repositório git com `git clone`, ou não usar), com o local padrão por modo de trabalho (`./central-docs` no workspace; `docs/jarvis/central-docs` no projeto único) e o `.gitignore` correspondente; migração do `CENTRAL_DOCS_REPO` no Upgrade
+- **Branch base perguntada**: `eng.start` e `eng.rpa.robot` perguntam de qual branch partir (`main`, `dev`, a atual ou outra) e gravam `Branch base:` no `architecture.md`; o `eng.pr` abre o PR para essa base
+
+### Changed
+- **Breaking:** `CENTRAL_DOCS_REPO` deu lugar a `CENTRAL_DOCS_STORAGE` + `CENTRAL_DOCS_LOCATION`. Com a variável antiga e sem a nova, os comandos `jarvis docs` pedem o Upgrade do `/jarvis-init`
+- **Breaking:** destino do publish passa a `{SQUAD}/{product|engineering}/{produto}/{arquivo}` (antes `{SQUAD}/{WORKSPACE}/product/{tipo}-{feature}.md`, com ARD em `engineering/ARD/`)
+- Projeto único: `PROD_DOCS=docs/jarvis/product`, com `docs/jarvis/*` no `.gitignore`
+- `jarvis docs fetch` lê pelo adaptador e perdeu o argumento `[ref]` (a ref vem de `CENTRAL_DOCS_REF`)
+- Padrão de `CENTRAL_DOCS_TARGET_BRANCH` no código passou de `dev` para `main` (igual ao template)
+- `validate-frontmatter.js`: status de produto, ARD e RFC atualizados (#146) e campos obrigatórios do ARD no frontmatter (`id`, `name`, `version`, `status`)
+- Workflows, agente e templates que citavam `CENTRAL_DOCS_REPO` passam a checar `CENTRAL_DOCS_STORAGE`
+
+### Removed
+- `jarvis vcs fetch-raw` (e `bin/lib/vcs/fetch-raw.js`), `fetchRawFile` e `commitFiles` de `vcs/api.js`: a leitura do Central docs é sempre `jarvis docs fetch`
+- Cache Redis (`bin/lib/docs/redis-cache.js`) e `CENTRAL_DOCS_CACHE_TTL`
+
 ## [3.2.0] - 2026-10-06
 
 ### Added

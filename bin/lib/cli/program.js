@@ -28,7 +28,6 @@ import { tokens } from "../../commands/tokens.js";
 import { map } from "../../commands/map.js";
 import { runCreateMerge } from "../vcs/create-merge.js";
 import { runCreateIssue } from "../vcs/create-issue.js";
-import { runFetchRaw } from "../vcs/fetch-raw.js";
 import { runComment } from "../tasks/comment.js";
 import { fetchFile } from "../docs/fetch-file.js";
 import { formatIDEsList } from "../config/ide-config.js";
@@ -112,33 +111,38 @@ export function buildProgram() {
   const docs = cmd(program, "docs").description("Sincronizar ou publicar documentação");
 
   const docsSyncCmd = cmd(docs, "sync").description(
-    "Sincronizar docs do central-docs (usado por /warm-up)"
+    "Sincronizar docs do Central docs pelo adaptador de CENTRAL_DOCS_STORAGE (usado por /warm-up)"
   );
   withEnvOptions(withLogOptions(docsSyncCmd)).action((options) => docsSync(toLegacyFlags(options)));
 
-  cmd(docs, "fetch")
+  const docsFetchCmd = cmd(docs, "fetch")
     .description(
-      "Buscar um arquivo do central-docs, com cache Redis best-effort (lê CENTRAL_DOCS_REPO do ambiente)"
+      "Buscar um arquivo do Central docs pelo adaptador de CENTRAL_DOCS_STORAGE (com git: pull antes de ler)"
     )
-    .argument("<file-path>", "Path do arquivo dentro do repo central-docs")
-    .argument("[ref]", "Branch/ref", "main")
-    .action(async (filePath, ref) => {
-      try {
-        const content = await fetchFile(filePath, ref);
-        process.stdout.write(content);
-      } catch (error) {
-        console.error(error.message);
-        process.exit(error.code === 404 ? 2 : 1);
-      }
-    });
+    .argument("<file-path>", "Caminho do arquivo dentro do Central docs (ex: CORE/index.md)");
+  withEnvOptions(docsFetchCmd).action(async (filePath, options) => {
+    try {
+      const content = await fetchFile(filePath, { flags: toLegacyFlags(options) });
+      process.stdout.write(content);
+    } catch (error) {
+      console.error(error.message);
+      process.exit(error.code === 404 ? 2 : 1);
+    }
+  });
 
   const docsPublishCmd = cmd(docs, "publish")
-    .description("Publicar documento no central-docs (branch + MR/PR)")
+    .description(
+      "Publicar documento no Central docs (pasta: copia e regenera o índice; com git: branch + PR)"
+    )
     .option("--file <path>", "Caminho do arquivo local")
-    .option("--tipo <tipo>", "prd|frd|ard|rfc|swagger|qa-report")
-    .option("--feature <slug>", "Slug da feature (kebab-case)")
+    .option("--tipo <tipo>", "prd|frd|feat|epic|story|task|ard|rfc|swagger|qa-report")
+    .option("--produto <produto>", "Pasta do produto no Central docs (padrão: WORKSPACE do ENV.md)")
+    .option("--feature <slug>", "Só se o nome do arquivo fugir do padrão {tipo}-{id}-{nome}")
     .option("--squad <squad>", "Override do SQUAD do ENV.md")
-    .option("--workspace <workspace>", "Override do WORKSPACE do ENV.md");
+    .option(
+      "--workspace <workspace>",
+      "Override do WORKSPACE do ENV.md (mesmo efeito de --produto)"
+    );
   withEnvOptions(withLogOptions(docsPublishCmd)).action((options) =>
     docsPublish(toLegacyFlags(options))
   );
@@ -200,12 +204,6 @@ export function buildProgram() {
     .action((options) =>
       runCreateIssue({ repo: options.repo, title: options.title, bodyFile: options.bodyFile })
     );
-
-  cmd(vcs, "fetch-raw")
-    .description("Buscar o conteúdo bruto de um arquivo no central-docs (lê CENTRAL_DOCS_REPO)")
-    .argument("[file-path]")
-    .argument("[ref]", "Branch/ref", "main")
-    .action((filePath, ref) => runFetchRaw(filePath, ref));
 
   const tasks = cmd(program, "tasks").description("Adapters de task manager");
 

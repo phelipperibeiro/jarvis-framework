@@ -1,6 +1,6 @@
 // Testes dos adapters de Git host (vcs/api.js + git-parser.js). Rode com: npm run test:filtro
 //
-// fetchRawFile/createMergeRequest/createIssue/commitFiles fazem chamada de
+// createMergeRequest/createIssue fazem chamada de
 // rede real via `fetch()` global — em vez de mockar módulo ou refatorar
 // api.js para injetar um cliente HTTP, usa-se `mock.method` do `node:test`
 // no `fetch` global, controlando a resposta por vendor. Zero mudança em
@@ -15,7 +15,6 @@
 import { test, mock } from "node:test";
 import assert from "node:assert/strict";
 import {
-  fetchRawFile,
   createMergeRequest,
   createIssue,
   cardUrl,
@@ -129,70 +128,8 @@ test("cardUrl: task manager desconhecido cai no formato jira (/browse/)", () => 
 });
 
 // ---------------------------------------------------------------------------
-// fetchRawFile / createMergeRequest / createIssue — fetch mockado por vendor
+// createMergeRequest / createIssue — fetch mockado por vendor
 // ---------------------------------------------------------------------------
-
-test("fetchRawFile: monta a URL raw do GitLab e repassa o ref", async (t) => {
-  t.after(() => mock.reset());
-  let captured;
-  mock.method(globalThis, "fetch", async (url) => {
-    captured = String(url);
-    return { status: 200, ok: true, text: async () => "conteúdo" };
-  });
-
-  const content = await withEnv({ GITLAB_TOKEN: "fake-token" }, () =>
-    fetchRawFile("https://gitlab.com/g/r", "docs/x.md", "main")
-  );
-
-  assert.equal(content, "conteúdo");
-  assert.match(captured, /\/projects\/g%2Fr\/repository\/files\//);
-  assert.match(captured, /ref=main$/);
-});
-
-test("fetchRawFile: GitHub usa o endpoint /contents e pede Accept raw", async (t) => {
-  t.after(() => mock.reset());
-  let seenHeaders;
-  mock.method(globalThis, "fetch", async (url, init) => {
-    seenHeaders = init.headers;
-    return { status: 200, ok: true, text: async () => "conteúdo" };
-  });
-
-  await withEnv({ GITHUB_TOKEN: "fake-token" }, () =>
-    fetchRawFile("https://github.com/o/r", "docs/x.md", "main")
-  );
-
-  assert.equal(seenHeaders.Accept, "application/vnd.github.raw");
-});
-
-test("fetchRawFile: 404 lança erro com err.code = 404", async (t) => {
-  t.after(() => mock.reset());
-  mock.method(globalThis, "fetch", async () => ({ status: 404, ok: false, text: async () => "" }));
-
-  await withEnv({ GITHUB_TOKEN: "fake-token" }, () =>
-    assert.rejects(
-      () => fetchRawFile("https://github.com/o/r", "x.md"),
-      (err) => {
-        assert.equal(err.code, 404);
-        return true;
-      }
-    )
-  );
-});
-
-test("fetchRawFile: 401/403 lança erro de não autorizado com o status em err.code", async (t) => {
-  t.after(() => mock.reset());
-  mock.method(globalThis, "fetch", async () => ({ status: 401, ok: false, text: async () => "" }));
-
-  await withEnv({ BITBUCKET_TOKEN: "fake-token" }, () =>
-    assert.rejects(
-      () => fetchRawFile("https://bitbucket.org/w/r", "x.md"),
-      (err) => {
-        assert.equal(err.code, 401);
-        return true;
-      }
-    )
-  );
-});
 
 test("createMergeRequest: GitLab — POST em merge_requests, retorna iid/url de web_url", async (t) => {
   t.after(() => mock.reset());

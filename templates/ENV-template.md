@@ -58,6 +58,8 @@ RULES_FOLDER=.$IDE/rules
 SESSIONS_DIR=.jarvis/sessions
 
 # Pastas de produto (derivadas das de cima — em geral não precisa mexer)
+# PROD_DOCS: no projeto único (sem workspace), o /jarvis-init grava docs/jarvis/product
+# (com docs/jarvis/* no .gitignore); no modo workspace, $DOCS_FOLDER/$PROD_FOLDER_NAME.
 PROD_FOLDER_NAME=product
 PROD_RULES=$RULES_FOLDER/$PROD_FOLDER_NAME
 PROD_FLOWS=.$IDE/$FLOWS_FOLDER
@@ -204,11 +206,18 @@ JARVIS_PROJECT=https://github.com/phelipperibeiro/jarvis-framework
 
 
 # --- Central docs (opcional) -------------------------------------------------
-# Repo de documentação canônica (PRD, FRD, ARD, RFC). Em branco = desligado.
-CENTRAL_DOCS_REPO=
+# Onde fica a documentação canônica (PRD, FRD, épicos, ARD, RFC). Em branco = desligado.
+# Nunca dentro do versionamento de um repositório de código.
+#   CENTRAL_DOCS_STORAGE: filesystem (s3 e gdrive virão nas issues #144 e #145)
+#   CENTRAL_DOCS_LOCATION: pasta do Central docs, relativa à pasta do workspace ou absoluta.
+#     Padrão do /jarvis-init: ./central-docs (modo workspace, no .gitignore do workspace)
+#     ou docs/jarvis/central-docs (projeto único, com docs/jarvis/* no .gitignore).
+#   Se a pasta for um clone de um repositório de documentação (tem .git): git pull antes
+#   de ler e branch + commit + push + PR ao publicar. Sem .git: grava direto na pasta.
+CENTRAL_DOCS_STORAGE=
+CENTRAL_DOCS_LOCATION=
+# Só quando a pasta tem .git: branch lida no pull e branch base dos PRs.
 CENTRAL_DOCS_REF=main
 CENTRAL_DOCS_TARGET_BRANCH=main
-# Revisores padrão dos MRs (separados por vírgula).
+# Revisores padrão dos PRs (separados por vírgula; vão na descrição).
 CENTRAL_DOCS_REVIEWERS=
-# TTL do cache opcional (redis-cli, se existir). 3600 = 1 hora.
-CENTRAL_DOCS_CACHE_TTL=3600

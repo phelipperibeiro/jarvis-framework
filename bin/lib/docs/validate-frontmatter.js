@@ -2,10 +2,10 @@ import { readFileSync } from 'node:fs'
 import { parseFrontmatter, extractFrontmatterBlock } from '../utils/frontmatter.js'
 
 /**
- * Valida frontmatter YAML de documentos (PRD, FRD, ARD, RFC)
+ * Valida frontmatter YAML de documentos (PRD, FRD, épico, história, tarefa, ARD, RFC)
  * 
  * @param {string} filePath - Caminho do arquivo
- * @param {string} tipo - Tipo do documento (prd|frd|ard|rfc)
+ * @param {string} tipo - Tipo do documento (ver VALID_TYPES em publish-file.js)
  * @returns {Object} Metadados extraídos
  * @throws {Error} Se frontmatter for inválido
  */
@@ -54,7 +54,13 @@ export function validateFrontmatter(filePath, tipo) {
   }
 
   // Validar status
-  const validStatuses = ['icebox', 'in_review', 'in_progress', 'in_production', 'deprecated', 'Proposta', 'Em desenvolvimento', 'Em validação', 'Finalizada', 'Draft', 'In Review', 'Ready for Decision', 'Accepted', 'Rejected', 'Superseded']
+  // Produto (rules/product/prod-rules.md), ARD (templates/engineering/ARD-template.md),
+  // discovery (prod-discovery-template.md) e RFC (RFC-template.md)
+  const validStatuses = [
+    'icebox', 'in_review', 'backlog', 'in_progress', 'in_production', 'cancelled', 'deprecated',
+    'proposed', 'approved',
+    'Draft', 'In Review', 'Ready for Decision', 'Accepted', 'Rejected', 'Superseded'
+  ]
   
   if (metadata.status && !validStatuses.includes(metadata.status)) {
     console.warn(
@@ -76,7 +82,11 @@ function getRequiredFields(tipo) {
   const fields = {
     prd: ['id', 'name', 'version', 'status'],
     frd: ['id', 'name', 'version', 'status', 'related_prd'],
-    ard: ['Status', 'Data', 'Autor', 'Versão'],
+    feat: ['id', 'name', 'version', 'status', 'related_prd'],
+    epic: ['id', 'name', 'version', 'status', 'related_prd'],
+    story: ['id', 'name', 'status', 'related_prd'],
+    task: ['id', 'name', 'status'],
+    ard: ['id', 'name', 'version', 'status'],
     rfc: ['Status', 'Criado em', 'Proponente'],
     'qa-report': ['period', 'squad', 'version']
   }

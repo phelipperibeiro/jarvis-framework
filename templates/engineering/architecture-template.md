@@ -5,6 +5,7 @@
 
 > **Criado em:** {DATA}  
 > **Issue:** {JIRA_ISSUE_KEY}  
+> **Branch base:** {main | dev | outra — perguntada no eng.start; destino do PR no eng.pr}  
 > **Status:** 🔄 Em Revisão | ✅ Aprovado | ❌ Rejeitado  
 > **Advisor:** {modelo escolhido no início do eng.start} | não utilizado
 

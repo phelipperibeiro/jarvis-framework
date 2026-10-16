@@ -1,10 +1,11 @@
-import { loadEnv, resolveEnvPath } from "../lib/env-loader.js";
-import { fetchFile } from "../lib/docs/fetch-file.js";
+import { openStorageFromEnv } from "../lib/docs/fetch-file.js";
 import { logger, configureFromFlags } from "../lib/utils/logger.js";
 
+const COUNTED_TYPES = ["prd", "frd", "feat", "epic", "story", "task", "ard", "rfc"];
+
 /**
- * Sincroniza documentação do central-docs
- * Executado automaticamente em /warm-up
+ * Sincroniza a documentação do Central docs (lê `{SQUAD}/index.md` pelo adaptador).
+ * Executado automaticamente em /warm-up.
  *
  * @param {Object} flags - Flags do comando
  * @param {boolean} flags.silent - Modo silencioso (nem erros aparecem)
@@ -15,87 +16,53 @@ import { logger, configureFromFlags } from "../lib/utils/logger.js";
 export async function docsSync(flags = {}) {
   configureFromFlags(flags);
 
-  const cwd = process.cwd();
-
-  // Resolver path do ENV.md (suporta --ide e --env-file)
-  let envPath;
-  try {
-    const resolved = resolveEnvPath(cwd, flags);
-    envPath = resolved.path;
-  } catch (error) {
-    logger.error("❌ Erro ao resolver ENV.md:", error.message);
-    process.exit(1);
-  }
-
-  // Carregar ENV.md
   let env;
+  let storage;
   try {
-    env = loadEnv(cwd, envPath);
+    ({ env, storage } = openStorageFromEnv(flags));
   } catch (error) {
-    logger.error("❌ Erro ao carregar ENV.md:", error.message);
+    logger.error("❌ Central docs:", error.message);
     process.exit(1);
   }
 
-  // Verificar se central-docs está configurado
-  if (!env.CENTRAL_DOCS_REPO) {
-    logger.info("ℹ️  Central docs não configurado (CENTRAL_DOCS_REPO vazio)");
+  if (!storage) {
+    logger.info("ℹ️  Central docs desligado (CENTRAL_DOCS_STORAGE vazio)");
     return;
   }
 
-  const { SQUAD, WORKSPACE, CENTRAL_DOCS_REF = "main" } = env;
-
-  if (!SQUAD || !WORKSPACE) {
-    logger.error("❌ SQUAD ou WORKSPACE não definidos no ENV.md");
+  const { SQUAD } = env;
+  if (!SQUAD) {
+    logger.error("❌ SQUAD não definido no ENV.md");
     process.exit(1);
   }
 
-  logger.info(`🔄 Sincronizando docs do squad ${SQUAD}...`);
-
-  // Buscar index.md do squad
-  const indexPath = `${SQUAD}/index.md`;
+  logger.info(
+    `🔄 Sincronizando docs do squad ${SQUAD} (${storage.kind}${storage.isGit ? " + git" : ""})...`
+  );
 
   try {
-    const content = await fetchFile(indexPath, CENTRAL_DOCS_REF, {
-      repo: env.CENTRAL_DOCS_REPO,
-      cacheTtl: env.CENTRAL_DOCS_CACHE_TTL || "3600",
-    });
-
+    const content = await storage.fetch(`${SQUAD}/index.md`);
     logger.info("✅ Docs sincronizados");
 
-    if (content) {
-      logger.debug("\n📄 Conteúdo do index.md:\n");
-      logger.debug(content);
-    }
+    logger.debug("\n📄 Conteúdo do index.md:\n");
+    logger.debug(content);
 
-    // Parsear index.md para contar documentos
-    if (content) {
-      const prdCount = (content.match(/\[prd-.*\.md\]/g) || []).length;
-      const frdCount = (content.match(/\[frd-.*\.md\]/g) || []).length;
-      const ardCount = (content.match(/\[ard-.*\.md\]/g) || []).length;
-      const rfcCount = (content.match(/\[rfc-.*\.md\]/g) || []).length;
+    const counts = COUNTED_TYPES.map((tipo) => [
+      tipo,
+      (content.match(new RegExp(`\\[${tipo}-[^\\]]*\\]`, "g")) || []).length,
+    ]).filter(([, n]) => n > 0);
+    const total = counts.reduce((sum, [, n]) => sum + n, 0);
 
-      const total = prdCount + frdCount + ardCount + rfcCount;
-
-      if (total > 0) {
-        logger.info(`📊 ${total} documentos disponíveis:`);
-        if (prdCount > 0) logger.info(`   - ${prdCount} PRD(s)`);
-        if (frdCount > 0) logger.info(`   - ${frdCount} FRD(s)`);
-        if (ardCount > 0) logger.info(`   - ${ardCount} ARD(s)`);
-        if (rfcCount > 0) logger.info(`   - ${rfcCount} RFC(s)`);
-      }
+    if (total > 0) {
+      logger.info(`📊 ${total} documentos disponíveis:`);
+      for (const [tipo, n] of counts) logger.info(`   - ${n} ${tipo.toUpperCase()}(s)`);
     }
   } catch (error) {
     logger.error("❌ Erro ao sincronizar docs:", error.message);
-
-    // Dicas de troubleshooting
-    if (error.message.includes("Token GitLab")) {
-      logger.error("\n💡 Configure o token GitLab no .npmrc:");
-      logger.error("   //gitlab.com/api/v4/packages/npm/:_authToken=seu-token");
-    } else if (error.message.includes("não encontrado")) {
-      logger.error("\n💡 Verifique se o squad existe no central-docs:");
-      logger.error(`   ${SQUAD}/index.md`);
+    if (error.code === 404) {
+      logger.error("\n💡 O squad ainda não tem índice no Central docs:");
+      logger.error(`   ${SQUAD}/index.md (é criado na primeira publicação: jarvis docs publish)`);
     }
-
     process.exit(1);
   }
 }

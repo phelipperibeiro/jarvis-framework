@@ -34,8 +34,8 @@ Utilize o `$ARGUMENTS` que o usuário passar como ponto de partida e para entend
 
 | Passo | Skill | Condição |
 |-------|-------|----------|
-| Busca no Central Docs (condicional) | `/jarvis-docs-central` (via `jarvis docs sync --silent`) | Se `CENTRAL_DOCS_REPO` estiver definido no ENV.md |
-| Publicação no Central Docs (condicional) | `/jarvis-docs-central` (via `jarvis docs publish --tipo frd`) | Se `CENTRAL_DOCS_REPO` estiver definido, o FRD estiver salvo e aprovado e o usuário responder "Sim, publicar agora" |
+| Busca no Central Docs (condicional) | `/jarvis-docs-central` (via `jarvis docs sync --silent`) | Se `CENTRAL_DOCS_STORAGE` estiver definido no ENV.md |
+| Publicação no Central Docs (condicional) | `/jarvis-docs-central` (via `jarvis docs publish --tipo frd`) | Se `CENTRAL_DOCS_STORAGE` estiver definido, o FRD estiver salvo e aprovado e o usuário responder "Sim, publicar agora" |
 
 ## Princípios Fundamentais
 1. **Sempre use o template** `$PROD_TEMPLATES/prod-frd-template.md` para o output final
@@ -60,7 +60,7 @@ A FRD não é um épico, história ou task: ela serve como documento de detalham
 
 ## Busca no Central Docs (condicional)
 
-Se `CENTRAL_DOCS_REPO` definido no ENV.md:
+Se `CENTRAL_DOCS_STORAGE` definido no ENV.md:
 
 1. **Buscar PRD correspondente:**
    - Executar busca automática no central-docs:
@@ -191,7 +191,7 @@ O sistema deve validar os dados do formulário.
 
 Após salvar o FRD localmente e obter aprovação do usuário:
 
-1. Se `CENTRAL_DOCS_REPO` definido no ENV.md:
+1. Se `CENTRAL_DOCS_STORAGE` definido no ENV.md:
    - Perguntar ao usuário:
      ```
      Deseja publicar este FRD no repositório central de documentação?
@@ -200,23 +200,21 @@ Após salvar o FRD localmente e obter aprovação do usuário:
      ```
 
 2. Se **Sim**:
-   - Extrair o slug do nome do arquivo (ex: `frd-wallet-saque.md` → `wallet-saque`)
    - Executar:
      ```bash
      jarvis docs publish \
        --file {caminho_do_frd} \
-       --tipo frd \
-       --feature {slug}
+       --tipo frd
      ```
 
 3. Informar resultado:
-   - ✅ Sucesso: "FRD publicado no central-docs. MR criado: [URL]"
+   - ✅ Sucesso: "FRD publicado no Central docs." (com git: "PR aberto: [URL]")
    - ❌ Erro: Exibir mensagem de erro e orientar troubleshooting
 
 4. Se **Não**:
-   - Informar: "Para publicar depois, execute: `jarvis docs publish --file {caminho} --tipo frd --feature {slug}`"
+   - Informar: "Para publicar depois, execute: `jarvis docs publish --file {caminho} --tipo frd`"
 
-5. Se `CENTRAL_DOCS_REPO` não estiver definido:
-   - Informar: "Para habilitar publicação automática, configure `CENTRAL_DOCS_REPO` no ENV.md"
+5. Se `CENTRAL_DOCS_STORAGE` não estiver definido:
+   - Informar: "Para habilitar publicação automática, configure o Central docs no `/jarvis-init` (`CENTRAL_DOCS_STORAGE`)"
 
-> **Nota**: A publicação cria um Merge Request no GitLab. O FRD só será visível no central-docs após aprovação e merge do MR.
+> **Nota**: se a pasta do Central docs for um repositório git, a publicação abre um Pull/Merge Request e o FRD só entra na branch base depois do merge. Sem git, o documento é gravado direto e o índice é regenerado.

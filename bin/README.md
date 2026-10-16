@@ -17,17 +17,17 @@ bin/
     │   ├── program.js         # Único lugar que monta o commander — ver "Arquitetura"
     │   └── shared-options.js  # .option() repetidos entre comandos (--ide, --quiet, etc.)
     ├── vcs/                   # Adapters de Git host (GitLab/GitHub/Bitbucket)
-    │   ├── api.js             # Lógica HTTP real (createIssue, createMergeRequest, fetchRawFile)
-    │   ├── create-merge.js, create-issue.js, fetch-raw.js   # função exportada + CLI direto (ver abaixo)
+    │   ├── api.js             # Lógica HTTP real (createIssue, createMergeRequest)
+    │   ├── create-merge.js, create-issue.js   # função exportada + CLI direto (ver abaixo)
     ├── tasks/
     │   └── comment.js         # Adapter de task manager (jira/linear/github/asana) — mesmo padrão
     ├── config/                # ide-config.js (fonte de verdade de IDEs), constants.js
     ├── core/                  # scanner.js, sync-engine.js, profile-filter.js, token-report.js
-    ├── docs/                  # central-docs: fetch/publish + validação de frontmatter
-    │   ├── validate-frontmatter.js  # Valida/extrai frontmatter de PRD/FRD/ARD/RFC
-    │   ├── redis-cache.js      # Cache best-effort via `redis-cli` (get/setex/del)
-    │   ├── fetch-file.js       # fetchFile() — usado por `docs sync`/`docs fetch` e por publish-file.js
-    │   └── publish-file.js     # publishFile() — usado por `docs publish`
+    ├── docs/                  # Central docs: fetch/publish pelo adaptador + validação de frontmatter
+    │   ├── validate-frontmatter.js  # Valida/extrai frontmatter (PRD, FRD, épico, história, tarefa, ARD, RFC)
+    │   ├── fetch-file.js       # openStorageFromEnv() + fetchFile() — `docs sync`/`docs fetch`/`docs publish`
+    │   ├── publish-file.js     # tipos, resolveDestPath() e publishFile() — `docs publish`
+    │   └── storage/            # adaptadores (CENTRAL_DOCS_STORAGE): index.js (fábrica), filesystem.js (pasta + git), build-index.js
     ├── utils/                 # logger.js, ui.js, paths.js, frontmatter.js, git-parser.js, npmrc-parser.js
     ├── flow-map/              # `jarvis map` — grafo de chamadas entre workflows/skills/agents
     ├── auth/                  # session.js (auth.json legado, hoje só `jarvis logout` o lê)
@@ -77,22 +77,22 @@ O parser manual antigo nunca validava nada: qualquer `--flag` era aceito e ignor
 
 ## Argumentos: `[opcional]`, não `<obrigatório>` — de propósito
 
-Note que `info`, `vcs fetch-raw` e `tasks comment` declaram seus positionals como **opcionais** (`[target]`, `[file-path]`) mesmo sendo, na prática, obrigatórios para o comando funcionar. Isso é deliberado: se o commander validar "argumento obrigatório ausente" sozinho, ele intercepta **antes** da função rodar — e cada uma dessas funções já tem sua própria validação com mensagem de uso customizada e mais específica (`info.js`: `"❌ Uso incorreto\nUso: jarvis info <type/name>\nExemplo: ..."`). Deixar o positional opcional no commander e a validação dentro da função preserva essa mensagem.
+Note que `info` e `tasks comment` declaram seus positionals como **opcionais** (`[target]`, `[card-key]`) mesmo sendo, na prática, obrigatórios para o comando funcionar. Isso é deliberado: se o commander validar "argumento obrigatório ausente" sozinho, ele intercepta **antes** da função rodar — e cada uma dessas funções já tem sua própria validação com mensagem de uso customizada e mais específica (`info.js`: `"❌ Uso incorreto\nUso: jarvis info <type/name>\nExemplo: ..."`). Deixar o positional opcional no commander e a validação dentro da função preserva essa mensagem.
 
-**A mesma regra vale para `--flag` que já tem validação própria.** Nenhum comando aqui usa `.requiredOption()` ou `.choices()` do commander, mesmo quando faria sentido à primeira vista (ex: `--tipo` em `docs publish` só aceita `prd|frd|ard|rfc|swagger|qa-report`). `docsPublish.js` já valida isso e mostra um bloco de exemplos de uso bem mais rico que o que o commander mostraria. Usar `.choices()` ali faria o commander interceptar o valor errado com uma mensagem genérica, perdendo esse texto. **Ao adicionar uma opção nova**: se a função já vai validar o valor por dentro, deixe o commander permissivo (`.option()` simples) e confie na validação interna. Se não há validação nenhuma hoje, `.choices()`/`.argParser()` são bons lugares para adicionar uma — não há essa perda a proteger.
+**A mesma regra vale para `--flag` que já tem validação própria.** Nenhum comando aqui usa `.requiredOption()` ou `.choices()` do commander, mesmo quando faria sentido à primeira vista (ex: `--tipo` em `docs publish` só aceita os tipos de `VALID_TYPES`). `docsPublish.js` já valida isso e mostra um bloco de exemplos de uso bem mais rico que o que o commander mostraria. Usar `.choices()` ali faria o commander interceptar o valor errado com uma mensagem genérica, perdendo esse texto. **Ao adicionar uma opção nova**: se a função já vai validar o valor por dentro, deixe o commander permissivo (`.option()` simples) e confie na validação interna. Se não há validação nenhuma hoje, `.choices()`/`.argParser()` são bons lugares para adicionar uma — não há essa perda a proteger.
 
 ## `program.command()` vs `program.addCommand()`
 
 Este código usa `.command(nome)` (que cria e já anexa o subcomando) em todo lugar — não `.addCommand(instanciaDeCommand)`. São equivalentes; `.addCommand()` só compensa quando o `Command` é montado em outro módulo e precisa ser importado antes de anexar. Como tudo mora em `program.js`, não há motivo para o nível extra de indireção.
 
-## Os 4 "scripts standalone" (`vcs/*.js`, `tasks/comment.js`): dupla forma
+## Os 3 "scripts standalone" (`vcs/*.js`, `tasks/comment.js`): dupla forma
 
-`create-merge.js`, `create-issue.js`, `fetch-raw.js` e `comment.js` são chamados de duas formas:
+`create-merge.js`, `create-issue.js` e `comment.js` são chamados de duas formas:
 
 1. **Como subcomando do CLI**: `jarvis vcs create-merge --source ... --target ...` (via `program.js`)
 2. **Direto, por skills/workflows que ainda shell-am pra eles**: `node bin/lib/vcs/create-merge.js --source ...`
 
-Cada um dos 4 arquivos segue o mesmo padrão: exporta uma função (`runCreateMerge`, `runCreateIssue`, `runFetchRaw`, `runComment`) com a lógica, e termina com um guard que só lê `process.argv` quando o arquivo é executado diretamente:
+Cada um dos 3 arquivos segue o mesmo padrão: exporta uma função (`runCreateMerge`, `runCreateIssue`, `runComment`) com a lógica, e termina com um guard que só lê `process.argv` quando o arquivo é executado diretamente:
 
 ```js
 // Compatibilidade: continua funcionando como `node bin/lib/vcs/create-merge.js --source ...`
@@ -131,9 +131,9 @@ Os 3 arquivos mais críticos sem cobertura até pouco tempo atrás (`env-loader.
 - **`env-loader.js`** (e `flow-map.test.js`, mais antigo): `mkdtempSync(join(tmpdir(), "jarvis-..."))` monta um workspace fake com `.{ide}/ENV.md`, roda a função contra ele, `rmSync` no `finally`.
 - **`sync-engine.js`**: `getFrameworkRoot()` (`utils/paths.js`) já tem um escape hatch — `process.env.JARVIS_ROOT`, se definido e existir, vence sobre o framework real. O teste aponta `JARVIS_ROOT` para um fixture mínimo (`agents/`, `skills/`, etc. com 1 arquivo cada) em vez de sincronizar o framework inteiro.
 - **`vcs/api.js`**: usa `mock.method(globalThis, "fetch", ...)` do `node:test` pra controlar a resposta por vendor, sem mockar o módulo nem tocar rede real. **Atenção**: toda função de rede chama `getVcsToken()` antes do fetch — fixe `GITLAB_TOKEN`/`GITHUB_TOKEN`/`BITBUCKET_TOKEN` via env var no teste (ver `withEnv` em `vcs-api.test.js`), senão o resultado depende do que a máquina que roda o teste tiver em `.npmrc`/`gh auth`.
-- **`docs/fetch-file.js`/`docs/publish-file.js`**: mesmo mock de `fetch`. `redis-cli` (chamado por `docs/redis-cache.js`) **não dá pra mockar** — é um módulo nativo (`node:child_process`) não configurável, `mock.method` lança `TypeError: Cannot redefine property`. Como pode haver um `redis-cli` de verdade instalado (com ou sem servidor acessível) na máquina que roda o teste, cada teste usa uma chave de cache única (`docs:${randomUUID()}...`) em vez de mockar o cache — garante cache-miss determinístico sem depender do estado de nenhum Redis real.
+- **`docs/` (Central docs)**: tudo em pasta temporária (`mkdtempSync`). A camada git do adaptador `filesystem` usa um repositório `git init --bare` local como `origin` (sem rede), e o `createMergeRequest` é injetado pelo parâmetro `deps` de `getStorage` (ver `docs-storage.test.js`).
 
-**Armadilha com `async`**: o helper `withEnv(vars, fn)` (repetido nos 3 arquivos acima) precisa de `return **await** fn()`, não `return fn()`, dentro do `try`. Sem o `await`, o `finally` que restaura a env var roda assim que `fn()` retorna uma Promise pendente — ou seja, **antes** da função terminar. Isso só não quebra quando a leitura da env var acontece antes do primeiro `await` de `fn` (ex: `fetchRawFile` lê o token antes do seu próprio `fetch`); quebra silenciosamente em qualquer função com mais de um `await` no meio do caminho (ex: `publishFile`, que busca o `index.md` antes de chegar no commit, que é onde o token é lido).
+**Armadilha com `async`**: o helper `withEnv(vars, fn)` (em `vcs-api.test.js`) precisa de `return **await** fn()`, não `return fn()`, dentro do `try`. Sem o `await`, o `finally` que restaura a env var roda assim que `fn()` retorna uma Promise pendente — ou seja, **antes** da função terminar. Isso só não quebra quando a leitura da env var acontece antes do primeiro `await` de `fn` (ex: `createIssue` lê o token antes do seu próprio `fetch`); quebra silenciosamente em qualquer função com mais de um `await` antes de ler a variável.
 
 Ao escrever um teste novo para um arquivo que toca `fs`/rede, prefira um desses padrões a mockar o módulo inteiro ou refatorar pra injeção de dependência — nenhum dos arquivos acima precisou mudar uma linha de lógica de produção para ganhar teste.
 

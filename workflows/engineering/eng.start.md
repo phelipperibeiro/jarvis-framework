@@ -27,7 +27,7 @@ Este comando inicia o **planejamento** de uma nova feature.
 | Cabeçalho (agente) | `eng.agent` (agente) | Sempre — identidade do workflow |
 | Fase 0.1: Análise de Contexto (CDD) | `/jarvis-context-detect` | Se `ENABLE_CDD=true` no ENV.md (execução obrigatória antes da Fase 1); `ENABLE_CDD=false` pula |
 | Fase 0.5: Advisor (opcional) | `eng.advisor.agent` (agente) | Se o usuário escolher usar o Advisor no alerta e o `architecture.md` tiver questões em aberto (aberto só na primeira questão) |
-| Fase 2.2: Buscar Documentação Central | `/jarvis-docs-central` | Se `CENTRAL_DOCS_REPO` estiver configurado no ENV.md (buscar PRD, ARD e RFCs relacionados) |
+| Fase 2.2: Buscar Documentação Central | `/jarvis-docs-central` | Se `CENTRAL_DOCS_STORAGE` estiver configurado no ENV.md (buscar PRD, ARD e RFCs relacionados) |
 | Fase 3.4: Estratégia de Testes | `eng.qa.test-architect` (agente) | Se a feature tiver requisitos de performance ou segurança (APIs públicas, dados sensíveis, alta carga ou requisitos não-funcionais explícitos) |
 | Fase 3.4: Estratégia de Testes | `/eng-platform` | Se a feature tiver requisitos de performance (latência, throughput, escalabilidade) |
 | Fase 3.4: Estratégia de Testes | `/eng-ai` | Se a feature envolver IA (LLM, RAG, agentes, chatbots, embeddings) |
@@ -135,14 +135,16 @@ Registre a escolha no cabeçalho do `architecture.md` (`Advisor:`). O agente `en
 
 ## Fase 1: Preparação do Ambiente
 
-### 1.1 Criar Branch de Feature (GitFlow)
+### 1.1 Criar Branch de Feature
 
-Crie a branch de trabalho a partir de `dev` seguindo o padrão GitFlow:
+**Pergunte sempre a branch base** com `AskUserQuestion` (sem a ferramenta, use a tabela de `prod-rules.md`): **"De qual branch partir?"** com as opções `main`, `dev` e `{branch atual}` (só se a branch atual for outra), mais "Outro" para digitar. Não presuma `dev` nem `main`: cada projeto tem o seu fluxo.
+
+Grave a escolha no cabeçalho do `architecture.md` (`Branch base:`). O `eng.pr` abre o PR para essa mesma branch.
 
 ```bash
-# Garantir que está em dev e atualizado
-git checkout dev
-git pull origin dev
+# Garantir que a base está atualizada
+git checkout {BRANCH_BASE}
+git pull --ff-only origin {BRANCH_BASE}
 
 # Criar branch no padrão {TASK_MANAGER_KEY}-{titulo-em-kebab-case}
 git checkout -b {TASK_MANAGER_KEY}-{titulo-em-kebab-case}
@@ -175,9 +177,9 @@ git branch --show-current
 | `TASK-123` | "Implementar autenticação JWT" | `TASK-123-implementar-autenticacao-jwt` |
 | `BUG-789` | "Fix null pointer em login" | `BUG-789-fix-null-pointer-em-login` |
 
-> ⚠️ Se o usuário já estiver em uma branch com o padrão correto do TASK_MANAGER_KEY, use-a sem criar nova.
-> ⚠️ **NUNCA** criar branch a partir de `main`/`master`. Sempre a partir de `dev`.
-> ✅ A branch criada aqui será usada em todos os workflows subsequentes (work, pre-pr, pr).
+> ⚠️ Se o usuário já estiver em uma branch com o padrão correto do TASK_MANAGER_KEY, use-a sem criar nova (e ainda assim pergunte a base, para o `eng.pr`).
+> ⚠️ Se o projeto tiver convenção própria de nome de branch (ex.: `CONTRIBUTING.md`), siga a do projeto.
+> ✅ A branch criada aqui será usada em todos os workflows subsequentes (work, pre-pr, pr). Ela é sempre uma branch de trabalho: nunca implemente direto na base.
 
 ### 1.2 Criar Diretório de Sessão
 
@@ -215,7 +217,7 @@ Solicite ao usuário os dados de entrada:
 
 ### 2.2 Buscar Documentação Central (condicional)
 
-Se `CENTRAL_DOCS_REPO` estiver configurado no ENV.md, buscar docs relacionados:
+Se `CENTRAL_DOCS_STORAGE` estiver configurado no ENV.md, buscar docs relacionados:
 
 **Passo 1:** Identificar docs relevantes com base no Jira ID e tags do card
 
@@ -230,7 +232,7 @@ Se `CENTRAL_DOCS_REPO` estiver configurado no ENV.md, buscar docs relacionados:
 **Comportamento:**
 - Se docs encontrados → carregar e exibir resumo
 - Se não encontrados → perguntar se tem docs localmente
-- Se `CENTRAL_DOCS_REPO` vazio → pular silenciosamente
+- Se `CENTRAL_DOCS_STORAGE` vazio → pular silenciosamente
 
 ### 2.3 Análise do Requisito
 
@@ -426,16 +428,15 @@ Quando o usuário aprovar, informe:
 ```
 ✅ Architecture.md criado com sucesso!
 
-🌿 Branch: {TASK_MANAGER_KEY}-{titulo-em-kebab-case} (criada a partir de dev)
+🌿 Branch: {NOME_DA_BRANCH} (criada a partir de {BRANCH_BASE})
 📄 Arquivo: $SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/architecture.md
-🌿 Branch:  {NOME_DA_BRANCH}
 
 🔄 Board: mova o card para "Em progresso" no seu board de tarefas.
 
 📌 Próximos passos:
 1. Execute `eng.plan` para criar o plano detalhado de execução
 2. Execute `eng.work` para implementar (commita automaticamente ao final de cada fase)
-3. Execute `eng.pr` para abrir o MR para dev
+3. Execute `eng.pr` para abrir o MR para {BRANCH_BASE}
 
 🚫 Lembre-se: Este workflow NÃO executa código.
    Para implementar, use os comandos de execução.
@@ -452,11 +453,11 @@ Quando o usuário aprovar, informe:
 - ❌ NÃO faça commits
 - ❌ NÃO instale dependências
 - ❌ NÃO modifique arquivos de código existentes
-- ❌ NÃO crie branch a partir de `main`/`master`
+- ❌ NÃO crie a branch sem perguntar a base
 
 ### ✅ FAÇA APENAS
 
-- ✅ Criar branch a partir de `dev` no padrão `{TASK_MANAGER_KEY}-{titulo}`
+- ✅ Criar branch a partir da base escolhida pelo usuário, no padrão `{TASK_MANAGER_KEY}-{titulo}`
 - ✅ Criar o diretório `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/`
 - ✅ Criar o arquivo `architecture.md`
 - ✅ Investigar e analisar o codebase (leitura apenas)

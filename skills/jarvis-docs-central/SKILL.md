@@ -1,13 +1,13 @@
 ---
 name: jarvis-docs-central
-description: Integração com repositório centralizado de documentação (GitLab, GitHub ou Bitbucket). Busca e publica PRDs, FRDs, ARDs e RFCs via API do vendor.
+description: Integração com o Central docs, a documentação aprovada (PRD, FRD, épicos, histórias, ARD, RFC) guardada por um adaptador de armazenamento (hoje uma pasta do disco, com git opcional). Busca, publica e indexa pelo CLI jarvis docs.
 argument-hint: "[contexto da tarefa]"
 allowed-tools: Bash Read Write
 disable-model-invocation: false
 license: AGPL-3.0
 metadata:
   author: jarvis-team
-  version: "3.0"
+  version: "4.0"
   area: global
 ---
 
@@ -15,47 +15,50 @@ metadata:
 
 ## Objetivo
 
-Integrar o framework com o repositório `central-docs` (`CENTRAL_DOCS_REPO`), permitindo:
-- Buscar docs relevantes automaticamente durante workflows
-- Publicar docs aprovados via MR com git flow seguro
-- Sincronização automática em /warm-up
+Integrar os comandos do framework com o **Central docs**: o lugar onde fica a documentação aprovada de todos os produtos do squad, com um índice (`{SQUAD}/index.md`) que os outros comandos consultam.
 
-## Fonte de Verdade
+- Buscar documentos relevantes durante os workflows (Modo 1)
+- Publicar documentos aprovados (Modo 2)
+- Reparar o índice (Modo 3)
 
-> **Antes de qualquer operação**, leia `$CENTRAL_DOCS_REPO/AGENTS.md`.
-> Ele define o contrato completo do repositório: estrutura, naming, frontmatter e regras de índice.
-> Este skill implementa esse contrato — não o duplica.
+## Adaptadores de armazenamento
+
+O Central docs não depende de um serviço: `CENTRAL_DOCS_STORAGE` escolhe o adaptador e `CENTRAL_DOCS_LOCATION` diz onde ele guarda. Os comandos são sempre os mesmos (`jarvis docs fetch | sync | publish`), venha o conteúdo de onde vier.
+
+| `CENTRAL_DOCS_STORAGE` | `CENTRAL_DOCS_LOCATION` | Situação |
+|---|---|---|
+| *(vazio)* | — | Desligado: os comandos pulam em silêncio |
+| `filesystem` | Pasta (relativa à pasta do workspace ou absoluta) | Disponível |
+| `s3`, `gdrive` | — | Ainda não suportados (o comando para com a mensagem de "não suportado") |
+
+**Camada git do `filesystem`:** se a pasta tiver `.git` (clone de um repositório de documentação), o adaptador:
+- faz `git pull --ff-only` em `CENTRAL_DOCS_REF` antes de ler (se falhar, avisa e lê a cópia local);
+- ao publicar: branch `docs/{caminho}` → cópia → índice → commit → push → Pull/Merge Request para `CENTRAL_DOCS_TARGET_BRANCH`, com `CENTRAL_DOCS_REVIEWERS` na descrição.
+
+Sem `.git`, grava direto na pasta.
+
+**Onde fica a pasta** (o `/jarvis-init` sugere): no modo workspace, `./central-docs` (no `.gitignore` do workspace); no projeto único, `docs/jarvis/central-docs` (com `docs/jarvis/*` no `.gitignore`). Nunca no versionamento de um repositório de código.
 
 ## Pré-condição
 
 Ler do `$IDE/ENV.md`:
-- `CENTRAL_DOCS_REPO` — URL do repo (GitLab, GitHub ou Bitbucket; se vazio: encerrar silenciosamente)
-- `CENTRAL_DOCS_REF` — branch para leitura (padrão: `main`)
-- `VERSION_CONTROL` — fallback se o hostname da URL não identificar o vendor
-- `SQUAD` — squad do usuário (formato: ALL-CAPS-COM-HIFEN)
-- `WORKSPACE` — nome do workspace em kebab-case
-- `AREA` — define quais tipos de doc buscar
+- `CENTRAL_DOCS_STORAGE` e `CENTRAL_DOCS_LOCATION` (vazio: encerrar em silêncio)
+- `CENTRAL_DOCS_REF`, `CENTRAL_DOCS_TARGET_BRANCH`, `CENTRAL_DOCS_REVIEWERS` (só com `.git`)
+- `SQUAD` (ALL-CAPS-COM-HIFEN), `WORKSPACE` (vira a pasta do produto) e `AREA` (que tipos buscar)
 
-**Token VCS** (resolvido pelo adapter `bin/lib/utils/npmrc-parser.js` → `getVcsToken`):
-- GitLab: `.npmrc` `:_authToken=` ou `GITLAB_TOKEN`
-- GitHub: `gh auth token`, `GITHUB_TOKEN` ou `.npmrc` npm.pkg.github.com
-- Bitbucket: `BITBUCKET_TOKEN`
+`ENV.md` da versão anterior (com a variável do repositório remoto e sem `CENTRAL_DOCS_STORAGE`): os comandos pedem o Upgrade do `/jarvis-init`, que faz a migração.
 
-❌ **NUNCA** colar o token no chat.
-
-Se `CENTRAL_DOCS_REPO` não estiver definido, encerrar silenciosamente sem erro.
+Com `.git`, o PR usa o token do vendor pelo adaptador de VCS (GitLab `.npmrc`; GitHub `gh auth`/`GITHUB_TOKEN`; Bitbucket `BITBUCKET_TOKEN`). ❌ **Nunca** colar token no chat.
 
 ---
 
-## Convenções do central-docs (resumo operacional)
-
-### Estrutura de pastas
+## Estrutura do Central docs
 
 ```
 {SQUAD}/
-├── index.md                          # GERADO — não editar à mão
+├── index.md                          # GERADO a cada publicação — não editar à mão
 ├── product/
-│   └── {produto-em-kebab}/
+│   └── {produto}/                    # WORKSPACE do ENV.md (ou --produto)
 │       ├── prd-{id}-{nome}.md
 │       ├── frd-{id}-{nome}.md
 │       ├── feat-{id}-{nome}.md
@@ -63,226 +66,118 @@ Se `CENTRAL_DOCS_REPO` não estiver definido, encerrar silenciosamente sem erro.
 │       ├── story-{id}-{nome}.md
 │       └── task-{id}-{nome}.md
 ├── engineering/
-│   └── {produto-em-kebab}/
+│   └── {produto}/
 │       ├── ard-{id}-{nome}.md
-│       └── rfc-{id}-{nome}.md
-└── context/                          # opcional — só nasce com conteúdo
-    ├── CLAUDE.md
-    └── (pesquisas, dados, assets — formato livre)
+│       ├── rfc-{id}-{nome}.md
+│       ├── swagger-{nome}.{md|yaml|json}
+│       └── qa-report-{nome}.md
+└── context/                          # opcional — formato livre
 ```
 
-**Squads válidos** (pastas raiz ALL-CAPS): detectados dinamicamente pelo script.
-Fonte de verdade: `taxonomy.md` na raiz do repo.
+- **Nome do arquivo:** o do arquivo local, que já segue `{tipo}-{id}-{nome}.md` (`prod-rules.md`). Só quando o nome foge do padrão, `--feature {slug}` gera `{tipo}-{slug}.{ext}`.
+- **`{produto}`:** `WORKSPACE` (a pasta que contém o `$IDE/`), ou `--produto`.
 
-### Naming de arquivos
+### Frontmatter obrigatório (validado no `publish`)
 
+| Tipo | Campos |
+|------|--------|
+| `prd` | `id`, `name`, `version`, `status` |
+| `frd`, `feat`, `epic` | `id`, `name`, `version`, `status`, `related_prd` |
+| `story` | `id`, `name`, `status`, `related_prd` |
+| `task` | `id`, `name`, `status` |
+| `ard` | `id`, `name`, `version`, `status` |
+| `rfc` | `Status`, `Criado em`, `Proponente` |
+| `qa-report` | `period`, `squad`, `version` |
+
+**Status reconhecidos:**
+- produto: `icebox`, `in_review`, `backlog`, `in_progress`, `in_production`, `cancelled`, `deprecated`;
+- ARD: `proposed`, `in_progress`, `in_review`, `approved`;
+- RFC: `Draft`, `In Review`, `Ready for Decision`, `Accepted`, `Rejected`, `Superseded`.
+
+Status fora da lista só gera aviso.
+
+**Campos `related_*`:** só o **basename** do arquivo (sem path nem `./`).
+
+### Índice
+
+O `{SQUAD}/index.md` é **regenerado** a partir do frontmatter de todos os documentos a cada publicação (nunca editado, para duas publicações não apagarem a entrada uma da outra). Com `.git` e um `scripts/build-index.sh` no repositório de documentação, o adaptador usa o script dele (o CI do repositório confere o índice com ele).
+
+```markdown
+# CORE
+
+## product
+
+### loja
+- [prd-001-checkout.md](product/loja/prd-001-checkout.md) | v1.0.0 | backlog | Checkout
+
+## engineering
+
+### loja
+- [ard-001-pagamentos.md](engineering/loja/ard-001-pagamentos.md) | v1.0.0 | approved | Pagamentos
 ```
-{tipo}-{id}-{nome-em-kebab}.md
-```
-
-Exemplos: `prd-001-minha-feature.md`, `ard-001-minha-api.md`, `story-TASK-4-meu-exemplo.md`
-
-- Tipo sempre **lowercase**: `prd-`, `frd-`, `feat-`, `epic-`, `story-`, `task-`, `ard-`, `rfc-` , `swagger-`
-- Pasta de produto: `kebab-case`, um produto = uma pasta
-
-### Frontmatter obrigatório
-
-| Campo | PRD | FRD/FEAT/STORY | EPIC | TASK | ARD/RFC |
-|-------|-----|----------------|------|------|---------|
-| `id` | ✓ | ✓ | ✓ | ✓ | ✓ |
-| `name` | ✓ | ✓ | ✓ | ✓ | ✓ |
-| `version` | ✓ | ✓ | ✓ | ✓ | ✓ |
-| `status` | ✓ | ✓ | ✓ | ✓ | ✓ |
-| `created` / `updated` | ✓ | ✓ | ✓ | ✓ | ✓ |
-| `created_by` / `last_editor` | ✓ | ✓ | ✓ | ✓ | ✓ |
-| `related_prd` | – | ✓ | ✓ | – | – |
-| `related_epic` | – | – | – | ✓ | – |
-
-**Status válidos:** `draft`, `in_review`, `planejado`, `in_progress`, `in_production`, `icebox`, `deprecated`
-
-**Campos `related_*`:** sempre apenas o **basename** do arquivo, sem path nem `./`.
-```yaml
-# ✅ Certo
-related_prd: prd-001-minha-feature.md
-
-# ❌ Errado
-related_prd: ./prd-001-minha-feature.md
-related_prd: ../minha-feature/prd-001-minha-feature.md
-```
-
-### Índices — regra crítica
-
-O arquivo `{SQUAD}/index.md` é **gerado pelo script** `scripts/build-index.sh`. **Nunca editar à mão.**
-
-```bash
-# Sempre rodar após qualquer add/move/remove de spec
-bash scripts/build-index.sh
-```
-
-O script detecta squads dinamicamente (pastas raiz ALL-CAPS) e gera um único `index.md` por squad lendo o frontmatter de todos os specs em `product/` e `engineering/`, e listando o conteúdo de `context/`.
-
-O CI (`.gitlab-ci.yml`) **falha** se o `index.md` commitado divergir do que o script geraria.
 
 ---
 
 ## Quando Usar
 
-- `/warm-up` — carregar contexto do produto (Modo 1; aciona Modo 3 se índice ausente)
-- `/eng.start` — buscar PRD/ARD antes de iniciar feature (Modo 1)
-- `/eng.create-ard` — buscar PRD relacionado (Modo 1)
-- `/eng.pre-pr` — detectar docs desatualizados (Modo 1)
-- Publicação de doc aprovado (Modo 2)
-- Reparo de índices inconsistentes ou ausentes (Modo 3)
+- `/warm-up`: carregar o contexto do produto (Modo 1)
+- `/eng.start`, `/eng.create-ard`, `/eng.create-rfc`, `/eng.build-tech-spec`: buscar PRD/ARD/RFC relacionados (Modo 1)
+- `/prod.spec.*`: buscar specs existentes e publicar a aprovada (Modos 1 e 2)
+- `/eng.pre-pr`: detectar ARD novo ou desatualizado e oferecer a publicação (Modo 2)
+- Índice ausente ou divergente (Modo 3)
 
 ---
 
 ## Fluxo de Trabalho
 
-### Modo 1: Buscar Docs (usado em warm-up, eng.start)
-
-**Passo 1 — Buscar índice do squad**
+### Modo 1: Buscar docs
 
 ```bash
-jarvis docs sync
-
-# Internamente chama fetchFile() de bin/lib/docs/fetch-file.js, equivalente a:
-jarvis docs fetch "${SQUAD}/index.md" "${CENTRAL_DOCS_REF}"
+jarvis docs sync                         # lê {SQUAD}/index.md e resume o que há
+jarvis docs fetch {SQUAD}/index.md       # conteúdo do índice
+jarvis docs fetch {SQUAD}/product/{produto}/prd-001-checkout.md
 ```
 
-**Passo 1.b — Fallback: navegar árvore (quando index.md não existe)**
+- Com `.git`, o primeiro acesso faz `pull`.
+- `docs fetch` sai com código **2** quando o arquivo não existe.
 
-Se `jarvis docs sync` retornar exit code 2 (arquivo não encontrado):
+1. Buscar o índice do squad.
+2. Identificar os documentos pelo `TASK_MANAGER_KEY`, pelo nome ou pelo produto; filtrar por `AREA`:
+   - `PRODUCT` → PRD, FRD, épicos e histórias;
+   - `ENGINEERING` → PRD (contexto), ARD e RFC.
+3. Buscar cada arquivo com `jarvis docs fetch`.
+4. Devolver o conteúdo carregado, com um resumo (squad, produto, documentos e versões).
+
+### Modo 2: Publicar doc
 
 ```bash
-# Fallback: clonar o CENTRAL_DOCS_REPO e listar arquivos locais
-# (funciona igual em GitLab, GitHub e Bitbucket)
-git ls-tree -r --name-only "${CENTRAL_DOCS_REF}" -- "${SQUAD}/product/${WORKSPACE}" "${SQUAD}/engineering/${WORKSPACE}"
+jarvis docs publish --file ./docs/product/prd-001-checkout.md --tipo prd
+jarvis docs publish --file ./docs/engineering/ARD/ard-001-pagamentos.md --tipo ard --produto loja
+jarvis docs publish --file ./openapi.yaml --tipo swagger --feature api-wallet
 ```
 
-**Identificar docs por caminho (naming padrão):**
-- `engineering/{produto}/ard-*.md` → ARD
-- `engineering/{produto}/rfc-*.md` → RFC
-- `product/{produto}/prd-*.md` → PRD
-- `product/{produto}/frd-*.md` → FRD
-- `product/{produto}/feat-*.md` → FEAT
-- `product/{produto}/story-*.md` → STORY
-- `context/` → artefatos de contexto (pesquisas, dados, assets)
-
-**Passo 2 — Identificar docs relevantes**
-
-Com base no contexto da tarefa (`TASK_MANAGER_KEY`, tags, descrição):
-- Buscar no `index.md` por `TASK_MANAGER_KEY` matching
-- Se não encontrar, buscar por tags semânticas
-- Filtrar por AREA:
-  - `PRODUCT` → PRDs e FRDs
-  - `ENGINEERING` → PRD (contexto) + ARDs + RFCs
-
-**Passo 3 — Buscar arquivos identificados**
-
-```bash
-jarvis docs fetch "${SQUAD}/product/${WORKSPACE}/prd-feature.md" "main"
-jarvis docs fetch "${SQUAD}/engineering/${WORKSPACE}/ard-feature.md" "main"
-```
-
-**Passo 4 — Retornar resultado**
-
-```markdown
-# Contexto Carregado do Central Docs
-
-## Squad: MEU-SQUAD / Produto: meu-produto
-
-### PRD-001: Minha Feature (v1.2.0)
-[conteúdo do PRD]
-
-### ARD-001: Arquitetura da Minha Feature (v1.5)
-[conteúdo do ARD]
-```
-
----
-
-### Modo 2: Publicar Doc
-
-**Uso:**
-
-```bash
-jarvis docs publish \
-  --file ./docs/engineering/ard-001-minha-feature.md \
-  --squad MEU-SQUAD \
-  --produto meu-produto \
-  --tipo ard
-```
-
-**Fluxo interno:**
-
-1. Validar frontmatter YAML (campos obrigatórios conforme tabela acima)
-2. Validar naming do arquivo (`{tipo}-{id}-{nome-em-kebab}.md`)
-3. Validar que `related_*` usam apenas basename
-4. Determinar destino: `{SQUAD}/engineering/{produto}/` ou `{SQUAD}/product/{produto}/`
-5. Criar branch `docs/{SQUAD}/{area}/{produto}/{tipo}-{id}-{nome}`
-6. Commit via API do vendor (GitLab / GitHub / Bitbucket) com o doc
-7. Rodar `bash scripts/build-index.sh` localmente no clone e incluir o `{SQUAD}/index.md` atualizado no mesmo commit atômico
-8. Criar MR → main
-9. Retornar URL do MR
-
-**Commit atômico (doc + index):**
-
-```
-actions:
-  - { action: "create_or_update", file_path: "{SQUAD}/engineering/{produto}/ard-001-feature.md", content: "..." }
-  - { action: "create_or_update", file_path: "{SQUAD}/index.md", content: "..." }
-```
-
-> Usar `POST /repository/commits` com array `actions`.
-> O `index.md` é o output de `build-index.sh` — nunca construído manualmente.
-
-**Output:**
-
-```
-✅ MR criado: docs/MEU-SQUAD/engineering/meu-produto/ard-001-minha-feature → main
-URL: {url do MR/PR retornada pelo adapter}
-```
-
----
-
-### Modo 3: Reparar Índices
-
-> Detecta `{SQUAD}/index.md` ausente ou divergente e abre MR de reparo.
-
-**Quando ativar:**
-
-- Durante Modo 1, se o fallback de árvore encontrar docs que não aparecem no `index.md`
-- Durante warm-up, se `index.md` não existir
-- Quando o usuário pedir explicitamente
+Tipos: `prd, frd, feat, epic, story, task` (em `product/`) e `ard, rfc, swagger, qa-report` (em `engineering/`).
 
 **Fluxo:**
+1. Validar o frontmatter (tabela acima).
+2. Calcular o destino `{SQUAD}/{área}/{produto}/{nome}`.
+3. Sem `.git`: copiar o arquivo e regenerar `{SQUAD}/index.md`.
+4. Com `.git`:
+   1. `checkout` + `pull` de `CENTRAL_DOCS_TARGET_BRANCH`;
+   2. branch `docs/{SQUAD}/{área}/{produto}/{nome}`;
+   3. cópia + índice;
+   4. commit e push;
+   5. PR para `CENTRAL_DOCS_TARGET_BRANCH`;
+   6. voltar para a branch base.
+5. Mostrar o destino, o índice e a URL do PR (com `.git`).
 
-```
-1. Clonar ou usar clone local de central-docs
-2. Rodar: bash scripts/build-index.sh
-3. Comparar output com os index.md commitados (git diff)
-4. Se há divergência:
-   a. Criar branch: repair/index-{SQUAD}-{timestamp}
-   b. Commitar os index.md atualizados
-   c. Abrir MR → main
-5. Reportar ao usuário
-```
+Antes de publicar, **confirmar com o usuário**. Sem `.git` não há PR: a confirmação é a única revisão.
 
-> O `build-index.sh` detecta squads dinamicamente — não é necessário listar squads manualmente.
+### Modo 3: Reparar o índice
 
-**Output ao usuário:**
-
-```
-🔍 Verificando índices do central-docs (MEU-SQUAD)...
-
-⚠️  MEU-SQUAD/index.md divergente — 3 docs ausentes no índice
-
-📋 Abrindo MR de reparo...
-   Branch: repair/index-MEU-SQUAD-20260510
-   Arquivo: MEU-SQUAD/index.md
-
-✅ MR aberto:
-   URL: {CENTRAL_DOCS_REPO}/-/merge_requests/44
-```
+Quando o índice não existe ou não lista todos os documentos:
+- **Sem `.git`:** publicar de novo qualquer documento do squad regenera o índice. Na prática, o próximo `jarvis docs publish` já corrige.
+- **Com `.git`:** no clone, rodar `bash scripts/build-index.sh` (se existir) e abrir um PR `repair/index-{SQUAD}-{data}` com o índice atualizado.
 
 ### Skills invocados durante a execução do skill
 
@@ -296,97 +191,32 @@ URL: {url do MR/PR retornada pelo adapter}
 
 ### Nunca
 
-- Publicar doc sem validar frontmatter
-- Push direto para main (sempre via MR)
-- Buscar docs se `CENTRAL_DOCS_REPO` vazio (encerrar silenciosamente)
-- Inventar metadados (version, status, id)
-- Editar `{SQUAD}/index.md` manualmente — sempre via `build-index.sh`
-- Usar path em campos `related_*` — sempre basename apenas
-- Usar squad em minúsculas (ex: `core`) — sempre ALL-CAPS-COM-HIFEN: `MEU-SQUAD`
-- Criar subpastas `engineering/index.md` ou `product/index.md` (não existem neste repo)
+- Publicar documento sem validar o frontmatter
+- Editar `{SQUAD}/index.md` à mão
+- Push direto para a branch base quando a pasta tem `.git` (sempre por PR)
+- Buscar docs com `CENTRAL_DOCS_STORAGE` vazio (encerrar em silêncio)
+- Inventar metadados (`version`, `status`, `id`)
+- Usar path em campos `related_*`
+- Colocar o Central docs no versionamento de um repositório de código
 
 ### Sempre
 
-- Ler `$CENTRAL_DOCS_REPO/AGENTS.md` antes de operar
-- Usar GitLab API (não `git archive` ou `git clone` desnecessário)
-- Invalidar cache local (`redis-cli`) ao publicar, se o comando existir
-- Seguir git flow (branch → MR → main)
-- Extrair token do `.npmrc` automaticamente
-- Validar naming do arquivo antes de publicar
-- Incluir `{SQUAD}/index.md` (gerado por `build-index.sh`) em todo commit de publicação
+- Ler e publicar só pelo CLI (`jarvis docs fetch | sync | publish`), nunca lendo a pasta por fora do adaptador
+- Se o Central docs tiver `AGENTS.md` na raiz, lê-lo antes de operar
+- Confirmar com o usuário antes de publicar
+- Usar `SQUAD` em ALL-CAPS-COM-HIFEN
 
 ---
 
 ## Troubleshooting
 
-### Erro: Token VCS não encontrado
-
-GitLab: `.npmrc` `:_authToken=` ou `GITLAB_TOKEN`.
-GitHub: `gh auth login` ou `GITHUB_TOKEN`.
-Bitbucket: `BITBUCKET_TOKEN`.
-
-### Erro: index.md não encontrado (Modo 1)
-
-```
-❌ Arquivo não encontrado: MEU-SQUAD/index.md
-```
-
-**Causa:** Squad ainda sem docs publicados. Índice só existe após o primeiro `publish`.
-
-**Solução:** Publicar ao menos um doc via `jarvis docs publish`. O MR já incluirá o `index.md`.
-
-### Erro: Frontmatter inválido
-
-```
-❌ Campos obrigatórios ausentes: name, version, created_by
-```
-
-**Solução:** Adicionar campos conforme tabela de frontmatter obrigatório acima.
-
-### Erro: Naming inválido
-
-```
-❌ Nome do arquivo não segue o padrão: {tipo}-{id}-{nome-em-kebab}.md
-   Recebido: ARD-001-MinhaFeature.md
-   Esperado: ard-001-minha-feature.md
-```
-
-**Solução:** Renomear o arquivo seguindo o padrão lowercase com hífens.
-
-### CI falha com "Índices stale"
-
-```
-❌ Índices stale. Rode 'bash scripts/build-index.sh' localmente,
-   commita o resultado e empurre de novo.
-```
-
-**Solução:** O `{SQUAD}/index.md` no commit diverge do que o script geraria. Sempre incluir o output de `build-index.sh` no mesmo commit do doc.
-
----
-
-## Integração com Workflows
-
-### /warm-up
-
-```markdown
-Se CENTRAL_DOCS_REPO configurado:
-1. jarvis docs sync
-2. Exibir resumo de docs disponíveis do squad/produto
-```
-
-### /eng.start
-
-```markdown
-Se CENTRAL_DOCS_REPO definido:
-- Buscar docs relacionados ao `TASK_MANAGER_KEY` no index.md do squad
-- Carregar PRD + ARDs relevantes antes de criar architecture.md
-```
-
-### /eng.pre-pr
-
-```markdown
-1. Detectar mudanças arquiteturais no diff
-2. Verificar se ARD local existe e está atualizado vs central-docs
-3. Se desatualizado ou novo: perguntar "Publicar no central-docs?"
-4. Se sim: jarvis docs publish
-```
+| Mensagem | Causa | O que fazer |
+|---|---|---|
+| `Central docs desligado (CENTRAL_DOCS_STORAGE vazio)` | Não configurado | `/jarvis-init` → Central docs |
+| `… não é mais usado. Rode o /jarvis-init e escolha Upgrade (C)` | `ENV.md` da versão anterior | `/jarvis-init` → Upgrade (C) |
+| `Armazenamento "s3" ainda não suportado` | Valor de `STORAGE` sem adaptador | Use `filesystem` |
+| `Pasta do Central docs não encontrada` | `LOCATION` errado ou pasta não criada | Criar a pasta ou ajustar `LOCATION` |
+| `Arquivo não encontrado no Central docs: {SQUAD}/index.md` | Squad sem publicação ainda | Publicar o primeiro documento |
+| `Campos obrigatórios ausentes` | Frontmatter incompleto | Completar conforme a tabela |
+| `O arquivo "…" não segue o padrão` | Nome fora de `{tipo}-{id}-{nome}` | Renomear ou usar `--feature` |
+| `git pull`/`push` falhou (com `.git`) | Rede, permissão ou pasta suja | `git status` na pasta; o commit local fica para repetir |

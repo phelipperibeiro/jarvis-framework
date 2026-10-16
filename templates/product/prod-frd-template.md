@@ -165,7 +165,7 @@ Ele é um sistema de gestão de dados pessoais de saúde, que agrega informaçõ
 - {Exclusão adicional}
 
 ## Especificações relacionadas
-{liste todos os PRDs, FRDs ou outros documentos relacionados a este FRD fazendo uma análise prévia do projeto e das especificações existentes no `$CENTRAL_DOCS_REPO`. Pergunte para o usuário se existe outras relações que ele conheça. Antes de adicionar as sugestões, confirme com o usuário se elas estão corretas.}
+{liste todos os PRDs, FRDs ou outros documentos relacionados a este FRD fazendo uma análise prévia do projeto e das especificações existentes no Central docs (`jarvis docs sync`). Pergunte para o usuário se existe outras relações que ele conheça. Antes de adicionar as sugestões, confirme com o usuário se elas estão corretas.}
 
 **PRDs relacionadas**:
 | ID | Título | Descrição |

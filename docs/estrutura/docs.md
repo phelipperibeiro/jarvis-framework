@@ -39,4 +39,4 @@ docs/
 
 ## Relação com `jarvis docs sync`
 
-O CLI `jarvis docs sync|publish` fala com um **repositório central de documentação** (configurado no ENV: `CENTRAL_DOCS_*`). Isso é outra coisa: docs de produto/arquitetura da org, não esta pasta `docs/` do framework.
+O CLI `jarvis docs sync|fetch|publish` fala com o **Central docs**, a documentação aprovada da org (configurada no ENV: `CENTRAL_DOCS_STORAGE` + `CENTRAL_DOCS_LOCATION`; hoje uma pasta, com git opcional). Isso é outra coisa: docs de produto/arquitetura da org, não esta pasta `docs/` do framework.

@@ -31,7 +31,7 @@ Se faltar informação, ele pergunta nesta ordem: o modo, o card, o **tag do ser
 
 ## Como funciona
 
-**Setup:** confere o `ENV.md`, roda o CDD se estiver ligado e cria a branch `{TASK_MANAGER_KEY}-{robot-tag}` a partir de `dev` e a pasta da sessão.
+**Setup:** confere o `ENV.md`, roda o CDD se estiver ligado e pergunta de qual branch partir (`main`, `dev`, a atual ou outra), cria a branch `{TASK_MANAGER_KEY}-{robot-tag}` a partir dela e a pasta da sessão.
 
 ### Modo `new`
 

@@ -75,14 +75,16 @@ grep "^ENABLE_CDD=" $IDE/ENV.md
 
 ### 0.3 Criar Branch e Sessão
 
+Pergunte a branch base com `AskUserQuestion` (**"De qual branch partir?"**: `main`, `dev`, `{branch atual}` se for outra, ou Outro) e grave `Branch base:` no `architecture.md` da sessão; o `eng.pr` abre o PR para ela.
+
 ```bash
-git checkout dev && git pull origin dev
+git checkout {BRANCH_BASE} && git pull --ff-only origin {BRANCH_BASE}
 git checkout -b {TASK_MANAGER_KEY}-{robot-tag}
 mkdir -p $SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/
 echo "$(date -u +"%Y-%m-%dT%H:%M:%SZ")" > $SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/.timestamp_start
 ```
 
-> Branch sempre criada a partir de `dev`. Nunca de `main`/`master`.
+> A base é sempre perguntada: não presuma `dev` nem `main`. A branch de trabalho nunca é a própria base.
 
 ---
 

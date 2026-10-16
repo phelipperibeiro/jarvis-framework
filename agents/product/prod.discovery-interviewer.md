@@ -75,7 +75,7 @@ Não use quando já existe uma spec (use `/prod.spec.clarify`) ou quando o escop
 As skills são apoio, nunca a fonte da decisão. A busca em `$PROD_DOCS` não é uma skill: é feita sempre, antes de perguntar.
 
 ### jarvis-docs-central
-Para buscar documentação do produto no repositório central, quando `CENTRAL_DOCS_REPO` estiver configurado:
+Para buscar documentação do produto no Central docs, quando `CENTRAL_DOCS_STORAGE` estiver configurado:
 - Arquivo: `$IDE/skills/jarvis-docs-central/SKILL.md`
 - Confiança: sempre
 

@@ -19,7 +19,7 @@ evitando leitura desnecessária de arquivos e economizando tokens.
 | Passo | Skill | Condição |
 |-------|-------|----------|
 | Passo 0.5 › 2. Para cada tecnologia identificada | `context7` (MCP: `resolve-library-id`, `query-docs`) | Se houver variável de stack com valor no ENV.md (uma consulta por tecnologia identificada); sem variável de stack, pula silenciosamente |
-| Passo 2 — Sincronizar Documentação Central | `/jarvis-docs-central` | Se `CENTRAL_DOCS_REPO` estiver configurado no ENV.md (Modo 1: Buscar Docs, via Skill tool) |
+| Passo 2 — Sincronizar Documentação Central | `/jarvis-docs-central` | Se `CENTRAL_DOCS_STORAGE` estiver configurado no ENV.md (Modo 1: Buscar Docs, via Skill tool) |
 | Passo 4 › Menu TECH LEAD › opções A a H | `/eng.start`, `/eng.debug`, `/eng.create-ard`, `/eng.create-ard-from-code`, `/eng.create-rfc`, `/eng.build-tech-spec`, `/eng.review`, `/eng.docs` | Se `POSITION=TECH LEAD` e `AREA=ENGINEERING` (menu dedicado) e o usuário escolher uma das opções (cada opção chama o workflow correspondente, na ordem do menu e do roteamento do Passo 4; `Outro` não chama workflow) |
 | Passo 4 › Menu CTO › opções A a D | `/eng.review`, `/eng.create-ard`, `/eng.create-rfc`, `/eng.build-tech-spec` | Se `POSITION` for CTO ou equivalente (menu dedicado, para qualquer `AREA`) e o usuário escolher uma das opções (cada opção chama o workflow correspondente, na ordem do menu e do roteamento do Passo 4; `Outro` não chama workflow) |
 | Passo 4 › Menu ENGINEERING + DATA › opções A a C | `/data.new-pipeline`, `/eng-data`, `/data.contract` | Se `AREA=ENGINEERING` e `HUB=DATA` e o usuário escolher uma das opções (cada opção chama o workflow correspondente, na ordem do menu e do roteamento do Passo 4; `Outro` não chama workflow) |
@@ -129,7 +129,7 @@ O perfil de comunicação é derivado de `POSITION` (conforme definido no `$IDE/
 
 ## Passo 2 — Sincronizar Documentação Central (condicional)
 
-Se `CENTRAL_DOCS_REPO` estiver configurado no ENV.md, invocar o skill `jarvis-docs-central` via Skill tool para carregar docs do produto.
+Se `CENTRAL_DOCS_STORAGE` estiver configurado no ENV.md, invocar o skill `jarvis-docs-central` via Skill tool para carregar docs do produto.
 
 > ⚠️ **IMPORTANTE**: NÃO executar `jarvis docs sync` diretamente via Bash.
 > Usar sempre: **Skill tool → jarvis-docs-central (Modo 1: Buscar Docs)**
@@ -158,7 +158,7 @@ Contexto: warm-up - sincronização inicial
 ```
 
 **Comportamento:**
-- Se `CENTRAL_DOCS_REPO` vazio → pula silenciosamente
+- Se `CENTRAL_DOCS_STORAGE` vazio → pula silenciosamente
 - Se erro de token → exibe aviso mas continua
 - Se `index.md` não existe → navega estrutura do repo e lista docs disponíveis
 - Se erro genérico → exibe mensagem clara e continua sem bloquear
