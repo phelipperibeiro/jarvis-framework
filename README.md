@@ -205,6 +205,17 @@ Escolha **Upgrade (C)** — adiciona chaves novas do template sem apagar os valo
 
 ---
 
+## Estilo dos artefatos
+
+O `/jarvis-init` pergunta o `ARTIFACT_STYLE` (variável do `ENV.md`):
+
+| Valor | O que acontece |
+|---|---|
+| `ai-generated` (padrão) | Como sempre: metadados, links de rastreabilidade e padrões da ferramenta |
+| `human-generated` | Nada do que o Jarvis publica (commit, PR/MR, comentário no card, issue) leva marca de IA ou da IDE: o `/eng.pr` confere e limpa antes do push. Todo documento gerado pergunta, no fim, se você quer a versão humanizada, gravada ao lado como `{nome}.public.md` para repassar a clientes ou stakeholders |
+
+Com `human-generated`, o `/jarvis-init` copia a rule `rules/artifact-style-rules.md` (eixo `ARTIFACT_STYLE` do `Applies to`); com `ai-generated`, ela nem existe na sessão. Trocou o valor à mão? Rode `/jarvis-init upgrade`.
+
 ## Funciona com qualquer stack
 
 O Jarvis não presume Go, PHP, NestJS ou React. Cada área (backend e frontend) tem uma **skill base neutra**, e cada projeto registra no `ENV.md` as **especializações** da sua stack (`BACKEND_SPECIALIZATIONS` e `FRONTEND_SPECIALIZATIONS`). Os comandos `eng.*` carregam a base mais o que o projeto registrou.

@@ -158,6 +158,26 @@ Refs: {TASK_MANAGER_KEY}"
 
 > ⚠️ O push só acontece **depois do Sim** da Fase 4.3. Esta fase descreve o comando; ele roda dentro da publicação.
 
+### 3.0 Conferir marcas de IA (só com `ARTIFACT_STYLE=human-generated`)
+
+Antes do push, siga `$IDE/rules/artifact-style-rules.md`: nada publicado leva marca de IA ou da IDE.
+
+```bash
+TERMOS='co-authored-by|generated with|claude|anthropic|chatgpt|openai|copilot|\bIA\b|\bAI\b|sub-?agent|advisor'
+RANGE=$(git rev-parse --abbrev-ref @{u} >/dev/null 2>&1 && echo '@{u}..HEAD' || echo '{BRANCH_BASE}..HEAD')
+git log --format='%h %B' $RANGE | grep -inE "$TERMOS"
+grep -inE "$TERMOS" $SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/pull-request.md
+```
+
+Revise cada ocorrência antes de remover: a busca é larga e pode achar texto legítimo (ex.: `ai-generated`, um link para o PR).
+
+- **Nada encontrado (ou só falsos positivos):** siga para o push.
+- **No `pull-request.md`:** remova os trechos (o texto aprovado na 4.2 muda só nisso).
+- **Nas mensagens de commit:** reescreva **só os commits de `$RANGE`** (ainda não enviados), sem modo interativo, por exemplo, com `{ref}` = o início de `$RANGE` (`@{u}` ou `{BRANCH_BASE}`), `git rebase {ref} --exec 'M=$(git rev-parse --git-dir)/MSG_LIMPA; git log -1 --format=%B | sed -E "/^Co-Authored-By:/Id" > "$M" && git commit -q --amend -F "$M"'`, ajustando o `sed` aos termos achados. Depois, rode a busca de novo.
+- **Commit já enviado com marca:** não reescreva; avise o usuário e pare.
+
+Informe no resumo o que foi removido. Com `ai-generated` (ou vazio), pule este passo.
+
 ### 3.1 Enviar para Remote
 
 ```bash
@@ -201,7 +221,7 @@ Preencher com a tarefa. Link do card:
 
 `{TASK_MANAGER_KEY}` = `{TASK_MANAGER_KEY}`.
 
-> ⚠️ Não mencione AI, Claude ou assistentes no MR/PR.
+> ⚠️ Não mencione AI, Claude ou assistentes no MR/PR. Com `ARTIFACT_STYLE=human-generated`, também sem "Generated with …" nem link da ferramenta (`rules/artifact-style-rules.md`).
 
 ### 4.2 Revisão do texto
 

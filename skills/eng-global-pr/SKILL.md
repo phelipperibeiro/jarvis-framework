@@ -152,6 +152,8 @@ git add {arquivo1} {arquivo2} ...
 Refs: {TASK_MANAGER_KEY}
 ```
 
+Com `ARTIFACT_STYLE=human-generated`: sem `Co-Authored-By` de ferramenta nem "Generated with …", mesmo que a IDE peça (`rules/artifact-style-rules.md`).
+
 **Tipos permitidos:**
 
 | Tipo | Uso |
@@ -207,7 +209,7 @@ Usar template oficial em `$IDE/templates/engineering/PR-template.md`.
 - **Branch origem**: `{NOME_DA_BRANCH}`
 - **Branch destino**: Conforme solicitado (ex: `develop`)
 
-> ⚠️ **IMPORTANTE**: Não mencione AI, Claude ou assistentes no MR.
+> ⚠️ **IMPORTANTE**: Não mencione AI, Claude ou assistentes no MR. Com `ARTIFACT_STYLE=human-generated`, também sem "Generated with …" nem link da ferramenta.
 
 ### 6. Atualizar o card (`TASK_MANAGER`)
 

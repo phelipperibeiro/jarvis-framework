@@ -53,7 +53,8 @@ export function renderIndex(root, squad) {
     const areaDir = join(root, squad, area);
     const files = walkFiles(areaDir).filter((f) => {
       const name = f.split(sep).pop();
-      return name.startsWith(prefix) && name.endsWith(".md");
+      // {nome}.public.md (versão humanizada, ARTIFACT_STYLE=human-generated) não entra no índice
+      return name.startsWith(prefix) && name.endsWith(".md") && !name.endsWith(".public.md");
     });
     out.push(`## ${area}`, "", `> ${title}`, "");
     if (files.length === 0) {

@@ -81,6 +81,12 @@ DISCOVERIES_DOCS=$JARVIS_DOCS/$DISCOVERIES_FOLDER_NAME
 # Perguntado sempre pelo /jarvis-init. Para trocar, rode o /jarvis-init ou edite aqui.
 PROD_MODE=
 
+# Estilo dos artefatos gerados (commits, PRs, comentários e documentos).
+#   ai-generated    = como hoje: metadados, links de rastreabilidade e padrões da ferramenta (padrão)
+#   human-generated = nada publicado leva marca de IA; todo documento gerado oferece a versão {nome}.public.md
+# Perguntado pelo /jarvis-init. Trocou à mão? Rode /jarvis-init upgrade (copia ou remove a rule do estilo).
+ARTIFACT_STYLE=ai-generated
+
 
 # --- Especializações por área -------------------------------------------------
 # Skills especializados que o Jarvis carrega junto com o skill base de cada área.

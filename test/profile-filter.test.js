@@ -26,11 +26,40 @@ test("parseAppliesTo lê o bloco, com valores múltiplos", () => {
     POSITION: "all",
     AREA: "ENGINEERING",
     SQUAD: "all",
+    ARTIFACT_STYLE: "all",
   });
 });
 
 test("parseAppliesTo devolve null sem bloco", () => {
   assert.equal(parseAppliesTo("# Sem bloco\n"), null);
+});
+
+test("parseAppliesTo: 5º campo ARTIFACT_STYLE opcional, sem vazar para o SQUAD", () => {
+  const cinco = parseAppliesTo(
+    `${bloco("all", "all", "all", "CORE")} | ARTIFACT_STYLE: human-generated\n`
+  );
+  assert.equal(cinco.SQUAD, "CORE");
+  assert.equal(cinco.ARTIFACT_STYLE, "human-generated");
+  const quatro = parseAppliesTo(`${bloco("all", "all", "all", "all")}\n\n# T | com barra`);
+  assert.equal(quatro.SQUAD, "all");
+  assert.equal(quatro.ARTIFACT_STYLE, "all");
+});
+
+test("matchesProfile: ARTIFACT_STYLE só pelo perfil, sem coringa para FULLCYCLE/GENERALIST", () => {
+  const rule = parseAppliesTo(
+    `${bloco("all", "all", "all", "all")} | ARTIFACT_STYLE: human-generated`
+  );
+  const comEstilo = (estilo, p = profile("BACKEND", "SENIOR", "ENGINEERING")) => ({
+    ...p,
+    ARTIFACT_STYLE: estilo,
+  });
+  assert.equal(matchesProfile(rule, comEstilo("human-generated")), true);
+  assert.equal(matchesProfile(rule, comEstilo("ai-generated")), false);
+  assert.equal(matchesProfile(rule, profile("BACKEND", "SENIOR", "ENGINEERING")), false);
+  assert.equal(matchesProfile(rule, profile("FULLCYCLE", "GENERALIST", "ENGINEERING")), false);
+  // rule sem o eixo vale para qualquer estilo
+  const semEixo = parseAppliesTo(bloco("all", "all", "all", "all"));
+  assert.equal(matchesProfile(semEixo, comEstilo("human-generated")), true);
 });
 
 test("matchesProfile: sem bloco é universal", () => {
@@ -164,16 +193,19 @@ test("listRulesForProfile: AGENTS.md nunca é filtrado, rtk é opt-in, sem bloco
 // Issue #157 (discoveries em pasta própria, 2026-10-16): +309 B em todos os perfis — prod-rules.md
 // (AREA all) ganhou $DISCOVERIES_DOCS no ENV de fallback, a descrição dela e a regra de ENV antigo;
 // no FULLCYCLE/GENERALIST, -10 B de prod.spec-rules.md ($PROD_DOCS/discoveries/ → $DISCOVERIES_DOCS/).
+// Issue #159 (estilo de artefatos, 2026-10-16): +241 B em todos os perfis — rules/AGENTS.md (sempre
+// copiado) documenta o 5º campo opcional ARTIFACT_STYLE. A rule nova (artifact-style-rules.md) só entra
+// com ARTIFACT_STYLE=human-generated, que nenhum destes perfis tem.
 const BASE = [
   [
     "FULLCYCLE/GENERALIST/ENGINEERING/CORE",
     profile("FULLCYCLE", "GENERALIST", "ENGINEERING"),
     15,
-    99000,
+    99241,
   ],
-  ["BACKEND/SENIOR/ENGINEERING/CORE", profile("BACKEND", "SENIOR", "ENGINEERING"), 11, 65681],
-  ["FRONTEND/PLENO/ENGINEERING/CORE", profile("FRONTEND", "PLENO", "ENGINEERING"), 11, 66224],
-  ["QA/QA-ENGINEER/ENGINEERING/CORE", profile("QA", "QA-ENGINEER", "ENGINEERING"), 11, 65460],
+  ["BACKEND/SENIOR/ENGINEERING/CORE", profile("BACKEND", "SENIOR", "ENGINEERING"), 11, 65922],
+  ["FRONTEND/PLENO/ENGINEERING/CORE", profile("FRONTEND", "PLENO", "ENGINEERING"), 11, 66465],
+  ["QA/QA-ENGINEER/ENGINEERING/CORE", profile("QA", "QA-ENGINEER", "ENGINEERING"), 11, 65701],
 ];
 
 for (const [nome, p, arquivos, bytes] of BASE) {
@@ -186,3 +218,16 @@ for (const [nome, p, arquivos, bytes] of BASE) {
     );
   });
 }
+
+test("rules reais: artifact-style-rules.md só com ARTIFACT_STYLE=human-generated (sem coringa)", () => {
+  const tem = (p) =>
+    listRulesForProfile(join(root, "rules"), p).some((r) => r.path === "artifact-style-rules.md");
+  const base = profile("FULLCYCLE", "GENERALIST", "ENGINEERING");
+  assert.equal(tem(base), false);
+  assert.equal(tem({ ...base, ARTIFACT_STYLE: "ai-generated" }), false);
+  assert.equal(tem({ ...base, ARTIFACT_STYLE: "human-generated" }), true);
+  assert.equal(
+    tem({ ...profile("BACKEND", "SENIOR", "ENGINEERING"), ARTIFACT_STYLE: "human-generated" }),
+    true
+  );
+});

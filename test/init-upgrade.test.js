@@ -64,6 +64,7 @@ test("init --upgrade --yes: chaves novas, PROD_MODE pela AREA, discovery movido,
       assert.match(env, /^DISCOVERIES_FOLDER_NAME=discoveries$/m);
       assert.match(env, /^DISCOVERIES_DOCS=\$JARVIS_DOCS\/\$DISCOVERIES_FOLDER_NAME$/m);
       assert.match(env, /^PROD_MODE=developer-guided$/m);
+      assert.match(env, /^ARTIFACT_STYLE=ai-generated$/m);
       assert.match(env, /^RTK_ENABLED=false$/m);
       assert.equal((env.match(/^TASK_MANAGER=/gm) || []).length, 1);
 

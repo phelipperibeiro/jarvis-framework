@@ -50,9 +50,11 @@ Muitas rules começam com:
 > **Applies to:** HUB: all | POSITION: all | AREA: ENGINEERING | SQUAD: all
 ```
 
+Um 5º campo é opcional: `| ARTIFACT_STYLE: human-generated`. Sem ele, a rule vale para qualquer estilo. É assim que `rules/artifact-style-rules.md` só chega a quem escolheu `ARTIFACT_STYLE=human-generated` no ENV (FULLCYCLE e GENERALIST não são coringa neste eixo).
+
 No `/jarvis-init` (passo de sync de rules):
 
-1. Lê `HUB`, `POSITION`, `AREA`, `SQUAD` do ENV
+1. Lê `HUB`, `POSITION`, `AREA`, `SQUAD` e `ARTIFACT_STYLE` (vazio = `ai-generated`) do ENV
 2. Copia para `.$IDE/rules/` e `.$IDE/rules-on-demand/` só o que **bate** no perfil
 3. Remove da IDE o que não bate
 4. Exceção: `rtk-rules.md` só se `RTK_ENABLED=true`

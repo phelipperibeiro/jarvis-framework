@@ -6,16 +6,20 @@ import { logger } from "../lib/utils/logger.js";
 
 const AXES = ["HUB", "POSITION", "AREA", "SQUAD"];
 
-/** Perfil: as flags (`--hub` etc.) mandam; o que faltar vem do ENV.md. */
+/**
+ * Perfil: as flags (`--hub` etc.) mandam; o que faltar vem do ENV.md.
+ * ARTIFACT_STYLE é opcional (vazio = ai-generated) e não entra em `missing`.
+ */
 function resolveProfile(flags) {
   const profile = {};
   for (const axis of AXES) {
     const value = flags[axis.toLowerCase()];
     if (typeof value === "string") profile[axis] = value;
   }
+  if (typeof flags.artifactStyle === "string") profile.ARTIFACT_STYLE = flags.artifactStyle;
 
   let rtkEnabled = flags.rtk === true || flags.rtk === "true";
-  // O ENV.md só entra quando falta algum eixo; com os 4 eixos nas flags, o RTK vem só da flag.
+  // O ENV.md só entra quando falta algum eixo; com os 4 eixos nas flags, o RTK e o estilo vêm só das flags.
   if (AXES.some((axis) => !profile[axis])) {
     try {
       const { path } = resolveEnvPath(process.cwd(), flags);
@@ -23,6 +27,8 @@ function resolveProfile(flags) {
       for (const axis of AXES) {
         if (!profile[axis] && env[axis]) profile[axis] = env[axis];
       }
+      if (!profile.ARTIFACT_STYLE && env.ARTIFACT_STYLE)
+        profile.ARTIFACT_STYLE = env.ARTIFACT_STYLE;
       if (flags.rtk === undefined) rtkEnabled = env.RTK_ENABLED === "true";
     } catch {
       // sem ENV.md: valem só as flags
@@ -59,7 +65,7 @@ export async function tokens(flags) {
   showBanner();
   logger.info(`${CYAN}📏 Custo estimado no início da sessão${NC}`);
   logger.info(
-    `${DIM}Perfil: HUB=${profile.HUB} | POSITION=${profile.POSITION} | AREA=${profile.AREA} | SQUAD=${profile.SQUAD}` +
+    `${DIM}Perfil: HUB=${profile.HUB} | POSITION=${profile.POSITION} | AREA=${profile.AREA} | SQUAD=${profile.SQUAD} | ARTIFACT_STYLE=${profile.ARTIFACT_STYLE || "ai-generated"}` +
       ` | RTK=${rtkEnabled ? "ligado" : "desligado"}${NC}`
   );
   logger.info(`${DIM}${report.estimate}${NC}`);

@@ -70,7 +70,7 @@ test("buildReport: soma por tipo e total, respeitando o perfil", () => {
     assert.equal(r.total.bytes, soma);
     assert.equal(r.total.tokens, estimateTokens(soma));
     assert.match(r.estimate, /estimativa/);
-    assert.deepEqual(r.profile, perfil);
+    assert.deepEqual(r.profile, { ...perfil, ARTIFACT_STYLE: "ai-generated" });
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }

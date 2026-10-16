@@ -169,6 +169,7 @@ export function buildProgram() {
     .option("--position <position>")
     .option("--area <area>")
     .option("--squad <squad>")
+    .option("--artifact-style <estilo>", "ai-generated ou human-generated (padrão: lido do ENV.md)")
     .option("--rtk", "Força RTK ligado (padrão: lido do ENV.md)")
     .option("--json", "Saída em JSON")
     .option("--ide <ide>")

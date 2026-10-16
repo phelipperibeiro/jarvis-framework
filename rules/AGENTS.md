@@ -75,6 +75,8 @@ Cada arquivo de rule declara para quais perfis se aplica via bloco `applies_to`,
 > **Applies to:** HUB: {valor ou all} | POSITION: {valor ou all} | AREA: {valor ou all} | SQUAD: {valor ou all}
 ```
 
+Campo opcional no fim: `| ARTIFACT_STYLE: {ai-generated, human-generated ou all}` (ausente = `all`).
+
 **Eixos de filtragem:**
 
 | Eixo | Exemplos de valor | `all` significa |
@@ -83,13 +85,14 @@ Cada arquivo de rule declara para quais perfis se aplica via bloco `applies_to`,
 | POSITION | TECH LEAD, PM, QA-ENGINEER, SENIOR, GENERALIST | qualquer cargo |
 | AREA | ENGINEERING, PRODUCT | qualquer área |
 | SQUAD | CORE | qualquer squad |
+| ARTIFACT_STYLE (opcional) | ai-generated, human-generated | qualquer estilo (ENV vazio = `ai-generated`; sem coringa) |
 
 **Regras:**
 - Uma rule é aplicada se **todos** os eixos forem satisfeitos (AND, não OR)
 - Arquivos sem bloco `applies_to` são considerados **universais** — copiados para qualquer perfil
 - `rules/AGENTS.md` nunca é filtrado — sempre copiado
 
-**Quem faz a filtragem:** o skill `/jarvis-init` (Passo 9 — Profile-Aware Rules Sync). Ao criar, atualizar ou fazer upgrade do ENV.md, copia para `$IDE/rules/` apenas as rules que batem com o perfil (HUB + POSITION + AREA + SQUAD) e deleta as que não batem mais.
+**Quem faz a filtragem:** o skill `/jarvis-init` (Passo 8 — Profile-Aware Rules Sync). Ao criar, atualizar ou fazer upgrade do ENV.md, copia para `$IDE/rules/` apenas as rules que batem com o perfil (HUB + POSITION + AREA + SQUAD + ARTIFACT_STYLE) e deleta as que não batem mais.
 
 **Ao criar uma nova rule**, definir o bloco `applies_to` é obrigatório. Sem ele, a rule é tratada como universal — o que pode ser indesejado para rules domain-specific.
 
