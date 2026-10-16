@@ -222,7 +222,7 @@ Skills são invocados de formas diferentes dependendo da IDE:
 | Comando / Trigger | Skill |
 |-------------------|-------|
 | `/jarvis-init` | `jarvis-init` |
-| `/warm-up` | `jarvis-docs-central` (sync) |
+| `/warm-up` | `jarvis-docs-central` (só o recorte escolhido), `context7` (se o MCP estiver disponível) |
 | `eng.start` | `jarvis-docs-central` (buscar PRD/ARD) |
 | `/eng.docs` | `eng-global-docs-write`, `jarvis-docs-index` |
 | `/eng.pre-pr` | `eng-qa-planner`, `eng-global-docs-write`, `jarvis-docs-central` (detectar docs) |

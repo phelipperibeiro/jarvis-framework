@@ -22,6 +22,8 @@ Uma issue é a menor unidade de trabalho que pode ser feita. Ela deve entregar v
 
 Um grupo de histórias de um mesmo assunto podem formar um épico.
 
+> 🔥 **Warm-up**: se `$SESSIONS_DIR/warm-ups/` tiver aquecimentos, leia `$IDE/rules-on-demand/warm-up-consume-rules.md` e siga-o antes de começar (grava em `$SESSIONS_DIR/prod/{id do documento}/context.md`).
+
 ## Quando Usar
 - Ao decompor épicos em histórias de usuário implementáveis
 - Criar tarefas técnicas

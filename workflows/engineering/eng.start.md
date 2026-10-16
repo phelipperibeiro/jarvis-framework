@@ -121,6 +121,10 @@ CONTEXT_PROFILE:
 O perfil detectado será apresentado automaticamente pelo skill.
 Se o usuário solicitar ajustes, re-execute com `--override`.
 
+### Warm-up (se houver)
+
+Se `$SESSIONS_DIR/warm-ups/` tiver aquecimentos, leia `$IDE/rules-on-demand/warm-up-consume-rules.md` e siga-o: o aquecimento escolhido entra no `context.md` gerado acima e a pasta dele é apagada. Sem aquecimentos, siga sem perguntar.
+
 ---
 
 ## Fase 0.5: Advisor (opcional)

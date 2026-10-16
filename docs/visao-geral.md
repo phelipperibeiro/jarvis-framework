@@ -175,7 +175,7 @@ Hierarquia de leitura completa: ver `AGENTS.md` na raiz.
 
 | Fase | Comando | Pode | Não pode |
 |------|---------|------|----------|
-| Warm-up | `/warm-up` | Carregar contexto | — |
+| Warm-up | `/warm-up` | Preparar o contexto da tarefa (mapa de tecnologias, repositórios, recorte do Central docs, entregas) | Alterar o `ENV.md` |
 | Investigar | `/eng.start` | Arquitetura, dúvidas | Código de prod |
 | Planejar | `/eng.plan` | Plano faseado | Implementar |
 | Implementar | `/eng.work` | Código + testes | Commit/PR |

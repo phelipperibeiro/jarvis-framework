@@ -30,7 +30,7 @@ USER=
 # Limite de autonomia da IA neste workspace (60–100). 80 = a IA executa até 80%.
 MAX_AI_EXECUTION_PERCENTAGE=80
 
-# Context-Driven Development — deixe true. O warm-up calibra o comportamento.
+# Context-Driven Development — deixe true. Os comandos eng.* calibram o comportamento pelo CDD.
 ENABLE_CDD=true
 
 

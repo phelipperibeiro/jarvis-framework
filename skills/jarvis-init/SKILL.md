@@ -675,6 +675,9 @@ grep -qxF '.jarvis/' .gitignore 2>/dev/null || echo '.jarvis/' >> .gitignore
 #    JARVIS_DOCS=$DOCS_FOLDER/jarvis, PROD_DOCS=$JARVIS_DOCS/product, ENG_DOCS=$JARVIS_DOCS/engineering
 #    (valores do template) e docs/jarvis/ fora do versionamento (uma docs/ já existente não é tocada):
 grep -qxF 'docs/jarvis/' .gitignore 2>/dev/null || echo 'docs/jarvis/' >> .gitignore
+
+# 9. Mapa de tecnologias do workspace (CDD-MIND-MAP.md, na raiz, ao lado do AGENTS.md) fora do versionamento:
+grep -qxF 'CDD-MIND-MAP.md' .gitignore 2>/dev/null || echo 'CDD-MIND-MAP.md' >> .gitignore
 ```
 
 ### 5.2 Central docs (sempre)
@@ -972,6 +975,8 @@ Se não existir na raiz do projeto:
 2. Extrair informações do projeto
 3. Criar a partir do template com substituições
 4. Se não detectar, perguntar ao usuário
+5. Incluir (ou acrescentar, se o `AGENTS.md` já existir e não citar) a linha que identifica o mapa como contexto de workspace:
+   `> Contexto de workspace: [CDD-MIND-MAP.md](CDD-MIND-MAP.md) (tecnologias e papel de cada repositório; lido pelo /warm-up).`
 
 ### 8. Profile-Aware Rules Sync
 
@@ -1076,6 +1081,7 @@ A **detecção de stack por código e a criação de skill novo** (sub-passos 9.
 3. **Lê** o workspace (a análise **só lê**: não altera arquivos do projeto nem as listas), identifica as stacks de backend e de frontend, inclusive de vários projetos, e **mostra o que encontrou antes de sugerir** (só essas 2 áreas)
 4. Para cada stack de backend/frontend, sugere **registrar o skill que já existe** (mesmo `area` e `stack`) ou **criar um novo** com `/jarvis-create-specialization {área} {stack}`; a pessoa escolhe, e o que não aceita não muda
 5. Mostra um resumo das 6 listas e do que foi registrado ou criado
+6. **Monta o `CDD-MIND-MAP.md`** (o mapa de tecnologias do workspace, lido pelo `/warm-up`): com a mesma leitura do sub-passo 3, agora para **todas as áreas**, preenche uma linha por repositório (papel, linguagem, framework, área, até 5 ferramentas principais) pelo `$IDE/templates/cdd-mind-map-template.md`, mostra a tabela e pede a validação com `AskUserQuestion` (**Confirmar** | **Corrigir** | **Incluir informação**). Grava na raiz do workspace (já no `.gitignore`, Passo 5). Se o mapa já existe, só acrescenta os repositórios que faltam. Pular é permitido: o primeiro `/warm-up` cria o mapa.
 
 O tempo de ~10 minutos é referência, não limite. Nunca leia `.env*`, chaves ou credenciais.
 

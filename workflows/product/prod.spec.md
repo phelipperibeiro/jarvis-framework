@@ -14,6 +14,8 @@ model_justification: Especificações de produto requerem compreensão de requis
 
 Estas instruções ajudam a orientar o usuário que deseja começar a construir uma especificação. Esta especificação pode variar desde um PRD, história de usuário até tarefas. Devemos orientá-lo nessa construção de forma que a especificação, seja ela macro ou micro seja criada de acordo com as instruções e padrões do projeto.
 
+> 🔥 **Warm-up**: se `$SESSIONS_DIR/warm-ups/` tiver aquecimentos, leia `$IDE/rules-on-demand/warm-up-consume-rules.md` e siga-o antes de começar (grava em `$SESSIONS_DIR/prod/{id do documento}/context.md`).
+
 ## Quando usar
 - Esse comando serve para unificar a criação de todos os tipos de especificações do projeto.
 - Ao iniciar uma nova especificação de projeto ou modificar um PRD existente

@@ -23,6 +23,8 @@ Utilize o `$ARGUMENTS` que o usuário passar como ponto de partida e para entend
 #$ARGUMENTS
 </requirement>
 
+> 🔥 **Warm-up**: se `$SESSIONS_DIR/warm-ups/` tiver aquecimentos, leia `$IDE/rules-on-demand/warm-up-consume-rules.md` e siga-o antes de começar (grava em `$SESSIONS_DIR/prod/{id do documento}/context.md`).
+
 ## Quando usar
 - Ao dividir grandes recursos ou PRDs em partes gerenciáveis
 - Quando o trabalho abrange vários sprints ou iterações

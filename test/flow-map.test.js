@@ -361,7 +361,10 @@ test("framework real: eng.start, warm-up, eng-qa-planner e eng.agent mapeiam", (
 
   const warm = runMap("warm-up", {}, root);
   assert.equal(warm.code, 0);
-  assert.ok(warm.lines.filter((l) => l.includes("menu (")).length >= 6);
+  const warmText = warm.lines.join("\n");
+  assert.match(warmText, /jarvis-docs-central \[skill\]/);
+  assert.match(warmText, /context7 \[MCP\]/);
+  assert.match(warmText, /eng\.start \[workflow\]/);
 
   assert.equal(runMap("eng-qa-planner", {}, root).code, 0);
   const agent = runMap("eng.agent", {}, root);
