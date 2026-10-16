@@ -1,5 +1,5 @@
 import { existsSync, mkdirSync, readFileSync, appendFileSync, writeFileSync } from "node:fs";
-import { join } from "node:path";
+import { join, dirname, basename } from "node:path";
 import { createInterface } from "node:readline";
 import { syncAssets } from "../lib/core/sync-engine.js";
 import { discoverAll } from "../lib/core/scanner.js";
@@ -7,12 +7,23 @@ import {
   IDES,
   getIDEConfig,
   getIDEFolder,
+  getIDEValues,
   getWorkflowsFolder,
   isIDESupported,
 } from "../lib/config/ide-config.js";
 import { showBanner, RED, GREEN, BLUE, YELLOW, CYAN, DIM, BOLD, NC } from "../lib/utils/ui.js";
-import { getPackageInfo } from "../lib/utils/paths.js";
+import { getPackageInfo, getFrameworkRoot } from "../lib/utils/paths.js";
 import { logger, configureFromFlags } from "../lib/utils/logger.js";
+import { resolveEnvPath } from "../lib/env-loader.js";
+import { LOCK_FILE } from "../lib/config/constants.js";
+import { parseEnvEntries, planEnvUpgrade, applyEnvUpgrade } from "../lib/core/env-upgrade.js";
+import {
+  expandEnv,
+  planDocsMigration,
+  applyDocsMigration,
+  rewriteRelatedDiscovery,
+  declineEnvValues,
+} from "../lib/core/docs-migrate.js";
 
 function ask(rl, question) {
   return new Promise((resolve) => rl.question(question, resolve));
@@ -24,6 +35,11 @@ export async function init(flags) {
   const cwd = process.cwd();
 
   showBanner();
+
+  if (flags.upgrade) {
+    process.exitCode = await runUpgrade(cwd, flags);
+    return;
+  }
 
   let ide;
   if (flags.ide) {
@@ -206,4 +222,135 @@ export async function init(flags) {
   logger.info(`${BLUE}📖 Para ver todos os prompts disponíveis:${NC}`);
   logger.info(`     ${YELLOW}jarvis list${NC}`);
   logger.info("");
+}
+
+/** IDE de um ENV.md encontrado (`.claude/ENV.md` → `claude`). */
+function ideFromEnvPath(envPath) {
+  const folder = basename(dirname(envPath));
+  return getIDEValues().find((v) => `.${getIDEFolder(v)}` === folder);
+}
+
+function readLockVersion(workspaceDir) {
+  try {
+    return (
+      JSON.parse(readFileSync(join(workspaceDir, LOCK_FILE), "utf-8")).version || "desconhecida"
+    );
+  } catch {
+    return "desconhecida";
+  }
+}
+
+/**
+ * `jarvis init --upgrade`: atualiza um projeto já configurado em uma passada.
+ * 1. arquivos do framework (como o --force, sem perguntar); 2. só as chaves novas do ENV;
+ * 3. documentos dos caminhos antigos → docs/jarvis/… (com confirmação ou --yes).
+ * Nunca imprime valores do ENV, só nomes de chave e caminhos.
+ * @returns {Promise<number>} código de saída
+ */
+async function runUpgrade(cwd, flags) {
+  let resolved;
+  try {
+    resolved = resolveEnvPath(cwd, flags.ide ? { ide: flags.ide } : {});
+  } catch (err) {
+    resolved = { error: err.message.split("\n")[0] };
+  }
+  const ide = flags.ide || (resolved.path && ideFromEnvPath(resolved.path));
+  if (resolved.error || !ide || !existsSync(resolved.path)) {
+    logger.error(
+      `${RED}🚫 Nenhuma instalação do Jarvis encontrada (ENV.md ausente)${resolved.error ? `: ${resolved.error}` : ""}.${NC}`
+    );
+    logger.error(
+      `${YELLOW}Rode ${BOLD}jarvis init --ide ${flags.ide || "{ide}"}${NC}${YELLOW} e depois ${BOLD}/jarvis-init${NC}${YELLOW} na IDE.${NC}\n`
+    );
+    return 1;
+  }
+  const workspaceDir = resolved.root;
+  const envPath = resolved.path;
+  const previousVersion = readLockVersion(workspaceDir);
+
+  // 1. Arquivos do framework (o ENV.md não está entre os sincronizados)
+  logger.info(`${BLUE}⬆️  Upgrade do Jarvis em .${getIDEFolder(ide)}/${NC}\n`);
+  const sync = syncAssets(workspaceDir, ide, {
+    force: true,
+    workflowsFolder: getWorkflowsFolder(ide),
+    keepEnvValues: true,
+  });
+  for (const item of sync.errors) logger.error(`${RED}  ✗ ${item}${NC}`);
+
+  // 2. Variáveis novas (só acrescenta)
+  const envText = readFileSync(envPath, "utf-8");
+  const templateText = readFileSync(
+    join(getFrameworkRoot(), "templates", "ENV-template.md"),
+    "utf-8"
+  );
+  const envPlan = planEnvUpgrade(envText, templateText);
+  const addedKeys = envPlan.added.map((a) => a.key);
+
+  // 3. Documentos: o plano usa o ENV como ficará depois do upgrade (com as chaves novas)
+  const futureEntries = parseEnvEntries(
+    `${envText}\n${envPlan.added.map(({ key, value }) => `${key}=${value}`).join("\n")}\n`
+  );
+  const env = expandEnv(futureEntries);
+  const docsPlan = planDocsMigration(workspaceDir, env);
+
+  let accepted = false;
+  if (docsPlan.moves.length > 0) {
+    logger.info(`${YELLOW}📁 Documentos em caminhos antigos:${NC}`);
+    for (const m of docsPlan.moves) logger.info(`  ${m.from} → ${m.to}`);
+    if (flags.yes) accepted = true;
+    else if (process.stdin.isTTY) {
+      const rl = createInterface({ input: process.stdin, output: process.stdout });
+      const answer = await ask(rl, `Mover para docs/jarvis/…? (s/N): `);
+      rl.close();
+      accepted = answer.trim().toLowerCase() === "s";
+    } else {
+      logger.info(`${DIM}  Sem terminal interativo e sem --yes: nada será movido.${NC}`);
+    }
+  }
+
+  const overrides =
+    docsPlan.moves.length > 0 && !accepted ? declineEnvValues(docsPlan, addedKeys, env) : {};
+  const today = new Date().toISOString().slice(0, 10);
+  applyEnvUpgrade(envPath, envPlan, today, overrides);
+
+  let moved = [];
+  let rewritten = [];
+  let moveErrors = [];
+  if (accepted) {
+    const result = applyDocsMigration(workspaceDir, docsPlan, env);
+    moved = result.moved;
+    moveErrors = result.errors;
+    rewritten = rewriteRelatedDiscovery(workspaceDir, env, moved);
+  }
+
+  // 4. Resumo (só nomes de chave e caminhos)
+  const pkg = getPackageInfo();
+  logger.info("");
+  logger.info(`${GREEN}✅ Upgrade concluído: ${previousVersion} → ${pkg.version}${NC}`);
+  logger.info(`  • Arquivos do framework: ${sync.copied.length} item(ns) sincronizado(s)`);
+  logger.info(
+    `  • ENV.md: ${addedKeys.length ? `+ ${addedKeys.join(", ")}` : "nenhuma variável nova"}`
+  );
+  if (Object.keys(overrides).length) {
+    logger.info(`  • Mantidos no caminho antigo: ${Object.keys(overrides).join(", ")}`);
+  }
+  if (docsPlan.moves.length && !accepted) {
+    logger.info(`  • Documentos: nada movido (${docsPlan.moves.length} no caminho antigo)`);
+  }
+  if (moved.length) logger.info(`  • Documentos movidos: ${moved.length}`);
+  if (rewritten.length) logger.info(`  • related_discovery atualizado: ${rewritten.join(", ")}`);
+  for (const s of docsPlan.skipped)
+    logger.info(`${YELLOW}  ⚠️  Pulado (${s.reason}): ${s.from}${NC}`);
+  for (const e of moveErrors) logger.error(`${RED}  ✗ ${e}${NC}`);
+  for (const k of envPlan.pending) {
+    logger.info(`${YELLOW}  ⚠️  ${k} está vazio: responda no /jarvis-init upgrade${NC}`);
+  }
+  if (envPlan.warnings.includes("CENTRAL_DOCS_REPO")) {
+    logger.info(
+      `${YELLOW}  ⚠️  Central docs no formato antigo (CENTRAL_DOCS_REPO): a migração é feita pelo /jarvis-init upgrade${NC}`
+    );
+  }
+  logger.info("");
+  logger.info(`${CYAN}➡️  Agora rode ${BOLD}/jarvis-init upgrade${NC}${CYAN} na IDE.${NC}\n`);
+  return sync.errors.length || moveErrors.length ? 1 : 0;
 }

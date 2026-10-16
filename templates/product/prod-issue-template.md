@@ -24,7 +24,7 @@ related_epic: {nome do Epico relacionado, exemplo /master-docs/product/epics/epi
 related_frd: {path FRD relacionado, exemplo /master-docs/product/frds/frd-001.md}
 
 # Discovery de origem (o rascunho da ideia, anterior ao PRD). Remova a linha se não houver.
-related_discovery: {path do discovery de origem, exemplo $PROD_DOCS/discoveries/discovery-001-nome.md. Se não existir, ignore essa linha}
+related_discovery: {path do discovery de origem, exemplo $DISCOVERIES_DOCS/discovery-001-nome.md. Se não existir, ignore essa linha}
 
 # Data de criação (YYYY-MM-DD).
 created_at: {YYYY-MM-DD}

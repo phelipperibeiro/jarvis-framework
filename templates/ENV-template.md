@@ -71,6 +71,10 @@ PROD_FLOWS=.$IDE/$FLOWS_FOLDER
 PROD_TEMPLATES=.$IDE/$TEMPLATES_FOLDER/$PROD_FOLDER_NAME
 PROD_DOCS=$JARVIS_DOCS/$PROD_FOLDER_NAME
 
+# Discoveries (rascunhos de ideia, anteriores ao PRD) — fora de product/ (em geral não precisa mexer)
+DISCOVERIES_FOLDER_NAME=discoveries
+DISCOVERIES_DOCS=$JARVIS_DOCS/$DISCOVERIES_FOLDER_NAME
+
 # Modo de condução dos comandos de produto (prod.*) e do eng.create-ard.
 #   product-led      = para PMs: fluxo direto, sem explicações extras (padrão se vazio)
 #   developer-guided = para devs e futuros PMs: uma pergunta por vez, explica cada termo e etapa

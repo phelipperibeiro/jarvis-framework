@@ -116,8 +116,10 @@ Mesmos passos 2 e 3 do [Get Started](#get-started) acima — `jarvis init --ide 
 
 ```bash
 npm install -g jarvis-ai-framework@latest
-jarvis init --ide {ide}   # re-sincroniza os assets (agents/skills/workflows/rules)
+jarvis init --upgrade --ide {ide}   # assets + variáveis novas do ENV.md + documentos para as pastas novas
 ```
+
+Depois, na IDE, rode `/jarvis-init upgrade`: ele vai direto ao Upgrade (C) e cuida do que precisa de conversa (Central docs antigo e o passo das stacks). O `--upgrade` só **acrescenta** chaves ao `ENV.md`: nenhuma chave existente muda. Ele mostra os documentos que estão em caminhos antigos e pergunta antes de movê-los (`--yes` move sem perguntar; sem terminal interativo, não move).
 
 **Instalou via clone local** (fluxo de [Desenvolvendo o Jarvis localmente](#desenvolvendo-o-jarvis-localmente)) — quando o repo no GitHub ganhar commits novos, sincronize assim:
 

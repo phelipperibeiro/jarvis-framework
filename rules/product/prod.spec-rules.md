@@ -147,14 +147,14 @@ A terminologia inconsistente cria confusão. "Cliente" vs "Usuário" vs "Cliente
 
 ### Princípio: Discovery como insumo
 
-**Princípio**: O discovery (`$PROD_DOCS/discoveries/discovery-{id}-{nome}.md`) é um rascunho de suposições. Ele pode servir de contexto para um PRD, FRD, épico ou issue, mas nunca é obrigatório e nunca é tratado como verdade.
+**Princípio**: O discovery (`$DISCOVERIES_DOCS/discovery-{id}-{nome}.md`) é um rascunho de suposições. Ele pode servir de contexto para um PRD, FRD, épico ou issue, mas nunca é obrigatório e nunca é tratado como verdade.
 
 **O discovery é opcional**:
 - Sem discovery apontado, siga o fluxo do comando normalmente, sem procurar na pasta `discoveries/` e sem perguntar nada sobre discovery. Ter arquivos nessa pasta não tem relação com o comando.
 - Exemplos: `/prod.spec.prd já sei o que quero` segue o fluxo de sempre; `/prod.spec.prd discovery-002` carrega o discovery.
 
 **Como apontar e achar o discovery**:
-- O usuário aponta por caminho, nome ou id (como `discovery-002`); procure em `$PROD_DOCS/discoveries/`.
+- O usuário aponta por caminho, nome ou id (como `discovery-002`); procure em `$DISCOVERIES_DOCS/`.
 - Se o arquivo não existir: informe, liste os discoveries da pasta e pergunte qual usar, ou se o usuário prefere seguir sem discovery.
 - Se a pasta `discoveries/` não existir: siga sem discovery e não crie a pasta.
 - Se mais de um arquivo casar com o que o usuário apontou: pergunte qual usar, sem escolher sozinho.

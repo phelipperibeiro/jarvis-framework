@@ -1,7 +1,7 @@
 ---
 name: jarvis-init
 description: Inicializa o framework JARVIS e guia novos membros no processo de onboarding. Use quando precisar configurar o ambiente, criar ENV.md, validar MCPs ou orientar um novo desenvolvedor.
-argument-hint: "[nome-do-membro-opcional]"
+argument-hint: "[upgrade | nome-do-membro-opcional]"
 disable-model-invocation: false
 allowed-tools: Read Write Edit Grep Glob Bash MCP
 license: AGPL-3.0
@@ -39,7 +39,7 @@ Regras que **substituem** qualquer trecho legado deste skill ou dos assets:
 
 ## Entrada
 
-- `$ARGUMENTS` - (Opcional) Nome do novo membro para personalizar o onboarding
+- `$ARGUMENTS` - (Opcional) `upgrade` (sem diferenciar maiúsculas): com `$IDE/ENV.md` existente, vai direto ao **Upgrade (C)** do passo "2. Verificar Existência do ENV.md", sem o menu A/B/C/D; sem `ENV.md`, avisa e segue a criação normal. Qualquer outro valor é o nome do novo membro, para personalizar o onboarding.
 
 ## Recursos
 
@@ -179,7 +179,7 @@ Identificar qual IDE o usuário está utilizando:
 **CRÍTICO**: O `ENV.md` é a fonte de verdade do projeto.
 
 1. Verificar se `$IDE/ENV.md` já existe
-2. Se existir, perguntar ao usuário:
+2. Se existir e `$ARGUMENTS` for `upgrade`, siga direto para a opção C, sem perguntar. Se existir e não vier `upgrade`, perguntar ao usuário:
    ```
    ⚠️ O arquivo ENV.md já existe. O que deseja fazer?
    A: Sobrescrever completamente
@@ -190,10 +190,13 @@ Identificar qual IDE o usuário está utilizando:
 
 **Se opção C (Upgrade):**
 
+> No terminal, rode antes `jarvis init --upgrade --ide {ide}`: ele atualiza os arquivos do framework, acrescenta as variáveis novas e move os documentos para as pastas novas (itens 1–8, 10 a 12). Aqui ficam o Central docs antigo (item 9), as pendências que ele listar e o passo das stacks.
+> **O upgrade só acrescenta chaves novas:** nenhuma chave já existente, preenchida ou não, é alterada.
+
 1. Ler todas as chaves do `templates/ENV-template.md`
 2. Ler todas as chaves do `$IDE/ENV.md` existente
 3. Ler `HUB` do ENV.md existente
-4. Se `HUB≠DATA`: excluir do diff todas as chaves `DATA_*` — não propor adicioná-las
+4. Se `HUB≠DATA`: excluir do diff todas as chaves `DATA_*` (exceto `DATA_SPECIALIZATIONS`, que é obrigatória em qualquer HUB) — não propor adicioná-las
 5. Calcular diff: chaves no template que **não existem** no ENV.md atual (respeitando exclusão de DATA_* para não-DATA)
 6. Se não houver diff:
    ```
@@ -208,12 +211,14 @@ Identificar qual IDE o usuário está utilizando:
 
    Serão adicionadas ao final do ENV.md sem alterar os valores existentes.
    ```
-8. **Exceção — documentos nos caminhos antigos:** procure documentos de trabalho em `$DOCS_FOLDER/product`, `$DOCS_FOLDER/engineering/{ARD,RFC,qa,swagger,openapi,robots,c4}` e `docs/engineering/{robots,swagger,openapi,c4}`.
-   - Se houver, liste o que encontrou e pergunte com `AskUserQuestion` se move para `docs/jarvis/…` (`$PROD_DOCS` e `$ENG_DOCS/…`). Use `git mv` quando o arquivo for versionado e `mv` quando não for, e garanta `docs/jarvis/` no `.gitignore`.
-   - **Sem confirmação, não mova nada:** grave `PROD_DOCS`/`ENG_DOCS` apontando para os caminhos antigos.
+8. **Exceção — documentos nos caminhos antigos:** procure documentos de trabalho em `$DOCS_FOLDER/product`, `$DOCS_FOLDER/engineering/{ARD,RFC,qa,swagger,openapi,robots,c4}`, `docs/engineering/{robots,swagger,openapi,c4}` e os discoveries em `$PROD_DOCS/discoveries/`.
+   - Se houver, liste o que encontrou e pergunte com `AskUserQuestion` (uma pergunta para todos) se move para `docs/jarvis/…` (`$PROD_DOCS`, `$ENG_DOCS/…` e, para os discoveries, `$DISCOVERIES_DOCS`). Use `git mv` quando o arquivo for versionado e `mv` quando não for, e garanta `docs/jarvis/` no `.gitignore`.
+   - **Conflito** (arquivo com o mesmo nome no destino): não sobrescreva; liste e pule esse arquivo. A pasta antiga só é removida se ficar vazia.
+   - **`related_discovery`:** depois de mover discoveries, nos `.md` de `$PROD_DOCS`, troque todo `related_discovery:` cujo **nome de arquivo** seja o de um discovery movido pelo caminho novo (relativo ao workspace). Isso também conserta valores que já estavam quebrados.
+   - **Sem confirmação, não mova nada:** as chaves **novas** recebem o caminho antigo (`DISCOVERIES_DOCS=$PROD_DOCS/discoveries`; `PROD_DOCS`/`ENG_DOCS` só se também forem novas). Chave que já existe não muda: avise que os documentos ficaram no caminho antigo.
    - Depois, ofereça a carga inicial do Central docs (Passo 5.3).
 9. **Exceção — Central docs antigo:** se o `ENV.md` tiver `CENTRAL_DOCS_REPO` preenchido e não tiver `CENTRAL_DOCS_STORAGE`, propor a migração (só com confirmação): `CENTRAL_DOCS_STORAGE=filesystem`, `CENTRAL_DOCS_LOCATION` com o padrão do modo de trabalho (Passo 4, "Central docs") e `git clone {CENTRAL_DOCS_REPO} {LOCATION}`. Depois, comentar a linha antiga (`# CENTRAL_DOCS_REPO=… (migrado em YYYY-MM-DD)`) e `CENTRAL_DOCS_CACHE_TTL`. Sem confirmação, não mexe e avisa que os comandos de docs vão pedir o Upgrade.
-10. **Exceção — `PROD_MODE`:** se `PROD_MODE` estiver entre as chaves novas, faça a mesma pergunta do Passo 3 (Pergunta 8 — modo de condução) e grave a resposta no lugar do valor vazio. As demais chaves continuam sem pergunta.
+10. **Exceção — `PROD_MODE`:** se `PROD_MODE` estiver entre as chaves novas, grave pelo `AREA`: `ENGINEERING` → `developer-guided`, `PRODUCT` → `product-led`. Com outra `AREA` (ou vazia), faça a mesma pergunta do Passo 3 (Pergunta 8 — modo de condução) e grave a resposta. `PROD_MODE` que já existe, mesmo vazia, não muda. As demais chaves continuam sem pergunta.
 11. Appender as novas variáveis ao final do `ENV.md` com comentário de data:
    ```
    # --- Upgrade YYYY-MM-DD ---
@@ -606,6 +611,7 @@ Nunca grave TOKEN_VERSION_CONTROL (chave removida do template).
 | `JARVIS_PROJECT` | `https://github.com/phelipperibeiro/jarvis-framework` | Repo do framework (`/jarvis-report-issue`) |
 | `CENTRAL_DOCS_STORAGE` / `_LOCATION` | `filesystem` / pasta padrão do modo de trabalho | Central docs (o que foi implementado), configurado no Passo 5.2; vazio = desligado |
 | `JARVIS_DOCS` / `ENG_DOCS` | `$DOCS_FOLDER/jarvis` / `$JARVIS_DOCS/engineering` | Documentos de trabalho (não perguntar; `docs/jarvis/` no `.gitignore`) |
+| `DISCOVERIES_FOLDER_NAME` / `DISCOVERIES_DOCS` | `discoveries` / `$JARVIS_DOCS/$DISCOVERIES_FOLDER_NAME` | Discoveries, fora de `product/` (não perguntar) |
 | `CENTRAL_DOCS_REF` / `_TARGET_BRANCH` / `_REVIEWERS` | `main` / `main` / *(vazio)* | Só quando a pasta do Central docs tem `.git` |
 | `SESSIONS_DIR` | `.jarvis/sessions` | Não perguntar — gravar fixo |
 | `RTK_ENABLED` | `false` (ou true se detectar `rtk`) | Token Killer |
@@ -768,6 +774,8 @@ PROD_RULES=...
 PROD_FLOWS=...
 PROD_TEMPLATES=...
 PROD_DOCS=...
+DISCOVERIES_FOLDER_NAME=discoveries
+DISCOVERIES_DOCS=...
 
 # --- Task manager (opcional; vazio = freelance) ---
 TASK_MANAGER=
@@ -797,6 +805,8 @@ PROD_RULES=$RULES_FOLDER/$PROD_FOLDER_NAME
 PROD_FLOWS=.$IDE/$FLOWS_FOLDER
 PROD_TEMPLATES=.$IDE/$TEMPLATES_FOLDER/$PROD_FOLDER_NAME
 PROD_DOCS=$JARVIS_DOCS/$PROD_FOLDER_NAME
+DISCOVERIES_FOLDER_NAME=discoveries
+DISCOVERIES_DOCS=$JARVIS_DOCS/$DISCOVERIES_FOLDER_NAME
 ```
 
 **⚠️ IMPORTANTE - FLOWS_FOLDER por IDE:**
