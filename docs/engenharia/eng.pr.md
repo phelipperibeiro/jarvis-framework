@@ -30,7 +30,14 @@ Confere que tudo está passando, envia a branch e abre o merge request (ou pull 
 5. Com Sim: **push** e **cria o MR/PR** com o texto aprovado
 6. **Posta o link do MR no card** (um único comentário) e orienta a mover para "In Review" (quando há board)
 7. **Processa o code review:** analisa os comentários e aplica correções
-8. **Registra métricas de lead time** e mostra a mensagem final, lembrando o [`/eng.spec-consolidate`](./eng.spec-consolidate.md)
+8. **Registra métricas de lead time**
+9. **Registra o esforço em `daily.md`** (só com PR aberto), na sessão e nunca publicado:
+   - pergunta a data (hoje ou retroativa);
+   - se o período passar de um dia, pergunta sobre sábado/domingo trabalhados, feriados e outros dias não trabalhados, para contar os dias trabalhados;
+   - usa o formato *post mortem* em `bugfix`/`hotfix` ou com mais de 1 dia trabalhado (senão, pergunta);
+   - numa nova execução, pergunta se a mudança foi ajuste seu (o texto foca no que foi entregue) ou pedido da liderança (a mudança fica documentada);
+   - mostra a descrição detalhada e a linha de timesheet juntas para você aprovar ou ajustar.
+10. **Mensagem final**, com a linha de timesheet pronta para copiar e o lembrete do [`/eng.spec-consolidate`](./eng.spec-consolidate.md)
 
 A sessão **não é apagada**: o `/eng.spec-consolidate` precisa dela. Remova à mão quando quiser.
 
