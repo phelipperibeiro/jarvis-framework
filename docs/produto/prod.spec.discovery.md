@@ -12,7 +12,7 @@ Antes de escrever um Documento de Requisitos de Produto, alguém precisa respond
 
 Sem ela, o que costuma acontecer é começar pelo PRD com o problema e os requisitos **presumidos**, e descobrir tarde que a ideia não resolvia nada. O discovery é barato e pode terminar em "não vale a pena", que também é um bom resultado.
 
-Este comando faz de entrevistador. Ele pergunta uma coisa de cada vez, aprofunda respostas vagas, pede evidência, aponta contradições e levanta o que você não considerou. E **nunca chuta**: o que ele não sabe vira pergunta ou lacuna registrada, não um fato inventado.
+Este comando faz de entrevistador, mas economiza o seu tempo: primeiro mostra o que entendeu, depois faz **poucas perguntas**, só as que mudam a decisão, cada uma com o motivo e uma resposta recomendada. E **nunca chuta**: o que ele não sabe vira pergunta, lacuna ou suposição registrada, não um fato inventado.
 
 ## O que ele não é
 
@@ -35,30 +35,34 @@ O discovery é um **rascunho**. Ele não cria tarefas, histórias, épicos, crit
 ## Como funciona
 
 1. Você roda `/prod.spec.discovery` com a ideia (ou apontando um discovery existente para **retomar**)
-2. O agente explica a entrevista, consulta os documentos e o código do projeto e começa a perguntar, **uma pergunta por vez**
-3. O arquivo é criado logo no início e atualizado a cada tema, então uma conversa interrompida não se perde
-4. Ao cobrir um tema, o agente resume o que entendeu e pede sua confirmação
-5. Quando tem informação suficiente, propõe encerrar e pergunta se você quer acrescentar algo
-6. Fecha o documento com **veredito** e **próximo passo sugerido**
+2. O agente lê em silêncio o que já existe (documentos de produto, código, Central docs) e mostra **"O que entendi"**: o que você disse, o que ele supõe e o que falta (as lacunas críticas são as que mudam a decisão)
+3. Junto, propõe o **tamanho** da ideia e o nome do arquivo. Você confirma **uma vez** e o arquivo é criado
+4. Ele faz só as perguntas de maior impacto, uma por vez, mostrando **"pergunta N de até M"**, **por que importa** e a opção **recomendada**. Um padrão razoável não vira pergunta: vira suposição registrada
+5. Propõe 2 ou 3 **abordagens** (sempre com "a menor coisa que funciona" e "não fazer") e recomenda uma
+6. Fecha com o **scorecard**, o **veredito** e o **próximo passo sugerido**
 
-### Os quatro eixos da investigação
+### Tamanho e número de perguntas
 
-| Eixo | O que responde |
-|---|---|
-| **Ideia** | O que é e para quem |
-| **Problema** | Qual a dor, que evidência existe, quem sofre, como se resolve hoje |
-| **Requisitos iniciais** | O que precisaria ser verdade, em alto nível, como hipóteses |
-| **Viabilidade** | Um sinal (alto, médio ou baixo) de valor, usabilidade, técnica e negócio |
+| Tamanho (`size`) | Quando | Perguntas | Próximo passo típico |
+|---|---|---|---|
+| `small` | Trabalho pequeno e já claro | 0 a 2 | [`issue`](./prod.spec.issue.md) |
+| `bounded` | Funcionalidade dentro de um produto existente | até 5 | [`frd`](./prod.spec.frd.md) |
+| `broad` | Ideia ampla, com várias entregas | até 8 | [`prd`](./prod.spec.prd.md) e depois [`breakdown`](./prod.spec.breakdown.md) |
+
+Ao chegar no teto, ele pergunta se encerra ou se você quer mais perguntas. No modo guiado (`PROD_MODE=developer-guided`), pedir explicação (`[Explicar melhor]`, `[Dúvida]`) não conta no teto.
 
 ## O que sai
 
-Um arquivo em `$PROD_DOCS/discoveries/discovery-{id}-{nome}.md` (nos projetos que usam o Jarvis, `$PROD_DOCS` é normalmente `docs/product`), feito pelo template, com estas seções: Ideia, Problema, Hipóteses, Viabilidade, Alternativas e riscos, Perguntas em aberto, Veredito, Próximo passo sugerido e Histórico das sessões.
+Um arquivo em `$PROD_DOCS/discoveries/discovery-{id}-{nome}.md` (`$PROD_DOCS` é `docs/jarvis/product`, fora do versionamento do código), feito pelo template, com estas seções: Entendimento, Problema, Abordagens, Scorecard (valor, usabilidade, técnica e negócio: forte, adequado, fraco ou desconhecido), Veredito, Próximo passo sugerido e Histórico.
+
+Ao retomar um discovery no formato antigo (com as seções Hipóteses e Perguntas em aberto), o comando o converte para o formato novo no mesmo arquivo e avisa.
 
 O cabeçalho do arquivo traz:
 
 | Campo | Valores |
 |---|---|
 | `status` | `in_review` enquanto o rascunho existe; `cancelled` se o veredito for não seguir |
+| `size` | `small`, `bounded` ou `broad` (define quantas perguntas) |
 | `verdict` | vazio durante a entrevista; `proceed` (seguir), `investigate_more` (investigar mais) ou `do_not_proceed` (não seguir) |
 
 O `status` só diz se o rascunho está vivo. A conclusão fica no `verdict`, e é uma **recomendação**, não uma aprovação: quem decide é você.
@@ -72,7 +76,7 @@ Todo discovery termina sugerindo um caminho, com o **comando pronto e o id do di
 | Ideia ampla, com várias entregas | [`prd`](./prod.spec.prd.md) e depois [`breakdown`](./prod.spec.breakdown.md) |
 | Funcionalidade delimitada dentro de um produto existente | [`frd`](./prod.spec.frd.md) |
 | Trabalho pequeno e já claro | [`issue`](./prod.spec.issue.md) |
-| Lacunas críticas ou veredito "investigar mais" | Retomar o próprio discovery, com as perguntas em aberto |
+| Lacunas críticas ou veredito "investigar mais" | Retomar o próprio discovery, pelas lacunas |
 | Veredito "não seguir" | Arquivar a ideia, mantendo o registro |
 
 ## Exemplo
@@ -80,16 +84,17 @@ Todo discovery termina sugerindo um caminho, com o **comando pronto e o id do di
 > "Quero que o Jarvis gere relatórios de uso."
 
 1. `/prod.spec.discovery quero que o Jarvis gere relatórios de uso`
-2. O agente pergunta quem vai ler esses relatórios e o que essa pessoa faz hoje sem eles
-3. Você responde que é o líder do time, que hoje monta tudo à mão; o agente pede um exemplo real e quanto tempo isso leva
-4. Ele registra como **suposição** o que você só acha ("todo líder quer isso") e pergunta como confirmar
+2. O agente mostra o que entendeu: "relatórios de uso" (dito por você); "o leitor é o líder do time" (suposição); "que decisão o relatório apoia" (lacuna crítica). Tamanho: `bounded`, até 5 perguntas. Você confirma
+3. "Pergunta 1 de até 5 — Quem decide algo com esse relatório? Por que importa: sem um leitor com uma decisão, não há problema a resolver." Recomendada: "o líder do time, para redistribuir trabalho"
+4. Ele registra como **suposição** o que você só acha ("todo líder quer isso"), sem gastar pergunta
 5. No fim, o veredito sai como `investigate_more`: falta saber se mais de um líder tem a mesma dor. O próximo passo sugerido é **retomar** o discovery depois de conversar com dois líderes
-6. Dias depois, você roda `/prod.spec.discovery` apontando o arquivo: o agente resume onde parou e continua pelas perguntas em aberto
+6. Dias depois, você roda `/prod.spec.discovery` apontando o arquivo: o agente resume onde parou e continua pelas lacunas, com as perguntas que restam
 
 ## Como o framework te favorece
 
+- **Poucas perguntas:** o tamanho da ideia define o teto, e cada pergunta vem com o motivo e uma recomendação
 - **Não inventa dados:** o que não sabe vira pergunta ou lacuna, com a origem de cada fato (dado, observação ou suposição)
-- **Retomável:** o arquivo é versionado e cada sessão fica no histórico
+- **Retomável:** o arquivo fica em `docs/jarvis/product/discoveries/` e cada sessão fica no histórico
 - **Não invade outras etapas:** se você pedir tarefas, critérios de aceitação ou código, ele recusa e indica o comando certo
 - **Não grava dados sensíveis:** credenciais e dados pessoais de clientes não entram no arquivo
 

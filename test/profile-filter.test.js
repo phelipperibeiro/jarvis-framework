@@ -158,12 +158,15 @@ test("listRulesForProfile: AGENTS.md nunca é filtrado, rtk é opt-in, sem bloco
 // Issue #153 (warm-up enxuto, 2026-10-16): +128 B em cada perfil — rules/AGENTS.md (sempre
 // copiado) passou a mostrar rules-on-demand/warm-up-consume-rules.md. A rule nova fica em
 // rules-on-demand/ e não entra nesta conta.
+// Issue #154 (discovery fluido, 2026-10-16): +59 B só em FULLCYCLE/GENERALIST — prod.spec-rules.md
+// (AREA PRODUCT, que o GENERALIST também recebe) trocou "hipóteses e perguntas em aberto" por
+// "suposições e lacunas" na seção "Discovery como insumo".
 const BASE = [
   [
     "FULLCYCLE/GENERALIST/ENGINEERING/CORE",
     profile("FULLCYCLE", "GENERALIST", "ENGINEERING"),
     15,
-    98642,
+    98701,
   ],
   ["BACKEND/SENIOR/ENGINEERING/CORE", profile("BACKEND", "SENIOR", "ENGINEERING"), 11, 65372],
   ["FRONTEND/PLENO/ENGINEERING/CORE", profile("FRONTEND", "PLENO", "ENGINEERING"), 11, 65915],

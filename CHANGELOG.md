@@ -9,6 +9,19 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), e o
 ## [Unreleased]
 
 ### Changed
+- **`/prod.spec.discovery` mais fluido** (#154). O fluxo agora é:
+  - lê o projeto em silêncio;
+  - mostra **"O que entendi"** (dito por você, suposição, lacuna), com o tamanho da ideia e o nome do arquivo, numa **única confirmação**;
+  - faz só perguntas de alto impacto, uma por vez, com **"pergunta N de até M"**, **por que importa** e a opção **recomendada**;
+  - fecha com 2–3 abordagens, um **scorecard** por lente (forte, adequado, fraco, desconhecido), o veredito e o próximo passo com o comando pronto.
+
+  O **orçamento de perguntas** vai pelo tamanho (`size` no frontmatter: `small` 0–2, `bounded` até 5, `broad` até 8). No modo `developer-guided`, as explicações do mentor não contam. Também mudam:
+  - **Defaults razoáveis:** viram suposição explícita, não pergunta;
+  - **Ideia pequena:** também gera o arquivo;
+  - **Discoveries no formato antigo:** são convertidos no mesmo caminho (mesmo id e nome) ao serem retomados.
+- `templates/product/prod-discovery-template.md`: seções Entendimento, Problema, Abordagens, Scorecard, Veredito, Próximo passo e Histórico (saem Hipóteses, Viabilidade, Alternativas e riscos e Perguntas em aberto); frontmatter com `size`
+- `agents/product/prod.discovery-interviewer.md` só com a postura (de 105 para 40 linhas); workflow, agente e template somam 235 linhas (eram 392)
+- `rules/product/prod.spec-rules.md` ("Discovery como insumo"): "suposições e lacunas" no lugar de "hipóteses e perguntas em aberto", sem mudar o comportamento
 - **`/warm-up` reescrito** (#153): passou de 537 para 123 linhas e agora é a **preparação de contexto de uma tarefa nova**. Ele carrega só o que é relevante e guarda o resultado por apelido em `$SESSIONS_DIR/warm-ups/{apelido}/warm-up.md`. Passos:
   - **Mapa de tecnologias:** lê (ou cria) o `CDD-MIND-MAP.md`;
   - **Repositórios e áreas:** pergunta quais repositórios aquecer e confirma as áreas, carregando só as especialidades dessas áreas, em memória (o `ENV.md` nunca muda);

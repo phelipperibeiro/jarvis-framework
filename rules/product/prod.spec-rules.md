@@ -162,12 +162,12 @@ A terminologia inconsistente cria confusão. "Cliente" vs "Usuário" vs "Cliente
 **Como usar o discovery**:
 - Leia o discovery como **contexto, não como resposta**: é um rascunho e pode estar defasado.
 - **Questione e repasse tudo com o usuário**, seção por seção: mostre o que está registrado e pergunte se ainda vale ou se mudou.
-- Hipóteses e perguntas em aberto do discovery são perguntadas como tais; o que o comando exige e o discovery não cobre é perguntado normalmente.
+- Suposições e lacunas do discovery (seção Entendimento; em discoveries antigos, Hipóteses e Perguntas em aberto) são perguntadas como tais; o que o comando exige e o discovery não cobre é perguntado normalmente.
 - Nada do discovery entra no documento novo como fato sem o usuário ter passado por aquilo. O que ficar sem validação continua marcado como suposição.
 
 **Avisos conforme a situação do discovery**:
 - `verdict: do_not_proceed` (ou `status: cancelled`): avise que a recomendação foi não seguir, mostre o motivo registrado e só continue com confirmação explícita do usuário.
-- `verdict: investigate_more`, `verdict` vazio ou `status: in_review` (discovery ainda em entrevista): avise que há lacunas críticas, liste as perguntas em aberto e pergunte se o usuário quer retomar o discovery antes ou seguir assumindo o risco.
+- `verdict: investigate_more`, `verdict` vazio ou `status: in_review` (discovery ainda em entrevista): avise que há lacunas críticas, liste as lacunas e pergunte se o usuário quer retomar o discovery antes ou seguir assumindo o risco.
 - `verdict: proceed`: siga normalmente.
 
 **O documento novo é o oficial**:
