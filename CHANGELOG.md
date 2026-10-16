@@ -6,6 +6,22 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), e o
 
 > Versões anteriores a `2.1.1` não foram documentadas retroativamente neste changelog — o histórico detalhado dessas versões continua disponível via `git log`.
 
+## [5.5.0] - 2026-10-16
+
+### Added
+- **Transições do ciclo de engenharia com `AskUserQuestion`** (#161). A opção padrão de cada pergunta mantém o fluxo de sempre, com nome que diz o que acontece ("(como hoje)"), nunca "Ignorar". A regra geral fica em `rules-on-demand/engineering/eng.transitions-rules.md`. As perguntas:
+  - `eng.start`, só sem Advisor: no início, como tratar as questões em aberto (no `architecture.md`, como hoje, ou uma a uma, assim que surgirem); no fim, "Aprovar o architecture.md?" (parar, seguir para o `/eng.plan` ou ajustar), que já é a aprovação. Com Advisor, nada muda;
+  - `eng.plan`: a mesma pergunta no fim, seguindo para o `/eng.work`;
+  - `eng.work`: no início, execução (fase a fase ou todas de uma vez, até o limite `MAX_AI_EXECUTION_PERCENTAGE`), commits (um por fase ou um só) e o que vem depois (sugerir ou rodar o `/eng.pre-pr`, ir direto ao `/eng.pr` ou parar), gravados no `plan.md`;
+  - `eng.pre-pr`: no fim, seguir para o `/eng.pr` ou parar para ajustar;
+  - `eng.pr`: no início, revisar o texto aqui ou publicar direto e validar no PR; no fim, "O PR já foi aprovado e mergeado?", com Sim chamando o `/eng.spec-consolidate`.
+- **`jarvis vcs create-issue --label`** (#161): labels separadas por vírgula (padrão `bug`); no Bitbucket, a primeira label vira o `kind`.
+
+### Changed
+- **`jarvis-report-issue`** (#161): classifica o report em **bug** (`[BUG]`, label `bug`) ou **melhoria** (`[MELHORIA]`, label `enhancement`, corpo de issue autossuficiente); na dúvida, pergunta.
+- `eng.spec-consolidate` roda **depois do merge** do PR (antes: "logo depois do PR aberto").
+- Templates `architecture-template.md` e `plan-template.md` com os campos das escolhas novas.
+
 ## [5.4.0] - 2026-10-16
 
 ### Added

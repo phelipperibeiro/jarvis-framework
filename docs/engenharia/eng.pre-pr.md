@@ -48,6 +48,10 @@ Sempre termina com o arquivo **`$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/gate-checkl
 
 Depois, pergunta **Sim / Não**: publicar o relatório, com as suas decisões, como comentário na issue/card? Sem board, ou com Não, ele fica só na sessão. E **espera sua permissão** antes do `eng.pr`.
 
+## Perguntas que ele faz
+
+- **No fim:** "Seguir para o `/eng.pr`?" → **Parar aqui para ajustar (como hoje)** ou **Seguir para o `/eng.pr`** (com lacunas a ajustar, a opção avisa quantas são).
+
 ## Regras que importam
 
 - Ao dizer "testes passando", o comando mostra **qual comando rodou e o resultado**

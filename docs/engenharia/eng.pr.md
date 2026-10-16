@@ -41,6 +41,11 @@ Confere que tudo está passando, envia a branch e abre o merge request (ou pull 
 
 A sessão **não é apagada**: o `/eng.spec-consolidate` precisa dela. Remova à mão quando quiser.
 
+## Perguntas que ele faz
+
+- **No início:** "Como validar o PR?" → **Revisar o texto e confirmar a publicação aqui (como hoje)** ou **Publicar direto e validar no PR** (pula a revisão do texto e o "Publicar agora?").
+- **No fim:** "O PR já foi aprovado e mergeado?" → **Ainda não (como hoje)** ou **Sim, rodar o `/eng.spec-consolidate`**, que registra no Central docs o que a entrega implementou.
+
 ## Regras que importam
 
 - Nome da branch: `{TASK_MANAGER_KEY}-{titulo-em-kebab-case}`

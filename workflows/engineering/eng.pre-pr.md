@@ -15,6 +15,7 @@ Antes de abrir o PR/MR, este comando **revê a branch atrás de possíveis lacun
 > ⚠️ **Só revisa.** O `eng.pre-pr` não corrige código, não escreve testes, não atualiza documentação e não publica nada no Central docs. Ele aponta; quem decide e ajusta é você (ou o `eng.work`, se pedir).
 
 > 📋 **Rules**: `$IDE/rules-on-demand/engineering/eng.pre-pr-rules.md` — **antes de começar, leia esse arquivo e siga-o**: ele não é carregado automaticamente no início da sessão.
+> 🔀 **Transições**: `$IDE/rules-on-demand/engineering/eng.transitions-rules.md` — perguntas de início e de fim deste comando (a opção padrão mantém o fluxo de sempre).
 
 ## Skills recomendados
 
@@ -112,4 +113,4 @@ A coluna **Decisão** nasce vazia: quem preenche é o usuário.
 3. Pergunte com `AskUserQuestion` (**Sim / Não**, sempre, nunca publicar sem a resposta): **"Publicar o gate-checklist.md (com as decisões) como comentário na issue/card?"**
    - **Sim** (e `TASK_MANAGER` preenchido): `/eng-global-task-comment {TASK_MANAGER_KEY}` com o conteúdo do arquivo.
    - **Não**, ou modo freelance: fica só na sessão.
-4. Próximo passo: ajustar o que foi marcado "Ajustar" (à mão ou com o `/eng.work`) e rodar o `/eng.pr`, que usa o PR Brief deste relatório.
+4. Próximo passo: ajustar o que foi marcado "Ajustar" (à mão ou com o `/eng.work`) e rodar o `/eng.pr`, que usa o PR Brief deste relatório. Pergunte com `AskUserQuestion` (`eng.transitions-rules.md`): **"Seguir para o `/eng.pr`?"** → **Parar aqui para ajustar (como hoje)** / **Seguir para o `/eng.pr`**. Com lacuna marcada "Ajustar", deixe isso claro na opção de seguir ("Seguir mesmo com {n} lacunas a ajustar"). Com "Seguir", chame o `/eng.pr {TASK_MANAGER_KEY}` (ou mostre o comando).

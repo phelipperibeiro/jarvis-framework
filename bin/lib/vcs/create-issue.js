@@ -9,11 +9,25 @@ import { createIssue, parseRepoUrl } from "./api.js";
  * @param {string} options.repo - URL ou `org/repo` do repositório
  * @param {string} options.title - Título da issue
  * @param {string} options.bodyFile - Path de um arquivo com o corpo em markdown
+ * @param {string} [options.labels] - Labels separadas por vírgula (padrão: bug)
  */
-export async function runCreateIssue({ repo, title, bodyFile }) {
+/**
+ * "enhancement, documentation" → ["enhancement", "documentation"]; vazio → undefined (padrão: bug).
+ * @param {string} [raw]
+ * @returns {string[] | undefined}
+ */
+export function parseLabels(raw) {
+  const list = String(raw || "")
+    .split(",")
+    .map((l) => l.trim())
+    .filter(Boolean);
+  return list.length ? list : undefined;
+}
+
+export async function runCreateIssue({ repo, title, bodyFile, labels }) {
   if (!title || !bodyFile || !repo) {
     console.error(
-      "Uso: jarvis vcs create-issue --repo <url-ou-path> --title <titulo> --body-file <path>"
+      "Uso: jarvis vcs create-issue --repo <url-ou-path> --title <titulo> --body-file <path> [--label <labels>]"
     );
     process.exit(1);
   }
@@ -33,7 +47,7 @@ export async function runCreateIssue({ repo, title, bodyFile }) {
   const body = existsSync(bodyFile) ? readFileSync(bodyFile, "utf-8") : "";
 
   try {
-    const result = await createIssue(repoUrl, { title, body });
+    const result = await createIssue(repoUrl, { title, body, labels: parseLabels(labels) });
     parseRepoUrl(repoUrl);
     console.log(`✅ Issue aberto: ${result.url}`);
     console.log(JSON.stringify(result));

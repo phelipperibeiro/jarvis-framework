@@ -10,7 +10,7 @@ model_justification: Consolidar exige ler e cruzar muitas fontes (documentos, de
 
 # Consolidar no Central docs
 
-Este comando registra no **Central docs** o que a entrega **de fato implementou**. Ele roda **logo depois do PR aberto** (`/eng.pr`) e gera dois documentos completos e autossuficientes:
+Este comando registra no **Central docs** o que a entrega **de fato implementou**. Ele roda **depois do merge do PR** (o `/eng.pr` pergunta no fim se o PR já foi mergeado e oferece chamá-lo) e gera dois documentos completos e autossuficientes:
 - o **documento da funcionalidade** (`feature-{slug}.md`), com o estado atual, novo ou atualizado;
 - o **registro da entrega** (`delivery-{AAAA-MM-DD}-{task_key}.md`), com o PR, os commits e os autores.
 

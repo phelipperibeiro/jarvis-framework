@@ -207,8 +207,14 @@ export function buildProgram() {
     .option("--repo <url-ou-path>")
     .option("--title <titulo>")
     .option("--body-file <path>")
+    .option("--label <labels>", "Labels separadas por vírgula (padrão: bug)")
     .action((options) =>
-      runCreateIssue({ repo: options.repo, title: options.title, bodyFile: options.bodyFile })
+      runCreateIssue({
+        repo: options.repo,
+        title: options.title,
+        bodyFile: options.bodyFile,
+        labels: options.label,
+      })
     );
 
   const tasks = cmd(program, "tasks").description("Adapters de task manager");

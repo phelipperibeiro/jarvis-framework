@@ -3,6 +3,8 @@
 > 📋 **Plano de Execução** | Jira: [{TASK_MANAGER_KEY}]({TASK_MANAGER_URL_BASE}/browse/{TASK_MANAGER_KEY})
 >
 > Se você está trabalhando nesta feature, **atualize este arquivo** conforme progride.
+>
+> **Execução:** {fase a fase | todas de uma vez} · **Commits:** {um por fase | um só ao final} · **Depois do work:** {sugerir /eng.pre-pr | rodar /eng.pre-pr | direto para /eng.pr | parar} _(preenchido pelo `eng.work`, Fase 1.3)_
 
 ---
 

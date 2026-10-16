@@ -15,6 +15,7 @@ Este comando executa a **implementação de código** seguindo o plano de execu�
 
 > 📋 **Rules**: `$IDE/rules-on-demand/engineering/eng.work-rules.md` — **antes de começar, leia esse arquivo e siga-o**: ele não é carregado automaticamente no início da sessão.
 > 📤 **Template**: `$IDE/templates/engineering/work-progress-template.md`
+> 🔀 **Transições**: `$IDE/rules-on-demand/engineering/eng.transitions-rules.md` — perguntas de início e de fim deste comando (a opção padrão mantém o fluxo de sempre).
 
 > ⚠️ **IMPORTANTE**: Este workflow é para codificação com commits incrementais por fase.
 > **NÃO crie PRs, NÃO faça push**, mas **FAZ commit ao final de cada fase validada.**
@@ -169,6 +170,20 @@ Procure no `plan.md`:
 - Fase marcada como `[Em Progresso ⏰]`
 - Se nenhuma, identifique a primeira `[Não Iniciada ⏳]`
 
+### 1.3 Escolhas do início (`eng.transitions-rules.md`)
+
+Pergunte com `AskUserQuestion`, uma pergunta por decisão (padrão primeiro):
+
+| Pergunta | Opções |
+|---|---|
+| **Execução das fases** | **Fase a fase, com aprovação (como hoje)** / **Todas de uma vez** (mostre "N de M tarefas", com N pelo limite `MAX_AI_EXECUTION_PERCENTAGE` abaixo) |
+| **Commits** | **Um por fase (como hoje)** / **Um commit só ao final** |
+| **Depois do work** | **Sugerir o `/eng.pre-pr` (como hoje)** / **Rodar o `/eng.pre-pr` na sequência** / **Ir direto para o `/eng.pr`** / **Parar aqui** |
+
+- Grave as escolhas no cabeçalho do `plan.md` (`Execução:`, `Commits:`, `Depois do work:`). Retomada com escolhas já gravadas: uma pergunta só, **"Manter as escolhas ({resumo})?"** (Manter / Mudar).
+- **Em qualquer escolha**, o limite de execução, um teste falhando e uma questão nova em aberto **param** a execução e voltam a perguntar.
+- Com **Todas de uma vez**, a escolha é a aprovação das fases: as pausas da Fase 2.2 e da 6.1 não acontecem.
+
 ---
 
 ## Fase 2: Planejamento da Implementação
@@ -202,7 +217,7 @@ Apresente ao usuário:
 
 ### 2.2 Aguardar Aprovação
 
-**PARE e aguarde confirmação do usuário antes de implementar.**
+**PARE e aguarde confirmação do usuário antes de implementar** (com "Fase a fase"; com "Todas de uma vez", siga direto).
 
 Se o usuário tiver sugestões, ajuste o plano.
 
@@ -441,7 +456,7 @@ Refs: {TASK_MANAGER_KEY}"
 
 **Regras de commit:**
 - Sempre referenciar o `TASK_MANAGER_KEY` no início e no `Refs:`
-- Uma fase = um commit (agrupar todas as mudanças da fase)
+- Uma fase = um commit (agrupar todas as mudanças da fase), com "Um por fase"; com "Um commit só ao final", um commit depois da última fase, com todos os testes passando
 - Tipo: `feat`, `fix`, `refactor`, `test`, `docs`, `chore`
 - **NUNCA** usar `git add .` — adicionar arquivos individualmente
 
@@ -480,7 +495,7 @@ Refs: TASK-123"
 ❓ Deseja iniciar a Fase {N+1}?
 ```
 
-**AGUARDE confirmação antes de iniciar.**
+**AGUARDE confirmação antes de iniciar** (com "Fase a fase"; com "Todas de uma vez", siga para a próxima fase).
 
 ### 6.2 Se Todas as Fases Foram Concluídas
 
@@ -506,6 +521,8 @@ Refs: TASK-123"
 ⚠️ LEMBRETE: push e PR são responsabilidade do `eng.pr`.
 ```
 
+Depois da mensagem, siga a escolha **Depois do work**: sugerir o `/eng.pre-pr` (como hoje), chamar o `/eng.pre-pr {TASK_MANAGER_KEY}`, chamar o `/eng.pr {TASK_MANAGER_KEY}` ou parar (chamar = pelo Skill tool, ou mostrar o comando pronto na IDE que não permite).
+
 ## Regras Importantes
 
 ### ⛔ NÃO FAÇA
@@ -513,10 +530,10 @@ Refs: TASK-123"
 - ❌ NÃO crie Pull Requests
 - ❌ NÃO faça push (`git push`) — push é responsabilidade do `eng.pr`
 - ❌ NÃO use `git add .` — adicionar arquivos individualmente
-- ❌ NÃO commite sem aprovação explícita do usuário na fase
+- ❌ NÃO commite sem aprovação explícita do usuário na fase (a escolha "Todas de uma vez" da 1.3 é essa aprovação)
 - ❌ NÃO commite com testes falhando
 - ❌ NÃO mova cards no Jira
-- ❌ NÃO sugira "vamos fazer o PR agora"
+- ❌ NÃO sugira "vamos fazer o PR agora" (salvo a escolha "Ir direto para o `/eng.pr`" da 1.3)
 
 ### ✅ FAÇA SEMPRE
 

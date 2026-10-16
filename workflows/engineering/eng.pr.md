@@ -15,6 +15,7 @@ Este comando cria a **branch, commita as alterações e abre um Merge Request**.
 
 > 📋 **Rules**: `$IDE/rules-on-demand/engineering/eng.pr-rules.md` — **antes de começar, leia esse arquivo e siga-o**: ele não é carregado automaticamente no início da sessão.
 > 📤 **Template**: `$IDE/templates/engineering/PR-template.md`
+> 🔀 **Transições**: `$IDE/rules-on-demand/engineering/eng.transitions-rules.md` — perguntas de início e de fim deste comando (a opção padrão mantém o fluxo de sempre).
 
 ## Skills recomendados
 
@@ -65,6 +66,12 @@ Ler `TASK_MANAGER` do `$IDE/ENV.md`. Seguir `$IDE/rules/engineering/eng.integrat
 > 💡 A branch de feature já foi criada no `eng.start`. Este workflow apenas faz push e abre o MR.
 
 ---
+
+## Fase 0: Como validar o PR (`eng.transitions-rules.md`)
+
+Pergunte com `AskUserQuestion`: **"Como validar o PR?"**
+- **Revisar o texto e confirmar a publicação aqui (como hoje):** segue as Fases 4.2 e 4.3.
+- **Publicar direto e validar no PR:** gera o `pull-request.md` na sessão (4.1) e publica sem a revisão do texto (4.2) e sem a pergunta "Publicar o PR agora?" (4.3); você valida no próprio PR.
 
 ## Fase 1: Validação Pré-PR
 
@@ -225,11 +232,11 @@ Preencher com a tarefa. Link do card:
 
 ### 4.2 Revisão do texto
 
-Mostre o `pull-request.md` (título e resumo das seções) e pergunte com `AskUserQuestion`: `[Aprovar]` / `[Ajustar]`. Ajuste até a aprovação.
+Mostre o `pull-request.md` (título e resumo das seções) e pergunte com `AskUserQuestion`: `[Aprovar]` / `[Ajustar]`. Ajuste até a aprovação. (Pule com "Publicar direto e validar no PR" na Fase 0.)
 
 ### 4.3 Publicar? (Sim / Não)
 
-Pergunte com `AskUserQuestion` (**Sim / Não**): **"Publicar o PR agora?"**
+Pergunte com `AskUserQuestion` (**Sim / Não**): **"Publicar o PR agora?"** (Com "Publicar direto e validar no PR" na Fase 0, vale como Sim.)
 
 - **Não:** nada é enviado. O `pull-request.md` fica na sessão para você publicar quando quiser (à mão ou rodando o `/eng.pr` de novo). Pule para a Fase 7 (sem `daily.md`, que só existe com PR aberto), com a mensagem "PR não publicado".
 - **Sim:** faça o push (Fase 3) e crie o MR/PR (4.4).
@@ -391,9 +398,9 @@ Regras em `$IDE/rules-on-demand/engineering/eng.pr-rules.md` (seção "daily.md"
 🕒 Timesheet: {LINHA_DE_TIMESHEET_APROVADA}
 
 📌 Próximos passos:
-1. /eng.spec-consolidate {TASK_MANAGER_KEY} → registrar no Central docs o que esta entrega implementou
-2. Aguardar revisão do time e processar os comentários do code review
-3. Merge após aprovação
+1. Aguardar revisão do time e processar os comentários do code review
+2. Merge após aprovação
+3. /eng.spec-consolidate {TASK_MANAGER_KEY} depois do merge → registrar no Central docs o que esta entrega implementou
 
 🗂️ A sessão $SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/ não é apagada (o /eng.spec-consolidate precisa dela).
    Remova à mão quando quiser.
@@ -402,6 +409,12 @@ Regras em `$IDE/rules-on-demand/engineering/eng.pr-rules.md` (seção "daily.md"
 - MR: {LINK_DO_MR}
 - Jira: {TASK_MANAGER_URL_BASE}/browse/{TASK_MANAGER_KEY}
 ```
+
+### 7.4 PR mergeado? (`eng.transitions-rules.md`)
+
+Pergunte com `AskUserQuestion`: **"O PR já foi aprovado e mergeado?"**
+- **Ainda não (como hoje):** encerre com a mensagem acima.
+- **Sim, rodar o `/eng.spec-consolidate`:** chame o `/eng.spec-consolidate {TASK_MANAGER_KEY}` (ou mostre o comando).
 
 ## Regras Importantes
 

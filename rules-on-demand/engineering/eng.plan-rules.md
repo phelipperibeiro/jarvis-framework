@@ -261,7 +261,7 @@ Cada fase pode ter uma seção `### Comentários:` para:
 - ✅ Detalhar cada tarefa com contexto
 - ✅ Indicar dependências (sequencial/paralelo)
 - ✅ Usar os emojis de status corretamente
-- ✅ Validar o plano com o humano antes de prosseguir
+- ✅ Validar o plano com o humano antes de prosseguir (pergunta "Aprovar o plan.md?" de `eng.transitions-rules.md`)
 - ✅ Escrever tudo em português (pt-BR)
 
 ---

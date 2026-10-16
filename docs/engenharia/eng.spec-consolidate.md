@@ -4,7 +4,7 @@ Workflow: `workflows/engineering/eng.spec-consolidate.md` · Agente: `agents/eng
 
 ## Em uma frase
 
-Depois do PR aberto, transforma tudo o que a entrega envolveu num registro completo para o **Central docs**: o documento da funcionalidade (estado atual) e o registro da entrega.
+Depois do merge do PR (o `/eng.pr` pergunta no fim e oferece chamá-lo), transforma tudo o que a entrega envolveu num registro completo para o **Central docs**: o documento da funcionalidade (estado atual) e o registro da entrega.
 
 ## O que é
 
