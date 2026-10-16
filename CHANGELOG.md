@@ -6,7 +6,7 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), e o
 
 > Versões anteriores a `2.1.1` não foram documentadas retroativamente neste changelog — o histórico detalhado dessas versões continua disponível via `git log`.
 
-## [Unreleased]
+## [5.1.0] - 2026-10-15
 
 ### Added
 - **`daily.md` no `eng.pr`** (#151): com PR aberto, a Conclusão registra o esforço em `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/daily.md`, só na sessão e nunca publicado.
