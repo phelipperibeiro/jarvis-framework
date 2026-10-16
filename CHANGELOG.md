@@ -6,23 +6,15 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), e o
 
 > Versões anteriores a `2.1.1` não foram documentadas retroativamente neste changelog — o histórico detalhado dessas versões continua disponível via `git log`.
 
-## [Unreleased]
+## [4.0.0] - 2026-10-15
+
+> **Major:** o Central docs trocou `CENTRAL_DOCS_REPO` por `CENTRAL_DOCS_STORAGE` + `CENTRAL_DOCS_LOCATION` (o Upgrade do `/jarvis-init` migra), mudou o destino do `jarvis docs publish` e removeu o `jarvis vcs fetch-raw`, o `[ref]` do `docs fetch` e o cache Redis. Inclui também o modo Developer-Guided (#146).
 
 ### Added
 - **Modo Developer-Guided nos comandos de produto** (#146): o `/jarvis-init` sempre pergunta o modo de condução (`PROD_MODE=product-led | developer-guided`, sem opção sugerida, inclusive no Upgrade quando a chave é nova). Com `developer-guided`, os 10 comandos de `workflows/product/` e o `eng.create-ard` leem a regra sob demanda `rules-on-demand/product/prod.guided-rules.md`: uma pergunta por vez, termo de PM sempre com explicação, opções `[Sim]/[Não]/[Explicar melhor]/[Dúvida]` (a dúvida usa o "Outro" de texto livre), mentoria entre artefatos e revisão ao fechar cada documento. O documento gerado é o mesmo nos dois modos
 - **Frontmatter comentado** em todos os templates de produto e no de ARD: cada campo diz o que significa e lista todas as opções
 - **`recommended_model: opus`** nos documentos de produto e no ARD; os comandos que criam ou editam documento avisam (sem bloquear) quando a sessão está em outro modelo
 - Status `deprecated` (esteve em produção e foi descontinuado) na lista única de `rules/product/prod-rules.md`; `cancelled` passa a significar "cancelado antes de ser entregue"
-
-### Changed
-- `templates/engineering/ARD-template.md` ganhou frontmatter YAML (`status: proposed | in_progress | in_review | approved`, versão, datas, autor, relacionados); as linhas equivalentes saíram do bloco do corpo
-- `prod-breakdown-template.md`: `last_updated` → `updated_at` e campo `status` novo; `prod-epic-template.md` e `prod-issue-template.md` usam a lista única de status
-- `recommended_model` dos 11 workflows (10 de produto e `eng.create-ard`) passou a `opus` (o `prod.roadmap.preview` ganhou o campo)
-- Upgrade do `jarvis-init`: numeração dos passos corrigida (havia dois "4." e dois "5.")
-
-## [Unreleased]
-
-### Added
 - **Central docs por adaptador de armazenamento** (#143): `CENTRAL_DOCS_STORAGE` escolhe o adaptador e `CENTRAL_DOCS_LOCATION` diz onde ele guarda. Primeiro adaptador: `filesystem` (uma pasta do disco). Se a pasta tiver `.git` (clone de um repositório de documentação), o adaptador faz `git pull` antes de ler e branch + commit + push + Pull/Merge Request ao publicar (usando o `scripts/build-index.sh` do repositório, quando existir). Código em `bin/lib/docs/storage/` (`index.js`, `filesystem.js`, `build-index.js`); S3 e Google Drive ficam para #144 e #145
 - `{SQUAD}/index.md` regenerado a partir do frontmatter a cada publicação (em vez de editado), no mesmo caminho lido pelo `docs sync`
 - `jarvis docs publish`: tipos `feat`, `epic`, `story` e `task` (o `/prod.spec.epic` passa a publicar), `--produto` (padrão `WORKSPACE`) e o nome do arquivo local como nome no Central docs (`--feature` só para nome fora do padrão)
@@ -30,6 +22,10 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), e o
 - **Branch base perguntada**: `eng.start` e `eng.rpa.robot` perguntam de qual branch partir (`main`, `dev`, a atual ou outra) e gravam `Branch base:` no `architecture.md`; o `eng.pr` abre o PR para essa base
 
 ### Changed
+- `templates/engineering/ARD-template.md` ganhou frontmatter YAML (`status: proposed | in_progress | in_review | approved`, versão, datas, autor, relacionados); as linhas equivalentes saíram do bloco do corpo
+- `prod-breakdown-template.md`: `last_updated` → `updated_at` e campo `status` novo; `prod-epic-template.md` e `prod-issue-template.md` usam a lista única de status
+- `recommended_model` dos 11 workflows (10 de produto e `eng.create-ard`) passou a `opus` (o `prod.roadmap.preview` ganhou o campo)
+- Upgrade do `jarvis-init`: numeração dos passos corrigida (havia dois "4." e dois "5.")
 - **Breaking:** `CENTRAL_DOCS_REPO` deu lugar a `CENTRAL_DOCS_STORAGE` + `CENTRAL_DOCS_LOCATION`. Com a variável antiga e sem a nova, os comandos `jarvis docs` pedem o Upgrade do `/jarvis-init`
 - **Breaking:** destino do publish passa a `{SQUAD}/{product|engineering}/{produto}/{arquivo}` (antes `{SQUAD}/{WORKSPACE}/product/{tipo}-{feature}.md`, com ARD em `engineering/ARD/`)
 - Projeto único: `PROD_DOCS=docs/jarvis/product`, com `docs/jarvis/*` no `.gitignore`
