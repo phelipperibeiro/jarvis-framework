@@ -87,7 +87,12 @@ export function buildProgram() {
   const initCmd = cmd(program, "init")
     .description("Bootstrap do framework no workspace")
     .option("--ide <ide>", "IDE a configurar (pula o menu interativo)")
-    .option("--force", "Sobrescreve a instalação existente sem perguntar");
+    .option("--force", "Sobrescreve a instalação existente sem perguntar")
+    .option(
+      "--upgrade",
+      "Atualiza um projeto já configurado: arquivos do framework, variáveis novas do ENV e pastas de documentos"
+    )
+    .option("--yes", "Com --upgrade, move os documentos para as pastas novas sem perguntar");
   withLogOptions(initCmd).action((options) => init(toLegacyFlags(options)));
 
   cmd(program, "list")

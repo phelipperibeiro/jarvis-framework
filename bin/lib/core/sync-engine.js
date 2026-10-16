@@ -149,7 +149,7 @@ export function syncAssets(targetDir, ide, opts = {}) {
 
   // RTK: detectar e reconciliar RTK_ENABLED + rtk-rules.md
   if (!opts.dryRun) {
-    const rtkResult = reconcileRtk(ideDir, targetDir, ide);
+    const rtkResult = reconcileRtk(ideDir, targetDir, ide, { keepEnvValues: opts.keepEnvValues });
     if (rtkResult) result.copied.push(rtkResult);
   }
 
@@ -191,9 +191,11 @@ export function syncAssets(targetDir, ide, opts = {}) {
  * Detecta RTK no PATH e reconcilia RTK_ENABLED no ENV.md + rtk-rules.md na IDE.
  * - RTK encontrado → RTK_ENABLED=true no ENV.md, mantém rule
  * - RTK não encontrado → remove rtk-rules.md da IDE, mantém RTK_ENABLED=false
+ * - `keepEnvValues` (jarvis init --upgrade): não troca RTK_ENABLED=false por true, porque o
+ *   upgrade só acrescenta chaves novas; acrescentar RTK_ENABLED quando ela não existe continua valendo
  * @returns {string|null} mensagem de log ou null se nenhuma ação
  */
-function reconcileRtk(ideDir, targetDir, ide) {
+function reconcileRtk(ideDir, targetDir, ide, { keepEnvValues = false } = {}) {
   const rtkRulePath = join(ideDir, "rules", "rtk-rules.md");
   const envPath = join(ideDir, "ENV.md");
   const hasRtk = (() => {
@@ -209,7 +211,7 @@ function reconcileRtk(ideDir, targetDir, ide) {
     // Ativar RTK_ENABLED no ENV.md se existir e estiver false
     if (existsSync(envPath)) {
       let env = readFileSync(envPath, "utf-8");
-      if (env.includes("RTK_ENABLED=false")) {
+      if (env.includes("RTK_ENABLED=false") && !keepEnvValues) {
         env = env.replace("RTK_ENABLED=false", "RTK_ENABLED=true");
         writeFileSync(envPath, env, "utf-8");
         return "(rtk) detectado — RTK_ENABLED=true no ENV.md";

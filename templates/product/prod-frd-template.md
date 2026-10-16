@@ -29,7 +29,7 @@ updated_at: {YYYY-MM-DD}
 related_prd: {Lista de PRDs que são relacionadas a esse PRD, se forem vários, utilize sintaxe compatível com YAML}
 
 # Discovery de origem (o rascunho da ideia, anterior ao PRD). Remova a linha se não houver.
-related_discovery: {path do discovery de origem, exemplo $PROD_DOCS/discoveries/discovery-001-nome.md. Se não existir, ignore essa linha}
+related_discovery: {path do discovery de origem, exemplo $DISCOVERIES_DOCS/discovery-001-nome.md. Se não existir, ignore essa linha}
 
 # Data de criação (YYYY-MM-DD).
 created_at: {YYYY-MM-DD}

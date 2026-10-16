@@ -16,7 +16,7 @@ model_justification: Discovery exige separar fatos de suposições, escolher as 
 
 > 🔥 **Warm-up**: se `$SESSIONS_DIR/warm-ups/` tiver aquecimentos, leia `$IDE/rules-on-demand/warm-up-consume-rules.md` e siga-o antes de começar (grava em `$SESSIONS_DIR/prod/{id do documento}/context.md`).
 
-Investiga uma ideia crua com **poucas perguntas certas** e grava um **rascunho** em `$PROD_DOCS/discoveries/discovery-{id}-{nome}.md`, pelo template `$PROD_TEMPLATES/prod-discovery-template.md`. Postura: agente `$IDE/agents/product/prod.discovery-interviewer.md`. Guia humano: `docs/produto/prod.spec.discovery.md`. Siga `$PROD_RULES` (ENV, idioma, `AskUserQuestion` uma pergunta por vez).
+Investiga uma ideia crua com **poucas perguntas certas** e grava um **rascunho** em `$DISCOVERIES_DOCS/discovery-{id}-{nome}.md`, pelo template `$PROD_TEMPLATES/prod-discovery-template.md`. Postura: agente `$IDE/agents/product/prod.discovery-interviewer.md`. Guia humano: `docs/produto/prod.spec.discovery.md`. Siga `$PROD_RULES` (ENV, idioma, `AskUserQuestion` uma pergunta por vez).
 
 <requirement>
 #$ARGUMENTS
@@ -39,7 +39,7 @@ Sem ideia: pergunte qual é, antes de tudo. Caminho, nome ou id de um discovery 
 
 ## Passo 1 — Ler em silêncio
 
-Antes de perguntar qualquer coisa, leia: o `$ARGUMENTS`; em `$PROD_DOCS`, os PRD/FRD que já cobrem a ideia e os discoveries parecidos (só título e Entendimento/Ideia); o código e os commits, se ajudarem a viabilidade; o Central docs, se configurado. Não repita perguntas cuja resposta já está em algum desses.
+Antes de perguntar qualquer coisa, leia: o `$ARGUMENTS`; em `$PROD_DOCS`, os PRD/FRD que já cobrem a ideia; em `$DISCOVERIES_DOCS`, os discoveries parecidos (só título e Entendimento/Ideia); o código e os commits, se ajudarem a viabilidade; o Central docs, se configurado. Não repita perguntas cuja resposta já está em algum desses.
 
 ## Passo 2 — Entendimento (uma confirmação)
 

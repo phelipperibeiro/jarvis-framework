@@ -53,7 +53,7 @@ Ao chegar no teto, ele pergunta se encerra ou se você quer mais perguntas. No m
 
 ## O que sai
 
-Um arquivo em `$PROD_DOCS/discoveries/discovery-{id}-{nome}.md` (`$PROD_DOCS` é `docs/jarvis/product`, fora do versionamento do código), feito pelo template, com estas seções: Entendimento, Problema, Abordagens, Scorecard (valor, usabilidade, técnica e negócio: forte, adequado, fraco ou desconhecido), Veredito, Próximo passo sugerido e Histórico.
+Um arquivo em `$DISCOVERIES_DOCS/discovery-{id}-{nome}.md` (`$DISCOVERIES_DOCS` é `docs/jarvis/discoveries`, fora do versionamento do código), feito pelo template, com estas seções: Entendimento, Problema, Abordagens, Scorecard (valor, usabilidade, técnica e negócio: forte, adequado, fraco ou desconhecido), Veredito, Próximo passo sugerido e Histórico.
 
 Ao retomar um discovery no formato antigo (com as seções Hipóteses e Perguntas em aberto), o comando o converte para o formato novo no mesmo arquivo e avisa.
 
@@ -94,7 +94,7 @@ Todo discovery termina sugerindo um caminho, com o **comando pronto e o id do di
 
 - **Poucas perguntas:** o tamanho da ideia define o teto, e cada pergunta vem com o motivo e uma recomendação
 - **Não inventa dados:** o que não sabe vira pergunta ou lacuna, com a origem de cada fato (dado, observação ou suposição)
-- **Retomável:** o arquivo fica em `docs/jarvis/product/discoveries/` e cada sessão fica no histórico
+- **Retomável:** o arquivo fica em `docs/jarvis/discoveries/` e cada sessão fica no histórico
 - **Não invade outras etapas:** se você pedir tarefas, critérios de aceitação ou código, ele recusa e indica o comando certo
 - **Não grava dados sensíveis:** credenciais e dados pessoais de clientes não entram no arquivo
 

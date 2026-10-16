@@ -161,16 +161,19 @@ test("listRulesForProfile: AGENTS.md nunca é filtrado, rtk é opt-in, sem bloco
 // Issue #154 (discovery fluido, 2026-10-16): +59 B só em FULLCYCLE/GENERALIST — prod.spec-rules.md
 // (AREA PRODUCT, que o GENERALIST também recebe) trocou "hipóteses e perguntas em aberto" por
 // "suposições e lacunas" na seção "Discovery como insumo".
+// Issue #157 (discoveries em pasta própria, 2026-10-16): +309 B em todos os perfis — prod-rules.md
+// (AREA all) ganhou $DISCOVERIES_DOCS no ENV de fallback, a descrição dela e a regra de ENV antigo;
+// no FULLCYCLE/GENERALIST, -10 B de prod.spec-rules.md ($PROD_DOCS/discoveries/ → $DISCOVERIES_DOCS/).
 const BASE = [
   [
     "FULLCYCLE/GENERALIST/ENGINEERING/CORE",
     profile("FULLCYCLE", "GENERALIST", "ENGINEERING"),
     15,
-    98701,
+    99000,
   ],
-  ["BACKEND/SENIOR/ENGINEERING/CORE", profile("BACKEND", "SENIOR", "ENGINEERING"), 11, 65372],
-  ["FRONTEND/PLENO/ENGINEERING/CORE", profile("FRONTEND", "PLENO", "ENGINEERING"), 11, 65915],
-  ["QA/QA-ENGINEER/ENGINEERING/CORE", profile("QA", "QA-ENGINEER", "ENGINEERING"), 11, 65151],
+  ["BACKEND/SENIOR/ENGINEERING/CORE", profile("BACKEND", "SENIOR", "ENGINEERING"), 11, 65681],
+  ["FRONTEND/PLENO/ENGINEERING/CORE", profile("FRONTEND", "PLENO", "ENGINEERING"), 11, 66224],
+  ["QA/QA-ENGINEER/ENGINEERING/CORE", profile("QA", "QA-ENGINEER", "ENGINEERING"), 11, 65460],
 ];
 
 for (const [nome, p, arquivos, bytes] of BASE) {

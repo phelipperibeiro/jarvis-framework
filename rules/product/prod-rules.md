@@ -40,12 +40,14 @@ PROD_RULES=$RULES_FOLDER/$PROD_FOLDER_NAME
 PROD_FLOWS=.$IDE/$FLOWS_FOLDER
 PROD_TEMPLATES=.$IDE/$TEMPLATES_FOLDER/$PROD_FOLDER_NAME
 PROD_DOCS=$DOCS_FOLDER/jarvis/$PROD_FOLDER_NAME
+DISCOVERIES_DOCS=$DOCS_FOLDER/jarvis/discoveries
 ```
 
 Abaixo, segue uma descrição de algumas das variáveis mais importantes para as rotinas de produto:
 
 - $DOCS_FOLDER é o nome da pasta principal de documentações do projeto. Ela fica localizada na raiz do projeto.
-- $PROD_DOCS é a pasta dos documentos de produto gerados pelos comandos (PRD, FRD, épicos, histórias, discovery): `$JARVIS_DOCS/product` (`docs/jarvis/product`), nos dois modos de trabalho e fora do versionamento do código. Os de engenharia ficam em `$ENG_DOCS` (`docs/jarvis/engineering`).
+- $PROD_DOCS é a pasta dos documentos de produto gerados pelos comandos (PRD, FRD, épicos, histórias): `$JARVIS_DOCS/product` (`docs/jarvis/product`), nos dois modos de trabalho e fora do versionamento do código. Os de engenharia ficam em `$ENG_DOCS` (`docs/jarvis/engineering`).
+- $DISCOVERIES_DOCS é a pasta dos discoveries: `$JARVIS_DOCS/discoveries` (`docs/jarvis/discoveries`), fora de `product/`. ENV sem a variável: use `$PROD_DOCS/discoveries` se essa pasta existir, senão `$JARVIS_DOCS/discoveries`, e avise para rodar `jarvis init --upgrade`.
 - $PROD_FOLDER_NAME é o nome padrão da pasta de produto que será usada em diversos contextos do projeto.
 - $TEMPLATES_FOLDER é o nome da pasta principal de templates do projeto.
 - $PROD_TEMPLATES é o caminho completo para os templates de produto.
@@ -126,7 +128,7 @@ Dentro das pastas do projeto, os caminhos de pastas e o nome dos arquivos finais
 - Documento de Requisitos Funcionais: `$PROD_DOCS/prd-{id}-{nome-do-pai}/frd-{id}-{nome}.md`
 - Épico: `$PROD_DOCS/prd-{id}-{nome-do-pai}/issues/epic-{id}-{nome}.md`
 - História / tarefa: `$PROD_DOCS/prd-{id}-{nome-do-pai}/issues/{story|task}-{id}-{nome}.md`
-- Discovery (rascunho de uma ideia, anterior ao PRD): `$PROD_DOCS/discoveries/discovery-{id}-{nome}.md`. Usa `status` (`in_review` enquanto o rascunho existe; `cancelled` se o veredito for não seguir) e `verdict` (vazio durante a entrevista, `proceed`, `investigate_more` ou `do_not_proceed`). O veredito é uma recomendação; um PRD, FRD, épico ou issue criado depois prevalece como fonte da verdade.
+- Discovery (rascunho de uma ideia, anterior ao PRD): `$DISCOVERIES_DOCS/discovery-{id}-{nome}.md`. Usa `status` (`in_review` enquanto o rascunho existe; `cancelled` se o veredito for não seguir) e `verdict` (vazio durante a entrevista, `proceed`, `investigate_more` ou `do_not_proceed`). O veredito é uma recomendação; um PRD, FRD, épico ou issue criado depois prevalece como fonte da verdade.
 
 O ID deve ser iterado nos novos arquivos seguindo a sequência existente.
 

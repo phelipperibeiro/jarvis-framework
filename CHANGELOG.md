@@ -6,6 +6,24 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), e o
 
 > Versões anteriores a `2.1.1` não foram documentadas retroativamente neste changelog — o histórico detalhado dessas versões continua disponível via `git log`.
 
+## [5.3.0] - 2026-10-16
+
+### Added
+- **`jarvis init --upgrade [--ide X] [--yes]`** (#157): atualiza um projeto já configurado numa passada, sem a pergunta "Deseja reinstalar?":
+  - **arquivos do framework:** sincroniza como o `--force` (o `ENV.md` nunca é sobrescrito);
+  - **`ENV.md`:** acrescenta só as chaves do template que faltam, num bloco `# --- Upgrade AAAA-MM-DD ---`. **Nenhuma chave existente muda** (preenchida, vazia ou com lista de opções). Chave nova com lista de opções entra vazia, e `PROD_MODE` nova vem da `AREA` (`ENGINEERING` → `developer-guided`, `PRODUCT` → `product-led`);
+  - **documentos em caminhos antigos:** os mesmos do Upgrade (C) do `/jarvis-init`, mais os discoveries. Mostra a lista e pergunta antes de mover (`--yes` move sem perguntar; sem terminal interativo, não move). Usa `git mv` quando o arquivo é versionado, pula quando o destino já tem um arquivo com o mesmo nome e corrige o `related_discovery` pelo nome do arquivo;
+  - **resumo:** versão anterior → nova, variáveis acrescentadas (só nomes), documentos movidos ou pulados, pendências, e o próximo passo: `/jarvis-init upgrade` na IDE.
+
+  A lógica fica em `bin/lib/core/env-upgrade.js` e `bin/lib/core/docs-migrate.js`, com testes (`test/env-upgrade.test.js`, `test/docs-migrate.test.js`, `test/init-upgrade.test.js`).
+- **`/jarvis-init upgrade`** (#157): com o `ENV.md` existente, vai direto ao Upgrade (C), sem o menu A/B/C/D.
+- **`DISCOVERIES_FOLDER_NAME` e `DISCOVERIES_DOCS`** no `templates/ENV-template.md` (#157).
+
+### Changed
+- **Discoveries em pasta própria** (#157): `/prod.spec.discovery` grava em `$DISCOVERIES_DOCS` (`docs/jarvis/discoveries/`), fora de `product/`. As rules (`prod-rules.md`, `prod.spec-rules.md`), o workflow, os templates de PRD, FRD, épico e issue e o guia apontam para lá. ENV ainda sem a variável: os comandos usam `$PROD_DOCS/discoveries` se essa pasta existir e avisam para rodar o upgrade.
+- **Upgrade (C) do `/jarvis-init`** (#157): o item 8 também move os discoveries, pula conflito e corrige o `related_discovery`. Na recusa, só as chaves **novas** recebem o caminho antigo (`DISCOVERIES_DOCS=$PROD_DOCS/discoveries`). O item 10 grava a `PROD_MODE` nova pela `AREA`; a criação do ENV continua perguntando.
+- `syncAssets` aceita `keepEnvValues`: com o `--upgrade`, o RTK não troca `RTK_ENABLED=false` por `true` (acrescentar a chave quando ela não existe continua valendo).
+
 ## [5.2.0] - 2026-10-16
 
 ### Changed
