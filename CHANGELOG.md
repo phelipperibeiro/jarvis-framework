@@ -6,6 +6,30 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), e o
 
 > Versões anteriores a `2.1.1` não foram documentadas retroativamente neste changelog — o histórico detalhado dessas versões continua disponível via `git log`.
 
+## [Unreleased]
+
+> **Major:** o Central docs passa a guardar só o que foi implementado (`jarvis docs publish` aceita apenas `feature` e `delivery`), os documentos de trabalho mudam para `docs/jarvis/`, o `eng.pre-pr` deixa de corrigir e publicar, e o `eng.pr` deixa de apagar a sessão e só publica com Sim.
+
+### Added
+- **`/eng.spec-consolidate`** (#149): depois do PR aberto, consolida no Central docs o que a entrega implementou. Ele lê o `architecture.md`, o `plan.md`, os documentos de trabalho, o `git log`/diff desde a branch base (com autores), o PR/MR e o card. Gera um documento **por funcionalidade** (`feature-{slug}.md`, estado atual, completo e autossuficiente) e um **registro por entrega** (`delivery-{data}-{key}.md`), mostra para revisão e publica só com Sim. Modo `--inicial` para montar o Central docs a partir dos documentos existentes
+- Agente `agents/engineering/eng.docs-consolidator.agent.md` (documentação para humanos e IAs: completude, bons nomes, referências de card e PR/MR com URL conforme `TASK_MANAGER`/`VERSION_CONTROL`, sem e-mails nem segredos)
+- Templates `templates/engineering/central-feature-template.md` (11 seções) e `central-delivery-template.md` (7 seções)
+- `eng.pre-pr` gera o **`gate-checklist.md`** na sessão (lacunas por área com onde, por que importa, sugestão, severidade e a coluna **Decisão**) e pergunta Sim/Não para publicá-lo como comentário na issue/card; evento novo permitido na `eng.integrations-rules.md`
+- `eng.pr` gera o **`pull-request.md`** na sessão e pergunta Sim/Não antes do push e do MR/PR
+- `JARVIS_DOCS` e `ENG_DOCS` no `ENV-template`; `/jarvis-init` com o Central docs ligado por padrão (Passo 5.2), migração "oferecer mover" dos documentos nos caminhos antigos e carga inicial do Central docs (Passo 5.3)
+
+### Changed
+- **Breaking:** `jarvis docs publish` aceita só `feature` e `delivery`; PRD, FRD, épico, ARD, RFC, swagger e qa-report são recusados com a explicação. Os workflows `prod.spec.{prd,frd,epic}`, `eng.create-ard`, `eng.create-ard-from-code` e `eng.create-rfc` deixam de oferecer a publicação
+- **Breaking:** documentos de trabalho em `docs/jarvis/` nos dois modos (com `docs/jarvis/` no `.gitignore`): `PROD_DOCS=$JARVIS_DOCS/product`, e ARD, RFC, QA, swagger/openapi, robôs e C4 em `$ENG_DOCS/…` (workflows, skills, agentes, regras e templates)
+- **Breaking:** `eng.pre-pr` só revisa e aponta lacunas (sem corrigir, sem escrever testes, sem atualizar documentação); sai o Gate 0 (publicação de ARD)
+- **Breaking:** `eng.pr` não apaga mais a sessão (o `/eng.spec-consolidate` precisa dela) e termina lembrando o `/eng.spec-consolidate`
+- Central docs ligado por padrão (`CENTRAL_DOCS_STORAGE=filesystem`); o índice lista só funcionalidades e as 10 entregas mais recentes por produto (PRD/ARD publicados na 4.0.0 ficam fora do índice)
+- Quem consulta o Central docs (`warm-up`, `eng.start`, `prod.spec.*`, `eng.create-ard*`, `eng.create-rfc`, `eng.build-tech-spec`, `prod.discovery-interviewer`) passa a ler as funcionalidades já implementadas; PRD, ARD e RFC vêm de `docs/jarvis/`
+
+### Removed
+- Gate 0 do `eng.pre-pr` e a Fase 8 (limpeza da sessão) do `eng.pr`
+- Publicação de documentos de trabalho no Central docs
+
 ## [4.0.0] - 2026-10-15
 
 > **Major:** o Central docs trocou `CENTRAL_DOCS_REPO` por `CENTRAL_DOCS_STORAGE` + `CENTRAL_DOCS_LOCATION` (o Upgrade do `/jarvis-init` migra), mudou o destino do `jarvis docs publish` e removeu o `jarvis vcs fetch-raw`, o `[ref]` do `docs fetch` e o cache Redis. Inclui também o modo Developer-Guided (#146).

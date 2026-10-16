@@ -65,7 +65,7 @@ O artefato de breakdown segue o template `$PROD_TEMPLATES/prod-breakdown-templat
 Se `CENTRAL_DOCS_STORAGE` estiver no `ENV.md`:
 
 1. `jarvis docs sync --silent` (best-effort)
-2. Localizar Documento de Requisitos de Produto / funcional relacionado (nome, tags, `TASK_MANAGER_KEY`)
+2. Localizar no Central docs as funcionalidades já implementadas relacionadas (nome, tags, `TASK_MANAGER_KEY`); o Documento de Requisitos de Produto / funcional vem de `$PROD_DOCS`
 3. Usar como contexto; se não achar, seguir com arquivos locais em `$PROD_DOCS`
 
 ## Sessões

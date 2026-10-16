@@ -42,7 +42,7 @@ Criar e manter documentação de arquitetura usando os 4 níveis do C4:
 
 - **Script de detecção**: `$IDE/scripts/detect-stack.sh`
 - **Template**: `$IDE/templates/engineering/c4-model-template.md`
-- **Saída**: `$DOCS_FOLDER/engineering/c4/`
+- **Saída**: `$ENG_DOCS/c4/`
 
 ### Exemplos de Output
 
@@ -84,7 +84,7 @@ Code      -> Quais classes/interfaces críticas?
 ### 1. Verificar Documentação Existente
 
 ```bash
-ls -la $DOCS_FOLDER/engineering/c4/ 2>/dev/null || echo "Nenhum diagrama C4"
+ls -la $ENG_DOCS/c4/ 2>/dev/null || echo "Nenhum diagrama C4"
 ls -la $DOCS_FOLDER/architecture/adr/ 2>/dev/null
 ```
 
@@ -318,7 +318,7 @@ git diff origin/main --name-only | grep -E "docker|config|src/(domain|infrastruc
 ```
 ✅ Diagrama C4 criado/atualizado!
 
-📄 Arquivo: $DOCS_FOLDER/engineering/c4/{arquivo}.md
+📄 Arquivo: $ENG_DOCS/c4/{arquivo}.md
 📊 Nível: {nivel}
 🏗️ Sistema: {nome}
 

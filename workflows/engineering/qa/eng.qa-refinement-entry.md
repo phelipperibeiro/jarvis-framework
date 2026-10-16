@@ -67,7 +67,7 @@ O código ainda não existe neste momento do fluxo.
 ## Output
 
 Documento de estratégia de testes salvo em:
-`$DOCS_FOLDER/engineering/qa/strategies/{task-id}-test-strategy.md`
+`$ENG_DOCS/qa/strategies/{task-id}-test-strategy.md`
 
 Estrutura do documento:
 ```

@@ -132,12 +132,12 @@ export function buildProgram() {
 
   const docsPublishCmd = cmd(docs, "publish")
     .description(
-      "Publicar documento no Central docs (pasta: copia e regenera o índice; com git: branch + PR)"
+      "Publicar a consolidação (feature/delivery) no Central docs (pasta: copia e regenera o índice; com git: branch + PR)"
     )
     .option("--file <path>", "Caminho do arquivo local")
-    .option("--tipo <tipo>", "prd|frd|feat|epic|story|task|ard|rfc|swagger|qa-report")
+    .option("--tipo <tipo>", "feature|delivery (consolidação do /eng.spec-consolidate)")
     .option("--produto <produto>", "Pasta do produto no Central docs (padrão: WORKSPACE do ENV.md)")
-    .option("--feature <slug>", "Só se o nome do arquivo fugir do padrão {tipo}-{id}-{nome}")
+    .option("--feature <slug>", "Só se o nome do arquivo fugir do padrão {tipo}-{nome}.md")
     .option("--squad <squad>", "Override do SQUAD do ENV.md")
     .option(
       "--workspace <workspace>",

@@ -80,6 +80,10 @@ export function validateFrontmatter(filePath, tipo) {
  */
 function getRequiredFields(tipo) {
   const fields = {
+    // Consolidação do Central docs (/eng.spec-consolidate)
+    feature: ['id', 'name', 'status', 'product', 'updated_at'],
+    delivery: ['id', 'feature', 'task_key', 'pr', 'date'],
+    // Documentos de trabalho (validação usada fora do publish)
     prd: ['id', 'name', 'version', 'status'],
     frd: ['id', 'name', 'version', 'status', 'related_prd'],
     feat: ['id', 'name', 'version', 'status', 'related_prd'],

@@ -63,25 +63,21 @@ Confirmar que está na branch certa? (s/n)
 
 ## Regras de Validação
 
+### Só revisar
+
+O `eng.pre-pr` **aponta lacunas e não corrige nada**: não altera código, não escreve testes, não atualiza documentação e não publica no Central docs. Quem decide o que ajustar é o usuário.
+
 ### Escopo de Análise
 
-Avaliar **apenas** as mudanças da branch atual em relação ao branch base (`main`/`develop`):
+Avaliar **apenas** as mudanças da branch atual em relação à branch base (`Branch base:` do `architecture.md`; sem ele, perguntar):
 
 ```bash
-git diff main...HEAD
+git diff {BRANCH_BASE}...HEAD
 ```
 
 ### Evidências Obrigatórias
 
-Ao citar "testes passando" ou "validações OK", incluir:
-- Qual comando foi executado
-- Output do resultado (ou smoke test manual se não houver suíte)
-
-### Revalidação após Mudanças
-
-Se qualquer gate levar a mudanças de código, reexecutar obrigatoriamente:
-- Revisão técnica do código alterado
-- Testes/validações
+Cada lacuna cita onde está (`arquivo:linha`) ou o comando que a revelou e o resultado.
 
 ---
 
@@ -89,11 +85,8 @@ Se qualquer gate levar a mudanças de código, reexecutar obrigatoriamente:
 
 O workflow **deve sempre** terminar com:
 
-1. **Semáforo de status**:
-   - 🟢 Green: pronto para PR
-   - 🟡 Yellow: pode abrir PR com ressalvas documentadas
-   - 🔴 Red: bloqueado — listar o que impede o PR
-
-2. **Comentário no card só se a validação reprovar** (🔴 RED, bloqueio), com o motivo (via `/eng-global-task-comment`) — pular se freelance; GREEN e YELLOW não comentam
-
-3. **Aguardar permissão explícita** do usuário para prosseguir para `/eng.pr`
+1. **`gate-checklist.md`** em `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/`:
+   - semáforo (🟢 / 🟡 / 🔴), resumo, lacunas por área (o quê, onde, por que importa, sugestão, severidade, **Decisão**), evidências e PR Brief.
+2. **Decisões do usuário** gravadas na coluna Decisão (Ajustar / Não ajustar + motivo).
+3. **Pergunta Sim / Não** (`AskUserQuestion`) para publicar o relatório como comentário na issue/card (`/eng-global-task-comment`). Nunca publicar sem a resposta. Freelance: só na sessão.
+4. **Aguardar permissão explícita** do usuário para prosseguir para `/eng.pr`.

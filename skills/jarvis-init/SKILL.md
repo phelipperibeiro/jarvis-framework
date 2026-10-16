@@ -208,20 +208,24 @@ Identificar qual IDE o usuário está utilizando:
 
    Serão adicionadas ao final do ENV.md sem alterar os valores existentes.
    ```
-8. **Exceção — Central docs antigo:** se o `ENV.md` tiver `CENTRAL_DOCS_REPO` preenchido e não tiver `CENTRAL_DOCS_STORAGE`, propor a migração (só com confirmação): `CENTRAL_DOCS_STORAGE=filesystem`, `CENTRAL_DOCS_LOCATION` com o padrão do modo de trabalho (Passo 4, "Central docs") e `git clone {CENTRAL_DOCS_REPO} {LOCATION}`. Depois, comentar a linha antiga (`# CENTRAL_DOCS_REPO=… (migrado em YYYY-MM-DD)`) e `CENTRAL_DOCS_CACHE_TTL`. Sem confirmação, não mexe e avisa que os comandos de docs vão pedir o Upgrade.
-9. **Exceção — `PROD_MODE`:** se `PROD_MODE` estiver entre as chaves novas, faça a mesma pergunta do Passo 3 (Pergunta 8 — modo de condução) e grave a resposta no lugar do valor vazio. As demais chaves continuam sem pergunta.
-10. Appender as novas variáveis ao final do `ENV.md` com comentário de data:
+8. **Exceção — documentos nos caminhos antigos:** procure documentos de trabalho em `$DOCS_FOLDER/product`, `$DOCS_FOLDER/engineering/{ARD,RFC,qa,swagger,openapi,robots,c4}` e `docs/engineering/{robots,swagger,openapi,c4}`.
+   - Se houver, liste o que encontrou e pergunte com `AskUserQuestion` se move para `docs/jarvis/…` (`$PROD_DOCS` e `$ENG_DOCS/…`). Use `git mv` quando o arquivo for versionado e `mv` quando não for, e garanta `docs/jarvis/` no `.gitignore`.
+   - **Sem confirmação, não mova nada:** grave `PROD_DOCS`/`ENG_DOCS` apontando para os caminhos antigos.
+   - Depois, ofereça a carga inicial do Central docs (Passo 5.3).
+9. **Exceção — Central docs antigo:** se o `ENV.md` tiver `CENTRAL_DOCS_REPO` preenchido e não tiver `CENTRAL_DOCS_STORAGE`, propor a migração (só com confirmação): `CENTRAL_DOCS_STORAGE=filesystem`, `CENTRAL_DOCS_LOCATION` com o padrão do modo de trabalho (Passo 4, "Central docs") e `git clone {CENTRAL_DOCS_REPO} {LOCATION}`. Depois, comentar a linha antiga (`# CENTRAL_DOCS_REPO=… (migrado em YYYY-MM-DD)`) e `CENTRAL_DOCS_CACHE_TTL`. Sem confirmação, não mexe e avisa que os comandos de docs vão pedir o Upgrade.
+10. **Exceção — `PROD_MODE`:** se `PROD_MODE` estiver entre as chaves novas, faça a mesma pergunta do Passo 3 (Pergunta 8 — modo de condução) e grave a resposta no lugar do valor vazio. As demais chaves continuam sem pergunta.
+11. Appender as novas variáveis ao final do `ENV.md` com comentário de data:
    ```
    # --- Upgrade YYYY-MM-DD ---
    NOVA_VAR_1=
    NOVA_VAR_2=valor-padrão
    ```
-11. Confirmar:
+12. Confirmar:
    ```
    ✅ ENV.md atualizado! N variável(is) nova(s) adicionada(s).
    ⚠️ Preencha os valores em branco antes de usar os novos recursos.
    ```
-12. Oferecer o **passo 9 (adicionar as stacks)**, que a pessoa pode pular, e então encerrar (não continuar para o fluxo de onboarding completo).
+13. Oferecer o **passo 9 (adicionar as stacks)**, que a pessoa pode pular, e então encerrar (não continuar para o fluxo de onboarding completo).
 
 **⚠️ OBRIGATÓRIO - Criação do ENV.md**:
 
@@ -573,19 +577,7 @@ Token NÃO vai no ENV.md:
 Nunca grave TOKEN_VERSION_CONTROL (chave removida do template).
 ```
 
-**Central docs (onde fica a documentação aprovada — PRD, FRD, épicos, ARD, RFC):**
-```
-Onde fica a documentação central?
-A. Pasta local
-B. Repositório de documentação (git)
-C. Não usar → CENTRAL_DOCS_STORAGE= vazio
-```
-- **A ou B** → `CENTRAL_DOCS_STORAGE=filesystem` e `CENTRAL_DOCS_LOCATION` com o padrão do **modo de trabalho** (a pessoa pode digitar outro caminho):
-  - **modo workspace** (2+ subpastas com `.git`): `./central-docs`, e `central-docs/` no `.gitignore` do workspace;
-  - **projeto único** (só a raiz tem `.git`): `docs/jarvis/central-docs` (já coberto por `docs/jarvis/*` no `.gitignore`, ver Passo 5).
-- **A**: `mkdir -p {LOCATION}` e criar `{LOCATION}/AGENTS.md` mínimo explicando a estrutura `{SQUAD}/{product|engineering}/{produto}/` e que o `{SQUAD}/index.md` é gerado pelo `jarvis docs publish`.
-- **B**: pedir a URL do repositório e rodar `git clone {URL} {LOCATION}`. Se `{LOCATION}` já existir com `.git`, só usar. Perguntar `CENTRAL_DOCS_TARGET_BRANCH` (padrão `main`).
-- Nunca colocar o Central docs no versionamento de um repositório de código.
+**Central docs:** não é perguntado aqui. Ele é ligado por padrão e configurado no **Passo 5.2**, que roda sempre.
 
 #### Variáveis Opcionais (alinhar ao `templates/ENV-template.md`)
 
@@ -612,7 +604,8 @@ C. Não usar → CENTRAL_DOCS_STORAGE= vazio
 | `TEST_FOLDER` | *(vazio)* | Pasta de testes |
 | `QA_SIGNOFF_BRANCHES` / `QA_SIGNOFF_MAX_AGE` | `main,release/*` / `24` | Sign-off QA |
 | `JARVIS_PROJECT` | `https://github.com/phelipperibeiro/jarvis-framework` | Repo do framework (`/jarvis-report-issue`) |
-| `CENTRAL_DOCS_STORAGE` / `_LOCATION` | *(vazio = desligado)* | Central docs: `filesystem` + pasta (padrão por modo de trabalho) |
+| `CENTRAL_DOCS_STORAGE` / `_LOCATION` | `filesystem` / pasta padrão do modo de trabalho | Central docs (o que foi implementado), configurado no Passo 5.2; vazio = desligado |
+| `JARVIS_DOCS` / `ENG_DOCS` | `$DOCS_FOLDER/jarvis` / `$JARVIS_DOCS/engineering` | Documentos de trabalho (não perguntar; `docs/jarvis/` no `.gitignore`) |
 | `CENTRAL_DOCS_REF` / `_TARGET_BRANCH` / `_REVIEWERS` | `main` / `main` / *(vazio)* | Só quando a pasta do Central docs tem `.git` |
 | `SESSIONS_DIR` | `.jarvis/sessions` | Não perguntar — gravar fixo |
 | `RTK_ENABLED` | `false` (ou true se detectar `rtk`) | Token Killer |
@@ -678,13 +671,49 @@ mkdir -p .jarvis/sessions/eng .jarvis/sessions/prod .jarvis/sessions/qa
 # Garantir .jarvis/ no .gitignore do workspace
 grep -qxF '.jarvis/' .gitignore 2>/dev/null || echo '.jarvis/' >> .gitignore
 
-# 8. Modo de trabalho (detectado no Passo 3, Pergunta 1):
-#    - Projeto único (só a raiz tem .git): PROD_DOCS=docs/jarvis/product e
-#      docs/jarvis/ fora do versionamento (uma docs/ já existente não é tocada):
-grep -qxF 'docs/jarvis/*' .gitignore 2>/dev/null || echo 'docs/jarvis/*' >> .gitignore
-#    - Modo workspace: PROD_DOCS=$DOCS_FOLDER/$PROD_FOLDER_NAME (padrão do template) e, se o
-#      Central docs ficar dentro do workspace: grep -qxF 'central-docs/' .gitignore || echo 'central-docs/' >> .gitignore
+# 8. Documentos de trabalho em docs/jarvis/ — nos DOIS modos de trabalho:
+#    JARVIS_DOCS=$DOCS_FOLDER/jarvis, PROD_DOCS=$JARVIS_DOCS/product, ENG_DOCS=$JARVIS_DOCS/engineering
+#    (valores do template) e docs/jarvis/ fora do versionamento (uma docs/ já existente não é tocada):
+grep -qxF 'docs/jarvis/' .gitignore 2>/dev/null || echo 'docs/jarvis/' >> .gitignore
 ```
+
+### 5.2 Central docs (sempre)
+
+O Central docs é **ligado por padrão**: é onde fica o registro do que **foi implementado**, gerado pelo `/eng.spec-consolidate` depois de cada PR. Explique em uma frase ao usuário:
+
+```
+📚 Central docs: o registro do que foi implementado (um documento completo por funcionalidade
+e um por entrega), consultado pela IA e por outros squads. Os rascunhos (PRD, FRD, ARD, RFC)
+ficam em docs/jarvis/ e não vão para lá.
+```
+
+Pergunte com `AskUserQuestion`:
+- **"Onde fica o Central docs?"**
+  - A) Pasta local (padrão)
+  - B) Repositório de documentação (git)
+  - C) Desligar
+
+**A ou B:**
+- `CENTRAL_DOCS_STORAGE=filesystem`.
+- `CENTRAL_DOCS_LOCATION` com o padrão do **modo de trabalho** (a pessoa pode digitar outro caminho):
+  - **modo workspace** (2+ subpastas com `.git`): `./central-docs`, com `central-docs/` no `.gitignore` do workspace;
+  - **projeto único** (só a raiz tem `.git`): `docs/jarvis/central-docs`, já coberto por `docs/jarvis/` no `.gitignore`.
+- **A:** `mkdir -p {LOCATION}` e criar `{LOCATION}/AGENTS.md` mínimo, explicando:
+  - a estrutura `{SQUAD}/product/{produto}/feature-*.md` e `{SQUAD}/engineering/{produto}/delivery-*.md`;
+  - que o `{SQUAD}/index.md` é gerado pelo `jarvis docs publish`.
+- **B:** pedir a URL e rodar `git clone {URL} {LOCATION}`. Se `{LOCATION}` já existir com `.git`, só usar. Perguntar `CENTRAL_DOCS_TARGET_BRANCH` (padrão `main`).
+
+**C:** `CENTRAL_DOCS_STORAGE=` vazio. O `/eng.spec-consolidate` fica indisponível até ligar.
+
+Nunca coloque o Central docs no versionamento de um repositório de código.
+
+### 5.3 Carga inicial do Central docs (se houver documentos)
+
+Com o Central docs ligado:
+1. Procure PRD, FRD, ARD e RFC em `$PROD_DOCS`, `$ENG_DOCS/{ARD,RFC}` (e nos caminhos antigos, se não foram movidos).
+2. Se encontrar algum, mostre a contagem e pergunte com `AskUserQuestion` (**Sim / Não**): **"Gerar o Central docs agora a partir desses documentos?"**
+3. Com **Sim**, chame `/eng.spec-consolidate --inicial`. Ele agrupa os documentos por funcionalidade, gera um `feature-*.md` por grupo (sem registro de entrega, porque não há PR) e só publica depois da revisão e do seu Sim.
+4. Com **Não**, siga. Dá para rodar o `/eng.spec-consolidate --inicial` depois.
 
 **⚠️ REGRA CRÍTICA — Bloco DATA:**
 
@@ -729,6 +758,8 @@ FLOWS_FOLDER={commands|workflows}
 TEMPLATES_FOLDER=templates
 RULES_FOLDER=.$IDE/rules
 SESSIONS_DIR=.jarvis/sessions
+JARVIS_DOCS=$DOCS_FOLDER/jarvis
+ENG_DOCS=$JARVIS_DOCS/engineering
 PROD_FOLDER_NAME=product
 PROD_RULES=...
 PROD_FLOWS=...
@@ -756,11 +787,13 @@ RULES_FOLDER=.$IDE/rules
 SESSIONS_DIR=.jarvis/sessions
 ENABLE_CDD=true
 
+JARVIS_DOCS=$DOCS_FOLDER/jarvis
+ENG_DOCS=$JARVIS_DOCS/engineering
 PROD_FOLDER_NAME=product
 PROD_RULES=$RULES_FOLDER/$PROD_FOLDER_NAME
 PROD_FLOWS=.$IDE/$FLOWS_FOLDER
 PROD_TEMPLATES=.$IDE/$TEMPLATES_FOLDER/$PROD_FOLDER_NAME
-PROD_DOCS=$DOCS_FOLDER/$PROD_FOLDER_NAME
+PROD_DOCS=$JARVIS_DOCS/$PROD_FOLDER_NAME
 ```
 
 **⚠️ IMPORTANTE - FLOWS_FOLDER por IDE:**
@@ -1105,6 +1138,7 @@ Apresentar checklist de onboarding por período (Dia 1, Semana 1, Mês 1).
 
 | Passo | Skill | Condição |
 |-------|-------|----------|
+| Passo 5.3 — Carga inicial do Central docs | `/eng.spec-consolidate --inicial` | Se o Central docs estiver ligado, houver PRD/FRD/ARD/RFC e o usuário responder Sim (também no Upgrade, depois da migração) |
 | Passo 9 — Adicionar as stacks (opcional) | `/jarvis-create-specialization {área} {stack}` | Se a pessoa escolher criar um skill novo para uma stack que ainda não tem especialização instalada (uma stack por vez; pular o passo não chama nada) |
 
 ---

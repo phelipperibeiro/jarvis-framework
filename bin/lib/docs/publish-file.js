@@ -1,8 +1,10 @@
 /**
- * @fileoverview Publica um documento no Central docs pelo adaptador configurado
- * (`CENTRAL_DOCS_STORAGE`). O destino segue a estrutura única
- * `{SQUAD}/{product|engineering}/{produto}/{arquivo}` e o índice do squad é
- * regenerado a cada publicação (ver `storage/build-index.js`).
+ * @fileoverview Publica no Central docs, pelo adaptador configurado
+ * (`CENTRAL_DOCS_STORAGE`), a consolidação do que foi implementado, gerada pelo
+ * `/eng.spec-consolidate`: o documento da funcionalidade (`feature-*.md`, em
+ * `{SQUAD}/product/{produto}/`) e o registro da entrega (`delivery-*.md`, em
+ * `{SQUAD}/engineering/{produto}/`). Documentos de trabalho (PRD, FRD, ARD, RFC…)
+ * não são publicados. O índice do squad é regenerado a cada publicação.
  * @module docs/publish-file
  */
 
@@ -12,17 +14,23 @@ import { logger } from "../utils/logger.js";
 
 /** @constant {Readonly<Record<string, "product"|"engineering">>} Área de cada tipo */
 export const AREA_BY_TYPE = Object.freeze({
-  prd: "product",
-  frd: "product",
-  feat: "product",
-  epic: "product",
-  story: "product",
-  task: "product",
-  ard: "engineering",
-  rfc: "engineering",
-  swagger: "engineering",
-  "qa-report": "engineering",
+  feature: "product",
+  delivery: "engineering",
 });
+
+/** @constant {ReadonlyArray<string>} Documentos de trabalho, que não vão mais para o Central docs */
+export const WORKING_DOC_TYPES = Object.freeze([
+  "prd",
+  "frd",
+  "feat",
+  "epic",
+  "story",
+  "task",
+  "ard",
+  "rfc",
+  "swagger",
+  "qa-report",
+]);
 
 /** @constant {ReadonlyArray<string>} Tipos aceitos pelo `jarvis docs publish` */
 export const VALID_TYPES = Object.freeze(Object.keys(AREA_BY_TYPE));
@@ -39,8 +47,8 @@ function assertSegment(label, value) {
 
 /**
  * Calcula o destino do documento no Central docs.
- * O nome é o do arquivo local quando ele já segue `{tipo}-…` (ex: `prd-001-checkout.md`);
- * senão vem de `--feature` (`{tipo}-{feature}.{ext}`).
+ * O nome é o do arquivo local quando ele já segue `{tipo}-…` (ex: `feature-checkout.md`,
+ * `delivery-2026-10-15-task-123.md`); senão vem de `--feature` (`{tipo}-{feature}.md`).
  *
  * @param {Object} p
  * @param {string} p.tipo
@@ -52,6 +60,12 @@ function assertSegment(label, value) {
  */
 export function resolveDestPath({ tipo, squad, produto, localFile, feature }) {
   const area = AREA_BY_TYPE[tipo];
+  if (!area && WORKING_DOC_TYPES.includes(tipo)) {
+    throw new Error(
+      `O Central docs guarda só o que foi implementado: "${tipo}" é um documento de trabalho e fica em docs/jarvis/.\n` +
+        "Gere a consolidação com /eng.spec-consolidate (tipos: feature, delivery)."
+    );
+  }
   if (!area) {
     throw new Error(`Tipo inválido: ${tipo}\nTipos válidos: ${VALID_TYPES.join(", ")}`);
   }
@@ -60,7 +74,7 @@ export function resolveDestPath({ tipo, squad, produto, localFile, feature }) {
 
   const local = basename(localFile);
   const ext = extname(local).toLowerCase() || ".md";
-  const followsPattern = local.toLowerCase().startsWith(`${tipo}-`) && /\.(md|ya?ml|json)$/.test(ext);
+  const followsPattern = local.toLowerCase().startsWith(`${tipo}-`) && ext === ".md";
 
   let fileName;
   if (followsPattern) {
@@ -70,7 +84,7 @@ export function resolveDestPath({ tipo, squad, produto, localFile, feature }) {
     fileName = `${tipo}-${feature}${ext}`;
   } else {
     throw new Error(
-      `O arquivo "${local}" não segue o padrão {tipo}-{id}-{nome}${ext}.\n` +
+      `O arquivo "${local}" não segue o padrão ${tipo}-{nome}.md.\n` +
         `Renomeie o arquivo ou informe --feature <slug>.`
     );
   }
@@ -97,12 +111,9 @@ export async function publishFile({ storage, localFile, tipo, squad, produto, fe
 
   const { destPath } = resolveDestPath({ tipo, squad, produto, localFile, feature });
 
-  const isStructuredSwagger = tipo === "swagger" && !localFile.toLowerCase().endsWith(".md");
-  if (!isStructuredSwagger) {
-    logger.info("Validando frontmatter...");
-    validateFrontmatter(localFile, tipo);
-    logger.info("✅ Frontmatter válido");
-  }
+  logger.info("Validando frontmatter...");
+  validateFrontmatter(localFile, tipo);
+  logger.info("✅ Frontmatter válido");
 
   logger.info("");
   logger.info("📋 Resumo da Publicação:");

@@ -149,16 +149,22 @@ test("listRulesForProfile: AGENTS.md nunca é filtrado, rtk é opt-in, sem bloco
 // (universal) trocou CENTRAL_DOCS_REPO por CENTRAL_DOCS_STORAGE/LOCATION e o PROD_DOCS do
 // projeto único; eng.integrations-rules.md (universal) tirou o `fetch-raw` e ganhou a linha
 // CENTRAL_DOCS_STORAGE. Nenhum arquivo adicionado.
+// Issue #149 (Central docs = o que foi implementado; documentos em docs/jarvis/, 2026-10-15):
+// prod-rules.md (universal: PROD_DOCS/ENG_DOCS e o novo papel do Central docs),
+// eng.integrations-rules.md (universal: evento do gate-checklist), eng.docs-scraping-rules.md
+// (AREA ENGINEERING: $ENG_DOCS/robots) e eng.rpa-rules.md (HUB BACKEND: $ENG_DOCS/robots).
+// +222 B em FRONTEND e QA; +215 B em FULLCYCLE e BACKEND, que também carregam eng.rpa-rules.md
+// (a troca de `docs/engineering/robots` por `$ENG_DOCS/robots` encurta essa rule em 7 B).
 const BASE = [
   [
     "FULLCYCLE/GENERALIST/ENGINEERING/CORE",
     profile("FULLCYCLE", "GENERALIST", "ENGINEERING"),
     15,
-    98299,
+    98514,
   ],
-  ["BACKEND/SENIOR/ENGINEERING/CORE", profile("BACKEND", "SENIOR", "ENGINEERING"), 11, 65029],
-  ["FRONTEND/PLENO/ENGINEERING/CORE", profile("FRONTEND", "PLENO", "ENGINEERING"), 11, 65565],
-  ["QA/QA-ENGINEER/ENGINEERING/CORE", profile("QA", "QA-ENGINEER", "ENGINEERING"), 11, 64801],
+  ["BACKEND/SENIOR/ENGINEERING/CORE", profile("BACKEND", "SENIOR", "ENGINEERING"), 11, 65244],
+  ["FRONTEND/PLENO/ENGINEERING/CORE", profile("FRONTEND", "PLENO", "ENGINEERING"), 11, 65787],
+  ["QA/QA-ENGINEER/ENGINEERING/CORE", profile("QA", "QA-ENGINEER", "ENGINEERING"), 11, 65023],
 ];
 
 for (const [nome, p, arquivos, bytes] of BASE) {

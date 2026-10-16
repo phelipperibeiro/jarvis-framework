@@ -1,6 +1,6 @@
 import { existsSync } from "node:fs";
 import { openStorageFromEnv } from "../lib/docs/fetch-file.js";
-import { publishFile, VALID_TYPES } from "../lib/docs/publish-file.js";
+import { publishFile, VALID_TYPES, WORKING_DOC_TYPES } from "../lib/docs/publish-file.js";
 import { logger, configureFromFlags } from "../lib/utils/logger.js";
 
 /**
@@ -9,9 +9,9 @@ import { logger, configureFromFlags } from "../lib/utils/logger.js";
  *
  * @param {Object} flags - Flags do comando
  * @param {string} flags.file - Caminho do arquivo local
- * @param {string} flags.tipo - Tipo do documento (ver VALID_TYPES)
+ * @param {string} flags.tipo - feature | delivery (ver VALID_TYPES)
  * @param {string} [flags.produto] - Pasta do produto (padrão: WORKSPACE do ENV.md)
- * @param {string} [flags.feature] - Slug, só se o nome do arquivo fugir do padrão {tipo}-{id}-{nome}
+ * @param {string} [flags.feature] - Slug, só se o nome do arquivo fugir do padrão {tipo}-{nome}.md
  * @param {string} [flags.squad] - Override do SQUAD do ENV.md
  * @param {string} [flags.workspace] - Override do WORKSPACE (padrão do --produto)
  * @param {string} flags.envFile - Path customizado do ENV.md
@@ -33,13 +33,23 @@ export async function docsPublish(flags = {}) {
     logger.error(
       `Uso: jarvis docs publish --file <path> --tipo <${VALID_TYPES.join("|")}> [--produto <produto>] [--feature <slug>] [--squad <squad>]\n`
     );
-    logger.error("Exemplo (o nome do arquivo já segue {tipo}-{id}-{nome}):");
-    logger.error("  jarvis docs publish --file ./docs/product/prd-001-checkout.md --tipo prd");
-    logger.error("");
-    logger.error("  # Arquivo fora do padrão de nome:");
     logger.error(
-      "  jarvis docs publish --file ./docs/engineering/swagger/api.yaml --tipo swagger --feature api-wallet"
+      "Normalmente chamado pelo /eng.spec-consolidate, que gera os dois arquivos na sessão:"
     );
+    logger.error(
+      "  jarvis docs publish --file .jarvis/sessions/eng/task-123/consolidation/delivery-2026-10-15-task-123.md --tipo delivery"
+    );
+    logger.error(
+      "  jarvis docs publish --file .jarvis/sessions/eng/task-123/consolidation/feature-checkout.md --tipo feature"
+    );
+    process.exit(1);
+  }
+
+  if (WORKING_DOC_TYPES.includes(tipo)) {
+    logger.error(
+      `❌ O Central docs guarda só o que foi implementado: "${tipo}" é um documento de trabalho.`
+    );
+    logger.error("   Ele fica em docs/jarvis/. Gere a consolidação com /eng.spec-consolidate.");
     process.exit(1);
   }
 

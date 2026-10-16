@@ -42,7 +42,7 @@ Atalhos:
 | 5 | Estratégia de testes e validação |
 | 6 | Checagem final com os guard rails das regras de engenharia |
 | 7 | Entrega: ARD preenchido, resumo executivo e próximos passos |
-| 8 | Publica no central docs, se `CENTRAL_DOCS_STORAGE` estiver configurado |
+| 8 | O ARD fica em `$ENG_DOCS/ARD/` (documento de trabalho); o Central docs é atualizado pelo `/eng.spec-consolidate` depois da entrega |
 
 ### Avaliação de complexidade (passo 2.5)
 

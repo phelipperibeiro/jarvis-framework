@@ -28,7 +28,7 @@ Garantir que todo código novo ou modificado possua cobertura de testes adequada
 ## Recursos
 
 - **Base**: [eng-qa](../eng-qa/SKILL.md) — princípios de risco e priorização usados aqui vêm da base
-- **Saída**: `$DOCS_FOLDER/engineering/qa/{task-id}-test_coverage_branch_report.md`
+- **Saída**: `$ENG_DOCS/qa/{task-id}-test_coverage_branch_report.md`
 
 ---
 
@@ -126,7 +126,7 @@ Determinar quais testes estão faltando:
 
 ### 5. Gerar o relatório
 
-Gerar arquivo `$DOCS_FOLDER/engineering/qa/{task-id}-test_coverage_branch_report.md`:
+Gerar arquivo `$ENG_DOCS/qa/{task-id}-test_coverage_branch_report.md`:
 
 ```markdown
 # Análise de Cobertura de Testes da Branch
@@ -232,7 +232,7 @@ describe('[Funcionalidade]', () => {
 - [ ] Diff da branch analisado (`git diff origin/main...HEAD`)
 - [ ] Cada arquivo alterado mapeado para seu teste correspondente (ou marcado como ausente)
 - [ ] Lacunas priorizadas por criticidade (alta/média/baixa)
-- [ ] Relatório gerado em `$DOCS_FOLDER/engineering/qa/{task-id}-test_coverage_branch_report.md`
+- [ ] Relatório gerado em `$ENG_DOCS/qa/{task-id}-test_coverage_branch_report.md`
 
 ---
 
@@ -240,7 +240,7 @@ describe('[Funcionalidade]', () => {
 
 | Artefato | Descrição |
 |----------|-----------|
-| `$DOCS_FOLDER/engineering/qa/{task-id}-test_coverage_branch_report.md` | Relatório de cobertura com plano de implementação priorizado |
+| `$ENG_DOCS/qa/{task-id}-test_coverage_branch_report.md` | Relatório de cobertura com plano de implementação priorizado |
 
 > O artefato é gerado na raiz do projeto ou no diretório especificado em `$ARGUMENTS`.
 
@@ -259,6 +259,6 @@ Prioridade alta: {N} cenários
 Prioridade média: {N} cenários
 Prioridade baixa: {N} cenários
 
-Relatório: $DOCS_FOLDER/engineering/qa/{task-id}-test_coverage_branch_report.md
+Relatório: $ENG_DOCS/qa/{task-id}-test_coverage_branch_report.md
 Próximo passo: implementar os testes do plano ou registrar uma especialização de execução em QA_SPECIALIZATIONS
 ```

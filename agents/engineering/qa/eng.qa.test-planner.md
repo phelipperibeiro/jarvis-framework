@@ -17,12 +17,12 @@ Antes de qualquer ação, determine qual modo aplicar:
 Aplicar quando invocado via `eng.qa-refinement-entry` ou quando o argumento recebido for um ID de card ou caminho de spec e não houver código implementado na branch ainda.
 - Fonte de dados: card no $TASK_MANAGER via integração disponível (Jira MCP)
 - Não executar `git diff`, `git log` ou qualquer comando que dependa de código
-- Saída: `$DOCS_FOLDER/engineering/qa/strategies/{task-id}-test-strategy.md`
+- Saída: `$ENG_DOCS/qa/strategies/{task-id}-test-strategy.md`
 
 **Modo B — Análise de Cobertura (pós-código)**
 Aplicar quando invocado via `eng-qa`, `eng-qa-planner` ou quando houver código implementado na branch (git diff retorna resultados).
 - Fonte de dados: `git diff origin/main...HEAD`
-- Saída: `$DOCS_FOLDER/engineering/qa/{task-id}-test_coverage_branch_report.md`
+- Saída: `$ENG_DOCS/qa/{task-id}-test_coverage_branch_report.md`
 
 Regra de decisão: se `git diff origin/main...HEAD` retornar vazio, operar em Modo A. Se retornar código, operar em Modo B.
 
@@ -225,7 +225,7 @@ Antes de finalizar cada cenário, aplicar este filtro:
 
 ### A.7. Salvar o Documento
 
-Salvar em: `$DOCS_FOLDER/engineering/qa/strategies/{task-id}-test-strategy.md`
+Salvar em: `$ENG_DOCS/qa/strategies/{task-id}-test-strategy.md`
 
 Estrutura obrigatória:
 ```
@@ -353,7 +353,7 @@ Isso permite:
 
 ### B.6. Gerar Relatório de Cobertura de Testes
 
-Crie um arquivo **`$DOCS_FOLDER/engineering/qa/{task-id}-test_coverage_branch_report.md`** contendo:
+Crie um arquivo **`$ENG_DOCS/qa/{task-id}-test_coverage_branch_report.md`** contendo:
 
 ```markdown
 # Análise de Cobertura de Testes da Branch
@@ -456,9 +456,9 @@ Esforço estimado: [estimativa aproximada]
 
 ## Saída
 
-**Modo A**: `$DOCS_FOLDER/engineering/qa/strategies/{task-id}-test-strategy.md` (gerado em A.7)
+**Modo A**: `$ENG_DOCS/qa/strategies/{task-id}-test-strategy.md` (gerado em A.7)
 
-**Modo B**: `$DOCS_FOLDER/engineering/qa/{task-id}-test_coverage_branch_report.md`
+**Modo B**: `$ENG_DOCS/qa/{task-id}-test_coverage_branch_report.md`
 
 As recomendações devem ser **específicas, acionáveis** e, quando possível, incluir **exemplos de estrutura de teste**.
 Foque **exclusivamente** no que foi alterado na branch atual para manter o escopo controlado.
@@ -470,7 +470,7 @@ Foque **exclusivamente** no que foi alterado na branch atual para manter o escop
 Após gerar o relatório de cobertura, sugira ao usuário invocar o agente **eng.qa.testing-engineer** para escrever os testes identificados como ausentes:
 
 ```
-@eng.qa.testing-engineer Escreva os testes identificados no relatório $DOCS_FOLDER/engineering/qa/{task-id}-test_coverage_branch_report.md
+@eng.qa.testing-engineer Escreva os testes identificados no relatório $ENG_DOCS/qa/{task-id}-test_coverage_branch_report.md
 ```
 
 Fluxo completo recomendado:

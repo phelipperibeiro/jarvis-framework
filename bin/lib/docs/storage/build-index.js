@@ -1,6 +1,6 @@
 /**
  * @fileoverview Gera o `{SQUAD}/index.md` do Central docs a partir do frontmatter
- * dos documentos. O índice é sempre regenerado pela listagem (nunca editado), para
+ * da consolidação (funcionalidades e entregas). O índice é sempre regenerado pela listagem (nunca editado), para
  * duas publicações seguidas não apagarem a entrada uma da outra.
  * @module docs/storage/build-index
  */
@@ -27,9 +27,20 @@ export function walkFiles(dir) {
     });
 }
 
+/** @constant {Readonly<Record<string, {prefix: string, title: string}>>} O que cada área lista no índice */
+export const INDEXED = Object.freeze({
+  product: { prefix: "feature-", title: "Funcionalidades (estado atual)" },
+  engineering: { prefix: "delivery-", title: "Entregas recentes" },
+});
+
+/** @constant {number} Entregas listadas por produto (as mais recentes; o nome começa pela data) */
+export const MAX_DELIVERIES_PER_PRODUCT = 10;
+
 /**
- * Monta o conteúdo do índice de um squad.
- * Formato: `# SQUAD` › `## área` › `### produto` › `- [arquivo](caminho) | vX | status | nome`.
+ * Monta o conteúdo do índice de um squad. Lista só a consolidação do
+ * `/eng.spec-consolidate`: funcionalidades (`feature-*`) e as entregas mais recentes
+ * (`delivery-*`). Outros arquivos (ex.: PRD/ARD publicados na 4.0.0) ficam fora.
+ * Formato: `# SQUAD` › `## área` › `### produto` › `- [arquivo](caminho) | status | nome | atualizado`.
  * @param {string} root - Pasta do Central docs
  * @param {string} squad
  * @returns {string}
@@ -38,9 +49,13 @@ export function renderIndex(root, squad) {
   const out = [`# ${squad}`, ""];
 
   for (const area of AREAS) {
+    const { prefix, title } = INDEXED[area];
     const areaDir = join(root, squad, area);
-    const files = walkFiles(areaDir).filter((f) => !f.endsWith(`${sep}index.md`));
-    out.push(`## ${area}`, "");
+    const files = walkFiles(areaDir).filter((f) => {
+      const name = f.split(sep).pop();
+      return name.startsWith(prefix) && name.endsWith(".md");
+    });
+    out.push(`## ${area}`, "", `> ${title}`, "");
     if (files.length === 0) {
       out.push("_Nenhum documento._", "");
       continue;
@@ -55,15 +70,21 @@ export function renderIndex(root, squad) {
     }
 
     for (const [product, productFiles] of byProduct) {
+      const listed =
+        area === "engineering"
+          ? [...productFiles].sort().reverse().slice(0, MAX_DELIVERIES_PER_PRODUCT)
+          : productFiles;
       out.push(`### ${product}`);
-      for (const file of productFiles) {
+      for (const file of listed) {
         const rel = relative(join(root, squad), file).split(sep).join("/");
         const name = rel.split("/").pop();
-        const meta = file.endsWith(".md") ? parseFrontmatter(readFileSync(file, "utf-8")) : {};
+        const meta = parseFrontmatter(readFileSync(file, "utf-8"));
         let line = `- [${name}](${rel})`;
-        if (meta.version) line += ` | v${meta.version}`;
         if (meta.status) line += ` | ${meta.status}`;
         if (meta.name) line += ` | ${meta.name}`;
+        if (meta.task_key) line += ` | ${meta.task_key}`;
+        const when = meta.updated_at || meta.date;
+        if (when) line += ` | ${when}`;
         out.push(line);
       }
       out.push("");

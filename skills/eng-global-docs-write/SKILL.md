@@ -100,7 +100,7 @@ ls -la docs/ 2>/dev/null || echo "Pasta docs/ não encontrada"
 - Comentários inline no código
 - Documentação de APIs
 - Exemplos e tutoriais
-- `docs/engineering/c4/` - Diagramas de arquitetura
+- `$ENG_DOCS/c4/` - Diagramas de arquitetura
 
 ---
 

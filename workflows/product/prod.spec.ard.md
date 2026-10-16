@@ -18,7 +18,7 @@ Antes de iniciar, revise o arquivo de regras invioláveis em `$PROD_RULES/**/*`.
 
 Este fluxo é a **porta de entrada de produto** para o ARD. Ele levanta com o PM, em linguagem de produto, o que a arquitetura precisa atender (restrições, requisitos não funcionais, integrações, volumes e riscos) e, com isso, **conduz o ARD pelo fluxo de engenharia** (`eng.create-ard`), sem duplicá-lo.
 
-> ⚠️ **O ARD é um documento de engenharia.** O arquivo resultante fica em `$DOCS_FOLDER/engineering/ARD/` (como no `eng.create-ard`), e as decisões de arquitetura pertencem à engenharia. Este comando só levanta os requisitos e abre o fluxo. Diga isso ao usuário no início.
+> ⚠️ **O ARD é um documento de engenharia.** O arquivo resultante fica em `$ENG_DOCS/ARD/` (como no `eng.create-ard`), e as decisões de arquitetura pertencem à engenharia. Este comando só levanta os requisitos e abre o fluxo. Diga isso ao usuário no início.
 
 Utilize o `$ARGUMENTS` que o usuário passar como ponto de partida e para entender o contexto do que foi pedido.
 <requirement>
@@ -45,12 +45,12 @@ Utilize o `$ARGUMENTS` que o usuário passar como ponto de partida e para entend
 
 | Passo | Skill | Condição |
 |-------|-------|----------|
-| Gate 1: Reconhecer o contexto | `/jarvis-docs-central` (via `jarvis docs sync --silent`) | Se `CENTRAL_DOCS_STORAGE` estiver definido no ENV.md e for preciso buscar o PRD ou FRD relacionado |
+| Gate 1: Reconhecer o contexto | `/jarvis-docs-central` (via `jarvis docs sync --silent`) | Se `CENTRAL_DOCS_STORAGE` estiver definido no ENV.md e for preciso conhecer as funcionalidades já implementadas relacionadas |
 | Gate 4: Conduzir o ARD | `/eng.create-ard` | Sempre, depois de os requisitos serem confirmados: modo `new`, com `--prd` quando houver PRD (workflow de engenharia; o aviso de transição de domínio é dado antes) |
 
 ## Resultado final
 - Um **resumo dos requisitos arquiteturais** confirmado pelo usuário (Gate 3), entregue como insumo ao `eng.create-ard`
-- O **ARD** gerado pelo `eng.create-ard` (numeração `ARD-###`, versão `1.0.0`, template `$IDE/templates/engineering/ARD-template.md` e caminho `$DOCS_FOLDER/engineering/ARD/{ARD-ID}-{slug}.md`)
+- O **ARD** gerado pelo `eng.create-ard` (numeração `ARD-###`, versão `1.0.0`, template `$IDE/templates/engineering/ARD-template.md` e caminho `$ENG_DOCS/ARD/{ARD-ID}-{slug}.md`)
 - Rascunhos WIP, se houver, em `$SESSIONS_DIR/prod/{TASK_MANAGER_KEY}/`; o documento canônico é o ARD
 - O arquivo final no mesmo idioma da interação do usuário
 
@@ -64,7 +64,7 @@ Utilize o `$ARGUMENTS` que o usuário passar como ponto de partida e para entend
 
 ### Gate 1: Reconhecer o contexto
 1. Valide o `ENV.md` (regra geral de produto) e avise que o ARD é um documento de engenharia.
-2. Identifique o PRD ou FRD de origem em `$PROD_DOCS` (ou o caminho que o usuário informar) e leia-o. Se `CENTRAL_DOCS_STORAGE` estiver definido, busque no central docs o PRD ou FRD relacionado.
+2. Identifique o PRD ou FRD de origem em `$PROD_DOCS` (ou o caminho que o usuário informar) e leia-o. Se `CENTRAL_DOCS_STORAGE` estiver definido, consulte também no Central docs as funcionalidades já implementadas relacionadas (o PRD e o FRD ficam em `$PROD_DOCS`).
 3. Resuma em poucas linhas o que a especificação pede e confirme com o usuário que é essa a origem. Se `AREA` do usuário não for `ENGINEERING`, avise que o ARD seguirá o fluxo de engenharia e deve ser revisado por alguém da engenharia.
 
 ### Gate 2: Levantar os requisitos arquiteturais em termos de produto

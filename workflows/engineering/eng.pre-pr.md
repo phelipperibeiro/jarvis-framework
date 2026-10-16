@@ -1,5 +1,5 @@
 ---
-description: Validação de segurança para realizar um pull request ou merge request
+description: Revisão de lacunas antes de abrir o PR/MR, com o relatório gate-checklist.md na sessão
 auto_execution_mode: 3
 env_file: "@/ENV.md"
 rules_file: "$IDE/rules-on-demand/engineering/eng.pre-pr-rules.md"
@@ -10,7 +10,9 @@ model_justification: Revisão multi-agente requer coordenação, análise de có
 
 # pre-pr
 
-Estamos nos aproximando de finalizar o trabalho nesta branch e nos preparar para um solicitação de integração. Agora, é hora de fazer verificações finais e limpezas para assegurar que estamos alinhados com nossos convenções e objetivos.
+Antes de abrir o PR/MR, este comando **revê a branch atrás de possíveis lacunas** (produto, código, testes, requisitos não funcionais, interface, segurança, documentação) e gera um relatório, o **`gate-checklist.md`**, na pasta da sessão. Ele é estruturado e explicativo, para você decidir o que ajustar e o que não ajustar.
+
+> ⚠️ **Só revisa.** O `eng.pre-pr` não corrige código, não escreve testes, não atualiza documentação e não publica nada no Central docs. Ele aponta; quem decide e ajusta é você (ou o `eng.work`, se pedir).
 
 > 📋 **Rules**: `$IDE/rules-on-demand/engineering/eng.pre-pr-rules.md` — **antes de começar, leia esse arquivo e siga-o**: ele não é carregado automaticamente no início da sessão.
 
@@ -18,7 +20,7 @@ Estamos nos aproximando de finalizar o trabalho nesta branch e nos preparar para
 
 - **eng-qa-planner**: para avaliar cobertura de testes e identificar gaps antes do PR — se a especialização estiver registrada em `QA_SPECIALIZATIONS` (ver `$IDE/rules/engineering/eng.specializations-rules.md`). Sem ela, use a base `eng-qa` diretamente.
   - Arquivo: `$IDE/skills/eng-qa-planner/SKILL.md`
-- **eng-global-docs-write**: para atualizar documentação baseada nas mudanças da branch.
+- **eng-global-docs-write**: para identificar documentação que ficou desatualizada com as mudanças da branch.
   - Arquivo: `$IDE/skills/eng-global-docs-write/SKILL.md`
 - **jarvis-docs-index**: para atualizar o índice de documentação quando necessário.
   - Arquivo: `$IDE/skills/jarvis-docs-index/SKILL.md`
@@ -36,117 +38,78 @@ Estamos nos aproximando de finalizar o trabalho nesta branch e nos preparar para
 | Passo | Skill | Condição |
 |-------|-------|----------|
 | Skills recomendados | `/eng-qa-planner` | Se a especialização estiver registrada em `QA_SPECIALIZATIONS`; sem ela, usar a base `/eng-qa` diretamente |
-| Skills recomendados | `/eng-global-docs-write` | Para atualizar a documentação com base nas mudanças da branch |
+| Skills recomendados | `/eng-global-docs-write` | Para identificar documentação desatualizada pelas mudanças da branch |
 | Skills recomendados | `/jarvis-docs-index` | Se for necessário atualizar o índice de documentação |
 | Skills recomendados | `/eng-platform` + `PLATFORM_SPECIALIZATIONS` | Se a feature tiver requisitos não-funcionais de latência, throughput ou escalabilidade |
 | Skills recomendados | `/eng-backend` e `/eng-frontend` (via `eng.specializations-rules.md`) | Para validar código de backend (endpoints, autenticação, workers) ou de frontend (componentes, performance de UI, WCAG 2.1 AA); a regra também carrega as especializações registradas no ENV.md |
-| Gate 0: Verificar Documentação Central | `/jarvis-docs-central` (via `jarvis docs publish --tipo ard`) | Se `CENTRAL_DOCS_STORAGE` estiver configurado, houver mudança arquitetural, o ARD estiver desatualizado ou novo e o usuário aceitar publicar |
 | Gates › item 1 | `prod.pm-checker` (agente) | Sempre — verificar alinhamento da branch com os docs de produto e engenharia |
 | Gates › item 2 | `eng.dev-code-reviewer` (agente) | Sempre — revisar o código antes de lançar |
 | Gates › item 3 | `eng.qa.test-planner` (agente) | Sempre — identificar gaps de cobertura de testes na branch |
-| Gates › item 4 | `eng.qa.testing-engineer` (agente) | Se o test-planner identificar gaps críticos (escrever os testes faltantes) |
 | Gates › item 5 | `eng.qa.test-architect` (agente) | Se a feature tiver requisitos não-funcionais (no `architecture.md` ou explícitos na task) |
 | Gates › item 6 | `/eng-qa` + `QA_SPECIALIZATIONS` | Sempre — frontend e/ou backend conforme o projeto |
 | Gates › item 7 | `eng.frontend.agent` (agente) | Se a branch tiver mudanças de interface (componentes, estilos, estado) |
 | Gates › item 8 | `eng.ux-designer.agent` (agente) | Se a branch introduzir nova feature de UI ou alterar fluxo de usuário |
-| Gates › item 9 | `eng.docs-writer` (agente) | Sempre — atualizar a documentação do projeto |
+| Gates › item 9 | `eng.docs-writer` (agente) | Sempre — apontar documentação do projeto desatualizada (sem editar) |
 | Gates › item 10 | Nenhuma — checklist inline | Se a branch tocar em auth, sessions, inputs de usuário, CORS, CSP, permissões ou adicionar endpoints públicos |
-| Saída final › 2) Bloqueadores e pendências | `/eng-global-task-comment` | Só se a validação reprovar (status RED): um comentário com o motivo (freelance pula) |
+| Publicação do relatório | `/eng-global-task-comment` | Só se o usuário responder **Sim** no fim: o `gate-checklist.md` com as decisões vira um comentário na issue/card (freelance pula) |
 
 ## Regras de Execução
 
-- **Escopo**: avalie apenas as mudanças desta branch em relação ao branch base (ex.: `main`/`master`).
-- **Evidências**: sempre que mencionar “testes/validações passando”, inclua quais comandos foram usados e o resultado (ou descreva smoke tests manuais quando não houver suíte).
-- **Revalidação**: se qualquer gate levar a mudanças no código, reexecute no mínimo:
-  - Gate 2 (revisão técnica)
-  - Gate 3 (testes/validações)
+- **Escopo**: avalie apenas as mudanças desta branch em relação à **branch base** (`Branch base:` do `architecture.md`; sem ele, pergunte).
+- **Só apontar**: cada agente/gate devolve lacunas, não correções. Nenhum arquivo do projeto é alterado por este comando.
+- **Evidências**: cite o comando rodado e o resultado, ou `arquivo:linha`, para cada lacuna.
 
-## Gates
+## Gates (revisão)
 
-### Gate 0: Verificar Documentação Central (condicional)
+1. Invoque o agente [prod.pm-checker]($IDE/agents/product/prod.pm-checker.md) para apontar desalinhamentos entre a branch e os documentos de produto e de engenharia (em `$PROD_DOCS`, `$ENG_DOCS` e no Central docs).
+2. Invoque o agente [eng.dev-code-reviewer]($IDE/agents/engineering/eng.dev-code-reviewer.md) para apontar problemas de código (bugs, legibilidade, padrões do projeto).
+3. Invoque o agente [eng.qa.test-planner]($IDE/agents/engineering/qa/eng.qa.test-planner.md) para apontar lacunas de cobertura de testes. Lacunas críticas: funções públicas sem teste, lógica de negócio descoberta, tratamento de erro não validado.
+4. **Se a feature tiver requisitos não funcionais** (no `architecture.md` ou explícitos na task), invoque o agente [eng.qa.test-architect]($IDE/agents/engineering/qa/eng.qa.test-architect.md) para apontar o que falta validar (performance, segurança, quality gates).
+5. Use a base [eng-qa]($IDE/skills/eng-qa/SKILL.md) (ou a especialização registrada em `QA_SPECIALIZATIONS`) para rodar os testes automatizados da branch e registrar o resultado.
+6. **Se a branch tiver mudanças de interface**, invoque o agente [eng.frontend.agent]($IDE/agents/engineering/eng.frontend.agent.md) para apontar problemas de tipagem, tokens de design e acessibilidade (WCAG 2.1 AA), aplicando as especializações de frontend registradas.
+7. **Se a branch introduzir nova feature de UI ou alterar fluxo de usuário**, invoque o agente [eng.ux-designer.agent]($IDE/agents/engineering/eng.ux-designer.agent.md) para apontar empty states, loading, mensagens de erro e consistência visual.
+8. **Se a branch tocar em auth, sessions, inputs de usuário, CORS, CSP, permissões ou adicionar endpoints públicos**, aplique o checklist de segurança (padrões da base [eng-backend]($IDE/skills/eng-backend/SKILL.md) + `BACKEND_SPECIALIZATIONS`, [eng-frontend]($IDE/skills/eng-frontend/SKILL.md) + `FRONTEND_SPECIALIZATIONS` e, para infraestrutura, [eng-platform]($IDE/skills/eng-platform/SKILL.md) + `PLATFORM_SPECIALIZATIONS`): sanitização de inputs e queries parametrizadas, auth guards, headers e CORS, secrets no diff, `npm audit` sem HIGH/CRITICAL.
+9. Invoque o agente [eng.docs-writer]($IDE/agents/engineering/eng.docs-writer.md) para apontar documentação do projeto que ficou desatualizada (sem editar).
 
-Se `CENTRAL_DOCS_STORAGE` estiver configurado no ENV.md:
+## Relatório: `gate-checklist.md` (obrigatório)
 
-**Passo 1:** Detectar mudanças arquiteturais no diff da branch
-```bash
-git diff main...HEAD | grep -E "(class|interface|schema|migration|config)" || true
-```
+Grave em `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/gate-checklist.md`:
 
-**Passo 2:** Se mudanças arquiteturais detectadas:
-- Verificar se ARD local existe em `./docs/engineering/`
-- Comparar com ARD do central-docs (se existir)
-- Se desatualizado ou novo:
-  - Perguntar: "Publicar ARD atualizado no central-docs?"
-  - Se sim: executar `jarvis docs publish --file <path> --tipo ard`
+```markdown
+# Gate checklist — {TASK_MANAGER_KEY}
 
-**Passo 3:** Se novos contratos/APIs criados:
-- Verificar se há RFC relacionado
-- Se não: sugerir criar RFC para decisões arquiteturais
+> Branch: {branch} → {branch base} · Data: {AAAA-MM-DD}
+> **Semáforo:** 🟢 pronto para PR | 🟡 pode abrir com notas | 🔴 há bloqueadores
 
-**Comportamento:**
-- Se `CENTRAL_DOCS_STORAGE` vazio → pular silenciosamente
-- Não bloquear PR por docs desatualizados (apenas avisar)
+## Resumo
+{3 a 5 frases: o que a branch faz, quantas lacunas por severidade e o principal risco.}
 
----
+## Lacunas
 
-1. Invoque o agente [prod.pm-checker]($IDE/agents/product/prod.pm-checker.md) para verificar se a branch está alinhada com os docs do projeto, documentação de produto e de engenharia.
-2. Invoque o agente [eng.dev-code-reviewer]($IDE/agents/engineering/eng.dev-code-reviewer.md) para revisar o código e assegurar que está bom para lançar.
-3. Invoque o agente [eng.qa.test-planner]($IDE/agents/engineering/qa/eng.qa.test-planner.md) para identificar gaps de cobertura de testes na branch.
-4. **Se o test-planner identificar gaps críticos**, invoque o agente [eng.qa.testing-engineer]($IDE/agents/engineering/qa/eng.qa.testing-engineer.md) para escrever os testes faltantes antes de prosseguir.
-   - Gaps críticos: funções públicas sem teste, lógica de negócio descoberta, tratamento de erros não validado
-   - Gaps aceitáveis (com justificativa): código de infraestrutura, integrações já cobertas por e2e
-5. **Se a feature tiver requisitos não-funcionais** (definidos no `architecture.md` ou explícitos na task), invoque o agente [eng.qa.test-architect]($IDE/agents/engineering/qa/eng.qa.test-architect.md) para validar:
-   - Testes de performance executados e dentro dos thresholds
-   - Testes de segurança passando (RBAC, injection, etc.)
-   - Quality gates configurados corretamente
-6. Use a base [eng-qa]($IDE/skills/eng-qa/SKILL.md) (ou a especialização registrada em `QA_SPECIALIZATIONS`, se houver uma) para validar testes automatizados nas mudanças da branch, frontend e/ou backend conforme o projeto.
-7. **Se a branch tiver mudanças de interface** (componentes, estilos, estado), invoque o agente [eng.frontend.agent]($IDE/agents/engineering/eng.frontend.agent.md) para validar:
-   - Tipagem forte (quando a linguagem tem), tokens de design do projeto usados, acessibilidade WCAG 2.1 AA
-   - Aplicar as exigências das especializações de frontend registradas (ver `eng.specializations-rules.md`)
-8. **Se a branch introduzir nova feature de UI ou alterar fluxo de usuário**, invoque o agente [eng.ux-designer.agent]($IDE/agents/engineering/eng.ux-designer.agent.md) para verificar:
-   - Empty states, loading states e mensagens de erro em linguagem humana
-   - Consistência com padrões visuais existentes no produto
-9. Invoque o agente [eng.docs-writer]($IDE/agents/engineering/eng.docs-writer.md) para atualizar a documentação do projeto.
-10. **Se a branch tocar em auth, sessions, inputs de usuário, CORS, CSP, permissões ou adicionar endpoints públicos**, aplicar o gate de segurança (os padrões de segurança da base [eng-backend]($IDE/skills/eng-backend/SKILL.md) + `BACKEND_SPECIALIZATIONS` / [eng-frontend]($IDE/skills/eng-frontend/SKILL.md) + `FRONTEND_SPECIALIZATIONS` e, para infraestrutura, do [eng-platform]($IDE/skills/eng-platform/SKILL.md) + `PLATFORM_SPECIALIZATIONS` servem de referência):
-   - Revisar sanitização de inputs e queries parametrizadas
-   - Verificar auth guards em endpoints novos
-   - Validar headers de segurança e configurações de CORS
-   - Escanear secrets no diff (`grep` por patterns de tokens/senhas)
-   - Verificar `npm audit` sem vulnerabilidades HIGH/CRITICAL
-   - Se achados CRITICAL: status **Red** (bloqueador)
+### {Área: Produto e documentação | Código | Testes | Não funcionais | Interface e UX | Segurança | Documentação do projeto}
 
-Você também precisará lidar com todo o feedback que esses agentes fornecerem e fazer mudanças e correções conforme necessário.
+| # | Lacuna | Onde | Por que importa | Sugestão | Severidade | Decisão |
+|---|---|---|---|---|---|---|
+| 1 | {o que falta ou está errado} | `{arquivo:linha}` | {impacto, em linguagem simples} | {como resolver} | 🔴 Bloqueador / 🟡 Importante / ⚪ Menor | {Ajustar \| Não ajustar: motivo} |
 
-## Checklist final (obrigatório)
+(uma tabela por área; área sem lacuna: "Nenhuma lacuna encontrada.")
 
-- [ ] Não existem bloqueadores abertos (segurança/bugs críticos).
-- [ ] Testes e validações relevantes foram executados e passaram (com evidências automatizadas ou manuais).
-- [ ] Cobertura de testes para mudanças da branch foi avaliada (e gaps críticos tratados ou justificados).
-- [ ] Documentação foi revisada/atualizada (listar arquivos alterados) ou foi explicitado por que não foi necessário.
-- [ ] Riscos conhecidos e trade-offs foram registrados (e follow-ups criados quando aplicável).
+## Evidências
+{Comandos rodados (testes, lint, build, audit) e resultados.}
 
-## Saída final (obrigatória)
-
-### 1) Status Pre-PR (Semáforo)
-
-- Green: pronto para PR
-- Yellow: pode abrir PR com notas e follow-ups
-- Red: não pode abrir PR (listar bloqueadores)
-
-### 2) Bloqueadores e pendências
-
-Se o status for **RED** (bloqueado), comente o bloqueio e o motivo no card com `/eng-global-task-comment` (freelance pula). GREEN e YELLOW não geram comentário.
-
-- Bloqueadores:
-- Pendências aceitas (com justificativa):
-- Follow-ups (links/IDs):
-
-### 3) PR Brief (para colar no PR)
-
+## PR Brief
 - Resumo do que mudou:
 - Como testar:
-- Evidências de testes/validações:
-- Docs atualizadas:
 - Riscos / trade-offs:
+```
 
-Uma vez terminado, me avise e peça minha permissão para abrir o Pull Request.
+A coluna **Decisão** nasce vazia: quem preenche é o usuário.
+
+## Fechamento
+
+1. Mostre o semáforo, o resumo e a lista de lacunas por severidade, com o caminho do `gate-checklist.md`.
+2. Peça as decisões: para cada lacuna 🔴 e 🟡, "Ajustar" ou "Não ajustar" (com o motivo). Use `AskUserQuestion` por lacuna quando houver poucas; com muitas, deixe a pessoa responder em texto ou editar o arquivo. Grave as decisões na coluna **Decisão**.
+3. Pergunte com `AskUserQuestion` (**Sim / Não**, sempre, nunca publicar sem a resposta): **"Publicar o gate-checklist.md (com as decisões) como comentário na issue/card?"**
+   - **Sim** (e `TASK_MANAGER` preenchido): `/eng-global-task-comment {TASK_MANAGER_KEY}` com o conteúdo do arquivo.
+   - **Não**, ou modo freelance: fica só na sessão.
+4. Próximo passo: ajustar o que foi marcado "Ajustar" (à mão ou com o `/eng.work`) e rodar o `/eng.pr`, que usa o PR Brief deste relatório.

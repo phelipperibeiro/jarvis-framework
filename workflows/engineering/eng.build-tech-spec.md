@@ -54,7 +54,7 @@ Transformar uma história de usuário (user story) do Jira em uma **Tech Spec co
 | Passo | Skill | Condição |
 |-------|-------|----------|
 | Processo de Criação › verificação de necessidade de RFC | `/eng.create-rfc` | Se a Tech Spec atender aos critérios que exigem RFC e o usuário escolher "A: Criar uma RFC agora" |
-| Caminho A › 2A.2 Análise de Documentação de Produto | `/jarvis-docs-central` | Se `CENTRAL_DOCS_STORAGE` estiver configurado (buscar PRD/FRD relacionados do épico) |
+| Caminho A › 2A.2 Análise de Documentação de Produto | `/jarvis-docs-central` | Se `CENTRAL_DOCS_STORAGE` estiver configurado (funcionalidades já implementadas relacionadas ao épico; PRD/FRD vêm de `$PROD_DOCS`) |
 | FASE 7 › 7.3 Criação no Jira | `ferramenta MCP/API do Jira` (referência a confirmar) | Se o projeto usar Jira e houver ferramenta MCP ou API disponível; senão fornecer template para criação manual (o texto não nomeia a ferramenta) |
 
 ---
@@ -418,8 +418,8 @@ Identifique:
   >
   > **1. Buscar contrato no repositório primeiro:**
   > Procure por specs existentes nos seguintes locais:
-  > - `docs/engineering/swagger/`
-  > - `docs/engineering/openapi/`
+  > - `$ENG_DOCS/swagger/`
+  > - `$ENG_DOCS/openapi/`
   > - `**/*swagger*.{yaml,yml,json}`
   > - `**/*openapi*.{yaml,yml,json}`
   > - `**/*api-spec*.{yaml,yml,json}`

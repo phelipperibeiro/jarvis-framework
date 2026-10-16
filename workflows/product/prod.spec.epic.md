@@ -43,7 +43,6 @@ Utilize o `$ARGUMENTS` que o usuário passar como ponto de partida e para entend
 |-------|-------|----------|
 | Busca no Central Docs (condicional) | `/jarvis-docs-central` (via `jarvis docs sync --silent`) | Se `CENTRAL_DOCS_STORAGE` estiver definido no ENV.md, antes de criar o épico |
 | Próximas etapas | `/prod.spec.issue` | Depois de criar o épico, se o usuário quiser escrever as histórias ou tarefas relacionadas |
-| Publicação no Central Docs (condicional) | `/jarvis-docs-central` (via `jarvis docs publish --tipo epic`) | Se `CENTRAL_DOCS_STORAGE` estiver definido, o épico estiver salvo e aprovado e o usuário responder "Sim, publicar agora" |
 
 ## Resultado final
 - Por padrão, use o modelo `$PROD_TEMPLATES/prod-epic-template.md` integralmente
@@ -124,44 +123,15 @@ Após a aprovação do usuário:
 
 Se `CENTRAL_DOCS_STORAGE` definido no ENV.md, antes de criar o épico:
 
-- Executar busca automática no central-docs:
+- Consultar no Central docs as funcionalidades já implementadas relacionadas (o que existe hoje):
   ```bash
   jarvis docs sync --silent
   ```
-- Buscar PRD e épicos existentes relacionados usando o contexto do usuário
-- Se PRD ou épico encontrado: carregar como contexto e informar o usuário
+- Buscar PRD e épicos existentes em `$PROD_DOCS` e, no Central docs, as funcionalidades já implementadas relacionadas
+- Se encontrar: carregar como contexto e informar o usuário
 - Se não encontrado: continuar com fluxo normal
 
-## Publicação no Central Docs (condicional)
+## Central docs
 
-Após salvar o épico localmente e obter aprovação do usuário:
+Este documento é um **documento de trabalho**: fica em `$PROD_DOCS`/`$ENG_DOCS` (`docs/jarvis/`) e **não** é publicado no Central docs. O Central docs registra só o que foi implementado, e quem o atualiza é o `/eng.spec-consolidate`, depois do PR da entrega.
 
-1. Se `CENTRAL_DOCS_STORAGE` definido no ENV.md:
-   - Perguntar ao usuário:
-     ```
-     Deseja publicar este épico no repositório central de documentação?
-     - ( ) Sim, publicar agora
-     - ( ) Não, vou publicar depois manualmente
-     ```
-
-2. Se **Sim**:
-   - Executar:
-     ```bash
-     jarvis docs publish \
-       --file {caminho_do_epico} \
-       --tipo epic
-     ```
-
-3. Informar resultado:
-   - ✅ Sucesso: "Épico publicado no Central docs." (com git: "PR aberto: [URL]")
-   - ❌ Erro: Exibir mensagem de erro e orientar troubleshooting
-
-4. Se **Não**:
-   - Informar: "Para publicar depois, execute: `jarvis docs publish --file {caminho} --tipo epic`"
-
-> **Nota**: se a pasta do Central docs for um repositório git, a publicação abre um Pull/Merge Request e o épico só entra na branch base depois do merge. Sem git, o documento é gravado direto e o índice é regenerado.
-
-Utilize o que o usuário fornecer analisar em:
-<requirement>
-#$ARGUMENTS
-</requirement>
