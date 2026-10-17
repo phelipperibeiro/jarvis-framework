@@ -35,6 +35,7 @@ Fonte: `workflows/engineering/`. Guias didáticos: [engenharia/README.md](./enge
 | [`/eng.pre-pr`](./engenharia/eng.pre-pr.md) | Validação antes de abrir o PR/MR | [workflow](../workflows/engineering/eng.pre-pr.md) |
 | [`/eng.pr`](./engenharia/eng.pr.md) | Cria branch, commit e merge request | [workflow](../workflows/engineering/eng.pr.md) |
 | [`/eng.spec-consolidate`](./engenharia/eng.spec-consolidate.md) | Registra no Central docs o que a entrega implementou (funcionalidade + entrega) | [workflow](../workflows/engineering/eng.spec-consolidate.md) |
+| [`/eng.daily-report`](./engenharia/eng.daily-report.md) | Junta os `daily.md` das sessões em um relatório por dia, com alertas das sessões sem registro | [workflow](../workflows/engineering/eng.daily-report.md) |
 | [`/eng.review`](./engenharia/eng.review.md) | Revisão de solução ou PR | [workflow](../workflows/engineering/eng.review.md) |
 | [`/eng.debug`](./engenharia/eng.debug.md) | Debugging e incidentes | [workflow](../workflows/engineering/eng.debug.md) |
 | [`/eng.bug-audit`](./engenharia/eng.bug-audit.md) | Auditoria de bugs e gaps de qualidade | [workflow](../workflows/engineering/eng.bug-audit.md) |

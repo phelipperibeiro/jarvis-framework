@@ -25,6 +25,7 @@ Cada etapa só avança com a sua aprovação. O `eng.start` e o `eng.plan` só p
 | [`eng.pre-pr`](./eng.pre-pr.md) | Valida a branch e dá um semáforo antes do PR |
 | [`eng.pr`](./eng.pr.md) | Faz o push e abre o merge request |
 | [`eng.spec-consolidate`](./eng.spec-consolidate.md) | Registra no Central docs o que a entrega implementou |
+| [`eng.daily-report`](./eng.daily-report.md) | Junta os `daily.md` em um relatório por dia, com alertas das sessões sem registro |
 | [`eng.review`](./eng.review.md) | Revisa uma solução ou PR |
 | [`eng.debug`](./eng.debug.md) | Investiga bug ou incidente com método |
 | [`eng.bug-audit`](./eng.bug-audit.md) | Audita um projeto atrás de bugs e débito técnico |
