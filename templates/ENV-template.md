@@ -11,20 +11,24 @@
 # Workspace = a pasta que contém $IDE/. Não é o nome de um repo.
 # Vazio: o CLI usa o nome dessa pasta. Preencha só se quiser outro slug.
 #
-#   meu-app/                    ← um git aqui
+#   meu-app/                    ← a raiz é um repositório (WORKSPACE_MODE=project)
 #   ├── .windsurf/ENV.md
 #   ├── .jarvis/sessions/
 #   └── .git/
 #
-#   workspace-squad/            ← vários gits nas subpastas
-#   ├── .windsurf/ENV.md
+#   workspace-squad/            ← a raiz NÃO é repositório; 1 ou mais subpastas com .git
+#   ├── .windsurf/ENV.md          (WORKSPACE_MODE=workspace)
 #   ├── .jarvis/sessions/
 #   ├── repo-api-1/
 #   └── repo-frontend/
 #
 # WORKSPACE_REPOS = allowlist opcional. Vazio = todas as subpastas com .git/.
+# WORKSPACE_MODE = workspace | project (detectado pelo /jarvis-init e pelo upgrade).
+#   workspace: a raiz não tem .git e há 1+ subpastas com .git/ (não depende do número de repos).
+#   project:   a raiz tem .git. O git já delimita o que é código.
 WORKSPACE=
 WORKSPACE_REPOS=
+WORKSPACE_MODE=
 USER=
 
 # Limite de autonomia da IA neste workspace (60–100). 80 = a IA executa até 80%.

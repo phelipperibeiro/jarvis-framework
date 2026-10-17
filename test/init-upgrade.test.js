@@ -132,3 +132,38 @@ test("init --upgrade: ENV com JARVIS_DOCS depois de PROD_DOCS (upgrade antigo) a
     );
   });
 });
+
+test("init --upgrade: WORKSPACE_MODE=workspace quando a raiz não é repositório e há UMA subpasta com .git", () => {
+  withWorkspace({ ".claude/ENV.md": ENV_V520, "app/.git/HEAD": "ref: refs/heads/main\n" }, (ws) => {
+    const r = run(ws, "--upgrade", "--ide", "claude", "--yes");
+    assert.equal(r.status, 0, r.stderr);
+    const env = readFileSync(join(ws, ".claude/ENV.md"), "utf-8");
+    assert.ok(env.startsWith(ENV_V520), "linhas existentes do ENV mudaram");
+    assert.match(env, /^WORKSPACE_MODE=workspace$/m);
+
+    const again = run(ws, "--upgrade", "--ide", "claude", "--yes");
+    assert.equal(again.status, 0, again.stderr);
+    assert.equal(readFileSync(join(ws, ".claude/ENV.md"), "utf-8"), env);
+  });
+});
+
+test("init --upgrade: WORKSPACE_MODE=project quando a raiz é repositório", () => {
+  withWorkspace({ ".claude/ENV.md": ENV_V520, ".git/HEAD": "ref: refs/heads/main\n" }, (ws) => {
+    const r = run(ws, "--upgrade", "--ide", "claude", "--yes");
+    assert.equal(r.status, 0, r.stderr);
+    assert.match(readFileSync(join(ws, ".claude/ENV.md"), "utf-8"), /^WORKSPACE_MODE=project$/m);
+  });
+});
+
+test("init --upgrade: WORKSPACE_MODE já definido no ENV não muda", () => {
+  withWorkspace(
+    { ".claude/ENV.md": `${ENV_V520}WORKSPACE_MODE=project\n`, "app/.git/HEAD": "x\n" },
+    (ws) => {
+      const r = run(ws, "--upgrade", "--ide", "claude", "--yes");
+      assert.equal(r.status, 0, r.stderr);
+      const env = readFileSync(join(ws, ".claude/ENV.md"), "utf-8");
+      assert.equal((env.match(/^WORKSPACE_MODE=/gm) || []).length, 1);
+      assert.match(env, /^WORKSPACE_MODE=project$/m);
+    }
+  );
+});

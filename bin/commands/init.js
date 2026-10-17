@@ -283,7 +283,7 @@ async function runUpgrade(cwd, flags) {
     join(getFrameworkRoot(), "templates", "ENV-template.md"),
     "utf-8"
   );
-  const envPlan = planEnvUpgrade(envText, templateText);
+  const envPlan = planEnvUpgrade(envText, templateText, { workspaceDir });
   const addedKeys = envPlan.added.map((a) => a.key);
 
   // 3. Documentos: o plano usa o ENV como ficará depois do upgrade (com as chaves novas)
@@ -348,6 +348,11 @@ async function runUpgrade(cwd, flags) {
   if (envPlan.warnings.includes("CENTRAL_DOCS_REPO")) {
     logger.info(
       `${YELLOW}  ⚠️  Central docs no formato antigo (CENTRAL_DOCS_REPO): a migração é feita pelo /jarvis-init upgrade${NC}`
+    );
+  }
+  if (envPlan.warnings.includes("WORKSPACE_MODE")) {
+    logger.info(
+      `${YELLOW}  ⚠️  WORKSPACE_MODE: a raiz é um repositório e há subpastas com .git (submódulos?): gravado como project; confira no ENV.md${NC}`
     );
   }
   logger.info("");
