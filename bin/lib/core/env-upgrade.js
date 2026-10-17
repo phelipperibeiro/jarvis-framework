@@ -62,7 +62,10 @@ export function planEnvUpgrade(envText, templateText, { workspaceDir } = {}) {
       if (!value) pending.push("PROD_MODE");
     }
     if (key === "WORKSPACE_MODE" && workspaceDir) {
-      const repos = (env.get("WORKSPACE_REPOS") || "").split(",").map((r) => r.trim()).filter(Boolean);
+      const repos = (env.get("WORKSPACE_REPOS") || "")
+        .split(",")
+        .map((r) => r.trim())
+        .filter(Boolean);
       const detected = detectWorkspaceMode(workspaceDir, { repos });
       value = detected.mode;
       if (detected.warning) warnings.push("WORKSPACE_MODE");

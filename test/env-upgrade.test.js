@@ -163,7 +163,9 @@ test("planEnvUpgrade: WORKSPACE_REPOS restringe a detecção", () => {
   const dir = mkdtempSync(join(tmpdir(), "jarvis-env-upgrade-ws-"));
   try {
     mkdirSync(join(dir, "a", ".git"), { recursive: true });
-    const plan = planEnvUpgrade("WORKSPACE_REPOS=outro\n", "WORKSPACE_MODE=\n", { workspaceDir: dir });
+    const plan = planEnvUpgrade("WORKSPACE_REPOS=outro\n", "WORKSPACE_MODE=\n", {
+      workspaceDir: dir,
+    });
     assert.deepEqual(plan.added, [{ key: "WORKSPACE_MODE", value: "project" }]);
   } finally {
     rmSync(dir, { recursive: true, force: true });

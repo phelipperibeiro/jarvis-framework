@@ -38,7 +38,7 @@ test("skill instalado que o framework não tem mais é obsoleto; os que existem 
 test("skill registrado em *_SPECIALIZATIONS nunca é obsoleto", () => {
   withDirs(["eng-backend-golang", "antigo"], [], (ide, fw) => {
     const registered = registeredSpecializations(
-      parseEnvEntries("BACKEND_SPECIALIZATIONS=[ \"eng-backend-golang\" ]\nQA_SPECIALIZATIONS=\n")
+      parseEnvEntries('BACKEND_SPECIALIZATIONS=[ "eng-backend-golang" ]\nQA_SPECIALIZATIONS=\n')
     );
     assert.deepEqual(findStaleSkills({ ideSkillsDir: ide, frameworkSkillsDir: fw, registered }), [
       "antigo",
@@ -48,7 +48,7 @@ test("skill registrado em *_SPECIALIZATIONS nunca é obsoleto", () => {
 
 test("registeredSpecializations: aceita vírgulas, colchetes, aspas e espaços", () => {
   const set = registeredSpecializations(
-    parseEnvEntries('A_SPECIALIZATIONS=a,b\nB_SPECIALIZATIONS=[ "c" , \'d\' ]\nOUTRA=x\n')
+    parseEnvEntries("A_SPECIALIZATIONS=a,b\nB_SPECIALIZATIONS=[ \"c\" , 'd' ]\nOUTRA=x\n")
   );
   assert.deepEqual([...set].sort(), ["a", "b", "c", "d"]);
 });

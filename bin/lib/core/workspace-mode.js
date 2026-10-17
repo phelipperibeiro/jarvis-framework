@@ -50,6 +50,8 @@ export function detectWorkspaceMode(workspaceDir, { repos = [] } = {}) {
 
 /** Lê o valor do ENV: só `workspace` ou `project` (sem diferenciar maiúsculas); outro valor = null. */
 export function normalizeWorkspaceMode(value) {
-  const v = String(value || "").trim().toLowerCase();
+  const v = String(value || "")
+    .trim()
+    .toLowerCase();
   return WORKSPACE_MODES.includes(v) ? v : null;
 }
