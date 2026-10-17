@@ -18,7 +18,9 @@ Lida pelos workflows `eng.start`, `eng.plan`, `eng.work`, `eng.pre-pr` e `eng.pr
 2. **Formato:** `AskUserQuestion`, uma pergunta por decisão, no máximo 4 opções. **Não liste "Outros"**: o `AskUserQuestion` já o acrescenta sozinho para o texto livre, e listá-lo gasta uma das 4 vagas. Sem `AskUserQuestion`, use a tabela de opções de `prod-rules.md`.
 3. **A resposta é a aprovação.** "Aprovar e seguir" ou "Aprovar e parar aqui" valem como a aprovação explícita que as rules de cada comando exigem. Sem uma dessas respostas, nada avança.
 4. **Seguir para o próximo comando:** se a IDE permite chamar outro comando (no Claude Code, pelo Skill tool), chame-o com o mesmo `{TASK_MANAGER_KEY}`; senão, mostre o comando pronto para colar.
-5. **Limites que nenhuma escolha dispensa:** `MAX_AI_EXECUTION_PERCENTAGE`, testes e lint passando, e a parada em questão nova em aberto.
+5. **Arquivos gerados em link clicável.** Ao terminar, cada comando lista os arquivos que gerou ou alterou como link markdown com caminho relativo ao workspace (ex.: `[architecture.md](.jarvis/sessions/eng/TASK-123/architecture.md)`), para o usuário abrir sem procurar no explorador. Inclui o link do PR, no `eng.pr`.
+   **Antes de cada pergunta:** quando a decisão depende de um arquivo (`architecture.md`, `plan.md`, `gate-checklist.md`, `pull-request.md`, `daily.md`), escreva primeiro uma mensagem em markdown na conversa, com o resumo e o link clicável do arquivo, e só então abra o `AskUserQuestion`. A pergunta fica curta, só com a decisão e o nome do arquivo em texto simples; ela espera a resposta enquanto a pessoa abre e lê com calma. Não dependa do link dentro do `AskUserQuestion`.
+6. **Limites que nenhuma escolha dispensa:** `MAX_AI_EXECUTION_PERCENTAGE`, testes e lint passando, e a parada em questão nova em aberto.
 
 ### Proibido
 
@@ -41,9 +43,9 @@ Lida pelos workflows `eng.start`, `eng.plan`, `eng.work`, `eng.pre-pr` e `eng.pr
 | `eng.pr` | Início | "O que fazer com o PR?" | Revisar o texto e publicar (como hoje) · Publicar sem revisar o texto · Só gerar os arquivos (o usuário abre o PR à mão) |
 | `eng.pr` | Fim | "O PR já foi aprovado e mergeado?" | Ainda não (como hoje) · Sim, rodar o `/eng.spec-consolidate` |
 
-**Com Advisor**, o `eng.start` não ganha pergunta nova: o Advisor decide as questões em aberto e o gate do fim segue a autonomia do `context.md`, como já estava.
-
 Nas perguntas "Depois do work" e "O que fazer com o plano?", a opção "como hoje" não é a primeira (em "Depois do work" fica por último), por escolha de produto: as primeiras opções são as ações que o usuário mais quer. Mesmo assim, é o fluxo que vale quando o usuário não escolhe.
+
+**Com Advisor**, o `eng.start` não ganha pergunta nova: o Advisor decide as questões em aberto e o gate do fim segue a autonomia do `context.md`, como já estava.
 
 ### Recomendado
 

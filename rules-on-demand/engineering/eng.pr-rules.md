@@ -324,7 +324,7 @@ Antes de considerar o PR completo:
 - [ ] Comentários de code review processados
 - [ ] `pull-request.md` aprovado na sessão (e publicado, se o usuário respondeu Sim)
 - [ ] Pergunta "O PR já foi aprovado e mergeado?" no fim (Sim → `/eng.spec-consolidate`)
-- [ ] `daily.md` gerado ou atualizado e aprovado (só com PR aberto), com a linha de timesheet na mensagem final
+- [ ] `daily.md` gerado ou atualizado e aprovado (com ou sem PR publicado), com a linha de timesheet na mensagem final
 
 ---
 
@@ -336,7 +336,7 @@ Antes de considerar o PR completo:
 
 ## daily.md (registro do esforço)
 
-- Gerado na Conclusão do `eng.pr`, em `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/daily.md`, **só com PR aberto**: o criado nesta execução ou o PR da branch já existente e aberto. Sem PR aberto, não gerar.
+- Gerado na Conclusão do `eng.pr`, em `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/daily.md`, **com ou sem PR publicado**, para não passar batido quando o PR é aberto à mão. Se houver PR (o criado nesta execução ou o já aberto da branch), preencher o campo `pr`; sem PR, deixá-lo vazio.
 - **Sempre perguntar a data** (hoje ou retroativa) com `AskUserQuestion`.
 - **Período de mais de um dia:** antes de contar os dias trabalhados, perguntar sobre sábado/domingo trabalhados, feriados e outros dias não trabalhados (o usuário informa as datas).
 - ***Post mortem*:** automático com `tipo: bugfix|hotfix` no `context.md` ou com mais de 1 dia trabalhado; nos outros casos, perguntar Sim/Não.

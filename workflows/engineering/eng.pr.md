@@ -233,7 +233,7 @@ Preencher com a tarefa. Link do card:
 
 ### 4.2 Revisão do texto
 
-Mostre o `pull-request.md` (título e resumo das seções) e pergunte com `AskUserQuestion`: `[Aprovar]` / `[Ajustar]`. Ajuste até a aprovação. (Pule com "Publicar direto e validar no PR" na Fase 0.)
+Mostre o `pull-request.md` como link clicável (regra 5 de `eng.transitions-rules.md`; título e resumo das seções) e pergunte com `AskUserQuestion` (depois da mensagem com o link clicável do arquivo): `[Aprovar]` / `[Ajustar]`. Ajuste até a aprovação. (Pulada com "Publicar sem revisar o texto" na Fase 0.)
 
 ### 4.3 Publicar ou não (sem pergunta nova)
 
@@ -355,7 +355,7 @@ fi
 
 Regras em `$IDE/rules-on-demand/engineering/eng.pr-rules.md` (seção "daily.md"); template em `$IDE/templates/engineering/daily-template.md`. Arquivo: `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/daily.md`, **só na sessão, nunca publicado**.
 
-1. **Há PR aberto?** Vale o criado na 4.4 ou o PR da branch que já existe e está aberto (CLI/adapter do vendor, ex.: `gh pr view --json state,number,url`). Sem PR aberto (Não na 4.3 e nenhum PR existente), **não gere** o `daily.md` e siga para a 7.3. Se não for possível confirmar, pergunte.
+1. **Gere sempre**, com ou sem PR publicado: quem abre o PR à mão ("Só gerar os arquivos" na Fase 0) também precisa do registro, e é aí que ele costuma passar batido. Se houver PR (o criado na 4.4 ou o PR já aberto da branch, via CLI/adapter do vendor, ex.: `gh pr view --json state,number,url`), preencha o campo `pr`; sem PR, deixe-o vazio e atualize quando o PR for aberto.
 2. **Data:** pergunte com `AskUserQuestion`: **"Registrar o esforço com qual data?"** → `Hoje ({AAAA-MM-DD})` | `Outra data` (o usuário digita `AAAA-MM-DD`).
 3. **Dias trabalhados** (só se o período entre a data do `.timestamp_start` e a data do registro tiver mais de um dia), uma pergunta por vez:
    - se o período tiver sábado ou domingo: **"Você trabalhou em {datas de sábado/domingo}?"** (Sim / Não; com várias datas, pode responder por data);
@@ -376,7 +376,7 @@ Regras em `$IDE/rules-on-demand/engineering/eng.pr-rules.md` (seção "daily.md"
    - **Descrição:** um parágrafo narrativo (contexto técnico, trabalho realizado, decisões), mais o *post mortem* quando couber (problema e causa raiz, investigação, solução/direcionamento), com detalhe suficiente para embasar questionamentos futuros.
    - **Timesheet:** **uma única linha** (`{TASK_KEY} — {resumo}`).
    - Sem e-mails, tokens nem valores de variáveis.
-7. **Revisão conjunta:** mostre a descrição e a linha de timesheet **juntas** e pergunte com `AskUserQuestion`: `[Aprovar]` / `[Ajustar]`. Com Ajustar, aplique os ajustes pontuais **nas duas** e mostre de novo, até aprovar.
+7. **Revisão conjunta:** mostre a descrição e a linha de timesheet **juntas** e pergunte com `AskUserQuestion` (depois da mensagem com o link clicável do `daily.md`): `[Aprovar]` / `[Ajustar]`. Com Ajustar, aplique os ajustes pontuais **nas duas** e mostre de novo, até aprovar.
 
 ### 7.3 Mensagem Final
 
@@ -395,7 +395,9 @@ Regras em `$IDE/rules-on-demand/engineering/eng.pr-rules.md` (seção "daily.md"
 
 {LEAD_TIME_MSG}
 
-📝 Daily: $SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/daily.md
+📄 Arquivos da sessão (links clicáveis, regra 5 de `eng.transitions-rules.md`; só os que existem):
+- [pull-request.md]({caminho relativo})
+- [daily.md]({caminho relativo})
 🕒 Timesheet: {LINHA_DE_TIMESHEET_APROVADA}
 
 📌 Próximos passos:

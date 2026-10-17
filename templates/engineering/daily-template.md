@@ -9,7 +9,7 @@ task_key: {TASK-123}
 # URL do card no task manager (padrão da eng.integrations-rules.md). Vazio no modo freelance.
 card_url: {URL}
 
-# Pull/Merge Request aberto: número e URL. O daily.md só existe com PR aberto.
+# Pull/Merge Request aberto: número e URL. Vazio se o PR ainda não foi aberto (o daily.md é gerado mesmo assim).
 pr: {#n URL}
 
 # Branch de trabalho e branch base (Branch base: do architecture.md).

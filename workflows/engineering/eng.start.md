@@ -412,7 +412,7 @@ Apresente:
 1. Resumo do que foi documentado
 2. Principais decisões arquiteturais
 3. Riscos identificados
-4. Link para o arquivo criado
+4. Arquivos gerados (`architecture.md`, `context.md` e o aquecimento consumido, se houver), cada um como link markdown clicável com caminho relativo ao workspace (`eng.transitions-rules.md`, regra 5)
 
 ### 5.2 Iteração
 
@@ -422,7 +422,7 @@ Se o usuário tiver feedback:
 - Apresente novamente
 - Continue até aprovação explícita
 
-**Sem Advisor**, a aprovação é a pergunta de transição (`eng.transitions-rules.md`): **"Aprovar o architecture.md?"** → **Aprovar e parar aqui (como hoje)** / **Aprovar e seguir para o `/eng.plan`** / **Ajustar o documento**. Com "seguir", chame o `/eng.plan {TASK_MANAGER_KEY}` (ou mostre o comando).
+**Sem Advisor**, a aprovação é a pergunta de transição (`eng.transitions-rules.md`): **"Aprovar o architecture.md?"** (depois da mensagem em markdown com o link clicável do arquivo) → **Aprovar e parar aqui (como hoje)** / **Aprovar e seguir para o `/eng.plan`** / **Ajustar o documento**. Com "seguir", chame o `/eng.plan {TASK_MANAGER_KEY}` (ou mostre o comando).
 **Com Advisor**, o gate segue a autonomia do `context.md` (CDD): `alta` → apresente o resumo e siga para o `eng.plan` sem aguardar; `média` ou `baixa` → aguarde a aprovação explícita. Sem `context.md`, use a tabela "Autonomia por POSITION" de `eng-rules.md`. Sem Advisor, nada muda.
 
 ### 5.3 Atualizar Board

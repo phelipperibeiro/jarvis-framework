@@ -31,7 +31,7 @@ Confere que tudo está passando, envia a branch e abre o merge request (ou pull 
 6. **Posta o link do MR no card** (um único comentário) e orienta a mover para "In Review" (quando há board)
 7. **Processa o code review:** analisa os comentários e aplica correções
 8. **Registra métricas de lead time**
-9. **Registra o esforço em `daily.md`** (só com PR aberto), na sessão e nunca publicado:
+9. **Registra o esforço em `daily.md`** (com ou sem PR publicado), na sessão e nunca publicado:
    - pergunta a data (hoje ou retroativa);
    - se o período passar de um dia, pergunta sobre sábado/domingo trabalhados, feriados e outros dias não trabalhados, para contar os dias trabalhados;
    - usa o formato *post mortem* em `bugfix`/`hotfix` ou com mais de 1 dia trabalhado (senão, pergunta);
