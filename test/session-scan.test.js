@@ -20,6 +20,7 @@ import {
   needsAlert,
   scanSessions,
 } from "../bin/lib/core/session-scan.js";
+import { runDailyReport, expandVars } from "../bin/commands/daily-report.js";
 
 const NOW = new Date(2026, 9, 17, 10, 0, 0); // 2026-10-17, 10h local
 
@@ -245,4 +246,77 @@ test("scanSessions: pasta inexistente vira aviso, sem erro", () => {
   const r = scanSessions(join(tmpdir(), "jarvis-nao-existe-xyz"), { days: 3, now: NOW });
   assert.equal(r.sessionsScanned, 0);
   assert.equal(r.warnings.length, 1);
+});
+
+function withWorkspace(envLines, sessions, fn) {
+  const root = mkdtempSync(join(tmpdir(), "jarvis-daily-ws-"));
+  try {
+    mkdirSync(join(root, ".claude"), { recursive: true });
+    writeFileSync(join(root, ".claude", "ENV.md"), envLines.join("\n") + "\n");
+    for (const [key, files] of Object.entries(sessions)) {
+      const dir = join(root, ".jarvis", "sessions", "eng", key);
+      mkdirSync(dir, { recursive: true });
+      for (const [name, content] of Object.entries(files)) writeFileSync(join(dir, name), content);
+    }
+    return fn(root);
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+}
+
+test("expandVars: resolve referências encadeadas e usa os padrões", () => {
+  const env = { DOCS_FOLDER: "documentos", JARVIS_DOCS: "$DOCS_FOLDER/jarvis" };
+  assert.equal(expandVars("$JARVIS_DOCS/engineering", env), "documentos/jarvis/engineering");
+  assert.equal(expandVars("$ENG_DOCS", {}), "docs/jarvis/engineering");
+  assert.equal(expandVars("$NAO_EXISTE/x", {}), "$NAO_EXISTE/x");
+});
+
+test("runDailyReport: acha as sessões pelo ENV.md e monta o caminho do relatório", () => {
+  withWorkspace(
+    [
+      "IDE=claude",
+      "SESSIONS_DIR=.jarvis/sessions",
+      "DOCS_FOLDER=docs",
+      "JARVIS_DOCS=$DOCS_FOLDER/jarvis",
+      "ENG_DOCS=$JARVIS_DOCS/engineering",
+    ],
+    { 163: { "daily.md": DAILY } },
+    (root) => {
+      const r = runDailyReport(
+        { days: "7", "env-file": join(root, ".claude", "ENV.md") },
+        root,
+        NOW
+      );
+      assert.equal(r.code, 0);
+      assert.equal(
+        r.json.reportPath,
+        "docs/jarvis/engineering/daily-reports/daily-report-2026-10-17-7d.md"
+      );
+      assert.equal(r.json.reportPathAbs, join(root, r.json.reportPath));
+      assert.equal(r.json.sessionsDir, ".jarvis/sessions/eng");
+      assert.deepEqual(
+        r.json.byDate.map((d) => d.date),
+        ["2026-10-17", "2026-10-12"]
+      );
+    }
+  );
+});
+
+test("runDailyReport: ENV sem ENG_DOCS nem SESSIONS_DIR usa os padrões", () => {
+  withWorkspace(["IDE=claude"], {}, (root) => {
+    const r = runDailyReport({ "env-file": join(root, ".claude", "ENV.md") }, root, NOW);
+    assert.equal(r.code, 0);
+    assert.equal(r.json.days, 7);
+    assert.equal(
+      r.json.reportPath,
+      "docs/jarvis/engineering/daily-reports/daily-report-2026-10-17-7d.md"
+    );
+  });
+});
+
+test("runDailyReport: janela inválida sai com código 1 e lista os valores aceitos", () => {
+  const r = runDailyReport({ days: "10" }, tmpdir(), NOW);
+  assert.equal(r.code, 1);
+  assert.match(r.lines[0], /1, 3, 7, 15, 30, 60/);
+  assert.equal(r.json, undefined);
 });

@@ -26,6 +26,7 @@ import { qaSignoff } from "../../commands/qa-signoff.js";
 import { installRtk } from "../../commands/install-rtk.js";
 import { tokens } from "../../commands/tokens.js";
 import { map } from "../../commands/map.js";
+import { dailyReport } from "../../commands/daily-report.js";
 import { runCreateMerge } from "../vcs/create-merge.js";
 import { runCreateIssue } from "../vcs/create-issue.js";
 import { runComment } from "../tasks/comment.js";
@@ -186,6 +187,14 @@ export function buildProgram() {
     .option("--depth <n>", "Profundidade máxima")
     .option("--reverse", "Mostra quem chama, em vez do que é chamado")
     .action((name, options) => map(toLegacyFlags(options, { _: [name].filter(Boolean) })));
+
+  cmd(program, "daily-report")
+    .description("Junta os daily.md das sessões por dia (base do /eng.daily-report)")
+    .option("--days <n>", "Janela em dias: 1, 3, 7, 15, 30 ou 60 (padrão: 7)")
+    .option("--json", "Saída em JSON")
+    .option("--ide <ide>")
+    .option("--env-file <path>")
+    .action((options) => dailyReport(toLegacyFlags(options)));
 
   const vcs = cmd(program, "vcs").description("Adapters de Git host (GitLab/GitHub/Bitbucket)");
 
