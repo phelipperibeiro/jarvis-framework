@@ -1437,7 +1437,7 @@ Bem-vindo! 🎉
 ### Regras Aplicáveis
 
 - **Idioma**: Todos os arquivos `.md` gerados devem ser em português do Brasil (pt-BR)
-- **Detecção de IDE**: A variável `$IDE` é detectada automaticamente (`.windsurf/`, `.claude/`, `.cursor/`, `.codex/`, `.opencode/`, `.gemini/`)
+- **Detecção de IDE**: A variável `$IDE` é detectada automaticamente (`.windsurf/`, `.claude/`, `.cursor/`, `.codex/`, `.opencode/`, `.agents/`)
 - **Nunca inventar dados**: Se informação não estiver disponível, perguntar ao usuário
 - **Nunca expor credenciais**: Tokens e senhas nunca devem ser expostos no chat
 - **MAX_AI_EXECUTION_PERCENTAGE**:

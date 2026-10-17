@@ -37,7 +37,7 @@ env_file: "@/ENV.md"
     - `.cursor/` → Cursor IDE
     - `.codex/` → Codex CLI (OpenAI)
     - `.opencode/` → OpenCode
-    - `.gemini/` → Gemini CLI / Antigravity (Google)
+    - `.agents/` → Gemini CLI / Antigravity (Google)
   - **Como usar**: Em qualquer referência a caminhos, use `$IDE/` como prefixo.
   - **Exemplos de resolução**:
     - `$IDE/ENV.md` → `.windsurf/ENV.md` (se usando Windsurf)
