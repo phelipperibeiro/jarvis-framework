@@ -233,7 +233,7 @@ Preencher com a tarefa. Link do card:
 
 ### 4.2 Revisão do texto
 
-Mostre o `pull-request.md` como link clicável (regra 5 de `eng.transitions-rules.md`; título e resumo das seções) e pergunte com `AskUserQuestion` (depois da mensagem com o link clicável do arquivo): `[Aprovar]` / `[Ajustar]`. Ajuste até a aprovação. (Pulada com "Publicar sem revisar o texto" na Fase 0.)
+Mostre o consolidado de links da sessão (regra 5 de `eng.transitions-rules.md`, com o `pull-request.md` novo), o título e o resumo das seções e pergunte com `AskUserQuestion` (depois da mensagem com o consolidado de links): `[Aprovar]` / `[Ajustar]`. Ajuste até a aprovação. (Pulada com "Publicar sem revisar o texto" na Fase 0.)
 
 ### 4.3 Publicar ou não (sem pergunta nova)
 
@@ -376,7 +376,7 @@ Regras em `$IDE/rules-on-demand/engineering/eng.pr-rules.md` (seção "daily.md"
    - **Descrição:** um parágrafo narrativo (contexto técnico, trabalho realizado, decisões), mais o *post mortem* quando couber (problema e causa raiz, investigação, solução/direcionamento), com detalhe suficiente para embasar questionamentos futuros.
    - **Timesheet:** **uma única linha** (`{TASK_KEY} — {resumo}`).
    - Sem e-mails, tokens nem valores de variáveis.
-7. **Revisão conjunta:** mostre a descrição e a linha de timesheet **juntas** e pergunte com `AskUserQuestion` (depois da mensagem com o link clicável do `daily.md`): `[Aprovar]` / `[Ajustar]`. Com Ajustar, aplique os ajustes pontuais **nas duas** e mostre de novo, até aprovar.
+7. **Revisão conjunta:** mostre a descrição e a linha de timesheet **juntas** e pergunte com `AskUserQuestion` (depois da mensagem com o consolidado de links, com o `daily.md` novo): `[Aprovar]` / `[Ajustar]`. Com Ajustar, aplique os ajustes pontuais **nas duas** e mostre de novo, até aprovar.
 
 ### 7.3 Mensagem Final
 
@@ -395,9 +395,13 @@ Regras em `$IDE/rules-on-demand/engineering/eng.pr-rules.md` (seção "daily.md"
 
 {LEAD_TIME_MSG}
 
-📄 Arquivos da sessão (links clicáveis, regra 5 de `eng.transitions-rules.md`; só os que existem):
-- [pull-request.md]({caminho relativo})
-- [daily.md]({caminho relativo})
+📄 Arquivos da sessão (consolidado acumulado, regra 5 de `eng.transitions-rules.md`; só os que existem):
+- [context.md]({caminho relativo})
+- [architecture.md]({caminho relativo})
+- [plan.md]({caminho relativo})
+- [gate-checklist.md]({caminho relativo})  ← se o `eng.pre-pr` rodou
+- [pull-request.md]({caminho relativo}) (novo)
+- [daily.md]({caminho relativo}) (novo)
 🕒 Timesheet: {LINHA_DE_TIMESHEET_APROVADA}
 
 📌 Próximos passos:

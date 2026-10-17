@@ -108,7 +108,7 @@ A coluna **Decisão** nasce vazia: quem preenche é o usuário.
 
 ## Fechamento
 
-1. Mostre o semáforo, o resumo e a lista de lacunas por severidade, com o link clicável do `gate-checklist.md` (regra 5 de `eng.transitions-rules.md`).
+1. Mostre o semáforo, o resumo e a lista de lacunas por severidade, com o consolidado de links da sessão (regra 5 de `eng.transitions-rules.md`: tudo o que já existe, com o `gate-checklist.md` novo).
 2. Peça as decisões com `AskUserQuestion`, depois da mensagem em markdown do passo 1 (com o link clicável): **"O que fazer com as {n} lacunas encontradas ({a} 🔴 bloqueadoras, {b} 🟡 importantes)? Relatório: gate-checklist.md."**
    - **Corrigir todas antes do PR:** marca as {n} como "Corrigir"; você corrige à mão ou com o `/eng.work`.
    - **Corrigir só as bloqueadoras 🔴:** marca as {a} 🔴 como "Corrigir"; as 🟡 ficam "Aceitar", com um motivo só, pedido uma vez.
@@ -120,7 +120,7 @@ A coluna **Decisão** nasce vazia: quem preenche é o usuário.
    - **Não, manter só na sessão (como hoje):** nada é enviado ao card.
    - **Sim, só o resumo:** `/eng-global-task-comment {TASK_MANAGER_KEY}` com o semáforo, o resumo e as lacunas 🔴 com a decisão de cada uma.
    - **Sim, o relatório completo:** `/eng-global-task-comment {TASK_MANAGER_KEY}` com o conteúdo do `gate-checklist.md`.
-4. Próximo passo: corrigir o que foi marcado "Corrigir" (à mão ou com o `/eng.work`) e rodar o `/eng.pr`, que usa o PR Brief deste relatório. Antes, escreva uma mensagem em markdown com o link clicável do `gate-checklist.md` e o resumo; depois pergunte com `AskUserQuestion` (`eng.transitions-rules.md`):
+4. Próximo passo: corrigir o que foi marcado "Corrigir" (à mão ou com o `/eng.work`) e rodar o `/eng.pr`, que usa o PR Brief deste relatório. Antes, escreva uma mensagem em markdown com o consolidado de links da sessão (regra 5) e o resumo; depois pergunte com `AskUserQuestion` (`eng.transitions-rules.md`):
    - **Com {n} lacunas marcadas "Corrigir"** — **"O `/eng.pre-pr` encontrou {n} lacunas a corrigir ({a} 🔴, {b} 🟡). Leia o gate-checklist.md com calma e responda quando decidir. Como seguir?"**
      - **Corrigir as lacunas agora:** chame o `/eng.work {TASK_MANAGER_KEY}` para as {n} lacunas (ou mostre o comando).
      - **Parar aqui para corrigir à mão (como hoje):** o comando termina.

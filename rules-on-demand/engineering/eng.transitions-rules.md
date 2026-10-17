@@ -8,7 +8,7 @@ Dar fluidez ao ciclo `eng.start → eng.plan → eng.work → eng.pre-pr → eng
 
 ## Escopo
 
-Lida pelos workflows `eng.start`, `eng.plan`, `eng.work`, `eng.pre-pr` e `eng.pr` (cada um manda ler este arquivo). Vale para as perguntas da tabela "Transições" abaixo.
+Lida pelos workflows `eng.start`, `eng.plan`, `eng.work`, `eng.pre-pr` e `eng.pr` (cada um manda ler este arquivo). Vale para as perguntas da tabela "Transições" abaixo. A regra 5 (consolidado de links) vale também para a mensagem final do `eng.spec-consolidate`, que fecha o ciclo.
 
 ## Regras
 
@@ -18,8 +18,11 @@ Lida pelos workflows `eng.start`, `eng.plan`, `eng.work`, `eng.pre-pr` e `eng.pr
 2. **Formato:** `AskUserQuestion`, uma pergunta por decisão, no máximo 4 opções. **Não liste "Outros"**: o `AskUserQuestion` já o acrescenta sozinho para o texto livre, e listá-lo gasta uma das 4 vagas. Sem `AskUserQuestion`, use a tabela de opções de `prod-rules.md`.
 3. **A resposta é a aprovação.** "Aprovar e seguir" ou "Aprovar e parar aqui" valem como a aprovação explícita que as rules de cada comando exigem. Sem uma dessas respostas, nada avança.
 4. **Seguir para o próximo comando:** se a IDE permite chamar outro comando (no Claude Code, pelo Skill tool), chame-o com o mesmo `{TASK_MANAGER_KEY}`; senão, mostre o comando pronto para colar.
-5. **Arquivos gerados em link clicável.** Ao terminar, cada comando lista os arquivos que gerou ou alterou como link markdown com caminho relativo ao workspace (ex.: `[architecture.md](.jarvis/sessions/eng/TASK-123/architecture.md)`), para o usuário abrir sem procurar no explorador. Inclui o link do PR, no `eng.pr`.
-   **Antes de cada pergunta:** quando a decisão depende de um arquivo (`architecture.md`, `plan.md`, `gate-checklist.md`, `pull-request.md`, `daily.md`), escreva primeiro uma mensagem em markdown na conversa, com o resumo e o link clicável do arquivo, e só então abra o `AskUserQuestion`. A pergunta fica curta, só com a decisão e o nome do arquivo em texto simples; ela espera a resposta enquanto a pessoa abre e lê com calma. Não dependa do link dentro do `AskUserQuestion`.
+5. **Consolidado de links, acumulado a cada etapa.** Ao terminar e antes de cada pergunta que depende de um arquivo, cada comando mostra o bloco "📄 Arquivos da sessão" com **todos** os arquivos que já existem na sessão, e não só os da etapa, para que a lista fique sempre visível até o `eng.spec-consolidate`:
+   - Ordem do ciclo: `context.md`, `architecture.md`, `plan.md`, `gate-checklist.md`, `pull-request.md`, `daily.md`, as versões `{nome}.public.md` (se houver) e os arquivos de `consolidation/` (do `eng.spec-consolidate`). Só entra o que existe.
+   - Cada item é um link markdown com caminho relativo ao workspace (ex.: `[architecture.md](.jarvis/sessions/eng/TASK-123/architecture.md)`), marcado `(novo)` ou `(atualizado)` quando foi gerado ou alterado nesta etapa.
+   - Logo abaixo, "🔗 Links" com o card/issue e, quando existir, o PR/MR.
+   - **Antes de cada pergunta que depende de um arquivo** (`architecture.md`, `plan.md`, `gate-checklist.md`, `pull-request.md`, `daily.md`), escreva primeiro essa mensagem em markdown, com o resumo, e só então abra o `AskUserQuestion`. A pergunta fica curta, só com a decisão e o nome do arquivo em texto simples; ela espera a resposta enquanto a pessoa abre e lê com calma. Não dependa do link dentro do `AskUserQuestion`.
 6. **Limites que nenhuma escolha dispensa:** `MAX_AI_EXECUTION_PERCENTAGE`, testes e lint passando, e a parada em questão nova em aberto.
 
 ### Proibido

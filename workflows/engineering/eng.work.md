@@ -503,7 +503,7 @@ Refs: TASK-123"
 🎉 TODAS AS FASES CONCLUÍDAS!
 
 📁 Sessão: $SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/
-📄 Plan atualizado: [plan.md]({caminho relativo do plan.md}) ✅ (link clicável; liste também os demais arquivos da sessão e os criados ou alterados, como na regra 5 de `eng.transitions-rules.md`)
+📄 Arquivos da sessão (consolidado acumulado, regra 5 de `eng.transitions-rules.md`): links de `context.md`, `architecture.md` e `plan.md` (atualizado ✅), mais os links do card/issue
 🌿 Branch: {TASK_MANAGER_KEY}-{titulo} — {N} commits realizados
 
 📊 Resumo:

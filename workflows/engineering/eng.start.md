@@ -414,7 +414,7 @@ Apresente:
 1. Resumo do que foi documentado
 2. Principais decisões arquiteturais
 3. Riscos identificados
-4. Arquivos gerados (`architecture.md`, `context.md` e o aquecimento consumido, se houver), cada um como link markdown clicável com caminho relativo ao workspace (`eng.transitions-rules.md`, regra 5)
+4. Consolidado de links da sessão (regra 5 de `eng.transitions-rules.md`): `context.md`, `architecture.md` (novo) e o aquecimento consumido, se houver, mais os links do card/issue
 
 ### 5.2 Iteração
 
