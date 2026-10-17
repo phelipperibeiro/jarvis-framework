@@ -6,6 +6,17 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), e o
 
 > Versões anteriores a `2.1.1` não foram documentadas retroativamente neste changelog — o histórico detalhado dessas versões continua disponível via `git log`.
 
+## [5.7.0] - 2026-10-17
+
+### Added
+- **`/eng.daily-report {N}`** (#165): junta os `daily.md` das sessões em um relatório por dia, do mais recente para o mais antigo, em lista aninhada (tarefa > frentes de trabalho > detalhes), com a linha de timesheet de cada tarefa e um bloco de alertas das sessões sem `daily.md` que deveriam ter (chegaram ao `eng.pr` ou começaram a partir de 2026-10-15). Janela de 1, 3, 7, 15, 30 ou 60 dias (padrão 7), no calendário local e incluindo hoje; outro valor é recusado sem gerar arquivo. O relatório fica em `$ENG_DOCS/daily-reports/daily-report-AAAA-MM-DD-{N}d.md` (a mesma janela no mesmo dia sobrescreve) e nunca é publicado. Guia em `docs/engenharia/eng.daily-report.md`.
+- **`jarvis daily-report --days N [--json]`** (#165): a parte determinística do relatório (`bin/lib/core/session-scan.js`). Lê as sessões a partir do `ENV.md` do workspace, converte o `.timestamp_start` (UTC) para o dia local, deduz data e atividade das sessões sem `daily.md`, aplica a regra de alertas e remove e-mails. Testes em `test/session-scan.test.js`.
+
+### Changed
+- **Template do `architecture.md`, seção 8 (Questões em Aberto)** (#165): coluna "Opção escolhida" na tabela; ✅ e "(escolhida)" na opção adotada e ❌ nas demais (sem marcação enquanto a questão está aberta).
+- **Consolidado de links da sessão** (#165, regra 5 de `eng.transitions-rules.md`): o bloco "Arquivos da sessão" aparece antes de **toda** pergunta de transição, inclusive as do início de um comando (como "O que fazer com o PR?"), e não só das que dependem de um arquivo.
+- `daily-template.md` e o guia do `eng.pr` apontam para o `/eng.daily-report` (antes: "um comando futuro").
+
 ## [5.6.0] - 2026-10-17
 
 ### Added
