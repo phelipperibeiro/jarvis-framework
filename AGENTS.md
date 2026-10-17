@@ -199,6 +199,7 @@ jarvis list                                         # Listar agents, skills e wo
 jarvis install-rtk                                  # Instalar RTK (token killer — economia 60-90% em tokens de shell)
 jarvis tokens    [--hub X --position Y --area Z --squad W] [--rtk] [--json]   # Estimar o que carrega no início da sessão (perfil do ENV.md se sem flags)
 jarvis map       <nome> [--depth N] [--reverse]      # Mapa de chamadas de um workflow, skill ou agente (lê só as tabelas padronizadas)
+jarvis daily-report [--days N] [--json]             # Junta os daily.md das sessões por dia (usado pelo /eng.daily-report)
 ```
 
 Quando atuar em um projeto alvo, detectar comandos em:

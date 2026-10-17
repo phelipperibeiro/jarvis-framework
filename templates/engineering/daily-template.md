@@ -30,7 +30,7 @@ updated_at: {YYYY-MM-DD}
 
 # Daily — {TASK_KEY}
 
-> Registro pessoal do esforço: narrativa auditável e linha pronta para o timesheet. Fica só na sessão, nunca é publicado. Uma seção por data (`## AAAA-MM-DD`), no formato abaixo, para um comando futuro juntar os registros de um dia.
+> Registro pessoal do esforço: narrativa auditável e linha pronta para o timesheet. Fica só na sessão, nunca é publicado. Uma seção por data (`## AAAA-MM-DD`), no formato abaixo, para o `/eng.daily-report` juntar os registros por dia.
 
 ## {AAAA-MM-DD}
 
