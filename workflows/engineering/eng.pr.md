@@ -413,7 +413,11 @@ Regras em `$IDE/rules-on-demand/engineering/eng.pr-rules.md` (seção "daily.md"
 - Jira: {TASK_MANAGER_URL_BASE}/browse/{TASK_MANAGER_KEY}
 ```
 
-### 7.4 PR mergeado? (`eng.transitions-rules.md`)
+### 7.4 Versões humanizadas (só com `ARTIFACT_STYLE=human-generated`)
+
+Pergunte uma vez, com `AskUserQuestion` de várias perguntas em abas (`rules/artifact-style-rules.md`, regra 2), uma aba por documento da sessão que existir: `architecture.md`, `plan.md`, `gate-checklist.md` e `daily.md` (o `pull-request.md` não entra: já é público). Cada aba: **"Gerar a versão humanizada de {documento}?"** → **Não (como hoje)** / **Sim**. Com Sim, grave `{nome}.public.md` ao lado do original, seguindo o checklist da regra, e mostre o link. Com outro `ARTIFACT_STYLE`, pule esta etapa.
+
+### 7.5 PR mergeado? (`eng.transitions-rules.md`)
 
 Pergunte com `AskUserQuestion`: **"O PR já foi aprovado e mergeado?"**
 - **Ainda não (como hoje):** encerre com a mensagem acima.
