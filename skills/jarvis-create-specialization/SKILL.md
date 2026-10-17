@@ -92,7 +92,7 @@ Se a variável **não existir** (ausente; vazia é válida), **interrompa antes 
 Procure, na pasta do projeto, arquivos-fonte e arquivos de dependência (`package.json`, `go.mod`, `composer.json`, `pom.xml`, `build.gradle`, `pyproject.toml`, `requirements.txt`, `Gemfile`, `Cargo.toml`, `*.csproj` e afins), **ignorando** `node_modules`, `vendor`, `.git` e pastas de build.
 
 - **Nenhum encontrado:** `ℹ️ Não encontrei código no projeto. Não criei nenhum skill; a skill base de {área} continua valendo.` e **fim**.
-- **Mais de uma pasta candidata** (workspace com vários projetos, ou `WORKSPACE_REPOS`): pergunte qual ler.
+- **Mais de uma pasta candidata** (workspace com vários projetos, ou `WORKSPACE_REPOS`): pergunte qual ler. Com `WORKSPACE_MODE=workspace`, leia só dentro dos repositórios (subpastas com `.git/`), nunca a raiz.
 
 ### Passo 4: Ler o projeto
 

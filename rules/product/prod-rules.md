@@ -66,6 +66,7 @@ Abaixo, segue uma descrição de algumas das variáveis mais importantes para as
   - `.codex/` → Codex CLI (OpenAI)
   - `.opencode/` → OpenCode
   - `.agents/` → Gemini CLI / Antigravity (Google)
+  - `.kiro/` → Kiro (AWS)
 - **Como usar**: Em qualquer referência a caminhos, use `$IDE/` como prefixo.
 - **Exemplos de resolução**:
   - `$IDE/ENV.md` → `.windsurf/ENV.md` (se usando Windsurf)

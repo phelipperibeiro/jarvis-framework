@@ -288,6 +288,8 @@ Use ferramentas de busca para entender o código existente:
 - **Grep**: Buscar padrões e implementações similares
 - **Read**: Analisar arquivos críticos que serão impactados
 
+Com `WORKSPACE_MODE=workspace`, busque só nos repositórios do workspace e siga a regra "Buscas de código em modo workspace" de `eng-rules.md` (ignora `$IDE/`, `.jarvis/`, `.vscode/`, `node_modules/` e o `CDD-MIND-MAP.md`; `docs/jarvis/` é lida como documento de trabalho).
+
 ### 3.2 Documentação Existente
 
 Verifique:

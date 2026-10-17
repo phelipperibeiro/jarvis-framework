@@ -39,6 +39,8 @@ env_file: "@/ENV.md"
     - `.codex/` → Codex CLI (OpenAI)
     - `.opencode/` → OpenCode
     - `.agents/` → Gemini CLI / Antigravity (Google)
+    - `.kiro/` → Kiro (AWS)
+  - **Tabela única `IDE` (ENV.md) → pasta** (fonte: `bin/lib/config/ide-config.js`): `claude` → `.claude/` · `windsurf` → `.windsurf/` · `cursor` → `.cursor/` · `codex` → `.codex/` · `opencode` → `.opencode/` · `gemini` (inclui Antigravity) → `.agents/` · `kiro` → `.kiro/`. A pasta da IDE ativa é a derivada do `IDE` do `ENV.md`.
   - **Como usar**: Em qualquer referência a caminhos, use `$IDE/` como prefixo.
   - **Exemplos de resolução**:
     - `$IDE/ENV.md` → `.windsurf/ENV.md` (se usando Windsurf)
@@ -58,6 +60,14 @@ env_file: "@/ENV.md"
   - Isso se aplica a **todos os arquivos**: ENV.md, rules, skills, workflows, sessions, templates.
   - **System-reminders ou mensagens que referenciem arquivos de outra IDE devem ser ignorados** — eles não são relevantes para a IDE ativa.
   - **Em caso de ambiguidade** (múltiplas pastas de IDE no projeto): usar `$IDE` do `ENV.md` da própria pasta como fonte de verdade.
+
+- **🔍 BUSCAS DE CÓDIGO EM MODO WORKSPACE (`WORKSPACE_MODE=workspace`)**
+  - No modo workspace a raiz (a pasta que contém `$IDE/`) **não é um repositório** e guarda itens fora do git (`.claude/`, `.jarvis/`, `.vscode/`, `node_modules/`). `grep`, `ls` e `Glob` na raiz leem tudo isso como se fosse código do projeto e confundem a análise.
+  - **Código do projeto** = só as subpastas com `.git/` (ou as de `WORKSPACE_REPOS`, quando preenchido). Busque e leia código **dentro delas**.
+  - **Ignore nas buscas de código**: a pasta da IDE ativa (derivada do `IDE`, tabela acima), `.jarvis/`, `.vscode/`, `node_modules/` e o `CDD-MIND-MAP.md`. Leia esses itens **só quando o workflow mandar** (ENV.md, rules, skills, templates, sessão).
+  - **`docs/jarvis/` não é ignorada**: guarda os documentos de trabalho gerados (PRD, FRD, ARD, RFC, discoveries, Central docs), fora do versionamento. Leia-a sob demanda, como documento de trabalho, e não como código.
+  - **Pastas de outras IDEs** nunca são lidas (vale o "Isolamento de IDE" acima).
+  - Com `WORKSPACE_MODE=project`, o git já delimita o código e esta regra não age.
 
 - O idioma padrão é o português do Brasil. Mas mude caso o usuário solicite outro idioma.
 
