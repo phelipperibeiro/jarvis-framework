@@ -22,9 +22,10 @@ bin/
 │   ├── install-rtk.js      # jarvis install-rtk
 │   ├── tokens.js           # jarvis tokens
 │   ├── map.js              # jarvis map
+│   ├── daily-report.js     # jarvis daily-report
 │   └── qa-signoff.js       # jarvis qa-signoff (CI)
 └── lib/
-    ├── core/               # sync-engine, scanner, profile-filter, token-report, env-upgrade, docs-migrate, workspace-mode, stale-skills
+    ├── core/               # sync-engine, scanner, profile-filter, token-report, env-upgrade, docs-migrate, workspace-mode, stale-skills, session-scan
     ├── flow-map/           # índice, leitor das tabelas de chamadas, árvore e saída do jarvis map
     ├── config/             # IDEs, constants (SYNC_DIRS, LOCK_FILE)
     ├── vcs/                # adapters GitLab/GitHub/Bitbucket
@@ -45,6 +46,7 @@ bin/
 | `jarvis install-rtk` | rustup (se preciso) + `cargo install rtk` |
 | `jarvis tokens` | Estima o que carrega no início da sessão para um perfil (rules, `AGENTS.md`, frontmatter dos skills, `warm-up`) |
 | `jarvis map <nome>` | Árvore em texto do que um workflow, skill ou agente chama (`--reverse`: quem o chama; `--depth N`) |
+| `jarvis daily-report` | Junta os `daily.md` das sessões por dia, com alertas das sessões sem registro (`--days N`, `--json`; base do `/eng.daily-report`) |
 | `jarvis qa-signoff` | Gate de QA para CI |
 | `jarvis --version` | Lê `package.json` |
 

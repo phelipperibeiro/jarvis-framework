@@ -36,7 +36,8 @@ Confere que tudo está passando, envia a branch e abre o merge request (ou pull 
    - se o período passar de um dia, pergunta sobre sábado/domingo trabalhados, feriados e outros dias não trabalhados, para contar os dias trabalhados;
    - usa o formato *post mortem* em `bugfix`/`hotfix` ou com mais de 1 dia trabalhado (senão, pergunta);
    - numa nova execução, pergunta se a mudança foi ajuste seu (o texto foca no que foi entregue) ou pedido da liderança (a mudança fica documentada);
-   - mostra a descrição detalhada e a linha de timesheet juntas para você aprovar ou ajustar.
+   - mostra a descrição detalhada e a linha de timesheet juntas para você aprovar ou ajustar;
+   - o [`/eng.daily-report`](./eng.daily-report.md) junta esses registros por dia, de todas as sessões.
 10. **Mensagem final**, com a linha de timesheet pronta para copiar e o lembrete do [`/eng.spec-consolidate`](./eng.spec-consolidate.md)
 
 A sessão **não é apagada**: o `/eng.spec-consolidate` precisa dela. Remova à mão quando quiser.
