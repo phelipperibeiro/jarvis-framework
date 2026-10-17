@@ -43,14 +43,14 @@ O comando percorre "gates" de revisão. Alguns sempre rodam, outros só quando a
 Sempre termina com o arquivo **`$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/gate-checklist.md`**:
 
 1. **Semáforo:** 🟢 pronto para PR, 🟡 pode abrir com notas, 🔴 há bloqueadores
-2. **Lacunas por área**, cada uma com: o que é, onde (`arquivo:linha`), por que importa, sugestão, severidade e a coluna **Decisão**, que você preenche (Ajustar / Não ajustar + motivo)
+2. **Lacunas por área**, cada uma com: o que é, onde (`arquivo:linha`), por que importa, sugestão, severidade e a coluna **Decisão**, que você preenche (Corrigir / Aceitar + motivo; ou "Só gerar o relatório" para analisar com calma, sem decidir agora)
 3. **Evidências** (comandos rodados e resultados) e o **PR Brief**, que o `eng.pr` aproveita
 
-Depois, pergunta **Sim / Não**: publicar o relatório, com as suas decisões, como comentário na issue/card? Sem board, ou com Não, ele fica só na sessão. E **espera sua permissão** antes do `eng.pr`.
+Depois, com board, pergunta se registra o resultado como comentário no card: **Não, manter só na sessão (como hoje)**, **Sim, só o resumo** ou **Sim, o relatório completo**. Sem board (freelance), não pergunta e o relatório fica só na sessão. E **espera sua permissão** antes do `eng.pr`.
 
 ## Perguntas que ele faz
 
-- **No fim:** "Seguir para o `/eng.pr`?" → **Parar aqui para ajustar (como hoje)** ou **Seguir para o `/eng.pr`** (com lacunas a ajustar, a opção avisa quantas são).
+- **No fim:** "Como seguir?", depois de uma mensagem com o link do relatório. Com lacunas: **Corrigir as lacunas agora**, **Parar aqui para corrigir à mão (como hoje)**, ou **Abrir o PR assim mesmo**. Sem lacunas: **Abrir o PR agora** ou **Parar aqui (como hoje)**.
 
 ## Regras que importam
 

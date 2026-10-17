@@ -331,7 +331,7 @@ Antes de considerar o PR completo:
 ## Sessão e publicação
 
 - O texto do PR fica em **`$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/pull-request.md`**, aprovado pelo usuário.
-- **Publicar (push + MR/PR) só com o Sim** do `AskUserQuestion` "Publicar o PR agora?", ou com a escolha "Publicar direto e validar no PR" da Fase 0 (`eng.transitions-rules.md`). Com Não, o arquivo fica na sessão e nada é enviado.
+- **Publicar (push + MR/PR) só com a escolha "Revisar o texto e publicar" (depois da aprovação do texto) ou "Publicar sem revisar o texto"** da Fase 0 (`eng.transitions-rules.md`). Com "Só gerar os arquivos", o arquivo fica na sessão e nada é enviado.
 - **A sessão nunca é apagada por este comando:** o `/eng.spec-consolidate`, que roda depois do merge, precisa do `architecture.md`, do `plan.md`, do `gate-checklist.md` e do `pull-request.md`. A pessoa apaga à mão quando quiser.
 
 ## daily.md (registro do esforço)

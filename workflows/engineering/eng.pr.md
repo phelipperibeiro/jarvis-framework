@@ -44,8 +44,8 @@ Este comando cria a **branch, commita as alterações e abre um Merge Request**.
 | Fase 1 › 1.4 Executar Testes Automatizados (Opcional) | `/eng-qa` + `QA_SPECIALIZATIONS` | Passo opcional, recomendado em mudanças significativas |
 | Skills recomendados | `/eng-global-docs-write` | Se houver necessidade de atualizar documentação junto do PR |
 | Agentes recomendados (opcional) | `eng.qa.test-planner` (agente) | Se houver dúvidas sobre cobertura de testes ou mudanças significativas |
-| Fase 4 › 4.4 Criar MR/PR via adapter | `jarvis vcs create-merge` (CLI do Jarvis) | Só se o usuário responder **Sim** na Fase 4.3: abre o MR/PR conforme `VERSION_CONTROL` ou o host do `origin` |
-| Fase 5 › 5.2 Link do MR | `/eng-global-task-comment` | Depois de o MR ser criado (só com o Sim da 4.3): um único comentário no card com o link do MR, seguindo o Passo 6 do skill `eng-global-pr` (freelance pula) |
+| Fase 4 › 4.4 Criar MR/PR via adapter | `jarvis vcs create-merge` (CLI do Jarvis) | Só se a escolha da Fase 0 for publicar (4.3): abre o MR/PR conforme `VERSION_CONTROL` ou o host do `origin` |
+| Fase 5 › 5.2 Link do MR | `/eng-global-task-comment` | Depois de o MR ser criado (só ao publicar, 4.3): um único comentário no card com o link do MR, seguindo o Passo 6 do skill `eng-global-pr` (freelance pula) |
 
 ---
 
@@ -67,11 +67,12 @@ Ler `TASK_MANAGER` do `$IDE/ENV.md`. Seguir `$IDE/rules/engineering/eng.integrat
 
 ---
 
-## Fase 0: Como validar o PR (`eng.transitions-rules.md`)
+## Fase 0: O que fazer com o PR (`eng.transitions-rules.md`)
 
-Pergunte com `AskUserQuestion`: **"Como validar o PR?"**
-- **Revisar o texto e confirmar a publicação aqui (como hoje):** segue as Fases 4.2 e 4.3.
-- **Publicar direto e validar no PR:** gera o `pull-request.md` na sessão (4.1) e publica sem a revisão do texto (4.2) e sem a pergunta "Publicar o PR agora?" (4.3); você valida no próprio PR.
+Pergunte com `AskUserQuestion`: **"O que fazer com o PR?"**
+- **Revisar o texto e publicar (como hoje):** gera o `pull-request.md`, você aprova ou ajusta (4.2) e, com a aprovação, faz o push e abre o PR (4.4). A aprovação do texto é a confirmação da publicação.
+- **Publicar sem revisar o texto:** gera o `pull-request.md` (4.1), faz o push e abre o PR (4.4) sem a revisão (4.2); você ajusta o texto direto no PR.
+- **Só gerar os arquivos:** gera o `pull-request.md` (4.1), mostra para revisão (4.2) e não faz push nem abre o PR; você abre à mão. A Fase 7 gera o `daily.md` mesmo assim.
 
 ## Fase 1: Validação Pré-PR
 
@@ -163,7 +164,7 @@ Refs: {TASK_MANAGER_KEY}"
 
 ## Fase 3: Push
 
-> ⚠️ O push só acontece **depois do Sim** da Fase 4.3. Esta fase descreve o comando; ele roda dentro da publicação.
+> ⚠️ O push só acontece **depois da escolha de publicar** (Fase 0 e 4.3). Esta fase descreve o comando; ele roda dentro da publicação.
 
 ### 3.0 Conferir marcas de IA (só com `ARTIFACT_STYLE=human-generated`)
 
@@ -234,12 +235,12 @@ Preencher com a tarefa. Link do card:
 
 Mostre o `pull-request.md` (título e resumo das seções) e pergunte com `AskUserQuestion`: `[Aprovar]` / `[Ajustar]`. Ajuste até a aprovação. (Pule com "Publicar direto e validar no PR" na Fase 0.)
 
-### 4.3 Publicar? (Sim / Não)
+### 4.3 Publicar ou não (sem pergunta nova)
 
-Pergunte com `AskUserQuestion` (**Sim / Não**): **"Publicar o PR agora?"** (Com "Publicar direto e validar no PR" na Fase 0, vale como Sim.)
+A decisão já veio da Fase 0; não pergunte de novo. Aprovado o texto na 4.2, siga a escolha:
 
-- **Não:** nada é enviado. O `pull-request.md` fica na sessão para você publicar quando quiser (à mão ou rodando o `/eng.pr` de novo). Pule para a Fase 7 (sem `daily.md`, que só existe com PR aberto), com a mensagem "PR não publicado".
-- **Sim:** faça o push (Fase 3) e crie o MR/PR (4.4).
+- **Só gerar os arquivos:** nada é enviado. O `pull-request.md` fica na sessão para você publicar quando quiser (à mão ou rodando o `/eng.pr` de novo). Pule para a Fase 7, que gera o `daily.md` mesmo assim (para não passar batido quando você abrir o PR à mão), com a mensagem "PR não publicado".
+- **Revisar o texto e publicar** ou **Publicar sem revisar o texto:** faça o push (Fase 3) e crie o MR/PR (4.4).
 
 ### 4.4 Criar MR/PR via adapter
 
@@ -434,7 +435,7 @@ Pergunte com `AskUserQuestion`: **"O PR já foi aprovado e mergeado?"**
 - ✅ Criar branch no padrão `{TASK_MANAGER_KEY}-{titulo}`
 - ✅ Preencher template do MR completamente
 - ✅ Mover card para "In Review"
-- ✅ Gerar o `pull-request.md` na sessão e só publicar com o **Sim** (Fase 4.3)
+- ✅ Gerar o `pull-request.md` na sessão e só publicar com a escolha de publicar da Fase 0 (4.3)
 - ✅ Com PR aberto, registrar o esforço no `daily.md` (7.2), com revisão conjunta da descrição e do timesheet
 - ✅ **Nunca apagar a sessão:** o `/eng.spec-consolidate` precisa dela
 

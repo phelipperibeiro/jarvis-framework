@@ -87,6 +87,6 @@ O workflow **deve sempre** terminar com:
 
 1. **`gate-checklist.md`** em `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/`:
    - semáforo (🟢 / 🟡 / 🔴), resumo, lacunas por área (o quê, onde, por que importa, sugestão, severidade, **Decisão**), evidências e PR Brief.
-2. **Decisões do usuário** gravadas na coluna Decisão (Ajustar / Não ajustar + motivo).
-3. **Pergunta Sim / Não** (`AskUserQuestion`) para publicar o relatório como comentário na issue/card (`/eng-global-task-comment`). Nunca publicar sem a resposta. Freelance: só na sessão.
+2. **Decisões do usuário** gravadas na coluna Decisão (Corrigir / Aceitar + motivo; vazia se o usuário escolheu "Só gerar o relatório").
+3. **Pergunta** (`AskUserQuestion`) sobre registrar o resultado como comentário no card (`/eng-global-task-comment`): Não, manter só na sessão (como hoje) / Sim, só o resumo / Sim, o relatório completo. Nunca publicar sem a resposta. Freelance: não pergunta, só na sessão.
 4. **Aguardar permissão explícita** do usuário para prosseguir para `/eng.pr`.

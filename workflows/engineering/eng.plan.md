@@ -168,7 +168,7 @@ CONTEXT_PROFILE:
 1. **Apresentar** o plano ao humano
 2. **Discutir** ajustes necessários
 3. **Atualizar** `architecture.md` se houver mudanças arquiteturais
-4. **Confirmar** antes de prosseguir, com a pergunta de transição (`eng.transitions-rules.md`): **"Aprovar o plan.md?"** → **Aprovar e parar aqui (como hoje)** / **Aprovar e seguir para o `/eng.work`** / **Ajustar o plano**. Com "seguir", chame o `/eng.work {TASK_MANAGER_KEY}` (ou mostre o comando)
+4. **Confirmar** antes de prosseguir, com a pergunta de transição (`eng.transitions-rules.md`): **"O que fazer com o plano?"** (depois da mensagem em markdown com o link clicável do `plan.md`) → **Aprovar e implementar agora** (chame o `/eng.work {TASK_MANAGER_KEY}`, ou mostre o comando) / **Aprovar e seguir manualmente (como hoje)** (o comando termina e o usuário chama o `/eng.work` quando quiser) / **Ajustar o plano** (o usuário diz o que mudar; atualize o `plan.md` e mostre de novo). As duas aprovações valem como a aprovação explícita do plano
 
 ---
 

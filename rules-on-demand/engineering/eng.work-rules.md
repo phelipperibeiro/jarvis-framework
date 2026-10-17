@@ -81,7 +81,7 @@ O `work` é **estritamente proibido** de:
 
 O commit segue o formato do workflow (`{TASK_MANAGER_KEY} {tipo}({escopo}): {descrição}`, com `Refs:`). Push e PR são responsabilidade do `eng.pr`.
 
-**Escolhas do início** (`eng.transitions-rules.md`, Fase 1.3 do workflow): execução, commits e o que vem depois. Com "Todas de uma vez", a escolha é a aprovação das fases; com "Um commit só ao final", o commit é um só, depois da última fase; com "Ir direto para o `/eng.pr`", o work termina chamando o `/eng.pr` (que faz o push e o PR, não o work).
+**Escolhas do início** (`eng.transitions-rules.md`, Fase 1.3 do workflow): execução, commits e o que vem depois. Com "Todas de uma vez", a escolha é a aprovação das fases; com "Um commit só ao final", o commit é um só, depois da última fase; com "Rodar o `/eng.pr`", o work termina chamando o `/eng.pr` (que faz o push e o PR, não o work).
 
 ### 2. Escopo de Atuação
 

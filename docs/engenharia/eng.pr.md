@@ -43,7 +43,7 @@ A sessão **não é apagada**: o `/eng.spec-consolidate` precisa dela. Remova à
 
 ## Perguntas que ele faz
 
-- **No início:** "Como validar o PR?" → **Revisar o texto e confirmar a publicação aqui (como hoje)** ou **Publicar direto e validar no PR** (pula a revisão do texto e o "Publicar agora?").
+- **No início:** "O que fazer com o PR?" → **Revisar o texto e publicar (como hoje)**, **Publicar sem revisar o texto**, **Só gerar os arquivos** (você abre o PR à mão; nada é enviado).
 - **No fim:** "O PR já foi aprovado e mergeado?" → **Ainda não (como hoje)** ou **Sim, rodar o `/eng.spec-consolidate`**, que registra no Central docs o que a entrega implementou.
 
 ## Regras que importam
