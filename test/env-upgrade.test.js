@@ -1,7 +1,7 @@
 // Testes do upgrade do ENV.md (env-upgrade.js). Rode com: npm run test:filtro
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { mkdtempSync, writeFileSync, readFileSync, rmSync } from "node:fs";
+import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -104,4 +104,70 @@ test("template real × ENV sem as variáveis da #157: plano traz só as duas cha
     key: "DISCOVERIES_DOCS",
     value: "$JARVIS_DOCS/$DISCOVERIES_FOLDER_NAME",
   });
+});
+
+test("planEnvUpgrade: WORKSPACE_MODE novo entra com o modo detectado (workspace com 1 subpasta)", () => {
+  const dir = mkdtempSync(join(tmpdir(), "jarvis-env-upgrade-ws-"));
+  try {
+    mkdirSync(join(dir, "app", ".git"), { recursive: true });
+    const plan = planEnvUpgrade("HUB=BACKEND\n", "WORKSPACE_MODE=\n", { workspaceDir: dir });
+    assert.deepEqual(plan.added, [{ key: "WORKSPACE_MODE", value: "workspace" }]);
+    assert.deepEqual(plan.warnings, []);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("planEnvUpgrade: WORKSPACE_MODE em raiz com .git entra como project", () => {
+  const dir = mkdtempSync(join(tmpdir(), "jarvis-env-upgrade-ws-"));
+  try {
+    mkdirSync(join(dir, ".git"), { recursive: true });
+    const plan = planEnvUpgrade("HUB=BACKEND\n", "WORKSPACE_MODE=\n", { workspaceDir: dir });
+    assert.deepEqual(plan.added, [{ key: "WORKSPACE_MODE", value: "project" }]);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("planEnvUpgrade: WORKSPACE_MODE com submódulo gera aviso só com o nome da chave", () => {
+  const dir = mkdtempSync(join(tmpdir(), "jarvis-env-upgrade-ws-"));
+  try {
+    mkdirSync(join(dir, ".git"), { recursive: true });
+    mkdirSync(join(dir, "lib", ".git"), { recursive: true });
+    const plan = planEnvUpgrade("HUB=BACKEND\n", "WORKSPACE_MODE=\n", { workspaceDir: dir });
+    assert.deepEqual(plan.warnings, ["WORKSPACE_MODE"]);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("planEnvUpgrade: WORKSPACE_MODE já existente nunca muda (preenchido ou vazio)", () => {
+  const dir = mkdtempSync(join(tmpdir(), "jarvis-env-upgrade-ws-"));
+  try {
+    mkdirSync(join(dir, "app", ".git"), { recursive: true });
+    for (const env of ["WORKSPACE_MODE=project\n", "WORKSPACE_MODE=\n"]) {
+      const plan = planEnvUpgrade(env, "WORKSPACE_MODE=\n", { workspaceDir: dir });
+      assert.deepEqual(plan.added, []);
+    }
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("planEnvUpgrade: sem workspaceDir, WORKSPACE_MODE entra com o valor do template", () => {
+  const plan = planEnvUpgrade("HUB=BACKEND\n", "WORKSPACE_MODE=\n");
+  assert.deepEqual(plan.added, [{ key: "WORKSPACE_MODE", value: "" }]);
+});
+
+test("planEnvUpgrade: WORKSPACE_REPOS restringe a detecção", () => {
+  const dir = mkdtempSync(join(tmpdir(), "jarvis-env-upgrade-ws-"));
+  try {
+    mkdirSync(join(dir, "a", ".git"), { recursive: true });
+    const plan = planEnvUpgrade("WORKSPACE_REPOS=outro\n", "WORKSPACE_MODE=\n", {
+      workspaceDir: dir,
+    });
+    assert.deepEqual(plan.added, [{ key: "WORKSPACE_MODE", value: "project" }]);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
 });

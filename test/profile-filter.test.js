@@ -196,16 +196,20 @@ test("listRulesForProfile: AGENTS.md nunca é filtrado, rtk é opt-in, sem bloco
 // Issue #159 (estilo de artefatos, 2026-10-16): +241 B em todos os perfis — rules/AGENTS.md (sempre
 // copiado) documenta o 5º campo opcional ARTIFACT_STYLE. A rule nova (artifact-style-rules.md) só entra
 // com ARTIFACT_STYLE=human-generated, que nenhum destes perfis tem.
+// Issue #163 (perguntas do ciclo eng.*, 2026-10-17): +37 B em todos os perfis — eng.integrations-rules.md
+// (comentário no card: o relatório do eng.pre-pr passa a ser registrado se o usuário escolher resumo ou completo).
+// Issue #163 (WORKSPACE_MODE, 2026-10-17): +342 B em todos os perfis — eng-rules.md ganha a validação não bloqueante do modo.
+// Issue #163 (buscas em modo workspace, 2026-10-17): +1552 B em todos os perfis — eng-rules.md ganha a tabela IDE → pasta e a regra de buscas.
 const BASE = [
   [
     "FULLCYCLE/GENERALIST/ENGINEERING/CORE",
     profile("FULLCYCLE", "GENERALIST", "ENGINEERING"),
     15,
-    99241,
+    101172,
   ],
-  ["BACKEND/SENIOR/ENGINEERING/CORE", profile("BACKEND", "SENIOR", "ENGINEERING"), 11, 65922],
-  ["FRONTEND/PLENO/ENGINEERING/CORE", profile("FRONTEND", "PLENO", "ENGINEERING"), 11, 66465],
-  ["QA/QA-ENGINEER/ENGINEERING/CORE", profile("QA", "QA-ENGINEER", "ENGINEERING"), 11, 65701],
+  ["BACKEND/SENIOR/ENGINEERING/CORE", profile("BACKEND", "SENIOR", "ENGINEERING"), 11, 67853],
+  ["FRONTEND/PLENO/ENGINEERING/CORE", profile("FRONTEND", "PLENO", "ENGINEERING"), 11, 68396],
+  ["QA/QA-ENGINEER/ENGINEERING/CORE", profile("QA", "QA-ENGINEER", "ENGINEERING"), 11, 67632],
 ];
 
 for (const [nome, p, arquivos, bytes] of BASE) {

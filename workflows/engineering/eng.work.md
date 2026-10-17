@@ -178,7 +178,7 @@ Pergunte com `AskUserQuestion`, uma pergunta por decisão (padrão primeiro):
 |---|---|
 | **Execução das fases** | **Fase a fase, com aprovação (como hoje)** / **Todas de uma vez** (mostre "N de M tarefas", com N pelo limite `MAX_AI_EXECUTION_PERCENTAGE` abaixo) |
 | **Commits** | **Um por fase (como hoje)** / **Um commit só ao final** |
-| **Depois do work** | **Sugerir o `/eng.pre-pr` (como hoje)** / **Rodar o `/eng.pre-pr` na sequência** / **Ir direto para o `/eng.pr`** / **Parar aqui** |
+| **Depois do work** | **Rodar o `/eng.pre-pr`** / **Rodar o `/eng.pr`** (sem o `/eng.pre-pr`) / **Fluxo normal (como hoje)** (só a mensagem final; o usuário segue os próximos comandos manualmente) |
 
 - Grave as escolhas no cabeçalho do `plan.md` (`Execução:`, `Commits:`, `Depois do work:`). Retomada com escolhas já gravadas: uma pergunta só, **"Manter as escolhas ({resumo})?"** (Manter / Mudar).
 - **Em qualquer escolha**, o limite de execução, um teste falhando e uma questão nova em aberto **param** a execução e voltam a perguntar.
@@ -503,7 +503,7 @@ Refs: TASK-123"
 🎉 TODAS AS FASES CONCLUÍDAS!
 
 📁 Sessão: $SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/
-📄 Plan atualizado: plan.md ✅
+📄 Arquivos da sessão (consolidado acumulado, regra 5 de `eng.transitions-rules.md`): links de `context.md`, `architecture.md` e `plan.md` (atualizado, com comentários por fase; quantas fases concluídas), cada um com a nota de estado, mais os links do card/issue
 🌿 Branch: {TASK_MANAGER_KEY}-{titulo} — {N} commits realizados
 
 📊 Resumo:
@@ -521,7 +521,7 @@ Refs: TASK-123"
 ⚠️ LEMBRETE: push e PR são responsabilidade do `eng.pr`.
 ```
 
-Depois da mensagem, siga a escolha **Depois do work**: sugerir o `/eng.pre-pr` (como hoje), chamar o `/eng.pre-pr {TASK_MANAGER_KEY}`, chamar o `/eng.pr {TASK_MANAGER_KEY}` ou parar (chamar = pelo Skill tool, ou mostrar o comando pronto na IDE que não permite).
+Depois da mensagem, siga a escolha **Depois do work**: chamar o `/eng.pre-pr {TASK_MANAGER_KEY}`, chamar o `/eng.pr {TASK_MANAGER_KEY}`, fazer o que o usuário descreveu em texto livre (o "Outros" automático) ou, no **Fluxo normal (como hoje)**, só encerrar com a mensagem (chamar = pelo Skill tool, ou mostrar o comando pronto na IDE que não permite).
 
 ## Regras Importantes
 
@@ -533,7 +533,7 @@ Depois da mensagem, siga a escolha **Depois do work**: sugerir o `/eng.pre-pr` (
 - ❌ NÃO commite sem aprovação explícita do usuário na fase (a escolha "Todas de uma vez" da 1.3 é essa aprovação)
 - ❌ NÃO commite com testes falhando
 - ❌ NÃO mova cards no Jira
-- ❌ NÃO sugira "vamos fazer o PR agora" (salvo a escolha "Ir direto para o `/eng.pr`" da 1.3)
+- ❌ NÃO sugira "vamos fazer o PR agora" (salvo a escolha "Rodar o `/eng.pr`" da 1.3)
 
 ### ✅ FAÇA SEMPRE
 

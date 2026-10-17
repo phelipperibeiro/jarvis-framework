@@ -132,3 +132,91 @@ test("init --upgrade: ENV com JARVIS_DOCS depois de PROD_DOCS (upgrade antigo) a
     );
   });
 });
+
+test("init --upgrade: WORKSPACE_MODE=workspace quando a raiz não é repositório e há UMA subpasta com .git", () => {
+  withWorkspace({ ".claude/ENV.md": ENV_V520, "app/.git/HEAD": "ref: refs/heads/main\n" }, (ws) => {
+    const r = run(ws, "--upgrade", "--ide", "claude", "--yes");
+    assert.equal(r.status, 0, r.stderr);
+    const env = readFileSync(join(ws, ".claude/ENV.md"), "utf-8");
+    assert.ok(env.startsWith(ENV_V520), "linhas existentes do ENV mudaram");
+    assert.match(env, /^WORKSPACE_MODE=workspace$/m);
+
+    const again = run(ws, "--upgrade", "--ide", "claude", "--yes");
+    assert.equal(again.status, 0, again.stderr);
+    assert.equal(readFileSync(join(ws, ".claude/ENV.md"), "utf-8"), env);
+  });
+});
+
+test("init --upgrade: WORKSPACE_MODE=project quando a raiz é repositório", () => {
+  withWorkspace({ ".claude/ENV.md": ENV_V520, ".git/HEAD": "ref: refs/heads/main\n" }, (ws) => {
+    const r = run(ws, "--upgrade", "--ide", "claude", "--yes");
+    assert.equal(r.status, 0, r.stderr);
+    assert.match(readFileSync(join(ws, ".claude/ENV.md"), "utf-8"), /^WORKSPACE_MODE=project$/m);
+  });
+});
+
+test("init --upgrade: WORKSPACE_MODE já definido no ENV não muda", () => {
+  withWorkspace(
+    { ".claude/ENV.md": `${ENV_V520}WORKSPACE_MODE=project\n`, "app/.git/HEAD": "x\n" },
+    (ws) => {
+      const r = run(ws, "--upgrade", "--ide", "claude", "--yes");
+      assert.equal(r.status, 0, r.stderr);
+      const env = readFileSync(join(ws, ".claude/ENV.md"), "utf-8");
+      assert.equal((env.match(/^WORKSPACE_MODE=/gm) || []).length, 1);
+      assert.match(env, /^WORKSPACE_MODE=project$/m);
+    }
+  );
+});
+
+const SKILL = "---\nname: x\n---\n";
+
+test("init --upgrade: skill antigo é listado e não é removido sem confirmação (nem com --yes)", () => {
+  withWorkspace(
+    { ".claude/ENV.md": ENV_V520, ".claude/skills/skill-antigo/SKILL.md": SKILL },
+    (ws) => {
+      const r = run(ws, "--upgrade", "--ide", "claude", "--yes");
+      assert.equal(r.status, 0, r.stderr);
+      assert.match(r.stdout, /Skills instalados que saíram do framework/);
+      assert.match(r.stdout, /skill-antigo/);
+      assert.ok(existsSync(join(ws, ".claude/skills/skill-antigo/SKILL.md")));
+    }
+  );
+});
+
+test("init --upgrade --remove-stale: remove só o obsoleto; especialização registrada fica", () => {
+  withWorkspace(
+    {
+      ".claude/ENV.md": `${ENV_V520}BACKEND_SPECIALIZATIONS=minha-stack\n`,
+      ".claude/skills/skill-antigo/SKILL.md": SKILL,
+      ".claude/skills/minha-stack/SKILL.md": SKILL,
+    },
+    (ws) => {
+      const r = run(ws, "--upgrade", "--ide", "claude", "--remove-stale");
+      assert.equal(r.status, 0, r.stderr);
+      assert.ok(!existsSync(join(ws, ".claude/skills/skill-antigo")));
+      assert.ok(existsSync(join(ws, ".claude/skills/minha-stack/SKILL.md")));
+      assert.ok(existsSync(join(ws, ".claude/skills/eng-backend/SKILL.md")));
+
+      const again = run(ws, "--upgrade", "--ide", "claude", "--remove-stale");
+      assert.equal(again.status, 0, again.stderr);
+      assert.doesNotMatch(again.stdout, /saíram do framework/);
+    }
+  );
+});
+
+test("init --upgrade: eng-scraper e eng-scraper-robot-builder (renomeados na #81) saem sozinhos", () => {
+  withWorkspace(
+    {
+      ".claude/ENV.md": ENV_V520,
+      ".claude/skills/eng-scraper/SKILL.md": SKILL,
+      ".claude/skills/eng-scraper-robot-builder/SKILL.md": SKILL,
+    },
+    (ws) => {
+      const r = run(ws, "--upgrade", "--ide", "claude", "--yes");
+      assert.equal(r.status, 0, r.stderr);
+      assert.ok(!existsSync(join(ws, ".claude/skills/eng-scraper")));
+      assert.ok(!existsSync(join(ws, ".claude/skills/eng-scraper-robot-builder")));
+      assert.doesNotMatch(r.stdout, /saíram do framework/);
+    }
+  );
+});

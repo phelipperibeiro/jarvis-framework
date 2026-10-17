@@ -52,7 +52,7 @@ Antes de abrir o PR/MR, este comando **revê a branch atrás de possíveis lacun
 | Gates › item 8 | `eng.ux-designer.agent` (agente) | Se a branch introduzir nova feature de UI ou alterar fluxo de usuário |
 | Gates › item 9 | `eng.docs-writer` (agente) | Sempre — apontar documentação do projeto desatualizada (sem editar) |
 | Gates › item 10 | Nenhuma — checklist inline | Se a branch tocar em auth, sessions, inputs de usuário, CORS, CSP, permissões ou adicionar endpoints públicos |
-| Publicação do relatório | `/eng-global-task-comment` | Só se o usuário responder **Sim** no fim: o `gate-checklist.md` com as decisões vira um comentário na issue/card (freelance pula) |
+| Publicação do relatório | `/eng-global-task-comment` | Só se o usuário escolher um dos **Sim** no fim: o resumo ou o `gate-checklist.md` completo, com as decisões, vira um comentário na issue/card (freelance pula, sem perguntar) |
 
 ## Regras de Execução
 
@@ -91,7 +91,7 @@ Grave em `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/gate-checklist.md`:
 
 | # | Lacuna | Onde | Por que importa | Sugestão | Severidade | Decisão |
 |---|---|---|---|---|---|---|
-| 1 | {o que falta ou está errado} | `{arquivo:linha}` | {impacto, em linguagem simples} | {como resolver} | 🔴 Bloqueador / 🟡 Importante / ⚪ Menor | {Ajustar \| Não ajustar: motivo} |
+| 1 | {o que falta ou está errado} | `{arquivo:linha}` | {impacto, em linguagem simples} | {como resolver} | 🔴 Bloqueador / 🟡 Importante / ⚪ Menor | {Corrigir \| Aceitar: motivo} |
 
 (uma tabela por área; área sem lacuna: "Nenhuma lacuna encontrada.")
 
@@ -108,9 +108,21 @@ A coluna **Decisão** nasce vazia: quem preenche é o usuário.
 
 ## Fechamento
 
-1. Mostre o semáforo, o resumo e a lista de lacunas por severidade, com o caminho do `gate-checklist.md`.
-2. Peça as decisões: para cada lacuna 🔴 e 🟡, "Ajustar" ou "Não ajustar" (com o motivo). Use `AskUserQuestion` por lacuna quando houver poucas; com muitas, deixe a pessoa responder em texto ou editar o arquivo. Grave as decisões na coluna **Decisão**.
-3. Pergunte com `AskUserQuestion` (**Sim / Não**, sempre, nunca publicar sem a resposta): **"Publicar o gate-checklist.md (com as decisões) como comentário na issue/card?"**
-   - **Sim** (e `TASK_MANAGER` preenchido): `/eng-global-task-comment {TASK_MANAGER_KEY}` com o conteúdo do arquivo.
-   - **Não**, ou modo freelance: fica só na sessão.
-4. Próximo passo: ajustar o que foi marcado "Ajustar" (à mão ou com o `/eng.work`) e rodar o `/eng.pr`, que usa o PR Brief deste relatório. Pergunte com `AskUserQuestion` (`eng.transitions-rules.md`): **"Seguir para o `/eng.pr`?"** → **Parar aqui para ajustar (como hoje)** / **Seguir para o `/eng.pr`**. Com lacuna marcada "Ajustar", deixe isso claro na opção de seguir ("Seguir mesmo com {n} lacunas a ajustar"). Com "Seguir", chame o `/eng.pr {TASK_MANAGER_KEY}` (ou mostre o comando).
+1. Mostre o semáforo, o resumo e a lista de lacunas por severidade, com o consolidado de links da sessão (regra 5 de `eng.transitions-rules.md`: tudo o que já existe, com o `gate-checklist.md` novo).
+2. Peça as decisões com `AskUserQuestion`, depois da mensagem em markdown do passo 1 (com o link clicável): **"O que fazer com as {n} lacunas encontradas ({a} 🔴 bloqueadoras, {b} 🟡 importantes)? Relatório: gate-checklist.md."**
+   - **Corrigir todas antes do PR:** marca as {n} como "Corrigir"; você corrige à mão ou com o `/eng.work`.
+   - **Corrigir só as bloqueadoras 🔴:** marca as {a} 🔴 como "Corrigir"; as 🟡 ficam "Aceitar", com um motivo só, pedido uma vez.
+   - **Decidir uma a uma:** mostra cada lacuna 🔴 e 🟡 e você escolhe "Corrigir" ou "Aceitar" (com o motivo), com `AskUserQuestion` por lacuna.
+   - **Só gerar o relatório (vou analisar com calma):** não registra decisão agora; a coluna **Decisão** fica vazia, o `gate-checklist.md` fica na sessão para você analisar e o comando termina sem as perguntas 3 e 4. Rode o `/eng.pre-pr` de novo, ou preencha o arquivo à mão, quando decidir.
+
+   Grave as decisões na coluna **Decisão** como `Corrigir` ou `Aceitar: motivo`.
+3. **Modo freelance (`TASK_MANAGER` vazio):** não pergunte; o relatório fica só na sessão. **Com board**, pergunte com `AskUserQuestion` (nunca publique sem a resposta): **"Registrar o resultado do `/eng.pre-pr` como comentário no card {TASK_MANAGER_KEY}?"**
+   - **Não, manter só na sessão (como hoje):** nada é enviado ao card.
+   - **Sim, só o resumo:** `/eng-global-task-comment {TASK_MANAGER_KEY}` com o semáforo, o resumo e as lacunas 🔴 com a decisão de cada uma.
+   - **Sim, o relatório completo:** `/eng-global-task-comment {TASK_MANAGER_KEY}` com o conteúdo do `gate-checklist.md`.
+4. Próximo passo: corrigir o que foi marcado "Corrigir" (à mão ou com o `/eng.work`) e rodar o `/eng.pr`, que usa o PR Brief deste relatório. Antes, escreva uma mensagem em markdown com o consolidado de links da sessão (regra 5) e o resumo; depois pergunte com `AskUserQuestion` (`eng.transitions-rules.md`):
+   - **Com {n} lacunas marcadas "Corrigir"** — **"O `/eng.pre-pr` encontrou {n} lacunas a corrigir ({a} 🔴, {b} 🟡). Leia o gate-checklist.md com calma e responda quando decidir. Como seguir?"**
+     - **Corrigir as lacunas agora:** chame o `/eng.work {TASK_MANAGER_KEY}` para as {n} lacunas (ou mostre o comando).
+     - **Parar aqui para corrigir à mão (como hoje):** o comando termina.
+     - **Abrir o PR assim mesmo:** chame o `/eng.pr {TASK_MANAGER_KEY}`; as {n} pendências seguem registradas no PR Brief.
+   - **Sem lacunas a corrigir** — **"Relatório sem lacunas a corrigir (gate-checklist.md). Como seguir?"**: **Abrir o PR agora** (chame o `/eng.pr {TASK_MANAGER_KEY}`) / **Parar aqui (como hoje)**.

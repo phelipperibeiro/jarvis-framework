@@ -220,6 +220,7 @@ Identificar qual IDE o usuário está utilizando:
    - Depois, ofereça a carga inicial do Central docs (Passo 5.3).
 9. **Exceção — Central docs antigo:** se o `ENV.md` tiver `CENTRAL_DOCS_REPO` preenchido e não tiver `CENTRAL_DOCS_STORAGE`, propor a migração (só com confirmação): `CENTRAL_DOCS_STORAGE=filesystem`, `CENTRAL_DOCS_LOCATION` com o padrão do modo de trabalho (Passo 4, "Central docs") e `git clone {CENTRAL_DOCS_REPO} {LOCATION}`. Depois, comentar a linha antiga (`# CENTRAL_DOCS_REPO=… (migrado em YYYY-MM-DD)`) e `CENTRAL_DOCS_CACHE_TTL`. Sem confirmação, não mexe e avisa que os comandos de docs vão pedir o Upgrade.
 10. **Exceção — `PROD_MODE`:** se `PROD_MODE` estiver entre as chaves novas, grave pelo `AREA`: `ENGINEERING` → `developer-guided`, `PRODUCT` → `product-led`. Com outra `AREA` (ou vazia), faça a mesma pergunta do Passo 3 (Pergunta 8 — modo de condução) e grave a resposta. `PROD_MODE` que já existe, mesmo vazia, não muda. As demais chaves continuam sem pergunta.
+    - **`WORKSPACE_MODE`:** o `jarvis init --upgrade` já grava o modo detectado (raiz sem `.git` e 1+ subpastas com `.git/` = `workspace`; raiz com `.git` = `project`). Se a chave existir vazia, detecte do mesmo jeito e grave; se existir preenchida, não muda. Em `workspace`, o caminho do Central docs padrão é `./central-docs` (Passo 5.2).
 11. Appender as novas variáveis ao final do `ENV.md` com comentário de data:
    ```
    # --- Upgrade YYYY-MM-DD ---
@@ -350,9 +351,10 @@ Digite o número (1-9) ou nome do cargo:
 Pergunta 1: Workspace detectado: `{basename da pasta que contém $IDE/}`. Usar esse nome?
 [Enter = sim. Só perguntar outro slug se o usuário recusar.]
 Não perguntar single vs multi.
-Escanear `.git/` na raiz e nas subpastas.
-- Só a raiz tem git → `WORKSPACE_REPOS` vazio
-- 2+ subpastas com git → listar e perguntar se filtra; senão vazio (todas)
+Escanear `.git/` na raiz e nas subpastas e gravar `WORKSPACE_MODE` (o que define o modo é a RAIZ ser ou não um repositório, não o número de repositórios):
+- Raiz com `.git` → `WORKSPACE_MODE=project`, `WORKSPACE_REPOS` vazio (se também houver subpastas com `.git`, como submódulos, grave `project` e avise)
+- Raiz sem `.git` e 1 ou mais subpastas com `.git` → `WORKSPACE_MODE=workspace`; com 2 ou mais, listar e perguntar se filtra (`WORKSPACE_REPOS`); senão vazio (todas)
+- Raiz sem `.git` e nenhuma subpasta com `.git` → `WORKSPACE_MODE=project`
 
 Pergunta 6: Qual o limite de execução da AI? (número entre 60 e 100)
 [aguardar resposta e validar range 60-100]
@@ -449,6 +451,7 @@ Qual o estilo dos artefatos que o Jarvis gera (commits, PRs, comentários e docu
 |----------|-----------|-----------|
 | `WORKSPACE` | Slug da pasta do `$IDE/` | Vazio = nome da pasta (detectar) |
 | `WORKSPACE_REPOS` | Allowlist de subpastas-repo | Vazio = todas com `.git/` |
+| `WORKSPACE_MODE` | Modo de trabalho | `workspace` (raiz sem `.git` e 1+ subpastas com `.git/`) ou `project` (raiz com `.git`). Detectado, não perguntado |
 | `IDE` | IDE utilizada | `windsurf`, `claude`, `cursor`, `codex`, `opencode`, `gemini`, `kiro` (antigravity → gemini) |
 | `SQUAD` | Nome do squad | Deve estar em `taxonomy.md` → Squads |
 | `HUB` | Hub do workspace | Deve estar em `taxonomy.md` → Hubs (**inclui DATA**) |
@@ -717,8 +720,8 @@ Pergunte com `AskUserQuestion`:
 **A ou B:**
 - `CENTRAL_DOCS_STORAGE=filesystem`.
 - `CENTRAL_DOCS_LOCATION` com o padrão do **modo de trabalho** (a pessoa pode digitar outro caminho):
-  - **modo workspace** (2+ subpastas com `.git`): `./central-docs`, com `central-docs/` no `.gitignore` do workspace;
-  - **projeto único** (só a raiz tem `.git`): `docs/jarvis/central-docs`, já coberto por `docs/jarvis/` no `.gitignore`.
+  - **`WORKSPACE_MODE=workspace`** (a raiz não é repositório e há 1+ subpastas com `.git`): `./central-docs`, com `central-docs/` no `.gitignore` do workspace;
+  - **`WORKSPACE_MODE=project`** (a raiz tem `.git`): `docs/jarvis/central-docs`, já coberto por `docs/jarvis/` no `.gitignore`.
 - **A:** `mkdir -p {LOCATION}` e criar `{LOCATION}/AGENTS.md` mínimo, explicando:
   - a estrutura `{SQUAD}/product/{produto}/feature-*.md` e `{SQUAD}/engineering/{produto}/delivery-*.md`;
   - que o `{SQUAD}/index.md` é gerado pelo `jarvis docs publish`.
@@ -762,6 +765,7 @@ O arquivo `$IDE/ENV.md` deve seguir a **estrutura e ordem** de `templates/ENV-te
 # --- Workspace e identidade ---
 WORKSPACE=
 WORKSPACE_REPOS=
+WORKSPACE_MODE={workspace|project}
 USER={resolvido}
 MAX_AI_EXECUTION_PERCENTAGE={60-100}
 ENABLE_CDD=true
@@ -1437,7 +1441,7 @@ Bem-vindo! 🎉
 ### Regras Aplicáveis
 
 - **Idioma**: Todos os arquivos `.md` gerados devem ser em português do Brasil (pt-BR)
-- **Detecção de IDE**: A variável `$IDE` é detectada automaticamente (`.windsurf/`, `.claude/`, `.cursor/`, `.codex/`, `.opencode/`, `.gemini/`)
+- **Detecção de IDE**: A variável `$IDE` é detectada automaticamente (`.windsurf/`, `.claude/`, `.cursor/`, `.codex/`, `.opencode/`, `.agents/`)
 - **Nunca inventar dados**: Se informação não estiver disponível, perguntar ao usuário
 - **Nunca expor credenciais**: Tokens e senhas nunca devem ser expostos no chat
 - **MAX_AI_EXECUTION_PERCENTAGE**:

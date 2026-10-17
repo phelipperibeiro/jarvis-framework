@@ -288,6 +288,8 @@ Use ferramentas de busca para entender o código existente:
 - **Grep**: Buscar padrões e implementações similares
 - **Read**: Analisar arquivos críticos que serão impactados
 
+Com `WORKSPACE_MODE=workspace`, busque só nos repositórios do workspace e siga a regra "Buscas de código em modo workspace" de `eng-rules.md` (ignora `$IDE/`, `.jarvis/`, `.vscode/`, `node_modules/` e o `CDD-MIND-MAP.md`; `docs/jarvis/` é lida como documento de trabalho).
+
 ### 3.2 Documentação Existente
 
 Verifique:
@@ -412,7 +414,7 @@ Apresente:
 1. Resumo do que foi documentado
 2. Principais decisões arquiteturais
 3. Riscos identificados
-4. Link para o arquivo criado
+4. Consolidado de links da sessão (regra 5 de `eng.transitions-rules.md`): `context.md` (novo; tipo e autonomia) e `architecture.md` (novo; quantas questões em aberto) e o aquecimento consumido, se houver, cada um com a nota de estado, mais os links do card/issue
 
 ### 5.2 Iteração
 
@@ -422,7 +424,7 @@ Se o usuário tiver feedback:
 - Apresente novamente
 - Continue até aprovação explícita
 
-**Sem Advisor**, a aprovação é a pergunta de transição (`eng.transitions-rules.md`): **"Aprovar o architecture.md?"** → **Aprovar e parar aqui (como hoje)** / **Aprovar e seguir para o `/eng.plan`** / **Ajustar o documento**. Com "seguir", chame o `/eng.plan {TASK_MANAGER_KEY}` (ou mostre o comando).
+**Sem Advisor**, a aprovação é a pergunta de transição (`eng.transitions-rules.md`): **"Aprovar o architecture.md?"** (depois da mensagem em markdown com o link clicável do arquivo) → **Aprovar e parar aqui (como hoje)** / **Aprovar e seguir para o `/eng.plan`** / **Ajustar o documento**. Com "seguir", chame o `/eng.plan {TASK_MANAGER_KEY}` (ou mostre o comando).
 **Com Advisor**, o gate segue a autonomia do `context.md` (CDD): `alta` → apresente o resumo e siga para o `eng.plan` sem aguardar; `média` ou `baixa` → aguarde a aprovação explícita. Sem `context.md`, use a tabela "Autonomia por POSITION" de `eng-rules.md`. Sem Advisor, nada muda.
 
 ### 5.3 Atualizar Board

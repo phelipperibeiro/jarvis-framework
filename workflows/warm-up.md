@@ -28,7 +28,7 @@ As rules já estão no contexto da sessão: **não as releia**. Perfil de comuni
 ## Passo 1 — Perfil (silencioso)
 
 ```bash
-grep -E "^(POSITION|AREA|HUB|SQUAD|WORKSPACE|WORKSPACE_REPOS|PROD_MODE|ENABLE_CDD|CENTRAL_DOCS_STORAGE|[A-Z]+_SPECIALIZATIONS)=" $IDE/ENV.md
+grep -E "^(POSITION|AREA|HUB|SQUAD|WORKSPACE|WORKSPACE_REPOS|WORKSPACE_MODE|PROD_MODE|ENABLE_CDD|CENTRAL_DOCS_STORAGE|[A-Z]+_SPECIALIZATIONS)=" $IDE/ENV.md
 ```
 
 `$IDE/ENV.md` pode estar num ancestral do cwd. `WORKSPACE` vazio = nome da pasta que contém `$IDE/`. Não invente valores ausentes; não pergunte o que está no ENV.
@@ -37,7 +37,7 @@ grep -E "^(POSITION|AREA|HUB|SQUAD|WORKSPACE|WORKSPACE_REPOS|PROD_MODE|ENABLE_CD
 
 O mapa é o **contexto de workspace**: stack e papel de cada repositório. Fica na raiz do workspace (ao lado do `AGENTS.md`), fora do versionamento. Formato e instruções de preenchimento: `$IDE/templates/cdd-mind-map-template.md`.
 
-1. **Repositórios do workspace:** os de `WORKSPACE_REPOS` ou, se vazia, as subpastas com `.git/`; só a raiz com `.git` = projeto único (uma linha).
+1. **Repositórios do workspace:** use o `WORKSPACE_MODE` do ENV. `workspace`: os de `WORKSPACE_REPOS` ou, se vazia, as subpastas com `.git/` (a raiz não é repositório, mesmo com uma subpasta só). `project`: a raiz, uma linha. Reconfira pelo critério (raiz com `.git` = `project`; raiz sem `.git` e 1+ subpastas com `.git/` = `workspace`) e, se o valor gravado divergir do detectado ou estiver ausente, avise e sugira `jarvis init --upgrade`, sem alterar o ENV. Nas buscas de código vale a regra "Buscas de código em modo workspace" de `eng-rules.md`.
 2. **Mapa não existe:** infira cada repositório pela tabela `$IDE/skills/jarvis-init/assets/sinais-de-stack.md` e pela estrutura (papel), mostre a tabela e pergunte com `AskUserQuestion`: **Confirmar** | **Corrigir** | **Incluir informação**. Repita até confirmar. Então:
    - grave `CDD-MIND-MAP.md` na raiz do workspace;
    - garanta a linha no `.gitignore`: `grep -qxF 'CDD-MIND-MAP.md' .gitignore 2>/dev/null || echo 'CDD-MIND-MAP.md' >> .gitignore`;

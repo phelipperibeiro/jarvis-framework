@@ -146,9 +146,9 @@ elif [ -d ".codex" ]; then
 elif [ -d ".opencode" ]; then
   echo "IDE: OpenCode"
   echo "Pasta: .opencode/"
-elif [ -d ".gemini" ]; then
+elif [ -d ".agents" ]; then
   echo "IDE: Gemini CLI / Antigravity"
-  echo "Pasta: .gemini/"
+  echo "Pasta: .agents/"
 fi
 ```
 
@@ -161,7 +161,7 @@ fi
 | Cursor | `.cursor/` | `~/.cursor/mcp.json` |
 | Codex (OpenAI) | `.codex/` | - |
 | OpenCode | `.opencode/` | - |
-| Gemini CLI / Antigravity | `.gemini/` | - |
+| Gemini CLI / Antigravity | `.agents/` | - |
 
  Windsurf / Claude Code / Cursor / Codex / OpenCode / Gemini
 

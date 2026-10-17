@@ -16,6 +16,11 @@ import { getPackageInfo, getFrameworkRoot } from "../lib/utils/paths.js";
 import { logger, configureFromFlags } from "../lib/utils/logger.js";
 import { resolveEnvPath } from "../lib/env-loader.js";
 import { LOCK_FILE } from "../lib/config/constants.js";
+import {
+  findStaleSkills,
+  registeredSpecializations,
+  removeStaleSkills,
+} from "../lib/core/stale-skills.js";
 import { parseEnvEntries, planEnvUpgrade, applyEnvUpgrade } from "../lib/core/env-upgrade.js";
 import {
   expandEnv,
@@ -283,7 +288,7 @@ async function runUpgrade(cwd, flags) {
     join(getFrameworkRoot(), "templates", "ENV-template.md"),
     "utf-8"
   );
-  const envPlan = planEnvUpgrade(envText, templateText);
+  const envPlan = planEnvUpgrade(envText, templateText, { workspaceDir });
   const addedKeys = envPlan.added.map((a) => a.key);
 
   // 3. Documentos: o plano usa o ENV como ficará depois do upgrade (com as chaves novas)
@@ -312,6 +317,34 @@ async function runUpgrade(cwd, flags) {
     docsPlan.moves.length > 0 && !accepted ? declineEnvValues(docsPlan, addedKeys, env) : {};
   const today = new Date().toISOString().slice(0, 10);
   applyEnvUpgrade(envPath, envPlan, today, overrides);
+
+  // 3.1 Skills instalados que saíram do framework: só lista; remove com confirmação ou --remove-stale
+  const ideSkillsDir = join(workspaceDir, `.${getIDEFolder(ide)}`, "skills");
+  const stale = findStaleSkills({
+    ideSkillsDir,
+    frameworkSkillsDir: join(getFrameworkRoot(), "skills"),
+    registered: registeredSpecializations(parseEnvEntries(envText)),
+  });
+  let staleRemoved = [];
+  let staleErrors = [];
+  if (stale.length > 0) {
+    logger.info(`${YELLOW}🧹 Skills instalados que saíram do framework:${NC}`);
+    for (const name of stale) logger.info(`  .${getIDEFolder(ide)}/skills/${name}/`);
+    let confirmed = Boolean(flags.removeStale);
+    if (!confirmed && !flags.yes && process.stdin.isTTY) {
+      const rl = createInterface({ input: process.stdin, output: process.stdout });
+      const answer = await ask(rl, `Remover estes skills antigos? (s/N): `);
+      rl.close();
+      confirmed = answer.trim().toLowerCase() === "s";
+    }
+    if (confirmed) {
+      ({ removed: staleRemoved, errors: staleErrors } = removeStaleSkills(ideSkillsDir, stale));
+    } else {
+      logger.info(
+        `${DIM}  Nada removido. Apague as pastas à mão ou rode de novo com ${BOLD}--remove-stale${NC}${DIM}.${NC}`
+      );
+    }
+  }
 
   let moved = [];
   let rewritten = [];
@@ -342,6 +375,8 @@ async function runUpgrade(cwd, flags) {
   for (const s of docsPlan.skipped)
     logger.info(`${YELLOW}  ⚠️  Pulado (${s.reason}): ${s.from}${NC}`);
   for (const e of moveErrors) logger.error(`${RED}  ✗ ${e}${NC}`);
+  if (staleRemoved.length) logger.info(`  • Skills antigos removidos: ${staleRemoved.join(", ")}`);
+  for (const e of staleErrors) logger.error(`${RED}  ✗ ${e}${NC}`);
   for (const k of envPlan.pending) {
     logger.info(`${YELLOW}  ⚠️  ${k} está vazio: responda no /jarvis-init upgrade${NC}`);
   }
@@ -350,7 +385,12 @@ async function runUpgrade(cwd, flags) {
       `${YELLOW}  ⚠️  Central docs no formato antigo (CENTRAL_DOCS_REPO): a migração é feita pelo /jarvis-init upgrade${NC}`
     );
   }
+  if (envPlan.warnings.includes("WORKSPACE_MODE")) {
+    logger.info(
+      `${YELLOW}  ⚠️  WORKSPACE_MODE: a raiz é um repositório e há subpastas com .git (submódulos?): gravado como project; confira no ENV.md${NC}`
+    );
+  }
   logger.info("");
   logger.info(`${CYAN}➡️  Agora rode ${BOLD}/jarvis-init upgrade${NC}${CYAN} na IDE.${NC}\n`);
-  return sync.errors.length || moveErrors.length ? 1 : 0;
+  return sync.errors.length || moveErrors.length || staleErrors.length ? 1 : 0;
 }

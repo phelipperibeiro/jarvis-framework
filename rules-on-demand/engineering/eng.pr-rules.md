@@ -324,19 +324,19 @@ Antes de considerar o PR completo:
 - [ ] Comentários de code review processados
 - [ ] `pull-request.md` aprovado na sessão (e publicado, se o usuário respondeu Sim)
 - [ ] Pergunta "O PR já foi aprovado e mergeado?" no fim (Sim → `/eng.spec-consolidate`)
-- [ ] `daily.md` gerado ou atualizado e aprovado (só com PR aberto), com a linha de timesheet na mensagem final
+- [ ] `daily.md` gerado ou atualizado e aprovado (com ou sem PR publicado), com a linha de timesheet na mensagem final
 
 ---
 
 ## Sessão e publicação
 
 - O texto do PR fica em **`$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/pull-request.md`**, aprovado pelo usuário.
-- **Publicar (push + MR/PR) só com o Sim** do `AskUserQuestion` "Publicar o PR agora?", ou com a escolha "Publicar direto e validar no PR" da Fase 0 (`eng.transitions-rules.md`). Com Não, o arquivo fica na sessão e nada é enviado.
+- **Publicar (push + MR/PR) só com a escolha "Revisar o texto e publicar" (depois da aprovação do texto) ou "Publicar sem revisar o texto"** da Fase 0 (`eng.transitions-rules.md`). Com "Só gerar os arquivos", o arquivo fica na sessão e nada é enviado.
 - **A sessão nunca é apagada por este comando:** o `/eng.spec-consolidate`, que roda depois do merge, precisa do `architecture.md`, do `plan.md`, do `gate-checklist.md` e do `pull-request.md`. A pessoa apaga à mão quando quiser.
 
 ## daily.md (registro do esforço)
 
-- Gerado na Conclusão do `eng.pr`, em `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/daily.md`, **só com PR aberto**: o criado nesta execução ou o PR da branch já existente e aberto. Sem PR aberto, não gerar.
+- Gerado na Conclusão do `eng.pr`, em `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/daily.md`, **com ou sem PR publicado**, para não passar batido quando o PR é aberto à mão. Se houver PR (o criado nesta execução ou o já aberto da branch), preencher o campo `pr`; sem PR, deixá-lo vazio.
 - **Sempre perguntar a data** (hoje ou retroativa) com `AskUserQuestion`.
 - **Período de mais de um dia:** antes de contar os dias trabalhados, perguntar sobre sábado/domingo trabalhados, feriados e outros dias não trabalhados (o usuário informa as datas).
 - ***Post mortem*:** automático com `tipo: bugfix|hotfix` no `context.md` ou com mais de 1 dia trabalhado; nos outros casos, perguntar Sim/Não.

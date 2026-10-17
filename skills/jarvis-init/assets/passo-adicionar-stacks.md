@@ -96,7 +96,7 @@ Pergunte: **"Quer registrar alguma delas agora?"** Se sim, registre pelo 9.6 e s
 **Quais projetos analisar:**
 
 1. `WORKSPACE_REPOS` do `ENV.md`, quando preenchido
-2. Vazio: a raiz do workspace e as **subpastas com `.git/`**
+2. Vazio: com `WORKSPACE_MODE=workspace`, só as **subpastas com `.git/`** (a raiz não é repositório e guarda `$IDE/`, `.jarvis/` e outros itens fora do git); com `project`, a raiz
 3. Monorepos sem `.git` por pacote: procure manifestos **até 2 níveis** de profundidade
 
 **Ignore sempre** `node_modules`, `vendor`, `.git` e pastas de build.

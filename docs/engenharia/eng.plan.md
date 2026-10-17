@@ -52,7 +52,7 @@ Por `MAX_AI_EXECUTION_PERCENTAGE`: de 80% para cima, plano completo validado no 
 
 ## Perguntas que ele faz
 
-- **No fim:** "Aprovar o plan.md?" → **Aprovar e parar aqui (como hoje)**, **Aprovar e seguir para o `/eng.work`** ou **Ajustar o plano**. A resposta já é a sua aprovação.
+- **No fim:** "O que fazer com o plano?" → **Aprovar e implementar agora**, **Aprovar e seguir manualmente (como hoje)** ou **Ajustar o plano**. As duas aprovações já valem como a sua aprovação do plano.
 
 ## Regras que importam
 

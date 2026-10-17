@@ -31,7 +31,7 @@ Confere que tudo está passando, envia a branch e abre o merge request (ou pull 
 6. **Posta o link do MR no card** (um único comentário) e orienta a mover para "In Review" (quando há board)
 7. **Processa o code review:** analisa os comentários e aplica correções
 8. **Registra métricas de lead time**
-9. **Registra o esforço em `daily.md`** (só com PR aberto), na sessão e nunca publicado:
+9. **Registra o esforço em `daily.md`** (com ou sem PR publicado), na sessão e nunca publicado:
    - pergunta a data (hoje ou retroativa);
    - se o período passar de um dia, pergunta sobre sábado/domingo trabalhados, feriados e outros dias não trabalhados, para contar os dias trabalhados;
    - usa o formato *post mortem* em `bugfix`/`hotfix` ou com mais de 1 dia trabalhado (senão, pergunta);
@@ -43,7 +43,7 @@ A sessão **não é apagada**: o `/eng.spec-consolidate` precisa dela. Remova à
 
 ## Perguntas que ele faz
 
-- **No início:** "Como validar o PR?" → **Revisar o texto e confirmar a publicação aqui (como hoje)** ou **Publicar direto e validar no PR** (pula a revisão do texto e o "Publicar agora?").
+- **No início:** "O que fazer com o PR?" → **Revisar o texto e publicar (como hoje)**, **Publicar sem revisar o texto**, **Só gerar os arquivos** (você abre o PR à mão; nada é enviado).
 - **No fim:** "O PR já foi aprovado e mergeado?" → **Ainda não (como hoje)** ou **Sim, rodar o `/eng.spec-consolidate`**, que registra no Central docs o que a entrega implementou.
 
 ## Regras que importam

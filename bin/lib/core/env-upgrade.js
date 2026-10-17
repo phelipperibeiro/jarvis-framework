@@ -2,6 +2,7 @@
 // Regra: só acrescenta. Nenhuma chave existente muda, preenchida, vazia ou com lista de opções.
 // Mesmas regras do Upgrade (C) do skill jarvis-init (itens 4, 5, 9, 10 e 11).
 import { readFileSync, writeFileSync } from "node:fs";
+import { detectWorkspaceMode } from "./workspace-mode.js";
 
 const KEY_LINE = /^([A-Z][A-Z0-9_]*)=(.*)$/;
 
@@ -35,10 +36,13 @@ function isDataOnlyKey(key) {
 
 /**
  * Calcula o que o upgrade acrescenta, sem gravar nada.
+ * @param {string} envText
+ * @param {string} templateText
+ * @param {{ workspaceDir?: string }} [options] - `workspaceDir`: pasta que contém o `$IDE/`, para detectar o `WORKSPACE_MODE`
  * @returns {{ added: {key: string, value: string}[], pending: string[], warnings: string[] }}
  *   `pending` e `warnings` trazem só nomes de chave, nunca valores do ENV.
  */
-export function planEnvUpgrade(envText, templateText) {
+export function planEnvUpgrade(envText, templateText, { workspaceDir } = {}) {
   const env = parseEnvEntries(envText);
   const template = parseEnvEntries(templateText);
   const hub = (env.get("HUB") || "").toUpperCase();
@@ -56,6 +60,15 @@ export function planEnvUpgrade(envText, templateText) {
     if (key === "PROD_MODE") {
       value = PROD_MODE_BY_AREA[area] || "";
       if (!value) pending.push("PROD_MODE");
+    }
+    if (key === "WORKSPACE_MODE" && workspaceDir) {
+      const repos = (env.get("WORKSPACE_REPOS") || "")
+        .split(",")
+        .map((r) => r.trim())
+        .filter(Boolean);
+      const detected = detectWorkspaceMode(workspaceDir, { repos });
+      value = detected.mode;
+      if (detected.warning) warnings.push("WORKSPACE_MODE");
     }
     added.push({ key, value });
   }

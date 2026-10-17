@@ -10,6 +10,8 @@ model_justification: Consolidar exige ler e cruzar muitas fontes (documentos, de
 
 # Consolidar no Central docs
 
+> 🔀 **Consolidado de links**: na mensagem final (Passo 7), siga a regra 5 de `$IDE/rules-on-demand/engineering/eng.transitions-rules.md`: liste, como links clicáveis, todos os arquivos da sessão que já existem.
+
 Este comando registra no **Central docs** o que a entrega **de fato implementou**. Ele roda **depois do merge do PR** (o `/eng.pr` pergunta no fim se o PR já foi mergeado e oferece chamá-lo) e gera dois documentos completos e autossuficientes:
 - o **documento da funcionalidade** (`feature-{slug}.md`), com o estado atual, novo ou atualizado;
 - o **registro da entrega** (`delivery-{AAAA-MM-DD}-{task_key}.md`), com o PR, os commits e os autores.
@@ -116,6 +118,8 @@ Com `ARTIFACT_STYLE=human-generated`, a versão humanizada (`{nome}.public.md`) 
 
 ```
 ✅ Consolidação {publicada | salva na sessão}
+
+📄 Arquivos da sessão (consolidado acumulado, regra 5 de `eng.transitions-rules.md`): links de `context.md`, `architecture.md`, `plan.md`, `gate-checklist.md`, `pull-request.md`, `daily.md` e dos arquivos de `consolidation/` (novos), só os que existem
 
 📄 Funcionalidade: {SQUAD}/product/{produto}/feature-{slug}.md
 🧾 Entrega:        {SQUAD}/engineering/{produto}/delivery-{AAAA-MM-DD}-{task_key}.md
