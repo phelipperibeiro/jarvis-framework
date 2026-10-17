@@ -6,6 +6,28 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), e o
 
 > Versões anteriores a `2.1.1` não foram documentadas retroativamente neste changelog — o histórico detalhado dessas versões continua disponível via `git log`.
 
+## [5.6.0] - 2026-10-17
+
+### Added
+- **`WORKSPACE_MODE=workspace|project`** (#163): nova chave do `ENV.md`, detectada pelo `jarvis init --upgrade` (e pelo `/jarvis-init`) com a função `detectWorkspaceMode`. O que define o modo é a **raiz** ser ou não um repositório (raiz sem `.git` e 1+ subpastas com `.git/` = `workspace`; raiz com `.git` = `project`), e não quantos repositórios existem. O upgrade nunca altera uma chave que já existe.
+- **Regra de buscas em modo workspace** (#163, `eng-rules.md`): só os repositórios são código; a pasta da IDE ativa, `.jarvis/`, `.vscode/`, `node_modules/` e o `CDD-MIND-MAP.md` são ignorados nas buscas, salvo leitura pedida pelo workflow; `docs/jarvis/` é lida sob demanda como documento de trabalho. Tabela única `IDE → pasta` (inclui Kiro).
+- **Consolidado de links da sessão** (#163, regra 5 de `eng.transitions-rules.md`): a cada etapa, o comando mostra o bloco "Arquivos da sessão" com links clicáveis de tudo o que já existe, com uma nota curta de estado em cada arquivo, antes das perguntas que dependem de um arquivo e na mensagem final.
+- **`jarvis init --upgrade` lista e oferece remover skills antigos** (#163): os instalados que o framework não tem mais; a remoção só com confirmação no terminal ou `--remove-stale` (nunca com `--yes`); skills registrados em `*_SPECIALIZATIONS` nunca são listados.
+
+### Changed
+- **Perguntas do ciclo `eng.*`** (#163): rótulos que dizem o que acontece e nenhuma opção "Outros" listada (o `AskUserQuestion` já a acrescenta).
+  - `eng.work`: "Depois do work" com Rodar o `/eng.pre-pr`, Rodar o `/eng.pr` (sem o pre-pr) e Fluxo normal (como hoje);
+  - `eng.plan`: "O que fazer com o plano?" (aprovar e implementar agora, aprovar e seguir manualmente, ajustar);
+  - `eng.pre-pr`: decisão das lacunas numa pergunta só (Corrigir/Aceitar); comentário no card só com board (só o resumo ou o relatório completo); pergunta final conforme haja lacunas;
+  - `eng.pr`: "O que fazer com o PR?" (revisar e publicar, publicar sem revisar, só gerar os arquivos).
+- **`daily.md`** é gerado com ou sem PR publicado (antes: só com PR aberto).
+- **Humanização** (`ARTIFACT_STYLE=human-generated`): uma pergunta só, no fim do `eng.pr`, em abas (uma por documento); `pull-request.md` (já é público) e `context.md` ficam de fora.
+
+### Fixed
+- **Critério de modo workspace** no `jarvis-init` (#163): "2+ subpastas com `.git`" classificava um workspace de um repositório só como projeto único e escolhia o caminho errado do Central docs.
+- **Pasta do Gemini** (#163): `.gemini/` → `.agents/` em `eng-rules`, `prod-rules`, `setup-guide` e `jarvis-init` (é a pasta que o `jarvis init` instala).
+- **Skills `eng-scraper` e `eng-scraper-robot-builder`** (#163): o renome para `eng-automation` (#81) não estava em `OBSOLETE_PATHS`; ficavam sobrando na pasta da IDE e bloqueavam todo `eng.*` (área `scraper` não reconhecida). Agora o upgrade os remove.
+
 ## [5.5.0] - 2026-10-16
 
 > Primeiro release desde a 5.2.0: reúne também as mudanças de [5.3.0] e [5.4.0], que não foram publicadas separadamente.
