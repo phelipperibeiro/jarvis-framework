@@ -396,12 +396,12 @@ Regras em `$IDE/rules-on-demand/engineering/eng.pr-rules.md` (seção "daily.md"
 {LEAD_TIME_MSG}
 
 📄 Arquivos da sessão (consolidado acumulado, regra 5 de `eng.transitions-rules.md`; só os que existem):
-- [context.md]({caminho relativo})
-- [architecture.md]({caminho relativo})
-- [plan.md]({caminho relativo})
-- [gate-checklist.md]({caminho relativo})  ← se o `eng.pre-pr` rodou
-- [pull-request.md]({caminho relativo}) (novo)
-- [daily.md]({caminho relativo}) (novo)
+- [context.md]({caminho relativo}) ({nota de estado})
+- [architecture.md]({caminho relativo}) ({nota de estado})
+- [plan.md]({caminho relativo}) ({nota de estado})
+- [gate-checklist.md]({caminho relativo}) ({nota de estado})  ← se o `eng.pre-pr` rodou
+- [pull-request.md]({caminho relativo}) (novo; {publicado como PR #N | gerado, PR não publicado})
+- [daily.md]({caminho relativo}) (novo; {aprovado, com timesheet})
 🕒 Timesheet: {LINHA_DE_TIMESHEET_APROVADA}
 
 📌 Próximos passos:

@@ -414,7 +414,7 @@ Apresente:
 1. Resumo do que foi documentado
 2. Principais decisões arquiteturais
 3. Riscos identificados
-4. Consolidado de links da sessão (regra 5 de `eng.transitions-rules.md`): `context.md`, `architecture.md` (novo) e o aquecimento consumido, se houver, mais os links do card/issue
+4. Consolidado de links da sessão (regra 5 de `eng.transitions-rules.md`): `context.md` (novo; tipo e autonomia) e `architecture.md` (novo; quantas questões em aberto) e o aquecimento consumido, se houver, cada um com a nota de estado, mais os links do card/issue
 
 ### 5.2 Iteração
 
