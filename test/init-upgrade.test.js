@@ -167,3 +167,56 @@ test("init --upgrade: WORKSPACE_MODE já definido no ENV não muda", () => {
     }
   );
 });
+
+const SKILL = "---\nname: x\n---\n";
+
+test("init --upgrade: skill antigo é listado e não é removido sem confirmação (nem com --yes)", () => {
+  withWorkspace(
+    { ".claude/ENV.md": ENV_V520, ".claude/skills/skill-antigo/SKILL.md": SKILL },
+    (ws) => {
+      const r = run(ws, "--upgrade", "--ide", "claude", "--yes");
+      assert.equal(r.status, 0, r.stderr);
+      assert.match(r.stdout, /Skills instalados que saíram do framework/);
+      assert.match(r.stdout, /skill-antigo/);
+      assert.ok(existsSync(join(ws, ".claude/skills/skill-antigo/SKILL.md")));
+    }
+  );
+});
+
+test("init --upgrade --remove-stale: remove só o obsoleto; especialização registrada fica", () => {
+  withWorkspace(
+    {
+      ".claude/ENV.md": `${ENV_V520}BACKEND_SPECIALIZATIONS=minha-stack\n`,
+      ".claude/skills/skill-antigo/SKILL.md": SKILL,
+      ".claude/skills/minha-stack/SKILL.md": SKILL,
+    },
+    (ws) => {
+      const r = run(ws, "--upgrade", "--ide", "claude", "--remove-stale");
+      assert.equal(r.status, 0, r.stderr);
+      assert.ok(!existsSync(join(ws, ".claude/skills/skill-antigo")));
+      assert.ok(existsSync(join(ws, ".claude/skills/minha-stack/SKILL.md")));
+      assert.ok(existsSync(join(ws, ".claude/skills/eng-backend/SKILL.md")));
+
+      const again = run(ws, "--upgrade", "--ide", "claude", "--remove-stale");
+      assert.equal(again.status, 0, again.stderr);
+      assert.doesNotMatch(again.stdout, /saíram do framework/);
+    }
+  );
+});
+
+test("init --upgrade: eng-scraper e eng-scraper-robot-builder (renomeados na #81) saem sozinhos", () => {
+  withWorkspace(
+    {
+      ".claude/ENV.md": ENV_V520,
+      ".claude/skills/eng-scraper/SKILL.md": SKILL,
+      ".claude/skills/eng-scraper-robot-builder/SKILL.md": SKILL,
+    },
+    (ws) => {
+      const r = run(ws, "--upgrade", "--ide", "claude", "--yes");
+      assert.equal(r.status, 0, r.stderr);
+      assert.ok(!existsSync(join(ws, ".claude/skills/eng-scraper")));
+      assert.ok(!existsSync(join(ws, ".claude/skills/eng-scraper-robot-builder")));
+      assert.doesNotMatch(r.stdout, /saíram do framework/);
+    }
+  );
+});

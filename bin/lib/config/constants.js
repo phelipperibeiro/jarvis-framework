@@ -46,6 +46,11 @@ export const OBSOLETE_PATHS = Object.freeze([
   "skills/lovable-prompt-generator",
   "steering/skills/skill-churn-audit.md",
   "steering/skills/skill-lovable-prompt-generator.md",
+  // eng-scraper e eng-scraper-robot-builder (renomeados na #81 para eng-automation): ficavam sobrando na pasta da IDE
+  "skills/eng-scraper",
+  "skills/eng-scraper-robot-builder",
+  "steering/skills/skill-eng-scraper.md",
+  "steering/skills/skill-eng-scraper-robot-builder.md",
   "skills/eng-nestjs",
   "skills/eng-rabbitmq",
   "skills/eng-arch-c4",
