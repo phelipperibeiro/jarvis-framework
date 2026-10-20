@@ -141,6 +141,8 @@ export const OBSOLETE_PATHS = Object.freeze([
   // entraram na base eng-frontend (temas 13, 14)
   "skills/eng-frontend-design-system",
   "skills/eng-frontend-microfrontend",
+  // eng.bug-audit (removido): virou o caso "varrer" do /eng.debug (#168)
+  "workflows/engineering/eng.bug-audit.md",
 ]);
 
 /**

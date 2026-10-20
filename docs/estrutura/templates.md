@@ -24,6 +24,8 @@ templates/
     ├── plan-template.md
     ├── PR-template.md
     ├── breakdown-subtasks-template.md
+    ├── debug-report-template.md      # relatório do /eng.debug (caso investigar)
+    ├── bug-audit-report-template.md  # relatório do /eng.debug (caso varrer)
     ├── data-pipeline-template.md
     ├── data-contract-template.md
     ├── work-progress-template.md
@@ -31,7 +33,6 @@ templates/
     ├── CONTACTS-template.md
     └── qa/
         ├── qa.cypress-test-template.md
-        ├── qa.exploratory-session-template.md
         ├── qa.quality-report-template.md
         ├── qa.release-signoff-template.md
         ├── qa.sprint-plan-template.md

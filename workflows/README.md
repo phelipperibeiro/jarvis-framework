@@ -30,8 +30,7 @@ workflows/
     ├── eng.pre-pr.md             # Validação pré-PR
     ├── eng.pr.md                 # Criação de PR
     ├── eng.review.md             # Revisão
-    ├── eng.debug.md              # Debug/incident
-    ├── eng.bug-audit.md          # Auditoria de bugs
+    ├── eng.debug.md              # Debug: investiga um bug ou varre um escopo
     ├── eng.docs.md               # Documentação (engenharia)
     ├── eng.create-ard.md         # Criar ARD
     ├── eng.create-ard-from-code.md
@@ -88,14 +87,13 @@ workflows/
 | `eng.pre-pr.md` | Validação final antes do PR |
 | `eng.pr.md` | Criar branch, commit e Pull Request |
 | `eng.review.md` | Revisão de solução/PR |
-| `eng.debug.md` | Debug e investigação de incidentes |
+| `eng.debug.md` | Investiga um bug ou varre um escopo atrás de problemas |
 | `eng.docs.md` | Atualizar documentação de engenharia |
 | `eng.create-ard.md` | Criar ARD (Architecture Review Document) |
 | `eng.create-ard-from-code.md` | Criar ARD a partir do código |
 | `eng.create-rfc.md` | Criar RFC (Request For Comments) |
 | `eng.build-tech-spec.md` | Criar especificação técnica |
 | `eng.breakdown-subtasks.md` | Quebrar tech spec em subtarefas |
-| `eng.bug-audit.md` | Auditoria e análise de bugs |
 | `eng.light-arch.md` | Design arquitetural leve |
 | `eng.rpa.robot.md` | Criar robô novo ou manter existente — análise, scaffolding, impl, docs, PR |
 | `eng.frontend-component.md` | Criar ou refatorar componente frontend com qualidade (design system vs remote, a11y, testes) |

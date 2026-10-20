@@ -11,7 +11,7 @@ agents/
 ├── engineering/                  # ⚙️ Agentes do domínio de Engenharia
 │   ├── eng.advisor.agent.md      # Advisor opcional das questões em aberto (eng.start)
 │   ├── eng.agent.md              # Agent principal de engenharia
-│   ├── eng.bug-hunter.md         # Caça e análise de bugs
+│   ├── eng.bug-hunter.md         # Caça e análise de bugs (persona do /eng.debug)
 │   ├── eng.dev-code-reviewer.md  # Code reviewer
 │   ├── eng.docs-writer.md        # Escritor de documentação
 │   ├── eng.rpa.agent.md          # Automação RPA (ARACHNE)

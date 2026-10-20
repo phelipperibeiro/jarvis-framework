@@ -141,6 +141,17 @@ export function syncAssets(targetDir, ide, opts = {}) {
         result.copied.push(`(cleanup) .${getIDEFolder(ide)}/${obsolete} removed`);
       } catch {}
     }
+
+    // Workflows ficam achatados na pasta de workflows da IDE (ex: .claude/commands/),
+    // então o caminho do framework nunca existe lá: remove pelo nome exato do arquivo.
+    if (!obsolete.startsWith("workflows/")) continue;
+    const flatPath = join(workflowsDest, basename(obsolete));
+    if (existsSync(flatPath) && !opts.dryRun) {
+      try {
+        rmSync(flatPath, { force: true });
+        result.copied.push(`(cleanup) .${getIDEFolder(ide)}/${relative(ideDir, flatPath)} removed`);
+      } catch {}
+    }
   }
 
   if (!opts.dryRun) {

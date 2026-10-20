@@ -82,7 +82,7 @@ Use este skill quando há um **card de bug** (`TASK_MANAGER_KEY`) e o bug suspei
 - Bug intermitente suspeito de timeout ou race condition cross-service
 
 **NÃO usar quando:**
-- Não há um card/bug específico para investigar (use `eng.bug-audit` para auditoria de projeto)
+- Não há um card/bug específico para investigar (use o `/eng.debug` no caso varrer para auditar um escopo)
 - O bug do card é claramente interno ao serviço (sem chamadas externas no stack trace)
 - O fluxo descrito no card tem apenas 1 serviço envolvido
 
@@ -143,7 +143,7 @@ Este skill é **exclusivamente de investigação**:
 - Apenas ler código, nunca modificar
 - Nunca executar queries em banco de dados de produção
 - Nunca acionar endpoints de produção diretamente
-- Reportar descobertas; a correção é feita via `eng.debug` → `eng.work`
+- Reportar descobertas; a correção é feita via `/eng.debug` (caso investigar) → `eng.plan`/`eng.work`
 
 ---
 
@@ -352,7 +352,7 @@ Criar arquivo `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/ms-trace-report.md`:
 
 ---
 
-## Hipóteses Rankeadas (para eng.debug Passo 2)
+## Hipóteses Rankeadas (para as hipóteses do caso investigar do /eng.debug)
 
 > Ordenadas do mais provável para o menos provável com base nos riscos identificados.
 
@@ -397,7 +397,7 @@ Criar arquivo `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/ms-trace-report.md`:
 
 ---
 
-### Fase 5 – Handoff para eng.debug
+### Fase 5 – Handoff para o /eng.debug (caso investigar)
 
 Ao concluir, retornar:
 
@@ -407,8 +407,8 @@ Ao concluir, retornar:
    - Hipótese principal
 
 2. **Próximo passo recomendado**:
-   - Se hipótese clara: `→ eng.debug Passo 4 (Análise de Evidências) — investigar {serviço} em {boundary}`
-   - Se inconclusivo: `→ eng.debug Passo 3 (Plano de Investigação) — coletar logs de {serviços}`
+   - Se hipótese clara: `→ caso investigar do /eng.debug (evidências) — investigar {serviço} em {boundary}`
+   - Se inconclusivo: `→ caso investigar do /eng.debug (plano de investigação) — coletar logs de {serviços}`
    - Se bug multi-serviço complexo: `→ eng.plan {TASK_MANAGER_KEY} — múltiplos componentes afetados`
 
 ### Skills invocados durante a execução do skill
@@ -423,7 +423,7 @@ Ao concluir, retornar:
 
 **Nunca:**
 - Iniciar sem ler o card — o fluxo investigado deve vir do card/`TASK_MANAGER_KEY`, não de suposição
-- Fazer varredura geral do projeto em busca de outros bugs (use `eng.bug-audit` para isso)
+- Fazer varredura geral do projeto em busca de outros bugs (use o `/eng.debug` no caso varrer para isso)
 - Fazer suposições sobre o comportamento de um serviço sem ler o código
 - Modificar código de qualquer serviço (este skill é read-only)
 - Executar queries destrutivas em banco de dados
@@ -454,7 +454,7 @@ Ao concluir, retornar:
 ## Output
 
 - `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/ms-trace-report.md` — relatório completo de rastreamento
-- Hipóteses formatadas para alimentar o Passo 2 do `eng.debug`
+- Hipóteses formatadas para alimentar as hipóteses do caso investigar do `/eng.debug`
 - Lista de serviços não inspecionados (se aplicável)
 
 ---
@@ -473,5 +473,5 @@ Hipótese principal: {hipótese 1 resumida}
 
 Relatório completo: $SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/ms-trace-report.md
 
-Próximo passo: → {eng.debug Passo 4 | eng.debug Passo 3 | eng.plan} {TASK_MANAGER_KEY}
+Próximo passo: → {/eng.debug caso investigar: evidências | /eng.debug caso investigar: plano de investigação | eng.plan} {TASK_MANAGER_KEY}
 ```
