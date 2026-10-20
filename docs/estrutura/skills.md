@@ -17,6 +17,7 @@ skills/
 ├── jarvis-docs-central/              # sync/publish docs centrais
 ├── eng-backend/, eng-frontend/, eng-backend-nestjs/, …
 ├── eng-global-pr/, eng-global-docs-write/, eng-global-task-comment/
+├── eng-global-investigation/   # método de investigação de bugs (usado pelo /eng.debug)
 ├── eng-qa/, eng-qa-planner/    # base de QA + especializações em QA_SPECIALIZATIONS
 ├── eng-data/                   # base de dados (+ especializações em DATA_SPECIALIZATIONS)
 ├── eng-platform/               # base de platform/infra (+ segurança) em PLATFORM_SPECIALIZATIONS
