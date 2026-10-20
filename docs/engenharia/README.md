@@ -27,8 +27,7 @@ Cada etapa só avança com a sua aprovação. O `eng.start` e o `eng.plan` só p
 | [`eng.spec-consolidate`](./eng.spec-consolidate.md) | Registra no Central docs o que a entrega implementou |
 | [`eng.daily-report`](./eng.daily-report.md) | Junta os `daily.md` em um relatório por dia, com alertas das sessões sem registro |
 | [`eng.review`](./eng.review.md) | Revisa uma solução ou PR |
-| [`eng.debug`](./eng.debug.md) | Investiga bug ou incidente com método |
-| [`eng.bug-audit`](./eng.bug-audit.md) | Audita um projeto atrás de bugs e débito técnico |
+| [`eng.debug`](./eng.debug.md) | Investiga um bug ou varre um escopo atrás de problemas, só lendo |
 | [`eng.docs`](./eng.docs.md) | Cria ou atualiza a documentação |
 
 ## Arquitetura e specs técnicas
