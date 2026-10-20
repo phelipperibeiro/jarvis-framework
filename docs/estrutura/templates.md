@@ -24,6 +24,8 @@ templates/
     ├── plan-template.md
     ├── PR-template.md
     ├── breakdown-subtasks-template.md
+    ├── debug-report-template.md      # relatório do /eng.debug (caso investigar)
+    ├── bug-audit-report-template.md  # relatório do /eng.debug (caso varrer)
     ├── data-pipeline-template.md
     ├── data-contract-template.md
     ├── work-progress-template.md
