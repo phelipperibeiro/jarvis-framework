@@ -168,3 +168,53 @@ test("syncAssets: dryRun não escreve nada no disco", () => {
     assert.ok(result.copied.length > 0); // reporta o que faria, sem fazer
   });
 });
+
+// OBSOLETE_PATHS guarda os workflows pelo caminho do framework (workflows/engineering/...),
+// mas na instalação eles ficam achatados na pasta de workflows da IDE.
+test("syncAssets: remove workflow obsoleto achatado na pasta de comandos do Claude Code", () => {
+  withJarvisRoot((root, target) => {
+    buildMinimalFramework(root);
+    write(target, ".claude/commands/eng.qa-exploratory-session.md");
+
+    const result = syncAssets(target, "claude", { workflowsFolder: "commands" });
+
+    assert.ok(!existsSync(join(target, ".claude/commands/eng.qa-exploratory-session.md")));
+    assert.ok(
+      result.copied.includes("(cleanup) .claude/commands/eng.qa-exploratory-session.md removed")
+    );
+    assert.ok(existsSync(join(target, ".claude/commands/eng.start.md")));
+  });
+});
+
+test("syncAssets: remove workflow obsoleto achatado numa IDE que usa workflows/", () => {
+  withJarvisRoot((root, target) => {
+    buildMinimalFramework(root);
+    write(target, ".windsurf/workflows/eng.security-incident.md");
+
+    syncAssets(target, "windsurf", {});
+
+    assert.ok(!existsSync(join(target, ".windsurf/workflows/eng.security-incident.md")));
+  });
+});
+
+test("syncAssets: não remove comando do usuário com nome parecido ao de um workflow obsoleto", () => {
+  withJarvisRoot((root, target) => {
+    buildMinimalFramework(root);
+    write(target, ".claude/commands/eng.qa-exploratory-session-meu.md");
+
+    syncAssets(target, "claude", { workflowsFolder: "commands" });
+
+    assert.ok(existsSync(join(target, ".claude/commands/eng.qa-exploratory-session-meu.md")));
+  });
+});
+
+test("syncAssets: dryRun não remove workflow obsoleto achatado", () => {
+  withJarvisRoot((root, target) => {
+    buildMinimalFramework(root);
+    write(target, ".claude/commands/eng.qa-exploratory-session.md");
+
+    syncAssets(target, "claude", { workflowsFolder: "commands", dryRun: true });
+
+    assert.ok(existsSync(join(target, ".claude/commands/eng.qa-exploratory-session.md")));
+  });
+});
