@@ -33,7 +33,6 @@ templates/
     ├── CONTACTS-template.md
     └── qa/
         ├── qa.cypress-test-template.md
-        ├── qa.exploratory-session-template.md
         ├── qa.quality-report-template.md
         ├── qa.release-signoff-template.md
         ├── qa.sprint-plan-template.md
