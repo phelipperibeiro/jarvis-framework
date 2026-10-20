@@ -6,6 +6,27 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), e o
 
 > Versões anteriores a `2.1.1` não foram documentadas retroativamente neste changelog — o histórico detalhado dessas versões continua disponível via `git log`.
 
+## [6.0.0] - 2026-10-20
+
+> **Major:** o `/eng.bug-audit` deixa de existir. O `/eng.debug` vira o comando único de bugs: investiga um sintoma ou varre um escopo (pasta, módulo ou `--all`).
+
+### Added
+- **Skill `eng-global-investigation`** (#168): o método de investigação do `/eng.debug`, que busca a causa raiz antes de corrigir. Traz as fases, hipóteses com evidência (arquivo:linha), limite de 3 tentativas e os vereditos `confirmado`, `provável` e `inconclusivo`. O orçamento de etapas depende da urgência do `context.md` (5, 10 ou 15), com parada após 3 rodadas sem avançar e um crítico antes de concluir. Inclui a política de acesso por ambiente, só de leitura, e nada é publicado no card. Os dois casos e as técnicas independentes de stack ficam em `references/` (`caso-investigar.md`, `caso-varrer.md`, `rastrear-para-tras.md`, `fronteiras-entre-componentes.md`).
+- Templates `templates/engineering/debug-report-template.md` (sintoma, código lido, hipóteses, evidências, veredito, correção, teste de regressão descrito e débitos como cards prontos) e `bug-audit-report-template.md` (suspeitos P0–P3 com o card pronto de cada um; nada é aberto no board).
+- **Varredura em paralelo** (#168): com `--all` ou mais de 200 arquivos, o `/eng.debug` pergunta se varre em sequência ou em paralelo, com no máximo 4 subagentes, um por categoria.
+
+### Changed
+- **Breaking:** o `/eng.debug` (#168) detecta pela entrada o que fazer. Card, erro ou stack trace levam a investigar; pasta, módulo ou `--all` levam a varrer. Se a entrada for ambígua, ele faz uma pergunta. A saída fica em `debug-report.md` ou `bug-audit-report.md` na sessão, e a correção segue pelo `eng.plan` ou pelo `eng.work`. O workflow caiu de 463 para cerca de 150 linhas, e saiu o comentário fixo no Jira.
+- Agente `eng.bug-hunter` reduzido à persona (postura, ceticismo, evidência e prevenção), apontando para a skill e para o `/eng.debug`.
+- `eng-backend-microservices-trace`: passa o bug para o caso investigar do `/eng.debug`, sem passos numerados.
+- Guia `docs/engenharia/eng.debug.md` com os dois casos e o "qual usar quando"; `docs/comandos.md`, `workflows/README.md` e `agents/README.md` atualizados.
+
+### Removed
+- **Breaking:** `/eng.bug-audit` (workflow e guia). Use `/eng.debug` com uma pasta, um módulo ou `--all`. O `jarvis init --upgrade` remove o comando das instalações.
+
+### Fixed
+- **Limpeza de workflows obsoletos** (#168): o `jarvis init --upgrade` procurava `workflows/engineering/...` na pasta da IDE, mas a instalação achata os workflows na pasta de comandos (ex.: `.claude/commands/`). Por isso comandos removidos antes, como `eng.qa-exploratory-session` e `eng.security-incident`, continuavam nas instalações. Agora eles são removidos pelo nome exato do arquivo (testes em `test/sync-engine.test.js`).
+
 ## [5.7.0] - 2026-10-17
 
 ### Added
