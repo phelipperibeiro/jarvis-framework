@@ -73,6 +73,15 @@ Antes de declarar a causa, faça um passe contra a sua própria conclusão: que 
 
 Nunca `confirmado` sem a reprodução ter sido feita. Se a investigação mostrar uma causa externa ou de ambiente (tempo, rede, serviço de terceiro), diga isso, proponha o tratamento (timeout, retentativa, mensagem de erro) e o que observar daqui em diante.
 
+## Detalhe de cada caso do `/eng.debug`
+
+Leia só o do caso escolhido:
+
+| Caso | Arquivo |
+|------|---------|
+| Investigar um sintoma | [`references/caso-investigar.md`](references/caso-investigar.md) |
+| Varrer um escopo | [`references/caso-varrer.md`](references/caso-varrer.md) |
+
 ### Skills invocados durante a execução do skill
 
 | Passo | Skill | Condição |
