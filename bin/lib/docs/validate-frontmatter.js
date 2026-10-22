@@ -55,10 +55,11 @@ export function validateFrontmatter(filePath, tipo) {
 
   // Validar status
   // Produto (rules/product/prod-rules.md), ARD (templates/engineering/ARD-template.md),
-  // discovery (prod-discovery-template.md) e RFC (RFC-template.md)
+  // discovery (prod-discovery-template.md), RFC (RFC-template.md) e
+  // SPEC (templates/engineering/ref-spec-template.md)
   const validStatuses = [
     'icebox', 'in_review', 'backlog', 'in_progress', 'in_production', 'cancelled', 'deprecated',
-    'proposed', 'approved',
+    'proposed', 'approved', 'superseded',
     'Draft', 'In Review', 'Ready for Decision', 'Accepted', 'Rejected', 'Superseded'
   ]
   
