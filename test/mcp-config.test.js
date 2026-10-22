@@ -200,15 +200,6 @@ test("codex: variantes do cabeçalho já existentes não são duplicadas", () =>
   }
 });
 
-test("codex: context7 como chave numa forma desconhecida fica intacto e vira aviso", () => {
-  const toml = '[outros]\ncontext7 = { command = "npx" }\n';
-  withWorkspace({ ".codex/config.toml": toml }, (ws) => {
-    const r = ensureContext7(ws, "codex");
-    assert.match(r.manual[0].reason, /forma que não reconheço/);
-    assert.equal(readFileSync(join(ws, ".codex/config.toml"), "utf-8"), toml);
-  });
-});
-
 test("codex: separador antes do bloco conforme o fim do arquivo", () => {
   const block = mcpSnippet(getMCPTargets("codex")[0]);
   for (const [before, sep] of [
@@ -278,36 +269,10 @@ test("JSON com CRLF é regravado com CRLF", () => {
   });
 });
 
-test("codex: sem falso positivo (chave parecida, comentário e texto)", () => {
-  const cases = [
-    'mcp_servers = { context7-legacy = { command = "x" } }\n',
-    '# vou usar o context7 depois\nmodel = "x"\n',
-    '[mcp_servers.outro]\nargs = ["@upstash/context7-mcp"]\n',
-  ];
-  for (const toml of cases) {
-    withWorkspace({ ".codex/config.toml": toml }, (ws) => {
-      const r = ensureContext7(ws, "codex");
-      assert.deepEqual(r.written, [".codex/config.toml"], toml);
-      const after = readFileSync(join(ws, ".codex/config.toml"), "utf-8");
-      assert.ok(after.startsWith(toml), toml);
-      assert.match(after, /^\[mcp_servers\.context7\]$/m, toml);
-    });
-  }
-});
-
 test("codex: inline com outras chaves antes do context7 é reconhecido", () => {
   const toml = 'mcp_servers = { outro = { command = "x" }, context7 = { command = "npx" } }\n';
   withWorkspace({ ".codex/config.toml": toml }, (ws) => {
     assert.deepEqual(ensureContext7(ws, "codex").present, [".codex/config.toml"]);
-  });
-});
-
-test("codex: cabeçalho de tabela sem ] fica intacto e vira aviso", () => {
-  const toml = '[mcp_servers.outro\ncommand = "x"\n';
-  withWorkspace({ ".codex/config.toml": toml }, (ws) => {
-    const r = ensureContext7(ws, "codex");
-    assert.match(r.manual[0].reason, /sem "\]"/);
-    assert.equal(readFileSync(join(ws, ".codex/config.toml"), "utf-8"), toml);
   });
 });
 
@@ -320,26 +285,6 @@ test("codex: TOML com CRLF recebe o bloco com CRLF", () => {
   });
 });
 
-test("codex: mcp_servers.context7 dentro de outra tabela vira aviso, não já configurado", () => {
-  const toml = '[other]\nmcp_servers.context7.command = "x"\n';
-  withWorkspace({ ".codex/config.toml": toml }, (ws) => {
-    const r = ensureContext7(ws, "codex");
-    assert.deepEqual(r.present, []);
-    assert.match(r.manual[0].reason, /forma que não reconheço/);
-    assert.equal(readFileSync(join(ws, ".codex/config.toml"), "utf-8"), toml);
-  });
-});
-
-test("codex: context7 aninhado em outro servidor da tabela inline não é já configurado", () => {
-  const toml = 'mcp_servers = { outro = { env = { context7 = "1" } } }\n';
-  withWorkspace({ ".codex/config.toml": toml }, (ws) => {
-    const r = ensureContext7(ws, "codex");
-    assert.deepEqual(r.present, []);
-    assert.match(r.manual[0].reason, /forma que não reconheço/);
-    assert.equal(readFileSync(join(ws, ".codex/config.toml"), "utf-8"), toml);
-  });
-});
-
 test("codex: menções que não são chave não geram aviso e recebem o bloco", () => {
   const cases = [
     '[mcp_servers.outro]\nargs = ["a,context7=1"]\n',
@@ -349,6 +294,73 @@ test("codex: menções que não são chave não geram aviso e recebem o bloco", 
     'nota = """\ncontext7 = 1\n"""\n',
     "nota = '''\n[context7\n'''\n",
     "m = [\n  [\n 1 ],\n]\n",
+  ];
+  for (const toml of cases) {
+    withWorkspace({ ".codex/config.toml": toml }, (ws) => {
+      const r = ensureContext7(ws, "codex");
+      assert.deepEqual(r.written, [".codex/config.toml"], toml);
+      assert.deepEqual(r.manual, [], toml);
+    });
+  }
+});
+
+test("codex: context7 fora de mcp_servers (em outra tabela) recebe o bloco", () => {
+  const cases = [
+    '[outros]\ncontext7 = { command = "npx" }\n',
+    '[other]\nmcp_servers.context7.command = "x"\n',
+  ];
+  for (const toml of cases) {
+    withWorkspace({ ".codex/config.toml": toml }, (ws) => {
+      const r = ensureContext7(ws, "codex");
+      assert.deepEqual(r.written, [".codex/config.toml"], toml);
+      const after = readFileSync(join(ws, ".codex/config.toml"), "utf-8");
+      assert.ok(after.startsWith(toml), toml);
+      assert.match(after, /^\[mcp_servers\.context7\]$/m, toml);
+    });
+  }
+});
+
+test("codex: mcp_servers inline sem context7 não é estendido: aviso, arquivo intacto", () => {
+  const cases = [
+    'mcp_servers = { context7-legacy = { command = "x" } }\n',
+    'mcp_servers = { outro = { env = { context7 = "1" } } }\n',
+  ];
+  for (const toml of cases) {
+    withWorkspace({ ".codex/config.toml": toml }, (ws) => {
+      const r = ensureContext7(ws, "codex");
+      assert.deepEqual(r.present, [], toml);
+      assert.match(r.manual[0].reason, /deixaria o TOML inválido/, toml);
+      assert.equal(readFileSync(join(ws, ".codex/config.toml"), "utf-8"), toml);
+    });
+  }
+});
+
+test("codex: TOML que não parseia fica intacto e vira aviso", () => {
+  const cases = ['[mcp_servers.outro\ncommand = "x"\n', 'model = "x"\nmodel = "y"\n'];
+  for (const toml of cases) {
+    withWorkspace({ ".codex/config.toml": toml }, (ws) => {
+      const r = ensureContext7(ws, "codex");
+      assert.match(r.manual[0].reason, /não pôde ser lido/, toml);
+      assert.equal(readFileSync(join(ws, ".codex/config.toml"), "utf-8"), toml);
+    });
+  }
+});
+
+test("codex: mcp_servers que não é tabela vira aviso", () => {
+  const toml = 'mcp_servers = "x"\n';
+  withWorkspace({ ".codex/config.toml": toml }, (ws) => {
+    const r = ensureContext7(ws, "codex");
+    assert.match(r.manual[0].reason, /"mcp_servers" não é uma tabela/);
+    assert.equal(readFileSync(join(ws, ".codex/config.toml"), "utf-8"), toml);
+  });
+});
+
+test("codex: escape em string multilinha e array multilinha recebem o bloco", () => {
+  const tq = '"'.repeat(3);
+  const cases = [
+    `[other]\nnota = ${tq}\nx \\${tq}\n[mcp_servers.context7]\n${tq}\n`,
+    `nota = ${tq}x\\${tq}\n[mcp_servers]\ncontext7 = 1\n${tq}\n`,
+    "m = [\n  [1, 2],\n  [3],\n]\n",
   ];
   for (const toml of cases) {
     withWorkspace({ ".codex/config.toml": toml }, (ws) => {

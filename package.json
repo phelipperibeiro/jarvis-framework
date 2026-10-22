@@ -59,6 +59,7 @@
     "prettier": "^3.9.9"
   },
   "dependencies": {
-    "commander": "^13.1.0"
+    "commander": "^13.1.0",
+    "smol-toml": "^1.9.1"
   }
 }
