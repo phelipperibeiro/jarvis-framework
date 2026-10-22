@@ -16,7 +16,7 @@ Ligado por padrão. O `/jarvis-init` (Passo 5.2) pergunta "Onde fica o Central d
 
 ```ini
 CENTRAL_DOCS_STORAGE=filesystem
-CENTRAL_DOCS_LOCATION=./central-docs     # relativo à pasta do workspace, ou absoluto
+CENTRAL_DOCS_LOCATION=docs/jarvis/central-docs   # relativo à pasta do workspace, ou absoluto
 # Só se a pasta tiver .git:
 CENTRAL_DOCS_REF=main
 CENTRAL_DOCS_TARGET_BRANCH=main
@@ -25,10 +25,7 @@ SQUAD=CORE
 WORKSPACE=loja                           # vira a pasta do produto
 ```
 
-| Modo de trabalho | Pasta padrão | Fora do versionamento por |
-|---|---|---|
-| Workspace (vários repositórios) | `./central-docs` | `central-docs/` no `.gitignore` do workspace |
-| Projeto único | `docs/jarvis/central-docs` | `docs/jarvis/` no `.gitignore` do projeto |
+A pasta padrão é `docs/jarvis/central-docs` nos dois modos de trabalho, junto dos documentos de trabalho. No projeto único, `docs/jarvis/` no `.gitignore` a deixa fora do versionamento; no workspace (vários repositórios) a raiz não é versionada. Quem já usa `./central-docs` continua funcionando, e o Upgrade do `/jarvis-init` oferece mover a pasta.
 
 > Com `.git`, o PR usa o token do vendor (GitLab `.npmrc`, GitHub `gh auth`/`GITHUB_TOKEN`, Bitbucket `BITBUCKET_TOKEN`). O token **nunca** vai no chat nem no `ENV.md`.
 

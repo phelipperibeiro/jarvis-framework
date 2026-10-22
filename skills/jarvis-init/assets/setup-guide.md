@@ -131,7 +131,7 @@ PRIMEIRO: Identifique qual IDE você está utilizando para configurar os caminho
 if [ -d ".windsurf" ]; then
   echo "IDE: Windsurf"
   echo "Pasta: .windsurf/"
-  echo "MCP Config: ~/.codeium/windsurf/mcp_config.json"
+  echo "MCP Config: ~/.config/devin/mcp_config.json"
 elif [ -d ".cursor" ]; then
   echo "IDE: Cursor"
   echo "Pasta: .cursor/"
@@ -139,7 +139,7 @@ elif [ -d ".cursor" ]; then
 elif [ -d ".claude" ]; then
   echo "IDE: Claude"
   echo "Pasta: .claude/"
-  echo "MCP Config: ~/.claude/mcp_config.json"
+  echo "MCP Config: .mcp.json (raiz do workspace)"
 elif [ -d ".codex" ]; then
   echo "IDE: Codex (OpenAI)"
   echo "Pasta: .codex/"
@@ -155,13 +155,16 @@ fi
  Tabela de Caminhos por IDE
 
 | IDE | Pasta do Projeto | Arquivo MCP Config |
-|-----|------------------|--------------------||
-| Windsurf | `.windsurf/` | `~/.codeium/windsurf/mcp_config.json` |
-| Claude Code | `.claude/` | `~/.claude/mcp_config.json` |
-| Cursor | `.cursor/` | `~/.cursor/mcp.json` |
-| Codex (OpenAI) | `.codex/` | - |
-| OpenCode | `.opencode/` | - |
-| Gemini CLI / Antigravity | `.agents/` | - |
+|-----|------------------|--------------------|
+| Windsurf | `.windsurf/` | só global: `~/.config/devin/mcp_config.json` (antigo: `~/.codeium/windsurf/mcp_config.json`) |
+| Claude Code | `.claude/` | `.mcp.json` (raiz do workspace) |
+| Cursor | `.cursor/` | `.cursor/mcp.json` |
+| Codex (OpenAI) | `.codex/` | `.codex/config.toml` |
+| OpenCode | `.opencode/` | `opencode.json` |
+| Gemini CLI / Antigravity | `.agents/` | `.gemini/settings.json` e `.agents/mcp_config.json` |
+| Kiro | `.kiro/` | `.kiro/settings/mcp.json` |
+
+O `jarvis init` grava o Context7 nesses arquivos. Formatos e ativação: `mcp-configs.md` ("Caminhos de Configuração").
 
  Windsurf / Claude Code / Cursor / Codex / OpenCode / Gemini
 
@@ -201,20 +204,20 @@ OBRIGATÓRIO: O framework JARVIS depende de MCPs para funcionalidades avançadas
 
 ```bash
  Windsurf
-cat ~/.codeium/windsurf/mcp_config.json >/dev/null || echo "Não encontrado"
+cat ~/.config/devin/mcp_config.json >/dev/null || echo "Não encontrado"
 
  Cursor
 cat ~/.cursor/mcp.json >/dev/null || echo "Não encontrado"
 
  Claude
-cat ~/.claude/mcp_config.json >/dev/null || echo "Não encontrado"
+cat .mcp.json >/dev/null || echo "Não encontrado"
 ```
 
 | IDE | Caminho do Arquivo MCP |
 |-----|------------------------|
-| Windsurf | `~/.codeium/windsurf/mcp_config.json` |
-| Cursor | `~/.cursor/mcp.json` |
-| Claude | `~/.claude/mcp_config.json` |
+| Windsurf | `~/.config/devin/mcp_config.json` (antigo: `~/.codeium/windsurf/mcp_config.json`) |
+| Cursor | `.cursor/mcp.json` (ou `~/.cursor/mcp.json`) |
+| Claude Code | `.mcp.json` (raiz do workspace) |
 
  MCPs
 
@@ -296,9 +299,9 @@ chmod  ~/.claude/              Claude
 JSON inválido:
 ```bash
  Validar JSON (ajustar caminho conforme IDE)
-cat ~/.codeium/windsurf/mcp_config.json | python -m json.tool   Windsurf
+cat ~/.config/devin/mcp_config.json | python -m json.tool       Windsurf
 cat ~/.cursor/mcp.json | python -m json.tool                    Cursor
-cat ~/.claude/mcp_config.json | python -m json.tool             Claude
+cat .mcp.json | python -m json.tool                             Claude Code
 ```
 
  Verificação Final

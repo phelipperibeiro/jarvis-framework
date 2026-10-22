@@ -29,9 +29,31 @@ import {
   rewriteRelatedDiscovery,
   declineEnvValues,
 } from "../lib/core/docs-migrate.js";
+import { detectWorkspaceMode } from "../lib/core/workspace-mode.js";
+import { ensureContext7 } from "../lib/core/mcp-config.js";
 
 function ask(rl, question) {
   return new Promise((resolve) => rl.question(question, resolve));
+}
+
+/**
+ * Grava o Context7 (MCP obrigatório) no arquivo de MCP da IDE e mostra o que falta.
+ * @returns {number} quantidade de erros
+ */
+function setupMcp(workspaceDir, ide) {
+  const mcp = ensureContext7(workspaceDir, ide);
+  logger.info(`${BLUE}🔌 MCP (Context7):${NC}`);
+  for (const p of mcp.written) logger.info(`  ${GREEN}✓ ${p}${NC} (Context7 adicionado)`);
+  for (const p of mcp.present) logger.info(`${DIM}  ↳ ${p} (Context7 já configurado)${NC}`);
+  for (const m of mcp.manual) {
+    logger.info(`${YELLOW}  ⚠️  Config só global: inclua em ${m.path}:${NC}`);
+    for (const line of m.snippet.trimEnd().split("\n")) logger.info(`${DIM}     ${line}${NC}`);
+  }
+  for (const e of mcp.errors) logger.error(`${RED}  ✗ ${e} — nada alterado nesse arquivo${NC}`);
+  const note = getIDEConfig(ide)?.mcpNote;
+  if (note && (mcp.written.length || mcp.manual.length)) logger.info(`${DIM}  ${note}${NC}`);
+  logger.info("");
+  return mcp.errors.length;
 }
 
 export async function init(flags) {
@@ -154,20 +176,26 @@ export async function init(flags) {
   for (const area of ["eng", "prod", "qa"]) {
     mkdirSync(join(jarvisRoot, "sessions", area), { recursive: true });
   }
-  const gitignore = join(cwd, ".gitignore");
-  const ignoreLine = ".jarvis/";
-  if (existsSync(gitignore)) {
-    const text = readFileSync(gitignore, "utf8");
-    if (!text.split("\n").some((l) => l.trim() === ignoreLine || l.trim() === ".jarvis")) {
-      appendFileSync(gitignore, `${text.endsWith("\n") ? "" : "\n"}${ignoreLine}\n`);
+  // .gitignore só no modo project: no modo workspace a raiz não é versionada.
+  const workspaceMode = detectWorkspaceMode(cwd).mode;
+  if (workspaceMode === "project") {
+    const gitignore = join(cwd, ".gitignore");
+    const ignoreLine = ".jarvis/";
+    if (existsSync(gitignore)) {
+      const text = readFileSync(gitignore, "utf8");
+      if (!text.split("\n").some((l) => l.trim() === ignoreLine || l.trim() === ".jarvis")) {
+        appendFileSync(gitignore, `${text.endsWith("\n") ? "" : "\n"}${ignoreLine}\n`);
+      }
+    } else {
+      writeFileSync(gitignore, `${ignoreLine}\n`);
     }
-  } else {
-    writeFileSync(gitignore, `${ignoreLine}\n`);
   }
+
+  logger.info("");
+  setupMcp(cwd, ide);
 
   const pkg = getPackageInfo();
 
-  logger.info("");
   logger.info(`${GREEN}✓ Configuração concluída!${NC}`);
   logger.info(`${BOLD}${CYAN}  versão: ${pkg.name} v${pkg.version}${NC}`);
   logger.info(`${DIM}  origem: ${pkg.root}${NC}`);
@@ -281,6 +309,7 @@ async function runUpgrade(cwd, flags) {
     keepEnvValues: true,
   });
   for (const item of sync.errors) logger.error(`${RED}  ✗ ${item}${NC}`);
+  const mcpErrors = setupMcp(workspaceDir, ide);
 
   // 2. Variáveis novas (só acrescenta)
   const envText = readFileSync(envPath, "utf-8");
@@ -392,5 +421,5 @@ async function runUpgrade(cwd, flags) {
   }
   logger.info("");
   logger.info(`${CYAN}➡️  Agora rode ${BOLD}/jarvis-init upgrade${NC}${CYAN} na IDE.${NC}\n`);
-  return sync.errors.length || moveErrors.length || staleErrors.length ? 1 : 0;
+  return sync.errors.length || moveErrors.length || staleErrors.length || mcpErrors ? 1 : 0;
 }

@@ -174,3 +174,13 @@ test("declineEnvValues: só chave nova recebe o caminho antigo", () => {
     assert.deepEqual(declineEnvValues(plan, [], env()), {});
   });
 });
+
+test("applyDocsMigration: modo workspace move os documentos sem criar .gitignore na raiz", () => {
+  withWorkspace({ [OLD]: "# d", "app/.git/HEAD": "" }, (ws) => {
+    const e = env();
+    const result = applyDocsMigration(ws, planDocsMigration(ws, e), e);
+    assert.equal(result.errors.length, 0);
+    assert.ok(existsSync(join(ws, NEW)));
+    assert.ok(!existsSync(join(ws, ".gitignore")));
+  });
+});

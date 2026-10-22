@@ -48,6 +48,16 @@ export function detectWorkspaceMode(workspaceDir, { repos = [] } = {}) {
   return { mode: "project", repos: [], warning: null };
 }
 
+/**
+ * Modo efetivo: o `WORKSPACE_MODE` do ENV quando válido; senão, o detectado no disco.
+ * @param {string} workspaceDir
+ * @param {string} [envValue] - valor de `WORKSPACE_MODE` (pode faltar ou estar vazio)
+ * @returns {"workspace"|"project"}
+ */
+export function resolveWorkspaceMode(workspaceDir, envValue) {
+  return normalizeWorkspaceMode(envValue) || detectWorkspaceMode(workspaceDir).mode;
+}
+
 /** Lê o valor do ENV: só `workspace` ou `project` (sem diferenciar maiúsculas); outro valor = null. */
 export function normalizeWorkspaceMode(value) {
   const v = String(value || "")

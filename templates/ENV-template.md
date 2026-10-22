@@ -54,7 +54,8 @@ TEMPLATES_FOLDER=templates
 RULES_FOLDER=.$IDE/rules
 
 # Sessões de trabalho — relativo à pasta do workspace (a que contém $IDE/), não ao cwd.
-# jarvis init cria .jarvis/sessions/{eng,prod,qa} e adiciona .jarvis/ ao .gitignore.
+# jarvis init cria .jarvis/sessions/{eng,prod,qa} e, no modo project, adiciona .jarvis/ ao
+# .gitignore (no modo workspace a raiz não é versionada e o .gitignore não é criado).
 #   $SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/
 #   $SESSIONS_DIR/prod/{TASK_MANAGER_KEY}/
 #   $SESSIONS_DIR/qa/
@@ -62,8 +63,9 @@ RULES_FOLDER=.$IDE/rules
 SESSIONS_DIR=.jarvis/sessions
 
 # Documentos de trabalho gerados pelos comandos (PRD, FRD, épicos, ARD, RFC, SPEC, QA, swagger,
-# robôs, C4…): sempre em $DOCS_FOLDER/jarvis/, nos dois modos de trabalho, com docs/jarvis/
-# no .gitignore (o /jarvis-init garante). O que foi implementado vai para o Central docs.
+# robôs, C4…): sempre em $DOCS_FOLDER/jarvis/, nos dois modos de trabalho. No modo project,
+# docs/jarvis/ fica no .gitignore (o /jarvis-init garante); no modo workspace a raiz não é
+# versionada. O que foi implementado vai para o Central docs.
 JARVIS_DOCS=$DOCS_FOLDER/jarvis
 # Engenharia: ARD/, RFC/, qa/, swagger/, openapi/, robots/, c4/
 ENG_DOCS=$JARVIS_DOCS/engineering
@@ -230,12 +232,12 @@ JARVIS_PROJECT=https://github.com/phelipperibeiro/jarvis-framework
 # Nunca dentro do versionamento de um repositório de código.
 #   CENTRAL_DOCS_STORAGE: filesystem (s3 e gdrive virão nas issues #144 e #145); vazio = desligado
 #   CENTRAL_DOCS_LOCATION: pasta do Central docs, relativa à pasta do workspace ou absoluta.
-#     Padrão do /jarvis-init: ./central-docs (modo workspace, no .gitignore do workspace)
-#     ou docs/jarvis/central-docs (projeto único, coberto por docs/jarvis/ no .gitignore).
+#     Padrão do /jarvis-init: docs/jarvis/central-docs, nos dois modos de trabalho, junto dos
+#     documentos de trabalho (no modo project, coberto por docs/jarvis/ no .gitignore).
 #   Se a pasta for um clone de um repositório de documentação (tem .git): git pull antes
 #   de ler e branch + commit + push + PR ao publicar. Sem .git: grava direto na pasta.
 CENTRAL_DOCS_STORAGE=filesystem
-CENTRAL_DOCS_LOCATION=./central-docs
+CENTRAL_DOCS_LOCATION=docs/jarvis/central-docs
 # Só quando a pasta tem .git: branch lida no pull e branch base dos PRs.
 CENTRAL_DOCS_REF=main
 CENTRAL_DOCS_TARGET_BRANCH=main

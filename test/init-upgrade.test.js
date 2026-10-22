@@ -220,3 +220,22 @@ test("init --upgrade: eng-scraper e eng-scraper-robot-builder (renomeados na #81
     }
   );
 });
+
+test("init (instalação): modo workspace não cria .gitignore na raiz e grava o .mcp.json", () => {
+  withWorkspace({ "app/.git/HEAD": "" }, (ws) => {
+    const r = run(ws, "--ide", "claude");
+    assert.equal(r.status, 0, r.stderr);
+    assert.ok(!existsSync(join(ws, ".gitignore")));
+    assert.ok(existsSync(join(ws, ".jarvis/sessions/eng")));
+    const mcp = JSON.parse(readFileSync(join(ws, ".mcp.json"), "utf-8"));
+    assert.ok(mcp.mcpServers.context7);
+  });
+});
+
+test("init (instalação): modo project cria o .gitignore com .jarvis/", () => {
+  withWorkspace({ ".git/HEAD": "" }, (ws) => {
+    const r = run(ws, "--ide", "claude");
+    assert.equal(r.status, 0, r.stderr);
+    assert.match(readFileSync(join(ws, ".gitignore"), "utf-8"), /^\.jarvis\/$/m);
+  });
+});

@@ -18,12 +18,41 @@ Este documento contém as configurações de MCPs (Model Context Protocol) neces
 
 ## Caminhos de Configuração
 
-| IDE | Arquivo de Configuração |
-|-----|-------------------------|
-| **Windsurf** | `~/.codeium/windsurf/mcp_config.json` |
-| **Cursor** | `~/.cursor/mcp.json` |
-| **Claude** | `~/.claude/settings.json` |
-| **VS Code** | Depende da extensão |
+Cada IDE lê o MCP de um arquivo próprio, com formato próprio. O `jarvis init` (instalação e `--upgrade`) grava o **Context7** no arquivo de projeto da IDE escolhida: cria o arquivo se não existir e, se existir, só acrescenta o `context7` quando falta, sem tocar nos outros servidores. JSON inválido não é alterado (o init avisa). Fonte: documentação oficial de cada IDE (conferida em 2026-10); a tabela no código fica em `bin/lib/config/ide-config.js` (`mcp`).
+
+| IDE | Arquivo de projeto (gravado pelo `jarvis init`) | Global | Chave e formato | Para ativar |
+|-----|-----------------------------------------------|--------|-----------------|-------------|
+| **Claude Code** | `.mcp.json` (ou `claude mcp add --scope project`) | `~/.claude.json` (`claude mcp add --scope user`) | JSON `mcpServers` | Reiniciar e aprovar o servidor do `.mcp.json` |
+| **Cursor** | `.cursor/mcp.json` | `~/.cursor/mcp.json` | JSON `mcpServers` | Recarregar; conferir em Settings → MCP |
+| **Windsurf** | — (só global) | `~/.config/devin/mcp_config.json` (versões antigas: `~/.codeium/windsurf/mcp_config.json`) | JSON `mcpServers` | Incluir à mão e ativar no painel MCP do Cascade |
+| **Codex** | `.codex/config.toml` (só em projeto confiável) | `~/.codex/config.toml` | TOML `[mcp_servers.context7]` | Confiar no projeto e reiniciar |
+| **OpenCode** | `opencode.json` | `~/.config/opencode/opencode.json` | JSON `mcp` (`type: "local"`, `command` em array) | Reiniciar |
+| **Gemini CLI** | `.gemini/settings.json` | `~/.gemini/settings.json` | JSON `mcpServers` | `gemini trust` na pasta e reiniciar |
+| **Antigravity** | `.agents/mcp_config.json` | `~/.gemini/config/mcp_config.json` | JSON `mcpServers` | Refresh em Customizations (ou `/mcp` no CLI) |
+| **Kiro** | `.kiro/settings/mcp.json` | `~/.kiro/settings/mcp.json` | JSON `mcpServers` | Reconecta ao salvar |
+
+Na IDE `gemini` (Gemini CLI / Antigravity) o `jarvis init` grava os dois arquivos de projeto. Na Windsurf, que só tem config global, ele não grava fora do workspace: mostra o trecho para colar.
+
+### Context7 nos formatos que fogem do `mcpServers`
+
+**Codex** (`.codex/config.toml`):
+
+```toml
+[mcp_servers.context7]
+command = "npx"
+args = ["-y", "@upstash/context7-mcp"]
+```
+
+**OpenCode** (`opencode.json`):
+
+```json
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "context7": { "type": "local", "command": ["npx", "-y", "@upstash/context7-mcp"], "enabled": true }
+  }
+}
+```
 
 ---
 
@@ -31,7 +60,7 @@ Este documento contém as configurações de MCPs (Model Context Protocol) neces
 
 ### Windsurf
 
-Arquivo: `~/.codeium/windsurf/mcp_config.json`
+Arquivo (global): `~/.config/devin/mcp_config.json` (versões antigas: `~/.codeium/windsurf/mcp_config.json`)
 
 ```json
 {
@@ -74,7 +103,7 @@ Arquivo: `~/.codeium/windsurf/mcp_config.json`
 
 ### Cursor
 
-Arquivo: `~/.cursor/mcp.json`
+Arquivo: `.cursor/mcp.json` (projeto) ou `~/.cursor/mcp.json` (global)
 
 ```json
 {
@@ -115,9 +144,9 @@ Arquivo: `~/.cursor/mcp.json`
 }
 ```
 
-### Claude
+### Claude Code
 
-Arquivo: `~/.claude/settings.json`
+Arquivo: `.mcp.json` na raiz do workspace (projeto). Para o escopo de usuário, use `claude mcp add --scope user …` (grava em `~/.claude.json`). O `~/.claude/settings.json` **não** é lido para MCP.
 
 ```json
 {
@@ -181,7 +210,7 @@ npm install -g sonarqube-mcp-server
 which sonarqube-mcp-server
 ```
 
-**Windsurf** (`~/.codeium/windsurf/mcp_config.json`):
+**Windsurf** (`~/.config/devin/mcp_config.json`; versões antigas: `~/.codeium/windsurf/mcp_config.json`):
 ```json
 {
   "mcpServers": {
@@ -197,7 +226,7 @@ which sonarqube-mcp-server
 }
 ```
 
-**Cursor** (`~/.cursor/mcp.json`):
+**Cursor** (`.cursor/mcp.json` ou `~/.cursor/mcp.json`):
 ```json
 {
   "mcpServers": {
@@ -213,7 +242,7 @@ which sonarqube-mcp-server
 }
 ```
 
-**Claude** (`~/.claude/settings.json`):
+**Claude Code** (`.mcp.json`):
 ```json
 {
   "mcpServers": {
@@ -320,10 +349,11 @@ mcp__TestSprite__testsprite_check_account_info({})
 
 ### MCP não responde
 
-1. Verificar se IDE foi reiniciada após configurar MCPs
-2. Verificar se npx/uvx está funcionando: `npx --version` / `uvx --version`
-3. Verificar conexão com internet
-4. Verificar se o JSON está válido (sem vírgulas extras)
+1. Verificar se a IDE foi reiniciada (e o servidor aprovado, quando a IDE pede) após configurar MCPs
+2. Conferir se o arquivo está no caminho que a IDE lê (tabela "Caminhos de Configuração")
+3. Verificar se npx/uvx está funcionando: `npx --version` / `uvx --version`
+4. Verificar conexão com internet
+5. Verificar se o JSON está válido (sem vírgulas extras)
 
 ### Jira retorna erro de autenticação
 

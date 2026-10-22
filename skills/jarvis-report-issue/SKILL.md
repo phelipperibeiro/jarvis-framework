@@ -173,7 +173,29 @@ jarvis vcs create-issue \
   --title "$ISSUE_TITLE" \
   --body-file "$BODY_FILE" \
   --label "$LABEL"   # bug (Bug) ou enhancement (Melhoria), pela Fase 0
+STATUS=$?
+```
 
+**Fallback — sem token ou sem conexão com o repositório.** Se o comando falhar (exit diferente de 0: token ausente, sem rede, repositório inacessível), **não descarte o report**. Grave o issue montado em `.jarvis/issues/issue-{desc}.md`, na pasta do workspace (a que contém `$IDE/`), para a pessoa abrir manualmente:
+
+- `{desc}` é o slug do título, sem o prefixo de tipo: minúsculas, sem acentos, palavras separadas por `-`, até 60 caracteres (ex.: `[MELHORIA] jarvis-init: Central docs padrão` → `issue-jarvis-init-central-docs-padrao.md`). Se o arquivo já existir, acrescente `-2`, `-3`…
+- Conteúdo: um cabeçalho com o que vai nos campos do formulário e, depois, o corpo exatamente como seria enviado:
+
+  ```markdown
+  <!-- Abrir em: {URL de novo issue} · Label: {LABEL} -->
+  # {título do issue}
+
+  {corpo do issue}
+  ```
+
+- `{URL de novo issue}` vem de `JARVIS_PROJECT` pelo vendor: GitHub `{repo}/issues/new`, GitLab `{repo}/-/issues/new`, Bitbucket `{repo}/issues/new`.
+- `.jarvis/` já fica fora do versionamento, então o arquivo não vai para nenhum commit.
+
+```bash
+if [ "$STATUS" -ne 0 ]; then
+  mkdir -p .jarvis/issues
+  # gravar cabeçalho + "# $ISSUE_TITLE" + corpo em .jarvis/issues/issue-{desc}.md
+fi
 rm -f "$BODY_FILE"
 ```
 
@@ -193,13 +215,22 @@ Sucesso (exit 0):
 O time do Jarvis vai revisar e corrigir o artefato.
 ```
 
-Erro:
+Erro (o fallback da Fase 4 gravou o arquivo):
 
 ```
-🚫 Erro ao abrir issue: {mensagem}
+⚠️ Não consegui abrir o issue: {mensagem}
 
-Verifique token (GitLab .npmrc / gh auth / BITBUCKET_TOKEN) e JARVIS_PROJECT.
+O issue ficou pronto para você abrir manualmente:
+  Arquivo : .jarvis/issues/issue-{desc}.md
+  Título  : {título do issue}
+  Label   : {LABEL}
+  Abrir em: {URL de novo issue}
+
+Cole o título no campo de título e o conteúdo abaixo do título no corpo.
+Para abrir direto da próxima vez, configure o token (GitLab .npmrc / gh auth ou GITHUB_TOKEN / BITBUCKET_TOKEN) e confira o JARVIS_PROJECT.
 ```
+
+Com o token configurado depois, a pessoa pode pedir para abrir o issue a partir desse arquivo, sem montar o report de novo. Depois que o issue for aberto, o arquivo pode ser apagado.
 
 ### Skills invocados durante a execução do skill
 
@@ -216,3 +247,4 @@ Verifique token (GitLab .npmrc / gh auth / BITBUCKET_TOKEN) e JARVIS_PROJECT.
 - **Nunca** hardcodar o repo ou token — sempre ler `JARVIS_PROJECT` do ENV.md; o adapter resolve o vendor
 - **Sempre** usar a label do tipo: `bug` para bug, `enhancement` para melhoria (no Bitbucket, o adapter grava como `kind`)
 - **Sempre** limpar arquivos temporários após o curl
+- **Nunca** descartar o report quando a abertura falhar: grave o fallback em `.jarvis/issues/issue-{desc}.md` (Fase 4)
