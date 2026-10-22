@@ -54,8 +54,8 @@ TEMPLATES_FOLDER=templates
 RULES_FOLDER=.$IDE/rules
 
 # Sessões de trabalho — relativo à pasta do workspace (a que contém $IDE/), não ao cwd.
-# jarvis init cria .jarvis/sessions/{eng,prod,qa} e, no modo project, adiciona .jarvis/ ao
-# .gitignore (no modo workspace a raiz não é versionada e o .gitignore não é criado).
+# jarvis init cria .jarvis/sessions/{eng,prod,qa} e, se a raiz tiver .git, adiciona .jarvis/ ao
+# .gitignore (raiz sem .git, como no modo workspace, não é versionada: o .gitignore não é criado).
 #   $SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/
 #   $SESSIONS_DIR/prod/{TASK_MANAGER_KEY}/
 #   $SESSIONS_DIR/qa/
@@ -63,9 +63,9 @@ RULES_FOLDER=.$IDE/rules
 SESSIONS_DIR=.jarvis/sessions
 
 # Documentos de trabalho gerados pelos comandos (PRD, FRD, épicos, ARD, RFC, SPEC, QA, swagger,
-# robôs, C4…): sempre em $DOCS_FOLDER/jarvis/, nos dois modos de trabalho. No modo project,
-# docs/jarvis/ fica no .gitignore (o /jarvis-init garante); no modo workspace a raiz não é
-# versionada. O que foi implementado vai para o Central docs.
+# robôs, C4…): sempre em $DOCS_FOLDER/jarvis/, nos dois modos de trabalho. Com .git na raiz,
+# docs/jarvis/ fica no .gitignore (o /jarvis-init garante); sem .git (modo workspace) a raiz não
+# é versionada. O que foi implementado vai para o Central docs.
 JARVIS_DOCS=$DOCS_FOLDER/jarvis
 # Engenharia: ARD/, RFC/, qa/, swagger/, openapi/, robots/, c4/
 ENG_DOCS=$JARVIS_DOCS/engineering

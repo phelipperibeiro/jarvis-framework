@@ -215,7 +215,7 @@ Identificar qual IDE o usuário está utilizando:
    Serão adicionadas ao final do ENV.md sem alterar os valores existentes.
    ```
 8. **Exceção — documentos nos caminhos antigos:** procure documentos de trabalho em `$DOCS_FOLDER/product`, `$DOCS_FOLDER/engineering/{ARD,RFC,qa,swagger,openapi,robots,c4}`, `docs/engineering/{robots,swagger,openapi,c4}` e os discoveries em `$PROD_DOCS/discoveries/`.
-   - Se houver, liste o que encontrou e pergunte com `AskUserQuestion` (uma pergunta para todos) se move para `docs/jarvis/…` (`$PROD_DOCS`, `$ENG_DOCS/…` e, para os discoveries, `$DISCOVERIES_DOCS`). Use `git mv` quando o arquivo for versionado e `mv` quando não for e, só com `WORKSPACE_MODE=project`, garanta `docs/jarvis/` no `.gitignore`.
+   - Se houver, liste o que encontrou e pergunte com `AskUserQuestion` (uma pergunta para todos) se move para `docs/jarvis/…` (`$PROD_DOCS`, `$ENG_DOCS/…` e, para os discoveries, `$DISCOVERIES_DOCS`). Use `git mv` quando o arquivo for versionado e `mv` quando não for e, só se a raiz do workspace tiver `.git`, garanta `docs/jarvis/` no `.gitignore`.
    - **Conflito** (arquivo com o mesmo nome no destino): não sobrescreva; liste e pule esse arquivo. A pasta antiga só é removida se ficar vazia.
    - **`related_discovery`:** depois de mover discoveries, nos `.md` de `$PROD_DOCS`, troque todo `related_discovery:` cujo **nome de arquivo** seja o de um discovery movido pelo caminho novo (relativo ao workspace). Isso também conserta valores que já estavam quebrados.
    - **Sem confirmação, não mova nada:** as chaves **novas** recebem o caminho antigo (`DISCOVERIES_DOCS=$PROD_DOCS/discoveries`; `PROD_DOCS`/`ENG_DOCS` só se também forem novas). Chave que já existe não muda: avise que os documentos ficaram no caminho antigo.
@@ -224,7 +224,7 @@ Identificar qual IDE o usuário está utilizando:
    - **Central docs no padrão antigo do modo workspace:** se `CENTRAL_DOCS_LOCATION` for `./central-docs` (ou `central-docs`) e essa pasta existir, ofereça com `AskUserQuestion` (**Mover** | **Manter**) mover para `docs/jarvis/central-docs`, o padrão atual. Com **Mover**: se o destino já existir, não sobrescreva (avise e mantenha); senão, `mv ./central-docs docs/jarvis/central-docs` e troque o valor de `CENTRAL_DOCS_LOCATION` no `ENV.md`. Esta é a única alteração de uma chave existente no Upgrade e só acontece com a confirmação. Com **Manter**, nada muda.
 10. **Exceção — `PROD_MODE`:** se `PROD_MODE` estiver entre as chaves novas, grave pelo `AREA`: `ENGINEERING` → `developer-guided`, `PRODUCT` → `product-led`. Com outra `AREA` (ou vazia), faça a mesma pergunta do Passo 3 (Pergunta 8 — modo de condução) e grave a resposta. `PROD_MODE` que já existe, mesmo vazia, não muda. As demais chaves continuam sem pergunta.
     - **`WORKSPACE_MODE`:** o `jarvis init --upgrade` já grava o modo detectado (raiz sem `.git` e 1+ subpastas com `.git/` = `workspace`; raiz com `.git` = `project`). Se a chave existir vazia, detecte do mesmo jeito e grave; se existir preenchida, não muda.
-    - **`.gitignore` na raiz com `WORKSPACE_MODE=workspace`:** a raiz não é versionada, então esse arquivo não tem efeito. Não o apague; só avise: `ℹ️ O .gitignore da raiz do workspace não tem efeito (a raiz não é um repositório). Pode removê-lo se quiser.`
+    - **`.gitignore` numa raiz sem `.git` (ex.: `WORKSPACE_MODE=workspace`):** a raiz não é versionada, então esse arquivo não tem efeito. Não o apague; só avise: `ℹ️ O .gitignore da raiz do workspace não tem efeito (a raiz não é um repositório). Pode removê-lo se quiser.`
 11. Appender as novas variáveis ao final do `ENV.md` com comentário de data:
    ```
    # --- Upgrade YYYY-MM-DD ---
@@ -629,7 +629,7 @@ Nunca grave TOKEN_VERSION_CONTROL (chave removida do template).
 | `QA_SIGNOFF_BRANCHES` / `QA_SIGNOFF_MAX_AGE` | `main,release/*` / `24` | Sign-off QA |
 | `JARVIS_PROJECT` | `https://github.com/phelipperibeiro/jarvis-framework` | Repo do framework (`/jarvis-report-issue`) |
 | `CENTRAL_DOCS_STORAGE` / `_LOCATION` | `filesystem` / pasta padrão do modo de trabalho | Central docs (o que foi implementado), configurado no Passo 5.2; vazio = desligado |
-| `JARVIS_DOCS` / `ENG_DOCS` | `$DOCS_FOLDER/jarvis` / `$JARVIS_DOCS/engineering` | Documentos de trabalho (não perguntar; `docs/jarvis/` no `.gitignore` só no modo project) |
+| `JARVIS_DOCS` / `ENG_DOCS` | `$DOCS_FOLDER/jarvis` / `$JARVIS_DOCS/engineering` | Documentos de trabalho (não perguntar; `docs/jarvis/` no `.gitignore` só se a raiz tiver `.git`) |
 | `DISCOVERIES_FOLDER_NAME` / `DISCOVERIES_DOCS` | `discoveries` / `$JARVIS_DOCS/$DISCOVERIES_FOLDER_NAME` | Discoveries, fora de `product/` (não perguntar) |
 | `CENTRAL_DOCS_REF` / `_TARGET_BRANCH` / `_REVIEWERS` | `main` / `main` / *(vazio)* | Só quando a pasta do Central docs tem `.git` |
 | `SESSIONS_DIR` | `.jarvis/sessions` | Não perguntar — gravar fixo |
@@ -698,9 +698,10 @@ mkdir -p .jarvis/sessions/eng .jarvis/sessions/prod .jarvis/sessions/qa
 #    JARVIS_DOCS=$DOCS_FOLDER/jarvis, PROD_DOCS=$JARVIS_DOCS/product, ENG_DOCS=$JARVIS_DOCS/engineering
 #    (valores do template). Uma docs/ já existente não é tocada.
 
-# 9. .gitignore — SÓ com WORKSPACE_MODE=project (a raiz é um repositório).
-#    Com WORKSPACE_MODE=workspace a raiz não é versionada: NÃO crie nem altere o .gitignore da raiz.
-if [ "$WORKSPACE_MODE" = "project" ]; then
+# 9. .gitignore — SÓ se a raiz do workspace for um repositório (tem .git).
+#    Raiz sem .git (modo workspace, ou pasta sem nenhum repositório) não é versionada:
+#    NÃO crie nem altere o .gitignore da raiz.
+if [ -e .git ]; then
   for line in '.jarvis/' 'docs/jarvis/' 'CDD-MIND-MAP.md'; do
     grep -qxF "$line" .gitignore 2>/dev/null || echo "$line" >> .gitignore
   done
@@ -725,7 +726,7 @@ Pergunte com `AskUserQuestion`:
 
 **A ou B:**
 - `CENTRAL_DOCS_STORAGE=filesystem`.
-- `CENTRAL_DOCS_LOCATION=docs/jarvis/central-docs` nos dois modos de trabalho, junto dos documentos de trabalho (a pessoa pode digitar outro caminho). No modo project, `docs/jarvis/` no `.gitignore` já cobre a pasta; no modo workspace a raiz não é versionada, e nenhum `.gitignore` é necessário.
+- `CENTRAL_DOCS_LOCATION=docs/jarvis/central-docs` nos dois modos de trabalho, junto dos documentos de trabalho (a pessoa pode digitar outro caminho). Com `.git` na raiz (modo project), `docs/jarvis/` no `.gitignore` já cobre a pasta; sem `.git` na raiz (modo workspace) ela não é versionada, e nenhum `.gitignore` é necessário.
 - **A:** `mkdir -p {LOCATION}` e criar `{LOCATION}/AGENTS.md` mínimo, explicando:
   - a estrutura `{SQUAD}/product/{produto}/feature-*.md` e `{SQUAD}/engineering/{produto}/delivery-*.md`;
   - que o `{SQUAD}/index.md` é gerado pelo `jarvis docs publish`.
@@ -1133,7 +1134,7 @@ A **detecção de stack por código e a criação de skill novo** (sub-passos 9.
 3. **Lê** o workspace (a análise **só lê**: não altera arquivos do projeto nem as listas), identifica as stacks de backend e de frontend, inclusive de vários projetos, e **mostra o que encontrou antes de sugerir** (só essas 2 áreas)
 4. Para cada stack de backend/frontend, sugere **registrar o skill que já existe** (mesmo `area` e `stack`) ou **criar um novo** com `/jarvis-create-specialization {área} {stack}`; a pessoa escolhe, e o que não aceita não muda
 5. Mostra um resumo das 6 listas e do que foi registrado ou criado
-6. **Monta o `CDD-MIND-MAP.md`** (o mapa de tecnologias do workspace, lido pelo `/warm-up`): com a mesma leitura do sub-passo 3, agora para **todas as áreas**, preenche uma linha por repositório (papel, linguagem, framework, área, até 5 ferramentas principais) pelo `$IDE/templates/cdd-mind-map-template.md`, mostra a tabela e pede a validação com `AskUserQuestion` (**Confirmar** | **Corrigir** | **Incluir informação**). Grava na raiz do workspace (no modo project, já no `.gitignore`, Passo 5). Se o mapa já existe, só acrescenta os repositórios que faltam. Pular é permitido: o primeiro `/warm-up` cria o mapa.
+6. **Monta o `CDD-MIND-MAP.md`** (o mapa de tecnologias do workspace, lido pelo `/warm-up`): com a mesma leitura do sub-passo 3, agora para **todas as áreas**, preenche uma linha por repositório (papel, linguagem, framework, área, até 5 ferramentas principais) pelo `$IDE/templates/cdd-mind-map-template.md`, mostra a tabela e pede a validação com `AskUserQuestion` (**Confirmar** | **Corrigir** | **Incluir informação**). Grava na raiz do workspace (com `.git` na raiz, já no `.gitignore`, Passo 5). Se o mapa já existe, só acrescenta os repositórios que faltam. Pular é permitido: o primeiro `/warm-up` cria o mapa.
 
 O tempo de ~10 minutos é referência, não limite. Nunca leia `.env*`, chaves ou credenciais.
 
@@ -1166,7 +1167,7 @@ O tempo de ~10 minutos é referência, não limite. Nunca leia `.env*`, chaves o
 ⚠️ Lembre-se de:
 1. Não commitar tokens ou senhas no repositório
 2. Adicionar ENV.md ao .gitignore se contiver dados sensíveis
-3. No modo project, garantir `.jarvis/` no `.gitignore` (no modo workspace a raiz não é versionada)
+3. Com `.git` na raiz, garantir `.jarvis/` no `.gitignore` (sem `.git`, como no modo workspace, a raiz não é versionada)
 4. Tokens Git ficam fora do ENV (`.npmrc` / `gh auth` / `BITBUCKET_TOKEN`)
 ```
 
@@ -1243,7 +1244,7 @@ Apresentar checklist de onboarding por período (Dia 1, Semana 1, Mês 1).
 - ✅ Só perguntar USER se o usuário quiser outro identificador
 - ✅ Validar range do MAX_AI_EXECUTION_PERCENTAGE (60-100)
 - ✅ WORKSPACE detectado (basename da pasta do `$IDE/`) ou override
-- ✅ Criar `.jarvis/sessions/{eng,prod,qa}` e, só no modo project, garantir `.jarvis/` no `.gitignore`
+- ✅ Criar `.jarvis/sessions/{eng,prod,qa}` e, só com `.git` na raiz, garantir `.jarvis/` no `.gitignore`
 - ✅ Explicar freelance se `TASK_MANAGER` vazio (`TASK_MANAGER_KEY` próprio)
 - ✅ Garantir o Context7 no arquivo de MCP que a IDE lê, no formato dela, e validá-lo (obrigatório; pendente de ativação não bloqueia)
 - ✅ Checar MCP de task manager em best-effort (1 tentativa, nunca bloquear)
@@ -1429,7 +1430,7 @@ Bem-vindo! 🎉
 - [ ] Validou MAX_AI_EXECUTION_PERCENTAGE (60-100) - para campos livres
 - [ ] Confirmou WORKSPACE (nome da pasta do `$IDE/` ou override)
 - [ ] ENABLE_CDD=true e SESSIONS_DIR=.jarvis/sessions
-- [ ] Criou `.jarvis/sessions/{eng,prod,qa}` e, só no modo project, `.jarvis/` no `.gitignore` (no modo workspace, nenhum `.gitignore` na raiz)
+- [ ] Criou `.jarvis/sessions/{eng,prod,qa}` e, só com `.git` na raiz, `.jarvis/` no `.gitignore` (raiz sem `.git`: nenhum `.gitignore`)
 - [ ] TASK_MANAGER: valor ou vazio (freelance) explicado
 - [ ] Não gravou TOKEN_VERSION_CONTROL / PROJECT_NAME / EVENT_BUS*
 - [ ] Perguntou sobre variáveis opcionais

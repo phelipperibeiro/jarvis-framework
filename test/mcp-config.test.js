@@ -52,10 +52,13 @@ test("arquivo existente: preserva os outros servidores e é idempotente", () => 
   });
 });
 
-test("JSON inválido: não mexe no arquivo e reporta o erro", () => {
+test("JSON inválido: não mexe no arquivo e devolve o trecho com o motivo", () => {
   withWorkspace({ ".mcp.json": "{ quebrado" }, (ws) => {
     const r = ensureContext7(ws, "claude");
-    assert.equal(r.errors.length, 1);
+    assert.deepEqual(r.written, []);
+    assert.equal(r.manual.length, 1);
+    assert.match(r.manual[0].reason, /não consegui ler o JSON/);
+    assert.match(r.manual[0].snippet, /"context7"/);
     assert.equal(readFileSync(join(ws, ".mcp.json"), "utf-8"), "{ quebrado");
   });
 });

@@ -15,7 +15,7 @@ import {
 } from "node:fs";
 import { join, resolve, relative, dirname, basename, isAbsolute, sep } from "node:path";
 import { execFileSync } from "node:child_process";
-import { resolveWorkspaceMode } from "./workspace-mode.js";
+import { rootIsRepo } from "./workspace-mode.js";
 
 const ENG_SUBDIRS = ["ARD", "RFC", "qa", "swagger", "openapi", "robots", "c4"];
 const LEGACY_ENG_SUBDIRS = ["robots", "swagger", "openapi", "c4"];
@@ -165,8 +165,8 @@ function emptyDirsUnder(dirAbs) {
 
 /**
  * Aplica o plano: `git mv` se o arquivo é versionado, senão `rename`. Remove as pastas
- * antigas só se ficarem vazias e, no modo project, garante `{JARVIS_DOCS}/` no `.gitignore`
- * (no modo workspace a raiz não é versionada e o `.gitignore` não é tocado).
+ * antigas só se ficarem vazias e, se a raiz for um repositório, garante `{JARVIS_DOCS}/` no
+ * `.gitignore` (raiz não versionada, como no modo workspace, não tem o `.gitignore` tocado).
  * @returns {{ moved: {from: string, to: string, discovery: boolean}[], errors: string[] }}
  */
 export function applyDocsMigration(workspaceDir, plan, env) {
@@ -196,10 +196,7 @@ export function applyDocsMigration(workspaceDir, plan, env) {
     removeEmptyDirs(dirname(srcAbs), docsAbs);
   }
 
-  if (
-    moved.length > 0 &&
-    resolveWorkspaceMode(workspaceDir, env.get("WORKSPACE_MODE")) === "project"
-  ) {
+  if (moved.length > 0 && rootIsRepo(workspaceDir)) {
     ensureGitignore(workspaceDir, `${docsFolders(env).jarvis}/`);
   }
   return { moved, errors };

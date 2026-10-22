@@ -29,7 +29,7 @@ import {
   rewriteRelatedDiscovery,
   declineEnvValues,
 } from "../lib/core/docs-migrate.js";
-import { detectWorkspaceMode } from "../lib/core/workspace-mode.js";
+import { rootIsRepo } from "../lib/core/workspace-mode.js";
 import { ensureContext7 } from "../lib/core/mcp-config.js";
 
 function ask(rl, question) {
@@ -38,7 +38,7 @@ function ask(rl, question) {
 
 /**
  * Grava o Context7 (MCP obrigatório) no arquivo de MCP da IDE e mostra o que falta.
- * @returns {number} quantidade de erros
+ * Só avisa: problema no arquivo de MCP não muda o código de saída (instalação e --upgrade).
  */
 function setupMcp(workspaceDir, ide) {
   const mcp = ensureContext7(workspaceDir, ide);
@@ -46,14 +46,16 @@ function setupMcp(workspaceDir, ide) {
   for (const p of mcp.written) logger.info(`  ${GREEN}✓ ${p}${NC} (Context7 adicionado)`);
   for (const p of mcp.present) logger.info(`${DIM}  ↳ ${p} (Context7 já configurado)${NC}`);
   for (const m of mcp.manual) {
-    logger.info(`${YELLOW}  ⚠️  Config só global: inclua em ${m.path}:${NC}`);
+    const why = m.reason
+      ? `${m.path}: ${m.reason}. Nada alterado; inclua à mão:`
+      : `Config só global: inclua em ${m.path}:`;
+    logger.info(`${YELLOW}  ⚠️  ${why}${NC}`);
     for (const line of m.snippet.trimEnd().split("\n")) logger.info(`${DIM}     ${line}${NC}`);
   }
-  for (const e of mcp.errors) logger.error(`${RED}  ✗ ${e} — nada alterado nesse arquivo${NC}`);
+  for (const e of mcp.errors) logger.info(`${YELLOW}  ⚠️  ${e} (nada alterado)${NC}`);
   const note = getIDEConfig(ide)?.mcpNote;
   if (note && (mcp.written.length || mcp.manual.length)) logger.info(`${DIM}  ${note}${NC}`);
   logger.info("");
-  return mcp.errors.length;
 }
 
 export async function init(flags) {
@@ -176,9 +178,8 @@ export async function init(flags) {
   for (const area of ["eng", "prod", "qa"]) {
     mkdirSync(join(jarvisRoot, "sessions", area), { recursive: true });
   }
-  // .gitignore só no modo project: no modo workspace a raiz não é versionada.
-  const workspaceMode = detectWorkspaceMode(cwd).mode;
-  if (workspaceMode === "project") {
+  // .gitignore só numa raiz versionada (com .git): no modo workspace a raiz não é um repositório.
+  if (rootIsRepo(cwd)) {
     const gitignore = join(cwd, ".gitignore");
     const ignoreLine = ".jarvis/";
     if (existsSync(gitignore)) {
@@ -309,7 +310,7 @@ async function runUpgrade(cwd, flags) {
     keepEnvValues: true,
   });
   for (const item of sync.errors) logger.error(`${RED}  ✗ ${item}${NC}`);
-  const mcpErrors = setupMcp(workspaceDir, ide);
+  setupMcp(workspaceDir, ide);
 
   // 2. Variáveis novas (só acrescenta)
   const envText = readFileSync(envPath, "utf-8");
@@ -421,5 +422,5 @@ async function runUpgrade(cwd, flags) {
   }
   logger.info("");
   logger.info(`${CYAN}➡️  Agora rode ${BOLD}/jarvis-init upgrade${NC}${CYAN} na IDE.${NC}\n`);
-  return sync.errors.length || moveErrors.length || staleErrors.length || mcpErrors ? 1 : 0;
+  return sync.errors.length || moveErrors.length || staleErrors.length ? 1 : 0;
 }

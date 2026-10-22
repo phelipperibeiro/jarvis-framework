@@ -26,16 +26,27 @@ function listGitSubdirs(dir) {
 }
 
 /**
+ * A raiz é um repositório (tem `.git`, pasta ou arquivo)? É o critério do `.gitignore`:
+ * só se cria ou altera o `.gitignore` de uma raiz versionada. Uma pasta sem nenhum `.git`
+ * é `project` para o modo, mas não é versionada.
+ * @param {string} dir
+ * @returns {boolean}
+ */
+export function rootIsRepo(dir) {
+  return existsSync(join(dir, ".git"));
+}
+
+/**
  * @param {string} workspaceDir - pasta que contém o `$IDE/`
  * @param {{ repos?: string[] }} [options] - `repos`: allowlist (WORKSPACE_REPOS); vazia = todas
  * @returns {{ mode: "workspace"|"project", repos: string[], warning: string|null }}
  */
 export function detectWorkspaceMode(workspaceDir, { repos = [] } = {}) {
-  const rootIsRepo = existsSync(join(workspaceDir, ".git"));
+  const isRepo = rootIsRepo(workspaceDir);
   const allow = new Set(repos);
   const found = listGitSubdirs(workspaceDir).filter((n) => allow.size === 0 || allow.has(n));
 
-  if (rootIsRepo) {
+  if (isRepo) {
     return {
       mode: "project",
       repos: [],
@@ -46,16 +57,6 @@ export function detectWorkspaceMode(workspaceDir, { repos = [] } = {}) {
   }
   if (found.length >= 1) return { mode: "workspace", repos: found, warning: null };
   return { mode: "project", repos: [], warning: null };
-}
-
-/**
- * Modo efetivo: o `WORKSPACE_MODE` do ENV quando válido; senão, o detectado no disco.
- * @param {string} workspaceDir
- * @param {string} [envValue] - valor de `WORKSPACE_MODE` (pode faltar ou estar vazio)
- * @returns {"workspace"|"project"}
- */
-export function resolveWorkspaceMode(workspaceDir, envValue) {
-  return normalizeWorkspaceMode(envValue) || detectWorkspaceMode(workspaceDir).mode;
 }
 
 /** Lê o valor do ENV: só `workspace` ou `project` (sem diferenciar maiúsculas); outro valor = null. */
