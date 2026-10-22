@@ -360,6 +360,8 @@ Escanear `.git/` na raiz e nas subpastas e gravar `WORKSPACE_MODE` (o que define
 - Raiz sem `.git` e 1 ou mais subpastas com `.git` → `WORKSPACE_MODE=workspace`; com 2 ou mais, listar e perguntar se filtra (`WORKSPACE_REPOS`); senão vazio (todas)
 - Raiz sem `.git` e nenhuma subpasta com `.git` → `WORKSPACE_MODE=project`
 
+> O `WORKSPACE_MODE` não decide o `.gitignore`: ele só é criado ou alterado quando a raiz tem `.git` (Passo 5). Uma pasta sem nenhum `.git` é `project` e mesmo assim não recebe `.gitignore`.
+
 Pergunta 6: Qual o limite de execução da AI? (número entre 60 e 100)
 [aguardar resposta e validar range 60-100]
 ```

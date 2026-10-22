@@ -118,7 +118,7 @@ Também é sincronizado para `.$IDE/` no init.
 
 | Arquivo / pasta | Nota                                                             |
 | --------------- | ---------------------------------------------------------------- |
-| `.gitignore`    | Ignora `.history` e `.jarvis/` (sessões locais do workspace)     |
+| `.gitignore`    | Deste repositório: ignora `.history` e `.jarvis/` (sessões locais) |
 | `.vscode/`      | Settings locais do editor — não faz parte do framework publicado |
 | `.git/`         | Controle de versão                                               |
 | `.history/`     | Histórico local de edições (IDE) — ignorado                      |
