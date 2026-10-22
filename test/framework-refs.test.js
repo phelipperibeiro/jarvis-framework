@@ -20,11 +20,15 @@ function walk(dir) {
 // assets/ guarda modelos de arquivos que ainda serão gerados: os links de lá apontam para o futuro.
 const isAsset = (file) => file.split(sep).includes("assets");
 
-// Placeholders de exemplo, não referências reais: {nome}, *, …, <x>, xxx, nome-da-skill.
-const isPlaceholder = (path) => /[{}*…<>]|xxx|nome-d[aoe]-/i.test(path);
+// Placeholders de exemplo, não referências reais: {nome}, *, …, <x>, RFC-xxx, nome-da-skill.
+// O xxx e o nome-d?- valem por segmento do caminho, para não esconder um nome real que os contenha.
+const isPlaceholder = (path) =>
+  /[{}*…<>]/.test(path) ||
+  path.split("/").some((seg) => /(^|[-_.])x{3}([-_.]|$)/i.test(seg) || /^nome-d[aoe]-/i.test(seg));
 
-// Blocos de código trazem exemplos de comando; os links markdown de dentro deles não são navegáveis.
-const withoutCode = (text) => text.replace(/^(`{3,})[^\n]*\n[\s\S]*?^\1/gm, "");
+// Blocos de código (inclusive recuados, em listas) trazem exemplos de comando; os links markdown
+// de dentro deles não são navegáveis. O fechamento é uma linha só com as mesmas crases.
+const withoutCode = (text) => text.replace(/^[ \t]*(`{3,})[^\n]*\n[\s\S]*?^[ \t]*\1[ \t]*$/gm, "");
 
 // Arquivos gerados fora do framework (na raiz do workspace do usuário).
 const GENERATED = ["CDD-MIND-MAP.md"];
@@ -36,7 +40,8 @@ test("caminhos $IDE/... citados no framework existem (inclusive em blocos de có
     for (const file of walk(join(root, folder))) {
       const text = readFileSync(file, "utf8");
       for (const m of text.matchAll(/\$IDE\/((?:skills|templates|workflows|rules|rules-on-demand|agents)\/[^\s`'")\]|,;]+)/g)) {
-        const path = m[1].replace(/[.:]+$/, "");
+        // Pontuação e negrito colados no fim (`**$IDE/x.md**`) não fazem parte do caminho.
+        const path = m[1].replace(/[.:*]+$/, "");
         if (isPlaceholder(path)) continue;
         if (!existsSync(join(root, path))) broken.push(`${rel(file)}: $IDE/${path}`);
       }

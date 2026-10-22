@@ -5,7 +5,7 @@ description: >
   partir de um épico ou de uma história, com subtarefas de 4h a 1 dia para a história) e Reference
   Spec (especificação técnica normativa, sem card e sem subtarefas: contratos, convenções, perfis
   de spec). Cada modo tem o seu arquivo em references/, lido só quando o modo é escolhido.
-  Trigger: Use ao escrever uma Tech Spec a partir de um card ou uma spec técnica de referência.
+  Trigger: Use ao escrever uma Delivery Spec (Tech Spec a partir de um card) ou uma Reference Spec (spec técnica de referência).
 allowed-tools: Read Grep Glob Bash
 license: AGPL-3.0
 metadata:

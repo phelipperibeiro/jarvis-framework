@@ -1,5 +1,5 @@
 ---
-description: Tech Spec a partir de um card (épico ou história) ou especificação técnica de referência
+description: Delivery Spec (Tech Spec a partir de um card, épico ou história) ou Reference Spec (especificação técnica de referência)
 auto_execution_mode: 3
 recommended_model: claude-sonnet-4-20250514
 rules_file: $IDE/rules-on-demand/engineering/eng.tech-spec-rules.md

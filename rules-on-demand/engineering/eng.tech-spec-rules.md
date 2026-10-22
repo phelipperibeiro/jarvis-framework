@@ -90,7 +90,7 @@ $SESSION_FOLDER/{TASK_MANAGER_KEY}/tech-spec.md
 ### Nomenclatura
 
 - **Formato da pasta**: `{jira-key}` em **lowercase** (ex: `TASK-123` → `task-123`)
-- **Arquivo**: Sempre `tech-spec.md` ou `architecture.md`
+- **Arquivo**: `tech-spec.md` (história), `tech-spec-arch.md` (épico) ou `architecture.md`
 - **Exemplo**: `$SESSIONS_DIR/eng/task-123/tech-spec.md`
 
 > ⚠️ **IMPORTANTE**: NÃO adicione descrições ou sufixos ao nome da pasta.
