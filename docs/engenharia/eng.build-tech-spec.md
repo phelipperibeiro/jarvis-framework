@@ -1,52 +1,59 @@
-# `/eng.build-tech-spec` — Tech Spec a partir de um card
+# `/eng.build-tech-spec` — Tech Spec a partir de um card ou spec técnica de referência
 
-Workflow: `workflows/engineering/eng.build-tech-spec.md` · Regras: `rules-on-demand/engineering/eng.tech-spec-rules.md` · Template: `templates/engineering/tech-spec-template.md`
+Workflow: `workflows/engineering/eng.build-tech-spec.md` · Skill: `skills/eng-global-tech-spec/` · Regras: `rules-on-demand/engineering/eng.tech-spec-rules.md` · Templates: `templates/engineering/tech-spec-template.md` (modo card) e [`ref-spec-template.md`](../../templates/engineering/ref-spec-template.md) (modo referência)
 
 ## Em uma frase
 
-Transforma um épico ou uma história do board em uma **Tech Spec**: decisões arquiteturais justificadas, plano de implementação, riscos, testes e (para histórias) subtarefas prontas para virar cards.
+Tem dois modos: transforma um épico ou uma história do board em uma **Tech Spec** (decisões justificadas, plano, riscos, testes e, para histórias, subtarefas prontas para virar cards) ou escreve uma **especificação técnica de referência**, o documento normativo que diz como as implementações devem ser feitas.
 
 ## O que é
 
-A Tech Spec é o documento técnico auto-contido de um card: um desenvolvedor deve conseguir executá-la sem precisar perguntar. Ela **é salva na sessão** (`.jarvis/sessions/eng/{card}/tech-spec.md`) e anexada ao card, que é a fonte da verdade.
+- **Modo card:** a Tech Spec é o documento técnico auto-contido de um card: um desenvolvedor deve conseguir executá-la sem precisar perguntar. Ela **é salva na sessão** (`.jarvis/sessions/eng/{card}/tech-spec.md`) e anexada ao card, que é a fonte da verdade.
+- **Modo referência:** um documento normativo (contrato entre serviços, convenção de nomes, topologia, perfil de adaptação de uma spec, fases de adoção) que **não** deriva de card, **não** decide trade-off (isso é do RFC) e **não** desenha a arquitetura (isso é do ARD). Não tem subtarefas. Fica em `docs/jarvis/engineering/SPEC/SPEC-###-{nome}.md`, numerado como RFC e ARD, e é versionado com SemVer.
 
-> **Restrito a `POSITION=TECH LEAD`.** Se o seu cargo no `ENV.md` for outro, o comando responde "Acesso Negado" e para.
+> **Quem pode rodar:** `POSITION` igual a `TECH LEAD`, `HEAD`, `CTO`, `SPECIALIST` ou `SENIOR`. O `GENERALIST` sempre passa: em time pequeno ele acumula todos os papéis (ver `taxonomy.md`). Com outro cargo no `ENV.md`, o comando responde "Acesso Negado", lista os cargos aceitos e para.
 
 ## Quando usar
 
-- Antes de implementar uma história ou épico que precisa de especificação técnica detalhada
-- Quando o time quer subtarefas bem definidas para distribuir o trabalho
+- Antes de implementar uma história ou épico que precisa de especificação técnica detalhada (modo card)
+- Quando o time quer subtarefas bem definidas para distribuir o trabalho (modo card)
+- Quando um RFC ou ARD já decidiu o rumo e falta o documento que fixa contratos, convenções e fases (modo referência)
 
 ## Quando **não** usar
 
 - Você quer o fluxo enxuto de planejamento de uma tarefa → [`eng.start`](./eng.start.md)
-- Só quer quebrar uma Tech Spec que já existe → [`eng.breakdown-subtasks`](./eng.breakdown-subtasks.md)
+- Só quer detalhar as fatias de uma Tech Spec que já existe → [`eng.breakdown-subtasks`](./eng.breakdown-subtasks.md)
 - A decisão ainda está em discussão → [`eng.create-rfc`](./eng.create-rfc.md)
+- Você vai desenhar a arquitetura → [`eng.create-ard`](./eng.create-ard.md)
 
 ## Como funciona
 
-O comando começa **detectando se o card é um épico ou uma história** (e pergunta se não conseguir inferir). O tipo decide o resto do fluxo.
+1. **Cargo:** confere o `POSITION` (acima).
+2. **Modo:** com URL, ID ou texto de card, segue no modo card sem perguntar, como sempre. Com a descrição de um documento normativo, segue no modo referência. Sem argumentos (ou se ficar ambíguo), pergunta se há card de origem.
+3. **Áreas:** identifica as áreas da spec (backend, frontend, qa, data, automation, platform) e carrega o skill base de cada uma mais as especializações registradas no `ENV.md` (regra `eng.specializations-rules.md`). Assim a spec segue as convenções do projeto, e não padrões genéricos.
+4. **Executa o modo**, lendo só o arquivo dele (`skills/eng-global-tech-spec/references/`).
 
-**Etapas comuns**
+**Modo card: épico → Tech Spec arquitetural**
 
-1. **Entendimento profundo:** lê o card, o contexto de negócio, valida pré-requisitos e faz perguntas de clarificação
-2. **Validação de necessidade de RFC:** checa 8 critérios (impacta mais de uma squad, altera arquitetura ou infra, nova dependência crítica, custo recorrente, SLA ou contratos, lock-in, dados sensíveis, padrão reutilizável). Se qualquer um se aplicar, o RFC é obrigatório: você cria um, vincula um existente ou segue sem RFC justificando
+Entendimento do card, validação de necessidade de RFC (8 critérios), investigação arquitetural, proposta (decisões, desenho, contratos, riscos), apresentação a você e geração do `tech-spec-arch.md`. **Não quebra em subtarefas**, porque a quebra em histórias vem de Produto.
 
-**Caminho A: épico → Tech Spec arquitetural**
+**Modo card: história → Tech Spec de implementação**
 
-Investigação arquitetural, proposta (decisões, desenho, contratos, riscos), apresentação a você e geração do documento `tech-spec-arch.md`. **Não quebra em subtarefas**, porque a quebra em histórias vem de Produto.
+Entendimento do card, validação de RFC, investigação do codebase, **avaliação de complexidade**, proposta arquitetural, quebra em subtarefas, riscos e considerações, criação do `tech-spec.md`, criação das subtarefas no board (ou um template para você criar) e validação final.
 
-**Caminho B: história → Tech Spec de implementação**
+**Modo referência**
 
-Investigação técnica do codebase, **avaliação de complexidade**, proposta arquitetural, quebra em subtarefas, riscos e considerações, criação do `tech-spec.md`, criação das subtarefas no board (ou um template para você criar) e validação final.
+Triagem (escopo, áreas e se há RFC ou ARD de origem), checagem de RFC (sem origem, 7 dos 8 critérios: "padrão reutilizável" sai porque é a natureza do documento), investigação só de leitura, conteúdo pelo template (escopo normativo, decisões resolvidas com a origem de cada uma, contratos e convenções, critérios de aderência, fases e versionamento), aprovação e gravação em `docs/jarvis/engineering/SPEC/`. É documento de trabalho: não vai para o Central docs.
 
 ## Regras que importam
 
 - **Nunca inventa dados**; se não souber, pergunta
-- Toda decisão arquitetural tem justificativa, com pelo menos duas alternativas consideradas
+- Toda decisão tem justificativa; no modo card, com pelo menos duas alternativas consideradas
 - Toda Tech Spec documenta riscos com mitigação
-- Subtarefas são **fatias verticais completas** (endpoint inteiro, modal inteiro, tela inteira) e nunca fatias horizontais (só enum, só repository, só DTO)
+- No modo card, subtarefas são **fatias verticais completas** (endpoint inteiro, modal inteiro, tela inteira) e nunca fatias horizontais (só enum, só repository, só DTO)
+- No modo referência, cada decisão aponta a origem (RFC, ARD ou "resolvida aqui"), para que uma decisão nova não passe escondida
 
 ## Próximo passo típico
 
-[`eng.breakdown-subtasks`](./eng.breakdown-subtasks.md) → [`eng.start`](./eng.start.md) em cada subtarefa
+- **Modo card:** [`eng.start`](./eng.start.md) em cada subtarefa. Se as fatias forem para pessoas diferentes ou para quem precisa de um passo a passo (ex.: time com juniores), rode antes o [`eng.breakdown-subtasks`](./eng.breakdown-subtasks.md): ele não gera a spec, só detalha cada fatia.
+- **Modo referência:** revisar a spec com os revisores e mudar o status para `approved`; as implementações que a seguirem citam o `SPEC-###`.
