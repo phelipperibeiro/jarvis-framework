@@ -204,16 +204,18 @@ export function applyDocsMigration(workspaceDir, plan, env) {
 
 /**
  * Garante `line` no `.gitignore` de `workspaceDir` (cria o arquivo se faltar). Reconhece a
- * linha com e sem a barra final e com a barra inicial (`docs/jarvis/`, `docs/jarvis`,
- * `/docs/jarvis/`).
+ * linha com e sem a barra final, com a barra inicial e com `/*` ou `/**` (`docs/jarvis/`,
+ * `docs/jarvis`, `/docs/jarvis/`, `docs/jarvis/**`). Acrescenta com a quebra de linha do arquivo.
  * Quem chama decide se a raiz é versionada (`rootIsRepo`).
  */
 export function ensureGitignore(workspaceDir, line) {
   const p = join(workspaceDir, ".gitignore");
   const text = existsSync(p) ? readFileSync(p, "utf-8") : "";
   const bare = line.replace(/\/$/, "");
-  if (text.split("\n").some((l) => [line, bare, `/${line}`, `/${bare}`].includes(l.trim()))) return;
-  appendFileSync(p, `${text && !text.endsWith("\n") ? "\n" : ""}${line}\n`);
+  const forms = [bare, `${bare}/`, `${bare}/*`, `${bare}/**`].flatMap((f) => [f, `/${f}`]);
+  if (text.split(/\r?\n/).some((l) => forms.includes(l.trim()))) return;
+  const eol = text.includes("\r\n") ? "\r\n" : "\n";
+  appendFileSync(p, `${text && !text.endsWith("\n") ? eol : ""}${line}${eol}`);
 }
 
 /**

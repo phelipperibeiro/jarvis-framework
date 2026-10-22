@@ -95,18 +95,91 @@ function ensureJson(file, target) {
   return true;
 }
 
-/** Linhas do TOML sem espaços nas pontas, sem as de comentário (`#`) e sem as vazias. */
-const tomlLines = (text) =>
-  text
-    .split(/\r?\n/)
-    .map((l) => l.trim())
-    .filter((l) => l && !l.startsWith("#"));
+/** Posição da aspa que fecha a string aberta em `from` (`-1` se não fecha na linha). */
+function closingQuote(line, from, quote) {
+  for (let j = from; j < line.length; j++) {
+    if (quote === '"' && line[j] === "\\") {
+      j++;
+      continue;
+    }
+    if (line.startsWith(quote, j)) return j;
+  }
+  return -1;
+}
+
+/**
+ * Linhas do TOML prontas para inspeção, sem espaços nas pontas e sem as vazias:
+ *   - sem comentário (`#` fora de string) e sem as linhas de dentro de `"""` ou `'''`;
+ *   - strings com cara de chave (`"context7"`) ficam; as demais viram `""` (assim
+ *     `"context7.com"` ou `"@upstash/context7-mcp"` não contam como menção à chave).
+ */
+function tomlLines(text) {
+  const out = [];
+  let multi = null; // aspas triplas de uma string multilinha aberta
+  for (const raw of text.split(/\r?\n/)) {
+    let line = raw;
+    if (multi) {
+      const end = line.indexOf(multi);
+      if (end === -1) continue;
+      line = line.slice(end + multi.length);
+      multi = null;
+    }
+    let clean = "";
+    for (let i = 0; i < line.length; i++) {
+      const ch = line[i];
+      if (ch === "#") break;
+      if (ch !== '"' && ch !== "'") {
+        clean += ch;
+        continue;
+      }
+      const quote = line.startsWith(ch.repeat(3), i) ? ch.repeat(3) : ch;
+      const close = closingQuote(line, i + quote.length, quote);
+      if (close === -1) {
+        if (quote.length === 3) multi = quote;
+        clean += `${ch}${ch}`;
+        break;
+      }
+      const content = line.slice(i + quote.length, close);
+      clean += /^[A-Za-z0-9_-]+$/.test(content) ? `${ch}${content}${ch}` : `${ch}${ch}`;
+      i = close + quote.length - 1;
+    }
+    clean = clean.trim();
+    if (clean) out.push(clean);
+  }
+  return out;
+}
+
+/** Cabeçalho de tabela (`[a]`, `[[a]]`, `["a"]`): `[` seguido de chave, não de valor. */
+const isTomlHeader = (line) => /^\[\[?\s*[A-Za-z0-9_"'-]/.test(line);
+
+/** Chaves do primeiro nível de uma tabela inline (`{ a = 1, b = { c = 2 } }` → `a`, `b`). */
+function inlineTopKeys(inline) {
+  const keys = [];
+  let depth = 0;
+  let expectKey = false;
+  for (let i = 0; i < inline.length; i++) {
+    const ch = inline[i];
+    if (ch === "{" || ch === "[") {
+      depth++;
+      if (depth === 1 && ch === "{") expectKey = true;
+    } else if (ch === "}" || ch === "]") {
+      depth--;
+    } else if (depth === 1 && ch === ",") {
+      expectKey = true;
+    } else if (depth === 1 && expectKey && !/\s/.test(ch)) {
+      const m = inline.slice(i).match(/^["']?([A-Za-z0-9_-]+)/);
+      if (m) keys.push(m[1]);
+      expectKey = false;
+    }
+  }
+  return keys;
+}
 
 /**
  * O TOML já declara o servidor? Reconhece `[mcp_servers.context7]` (com espaços e aspas),
  * `context7 = …` dentro de `[mcp_servers]` e, antes do primeiro cabeçalho (na raiz),
- * `mcp_servers.context7 = …` e a tabela inline `mcp_servers = { context7 = … }`.
- * `context7` precisa ser a chave inteira (`context7-legacy` não conta).
+ * `mcp_servers.context7 = …` e a tabela inline `mcp_servers = { context7 = … }` (só no
+ * primeiro nível). `context7` precisa ser a chave inteira (`context7-legacy` não conta).
  */
 function tomlHasServer(text, key) {
   const name = `["']?${CONTEXT7.name}["']?`;
@@ -114,30 +187,35 @@ function tomlHasServer(text, key) {
   const keyTable = new RegExp(`^\\[\\s*${key}\\s*\\]`);
   const inKeyTableAssign = new RegExp(`^${name}\\s*[.=]`);
   const dotted = new RegExp(`^${key}\\s*\\.\\s*${name}\\s*[.=]`);
-  const inline = new RegExp(`^${key}\\s*=\\s*\\{(?:.*[{,])?\\s*${name}\\s*=`);
+  const inlineStart = new RegExp(`^${key}\\s*=\\s*(\\{.*)$`);
   let table = null; // null = raiz, antes do primeiro cabeçalho
   for (const line of tomlLines(text)) {
-    if (line.startsWith("[")) {
+    if (isTomlHeader(line)) {
       if (serverTable.test(line)) return true;
       table = keyTable.test(line) ? "key" : "other";
       continue;
     }
     if (table === "key" && inKeyTableAssign.test(line)) return true;
-    if (table === null && (dotted.test(line) || inline.test(line))) return true;
+    if (table !== null) continue;
+    if (dotted.test(line)) return true;
+    const inline = line.match(inlineStart);
+    if (inline && inlineTopKeys(inline[1]).includes(CONTEXT7.name)) return true;
   }
   return false;
 }
 
-/** Primeira linha que usa `context7` como chave (fora de comentário), numa forma qualquer. */
+/** Primeira linha que usa `context7` como chave, numa forma qualquer (já sem comentários). */
 function tomlContext7KeyLine(text) {
-  const asKey = new RegExp(`(^|[\\s{,.\\[])["']?${CONTEXT7.name}["']?\\s*[=.\\]]`);
-  return tomlLines(text).find((l) => asKey.test(l));
+  const name = `["']?${CONTEXT7.name}["']?`;
+  const inHeader = new RegExp(`[\\[.]\\s*${name}\\s*[.\\]]`);
+  const asKey = new RegExp(`(^|[{,.])\\s*${name}\\s*[=.]`);
+  return tomlLines(text).find((l) => (isTomlHeader(l) ? inHeader : asKey).test(l));
 }
 
 function ensureToml(file, target) {
   const text = existsSync(file) ? readFileSync(file, "utf-8") : "";
   if (tomlHasServer(text, target.key)) return false;
-  const brokenHeader = tomlLines(text).find((l) => l.startsWith("[") && !l.includes("]"));
+  const brokenHeader = tomlLines(text).find((l) => isTomlHeader(l) && !l.includes("]"));
   if (brokenHeader) {
     throw new Unrecognized(`cabeçalho de tabela sem "]" (${brokenHeader})`);
   }
