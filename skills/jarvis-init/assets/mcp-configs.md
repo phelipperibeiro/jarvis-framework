@@ -33,6 +33,8 @@ Cada IDE lê o MCP de um arquivo próprio, com formato próprio. O `jarvis init`
 
 Na IDE `gemini` (Gemini CLI / Antigravity) o `jarvis init` grava os dois arquivos de projeto. Na Windsurf, que só tem config global, ele não grava fora do workspace: mostra o trecho para colar.
 
+Quando um arquivo de MCP existe mas não dá para alterar com segurança (JSON com comentários ou inválido, raiz ou `mcpServers` que não é objeto, TOML que já usa `context7` como chave numa forma desconhecida ou com cabeçalho sem `]`), o `jarvis init` **não mexe nele**: mostra o motivo e o trecho para colar à mão. Isso é só um aviso e não muda o código de saída, nem na instalação nem no `--upgrade`.
+
 ### Context7 nos formatos que fogem do `mcpServers`
 
 **Codex** (`.codex/config.toml`):

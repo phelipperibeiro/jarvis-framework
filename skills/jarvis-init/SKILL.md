@@ -726,7 +726,7 @@ Pergunte com `AskUserQuestion`:
 
 **A ou B:**
 - `CENTRAL_DOCS_STORAGE=filesystem`.
-- `CENTRAL_DOCS_LOCATION=docs/jarvis/central-docs` nos dois modos de trabalho, junto dos documentos de trabalho (a pessoa pode digitar outro caminho). Com `.git` na raiz (modo project), `docs/jarvis/` no `.gitignore` já cobre a pasta; sem `.git` na raiz (modo workspace) ela não é versionada, e nenhum `.gitignore` é necessário.
+- `CENTRAL_DOCS_LOCATION=docs/jarvis/central-docs` nos dois modos de trabalho, junto dos documentos de trabalho (a pessoa pode digitar outro caminho). Com `.git` na raiz, `docs/jarvis/` no `.gitignore` já cobre a pasta; sem `.git` na raiz (como no modo workspace) ela não é versionada, e nenhum `.gitignore` é necessário.
 - **A:** `mkdir -p {LOCATION}` e criar `{LOCATION}/AGENTS.md` mínimo, explicando:
   - a estrutura `{SQUAD}/product/{produto}/feature-*.md` e `{SQUAD}/engineering/{produto}/delivery-*.md`;
   - que o `{SQUAD}/index.md` é gerado pelo `jarvis docs publish`.

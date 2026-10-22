@@ -233,7 +233,7 @@ JARVIS_PROJECT=https://github.com/phelipperibeiro/jarvis-framework
 #   CENTRAL_DOCS_STORAGE: filesystem (s3 e gdrive virão nas issues #144 e #145); vazio = desligado
 #   CENTRAL_DOCS_LOCATION: pasta do Central docs, relativa à pasta do workspace ou absoluta.
 #     Padrão do /jarvis-init: docs/jarvis/central-docs, nos dois modos de trabalho, junto dos
-#     documentos de trabalho (no modo project, coberto por docs/jarvis/ no .gitignore).
+#     documentos de trabalho (com .git na raiz, coberto por docs/jarvis/ no .gitignore).
 #   Se a pasta for um clone de um repositório de documentação (tem .git): git pull antes
 #   de ler e branch + commit + push + PR ao publicar. Sem .git: grava direto na pasta.
 CENTRAL_DOCS_STORAGE=filesystem
