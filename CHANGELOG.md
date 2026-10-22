@@ -6,6 +6,27 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), e o
 
 > Versões anteriores a `2.1.1` não foram documentadas retroativamente neste changelog — o histórico detalhado dessas versões continua disponível via `git log`.
 
+## [6.1.0] - 2026-10-22
+
+### Added
+- **Reference Spec no `/eng.build-tech-spec`** (#173): um segundo modo para escrever **especificações técnicas de referência**. São documentos normativos (contratos, convenções de nome, topologia, perfil de adaptação de uma spec, fases de adoção) que não derivam de card, não decidem trade-off (isso é do RFC) e não desenham arquitetura (isso é do ARD). A saída fica em `$ENG_DOCS/SPEC/SPEC-###-{slug}.md`, numerada como RFC e ARD, sem subtarefas e sem board. Sem RFC ou ARD de origem, a checagem de RFC aplica 7 dos 8 critérios: sai "padrão reutilizável", que é a natureza do documento. Cada decisão resolvida aponta a sua origem (RFC, ARD ou "resolvida aqui").
+- **Skill `eng-global-tech-spec`** (#173), no padrão do `eng.debug`: `SKILL.md` com as regras comuns e um arquivo por modo em `references/` (`delivery-spec.md` e `reference-spec.md`). Cada modo lê só o seu arquivo.
+- **Template `templates/engineering/ref-spec-template.md`** (#173): frontmatter com `id`, `version` (SemVer), `status` (`proposed | in_review | approved | superseded`) e `related`. Tem escopo normativo, decisões resolvidas com a origem de cada uma, contratos e convenções, critérios de aderência, fases e versionamento.
+- **`test/framework-refs.test.js`** (#173, no `test:filtro`): confere que os caminhos `$IDE/...` citados em skills, templates, workflows, rules e agents existem, inclusive dentro de blocos de código. Confere também os links relativos de skills, templates e workflows e a `metadata.area` de todo skill (as áreas válidas vêm da `eng.skills-rules.md`).
+- **`test/validate-frontmatter.test.js`** (#176, no `test:filtro`): o status `superseded` não gera aviso, e um status fora da lista gera.
+
+### Changed
+- **`/eng.build-tech-spec`** (#173): o workflow caiu de 976 para 139 linhas. Ficou com o gate de cargo, a triagem de modo e o passo de áreas. Com URL ou ID de card, segue no **Delivery Spec** (épico ou história) sem perguntar, com o comportamento de sempre e o texto movido sem reescrever para `references/delivery-spec.md`. Sem argumentos, pergunta o modo.
+- **Especializações no `/eng.build-tech-spec`** (#173): o comando aplica a `eng.specializations-rules.md`, carregando o skill base de cada área da spec e as especializações registradas no `ENV.md`, com as mensagens e o bloqueio padrão. As áreas são identificadas dentro do modo, depois da leitura do card ou da triagem.
+- **Fronteira com o `/eng.breakdown-subtasks`** (#173): o `build-tech-spec` entrega as fatias de 4h a 1 dia; o `breakdown-subtasks` só as detalha como passo a passo. Fica declarada no workflow, nos dois guias e nas rules.
+- **SPEC nas listas de documentos de trabalho** (#173, #174): `rules/` (`eng-rules`, `prod-rules`, `artifact-style-rules`), templates (`ENV-template`, `central-feature-template`), `jarvis-docs-central`, `jarvis-init` (inclusive a carga inicial do Central docs), `eng.spec-consolidate`, `eng.docs` e o agente `eng.docs-consolidator`. O `/eng.spec-consolidate --inicial` passa a ler também `$ENG_DOCS/SPEC`. Custo: +12 B por sessão nos perfis de engenharia.
+- Guias e índices (`docs/engenharia/eng.build-tech-spec.md`, `docs/comandos.md`, `docs/estrutura/`, `skills/AGENTS.md`, `templates/AGENTS.md`, `workflows/README.md`, `workflows/AGENTS.md`) com os dois modos.
+
+### Fixed
+- **Gate de `POSITION` no `/eng.build-tech-spec`** (#173): exigia `TECH LEAD` exato e bloqueava o `GENERALIST`, que a taxonomia define como coringa. Agora aceita `TECH LEAD`, `HEAD`, `CTO`, `SPECIALIST` e `SENIOR`, e o `GENERALIST` sempre passa. A linha `generalist` de `eng-rules.md` registra que ele satisfaz qualquer gate por cargo.
+- **`jarvis docs publish --tipo spec`** (#176): respondia "Tipo inválido". Agora explica que a SPEC é documento de trabalho e fica em `docs/jarvis/`; a SPEC continua sem poder ser publicada. O validador de frontmatter passa a aceitar o status `superseded`.
+- Link `RFC-Playbook@1.0.0.md` → `RFC-Playbook.md` (#173), que já estava quebrado; e o exemplo do Passo 8 do `jarvis-init`, que citava uma rule de QA já removida.
+
 ## [6.0.0] - 2026-10-20
 
 > **Major:** o `/eng.bug-audit` deixa de existir. O `/eng.debug` vira o comando único de bugs: investiga um sintoma ou varre um escopo (pasta, módulo ou `--all`).
