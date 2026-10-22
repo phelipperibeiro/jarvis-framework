@@ -25,6 +25,25 @@ class Unrecognized extends Error {}
 
 const isPlainObject = (v) => v !== null && typeof v === "object" && !Array.isArray(v);
 
+/**
+ * O servidor `context7` já está declarado? `true` se a entrada parece um servidor (objeto com
+ * `command` ou `url`); `false` se não existe; `Unrecognized` se existe mas não parece um
+ * servidor (`1`, `false`, `[]`, tabela vazia…), para não dizer "já configurado" sem estar.
+ */
+function hasContext7(servers) {
+  if (!servers || !Object.hasOwn(servers, CONTEXT7.name)) return false;
+  const entry = servers[CONTEXT7.name];
+  const looksLikeServer =
+    isPlainObject(entry) &&
+    ((entry.command != null && entry.command !== "") || typeof entry.url === "string");
+  if (!looksLikeServer) {
+    throw new Unrecognized(
+      `"${CONTEXT7.name}" existe mas não parece um servidor (sem command nem url)`
+    );
+  }
+  return true;
+}
+
 /** Item do servidor no formato do alvo. */
 function serverEntry(style) {
   if (style === "opencode") {
@@ -87,7 +106,7 @@ function ensureJson(file, target) {
     throw new Unrecognized(`"${target.key}" não é um objeto`);
   }
   const servers = current ?? {};
-  if (Object.hasOwn(servers, CONTEXT7.name)) return false;
+  if (hasContext7(servers)) return false;
   data[target.key] = { ...servers, [CONTEXT7.name]: serverEntry(target.style) };
   mkdirSync(dirname(file), { recursive: true });
   const body = JSON.stringify(data, null, indent).replace(/\n/g, eol);
@@ -117,7 +136,7 @@ function ensureToml(file, target) {
   if (servers !== undefined && !isPlainObject(servers)) {
     throw new Unrecognized(`"${target.key}" não é uma tabela`);
   }
-  if (servers && Object.hasOwn(servers, CONTEXT7.name)) return false;
+  if (hasContext7(servers)) return false;
   const eol = detectEol(text);
   const sep = text === "" || text.endsWith(eol + eol) ? "" : text.endsWith(eol) ? eol : eol + eol;
   const addition = `${sep}${mcpSnippet(target).replace(/\n/g, eol)}`;

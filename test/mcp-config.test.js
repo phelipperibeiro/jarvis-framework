@@ -370,3 +370,54 @@ test("codex: escape em string multilinha e array multilinha recebem o bloco", ()
     });
   }
 });
+
+test("context7 que existe mas não parece um servidor vira aviso (TOML e JSON)", () => {
+  const toml = [
+    "[mcp_servers]\ncontext7 = 1\n",
+    "[mcp_servers]\ncontext7 = false\n",
+    "mcp_servers.context7 = []\n",
+    "[mcp_servers.context7]\n",
+    '[mcp_servers.context7.env]\nX = "1"\n',
+  ];
+  for (const text of toml) {
+    withWorkspace({ ".codex/config.toml": text }, (ws) => {
+      const r = ensureContext7(ws, "codex");
+      assert.deepEqual(r.present, [], text);
+      assert.match(r.manual[0].reason, /não parece um servidor/, text);
+      assert.equal(readFileSync(join(ws, ".codex/config.toml"), "utf-8"), text);
+    });
+  }
+  for (const json of ['{"mcpServers":{"context7":1}}', '{"mcpServers":{"context7":{}}}']) {
+    withWorkspace({ ".mcp.json": json }, (ws) => {
+      const r = ensureContext7(ws, "claude");
+      assert.deepEqual(r.present, [], json);
+      assert.match(r.manual[0].reason, /não parece um servidor/, json);
+      assert.equal(readFileSync(join(ws, ".mcp.json"), "utf-8"), json);
+    });
+  }
+});
+
+test("context7 com url (servidor remoto) conta como já configurado", () => {
+  const toml = '[mcp_servers.context7]\nurl = "https://exemplo/mcp"\n';
+  withWorkspace({ ".codex/config.toml": toml }, (ws) => {
+    assert.deepEqual(ensureContext7(ws, "codex").present, [".codex/config.toml"]);
+  });
+});
+
+test("codex: TOML com BOM e arquivo vazio recebem o bloco; [[mcp_servers]] vira aviso", () => {
+  withWorkspace({ ".codex/config.toml": '﻿model = "x"\n' }, (ws) => {
+    assert.deepEqual(ensureContext7(ws, "codex").written, [".codex/config.toml"]);
+    const text = readFileSync(join(ws, ".codex/config.toml"), "utf-8");
+    assert.ok(text.startsWith("﻿"), "BOM preservado");
+    assert.match(text, /^\[mcp_servers\.context7\]$/m);
+  });
+  withWorkspace({ ".codex/config.toml": "" }, (ws) => {
+    assert.deepEqual(ensureContext7(ws, "codex").written, [".codex/config.toml"]);
+  });
+  const arrayOfTables = '[[mcp_servers]]\nname = "x"\n';
+  withWorkspace({ ".codex/config.toml": arrayOfTables }, (ws) => {
+    const r = ensureContext7(ws, "codex");
+    assert.match(r.manual[0].reason, /"mcp_servers" não é uma tabela/);
+    assert.equal(readFileSync(join(ws, ".codex/config.toml"), "utf-8"), arrayOfTables);
+  });
+});
