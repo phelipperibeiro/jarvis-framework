@@ -240,7 +240,7 @@ test("init (instalação): modo project cria o .gitignore com .jarvis/", () => {
   });
 });
 
-test("init --upgrade: .mcp.json inválido fica intacto, vira aviso e não muda o código de saída", () => {
+test("init --upgrade: .mcp.json inválido fica intacto, vira aviso e sai com 0", () => {
   withWorkspace({ ".claude/ENV.md": ENV_V520, ".mcp.json": "{ quebrado" }, (ws) => {
     const r = run(ws, "--upgrade", "--ide", "claude", "--yes");
     assert.equal(r.status, 0, r.stderr);

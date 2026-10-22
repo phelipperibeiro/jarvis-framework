@@ -320,7 +320,7 @@ test("codex: TOML com CRLF recebe o bloco com CRLF", () => {
   });
 });
 
-test('codex: mcp_servers.context7 dentro de outra tabela não é "já configurado": vira aviso', () => {
+test("codex: mcp_servers.context7 dentro de outra tabela vira aviso, não já configurado", () => {
   const toml = '[other]\nmcp_servers.context7.command = "x"\n';
   withWorkspace({ ".codex/config.toml": toml }, (ws) => {
     const r = ensureContext7(ws, "codex");
@@ -328,4 +328,33 @@ test('codex: mcp_servers.context7 dentro de outra tabela não é "já configurad
     assert.match(r.manual[0].reason, /forma que não reconheço/);
     assert.equal(readFileSync(join(ws, ".codex/config.toml"), "utf-8"), toml);
   });
+});
+
+test("codex: context7 aninhado em outro servidor da tabela inline não é já configurado", () => {
+  const toml = 'mcp_servers = { outro = { env = { context7 = "1" } } }\n';
+  withWorkspace({ ".codex/config.toml": toml }, (ws) => {
+    const r = ensureContext7(ws, "codex");
+    assert.deepEqual(r.present, []);
+    assert.match(r.manual[0].reason, /forma que não reconheço/);
+    assert.equal(readFileSync(join(ws, ".codex/config.toml"), "utf-8"), toml);
+  });
+});
+
+test("codex: menções que não são chave não geram aviso e recebem o bloco", () => {
+  const cases = [
+    '[mcp_servers.outro]\nargs = ["a,context7=1"]\n',
+    'model = "x" # context7 = 1\n',
+    'site = "context7.com"\n',
+    'lista = ["context7"]\n',
+    'nota = """\ncontext7 = 1\n"""\n',
+    "nota = '''\n[context7\n'''\n",
+    "m = [\n  [\n 1 ],\n]\n",
+  ];
+  for (const toml of cases) {
+    withWorkspace({ ".codex/config.toml": toml }, (ws) => {
+      const r = ensureContext7(ws, "codex");
+      assert.deepEqual(r.written, [".codex/config.toml"], toml);
+      assert.deepEqual(r.manual, [], toml);
+    });
+  }
 });
