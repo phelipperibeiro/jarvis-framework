@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
 import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, existsSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, dirname } from "node:path";
-import { ensureContext7 } from "../bin/lib/core/mcp-config.js";
+import { ensureContext7, mcpSnippet } from "../bin/lib/core/mcp-config.js";
 import { getIDEValues, getMCPTargets } from "../bin/lib/config/ide-config.js";
 
 function withWorkspace(files, fn) {
@@ -104,4 +104,133 @@ test("windsurf (só config global): não grava nada, devolve o trecho para colar
     assert.match(r.manual[0].snippet, /"context7"/);
     assert.ok(!existsSync(join(ws, "mcp_config.json")));
   });
+});
+
+test("caminho do arquivo de MCP por IDE", () => {
+  const expected = {
+    claude: [".mcp.json"],
+    cursor: [".cursor/mcp.json"],
+    codex: [".codex/config.toml"],
+    opencode: ["opencode.json"],
+    gemini: [".gemini/settings.json", ".agents/mcp_config.json"],
+    kiro: [".kiro/settings/mcp.json"],
+  };
+  for (const [ide, paths] of Object.entries(expected)) {
+    withWorkspace({}, (ws) => {
+      assert.deepEqual(ensureContext7(ws, ide).written, paths, ide);
+      for (const p of paths) assert.ok(existsSync(join(ws, p)), `${ide}: ${p}`);
+    });
+  }
+  assert.ok(getMCPTargets("windsurf").every((t) => t.global && t.path.startsWith("~/")));
+});
+
+test("raiz que não é objeto ([] ou null): arquivo intacto e aviso com o motivo", () => {
+  for (const content of ["[]", "null", '"x"']) {
+    withWorkspace({ ".mcp.json": content }, (ws) => {
+      const r = ensureContext7(ws, "claude");
+      assert.deepEqual(r.written, [], content);
+      assert.match(r.manual[0].reason, /não é um objeto JSON/, content);
+      assert.equal(readFileSync(join(ws, ".mcp.json"), "utf-8"), content);
+    });
+  }
+});
+
+test("mcpServers que não é objeto (string, array, número): arquivo intacto e aviso", () => {
+  for (const value of ['"abc"', '[{"a":1}]', "5"]) {
+    const content = `{"mcpServers":${value}}`;
+    withWorkspace({ ".mcp.json": content }, (ws) => {
+      const r = ensureContext7(ws, "claude");
+      assert.deepEqual(r.written, [], value);
+      assert.match(r.manual[0].reason, /"mcpServers" não é um objeto/, value);
+      assert.equal(readFileSync(join(ws, ".mcp.json"), "utf-8"), content);
+    });
+  }
+});
+
+test("mcpServers null vira objeto e recebe o context7", () => {
+  withWorkspace({ ".mcp.json": '{"mcpServers":null}' }, (ws) => {
+    assert.deepEqual(ensureContext7(ws, "claude").written, [".mcp.json"]);
+    assert.ok(readJson(ws, ".mcp.json").mcpServers.context7);
+  });
+});
+
+test("JSON com BOM é lido; JSON com comentários fica intacto", () => {
+  withWorkspace({ ".mcp.json": '\uFEFF{"mcpServers":{}}' }, (ws) => {
+    assert.deepEqual(ensureContext7(ws, "claude").written, [".mcp.json"]);
+    assert.ok(readJson(ws, ".mcp.json").mcpServers.context7);
+  });
+  const jsonc = '{\n  // servidores\n  "mcpServers": {}\n}\n';
+  withWorkspace({ ".gemini/settings.json": jsonc }, (ws) => {
+    const r = ensureContext7(ws, "gemini");
+    assert.deepEqual(r.written, [".agents/mcp_config.json"]);
+    assert.equal(r.manual[0].path, ".gemini/settings.json");
+    assert.equal(readFileSync(join(ws, ".gemini/settings.json"), "utf-8"), jsonc);
+  });
+});
+
+test("preserva a indentação do JSON existente (tab e 4 espaços)", () => {
+  for (const [indent, sample] of [
+    ["\t", '{\n\t"mcpServers": {}\n}\n'],
+    ["    ", '{\n    "mcpServers": {}\n}\n'],
+  ]) {
+    withWorkspace({ ".mcp.json": sample }, (ws) => {
+      ensureContext7(ws, "claude");
+      const text = readFileSync(join(ws, ".mcp.json"), "utf-8");
+      assert.ok(text.startsWith(`{\n${indent}"mcpServers"`), JSON.stringify(indent));
+    });
+  }
+});
+
+test("codex: variantes do cabeçalho já existentes não são duplicadas", () => {
+  const variants = [
+    '[mcp_servers."context7"]\ncommand = "npx"\n',
+    "[ mcp_servers.context7 ]\ncommand = 'npx'\n",
+    '[mcp_servers]\ncontext7 = { command = "npx" }\n',
+    'mcp_servers = { context7 = { command = "npx" } }\n',
+    'mcp_servers.context7.command = "npx"\n',
+  ];
+  for (const toml of variants) {
+    withWorkspace({ ".codex/config.toml": toml }, (ws) => {
+      const r = ensureContext7(ws, "codex");
+      assert.deepEqual(r.present, [".codex/config.toml"], toml);
+      assert.equal(readFileSync(join(ws, ".codex/config.toml"), "utf-8"), toml);
+    });
+  }
+});
+
+test("codex: context7 citado numa forma desconhecida fica intacto e vira aviso", () => {
+  const toml = '[outros]\nnota = "ver context7"\n';
+  withWorkspace({ ".codex/config.toml": toml }, (ws) => {
+    const r = ensureContext7(ws, "codex");
+    assert.match(r.manual[0].reason, /forma que não reconheço/);
+    assert.equal(readFileSync(join(ws, ".codex/config.toml"), "utf-8"), toml);
+  });
+});
+
+test("codex: separador antes do bloco conforme o fim do arquivo", () => {
+  const block = mcpSnippet(getMCPTargets("codex")[0]);
+  for (const [before, sep] of [
+    ['model = "x"', "\n\n"],
+    ['model = "x"\n', "\n"],
+    ['model = "x"\n\n', ""],
+  ]) {
+    withWorkspace({ ".codex/config.toml": before }, (ws) => {
+      ensureContext7(ws, "codex");
+      assert.equal(readFileSync(join(ws, ".codex/config.toml"), "utf-8"), before + sep + block);
+    });
+  }
+  withWorkspace({}, (ws) => {
+    ensureContext7(ws, "codex");
+    assert.equal(readFileSync(join(ws, ".codex/config.toml"), "utf-8"), block);
+  });
+});
+
+test("mcpSnippet: JSON com a chave da IDE e TOML com a tabela do servidor", () => {
+  const json = JSON.parse(mcpSnippet(getMCPTargets("opencode")[0]));
+  assert.deepEqual(Object.keys(json), ["mcp"]);
+  assert.equal(json.mcp.context7.type, "local");
+  assert.equal(
+    mcpSnippet(getMCPTargets("codex")[0]),
+    '[mcp_servers.context7]\ncommand = "npx"\nargs = ["-y", "@upstash/context7-mcp"]\n'
+  );
 });

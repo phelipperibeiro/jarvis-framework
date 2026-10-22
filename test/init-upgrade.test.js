@@ -239,3 +239,49 @@ test("init (instalação): modo project cria o .gitignore com .jarvis/", () => {
     assert.match(readFileSync(join(ws, ".gitignore"), "utf-8"), /^\.jarvis\/$/m);
   });
 });
+
+test("init --upgrade: .mcp.json inválido fica intacto, vira aviso e não muda o código de saída", () => {
+  withWorkspace({ ".claude/ENV.md": ENV_V520, ".mcp.json": "{ quebrado" }, (ws) => {
+    const r = run(ws, "--upgrade", "--ide", "claude", "--yes");
+    assert.equal(r.status, 0, r.stderr);
+    assert.equal(readFileSync(join(ws, ".mcp.json"), "utf-8"), "{ quebrado");
+    assert.match(r.stdout, /Nada alterado; inclua à mão/);
+  });
+});
+
+test("init --upgrade: .mcp.json com outro servidor é preservado e recebe o context7", () => {
+  const mcp = JSON.stringify({ mcpServers: { outro: { command: "x" } } });
+  withWorkspace({ ".claude/ENV.md": ENV_V520, ".mcp.json": mcp }, (ws) => {
+    const r = run(ws, "--upgrade", "--ide", "claude", "--yes");
+    assert.equal(r.status, 0, r.stderr);
+    const after = JSON.parse(readFileSync(join(ws, ".mcp.json"), "utf-8"));
+    assert.deepEqual(after.mcpServers.outro, { command: "x" });
+    assert.ok(after.mcpServers.context7);
+  });
+});
+
+test("init (instalação): pasta sem nenhum .git não recebe .gitignore", () => {
+  withWorkspace({}, (ws) => {
+    const r = run(ws, "--ide", "claude");
+    assert.equal(r.status, 0, r.stderr);
+    assert.ok(!existsSync(join(ws, ".gitignore")));
+  });
+});
+
+test("init (instalação): .gitignore existente sem \\n final recebe uma linha .jarvis/", () => {
+  withWorkspace({ ".git/HEAD": "", ".gitignore": "node_modules" }, (ws) => {
+    const r = run(ws, "--ide", "claude");
+    assert.equal(r.status, 0, r.stderr);
+    assert.equal(readFileSync(join(ws, ".gitignore"), "utf-8"), "node_modules\n.jarvis/\n");
+  });
+});
+
+test("init (instalação) na Windsurf: só config global, mostra o trecho e o que fazer", () => {
+  withWorkspace({}, (ws) => {
+    const r = run(ws, "--ide", "windsurf");
+    assert.equal(r.status, 0, r.stderr);
+    assert.match(r.stdout, /Config só global: inclua em ~\/\.config\/devin\/mcp_config\.json/);
+    assert.match(r.stdout, /"context7"/);
+    assert.match(r.stdout, /painel MCP do Cascade/);
+  });
+});

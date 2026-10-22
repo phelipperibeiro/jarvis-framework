@@ -187,3 +187,29 @@ test("applyDocsMigration: modo workspace move os documentos sem criar .gitignore
     assert.ok(!existsSync(join(ws, ".gitignore")));
   });
 });
+
+test("applyDocsMigration: pasta sem nenhum .git não recebe .gitignore", () => {
+  withWorkspace({ [OLD]: "# d" }, (ws) => {
+    const e = env();
+    applyDocsMigration(ws, planDocsMigration(ws, e), e);
+    assert.ok(existsSync(join(ws, NEW)));
+    assert.ok(!existsSync(join(ws, ".gitignore")));
+  });
+});
+
+test("applyDocsMigration: raiz com .git e subpasta com .git usa o .gitignore sem duplicar a linha", () => {
+  withWorkspace(
+    {
+      [OLD]: "# d",
+      ".git/HEAD": "",
+      "app/.git/HEAD": "",
+      ".gitignore": "node_modules\ndocs/jarvis/\n",
+    },
+    (ws) => {
+      const e = env();
+      applyDocsMigration(ws, planDocsMigration(ws, e), e);
+      const lines = readFileSync(join(ws, ".gitignore"), "utf-8").split("\n");
+      assert.equal(lines.filter((l) => l === "docs/jarvis/").length, 1);
+    }
+  );
+});
