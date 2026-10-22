@@ -25,20 +25,36 @@ class Unrecognized extends Error {}
 
 const isPlainObject = (v) => v !== null && typeof v === "object" && !Array.isArray(v);
 
+const filled = (v) => typeof v === "string" && v.trim() !== "";
+
+/** Chaves de URL de servidor remoto: `url`, `httpUrl` (Gemini CLI), `serverUrl` (Antigravity). */
+const URL_KEYS = ["url", "httpUrl", "serverUrl"];
+
 /**
- * O servidor `context7` já está declarado? `true` se a entrada parece um servidor (objeto com
- * `command` ou `url`); `false` se não existe; `Unrecognized` se existe mas não parece um
- * servidor (`1`, `false`, `[]`, tabela vazia…), para não dizer "já configurado" sem estar.
+ * A entrada parece um servidor MCP utilizável? Objeto com `command` (string não vazia ou array
+ * não vazio de strings não vazias, como no OpenCode) ou com uma URL não vazia (`URL_KEYS`).
+ */
+function looksLikeServer(entry) {
+  if (!isPlainObject(entry)) return false;
+  const { command } = entry;
+  const hasCommand = Array.isArray(command)
+    ? command.length > 0 && command.every(filled)
+    : filled(command);
+  return hasCommand || URL_KEYS.some((k) => filled(entry[k]));
+}
+
+/**
+ * O servidor `context7` já está declarado? `true` se a entrada parece um servidor
+ * (`looksLikeServer`); `false` se não existe; `Unrecognized` se existe mas não parece
+ * (`1`, `false`, `[]`, tabela vazia, `command` vazio…), para não dizer "já configurado" sem estar.
+ * Um servidor válido com `enabled = false` conta como declarado: o init não liga o que a
+ * pessoa desligou.
  */
 function hasContext7(servers) {
   if (!servers || !Object.hasOwn(servers, CONTEXT7.name)) return false;
-  const entry = servers[CONTEXT7.name];
-  const looksLikeServer =
-    isPlainObject(entry) &&
-    ((entry.command != null && entry.command !== "") || typeof entry.url === "string");
-  if (!looksLikeServer) {
+  if (!looksLikeServer(servers[CONTEXT7.name])) {
     throw new Unrecognized(
-      `"${CONTEXT7.name}" existe mas não parece um servidor (sem command nem url)`
+      `"${CONTEXT7.name}" existe mas não parece um servidor (sem command nem url preenchidos)`
     );
   }
   return true;

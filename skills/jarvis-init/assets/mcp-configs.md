@@ -33,7 +33,9 @@ Cada IDE lê o MCP de um arquivo próprio, com formato próprio. O `jarvis init`
 
 Na IDE `gemini` (Gemini CLI / Antigravity) o `jarvis init` grava os dois arquivos de projeto. Na Windsurf, que só tem config global, ele não grava fora do workspace: mostra o trecho para colar.
 
-Quando um arquivo de MCP existe mas não dá para alterar com segurança (JSON com comentários ou inválido, raiz ou `mcpServers` que não é objeto, TOML que não parseia ou em que o bloco `[mcp_servers.context7]` não cabe, como uma tabela inline `mcp_servers = { … }` já existente), o `jarvis init` **não mexe nele**: mostra o motivo e o trecho para colar à mão. Isso é só um aviso e não muda o código de saída, nem na instalação nem no `--upgrade`.
+Quando um arquivo de MCP existe mas não dá para alterar com segurança (JSON com comentários ou inválido, raiz ou `mcpServers` que não é objeto, TOML que não parseia ou em que o bloco `[mcp_servers.context7]` não cabe, como uma tabela inline `mcp_servers = { … }` já existente, ou um `context7` que existe mas não parece um servidor, sem `command` nem URL preenchidos), o `jarvis init` **não mexe nele**: mostra o motivo e o trecho para colar à mão. Isso é só um aviso e não muda o código de saída, nem na instalação nem no `--upgrade`.
+
+Um `context7` conta como já configurado quando tem `command` (texto ou lista, como no OpenCode) ou uma URL (`url`, `httpUrl` no Gemini CLI, `serverUrl` no Antigravity). Se ele estiver desligado (`enabled = false` ou `disabled: true`), continua contando como configurado: o init não liga um servidor que a pessoa desligou.
 
 O `.codex/config.toml` é lido com um parser TOML (`smol-toml`) só para saber se o `context7` já existe; o arquivo nunca é reescrito, e o bloco é acrescentado no fim.
 

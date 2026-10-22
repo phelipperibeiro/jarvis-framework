@@ -421,3 +421,52 @@ test("codex: TOML com BOM e arquivo vazio recebem o bloco; [[mcp_servers]] vira 
     assert.equal(readFileSync(join(ws, ".codex/config.toml"), "utf-8"), arrayOfTables);
   });
 });
+
+test("parece um servidor: vazio vira aviso; remotos e enabled=false contam", () => {
+  const invalid = [
+    { command: [] },
+    { command: "  " },
+    { command: 0 },
+    { command: false },
+    { command: [""] },
+    { url: "" },
+    { httpUrl: " " },
+    { enabled: false },
+  ];
+  for (const entry of invalid) {
+    const json = JSON.stringify({ mcpServers: { context7: entry } });
+    withWorkspace({ ".mcp.json": json }, (ws) => {
+      const r = ensureContext7(ws, "claude");
+      assert.deepEqual(r.present, [], json);
+      assert.match(r.manual[0].reason, /não parece um servidor/, json);
+    });
+  }
+  const valid = [
+    { type: "http", url: "https://exemplo/mcp" },
+    { type: "sse", url: "https://exemplo/sse" },
+    { type: "remote", url: "https://exemplo/mcp" },
+    { httpUrl: "https://exemplo/mcp" },
+    { serverUrl: "https://exemplo/mcp" },
+    { type: "local", command: ["npx", "-y", "@upstash/context7-mcp"] },
+    { command: "npx", enabled: false },
+  ];
+  for (const entry of valid) {
+    const json = JSON.stringify({ mcpServers: { context7: entry } });
+    withWorkspace({ ".mcp.json": json }, (ws) => {
+      assert.deepEqual(ensureContext7(ws, "claude").present, [".mcp.json"], json);
+    });
+  }
+});
+
+test("codex: command vazio ou url vazia no TOML viram aviso", () => {
+  for (const toml of [
+    '[mcp_servers.context7]\ncommand = ""\n',
+    '[mcp_servers.context7]\nurl = " "\n',
+  ]) {
+    withWorkspace({ ".codex/config.toml": toml }, (ws) => {
+      const r = ensureContext7(ws, "codex");
+      assert.deepEqual(r.present, [], toml);
+      assert.match(r.manual[0].reason, /não parece um servidor/, toml);
+    });
+  }
+});
