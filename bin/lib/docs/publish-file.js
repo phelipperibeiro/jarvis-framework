@@ -28,6 +28,7 @@ export const WORKING_DOC_TYPES = Object.freeze([
   "task",
   "ard",
   "rfc",
+  "spec",
   "swagger",
   "qa-report",
 ]);

@@ -43,7 +43,7 @@ jarvis docs publish --file .../consolidation/feature-checkout.md --tipo feature 
 jarvis docs publish --file .../consolidation/delivery-2026-10-15-task-123.md --tipo delivery
 ```
 
-- **Tipos:** só `feature` (vai para `product/`) e `delivery` (vai para `engineering/`). PRD, ARD e os outros documentos de trabalho são recusados.
+- **Tipos:** só `feature` (vai para `product/`) e `delivery` (vai para `engineering/`). PRD, ARD, SPEC e os outros documentos de trabalho são recusados, com a explicação de que ficam em `docs/jarvis/`.
 - Quem gera e publica é o [`/eng.spec-consolidate`](../../workflows/engineering/eng.spec-consolidate.md), depois do PR e do seu Sim.
 
 ## Estrutura e índice

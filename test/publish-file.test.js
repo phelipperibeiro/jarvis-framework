@@ -75,6 +75,14 @@ test("resolveDestPath: documento de trabalho (prd, ard…) é recusado com a exp
   }
 });
 
+test("resolveDestPath: a SPEC (Reference Spec) é documento de trabalho, não 'Tipo inválido'", () => {
+  assert.ok(WORKING_DOC_TYPES.includes("spec"));
+  assert.throws(
+    () => resolveDestPath({ tipo: "spec", squad: "CORE", produto: "loja", localFile: "SPEC-001-x.md" }),
+    /guarda só o que foi implementado.*\/eng\.spec-consolidate/s
+  );
+});
+
 test("resolveDestPath: nome fora do padrão usa --feature; sem ele, erro orientando", () => {
   assert.equal(
     resolveDestPath({

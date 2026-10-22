@@ -2,7 +2,8 @@ import { readFileSync } from 'node:fs'
 import { parseFrontmatter, extractFrontmatterBlock } from '../utils/frontmatter.js'
 
 /**
- * Valida frontmatter YAML de documentos (PRD, FRD, épico, história, tarefa, ARD, RFC)
+ * Valida frontmatter YAML da consolidação do Central docs (feature, delivery) e de documentos
+ * de trabalho (PRD, FRD, épico, história, tarefa, ARD, RFC, relatório de QA)
  * 
  * @param {string} filePath - Caminho do arquivo
  * @param {string} tipo - Tipo do documento (ver VALID_TYPES em publish-file.js)
@@ -55,10 +56,11 @@ export function validateFrontmatter(filePath, tipo) {
 
   // Validar status
   // Produto (rules/product/prod-rules.md), ARD (templates/engineering/ARD-template.md),
-  // discovery (prod-discovery-template.md) e RFC (RFC-template.md)
+  // discovery (prod-discovery-template.md), RFC (RFC-template.md) e
+  // SPEC (templates/engineering/ref-spec-template.md)
   const validStatuses = [
     'icebox', 'in_review', 'backlog', 'in_progress', 'in_production', 'cancelled', 'deprecated',
-    'proposed', 'approved',
+    'proposed', 'approved', 'superseded',
     'Draft', 'In Review', 'Ready for Decision', 'Accepted', 'Rejected', 'Superseded'
   ]
   
