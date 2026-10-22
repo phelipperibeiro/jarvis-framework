@@ -61,7 +61,7 @@ RULES_FOLDER=.$IDE/rules
 # Cookie/HTTP session (auth) NÃO é esta pasta.
 SESSIONS_DIR=.jarvis/sessions
 
-# Documentos de trabalho gerados pelos comandos (PRD, FRD, épicos, ARD, RFC, QA, swagger,
+# Documentos de trabalho gerados pelos comandos (PRD, FRD, épicos, ARD, RFC, SPEC, QA, swagger,
 # robôs, C4…): sempre em $DOCS_FOLDER/jarvis/, nos dois modos de trabalho, com docs/jarvis/
 # no .gitignore (o /jarvis-init garante). O que foi implementado vai para o Central docs.
 JARVIS_DOCS=$DOCS_FOLDER/jarvis

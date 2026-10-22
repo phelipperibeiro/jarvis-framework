@@ -14,7 +14,7 @@ Ajuda a escrever ou atualizar a documentação de engenharia, propondo mudanças
 
 - Depois de uma implementação, para deixar a documentação em dia
 - Para criar ou reorganizar documentação técnica de um projeto
-- Quando é preciso referenciar PRD, FRD, ARD ou RFC nos documentos
+- Quando é preciso referenciar PRD, FRD, ARD, RFC ou SPEC nos documentos
 
 ## Quando **não** usar
 
@@ -27,7 +27,7 @@ Ajuda a escrever ou atualizar a documentação de engenharia, propondo mudanças
 2. **Coleta o contexto mínimo** antes de escrever:
    - Qual o objetivo da mudança?
    - Quais arquivos precisam ser atualizados ou criados?
-   - Há links obrigatórios (PRD, FRD, ARD, RFC) para referenciar?
+   - Há links obrigatórios (PRD, FRD, ARD, RFC, SPEC) para referenciar?
    - Existe um padrão de pasta e nomenclatura no repositório?
 3. **Produz a saída:** propõe mudanças objetivas nos arquivos alvo, destaca riscos e sugere uma validação mínima (leitura rápida, conferir se os links funcionam)
 

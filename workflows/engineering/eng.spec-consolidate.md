@@ -134,7 +134,7 @@ Com `ARTIFACT_STYLE=human-generated`, a versão humanizada (`{nome}.public.md`) 
 
 ### ⛔ Nunca
 - Publicar sem o **Sim** do Passo 6
-- Publicar PRD, FRD, ARD ou RFC no Central docs (só `feature` e `delivery`)
+- Publicar PRD, FRD, ARD, RFC ou SPEC no Central docs (só `feature` e `delivery`)
 - Incluir e-mails, tokens, senhas, valores de variáveis ou dados pessoais de clientes
 - Inventar informação: sem fonte, pergunte ou registre "não informado"
 - Alterar o código, os documentos de trabalho ou a sessão fora de `consolidation/`

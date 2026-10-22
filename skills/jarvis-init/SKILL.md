@@ -707,7 +707,7 @@ O Central docs é **ligado por padrão**: é onde fica o registro do que **foi i
 
 ```
 📚 Central docs: o registro do que foi implementado (um documento completo por funcionalidade
-e um por entrega), consultado pela IA e por outros squads. Os rascunhos (PRD, FRD, ARD, RFC)
+e um por entrega), consultado pela IA e por outros squads. Os rascunhos (PRD, FRD, ARD, RFC, SPEC)
 ficam em docs/jarvis/ e não vão para lá.
 ```
 
@@ -1181,7 +1181,7 @@ Apresentar checklist de onboarding por período (Dia 1, Semana 1, Mês 1).
 
 | Passo | Skill | Condição |
 |-------|-------|----------|
-| Passo 5.3 — Carga inicial do Central docs | `/eng.spec-consolidate --inicial` | Se o Central docs estiver ligado, houver PRD/FRD/ARD/RFC e o usuário responder Sim (também no Upgrade, depois da migração) |
+| Passo 5.3 — Carga inicial do Central docs | `/eng.spec-consolidate --inicial` | Se o Central docs estiver ligado, houver PRD/FRD/ARD/RFC/SPEC e o usuário responder Sim (também no Upgrade, depois da migração) |
 | Passo 9 — Adicionar as stacks (opcional) | `/jarvis-create-specialization {área} {stack}` | Se a pessoa escolher criar um skill novo para uma stack que ainda não tem especialização instalada (uma stack por vez; pular o passo não chama nada) |
 
 ---

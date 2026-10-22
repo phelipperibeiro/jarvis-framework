@@ -65,7 +65,7 @@ env_file: "@/ENV.md"
   - No modo workspace a raiz (a pasta que contém `$IDE/`) **não é um repositório** e guarda itens fora do git (`.claude/`, `.jarvis/`, `.vscode/`, `node_modules/`). `grep`, `ls` e `Glob` na raiz leem tudo isso como se fosse código do projeto e confundem a análise.
   - **Código do projeto** = só as subpastas com `.git/` (ou as de `WORKSPACE_REPOS`, quando preenchido). Busque e leia código **dentro delas**.
   - **Ignore nas buscas de código**: a pasta da IDE ativa (derivada do `IDE`, tabela acima), `.jarvis/`, `.vscode/`, `node_modules/` e o `CDD-MIND-MAP.md`. Leia esses itens **só quando o workflow mandar** (ENV.md, rules, skills, templates, sessão).
-  - **`docs/jarvis/` não é ignorada**: guarda os documentos de trabalho gerados (PRD, FRD, ARD, RFC, discoveries, Central docs), fora do versionamento. Leia-a sob demanda, como documento de trabalho, e não como código.
+  - **`docs/jarvis/` não é ignorada**: guarda os documentos de trabalho gerados (PRD, FRD, ARD, RFC, SPEC, discoveries, Central docs), fora do versionamento. Leia-a sob demanda, como documento de trabalho, e não como código.
   - **Pastas de outras IDEs** nunca são lidas (vale o "Isolamento de IDE" acima).
   - Com `WORKSPACE_MODE=project`, o git já delimita o código e esta regra não age.
 

@@ -3,7 +3,7 @@
  * (`CENTRAL_DOCS_STORAGE`), a consolidação do que foi implementado, gerada pelo
  * `/eng.spec-consolidate`: o documento da funcionalidade (`feature-*.md`, em
  * `{SQUAD}/product/{produto}/`) e o registro da entrega (`delivery-*.md`, em
- * `{SQUAD}/engineering/{produto}/`). Documentos de trabalho (PRD, FRD, ARD, RFC…)
+ * `{SQUAD}/engineering/{produto}/`). Documentos de trabalho (PRD, FRD, ARD, RFC, SPEC…)
  * não são publicados. O índice do squad é regenerado a cada publicação.
  * @module docs/publish-file
  */

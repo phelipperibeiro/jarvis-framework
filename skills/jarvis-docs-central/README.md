@@ -1,6 +1,6 @@
 # jarvis-docs-central
 
-Integração com o **Central docs**: o registro do que **foi implementado** em cada produto do squad (um documento completo por funcionalidade e um registro por entrega), com um índice que os outros comandos consultam. Os documentos de trabalho (PRD, FRD, ARD, RFC) ficam em `docs/jarvis/` e não vão para lá.
+Integração com o **Central docs**: o registro do que **foi implementado** em cada produto do squad (um documento completo por funcionalidade e um registro por entrega), com um índice que os outros comandos consultam. Os documentos de trabalho (PRD, FRD, ARD, RFC, SPEC) ficam em `docs/jarvis/` e não vão para lá.
 
 ## Visão Geral
 
