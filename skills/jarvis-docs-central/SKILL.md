@@ -47,7 +47,7 @@ Quem escreve no Central docs é o **`/eng.spec-consolidate`** (agente `eng.docs-
 
 Sem `.git`, grava direto na pasta.
 
-**Onde fica a pasta** (o `/jarvis-init` configura no Passo 5.2): no modo workspace, `./central-docs` (no `.gitignore` do workspace); no projeto único, `docs/jarvis/central-docs` (coberto por `docs/jarvis/` no `.gitignore`). Nunca no versionamento de um repositório de código.
+**Onde fica a pasta** (o `/jarvis-init` configura no Passo 5.2): `docs/jarvis/central-docs`, nos dois modos de trabalho, junto dos documentos de trabalho (no projeto único, coberto por `docs/jarvis/` no `.gitignore`; no modo workspace a raiz não é versionada). Nunca no versionamento de um repositório de código.
 
 ## Pré-condição
 

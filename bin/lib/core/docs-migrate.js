@@ -15,6 +15,7 @@ import {
 } from "node:fs";
 import { join, resolve, relative, dirname, basename, isAbsolute, sep } from "node:path";
 import { execFileSync } from "node:child_process";
+import { rootIsRepo } from "./workspace-mode.js";
 
 const ENG_SUBDIRS = ["ARD", "RFC", "qa", "swagger", "openapi", "robots", "c4"];
 const LEGACY_ENG_SUBDIRS = ["robots", "swagger", "openapi", "c4"];
@@ -164,7 +165,8 @@ function emptyDirsUnder(dirAbs) {
 
 /**
  * Aplica o plano: `git mv` se o arquivo é versionado, senão `rename`. Remove as pastas
- * antigas só se ficarem vazias e garante `{JARVIS_DOCS}/` no `.gitignore` do workspace.
+ * antigas só se ficarem vazias e, se a raiz for um repositório, garante `{JARVIS_DOCS}/` no
+ * `.gitignore` (raiz não versionada, como no modo workspace, não tem o `.gitignore` tocado).
  * @returns {{ moved: {from: string, to: string, discovery: boolean}[], errors: string[] }}
  */
 export function applyDocsMigration(workspaceDir, plan, env) {
@@ -194,16 +196,26 @@ export function applyDocsMigration(workspaceDir, plan, env) {
     removeEmptyDirs(dirname(srcAbs), docsAbs);
   }
 
-  if (moved.length > 0) ensureGitignore(workspaceDir, `${docsFolders(env).jarvis}/`);
+  if (moved.length > 0 && rootIsRepo(workspaceDir)) {
+    ensureGitignore(workspaceDir, `${docsFolders(env).jarvis}/`);
+  }
   return { moved, errors };
 }
 
-function ensureGitignore(workspaceDir, line) {
+/**
+ * Garante `line` no `.gitignore` de `workspaceDir` (cria o arquivo se faltar). Reconhece a
+ * linha com e sem a barra final, com a barra inicial e com `/*` ou `/**` (`docs/jarvis/`,
+ * `docs/jarvis`, `/docs/jarvis/`, `docs/jarvis/**`). Acrescenta com a quebra de linha do arquivo.
+ * Quem chama decide se a raiz é versionada (`rootIsRepo`).
+ */
+export function ensureGitignore(workspaceDir, line) {
   const p = join(workspaceDir, ".gitignore");
   const text = existsSync(p) ? readFileSync(p, "utf-8") : "";
   const bare = line.replace(/\/$/, "");
-  if (text.split("\n").some((l) => [line, bare, `/${line}`, `/${bare}`].includes(l.trim()))) return;
-  appendFileSync(p, `${text && !text.endsWith("\n") ? "\n" : ""}${line}\n`);
+  const forms = [bare, `${bare}/`, `${bare}/*`, `${bare}/**`].flatMap((f) => [f, `/${f}`]);
+  if (text.split(/\r?\n/).some((l) => forms.includes(l.trim()))) return;
+  const eol = text.includes("\r\n") ? "\r\n" : "\n";
+  appendFileSync(p, `${text && !text.endsWith("\n") ? eol : ""}${line}${eol}`);
 }
 
 /**

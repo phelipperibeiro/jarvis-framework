@@ -12,6 +12,7 @@ import {
   applyDocsMigration,
   rewriteRelatedDiscovery,
   declineEnvValues,
+  ensureGitignore,
 } from "../bin/lib/core/docs-migrate.js";
 
 const ENV = [
@@ -113,17 +114,20 @@ test("planDocsMigration: DISCOVERIES_DOCS no caminho antigo (recusa anterior) n�
   });
 });
 
-test("applyDocsMigration: move, remove a pasta antiga vazia, mantém a não vazia e garante o .gitignore", () => {
-  withWorkspace({ [OLD]: "# d", "docs/jarvis/product/prd-001/prd.md": "" }, (ws) => {
-    const e = env();
-    const result = applyDocsMigration(ws, planDocsMigration(ws, e), e);
-    assert.equal(result.errors.length, 0);
-    assert.ok(existsSync(join(ws, NEW)));
-    assert.ok(!existsSync(join(ws, "docs/jarvis/product/discoveries")));
-    assert.ok(existsSync(join(ws, "docs/jarvis/product/prd-001/prd.md")));
-    assert.match(readFileSync(join(ws, ".gitignore"), "utf-8"), /^docs\/jarvis\/$/m);
-    assert.deepEqual(planDocsMigration(ws, e).moves, []);
-  });
+test("applyDocsMigration: move, limpa a pasta antiga e garante o .gitignore (raiz .git)", () => {
+  withWorkspace(
+    { [OLD]: "# d", "docs/jarvis/product/prd-001/prd.md": "", ".git/HEAD": "" },
+    (ws) => {
+      const e = env();
+      const result = applyDocsMigration(ws, planDocsMigration(ws, e), e);
+      assert.equal(result.errors.length, 0);
+      assert.ok(existsSync(join(ws, NEW)));
+      assert.ok(!existsSync(join(ws, "docs/jarvis/product/discoveries")));
+      assert.ok(existsSync(join(ws, "docs/jarvis/product/prd-001/prd.md")));
+      assert.match(readFileSync(join(ws, ".gitignore"), "utf-8"), /^docs\/jarvis\/$/m);
+      assert.deepEqual(planDocsMigration(ws, e).moves, []);
+    }
+  );
 });
 
 test("applyDocsMigration: arquivo versionado sai por git mv (rename no git)", () => {
@@ -173,4 +177,53 @@ test("declineEnvValues: só chave nova recebe o caminho antigo", () => {
     );
     assert.deepEqual(declineEnvValues(plan, [], env()), {});
   });
+});
+
+test("applyDocsMigration: modo workspace move os documentos sem criar .gitignore na raiz", () => {
+  withWorkspace({ [OLD]: "# d", "app/.git/HEAD": "" }, (ws) => {
+    const e = env();
+    const result = applyDocsMigration(ws, planDocsMigration(ws, e), e);
+    assert.equal(result.errors.length, 0);
+    assert.ok(existsSync(join(ws, NEW)));
+    assert.ok(!existsSync(join(ws, ".gitignore")));
+  });
+});
+
+test("applyDocsMigration: pasta sem nenhum .git não recebe .gitignore", () => {
+  withWorkspace({ [OLD]: "# d" }, (ws) => {
+    const e = env();
+    applyDocsMigration(ws, planDocsMigration(ws, e), e);
+    assert.ok(existsSync(join(ws, NEW)));
+    assert.ok(!existsSync(join(ws, ".gitignore")));
+  });
+});
+
+test("applyDocsMigration: raiz e subpasta com .git, .gitignore sem linha duplicada", () => {
+  withWorkspace(
+    {
+      [OLD]: "# d",
+      ".git/HEAD": "",
+      "app/.git/HEAD": "",
+      ".gitignore": "node_modules\ndocs/jarvis/\n",
+    },
+    (ws) => {
+      const e = env();
+      applyDocsMigration(ws, planDocsMigration(ws, e), e);
+      const lines = readFileSync(join(ws, ".gitignore"), "utf-8").split("\n");
+      assert.equal(lines.filter((l) => l === "docs/jarvis/").length, 1);
+    }
+  );
+});
+
+test("ensureGitignore: mantém o CRLF do arquivo e reconhece x/** e /x/*", () => {
+  withWorkspace({ ".gitignore": "node_modules\r\n" }, (ws) => {
+    ensureGitignore(ws, ".jarvis/");
+    assert.equal(readFileSync(join(ws, ".gitignore"), "utf-8"), "node_modules\r\n.jarvis/\r\n");
+  });
+  for (const existing of [".jarvis/**\n", "/.jarvis/*\n"]) {
+    withWorkspace({ ".gitignore": existing }, (ws) => {
+      ensureGitignore(ws, ".jarvis/");
+      assert.equal(readFileSync(join(ws, ".gitignore"), "utf-8"), existing);
+    });
+  }
 });

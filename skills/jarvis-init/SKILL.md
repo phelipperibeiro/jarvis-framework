@@ -164,15 +164,17 @@ const validAreas = extractOptions(taxonomyContent, 'Areas')
 
 Identificar qual IDE o usuário está utilizando:
 
-| IDE | Pasta | Arquivo MCP |
+| IDE | Pasta | Arquivo MCP (gravado pelo `jarvis init`) |
 |-----|-------|-------------|
-| Windsurf | `.windsurf/` | `~/.codeium/windsurf/mcp_config.json` |
-| Cursor | `.cursor/` | `~/.cursor/mcp.json` |
-| Claude | `.claude/` | `~/.claude/settings.json` (ou mcp_config) |
-| Codex | `.codex/` | via skills TUI |
-| OpenCode | `.opencode/` | config da IDE |
-| Gemini / Antigravity | `.agents/` | config da IDE |
-| Kiro | `.kiro/` | steering / MCP da IDE |
+| Windsurf | `.windsurf/` | só global: `~/.config/devin/mcp_config.json` (o init mostra o trecho) |
+| Cursor | `.cursor/` | `.cursor/mcp.json` |
+| Claude | `.claude/` | `.mcp.json` (na raiz do workspace) |
+| Codex | `.codex/` | `.codex/config.toml` (projeto confiável) |
+| OpenCode | `.opencode/` | `opencode.json` |
+| Gemini / Antigravity | `.agents/` | `.gemini/settings.json` e `.agents/mcp_config.json` |
+| Kiro | `.kiro/` | `.kiro/settings/mcp.json` |
+
+> Formatos e como ativar cada um: tabela "Caminhos de Configuração" em `assets/mcp-configs.md`.
 
 ### 2. Verificar Existência do ENV.md
 
@@ -213,14 +215,16 @@ Identificar qual IDE o usuário está utilizando:
    Serão adicionadas ao final do ENV.md sem alterar os valores existentes.
    ```
 8. **Exceção — documentos nos caminhos antigos:** procure documentos de trabalho em `$DOCS_FOLDER/product`, `$DOCS_FOLDER/engineering/{ARD,RFC,qa,swagger,openapi,robots,c4}`, `docs/engineering/{robots,swagger,openapi,c4}` e os discoveries em `$PROD_DOCS/discoveries/`.
-   - Se houver, liste o que encontrou e pergunte com `AskUserQuestion` (uma pergunta para todos) se move para `docs/jarvis/…` (`$PROD_DOCS`, `$ENG_DOCS/…` e, para os discoveries, `$DISCOVERIES_DOCS`). Use `git mv` quando o arquivo for versionado e `mv` quando não for, e garanta `docs/jarvis/` no `.gitignore`.
+   - Se houver, liste o que encontrou e pergunte com `AskUserQuestion` (uma pergunta para todos) se move para `docs/jarvis/…` (`$PROD_DOCS`, `$ENG_DOCS/…` e, para os discoveries, `$DISCOVERIES_DOCS`). Use `git mv` quando o arquivo for versionado e `mv` quando não for e, só se a raiz do workspace tiver `.git`, garanta `docs/jarvis/` no `.gitignore`.
    - **Conflito** (arquivo com o mesmo nome no destino): não sobrescreva; liste e pule esse arquivo. A pasta antiga só é removida se ficar vazia.
    - **`related_discovery`:** depois de mover discoveries, nos `.md` de `$PROD_DOCS`, troque todo `related_discovery:` cujo **nome de arquivo** seja o de um discovery movido pelo caminho novo (relativo ao workspace). Isso também conserta valores que já estavam quebrados.
    - **Sem confirmação, não mova nada:** as chaves **novas** recebem o caminho antigo (`DISCOVERIES_DOCS=$PROD_DOCS/discoveries`; `PROD_DOCS`/`ENG_DOCS` só se também forem novas). Chave que já existe não muda: avise que os documentos ficaram no caminho antigo.
    - Depois, ofereça a carga inicial do Central docs (Passo 5.3).
-9. **Exceção — Central docs antigo:** se o `ENV.md` tiver `CENTRAL_DOCS_REPO` preenchido e não tiver `CENTRAL_DOCS_STORAGE`, propor a migração (só com confirmação): `CENTRAL_DOCS_STORAGE=filesystem`, `CENTRAL_DOCS_LOCATION` com o padrão do modo de trabalho (Passo 4, "Central docs") e `git clone {CENTRAL_DOCS_REPO} {LOCATION}`. Depois, comentar a linha antiga (`# CENTRAL_DOCS_REPO=… (migrado em YYYY-MM-DD)`) e `CENTRAL_DOCS_CACHE_TTL`. Sem confirmação, não mexe e avisa que os comandos de docs vão pedir o Upgrade.
+9. **Exceção — Central docs antigo:** se o `ENV.md` tiver `CENTRAL_DOCS_REPO` preenchido e não tiver `CENTRAL_DOCS_STORAGE`, propor a migração (só com confirmação): `CENTRAL_DOCS_STORAGE=filesystem`, `CENTRAL_DOCS_LOCATION=docs/jarvis/central-docs` (Passo 5.2) e `git clone {CENTRAL_DOCS_REPO} {LOCATION}`. Depois, comentar a linha antiga (`# CENTRAL_DOCS_REPO=… (migrado em YYYY-MM-DD)`) e `CENTRAL_DOCS_CACHE_TTL`. Sem confirmação, não mexe e avisa que os comandos de docs vão pedir o Upgrade.
+   - **Central docs no padrão antigo do modo workspace:** se `CENTRAL_DOCS_LOCATION` for `./central-docs` (ou `central-docs`) e essa pasta existir, ofereça com `AskUserQuestion` (**Mover** | **Manter**) mover para `docs/jarvis/central-docs`, o padrão atual. Com **Mover**: se o destino já existir, não sobrescreva (avise e mantenha); senão, `mv ./central-docs docs/jarvis/central-docs` e troque o valor de `CENTRAL_DOCS_LOCATION` no `ENV.md`. Esta é a única alteração de uma chave existente no Upgrade e só acontece com a confirmação. Com **Manter**, nada muda.
 10. **Exceção — `PROD_MODE`:** se `PROD_MODE` estiver entre as chaves novas, grave pelo `AREA`: `ENGINEERING` → `developer-guided`, `PRODUCT` → `product-led`. Com outra `AREA` (ou vazia), faça a mesma pergunta do Passo 3 (Pergunta 8 — modo de condução) e grave a resposta. `PROD_MODE` que já existe, mesmo vazia, não muda. As demais chaves continuam sem pergunta.
-    - **`WORKSPACE_MODE`:** o `jarvis init --upgrade` já grava o modo detectado (raiz sem `.git` e 1+ subpastas com `.git/` = `workspace`; raiz com `.git` = `project`). Se a chave existir vazia, detecte do mesmo jeito e grave; se existir preenchida, não muda. Em `workspace`, o caminho do Central docs padrão é `./central-docs` (Passo 5.2).
+    - **`WORKSPACE_MODE`:** o `jarvis init --upgrade` já grava o modo detectado (raiz sem `.git` e 1+ subpastas com `.git/` = `workspace`; raiz com `.git` = `project`). Se a chave existir vazia, detecte do mesmo jeito e grave; se existir preenchida, não muda.
+    - **`.gitignore` numa raiz sem `.git` (ex.: `WORKSPACE_MODE=workspace`):** a raiz não é versionada, então esse arquivo não tem efeito. Não o apague; só avise: `ℹ️ O .gitignore da raiz do workspace não tem efeito (a raiz não é um repositório). Pode removê-lo se quiser.`
 11. Appender as novas variáveis ao final do `ENV.md` com comentário de data:
    ```
    # --- Upgrade YYYY-MM-DD ---
@@ -355,6 +359,8 @@ Escanear `.git/` na raiz e nas subpastas e gravar `WORKSPACE_MODE` (o que define
 - Raiz com `.git` → `WORKSPACE_MODE=project`, `WORKSPACE_REPOS` vazio (se também houver subpastas com `.git`, como submódulos, grave `project` e avise)
 - Raiz sem `.git` e 1 ou mais subpastas com `.git` → `WORKSPACE_MODE=workspace`; com 2 ou mais, listar e perguntar se filtra (`WORKSPACE_REPOS`); senão vazio (todas)
 - Raiz sem `.git` e nenhuma subpasta com `.git` → `WORKSPACE_MODE=project`
+
+> O `WORKSPACE_MODE` não decide o `.gitignore`: ele só é criado ou alterado quando a raiz tem `.git` (Passo 5). Uma pasta sem nenhum `.git` é `project` e mesmo assim não recebe `.gitignore`.
 
 Pergunta 6: Qual o limite de execução da AI? (número entre 60 e 100)
 [aguardar resposta e validar range 60-100]
@@ -625,7 +631,7 @@ Nunca grave TOKEN_VERSION_CONTROL (chave removida do template).
 | `QA_SIGNOFF_BRANCHES` / `QA_SIGNOFF_MAX_AGE` | `main,release/*` / `24` | Sign-off QA |
 | `JARVIS_PROJECT` | `https://github.com/phelipperibeiro/jarvis-framework` | Repo do framework (`/jarvis-report-issue`) |
 | `CENTRAL_DOCS_STORAGE` / `_LOCATION` | `filesystem` / pasta padrão do modo de trabalho | Central docs (o que foi implementado), configurado no Passo 5.2; vazio = desligado |
-| `JARVIS_DOCS` / `ENG_DOCS` | `$DOCS_FOLDER/jarvis` / `$JARVIS_DOCS/engineering` | Documentos de trabalho (não perguntar; `docs/jarvis/` no `.gitignore`) |
+| `JARVIS_DOCS` / `ENG_DOCS` | `$DOCS_FOLDER/jarvis` / `$JARVIS_DOCS/engineering` | Documentos de trabalho (não perguntar; `docs/jarvis/` no `.gitignore` só se a raiz tiver `.git`) |
 | `DISCOVERIES_FOLDER_NAME` / `DISCOVERIES_DOCS` | `discoveries` / `$JARVIS_DOCS/$DISCOVERIES_FOLDER_NAME` | Discoveries, fora de `product/` (não perguntar) |
 | `CENTRAL_DOCS_REF` / `_TARGET_BRANCH` / `_REVIEWERS` | `main` / `main` / *(vazio)* | Só quando a pasta do Central docs tem `.git` |
 | `SESSIONS_DIR` | `.jarvis/sessions` | Não perguntar — gravar fixo |
@@ -689,16 +695,19 @@ cat templates/ENV-template.md
 
 # 7. Criar pastas de sessão no workspace (pasta que contém $IDE/):
 mkdir -p .jarvis/sessions/eng .jarvis/sessions/prod .jarvis/sessions/qa
-# Garantir .jarvis/ no .gitignore do workspace
-grep -qxF '.jarvis/' .gitignore 2>/dev/null || echo '.jarvis/' >> .gitignore
 
 # 8. Documentos de trabalho em docs/jarvis/ — nos DOIS modos de trabalho:
 #    JARVIS_DOCS=$DOCS_FOLDER/jarvis, PROD_DOCS=$JARVIS_DOCS/product, ENG_DOCS=$JARVIS_DOCS/engineering
-#    (valores do template) e docs/jarvis/ fora do versionamento (uma docs/ já existente não é tocada):
-grep -qxF 'docs/jarvis/' .gitignore 2>/dev/null || echo 'docs/jarvis/' >> .gitignore
+#    (valores do template). Uma docs/ já existente não é tocada.
 
-# 9. Mapa de tecnologias do workspace (CDD-MIND-MAP.md, na raiz, ao lado do AGENTS.md) fora do versionamento:
-grep -qxF 'CDD-MIND-MAP.md' .gitignore 2>/dev/null || echo 'CDD-MIND-MAP.md' >> .gitignore
+# 9. .gitignore — SÓ se a raiz do workspace for um repositório (tem .git).
+#    Raiz sem .git (modo workspace, ou pasta sem nenhum repositório) não é versionada:
+#    NÃO crie nem altere o .gitignore da raiz.
+if [ -e .git ]; then
+  for line in '.jarvis/' 'docs/jarvis/' 'CDD-MIND-MAP.md'; do
+    grep -qxF "$line" .gitignore 2>/dev/null || echo "$line" >> .gitignore
+  done
+fi
 ```
 
 ### 5.2 Central docs (sempre)
@@ -719,9 +728,7 @@ Pergunte com `AskUserQuestion`:
 
 **A ou B:**
 - `CENTRAL_DOCS_STORAGE=filesystem`.
-- `CENTRAL_DOCS_LOCATION` com o padrão do **modo de trabalho** (a pessoa pode digitar outro caminho):
-  - **`WORKSPACE_MODE=workspace`** (a raiz não é repositório e há 1+ subpastas com `.git`): `./central-docs`, com `central-docs/` no `.gitignore` do workspace;
-  - **`WORKSPACE_MODE=project`** (a raiz tem `.git`): `docs/jarvis/central-docs`, já coberto por `docs/jarvis/` no `.gitignore`.
+- `CENTRAL_DOCS_LOCATION=docs/jarvis/central-docs` nos dois modos de trabalho, junto dos documentos de trabalho (a pessoa pode digitar outro caminho). Com `.git` na raiz, `docs/jarvis/` no `.gitignore` já cobre a pasta; sem `.git` na raiz (como no modo workspace) ela não é versionada, e nenhum `.gitignore` é necessário.
 - **A:** `mkdir -p {LOCATION}` e criar `{LOCATION}/AGENTS.md` mínimo, explicando:
   - a estrutura `{SQUAD}/product/{produto}/feature-*.md` e `{SQUAD}/engineering/{produto}/delivery-*.md`;
   - que o `{SQUAD}/index.md` é gerado pelo `jarvis docs publish`.
@@ -877,7 +884,12 @@ find .windsurf/workflows -mindepth 1 -type d -empty -delete
 | TestSprite | Se o usuário quiser | **Não** |
 | Redis / Sentry / event bus | Removidos do init — não checar | — |
 
-**Context7 é obrigatório.** Sem ele o init para e orienta a configuração (`assets/mcp-configs.md`). Não inventar docs de libs no lugar.
+**Context7 é obrigatório.** O `jarvis init` (instalação e `--upgrade`) já grava o Context7 no arquivo de MCP **que a IDE lê, no formato dela** (tabela "Caminhos de Configuração" em `assets/mcp-configs.md`). Antes de validar:
+1. Confira o arquivo de MCP da IDE ativa. Se faltar o `context7`, acrescente-o no formato da tabela, sem tocar nos outros servidores; com JSON inválido, não altere e avise. Na Windsurf, que só tem config global, mostre o trecho e o caminho para a pessoa incluir.
+2. Valide o Context7 (abaixo). O servidor só fica ativo numa sessão nova da IDE: se o arquivo está certo e o Context7 ainda não responde nesta sessão, **não bloqueie**. Registre como pendente, siga o init e, no fim, mostre o que falta (a "Para ativar" da tabela: reiniciar, aprovar ou confiar no projeto).
+3. Só bloqueie se o arquivo não puder ser gravado nem corrigido.
+
+Não inventar docs de libs no lugar.
 
 **Task manager / demais MCPs nunca bloqueiam.** Freelance / `TASK_MANAGER` vazio é válido. Sem Jira, Linear, Redis ou Sentry o init **continua**.
 
@@ -889,7 +901,8 @@ find .windsurf/workflows -mindepth 1 -type d -empty -delete
 
 **Verificação**:
 ```javascript
-// Context7 (OBRIGATÓRIO) — se falhar, parar e orientar config
+// Context7 (OBRIGATÓRIO) — sem resposta com o arquivo de MCP certo: pendente de ativação, seguir.
+// Parar só se o arquivo de MCP estiver ausente ou inválido e não puder ser corrigido.
 mcp1_resolve-library-id({ libraryName: "react", query: "test" })
 
 // Task manager — SÓ se TASK_MANAGER=jira (ou linear/github/asana). Senão: pular.
@@ -897,10 +910,16 @@ mcp1_resolve-library-id({ libraryName: "react", query: "test" })
 jira_get_issue({ issueKey: "PROJ-1" })
 ```
 
-Se Context7 falhar:
+Se o Context7 não responder, mas o arquivo de MCP estiver certo (pendente de ativação):
 ```
-🚫 Context7 indisponível — o init precisa dele para docs de libs atualizadas.
-Configure o MCP (assets/mcp-configs.md), reinicie a IDE e rode /jarvis-init de novo.
+⏳ Context7 configurado em {arquivo}, mas ainda não ativo nesta sessão.
+{Para ativar, da tabela da IDE}. Continuando o init…
+```
+
+Se o arquivo de MCP não puder ser gravado ou corrigido (ex.: JSON inválido):
+```
+🚫 Context7 não configurado: {arquivo} — {motivo}.
+Corrija o arquivo (formato em assets/mcp-configs.md), {Para ativar} e rode /jarvis-init upgrade.
 ```
 
 Se `TASK_MANAGER=jira` e o MCP falhar:
@@ -1118,7 +1137,7 @@ A **detecção de stack por código e a criação de skill novo** (sub-passos 9.
 3. **Lê** o workspace (a análise **só lê**: não altera arquivos do projeto nem as listas), identifica as stacks de backend e de frontend, inclusive de vários projetos, e **mostra o que encontrou antes de sugerir** (só essas 2 áreas)
 4. Para cada stack de backend/frontend, sugere **registrar o skill que já existe** (mesmo `area` e `stack`) ou **criar um novo** com `/jarvis-create-specialization {área} {stack}`; a pessoa escolhe, e o que não aceita não muda
 5. Mostra um resumo das 6 listas e do que foi registrado ou criado
-6. **Monta o `CDD-MIND-MAP.md`** (o mapa de tecnologias do workspace, lido pelo `/warm-up`): com a mesma leitura do sub-passo 3, agora para **todas as áreas**, preenche uma linha por repositório (papel, linguagem, framework, área, até 5 ferramentas principais) pelo `$IDE/templates/cdd-mind-map-template.md`, mostra a tabela e pede a validação com `AskUserQuestion` (**Confirmar** | **Corrigir** | **Incluir informação**). Grava na raiz do workspace (já no `.gitignore`, Passo 5). Se o mapa já existe, só acrescenta os repositórios que faltam. Pular é permitido: o primeiro `/warm-up` cria o mapa.
+6. **Monta o `CDD-MIND-MAP.md`** (o mapa de tecnologias do workspace, lido pelo `/warm-up`): com a mesma leitura do sub-passo 3, agora para **todas as áreas**, preenche uma linha por repositório (papel, linguagem, framework, área, até 5 ferramentas principais) pelo `$IDE/templates/cdd-mind-map-template.md`, mostra a tabela e pede a validação com `AskUserQuestion` (**Confirmar** | **Corrigir** | **Incluir informação**). Grava na raiz do workspace (com `.git` na raiz, já no `.gitignore`, Passo 5). Se o mapa já existe, só acrescenta os repositórios que faltam. Pular é permitido: o primeiro `/warm-up` cria o mapa.
 
 O tempo de ~10 minutos é referência, não limite. Nunca leia `.env*`, chaves ou credenciais.
 
@@ -1150,8 +1169,8 @@ O tempo de ~10 minutos é referência, não limite. Nunca leia `.env*`, chaves o
 
 ⚠️ Lembre-se de:
 1. Não commitar tokens ou senhas no repositório
-2. Adicionar ENV.md ao .gitignore se contiver dados sensíveis
-3. Garantir `.jarvis/` no `.gitignore` da pasta do workspace
+2. Se o ENV.md tiver dados sensíveis e estiver num repositório (raiz com `.git`), adicioná-lo ao `.gitignore`
+3. Com `.git` na raiz, garantir `.jarvis/` no `.gitignore` (sem `.git`, como no modo workspace, a raiz não é versionada)
 4. Tokens Git ficam fora do ENV (`.npmrc` / `gh auth` / `BITBUCKET_TOKEN`)
 ```
 
@@ -1206,7 +1225,7 @@ Apresentar checklist de onboarding por período (Dia 1, Semana 1, Mês 1).
 - ❌ Pular criação do ENV.md ou omitir `SESSIONS_DIR`
 - ❌ Travar o init esperando Jira / Redis / Sentry / MCP de task manager
 - ❌ Exigir MCP de task manager quando `TASK_MANAGER` estiver vazio
-- ❌ Prosseguir sem Context7 respondendo
+- ❌ Prosseguir sem o Context7 no arquivo de MCP da IDE (pendente de ativação é aceito; arquivo ausente ou inválido, não)
 - ❌ Omitir hub DATA da lista de HUB
 - ❌ Criar AGENTS.md sem detectar stack
 - ❌ Apresentar checkin/checkout/daily como parte do onboarding
@@ -1228,9 +1247,9 @@ Apresentar checklist de onboarding por período (Dia 1, Semana 1, Mês 1).
 - ✅ Só perguntar USER se o usuário quiser outro identificador
 - ✅ Validar range do MAX_AI_EXECUTION_PERCENTAGE (60-100)
 - ✅ WORKSPACE detectado (basename da pasta do `$IDE/`) ou override
-- ✅ Criar `.jarvis/sessions/{eng,prod,qa}` e garantir `.jarvis/` no `.gitignore`
+- ✅ Criar `.jarvis/sessions/{eng,prod,qa}` e, só com `.git` na raiz, garantir `.jarvis/` no `.gitignore`
 - ✅ Explicar freelance se `TASK_MANAGER` vazio (`TASK_MANAGER_KEY` próprio)
-- ✅ Validar Context7 (obrigatório — sem ele o init para)
+- ✅ Garantir o Context7 no arquivo de MCP que a IDE lê, no formato dela, e validá-lo (obrigatório; pendente de ativação não bloqueia)
 - ✅ Checar MCP de task manager em best-effort (1 tentativa, nunca bloquear)
 - ✅ Pular MCP de task manager se `TASK_MANAGER` estiver vazio
 - ✅ Criar AGENTS.md na raiz
@@ -1250,7 +1269,7 @@ Apresentar checklist de onboarding por período (Dia 1, Semana 1, Mês 1).
 | **MAX_AI_EXECUTION_PERCENTAGE fora do range** | Ajustar automaticamente: <60 → 60, >100 → 100. Avisar usuário do ajuste. |
 | **USER inválido** | Pedir outro identificador (email ou nome). Sem validação de `@{DOMAIN}`. |
 | Template ENV não encontrado | Bloquear e pedir o pacote/framework com `templates/ENV-template.md` |
-| Context7 não responde | **Parar** o init; orientar `assets/mcp-configs.md` e reinício da IDE |
+| Context7 não responde | Arquivo de MCP certo: registrar como pendente, seguir e orientar a ativação no fim. Arquivo ausente/inválido e impossível de corrigir: **parar** e orientar `assets/mcp-configs.md` |
 | MCP de task manager não responde | Avisar e **continuar** (1 tentativa) |
 | Stack não detectada | Perguntar ao usuário |
 | IDE não detectada | Perguntar ao usuário qual IDE usa |
@@ -1378,7 +1397,7 @@ Pergunta 10 (opcional): Usa task manager? jira/linear/github/asana ou Nenhum (fr
 - Especializações: {registradas/criadas, ou "só skill base"}
 
 ✅ MCPs:
-- Context7: OK (obrigatório)
+- Context7: {OK | pendente de ativação: {Para ativar}} (obrigatório)
 - Task manager ({TASK_MANAGER ou "vazio=freelance"}): {OK | pulado / indisponível}
 - TestSprite: {OK | Não configurado}
 
@@ -1414,7 +1433,7 @@ Bem-vindo! 🎉
 - [ ] Validou MAX_AI_EXECUTION_PERCENTAGE (60-100) - para campos livres
 - [ ] Confirmou WORKSPACE (nome da pasta do `$IDE/` ou override)
 - [ ] ENABLE_CDD=true e SESSIONS_DIR=.jarvis/sessions
-- [ ] Criou `.jarvis/sessions/{eng,prod,qa}` e `.jarvis/` no `.gitignore`
+- [ ] Criou `.jarvis/sessions/{eng,prod,qa}` e, só com `.git` na raiz, `.jarvis/` no `.gitignore` (raiz sem `.git`: nenhum `.gitignore`)
 - [ ] TASK_MANAGER: valor ou vazio (freelance) explicado
 - [ ] Não gravou TOKEN_VERSION_CONTROL / PROJECT_NAME / EVENT_BUS*
 - [ ] Perguntou sobre variáveis opcionais
@@ -1423,7 +1442,7 @@ Bem-vindo! 🎉
 - [ ] **Se HUB≠DATA: bloco DATA_* removido completamente do ENV.md gerado**
 - [ ] Criou arquivo ENV.md usando template completo
 - [ ] **Se IDE ≠ claude: moveu todos os workflows de subpastas para a raiz de `$IDE/workflows/`**
-- [ ] Validou Context7 (obrigatório)
+- [ ] Garantiu o Context7 no arquivo de MCP da IDE e o validou (ou o registrou como pendente de ativação)
 - [ ] Se TASK_MANAGER definido: checou MCP em best-effort (não bloqueou)
 - [ ] Se TASK_MANAGER vazio: pulou MCP de task manager
 - [ ] Provisionou MCPs opcionais (Code Quality, se configurado)

@@ -220,3 +220,84 @@ test("init --upgrade: eng-scraper e eng-scraper-robot-builder (renomeados na #81
     }
   );
 });
+
+test("init (instalação): modo workspace não cria .gitignore na raiz e grava o .mcp.json", () => {
+  withWorkspace({ "app/.git/HEAD": "" }, (ws) => {
+    const r = run(ws, "--ide", "claude");
+    assert.equal(r.status, 0, r.stderr);
+    assert.ok(!existsSync(join(ws, ".gitignore")));
+    assert.ok(existsSync(join(ws, ".jarvis/sessions/eng")));
+    const mcp = JSON.parse(readFileSync(join(ws, ".mcp.json"), "utf-8"));
+    assert.ok(mcp.mcpServers.context7);
+  });
+});
+
+test("init (instalação): modo project cria o .gitignore com .jarvis/", () => {
+  withWorkspace({ ".git/HEAD": "" }, (ws) => {
+    const r = run(ws, "--ide", "claude");
+    assert.equal(r.status, 0, r.stderr);
+    assert.match(readFileSync(join(ws, ".gitignore"), "utf-8"), /^\.jarvis\/$/m);
+  });
+});
+
+test("init --upgrade: .mcp.json inválido fica intacto, vira aviso e sai com 0", () => {
+  withWorkspace({ ".claude/ENV.md": ENV_V520, ".mcp.json": "{ quebrado" }, (ws) => {
+    const r = run(ws, "--upgrade", "--ide", "claude", "--yes");
+    assert.equal(r.status, 0, r.stderr);
+    assert.equal(readFileSync(join(ws, ".mcp.json"), "utf-8"), "{ quebrado");
+    assert.match(r.stdout, /Nada alterado; inclua à mão/);
+  });
+});
+
+test("init --upgrade: .mcp.json com outro servidor é preservado e recebe o context7", () => {
+  const mcp = JSON.stringify({ mcpServers: { outro: { command: "x" } } });
+  withWorkspace({ ".claude/ENV.md": ENV_V520, ".mcp.json": mcp }, (ws) => {
+    const r = run(ws, "--upgrade", "--ide", "claude", "--yes");
+    assert.equal(r.status, 0, r.stderr);
+    const after = JSON.parse(readFileSync(join(ws, ".mcp.json"), "utf-8"));
+    assert.deepEqual(after.mcpServers.outro, { command: "x" });
+    assert.ok(after.mcpServers.context7);
+  });
+});
+
+test("init (instalação): pasta sem nenhum .git não recebe .gitignore", () => {
+  withWorkspace({}, (ws) => {
+    const r = run(ws, "--ide", "claude");
+    assert.equal(r.status, 0, r.stderr);
+    assert.ok(!existsSync(join(ws, ".gitignore")));
+  });
+});
+
+test("init (instalação): .gitignore existente sem \\n final recebe uma linha .jarvis/", () => {
+  withWorkspace({ ".git/HEAD": "", ".gitignore": "node_modules" }, (ws) => {
+    const r = run(ws, "--ide", "claude");
+    assert.equal(r.status, 0, r.stderr);
+    assert.equal(readFileSync(join(ws, ".gitignore"), "utf-8"), "node_modules\n.jarvis/\n");
+  });
+});
+
+test("init (instalação) na Windsurf: só config global, mostra o trecho e o que fazer", () => {
+  withWorkspace({}, (ws) => {
+    const r = run(ws, "--ide", "windsurf");
+    assert.equal(r.status, 0, r.stderr);
+    assert.match(r.stdout, /Config só global: inclua em ~\/\.config\/devin\/mcp_config\.json/);
+    assert.match(r.stdout, /"context7"/);
+    assert.match(r.stdout, /painel MCP do Cascade/);
+  });
+});
+
+test("init --upgrade: erro de IO no arquivo de MCP vira aviso e não muda o código de saída", () => {
+  withWorkspace({ ".claude/ENV.md": ENV_V520, ".mcp.json/x": "" }, (ws) => {
+    const r = run(ws, "--upgrade", "--ide", "claude", "--yes");
+    assert.equal(r.status, 0, r.stderr);
+    assert.match(r.stdout, /\.mcp\.json: .*\(nada alterado\)/);
+  });
+});
+
+test("init (instalação): .gitignore com /.jarvis/ não recebe a linha de novo", () => {
+  withWorkspace({ ".git/HEAD": "", ".gitignore": "/.jarvis/\n" }, (ws) => {
+    const r = run(ws, "--ide", "claude");
+    assert.equal(r.status, 0, r.stderr);
+    assert.equal(readFileSync(join(ws, ".gitignore"), "utf-8"), "/.jarvis/\n");
+  });
+});

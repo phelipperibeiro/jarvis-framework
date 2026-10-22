@@ -4,7 +4,11 @@ import assert from "node:assert/strict";
 import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { detectWorkspaceMode, normalizeWorkspaceMode } from "../bin/lib/core/workspace-mode.js";
+import {
+  detectWorkspaceMode,
+  normalizeWorkspaceMode,
+  rootIsRepo,
+} from "../bin/lib/core/workspace-mode.js";
 
 function withTree(dirs, fn) {
   const root = mkdtempSync(join(tmpdir(), "jarvis-ws-mode-"));
@@ -80,4 +84,14 @@ test("normalizeWorkspaceMode: aceita só workspace ou project", () => {
   assert.equal(normalizeWorkspaceMode("disabled"), null);
   assert.equal(normalizeWorkspaceMode(""), null);
   assert.equal(normalizeWorkspaceMode(undefined), null);
+});
+
+test("rootIsRepo: só com .git na raiz (pasta ou arquivo)", () => {
+  withTree([".git"], (root) => assert.equal(rootIsRepo(root), true));
+  withTree(["app/.git"], (root) => assert.equal(rootIsRepo(root), false));
+  withTree([], (root) => assert.equal(rootIsRepo(root), false));
+  withTree([], (root) => {
+    writeFileSync(join(root, ".git"), "gitdir: ../x\n");
+    assert.equal(rootIsRepo(root), true);
+  });
 });

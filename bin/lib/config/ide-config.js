@@ -22,6 +22,18 @@ export const STEERING_FOLDER = "steering";
  * @property {string} workflowsFolder - Nome da pasta para workflows/commands
  * @property {string} [folderName] - Nome real da pasta no filesystem (sem o ponto). Defaults para value.
  * @property {string} [icon] - Emoji/ícone da IDE (opcional)
+ * @property {ReadonlyArray<MCPTarget>} mcp - Onde a IDE lê a configuração de MCP
+ * @property {string} mcpNote - O que falta para o servidor ficar ativo depois de gravado
+ */
+
+/**
+ * Arquivo de MCP que a IDE lê. Fonte: documentação oficial de cada IDE (conferida em 2026-10).
+ * @typedef {Object} MCPTarget
+ * @property {string} path - Relativo ao workspace; com `~/`, é da pasta do usuário (global)
+ * @property {"json"|"toml"} format
+ * @property {"mcpServers"|"mcp"|"mcp_servers"} key - Chave raiz dos servidores
+ * @property {"stdio"|"opencode"|"plain"} style - Formato do item do servidor
+ * @property {boolean} [global] - Só existe config global: o init não grava, só orienta
  */
 
 /**
@@ -35,6 +47,24 @@ export const IDES = Object.freeze([
     supported: true,
     workflowsFolder: DEFAULT_WORKFLOWS_FOLDER,
     icon: "🤖",
+    mcp: [
+      {
+        path: "~/.config/devin/mcp_config.json",
+        format: "json",
+        key: "mcpServers",
+        style: "plain",
+        global: true,
+      },
+      {
+        path: "~/.codeium/windsurf/mcp_config.json",
+        format: "json",
+        key: "mcpServers",
+        style: "plain",
+        global: true,
+      },
+    ],
+    mcpNote:
+      "A Windsurf só tem config global de MCP: inclua o servidor no arquivo indicado e ative-o no painel MCP do Cascade.",
   },
   {
     name: "Claude Code",
@@ -42,6 +72,8 @@ export const IDES = Object.freeze([
     supported: true,
     workflowsFolder: COMMANDS_FOLDER,
     icon: "🔌",
+    mcp: [{ path: ".mcp.json", format: "json", key: "mcpServers", style: "stdio" }],
+    mcpNote: "Reinicie o Claude Code e aprove o servidor do .mcp.json quando ele perguntar.",
   },
   {
     name: "Cursor",
@@ -49,6 +81,8 @@ export const IDES = Object.freeze([
     supported: true,
     workflowsFolder: COMMANDS_FOLDER,
     icon: "💻",
+    mcp: [{ path: ".cursor/mcp.json", format: "json", key: "mcpServers", style: "plain" }],
+    mcpNote: "Recarregue o Cursor; o servidor aparece em Settings → MCP.",
   },
   {
     name: "Codex (OpenAI)",
@@ -56,6 +90,9 @@ export const IDES = Object.freeze([
     supported: true,
     workflowsFolder: DEFAULT_WORKFLOWS_FOLDER,
     icon: "🔮",
+    mcp: [{ path: ".codex/config.toml", format: "toml", key: "mcp_servers", style: "plain" }],
+    mcpNote:
+      "O Codex só lê o .codex/config.toml de projetos confiáveis (trusted): confie no projeto e reinicie o Codex.",
   },
   {
     name: "OpenCode",
@@ -63,6 +100,8 @@ export const IDES = Object.freeze([
     supported: true,
     workflowsFolder: COMMANDS_FOLDER,
     icon: "⚡",
+    mcp: [{ path: "opencode.json", format: "json", key: "mcp", style: "opencode" }],
+    mcpNote: "Reinicie o OpenCode para carregar o servidor do opencode.json.",
   },
   {
     name: "Gemini CLI / Antigravity (Google)",
@@ -71,6 +110,12 @@ export const IDES = Object.freeze([
     supported: true,
     workflowsFolder: DEFAULT_WORKFLOWS_FOLDER,
     icon: "🌐",
+    mcp: [
+      { path: ".gemini/settings.json", format: "json", key: "mcpServers", style: "plain" },
+      { path: ".agents/mcp_config.json", format: "json", key: "mcpServers", style: "plain" },
+    ],
+    mcpNote:
+      "Gemini CLI: confie na pasta (gemini trust) e reinicie. Antigravity: use Refresh em Customizations (ou /mcp no CLI).",
   },
   {
     name: "Kiro (AWS)",
@@ -78,6 +123,8 @@ export const IDES = Object.freeze([
     supported: true,
     workflowsFolder: STEERING_FOLDER,
     icon: "☁️",
+    mcp: [{ path: ".kiro/settings/mcp.json", format: "json", key: "mcpServers", style: "plain" }],
+    mcpNote: "O Kiro reconecta os servidores ao salvar o arquivo; confira no painel MCP.",
   },
 ]);
 
@@ -218,6 +265,15 @@ export function getIDEFolder(ideValue) {
 export function getWorkflowsFolder(ideValue) {
   const config = getIDEConfig(ideValue);
   return config?.workflowsFolder || DEFAULT_WORKFLOWS_FOLDER;
+}
+
+/**
+ * Arquivos de MCP da IDE (lista vazia para IDE desconhecida)
+ * @param {string} ideValue - Slug da IDE
+ * @returns {ReadonlyArray<MCPTarget>}
+ */
+export function getMCPTargets(ideValue) {
+  return getIDEConfig(ideValue)?.mcp || [];
 }
 
 /**

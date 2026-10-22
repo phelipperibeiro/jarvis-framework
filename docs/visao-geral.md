@@ -212,7 +212,7 @@ O banner do `init` mostra **versão + path de origem** do pacote.
 | Chat | `MESSAGE_COMUNICATOR` | slack/discord/teams |
 | Demais | ver ENV-template | DB, broker, storage, observability, Sonar… |
 
-**MCPs no `/jarvis-init`:** Context7 **obrigatório**. Task manager / Jira **não bloqueiam**.
+**MCPs no `/jarvis-init`:** Context7 **obrigatório**, gravado pelo `jarvis init` no arquivo de MCP que a IDE lê, no formato dela (pendente de ativação até reiniciar a IDE, sem bloquear). Task manager / Jira **não bloqueiam**.
 
 ---
 

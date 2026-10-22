@@ -40,7 +40,7 @@ O mapa é o **contexto de workspace**: stack e papel de cada repositório. Fica 
 1. **Repositórios do workspace:** use o `WORKSPACE_MODE` do ENV. `workspace`: os de `WORKSPACE_REPOS` ou, se vazia, as subpastas com `.git/` (a raiz não é repositório, mesmo com uma subpasta só). `project`: a raiz, uma linha. Reconfira pelo critério (raiz com `.git` = `project`; raiz sem `.git` e 1+ subpastas com `.git/` = `workspace`) e, se o valor gravado divergir do detectado ou estiver ausente, avise e sugira `jarvis init --upgrade`, sem alterar o ENV. Nas buscas de código vale a regra "Buscas de código em modo workspace" de `eng-rules.md`.
 2. **Mapa não existe:** infira cada repositório pela tabela `$IDE/skills/jarvis-init/assets/sinais-de-stack.md` e pela estrutura (papel), mostre a tabela e pergunte com `AskUserQuestion`: **Confirmar** | **Corrigir** | **Incluir informação**. Repita até confirmar. Então:
    - grave `CDD-MIND-MAP.md` na raiz do workspace;
-   - garanta a linha no `.gitignore`: `grep -qxF 'CDD-MIND-MAP.md' .gitignore 2>/dev/null || echo 'CDD-MIND-MAP.md' >> .gitignore`;
+   - só se a raiz do workspace tiver `.git`, garanta a linha no `.gitignore`: `[ -e .git ] && { grep -qxF 'CDD-MIND-MAP.md' .gitignore 2>/dev/null || echo 'CDD-MIND-MAP.md' >> .gitignore; }`. Sem `.git` na raiz (como no modo workspace), a raiz não é versionada: não crie nem altere o `.gitignore`;
    - se o `AGENTS.md` da raiz não citar o mapa, acrescente uma linha:
      `> Contexto de workspace: [CDD-MIND-MAP.md](CDD-MIND-MAP.md) (tecnologias e papel de cada repositório; lido pelo /warm-up).`
 3. **Mapa existe:** leia-o. Repositório com `.git` que não está no mapa → infira, valide com o usuário e acrescente só ele. Não reprocesse as linhas existentes.

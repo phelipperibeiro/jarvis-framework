@@ -13,7 +13,7 @@ bin/
 ├── jarvis.js              # entrypoint (bin no package.json)
 ├── postinstall.js          # após npm install: sync se houver jarvis-lock.json
 ├── commands/
-│   ├── init.js             # jarvis init [--ide] [--force] [--upgrade [--yes] [--remove-stale]]
+│   ├── init.js             # jarvis init [--ide] [--force] [--upgrade [--yes] [--remove-stale]]; grava o Context7 no MCP da IDE
 │   ├── list.js             # jarvis list
 │   ├── info.js             # jarvis info …
 │   ├── whoami.js           # jarvis whoami / logout legado
@@ -25,7 +25,7 @@ bin/
 │   ├── daily-report.js     # jarvis daily-report
 │   └── qa-signoff.js       # jarvis qa-signoff (CI)
 └── lib/
-    ├── core/               # sync-engine, scanner, profile-filter, token-report, env-upgrade, docs-migrate, workspace-mode, stale-skills, session-scan
+    ├── core/               # sync-engine, scanner, profile-filter, token-report, env-upgrade, docs-migrate, workspace-mode, mcp-config, stale-skills, session-scan
     ├── flow-map/           # índice, leitor das tabelas de chamadas, árvore e saída do jarvis map
     ├── config/             # IDEs, constants (SYNC_DIRS, LOCK_FILE)
     ├── vcs/                # adapters GitLab/GitHub/Bitbucket

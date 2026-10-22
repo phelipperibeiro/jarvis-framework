@@ -8,13 +8,13 @@ Este documento contém os checklists detalhados para o processo de onboarding de
 
 - [ ] IDE detectada corretamente
 - [ ] Caminho do arquivo MCP identificado (se for configurar)
-- [ ] **Context7** instalado e respondendo (**obrigatório**)
+- [ ] **Context7** no arquivo de MCP da IDE (**obrigatório**; gravado pelo `jarvis init`) e respondendo depois de reiniciar a IDE
 - [ ] **Task manager MCP** (Jira/Linear/…) só se `TASK_MANAGER` estiver definido — **não bloqueante**
 - [ ] **TestSprite** instalado e respondendo (opcional)
 - [ ] Arquivo MCP configurado corretamente (quando aplicável)
 - [ ] IDE reiniciada após configurar MCPs (quando aplicável)
 
-> **Context7 é obrigatório.** Sem ele o `/jarvis-init` para e orienta a config. Task manager / Jira / Redis **não** bloqueiam. `TASK_MANAGER` vazio = freelance.
+> **Context7 é obrigatório.** O `jarvis init` o grava no arquivo de MCP da IDE. Se ele só não responde ainda (falta reiniciar ou aprovar), o `/jarvis-init` registra como pendente e segue; para só se o arquivo estiver ausente ou inválido e não puder ser corrigido. Task manager / Jira / Redis **não** bloqueiam. `TASK_MANAGER` vazio = freelance.
 
 ---
 
@@ -37,7 +37,7 @@ Este documento contém os checklists detalhados para o processo de onboarding de
 - [ ] Ambiente de desenvolvimento configurado
 - [ ] Projeto rodando localmente
 - [ ] **Identidade definida** (`USER=` no ENV.md — sem login)
-- [ ] **MCPs: Context7 obrigatório; task manager só se configurado (não bloqueia)**
+- [ ] **MCPs: Context7 obrigatório (no arquivo da IDE; pendente de ativação é aceito); task manager só se configurado (não bloqueia)**
 - [ ] **AGENTS.md criado/atualizado na raiz do projeto**
 - [ ] Acessos básicos liberados (Git; task manager se usar)
 - [ ] Conhecer o time (daily/reunião) — se aplicável
@@ -63,7 +63,7 @@ Este documento contém os checklists detalhados para o processo de onboarding de
 - [ ] `USER=` preenchido no ENV.md (sem login)
 - [ ] IDE detectada corretamente
 - [ ] ENV.md criado/verificado
-- [ ] MCPs: Context7 OK; task manager checado sem bloquear (ou pulado se vazio)
+- [ ] MCPs: Context7 OK (ou pendente de ativação); task manager checado sem bloquear (ou pulado se vazio)
 - [ ] Ambiente de desenvolvimento configurado
 - [ ] AGENTS.md criado na raiz do projeto
 - [ ] Documentação principal apresentada

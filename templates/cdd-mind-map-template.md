@@ -8,7 +8,7 @@ workspace: {nome}
 
 # CDD-MIND-MAP — {workspace}
 
-> **Contexto de workspace:** o mapa de tecnologias e o papel de cada repositório deste workspace. Fica na raiz, ao lado do `AGENTS.md`, **fora do versionamento** (`.gitignore`), e é lido sob demanda pelo `/warm-up`. É definido uma vez e reaproveitado; não guarda decisões nem contexto de tarefa (isso vai para o `context.md` da sessão).
+> **Contexto de workspace:** o mapa de tecnologias e o papel de cada repositório deste workspace. Fica na raiz, ao lado do `AGENTS.md`, **fora do versionamento** (no `.gitignore` quando a raiz tem `.git`; sem `.git`, a raiz não é versionada), e é lido sob demanda pelo `/warm-up`. É definido uma vez e reaproveitado; não guarda decisões nem contexto de tarefa (isso vai para o `context.md` da sessão).
 
 | Repositório | Papel | Linguagem | Framework | Área | Ferramentas principais | Observações |
 |-------------|-------|-----------|-----------|------|------------------------|-------------|

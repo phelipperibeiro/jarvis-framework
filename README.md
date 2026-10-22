@@ -184,10 +184,10 @@ Escolha **Upgrade (C)** — adiciona chaves novas do template sem apagar os valo
 |-------|------------|
 | `git pull` | Código do framework no clone |
 | `npm install -g` / `--save-dev` | Binário `jarvis` + pacote que o `init` lê |
-| `jarvis init` (ou postinstall com lock) | Arquivos em `.$IDE/` (skills, agents, workflows…) |
+| `jarvis init` (ou postinstall com lock) | Arquivos em `.$IDE/` (skills, agents, workflows…) e o Context7 no arquivo de MCP da IDE (ex.: `.mcp.json` no Claude Code; só acrescenta, sem apagar outros servidores) |
 | `/jarvis-init` Upgrade | Só `$IDE/ENV.md` (variáveis faltantes) e, se você aceitar o passo opcional "adicionar as stacks", as listas de especializações |
 
-`ENV.md`, `.jarvis/sessions/` e o `.gitignore` do workspace **não** são sobrescritos pelo sync de assets.
+`ENV.md`, `.jarvis/sessions/` e o `.gitignore` do workspace **não** são sobrescritos pelo sync de assets. O `.gitignore` só é criado ou alterado quando a raiz tem `.git`; sem `.git` (como no modo workspace) a raiz não é versionada e o init não o toca.
 
 | Papel | Descricao | Link |
 |-------|-----------|------|
@@ -253,6 +253,6 @@ Precisa de ajuda?
 - **Engenharia (um guia por comando `eng.*`)** &mdash; [`docs/engenharia/`](docs/engenharia/README.md)
 - **Indice de docs/** &mdash; [`docs/README.md`](docs/README.md)
 - **Instrucoes para agentes / mapa de skills** &mdash; `AGENTS.md`
-- **Issues/Feedback** &mdash; skill `jarvis-report-issue`
+- **Issues/Feedback** &mdash; skill `jarvis-report-issue` (sem token ou rede, o issue fica em `.jarvis/issues/issue-{desc}.md` para abrir à mão)
 - **Duvidas sobre comandos** &mdash; Pergunte diretamente ao agent:
   `"Como funciona /eng.start?"` | `"Qual a diferenca entre /eng.work e /pr?"` | `"O que e CDD?"`
