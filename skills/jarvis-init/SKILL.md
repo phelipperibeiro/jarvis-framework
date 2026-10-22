@@ -899,7 +899,8 @@ Não inventar docs de libs no lugar.
 
 **Verificação**:
 ```javascript
-// Context7 (OBRIGATÓRIO) — se falhar, parar e orientar config
+// Context7 (OBRIGATÓRIO) — sem resposta com o arquivo de MCP certo: pendente de ativação, seguir.
+// Parar só se o arquivo de MCP estiver ausente ou inválido e não puder ser corrigido.
 mcp1_resolve-library-id({ libraryName: "react", query: "test" })
 
 // Task manager — SÓ se TASK_MANAGER=jira (ou linear/github/asana). Senão: pular.
@@ -1166,7 +1167,7 @@ O tempo de ~10 minutos é referência, não limite. Nunca leia `.env*`, chaves o
 
 ⚠️ Lembre-se de:
 1. Não commitar tokens ou senhas no repositório
-2. Adicionar ENV.md ao .gitignore se contiver dados sensíveis
+2. Se o ENV.md tiver dados sensíveis e estiver num repositório (raiz com `.git`), adicioná-lo ao `.gitignore`
 3. Com `.git` na raiz, garantir `.jarvis/` no `.gitignore` (sem `.git`, como no modo workspace, a raiz não é versionada)
 4. Tokens Git ficam fora do ENV (`.npmrc` / `gh auth` / `BITBUCKET_TOKEN`)
 ```

@@ -285,7 +285,8 @@ mcp__sonarqube__list_projects({})
 ### Context7 (OBRIGATÓRIO)
 
 ```javascript
-// Testar se Context7 está funcionando — sem ele o init para
+// Testar se o Context7 responde. Sem resposta, com o arquivo de MCP certo: pendente de
+// ativação (reiniciar/aprovar), o init segue. Só para com o arquivo ausente ou inválido.
 mcp__context7__resolve-library-id({
   libraryName: "react"
 })
