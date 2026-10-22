@@ -285,3 +285,19 @@ test("init (instalação) na Windsurf: só config global, mostra o trecho e o qu
     assert.match(r.stdout, /painel MCP do Cascade/);
   });
 });
+
+test("init --upgrade: erro de IO no arquivo de MCP vira aviso e não muda o código de saída", () => {
+  withWorkspace({ ".claude/ENV.md": ENV_V520, ".mcp.json/x": "" }, (ws) => {
+    const r = run(ws, "--upgrade", "--ide", "claude", "--yes");
+    assert.equal(r.status, 0, r.stderr);
+    assert.match(r.stdout, /\.mcp\.json: .*\(nada alterado\)/);
+  });
+});
+
+test("init (instalação): .gitignore com /.jarvis/ não recebe a linha de novo", () => {
+  withWorkspace({ ".git/HEAD": "", ".gitignore": "/.jarvis/\n" }, (ws) => {
+    const r = run(ws, "--ide", "claude");
+    assert.equal(r.status, 0, r.stderr);
+    assert.equal(readFileSync(join(ws, ".gitignore"), "utf-8"), "/.jarvis/\n");
+  });
+});

@@ -236,3 +236,96 @@ test("mcpSnippet: JSON com a chave da IDE e TOML com a tabela do servidor", () =
     '[mcp_servers.context7]\ncommand = "npx"\nargs = ["-y", "@upstash/context7-mcp"]\n'
   );
 });
+
+test("erro de IO (.mcp.json é um diretório): vai para errors, nada é gravado", () => {
+  withWorkspace({}, (ws) => {
+    mkdirSync(join(ws, ".mcp.json"));
+    const r = ensureContext7(ws, "claude");
+    assert.equal(r.errors.length, 1);
+    assert.deepEqual(r.written, []);
+  });
+});
+
+test("opencode: arquivo existente sem $schema continua sem a chave", () => {
+  const existing = { model: "x", mcp: { outro: { type: "local", command: ["y"] } } };
+  withWorkspace({ "opencode.json": JSON.stringify(existing) }, (ws) => {
+    ensureContext7(ws, "opencode");
+    const cfg = readJson(ws, "opencode.json");
+    assert.ok(!("$schema" in cfg));
+    assert.equal(cfg.model, "x");
+    assert.deepEqual(cfg.mcp.outro, existing.mcp.outro);
+    assert.ok(cfg.mcp.context7);
+  });
+});
+
+test("indentação: JSON minificado sai com 2 espaços; com 1 espaço, mantém 1", () => {
+  withWorkspace({ ".mcp.json": '{"mcpServers":{}}' }, (ws) => {
+    ensureContext7(ws, "claude");
+    assert.ok(readFileSync(join(ws, ".mcp.json"), "utf-8").startsWith('{\n  "mcpServers"'));
+  });
+  withWorkspace({ ".mcp.json": '{\n "mcpServers": {}\n}\n' }, (ws) => {
+    ensureContext7(ws, "claude");
+    assert.ok(readFileSync(join(ws, ".mcp.json"), "utf-8").startsWith('{\n "mcpServers"'));
+  });
+});
+
+test("JSON com CRLF é regravado com CRLF", () => {
+  withWorkspace({ ".mcp.json": '{\r\n  "mcpServers": {}\r\n}\r\n' }, (ws) => {
+    ensureContext7(ws, "claude");
+    const text = readFileSync(join(ws, ".mcp.json"), "utf-8");
+    assert.ok(!/[^\r]\n/.test(text), "toda quebra é CRLF");
+    assert.ok(JSON.parse(text).mcpServers.context7);
+  });
+});
+
+test("codex: sem falso positivo (chave parecida, comentário e texto)", () => {
+  const cases = [
+    'mcp_servers = { context7-legacy = { command = "x" } }\n',
+    '# vou usar o context7 depois\nmodel = "x"\n',
+    '[mcp_servers.outro]\nargs = ["@upstash/context7-mcp"]\n',
+  ];
+  for (const toml of cases) {
+    withWorkspace({ ".codex/config.toml": toml }, (ws) => {
+      const r = ensureContext7(ws, "codex");
+      assert.deepEqual(r.written, [".codex/config.toml"], toml);
+      const after = readFileSync(join(ws, ".codex/config.toml"), "utf-8");
+      assert.ok(after.startsWith(toml), toml);
+      assert.match(after, /^\[mcp_servers\.context7\]$/m, toml);
+    });
+  }
+});
+
+test("codex: inline com outras chaves antes do context7 é reconhecido", () => {
+  const toml = 'mcp_servers = { outro = { command = "x" }, context7 = { command = "npx" } }\n';
+  withWorkspace({ ".codex/config.toml": toml }, (ws) => {
+    assert.deepEqual(ensureContext7(ws, "codex").present, [".codex/config.toml"]);
+  });
+});
+
+test("codex: cabeçalho de tabela sem ] fica intacto e vira aviso", () => {
+  const toml = '[mcp_servers.outro\ncommand = "x"\n';
+  withWorkspace({ ".codex/config.toml": toml }, (ws) => {
+    const r = ensureContext7(ws, "codex");
+    assert.match(r.manual[0].reason, /sem "\]"/);
+    assert.equal(readFileSync(join(ws, ".codex/config.toml"), "utf-8"), toml);
+  });
+});
+
+test("codex: TOML com CRLF recebe o bloco com CRLF", () => {
+  withWorkspace({ ".codex/config.toml": 'model = "x"\r\n' }, (ws) => {
+    ensureContext7(ws, "codex");
+    const text = readFileSync(join(ws, ".codex/config.toml"), "utf-8");
+    assert.ok(!/[^\r]\n/.test(text), "toda quebra é CRLF");
+    assert.match(text, /\[mcp_servers\.context7\]\r\n/);
+  });
+});
+
+test('codex: mcp_servers.context7 dentro de outra tabela não é "já configurado": vira aviso', () => {
+  const toml = '[other]\nmcp_servers.context7.command = "x"\n';
+  withWorkspace({ ".codex/config.toml": toml }, (ws) => {
+    const r = ensureContext7(ws, "codex");
+    assert.deepEqual(r.present, []);
+    assert.match(r.manual[0].reason, /forma que não reconheço/);
+    assert.equal(readFileSync(join(ws, ".codex/config.toml"), "utf-8"), toml);
+  });
+});
