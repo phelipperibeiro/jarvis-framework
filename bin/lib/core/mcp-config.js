@@ -2,11 +2,12 @@
 // Os caminhos vêm de `getMCPTargets` (ide-config.js). Regras:
 //   - arquivo ausente → cria só com o Context7;
 //   - arquivo presente → acrescenta o `context7` se faltar, sem tocar nos outros servidores
-//     e mantendo a indentação do JSON;
+//     e mantendo a indentação, o BOM e a quebra de linha (LF ou CRLF);
 //   - o que não reconhece com segurança (JSON com comentários ou inválido, raiz ou lista de
-//     servidores que não é objeto, TOML que já cita `context7` numa forma desconhecida) → não
-//     mexe e devolve o trecho para a pessoa colar. O TOML não é validado por inteiro: só se
-//     procura o `context7` antes de acrescentar o bloco no fim;
+//     servidores que não é objeto, TOML que já usa `context7` como chave numa forma desconhecida
+//     ou com cabeçalho de tabela sem `]`) → não mexe e devolve o trecho para a pessoa colar.
+//     O TOML não é validado por inteiro (seria preciso um parser, dependência nova): além do
+//     cabeçalho sem `]`, só se procura o `context7` antes de acrescentar o bloco no fim;
 //   - config só global (`~/…`) → não grava fora do workspace: devolve o trecho.
 // Nada disso muda o código de saída do `jarvis init`: são avisos.
 import { existsSync, mkdirSync, readFileSync, writeFileSync, appendFileSync } from "node:fs";
@@ -54,18 +55,28 @@ function detectIndent(text) {
   return m[1].startsWith("\t") ? "\t" : m[1].length;
 }
 
+/** Quebra de linha usada no arquivo: CRLF se aparecer, senão LF. */
+const detectEol = (text) => (text.includes("\r\n") ? "\r\n" : "\n");
+
+const BOM = "\uFEFF";
+
 function ensureJson(file, target) {
   let data = {};
   let indent = 2;
+  let bom = "";
+  let eol = "\n";
   if (existsSync(file)) {
-    const text = readFileSync(file, "utf-8").replace(/^\uFEFF/, "");
+    const raw = readFileSync(file, "utf-8");
+    bom = raw.startsWith(BOM) ? BOM : "";
+    const text = raw.slice(bom.length);
     indent = detectIndent(text);
+    eol = detectEol(text);
     try {
       data = JSON.parse(text);
     } catch (err) {
-      throw new Unrecognized(
-        `não consegui ler o JSON com segurança (comentários ou erro de sintaxe: ${err.message.split("\n")[0]})`
-      );
+      const detail = err.message.split("\n")[0];
+      const reason = "não consegui ler o JSON com segurança (comentários ou erro de sintaxe";
+      throw new Unrecognized(`${reason}: ${detail})`);
     }
     if (!isPlainObject(data)) throw new Unrecognized("o arquivo não é um objeto JSON");
   } else if (target.style === "opencode") {
@@ -79,14 +90,23 @@ function ensureJson(file, target) {
   if (Object.hasOwn(servers, CONTEXT7.name)) return false;
   data[target.key] = { ...servers, [CONTEXT7.name]: serverEntry(target.style) };
   mkdirSync(dirname(file), { recursive: true });
-  writeFileSync(file, `${JSON.stringify(data, null, indent)}\n`);
+  const body = JSON.stringify(data, null, indent).replace(/\n/g, eol);
+  writeFileSync(file, `${bom}${body}${eol}`);
   return true;
 }
 
+/** Linhas do TOML sem espaços nas pontas, sem as de comentário (`#`) e sem as vazias. */
+const tomlLines = (text) =>
+  text
+    .split(/\r?\n/)
+    .map((l) => l.trim())
+    .filter((l) => l && !l.startsWith("#"));
+
 /**
  * O TOML já declara o servidor? Reconhece `[mcp_servers.context7]` (com espaços e aspas),
- * `context7 = …` dentro de `[mcp_servers]`, `mcp_servers.context7 = …` e a tabela inline
- * `mcp_servers = { context7 = … }`.
+ * `context7 = …` dentro de `[mcp_servers]` e, antes do primeiro cabeçalho (na raiz),
+ * `mcp_servers.context7 = …` e a tabela inline `mcp_servers = { context7 = … }`.
+ * `context7` precisa ser a chave inteira (`context7-legacy` não conta).
  */
 function tomlHasServer(text, key) {
   const name = `["']?${CONTEXT7.name}["']?`;
@@ -94,30 +114,43 @@ function tomlHasServer(text, key) {
   const keyTable = new RegExp(`^\\[\\s*${key}\\s*\\]`);
   const inKeyTableAssign = new RegExp(`^${name}\\s*[.=]`);
   const dotted = new RegExp(`^${key}\\s*\\.\\s*${name}\\s*[.=]`);
-  const inline = new RegExp(`^${key}\\s*=\\s*\\{.*\\b${CONTEXT7.name}\\b`);
-  let inKeyTable = false;
-  for (const raw of text.split(/\r?\n/)) {
-    const line = raw.trim();
+  const inline = new RegExp(`^${key}\\s*=\\s*\\{(?:.*[{,])?\\s*${name}\\s*=`);
+  let table = null; // null = raiz, antes do primeiro cabeçalho
+  for (const line of tomlLines(text)) {
     if (line.startsWith("[")) {
       if (serverTable.test(line)) return true;
-      inKeyTable = keyTable.test(line);
+      table = keyTable.test(line) ? "key" : "other";
       continue;
     }
-    if (inKeyTable && inKeyTableAssign.test(line)) return true;
-    if (dotted.test(line) || inline.test(line)) return true;
+    if (table === "key" && inKeyTableAssign.test(line)) return true;
+    if (table === null && (dotted.test(line) || inline.test(line))) return true;
   }
   return false;
+}
+
+/** Primeira linha que usa `context7` como chave (fora de comentário), numa forma qualquer. */
+function tomlContext7KeyLine(text) {
+  const asKey = new RegExp(`(^|[\\s{,.\\[])["']?${CONTEXT7.name}["']?\\s*[=.\\]]`);
+  return tomlLines(text).find((l) => asKey.test(l));
 }
 
 function ensureToml(file, target) {
   const text = existsSync(file) ? readFileSync(file, "utf-8") : "";
   if (tomlHasServer(text, target.key)) return false;
-  if (text.includes(CONTEXT7.name)) {
-    throw new Unrecognized(`o arquivo já cita "${CONTEXT7.name}" numa forma que não reconheço`);
+  const brokenHeader = tomlLines(text).find((l) => l.startsWith("[") && !l.includes("]"));
+  if (brokenHeader) {
+    throw new Unrecognized(`cabeçalho de tabela sem "]" (${brokenHeader})`);
+  }
+  const keyLine = tomlContext7KeyLine(text);
+  if (keyLine) {
+    throw new Unrecognized(
+      `o arquivo já usa "${CONTEXT7.name}" numa forma que não reconheço (${keyLine})`
+    );
   }
   mkdirSync(dirname(file), { recursive: true });
-  const sep = text === "" || text.endsWith("\n\n") ? "" : text.endsWith("\n") ? "\n" : "\n\n";
-  appendFileSync(file, `${sep}${mcpSnippet(target)}`);
+  const eol = detectEol(text);
+  const sep = text === "" || text.endsWith(eol + eol) ? "" : text.endsWith(eol) ? eol : eol + eol;
+  appendFileSync(file, `${sep}${mcpSnippet(target).replace(/\n/g, eol)}`);
   return true;
 }
 

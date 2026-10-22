@@ -1,4 +1,4 @@
-import { existsSync, mkdirSync, readFileSync, appendFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync } from "node:fs";
 import { join, dirname, basename } from "node:path";
 import { createInterface } from "node:readline";
 import { syncAssets } from "../lib/core/sync-engine.js";
@@ -28,6 +28,7 @@ import {
   applyDocsMigration,
   rewriteRelatedDiscovery,
   declineEnvValues,
+  ensureGitignore,
 } from "../lib/core/docs-migrate.js";
 import { rootIsRepo } from "../lib/core/workspace-mode.js";
 import { ensureContext7 } from "../lib/core/mcp-config.js";
@@ -180,16 +181,7 @@ export async function init(flags) {
   }
   // .gitignore só numa raiz versionada (com .git): no modo workspace a raiz não é um repositório.
   if (rootIsRepo(cwd)) {
-    const gitignore = join(cwd, ".gitignore");
-    const ignoreLine = ".jarvis/";
-    if (existsSync(gitignore)) {
-      const text = readFileSync(gitignore, "utf8");
-      if (!text.split("\n").some((l) => l.trim() === ignoreLine || l.trim() === ".jarvis")) {
-        appendFileSync(gitignore, `${text.endsWith("\n") ? "" : "\n"}${ignoreLine}\n`);
-      }
-    } else {
-      writeFileSync(gitignore, `${ignoreLine}\n`);
-    }
+    ensureGitignore(cwd, ".jarvis/");
   }
 
   logger.info("");

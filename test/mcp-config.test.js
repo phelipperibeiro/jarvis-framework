@@ -157,7 +157,9 @@ test("mcpServers null vira objeto e recebe o context7", () => {
 test("JSON com BOM é lido; JSON com comentários fica intacto", () => {
   withWorkspace({ ".mcp.json": '\uFEFF{"mcpServers":{}}' }, (ws) => {
     assert.deepEqual(ensureContext7(ws, "claude").written, [".mcp.json"]);
-    assert.ok(readJson(ws, ".mcp.json").mcpServers.context7);
+    const text = readFileSync(join(ws, ".mcp.json"), "utf-8");
+    assert.ok(text.startsWith("\uFEFF"), "BOM preservado");
+    assert.ok(JSON.parse(text.slice(1)).mcpServers.context7);
   });
   const jsonc = '{\n  // servidores\n  "mcpServers": {}\n}\n';
   withWorkspace({ ".gemini/settings.json": jsonc }, (ws) => {
@@ -198,8 +200,8 @@ test("codex: variantes do cabeçalho já existentes não são duplicadas", () =>
   }
 });
 
-test("codex: context7 citado numa forma desconhecida fica intacto e vira aviso", () => {
-  const toml = '[outros]\nnota = "ver context7"\n';
+test("codex: context7 como chave numa forma desconhecida fica intacto e vira aviso", () => {
+  const toml = '[outros]\ncontext7 = { command = "npx" }\n';
   withWorkspace({ ".codex/config.toml": toml }, (ws) => {
     const r = ensureContext7(ws, "codex");
     assert.match(r.manual[0].reason, /forma que não reconheço/);

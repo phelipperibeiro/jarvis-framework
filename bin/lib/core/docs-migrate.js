@@ -202,7 +202,13 @@ export function applyDocsMigration(workspaceDir, plan, env) {
   return { moved, errors };
 }
 
-function ensureGitignore(workspaceDir, line) {
+/**
+ * Garante `line` no `.gitignore` de `workspaceDir` (cria o arquivo se faltar). Reconhece a
+ * linha com e sem a barra final e com a barra inicial (`docs/jarvis/`, `docs/jarvis`,
+ * `/docs/jarvis/`).
+ * Quem chama decide se a raiz é versionada (`rootIsRepo`).
+ */
+export function ensureGitignore(workspaceDir, line) {
   const p = join(workspaceDir, ".gitignore");
   const text = existsSync(p) ? readFileSync(p, "utf-8") : "";
   const bare = line.replace(/\/$/, "");
