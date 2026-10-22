@@ -14,7 +14,7 @@ Ajuda a escrever ou atualizar a documentação de engenharia, propondo mudanças
 
 - Depois de uma implementação, para deixar a documentação em dia
 - Para criar ou reorganizar documentação técnica de um projeto
-- Quando é preciso referenciar PRD, FRD, ARD ou RFC nos documentos
+- Quando é preciso referenciar PRD, FRD, ARD, RFC ou SPEC nos documentos
 
 ## Quando **não** usar
 

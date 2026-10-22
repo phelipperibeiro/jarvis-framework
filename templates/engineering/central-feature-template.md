@@ -25,7 +25,7 @@ updated_at: {YYYY-MM-DD}
 last_delivery: {delivery-AAAA-MM-DD-task_key.md}
 
 # Documentos de trabalho de origem, só como referência (basename). O entendimento NÃO depende deles.
-related_docs: {prd-001-nome.md, frd-001-nome.md, ARD-001-nome.md, RFC-001-nome.md}
+related_docs: {prd-001-nome.md, frd-001-nome.md, ARD-001-nome.md, RFC-001-nome.md, SPEC-001-nome.md}
 ---
 
 # {Nome da funcionalidade}
