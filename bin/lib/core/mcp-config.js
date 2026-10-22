@@ -31,14 +31,15 @@ const filled = (v) => typeof v === "string" && v.trim() !== "";
 const URL_KEYS = ["url", "httpUrl", "serverUrl"];
 
 /**
- * A entrada parece um servidor MCP utilizável? Objeto com `command` (string não vazia ou array
- * não vazio de strings não vazias, como no OpenCode) ou com uma URL não vazia (`URL_KEYS`).
+ * A entrada parece um servidor MCP utilizável? Objeto com `command` (string não vazia ou, só
+ * onde a IDE aceita, como no OpenCode, array não vazio de strings não vazias) ou com uma URL
+ * não vazia (`URL_KEYS`).
  */
-function looksLikeServer(entry) {
+function looksLikeServer(entry, commandAsList) {
   if (!isPlainObject(entry)) return false;
   const { command } = entry;
   const hasCommand = Array.isArray(command)
-    ? command.length > 0 && command.every(filled)
+    ? commandAsList && command.length > 0 && command.every(filled)
     : filled(command);
   return hasCommand || URL_KEYS.some((k) => filled(entry[k]));
 }
@@ -50,9 +51,9 @@ function looksLikeServer(entry) {
  * Um servidor válido com `enabled = false` conta como declarado: o init não liga o que a
  * pessoa desligou.
  */
-function hasContext7(servers) {
+function hasContext7(servers, target) {
   if (!servers || !Object.hasOwn(servers, CONTEXT7.name)) return false;
-  if (!looksLikeServer(servers[CONTEXT7.name])) {
+  if (!looksLikeServer(servers[CONTEXT7.name], target.style === "opencode")) {
     throw new Unrecognized(
       `"${CONTEXT7.name}" existe mas não parece um servidor (sem command nem url preenchidos)`
     );
@@ -122,7 +123,7 @@ function ensureJson(file, target) {
     throw new Unrecognized(`"${target.key}" não é um objeto`);
   }
   const servers = current ?? {};
-  if (hasContext7(servers)) return false;
+  if (hasContext7(servers, target)) return false;
   data[target.key] = { ...servers, [CONTEXT7.name]: serverEntry(target.style) };
   mkdirSync(dirname(file), { recursive: true });
   const body = JSON.stringify(data, null, indent).replace(/\n/g, eol);
@@ -152,7 +153,7 @@ function ensureToml(file, target) {
   if (servers !== undefined && !isPlainObject(servers)) {
     throw new Unrecognized(`"${target.key}" não é uma tabela`);
   }
-  if (hasContext7(servers)) return false;
+  if (hasContext7(servers, target)) return false;
   const eol = detectEol(text);
   const sep = text === "" || text.endsWith(eol + eol) ? "" : text.endsWith(eol) ? eol : eol + eol;
   const addition = `${sep}${mcpSnippet(target).replace(/\n/g, eol)}`;

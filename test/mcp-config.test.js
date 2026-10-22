@@ -447,7 +447,6 @@ test("parece um servidor: vazio vira aviso; remotos e enabled=false contam", () 
     { type: "remote", url: "https://exemplo/mcp" },
     { httpUrl: "https://exemplo/mcp" },
     { serverUrl: "https://exemplo/mcp" },
-    { type: "local", command: ["npx", "-y", "@upstash/context7-mcp"] },
     { command: "npx", enabled: false },
   ];
   for (const entry of valid) {
@@ -469,4 +468,21 @@ test("codex: command vazio ou url vazia no TOML viram aviso", () => {
       assert.match(r.manual[0].reason, /não parece um servidor/, toml);
     });
   }
+});
+
+test("command em lista só conta como servidor no OpenCode", () => {
+  withWorkspace({ ".codex/config.toml": '[mcp_servers.context7]\ncommand = ["npx"]\n' }, (ws) => {
+    const r = ensureContext7(ws, "codex");
+    assert.deepEqual(r.present, []);
+    assert.match(r.manual[0].reason, /não parece um servidor/);
+  });
+  withWorkspace({ ".mcp.json": '{"mcpServers":{"context7":{"command":["npx"]}}}' }, (ws) => {
+    const r = ensureContext7(ws, "claude");
+    assert.deepEqual(r.present, []);
+    assert.match(r.manual[0].reason, /não parece um servidor/);
+  });
+  const opencode = { mcp: { context7: { type: "local", command: ["npx", "-y", "x"] } } };
+  withWorkspace({ "opencode.json": JSON.stringify(opencode) }, (ws) => {
+    assert.deepEqual(ensureContext7(ws, "opencode").present, ["opencode.json"]);
+  });
 });
