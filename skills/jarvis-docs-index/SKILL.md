@@ -204,6 +204,11 @@ Verificar:
 |----|--------|--------|
 | [RFC-001](./engineering/RFC/RFC-001.md) | [Título] | Draft |
 
+### Specs de referência (SPECs)
+| ID | Título | Versão | Status |
+|----|--------|--------|--------|
+| [SPEC-001](./engineering/SPEC/SPEC-001.md) | [Título] | 1.0.0 | proposed |
+
 ---
 
 ## Produto

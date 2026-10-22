@@ -241,6 +241,6 @@ Ao orientar o usuário sobre a movimentação de cards no board (Jira, GitLab, L
 | `pleno` | Média - explicar decisões não-óbvias |
 | `senior` | Alta - executar e reportar decisões |
 | `staff`, `tech-lead` | Muito alta - consultar apenas em trade-offs críticos |
-| `generalist` | Muito alta - consultar apenas em trade-offs críticos (superusuário: acumula funções de outras posições) |
+| `generalist` | Muito alta - consultar apenas em trade-offs críticos (superusuário: acumula funções de outras posições; satisfaz qualquer gate por POSITION, ver taxonomy.md) |
 
 > ⚠️ **Escape Hatch**: O usuário pode sempre override qualquer regra contextual com instrução explícita.

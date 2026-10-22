@@ -21,9 +21,10 @@ templates/
 │   ├── advisor-template.md         # Prompts e auditoria do Advisor
 │   ├── ARD-template.md             # Architecture Review Document
 │   ├── RFC-template.md             # Request For Comments
-│   ├── RFC-Playbook@1.0.0.md       # Playbook para RFCs
+│   ├── RFC-Playbook.md             # Playbook para RFCs
 │   ├── tech-spec-template.md       # Especificacao tecnica
 │   ├── tech-spec-delivery-template.md # Formatos de entrega da tech spec (Jira, mensagem final, fluxo)
+│   ├── ref-spec-template.md        # Especificação técnica de referência (Reference Spec do eng.build-tech-spec)
 │   ├── plan-template.md            # Plano de execucao
 │   ├── work-progress-template.md   # Progresso de trabalho
 │   ├── PR-template.md              # Pull Request
@@ -49,7 +50,7 @@ templates/
 | Tipo | Padrao | Exemplos |
 |------|--------|----------|
 | Template padrao | `{nome}-template.md` | `ARD-template.md` |
-| Template com versao | `{nome}@{versao}.md` | `RFC-Playbook@1.0.0.md` |
+| Template com versao | `{nome}@{versao}.md` | `RFC-Playbook@2.0.0.md` (hipotético: nenhum template usa versão no nome hoje) |
 | Template de QA | `qa/{nome}-template.md` | `qa/test-plan-template.md` |
 
 ---
@@ -111,8 +112,9 @@ Use chaves `{...}` para indicar campos a serem preenchidos:
 | `advisor-template.md` | Prompts do Advisor e modelo de auditoria | `/eng.start` |
 | `ARD-template.md` | Revisao de arquitetura | `/eng.create-ard` |
 | `RFC-template.md` | Proposta de mudanca | `/eng.create-rfc` |
-| `tech-spec-template.md` | Especificacao tecnica | `/eng.build-tech-spec` |
+| `tech-spec-template.md` | Especificação técnica de um card (Delivery Spec) | `/eng.build-tech-spec` |
 | `tech-spec-delivery-template.md` | Formatos de entrega da tech spec | `/eng.build-tech-spec` |
+| `ref-spec-template.md` | Especificação técnica de referência | `/eng.build-tech-spec` (Reference Spec) |
 | `plan-template.md` | Plano de execucao | `/eng.plan` |
 | `PR-template.md` | Pull Request | `/eng.pr` |
 

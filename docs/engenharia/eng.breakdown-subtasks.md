@@ -19,7 +19,8 @@ Não confunda com o [`prod.spec.breakdown`](../produto/prod.spec.breakdown.md), 
 
 ## Quando **não** usar
 
-- Você ainda não tem a Tech Spec → [`eng.build-tech-spec`](./eng.build-tech-spec.md)
+- Você ainda não tem a Tech Spec → [`eng.build-tech-spec`](./eng.build-tech-spec.md). Este comando não gera a spec: só reescreve como passo a passo as fatias de 4h a 1 dia que o `eng.build-tech-spec` já entrega
+- Você quer uma especificação técnica de referência (contrato, convenção), sem subtarefas → Reference Spec do [`eng.build-tech-spec`](./eng.build-tech-spec.md)
 - Você quer fatiar uma spec de produto → [`/prod.spec.breakdown`](../produto/prod.spec.breakdown.md)
 
 ## Como funciona

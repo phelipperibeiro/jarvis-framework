@@ -19,6 +19,7 @@ templates/
     ├── RFC-Playbook.md
     ├── tech-spec-template.md
     ├── tech-spec-delivery-template.md
+    ├── ref-spec-template.md     # Reference Spec do eng.build-tech-spec
     ├── architecture-template.md
     ├── c4-model-template.md
     ├── plan-template.md

@@ -22,6 +22,9 @@ skills/
 ├── eng-global-investigation/    # Método de investigação de bugs (causa raiz, hipóteses, veredito, política de acesso); usado pelo /eng.debug
 │   ├── SKILL.md
 │   └── references/
+├── eng-global-tech-spec/        # Método do /eng.build-tech-spec: Delivery Spec (épico/história) e Reference Spec
+│   ├── SKILL.md
+│   └── references/
 ├── eng-global-pr/               # Criacao de Pull/Merge Requests (GitLab/GitHub/Bitbucket)
 │   └── SKILL.md
 ├── eng-global-task-comment/     # Comentário no card (Jira/Linear/GitHub Issues/Asana)
@@ -231,6 +234,7 @@ Skills são invocados de formas diferentes dependendo da IDE:
 | `/eng.pre-pr` | `eng-qa-planner`, `eng-global-docs-write`, `jarvis-docs-central` (detectar docs) |
 | `/eng.pr` | `eng-global-pr` |
 | `/eng.debug` (investigar um bug ou varrer um escopo) | `eng-global-investigation` |
+| `/eng.build-tech-spec` (Delivery Spec ou Reference Spec) | `eng-global-tech-spec` |
 | Comentário no card | `eng-global-task-comment` |
 | `jarvis docs sync` | `jarvis-docs-central` |
 | `jarvis docs publish` | `jarvis-docs-central` |

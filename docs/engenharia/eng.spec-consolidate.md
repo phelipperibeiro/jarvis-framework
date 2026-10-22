@@ -8,7 +8,7 @@ Depois do merge do PR (o `/eng.pr` pergunta no fim e oferece chamá-lo), transfo
 
 ## O que é
 
-O Central docs guarda **só o que foi implementado**. Os documentos de trabalho (PRD, FRD, ARD, RFC, épicos…) ficam em `docs/jarvis/`, fora do versionamento, e podem estar desatualizados ou nunca ter sido implementados. Este comando cruza essas fontes com o que aconteceu de verdade:
+O Central docs guarda **só o que foi implementado**. Os documentos de trabalho (PRD, FRD, ARD, RFC, SPEC, épicos…) ficam em `docs/jarvis/`, fora do versionamento, e podem estar desatualizados ou nunca ter sido implementados. Este comando cruza essas fontes com o que aconteceu de verdade:
 - as decisões do `architecture.md` e as mudanças de direção do `plan.md`;
 - o diff e os commits (quem fez o quê, quando);
 - o PR/MR e o card.
