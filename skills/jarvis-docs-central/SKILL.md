@@ -150,7 +150,7 @@ jarvis docs publish --file .../consolidation/feature-checkout.md --tipo feature
 ```
 
 - Tipos aceitos: **`feature`** e **`delivery`**.
-- `prd`, `frd`, `ard`, `rfc` e os outros documentos de trabalho são recusados com a explicação.
+- `prd`, `frd`, `ard`, `rfc`, `spec` e os outros documentos de trabalho são recusados com a explicação.
 - `--produto` troca o `WORKSPACE`.
 
 **Fluxo:**

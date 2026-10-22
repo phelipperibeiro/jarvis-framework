@@ -24,7 +24,7 @@ bin/
     ├── config/                # ide-config.js (fonte de verdade de IDEs), constants.js
     ├── core/                  # scanner.js, sync-engine.js, profile-filter.js, token-report.js
     ├── docs/                  # Central docs: fetch/publish pelo adaptador + validação de frontmatter
-    │   ├── validate-frontmatter.js  # Valida/extrai frontmatter (PRD, FRD, épico, história, tarefa, ARD, RFC)
+    │   ├── validate-frontmatter.js  # Valida/extrai frontmatter (feature, delivery e documentos de trabalho: PRD, FRD, épico, história, tarefa, ARD, RFC, QA)
     │   ├── fetch-file.js       # openStorageFromEnv() + fetchFile() — `docs sync`/`docs fetch`/`docs publish`
     │   ├── publish-file.js     # tipos, resolveDestPath() e publishFile() — `docs publish`
     │   └── storage/            # adaptadores (CENTRAL_DOCS_STORAGE): index.js (fábrica), filesystem.js (pasta + git), build-index.js

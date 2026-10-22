@@ -2,7 +2,8 @@ import { readFileSync } from 'node:fs'
 import { parseFrontmatter, extractFrontmatterBlock } from '../utils/frontmatter.js'
 
 /**
- * Valida frontmatter YAML de documentos (PRD, FRD, épico, história, tarefa, ARD, RFC)
+ * Valida frontmatter YAML da consolidação do Central docs (feature, delivery) e de documentos
+ * de trabalho (PRD, FRD, épico, história, tarefa, ARD, RFC, relatório de QA)
  * 
  * @param {string} filePath - Caminho do arquivo
  * @param {string} tipo - Tipo do documento (ver VALID_TYPES em publish-file.js)
