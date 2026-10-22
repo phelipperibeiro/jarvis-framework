@@ -134,9 +134,15 @@ Exemplo preenchido da mensagem de entrega (fictício).
 
 ## Fluxo resumido
 
-Visão geral do fluxo do workflow, do tipo de documento (épico ou história) até a entrega.
+Visão geral do fluxo do workflow, do modo e do tipo de documento (épico ou história) até a entrega. O modo referência não usa este arquivo: o fluxo dele está em `skills/eng-global-tech-spec/references/modo-referencia.md`.
 
 ```
+┌─────────────────────────────────────────────────────────┐
+│ MODO: card ou referência? (pelos argumentos ou pergunta)│
+│    └─ Referência → modo-referencia.md → $ENG_DOCS/SPEC/ │
+│       (sem subtarefas e sem board)                      │
+└─────────────────────────────────────────────────────────┘
+                          ↓ card
 ┌─────────────────────────────────────────────────────────┐
 │ 0. DETECÇÃO DO TIPO                                     │
 │    └─ Épico ou História? (inferir ou perguntar)        │
@@ -175,5 +181,5 @@ Visão geral do fluxo do workflow, do tipo de documento (épico ou história) at
 ---
 
 **Notas para o agente**:
-- Este arquivo só traz formatos: o passo a passo continua em `workflows/engineering/eng.build-tech-spec.md`.
+- Este arquivo só traz formatos: o passo a passo do modo card está em `skills/eng-global-tech-spec/references/modo-card.md` (o workflow `eng.build-tech-spec.md` faz o gate, a triagem de modo e as áreas).
 - Mantenha os placeholders `{...}` até ter os dados reais; não invente links, estimativas nem ids.

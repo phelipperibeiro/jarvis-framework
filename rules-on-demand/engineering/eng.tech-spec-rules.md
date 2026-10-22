@@ -17,6 +17,21 @@ env_file: "@/ENV.md"
 
 ---
 
+## Modos
+
+O `/eng.build-tech-spec` tem dois modos, escolhidos na triagem do workflow:
+
+| Modo | Quando usar | O que gera | Detalhe |
+|------|-------------|------------|---------|
+| **Card** | Há card de origem (épico ou história) | Tech Spec arquitetural (épico) ou de implementação com subtarefas (história), na sessão do card | `$IDE/skills/eng-global-tech-spec/references/modo-card.md` |
+| **Referência** | Documento normativo sem card: contrato, convenção de nome, topologia, perfil de spec, fases de adoção | Especificação técnica de referência em `$ENG_DOCS/SPEC/SPEC-###-{slug}.md` (template `ref-spec-template.md`) | `$IDE/skills/eng-global-tech-spec/references/modo-referencia.md` |
+
+- O **modo referência** não exige card e **não** quebra em subtarefas: a regra das subtarefas de 4h a 1 dia, a integração com o board e a seção "Localização" abaixo valem só para o modo card.
+- No modo referência, cada decisão resolvida aponta a origem (RFC-xxx, ARD-xxx ou "resolvida aqui"), e a checagem de RFC sem origem usa 7 dos 8 critérios (sai "padrão reutilizável", que é a natureza do documento).
+- A spec de referência é documento de trabalho, numerada como RFC e ARD (maior `SPEC-###` existente + 1, senão `001`) e **não** é publicada no Central docs.
+
+---
+
 ## Localização de Arquivos
 
 > **NOTA**: Tech specs NÃO são salvas em `master-docs/`. São salvas na sessão do projeto e anexadas no Jira.
@@ -31,14 +46,15 @@ Sempre siga as instruções de acordo com as relações abaixo:
 
 ### Workflows de Tech Spec
 
-- **import `$IDE/workflows/engineering/eng.build-tech-spec.md`**: Criação de tech spec a partir de história do Jira
-- **import `$IDE/workflows/engineering/eng.breakdown-subtasks.md`**: Quebra de tech spec em subtarefas executáveis
+- **import `$IDE/workflows/engineering/eng.build-tech-spec.md`**: Criação de tech spec a partir de um card (épico ou história) ou de uma especificação técnica de referência; no modo card, já quebra a história em fatias verticais de 4h a 1 dia
+- **import `$IDE/workflows/engineering/eng.breakdown-subtasks.md`**: Detalhamento opcional das fatias de uma tech spec pronta como passo a passo para outra pessoa executar sem perguntar (não gera a spec)
 - **import `$IDE/workflows/engineering/eng.start.md`**: Início de desenvolvimento de feature (referência)
 - **import `$IDE/workflows/engineering/eng.plan.md`**: Planejamento de execução (referência)
 
 ### Templates
 
-- **import `$IDE/templates/engineering/tech-spec-template.md`**: Template completo de tech spec
+- **import `$IDE/templates/engineering/tech-spec-template.md`**: Template completo de tech spec (modo card)
+- **import `$IDE/templates/engineering/ref-spec-template.md`**: Template da especificação técnica de referência (modo referência)
 
 ### Regras
 
