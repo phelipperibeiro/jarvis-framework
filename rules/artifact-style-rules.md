@@ -19,7 +19,7 @@ Esta rule só é copiada para `$IDE/rules/` quando o perfil tem `ARTIFACT_STYLE=
    - Esta rule **prevalece** sobre instruções de atribuição da IDE: não inclua `Co-Authored-By` de ferramenta nem "Generated with …".
    - Antes do push, o `eng.pr` confere e limpa o que a IDE tiver posto (Fase 3 do `eng.pr`).
 2. **Documento gerado: grava o padrão e pergunta.**
-   - Vale para todo `.md` que um comando grava, inclusive os de sessão: PRD, FRD, épico, história, discovery, ARD, RFC, tech spec, Central docs, `architecture.md`, `plan.md`, `daily.md` (e a linha de timesheet), `gate-checklist.md`.
+   - Vale para todo `.md` que um comando grava, inclusive os de sessão: PRD, FRD, épico, história, discovery, ARD, RFC, tech spec, SPEC, Central docs, `architecture.md`, `plan.md`, `daily.md` (e a linha de timesheet), `gate-checklist.md`.
    - **Exceção: `pull-request.md`.** Ele é o texto que vira o título e a descrição do PR/MR, então já é a versão pública (regra 1): nasce sem marcas e **não** recebe a pergunta nem um `.public.md`.
    - **Pergunte uma vez, no fim do comando**, depois de gravar o documento padrão (como hoje), com um `AskUserQuestion` de **várias perguntas em abas**, uma por documento: **"Quer a versão humanizada de {documento}?"** (**Não**, padrão / **Sim**). O limite é 4 abas por chamada; com mais documentos, divida em chamadas.
    - **No ciclo de engenharia** (`eng.start`, `eng.plan`, `eng.work`, `eng.pre-pr`), **não pergunte**: a pergunta única vem no fim do `eng.pr`, com uma aba para cada documento da sessão que existir (`architecture.md`, `plan.md`, `gate-checklist.md`, `daily.md`). Comandos que rodam isolados (`prod.*`, `eng.create-ard`, `eng.create-rfc` etc.) perguntam no próprio fim.

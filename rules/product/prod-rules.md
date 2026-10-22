@@ -54,7 +54,7 @@ Abaixo, segue uma descrição de algumas das variáveis mais importantes para as
 - $FLOWS_FOLDER é o nome da pasta de workflows e comandos utilizados pelos IDEs. (tenha em mente que o nome da pasta pode variar de acordo com a IDE utilizada)
 - $RULES_FOLDER é o nome da pasta principal de regras invioláveis que os agentes devem seguir.
 - $PROD_RULES é o caminho para a pasta que contém as regras de produto. Leia todos os arquivos dentro dessa pasta para entender as regras de produto.
-- $CENTRAL_DOCS_STORAGE e $CENTRAL_DOCS_LOCATION configuram o Central docs: o registro do que **foi implementado** (um documento por funcionalidade e um por entrega, gerados pelo `/eng.spec-consolidate`), com um índice global. Ligado por padrão (`filesystem`); vazio = desligado. Os documentos de trabalho (PRD, FRD, ARD, RFC) não são publicados lá. Leitura e publicação sempre por `jarvis docs fetch | sync | publish`.
+- $CENTRAL_DOCS_STORAGE e $CENTRAL_DOCS_LOCATION configuram o Central docs: o registro do que **foi implementado** (um documento por funcionalidade e um por entrega, gerados pelo `/eng.spec-consolidate`), com um índice global. Ligado por padrão (`filesystem`); vazio = desligado. Os documentos de trabalho (PRD, FRD, ARD, RFC, SPEC) não são publicados lá. Leitura e publicação sempre por `jarvis docs fetch | sync | publish`.
 
 
 ## VARIÁVEL `$IDE` - DETECÇÃO AUTOMÁTICA DA PASTA DA IDE

@@ -176,7 +176,7 @@ jarvis docs publish --file .../consolidation/feature-checkout.md --tipo feature
 
 ### Nunca
 
-- Publicar documento de trabalho (PRD, FRD, ARD, RFC…) no Central docs
+- Publicar documento de trabalho (PRD, FRD, ARD, RFC, SPEC…) no Central docs
 - Publicar sem o Sim do usuário (Modo 2 é sempre pelo `/eng.spec-consolidate`)
 - Editar `{SQUAD}/index.md` à mão
 - Push direto para a branch base quando a pasta tem `.git` (sempre por PR)

@@ -30,7 +30,7 @@ related_docs: {prd-001-nome.md, frd-001-nome.md, ARD-001-nome.md, RFC-001-nome.m
 
 # {Nome da funcionalidade}
 
-> Documento **autossuficiente**: descreve o que está implementado hoje. Se os documentos de origem (PRD, FRD, ARD, RFC) se perderem, este documento basta. Escrito para humanos e para IAs: frases completas, termos definidos, nada implícito.
+> Documento **autossuficiente**: descreve o que está implementado hoje. Se os documentos de origem (PRD, FRD, ARD, RFC, SPEC) se perderem, este documento basta. Escrito para humanos e para IAs: frases completas, termos definidos, nada implícito.
 
 ## 1. Visão geral
 

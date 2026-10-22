@@ -40,7 +40,7 @@ O assistente deve:
 3. Coletar contexto mínimo antes de escrever:
    - Qual o objetivo da mudança?
    - Quais arquivos precisam ser atualizados/criados?
-   - Há links obrigatórios (PRD/FRD/ARD/RFC) que precisam ser referenciados?
+   - Há links obrigatórios (PRD/FRD/ARD/RFC/SPEC) que precisam ser referenciados?
    - Existe um padrão de pasta/nomenclatura para este repositório?
 
 4. Produzir a saída:
