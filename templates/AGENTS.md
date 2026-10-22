@@ -112,7 +112,7 @@ Use chaves `{...}` para indicar campos a serem preenchidos:
 | `advisor-template.md` | Prompts do Advisor e modelo de auditoria | `/eng.start` |
 | `ARD-template.md` | Revisao de arquitetura | `/eng.create-ard` |
 | `RFC-template.md` | Proposta de mudanca | `/eng.create-rfc` |
-| `tech-spec-template.md` | Especificacao tecnica | `/eng.build-tech-spec` |
+| `tech-spec-template.md` | Especificação técnica de um card (Delivery Spec) | `/eng.build-tech-spec` |
 | `tech-spec-delivery-template.md` | Formatos de entrega da tech spec | `/eng.build-tech-spec` |
 | `ref-spec-template.md` | Especificação técnica de referência | `/eng.build-tech-spec` (Reference Spec) |
 | `plan-template.md` | Plano de execucao | `/eng.plan` |

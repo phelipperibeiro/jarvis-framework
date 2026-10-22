@@ -42,7 +42,7 @@ Por isso o texto tem de ser **completo, autossuficiente e sem ambiguidade**.
 
 1. `architecture.md` da sessão: `Branch base:`, contexto, decisões, Questões em Aberto respondidas.
 2. `plan.md` da sessão: fases e comentários (mudanças de direção).
-3. Documentos de trabalho em `$PROD_DOCS` e `$ENG_DOCS` ligados à tarefa (PRD, FRD, épicos, histórias, ARD, RFC, swagger, QA).
+3. Documentos de trabalho em `$PROD_DOCS` e `$ENG_DOCS` ligados à tarefa (PRD, FRD, épicos, histórias, ARD, RFC, SPEC, swagger, QA).
 4. `git log {base}..HEAD --format='%h|%an|%ad|%s' --date=short` e `git diff --stat {base}...HEAD`.
 5. O código alterado, só leitura, para confirmar o comportamento real.
 6. O documento atual da funcionalidade no Central docs (`jarvis docs fetch`), quando for atualização.

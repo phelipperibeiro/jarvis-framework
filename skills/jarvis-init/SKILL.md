@@ -1085,8 +1085,8 @@ function parseAppliesTo(fileContent) {
 **Copiar preservando subpastas:**
 
 ```bash
-# Exemplo: rules/engineering/qa/eng.qa.quality-gate-scoring-rules.md
-# Destino: $IDE/rules/engineering/qa/eng.qa.quality-gate-scoring-rules.md
+# Exemplo: rules/engineering/frontend/eng.frontend-rules.md
+# Destino: $IDE/rules/engineering/frontend/eng.frontend-rules.md
 # (o mesmo vale para rules-on-demand/ → $IDE/rules-on-demand/)
 mkdir -p "$IDE/$pasta/$(dirname $relPath)"
 cp "$pasta/$relPath" "$IDE/$pasta/$relPath"   # $pasta = rules ou rules-on-demand

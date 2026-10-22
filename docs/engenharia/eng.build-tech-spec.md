@@ -1,4 +1,4 @@
-# `/eng.build-tech-spec` — Tech Spec a partir de um card ou spec técnica de referência
+# `/eng.build-tech-spec` — Delivery Spec (a partir de um card) ou Reference Spec
 
 Workflow: `workflows/engineering/eng.build-tech-spec.md` · Skill: `skills/eng-global-tech-spec/` · Regras: `rules-on-demand/engineering/eng.tech-spec-rules.md` · Templates: `templates/engineering/tech-spec-template.md` (Delivery Spec) e [`ref-spec-template.md`](../../templates/engineering/ref-spec-template.md) (Reference Spec)
 
@@ -30,8 +30,8 @@ Tem dois modos: transforma um épico ou uma história do board em uma **Tech Spe
 
 1. **Cargo:** confere o `POSITION` (acima).
 2. **Modo:** com URL, ID ou texto de card, segue no Delivery Spec sem perguntar, como sempre. Com a descrição de um documento normativo, segue no Reference Spec. Sem argumentos (ou se ficar ambíguo), pergunta se há card de origem.
-3. **Áreas:** identifica as áreas da spec (backend, frontend, qa, data, automation, platform) e carrega o skill base de cada uma mais as especializações registradas no `ENV.md` (regra `eng.specializations-rules.md`). Assim a spec segue as convenções do projeto, e não padrões genéricos.
-4. **Executa o modo**, lendo só o arquivo dele (`skills/eng-global-tech-spec/references/`).
+3. **Áreas (dentro do modo, depois de ler o card ou da triagem):** identifica as áreas da spec (backend, frontend, qa, data, automation, platform) e carrega o skill base de cada uma mais as especializações registradas no `ENV.md` (regra `eng.specializations-rules.md`). Assim a spec segue as convenções do projeto, e não padrões genéricos.
+4. **Executa o modo**, lendo só o arquivo dele (`skills/eng-global-tech-spec/references/`); o passo 3 acontece no começo desse arquivo.
 
 **Delivery Spec: épico → Tech Spec arquitetural**
 

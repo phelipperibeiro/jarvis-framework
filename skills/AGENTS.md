@@ -234,7 +234,7 @@ Skills são invocados de formas diferentes dependendo da IDE:
 | `/eng.pre-pr` | `eng-qa-planner`, `eng-global-docs-write`, `jarvis-docs-central` (detectar docs) |
 | `/eng.pr` | `eng-global-pr` |
 | `/eng.debug` (investigar um bug ou varrer um escopo) | `eng-global-investigation` |
-| `/eng.build-tech-spec` (Delivery Spec ou referência) | `eng-global-tech-spec` |
+| `/eng.build-tech-spec` (Delivery Spec ou Reference Spec) | `eng-global-tech-spec` |
 | Comentário no card | `eng-global-task-comment` |
 | `jarvis docs sync` | `jarvis-docs-central` |
 | `jarvis docs publish` | `jarvis-docs-central` |

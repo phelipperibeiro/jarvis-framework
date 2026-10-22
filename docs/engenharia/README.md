@@ -38,7 +38,7 @@ Cada etapa só avança com a sua aprovação. O `eng.start` e o `eng.plan` só p
 | [`eng.create-ard`](./eng.create-ard.md) | ARD: arquitetura proposta, riscos e testes |
 | [`eng.create-ard-from-code`](./eng.create-ard-from-code.md) | ARD a partir da arquitetura que o código já tem |
 | [`eng.create-rfc`](./eng.create-rfc.md) | RFC: decisão técnica discutida em aberto |
-| [`eng.build-tech-spec`](./eng.build-tech-spec.md) | Tech Spec de um épico ou história, ou spec técnica de referência |
+| [`eng.build-tech-spec`](./eng.build-tech-spec.md) | Delivery Spec (épico ou história) ou Reference Spec (spec normativa) |
 | [`eng.breakdown-subtasks`](./eng.breakdown-subtasks.md) | Quebra a Tech Spec em subtarefas verticais |
 
 ## Frontend

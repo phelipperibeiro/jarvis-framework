@@ -16,7 +16,7 @@ Este comando registra no **Central docs** o que a entrega **de fato implementou*
 - o **documento da funcionalidade** (`feature-{slug}.md`), com o estado atual, novo ou atualizado;
 - o **registro da entrega** (`delivery-{AAAA-MM-DD}-{task_key}.md`), com o PR, os commits e os autores.
 
-Os documentos de trabalho (PRD, FRD, ARD, RFC…) continuam em `docs/jarvis/` e **não** vão para o Central docs: lá fica só o que foi implementado.
+Os documentos de trabalho (PRD, FRD, ARD, RFC, SPEC…) continuam em `docs/jarvis/` e **não** vão para o Central docs: lá fica só o que foi implementado.
 
 > 🤖 **Modelo**: se a IDE informar o modelo desta sessão e ele for de outra família que o `recommended_model` do documento (ou do template, se for novo), avise em uma linha e siga, sem bloquear e sem repetir. Sem essa informação, não avise.
 > 📤 **Templates**: `$IDE/templates/engineering/central-feature-template.md` e `$IDE/templates/engineering/central-delivery-template.md`
@@ -52,7 +52,7 @@ Os documentos de trabalho (PRD, FRD, ARD, RFC…) continuam em `docs/jarvis/` e 
 
 O agente `eng.docs-consolidator` lê **todas** as fontes, na ordem do agente:
 1. `architecture.md` e `plan.md` da sessão.
-2. Documentos de trabalho ligados à tarefa em `$PROD_DOCS` e `$ENG_DOCS` (PRD, FRD, épicos, histórias, ARD, RFC, swagger, QA).
+2. Documentos de trabalho ligados à tarefa em `$PROD_DOCS` e `$ENG_DOCS` (PRD, FRD, épicos, histórias, ARD, RFC, SPEC, swagger, QA).
 3. Commits e arquivos:
    ```bash
    git log {base}..HEAD --format='%h|%an|%ad|%s' --date=short
@@ -65,7 +65,7 @@ O agente `eng.docs-consolidator` lê **todas** as fontes, na ordem do agente:
 ## Passo 2: Coleta (modo `--inicial`)
 
 1. Liste os PRD, FRD, ARD, RFC e SPEC em `$PROD_DOCS` e `$ENG_DOCS/{ARD,RFC,SPEC}` (e nos caminhos antigos, se o `/jarvis-init` não os moveu).
-2. Sugira o agrupamento por funcionalidade (um PRD/FRD e os ARD/RFC ligados a ele) e confirme com `AskUserQuestion` (aceitar / ajustar).
+2. Sugira o agrupamento por funcionalidade (um PRD/FRD e os ARD/RFC/SPEC ligados a ele) e confirme com `AskUserQuestion` (aceitar / ajustar).
 3. Para cada grupo, o agente lê os documentos e o código relacionado (só leitura), para descrever o que **está implementado**. O que estiver só especificado vai para "Fora do escopo", e o status reflete isso.
 
 ## Passo 3: Qual funcionalidade
