@@ -1,4 +1,4 @@
-# Modo referência — especificação técnica de referência
+# Reference Spec — especificação técnica de referência
 
 > Usado pelo `/eng.build-tech-spec` quando a entrada é um documento normativo sem card de origem.
 > 📤 **Template**: `$IDE/templates/engineering/ref-spec-template.md` · **Saída**: `$ENG_DOCS/SPEC/SPEC-###-{slug}.md`
@@ -11,12 +11,12 @@ Uma **especificação técnica de referência** é um documento normativo: diz c
 
 | Ela… | Quem faz isso, se não ela |
 |------|---------------------------|
-| **não** deriva de um card | o modo card (Tech Spec de épico ou história) |
+| **não** deriva de um card | o Delivery Spec (Tech Spec de épico ou história) |
 | **não** decide trade-off | o RFC (`/eng.create-rfc`) |
 | **não** desenha a arquitetura | o ARD (`/eng.create-ard`) |
-| **não** quebra em subtarefas nem cria cards | o modo card e o `/eng.breakdown-subtasks` |
+| **não** quebra em subtarefas nem cria cards | o Delivery Spec e o `/eng.breakdown-subtasks` |
 
-Se a conversa mostrar que existe um card de origem, volte ao workflow e siga o modo card.
+Se a conversa mostrar que existe um card de origem, volte ao workflow e siga o Delivery Spec.
 
 ---
 
@@ -25,15 +25,17 @@ Se a conversa mostrar que existe um card de origem, volte ao workflow e siga o m
 Pergunte **uma coisa por vez**, com `AskUserQuestion` quando houver opções:
 
 1. **Tema e escopo normativo:** o que a spec rege e o que fica de fora.
-2. **Áreas envolvidas** (backend, frontend, qa, data, automation, platform): a resposta alimenta o Passo 2 do workflow, que carrega o skill base e as especializações de cada área.
+2. **Áreas envolvidas** (backend, frontend, qa, data, automation, platform).
 3. **Origem:** "Há RFC ou ARD de origem?" — **Sim (informe o ID ou o caminho)** / **Não**.
 
 Não invente nada que o usuário não disse: o que faltar vira pergunta.
 
+> 🧩 **Agora aplique o Passo 2 (Áreas) do workflow** com as áreas da resposta 2: skill base de cada área + especializações registradas no `ENV.md` (`eng.specializations-rules.md`).
+
 ## 2. Checagem de RFC
 
 - **Com RFC/ARD de origem:** registre o ID em `related` e siga. Cada decisão da spec deve caber no que a origem já decidiu.
-- **Sem origem:** aplique os critérios abaixo. Eles são os da Fase 1.5 do modo card **sem** "Vai virar padrão reutilizável": esse critério sai porque ser um padrão reutilizável é a natureza deste documento. Não o recoloque, ou toda spec de referência exigiria RFC.
+- **Sem origem:** aplique os critérios abaixo. Eles são os da Fase 1.5 do Delivery Spec **sem** "Vai virar padrão reutilizável": esse critério sai porque ser um padrão reutilizável é a natureza deste documento. Não o recoloque, ou toda spec de referência exigiria RFC.
 
 | Critério | Aplica? |
 | -------- | ------- |

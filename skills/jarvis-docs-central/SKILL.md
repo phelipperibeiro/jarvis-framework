@@ -21,7 +21,7 @@ Integrar os comandos do framework com o **Central docs**: o registro do que **de
 
 | Camada | O que é | Onde fica |
 |---|---|---|
-| Documentos de trabalho | PRD, FRD, épicos, histórias, ARD, RFC, QA, swagger, robôs, C4: o que se pretende e se discute | `docs/jarvis/` (`$PROD_DOCS`, `$ENG_DOCS`), fora do versionamento |
+| Documentos de trabalho | PRD, FRD, épicos, histórias, ARD, RFC, SPEC, QA, swagger, robôs, C4: o que se pretende e se discute | `docs/jarvis/` (`$PROD_DOCS`, `$ENG_DOCS`), fora do versionamento |
 | **Central docs** | O que foi implementado: um documento **completo e autossuficiente** por funcionalidade (estado atual) e um **registro por entrega** (PR, commits, autores) | Pasta do Central docs (adaptador) |
 
 Quem escreve no Central docs é o **`/eng.spec-consolidate`** (agente `eng.docs-consolidator`), depois do merge do PR. Os documentos de trabalho nunca são publicados lá.
@@ -138,7 +138,7 @@ jarvis docs fetch {SQUAD}/product/{produto}/feature-checkout.md
 3. Buscar cada `feature-*` com `jarvis docs fetch` (e um `delivery-*`, se o detalhe de uma entrega importar).
 4. Devolver o resumo: funcionalidades, status e o que cada uma faz hoje.
 
-Os documentos de trabalho da tarefa (PRD, FRD, ARD, RFC) **não** estão aqui: leia-os em `$PROD_DOCS`/`$ENG_DOCS`.
+Os documentos de trabalho da tarefa (PRD, FRD, ARD, RFC, SPEC) **não** estão aqui: leia-os em `$PROD_DOCS`/`$ENG_DOCS`.
 
 ### Modo 2: Publicar a consolidação
 

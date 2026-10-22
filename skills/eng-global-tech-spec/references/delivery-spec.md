@@ -1,4 +1,4 @@
-# Modo card — Tech Spec a partir de um épico ou de uma história
+# Delivery Spec — Tech Spec a partir de um épico ou de uma história
 
 > Usado pelo `/eng.build-tech-spec` quando a entrada é um card (URL, ID ou texto de épico ou história). É o comportamento de sempre do comando: épico gera a Tech Spec arquitetural (sem subtarefas); história gera a Tech Spec de implementação, com subtarefas de 4h a 1 dia.
 > 📤 **Template**: `$IDE/templates/engineering/tech-spec-template.md` · **Formatos de entrega**: `$IDE/templates/engineering/tech-spec-delivery-template.md`
@@ -7,7 +7,7 @@
 
 ## Detecção do Tipo: Épico ou História
 
-**Antes de qualquer outra coisa**, determine se o input é um **épico** ou uma **história/task**.
+**Primeiro passo do Delivery Spec**: determine se o input é um **épico** ou uma **história/task**.
 
 **Se veio via URL/ID do $TASK_MANAGER:**
 - Busque o card e verifique o campo `issuetype` (Epic / Story / Task / Sub-task)
@@ -51,6 +51,8 @@ B: História / Task — implementação específica, pronta para desenvolvimento
 **Se recebeu conteúdo textual:**
 
 - Parse o conteúdo para identificar os elementos principais
+
+> 🧩 **Agora aplique o Passo 2 (Áreas) do workflow** com o que o card mostrou: skill base de cada área + especializações registradas no `ENV.md` (`eng.specializations-rules.md`).
 
 #### 1.2 Contexto de Negócio
 
@@ -99,7 +101,7 @@ Formule **3-5 perguntas críticas** ao usuário sobre:
 
 ### FASE 1.5: Validação de Necessidade de RFC
 
-Antes de prosseguir com a investigação técnica, valide se esta Tech Spec **requer um RFC** conforme o [RFC-Playbook]($IDE/templates/engineering/RFC-Playbook@1.0.0.md).
+Antes de prosseguir com a investigação técnica, valide se esta Tech Spec **requer um RFC** conforme o [RFC-Playbook]($IDE/templates/engineering/RFC-Playbook.md).
 
 #### 1.5.1 Checklist de Obrigatoriedade de RFC
 

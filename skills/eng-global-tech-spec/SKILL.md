@@ -1,10 +1,10 @@
 ---
 name: eng-global-tech-spec
 description: >
-  Método de especificação técnica do /eng.build-tech-spec, em dois modos: modo card (Tech Spec a
-  partir de um épico ou de uma história, com subtarefas de 4h a 1 dia para a história) e modo
-  referência (especificação técnica normativa, sem card e sem subtarefas: contratos, convenções,
-  perfis de spec). Cada modo tem o seu arquivo em references/, lido só quando o modo é escolhido.
+  Método de especificação técnica do /eng.build-tech-spec, em dois modos: Delivery Spec (Tech Spec a
+  partir de um épico ou de uma história, com subtarefas de 4h a 1 dia para a história) e Reference
+  Spec (especificação técnica normativa, sem card e sem subtarefas: contratos, convenções, perfis
+  de spec). Cada modo tem o seu arquivo em references/, lido só quando o modo é escolhido.
   Trigger: Use ao escrever uma Tech Spec a partir de um card ou uma spec técnica de referência.
 allowed-tools: Read Grep Glob Bash
 license: AGPL-3.0
@@ -24,14 +24,18 @@ Leia **só** o arquivo do modo escolhido pelo workflow:
 
 | Modo | Quando | Arquivo | Saída |
 |------|--------|---------|-------|
-| Card | Há card de origem (épico ou história) | [references/modo-card.md](references/modo-card.md) | `$SESSIONS_DIR/eng/{card}/tech-spec-arch.md` (épico) ou `tech-spec.md` com subtarefas (história) |
-| Referência | Documento normativo sem card: contrato, convenção de nome, topologia, perfil de adaptação de uma spec, fases de implementação | [references/modo-referencia.md](references/modo-referencia.md) | `$ENG_DOCS/SPEC/SPEC-###-{slug}.md` (template `ref-spec-template.md`), sem subtarefas |
+| Delivery Spec | Há card de origem (épico ou história) | [references/delivery-spec.md](references/delivery-spec.md) | `$SESSIONS_DIR/eng/{card}/tech-spec-arch.md` (épico) ou `tech-spec.md` com subtarefas (história) |
+| Reference Spec | Documento normativo sem card: contrato, convenção de nome, topologia, perfil de adaptação de uma spec, fases de implementação | [references/reference-spec.md](references/reference-spec.md) | `$ENG_DOCS/SPEC/SPEC-###-{slug}.md` (template `ref-spec-template.md`), sem subtarefas |
 
 ### Skills invocados durante a execução do skill
 
 | Passo | Skill | Condição |
 |-------|-------|----------|
-| — | Nenhuma — skill autocontida (as chamadas ficam no workflow `eng.build-tech-spec`) | — |
+| Delivery Spec › Fase 1.5 (necessidade de RFC) | `/eng.create-rfc` | Se a Tech Spec atender aos critérios que exigem RFC e o usuário escolher "A: Criar uma RFC agora" |
+| Delivery Spec › Caminho A › 2A.2 | `/jarvis-docs-central` | Se `CENTRAL_DOCS_STORAGE` estiver configurado |
+| Reference Spec › 2. Checagem de RFC | `/eng.create-rfc` | Sem RFC/ARD de origem, com algum dos 7 critérios "Sim" e a escolha "A: Criar uma RFC agora" |
+
+> As mesmas chamadas estão na tabela do workflow `eng.build-tech-spec`, com as do gate e das áreas.
 
 ---
 

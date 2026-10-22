@@ -13,10 +13,11 @@ version: [1.0.0]
 # Opções: proposed | in_review | approved | superseded
 # proposed = proposta, ainda em discussão | in_review = em validação com os revisores
 # approved = vigente: implementações devem segui-la | superseded = substituída por outra spec (cite qual em related)
+# Difere do ARD (que tem in_progress): uma spec normativa não fica "em desenvolvimento", mas é substituída por uma versão ou spec nova.
 status: [um dos valores acima]
 
 # Documentos de origem e relacionados: RFC (a decisão), ARD (a arquitetura), outras SPECs.
-# Opcional: uma spec de referência pode não ter origem (ver "Checagem de RFC" no modo referência).
+# Opcional: uma spec de referência pode não ter origem (ver "Checagem de RFC" no Reference Spec).
 related: [RFC-xxx, ARD-xxx]
 
 # Data de criação (YYYY-MM-DD).
@@ -80,7 +81,7 @@ reviewers: [nomes]
 
 ## 6. Fases de implementação (opcional)
 
-{Se a adoção tiver ordem (ex.: primeiro os produtores, depois os consumidores), descreva as fases e o critério de cada uma. Sem subtarefas nem estimativas: isso é do modo card.}
+{Se a adoção tiver ordem (ex.: primeiro os produtores, depois os consumidores), descreva as fases e o critério de cada uma. Sem subtarefas nem estimativas: isso é do Delivery Spec.}
 
 ## 7. Versionamento e compatibilidade
 

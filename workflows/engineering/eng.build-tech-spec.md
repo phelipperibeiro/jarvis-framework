@@ -4,6 +4,7 @@ auto_execution_mode: 3
 recommended_model: claude-sonnet-4-20250514
 rules_file: $IDE/rules-on-demand/engineering/eng.tech-spec-rules.md
 template_file: $IDE/templates/engineering/tech-spec-template.md
+# Reference Spec usa $IDE/templates/engineering/ref-spec-template.md (o scanner lê um template só; ver Passo 3)
 model_tier: very_high
 model_justification: Tech Spec requer análise profunda de requisitos, decisões arquiteturais, decomposição de tarefas e documentação técnica detalhada
 ---
@@ -45,23 +46,24 @@ Você é um **arquiteto de software especializado** em especificações técnica
 
 Gerar uma especificação técnica completa e auto-contida, em um de dois modos:
 
-- **Modo card** (o comportamento de sempre): a partir de um épico ou de uma história do $TASK_MANAGER. O épico gera a Tech Spec arquitetural; a história gera a Tech Spec de implementação, com decisões justificadas, riscos, testes e subtarefas executáveis (fatias verticais de 4h a 1 dia).
-- **Modo referência**: um documento normativo sem card de origem e sem quebra em subtarefas. Resolve o que ficou em aberto (topologia, contratos, convenções de nome, fases de implementação) sem decidir trade-off (o RFC decide) nem desenhar arquitetura (o ARD desenha), com versionamento SemVer e rastreabilidade opcional para o RFC/ARD de origem.
+- **Delivery Spec** (o comportamento de sempre): a partir de um épico ou de uma história do $TASK_MANAGER. O épico gera a Tech Spec arquitetural; a história gera a Tech Spec de implementação, com decisões justificadas, riscos, testes e subtarefas executáveis (fatias verticais de 4h a 1 dia).
+- **Reference Spec**: um documento normativo sem card de origem e sem quebra em subtarefas. Resolve o que ficou em aberto (topologia, contratos, convenções de nome, fases de implementação) sem decidir trade-off (o RFC decide) nem desenhar arquitetura (o ARD desenha), com versionamento SemVer e rastreabilidade opcional para o RFC/ARD de origem.
 
 ### Skills invocados durante o workflow
 
 | Passo | Skill | Condição |
 |-------|-------|----------|
-| Passo 3 – Executar o modo | `/eng-global-tech-spec` | Sempre — método de cada modo (`references/modo-card.md` ou `references/modo-referencia.md`) |
 | Passo 2 – Áreas | `/eng-backend` (via `eng.specializations-rules.md`) | Se a spec envolver backend (APIs, autenticação, workers, banco, integrações); a regra também carrega `BACKEND_SPECIALIZATIONS` |
 | Passo 2 – Áreas | `/eng-frontend` (via `eng.specializations-rules.md`) | Se a spec envolver frontend (componentes, interface, estado, estilos); a regra também carrega `FRONTEND_SPECIALIZATIONS` |
 | Passo 2 – Áreas | `/eng-qa` (via `eng.specializations-rules.md`) | Se a spec envolver testes, cobertura ou quality gates; a regra também carrega `QA_SPECIALIZATIONS` |
 | Passo 2 – Áreas | `/eng-data` (via `eng.specializations-rules.md`) | Se a spec envolver pipelines, modelagem ou contratos de dados; a regra também carrega `DATA_SPECIALIZATIONS` |
 | Passo 2 – Áreas | `/eng-automation` (via `eng.specializations-rules.md`) | Se a spec envolver RPA, scraping ou extração de dados; a regra também carrega `AUTOMATION_SPECIALIZATIONS` |
 | Passo 2 – Áreas | `/eng-platform` (via `eng.specializations-rules.md`) | Se a spec envolver infraestrutura (IaC, contêineres, CI/CD, observabilidade, SRE, custo); a regra também carrega `PLATFORM_SPECIALIZATIONS` |
-| Modo card › Processo de Criação › verificação de necessidade de RFC | `/eng.create-rfc` | Se a Tech Spec atender aos critérios que exigem RFC e o usuário escolher "A: Criar uma RFC agora" |
-| Modo card › Caminho A › 2A.2 Análise de Documentação de Produto | `/jarvis-docs-central` | Se `CENTRAL_DOCS_STORAGE` estiver configurado (funcionalidades já implementadas relacionadas ao épico; PRD/FRD vêm de `$PROD_DOCS`) |
-| Modo card › FASE 7 › 7.3 Criação no Jira | `ferramenta MCP/API do Jira` (referência a confirmar) | Se o projeto usar Jira e houver ferramenta MCP ou API disponível; senão fornecer template para criação manual (o texto não nomeia a ferramenta) |
+| Passo 3 – Executar o modo | `/eng-global-tech-spec` | Sempre — método de cada modo (`references/delivery-spec.md` ou `references/reference-spec.md`) |
+| Delivery Spec › Processo de Criação › verificação de necessidade de RFC | `/eng.create-rfc` | Se a Tech Spec atender aos critérios que exigem RFC e o usuário escolher "A: Criar uma RFC agora" |
+| Delivery Spec › Caminho A › 2A.2 Análise de Documentação de Produto | `/jarvis-docs-central` | Se `CENTRAL_DOCS_STORAGE` estiver configurado (funcionalidades já implementadas relacionadas ao épico; PRD/FRD vêm de `$PROD_DOCS`) |
+| Reference Spec › 2. Checagem de RFC | `/eng.create-rfc` | Se não houver RFC/ARD de origem, algum dos 7 critérios for "Sim" e o usuário escolher "A: Criar uma RFC agora" |
+| Delivery Spec › FASE 7 › 7.3 Criação no Jira | `ferramenta MCP/API do Jira` (referência a confirmar) | Se o projeto usar Jira e houver ferramenta MCP ou API disponível; senão fornecer template para criação manual (o texto não nomeia a ferramenta) |
 
 ---
 
@@ -86,22 +88,27 @@ Decida pela entrada:
 
 | Entrada | Modo |
 |---------|------|
-| URL ou ID de card, ou texto de épico ou de história | **Card** — sem perguntar, como sempre |
-| Texto que descreve um documento normativo (contrato, convenção de nome, topologia, perfil de spec, guia) | **Referência** |
-| Sem argumentos, ou ambíguo | Pergunte com `AskUserQuestion`: **"Tem card de origem ou é um documento normativo de referência?"** — **Tenho um card (como hoje)** / **Documento de referência**. Com "Tenho um card", peça o card. |
+| URL ou ID de card, ou texto de épico ou de história | **Delivery Spec** — sem perguntar, como sempre |
+| Texto que descreve um documento normativo (contrato, convenção de nome, topologia, perfil de spec, guia) | **Reference Spec** |
+| Sem argumentos, ou ambíguo | Pergunte com `AskUserQuestion`: **"Tem card de origem ou é um documento normativo de referência?"** — **Delivery Spec: tenho um card (como hoje)** / **Reference Spec: documento normativo**. Com "Delivery Spec", peça o card. |
 
 Antes de seguir, diga em uma linha o que entendeu, para o usuário corrigir se errou:
 
 ```
-🧭 Vou gerar a Tech Spec do card {KEY} (modo card)
-🧭 Vou escrever a especificação técnica de referência "{tema}" (modo referência)
+🧭 Vou gerar a Tech Spec do card {KEY} (Delivery Spec)
+🧭 Vou escrever a especificação técnica de referência "{tema}" (Reference Spec)
 ```
 
 ---
 
 ## Passo 2 – Áreas
 
-Identifique as áreas que a spec envolve (no modo card, pelo card; no modo referência, pelas respostas da triagem do `modo-referencia.md`) e aplique a [eng.specializations-rules.md]($IDE/rules/engineering/eng.specializations-rules.md) a **cada uma**: skill base da área mais as especializações registradas no `ENV.md`, com as mensagens e o bloqueio da própria regra (`✅ Skills carregados ({área}): ...`, `ℹ️ Sem especialização registrada para {área} ...` e a interrupção quando a variável da área não existe no `ENV.md`). Spec sem nenhuma dessas áreas não carrega nada.
+**Quando roda:** este passo precisa do conteúdo da spec, então não roda antes do Passo 3: roda **dentro** do modo, no ponto em que o arquivo do modo manda aplicá-lo:
+
+- **Delivery Spec:** logo depois da `1.1 Leitura e Análise do Card` (as áreas vêm do card);
+- **Reference Spec:** logo depois da `1. Triagem` (as áreas vêm das respostas da triagem).
+
+Nesse ponto, identifique as áreas que a spec envolve e aplique a [eng.specializations-rules.md]($IDE/rules/engineering/eng.specializations-rules.md) a **cada uma**: skill base da área mais as especializações registradas no `ENV.md`, com as mensagens e o bloqueio da própria regra (`✅ Skills carregados ({área}): ...`, `ℹ️ Sem especialização registrada para {área} ...` e a interrupção quando a variável da área não existe no `ENV.md`). Spec sem nenhuma dessas áreas não carrega nada.
 
 | Área | Indicadores | Skill |
 |------|-------------|-------|
@@ -122,8 +129,8 @@ Leia o `SKILL.md` da `eng-global-tech-spec` e **só** o arquivo do modo escolhid
 
 | Modo | Arquivo | Template | Saída |
 |------|---------|----------|-------|
-| Card | `$IDE/skills/eng-global-tech-spec/references/modo-card.md` | `$IDE/templates/engineering/tech-spec-template.md` | `$SESSIONS_DIR/eng/{card}/tech-spec-arch.md` (épico) ou `tech-spec.md` (história) |
-| Referência | `$IDE/skills/eng-global-tech-spec/references/modo-referencia.md` | `$IDE/templates/engineering/ref-spec-template.md` | `$ENG_DOCS/SPEC/SPEC-###-{slug}.md` |
+| Delivery Spec | `$IDE/skills/eng-global-tech-spec/references/delivery-spec.md` | `$IDE/templates/engineering/tech-spec-template.md` | `$SESSIONS_DIR/eng/{card}/tech-spec-arch.md` (épico) ou `tech-spec.md` (história) |
+| Reference Spec | `$IDE/skills/eng-global-tech-spec/references/reference-spec.md` | `$IDE/templates/engineering/ref-spec-template.md` | `$ENG_DOCS/SPEC/SPEC-###-{slug}.md` |
 
 Valem nos dois modos, sem exceção: nunca inventar dados (se não souber, pergunte), toda decisão tem justificativa e todo documento é auto-contido.
 

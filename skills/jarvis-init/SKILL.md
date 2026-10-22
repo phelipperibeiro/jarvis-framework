@@ -734,7 +734,7 @@ Nunca coloque o Central docs no versionamento de um repositório de código.
 ### 5.3 Carga inicial do Central docs (se houver documentos)
 
 Com o Central docs ligado:
-1. Procure PRD, FRD, ARD e RFC em `$PROD_DOCS`, `$ENG_DOCS/{ARD,RFC}` (e nos caminhos antigos, se não foram movidos).
+1. Procure PRD, FRD, ARD, RFC e SPEC em `$PROD_DOCS`, `$ENG_DOCS/{ARD,RFC,SPEC}` (e nos caminhos antigos, se não foram movidos).
 2. Se encontrar algum, mostre a contagem e pergunte com `AskUserQuestion` (**Sim / Não**): **"Gerar o Central docs agora a partir desses documentos?"**
 3. Com **Sim**, chame `/eng.spec-consolidate --inicial`. Ele agrupa os documentos por funcionalidade, gera um `feature-*.md` por grupo (sem registro de entrega, porque não há PR) e só publica depois da revisão e do seu Sim.
 4. Com **Não**, siga. Dá para rodar o `/eng.spec-consolidate --inicial` depois.

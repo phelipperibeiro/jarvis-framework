@@ -64,7 +64,7 @@ O agente `eng.docs-consolidator` lê **todas** as fontes, na ordem do agente:
 
 ## Passo 2: Coleta (modo `--inicial`)
 
-1. Liste os PRD, FRD, ARD e RFC em `$PROD_DOCS` e `$ENG_DOCS/{ARD,RFC}` (e nos caminhos antigos, se o `/jarvis-init` não os moveu).
+1. Liste os PRD, FRD, ARD, RFC e SPEC em `$PROD_DOCS` e `$ENG_DOCS/{ARD,RFC,SPEC}` (e nos caminhos antigos, se o `/jarvis-init` não os moveu).
 2. Sugira o agrupamento por funcionalidade (um PRD/FRD e os ARD/RFC ligados a ele) e confirme com `AskUserQuestion` (aceitar / ajustar).
 3. Para cada grupo, o agente lê os documentos e o código relacionado (só leitura), para descrever o que **está implementado**. O que estiver só especificado vai para "Fora do escopo", e o status reflete isso.
 
