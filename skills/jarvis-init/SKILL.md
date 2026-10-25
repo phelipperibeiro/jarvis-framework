@@ -595,7 +595,7 @@ Se **A** ou **B**, perguntar sobre cada variável opcional conforme seleção �
    ```
    - **Nenhum** ou **Outro**: avise "{vendor} ainda não é suportado; o eixo fica em modo freelance (as ações viram `.md`)" quando for o caso, deixe `TASK_MANAGER` vazio, pule a descoberta e as variáveis deste eixo e siga para o próximo. Workflows vão pedir o `TASK_MANAGER_KEY` na hora da tarefa.
    - **jira**: pergunte se é **Jira Cloud** ou **Jira Data Center/Server**. Data Center/Server não tem CLI oficial: avise, grave `TASK_MANAGER=jira` e `TASK_MANAGER_ACCESS=manual` (as ações viram `.md` com o link do card) e siga para as variáveis.
-2. **Descoberta da CLI** (só leitura; nunca instale nem faça login pela pessoa): rode o `bin` do vendor com `--version` e o `auth_status` do catálogo (`gh auth status`, `glab auth status`, `acli jira auth status`). Mostre o resultado em linguagem simples:
+2. **Descoberta da CLI** (só leitura; nunca instale nem faça login pela pessoa): rode o `bin` do vendor com `--version` e o `auth_status` do catálogo (`gh auth status`, `glab auth status`, `acli jira auth status`). Em github e gitlab, confira o login **no host** do `TASK_MANAGER_URL_BASE` (board) ou do `origin` (git), com `auth_status_host` (`--hostname {host}`): um login no github.com não vale para um GitHub Enterprise ou GitLab próprio. Mostre o resultado em linguagem simples:
    - instalada e logada (exit 0) → "`gh`: instalada, logada" → proponha `cli`;
    - instalada, login inválido (exit ≠ 0, ex.: `glab` com 401) → mostre o `login_cmd` e o `login_url` do catálogo;
    - não instalada → mostre o `install_url`.

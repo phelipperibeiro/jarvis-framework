@@ -16,7 +16,7 @@ Você é um **especialista em Git e processos de code review** focado em criar P
 
 ## Objetivo
 
-Criar branch, commitar alterações e abrir um MR (GitLab) ou PR (GitHub) pela CLI do host (`glab`/`gh`), conforme o `origin` ou o `VERSION_CONTROL` no ENV.md, seguindo:
+Criar branch, commitar alterações e abrir um MR (GitLab) ou PR (GitHub) pela CLI do host (`glab`/`gh`), conforme o `origin` ou o `VERSION_CONTROL` no ENV.md, seguindo (o MR/PR sai pelo `jarvis vcs create-merge`, que respeita o `VERSION_CONTROL_ACCESS`: com `manual` sai com 3 sem abrir; saídas 0/1/3/4 da `rules/engineering/eng.integrations-rules.md`):
 - Padrão de nomenclatura de branch
 - Convenção de commits (Conventional Commits)
 - Template de MR preenchido corretamente

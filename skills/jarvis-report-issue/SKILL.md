@@ -152,7 +152,7 @@ Se o projeto não estiver definido:
 Sem host (`grupo/repo`), o vendor não é adivinhado: o `jarvis vcs create-issue` sai com `3` e o issue vai para o fallback da Fase 4.
 > → PARAR
 
-Login: o da CLI do host (`gh auth login`; no GitLab, `glab auth login`). Nenhum token é lido ou pedido.
+Login: o da CLI do host (`gh auth login`; no GitLab, `glab auth login`). Nenhum token é lido ou pedido. O `VERSION_CONTROL_ACCESS` do projeto não se aplica aqui: o issue vai para o repositório do Jarvis.
 
 Versão do Jarvis:
 

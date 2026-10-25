@@ -268,7 +268,8 @@ Se o CLI `jarvis` não estiver instalado no repo alvo, usar `node {caminho-do-cl
 | Saída | O que aconteceu | O que fazer |
 |--------|-------|---------|
 | `0` | PR/MR criado | Seguir para a Fase 5 |
-| `3` | Indisponível, nada enviado (CLI ausente, sem login, `VERSION_CONTROL_ACCESS=manual`, host não suportado) | Se a CLI estiver logada, rodar direto: `gh pr create --repo {host}/{dono}/{repo} --head {NOME_DA_BRANCH} --base {BRANCH_BASE} --title "{título}" --body-file "$BODY_FILE"` (ou `glab mr create --repo {URL} --source-branch ... --target-branch ... --title ... -d "{corpo}" --yes`). Senão, o `pull-request.md` fica pronto e o comando mostra o link de novo PR/MR para abrir à mão |
+| `1` | Uso incorreto (ex.: arquivo da descrição inexistente, branch ou título inválido) | Corrigir a chamada e rodar de novo; não rodar a CLI direto |
+| `3` | Indisponível, nada enviado (CLI ausente, sem login, `VERSION_CONTROL_ACCESS=manual` ou inválido, ENV.md ambíguo, host não suportado) | Com `VERSION_CONTROL_ACCESS=manual`, **não** rodar a CLI: o `pull-request.md` e o link que o comando mostra bastam. Senão, se a CLI estiver logada, rodar direto: `gh pr create --repo {host}/{dono}/{repo} --head {NOME_DA_BRANCH} --base {BRANCH_BASE} --title "{título}" --body-file "$BODY_FILE"` (ou `glab mr create --repo {URL} --source-branch ... --target-branch ... --title ... -d "{corpo}" --yes`). Senão, o `pull-request.md` fica pronto e o comando mostra o link de novo PR/MR para abrir à mão |
 | `4` | Enviado com erro (inclusive timeout) | **Não** repetir: conferir no host se o PR/MR foi criado; se não, abrir à mão com o `pull-request.md` |
 
 Branch de origem inexistente no remote: conferir se o push (Fase 3) foi feito.

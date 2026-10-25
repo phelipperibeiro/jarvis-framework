@@ -27,7 +27,7 @@ Confere que tudo está passando, envia a branch e abre o merge request (ou pull 
 2. **Verifica a branch:** confirma a branch ativa, a branch de destino e os commits
 3. **Gera o `pull-request.md`** na sessão (`.jarvis/sessions/eng/{TASK_MANAGER_KEY}/`), a partir do template e do PR Brief do `gate-checklist.md`, e pede sua aprovação
 4. **Pergunta Sim / Não: publicar o PR agora?** Com Não, o arquivo fica na sessão e nada é enviado
-5. Com Sim: **push** e **cria o MR/PR** com o texto aprovado
+5. Com Sim: **push** e **cria o MR/PR** com o texto aprovado. Com `VERSION_CONTROL_ACCESS=manual`, CLI sem login ou saída 3, nada é enviado: fica o `pull-request.md` e o link para abrir à mão. Com saída 4 (erro depois de enviar), não repita: confira no host se o MR/PR foi criado
 6. **Posta o link do MR no card** (um único comentário) e orienta a mover para "In Review" (quando há board)
 7. **Processa o code review:** analisa os comentários e aplica correções
 8. **Registra métricas de lead time**

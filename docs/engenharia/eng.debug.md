@@ -60,7 +60,7 @@ Tenho um problema
 ## Regras que importam
 
 - **Somente leitura por padrão.** No ambiente local, pode alterar recursos (banco, fila, cache, arquivo) só depois de backup. **Produção é sempre só leitura**: com acesso que você fornecer, só consultas (SELECT, GET, logs, métricas); sem acesso, ele prepara a consulta para você pedir a quem tem. Ele nunca pede credencial.
-- **Nada no card.** O comando não comenta nem abre card; tudo fica no relatório, com o card pronto para você abrir.
+- **Nada no card.** O comando não comenta nem abre card; tudo fica no relatório, com o card pronto para você abrir. O card de entrada é lido pela CLI do vendor (`gh issue view`, `glab issue view` ou `acli jira workitem view`); sem acesso, cole o texto.
 - **Três tentativas.** Se três correções já falharam, ele para e discute a arquitetura com você antes da quarta.
 - Em sistemas com vários serviços, todo fluxo entre eles deve propagar um **Correlation ID**; a ausência entra como débito técnico.
 
