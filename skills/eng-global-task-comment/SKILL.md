@@ -70,7 +70,7 @@ Se o `jarvis` não estiver no projeto, use `node "$JARVIS_ROOT/bin/jarvis.js" ta
 
 ### 2. CLI do vendor direto
 
-Só se o passo 1 saiu com `3` (ou o `jarvis` não rodou) e `TASK_MANAGER_ACCESS` não é `manual`. Confira a CLI com o `auth_status` do catálogo (`bin/lib/integrations/vendors.json`) e, logada, rode a ação `comment` dele:
+Só se o passo 1 saiu com `3` por CLI ausente ou sem login (ou o `jarvis` não rodou). Se o motivo for `TASK_MANAGER_ACCESS` `manual` ou inválido, vá direto ao passo 3; se for ENV.md ambíguo, repita o passo 1 com `--ide` ou `--env-file`. Confira a CLI com o `auth_status` do catálogo (`bin/lib/integrations/vendors.json`) e, logada, rode a ação `comment` dele:
 
 | Vendor | Comando |
 |---|---|

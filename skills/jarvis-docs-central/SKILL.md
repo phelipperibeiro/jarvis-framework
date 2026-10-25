@@ -56,7 +56,7 @@ Ler do `$IDE/ENV.md`:
 - `CENTRAL_DOCS_REF`, `CENTRAL_DOCS_TARGET_BRANCH`, `CENTRAL_DOCS_REVIEWERS` (só com `.git`)
 - `SQUAD` (ALL-CAPS-COM-HIFEN) e `WORKSPACE` (vira a pasta do produto)
 
-Com `.git`, o PR é aberto pela CLI do host (`gh pr create` / `glab mr create`), com o login dela; sem a CLI, a branch fica no remote e a publicação mostra o link para abrir o MR à mão. ❌ **Nunca** colar token no chat nem gravar no `ENV.md`.
+Com `.git`, o PR é aberto pela CLI do host (`gh pr create` / `glab mr create`), com o login dela, respeitando o `VERSION_CONTROL_ACCESS` do `ENV.md` do projeto (não do repositório do Central docs). Sem a CLI, sem login, ou com `manual`/valor inválido/ENV.md ilegível, a branch fica no remote e a publicação mostra o link para abrir o MR à mão. ❌ **Nunca** colar token no chat nem gravar no `ENV.md`.
 
 ---
 
@@ -203,3 +203,4 @@ jarvis docs publish --file .../consolidation/feature-checkout.md --tipo feature
 | `O Central docs guarda só o que foi implementado` | Tentativa de publicar PRD/ARD/… | Gere a consolidação com `/eng.spec-consolidate` |
 | `Campos obrigatórios ausentes` | Frontmatter incompleto | Completar conforme a tabela |
 | `git pull`/`push` falhou (com `.git`) | Rede, permissão ou pasta suja | `git status` na pasta; o commit local fica para repetir |
+| `MR não aberto (…)` (com `.git`) | CLI do host ausente ou sem login; `VERSION_CONTROL_ACCESS` `manual` ou inválido; ENV.md ambíguo | Abrir o MR pelo link da mensagem, ou fazer o login da CLI / corrigir o `ACCESS` / passar `--ide` ou `--env-file` |

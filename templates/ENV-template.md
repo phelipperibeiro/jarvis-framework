@@ -115,7 +115,8 @@ PLATFORM_SPECIALIZATIONS=
 # pergunta um número de controle próprio (TASK_MANAGER_KEY) e as ações viram .md.
 # O Jarvis fala com o board pela CLI oficial, com o login dela (gh auth login,
 # glab auth login, acli jira auth login). Nenhum token vai neste arquivo.
-# TASK_MANAGER_ACCESS: cli (pela CLI) ou manual (gera um .md para colar). Vazio = tenta a CLI.
+# TASK_MANAGER_ACCESS: cli (pela CLI) ou manual (gera um .md para colar). Vazio ou a lista
+# [cli, manual] = tenta a CLI e avisa. Outro valor (ex.: manul): o comando para (saída 3) sem enviar.
 # TASK_MANAGER_URL_BASE: no GitHub/GitLab, o endereço do repositório dos cards
 # (ex: https://github.com/empresa/projeto; obrigatório); no Jira, o site (ex:
 # https://empresa.atlassian.net; opcional, só para o link do card).
@@ -130,7 +131,8 @@ TASK_MANAGER_URL_BASE=
 # Host de git do projeto: github ou gitlab. O repositório e o host vêm do
 # git remote get-url origin. PR/MR pela CLI oficial (gh pr create, glab mr create),
 # com o login dela. Nenhum token vai neste arquivo.
-# VERSION_CONTROL_ACCESS: cli ou manual (o pull-request.md fica pronto). Vazio = tenta a CLI.
+# VERSION_CONTROL_ACCESS: cli ou manual (o pull-request.md fica pronto). Vale também para o MR do
+# Central docs. Vazio ou a lista = tenta a CLI e avisa; outro valor: para (saída 3) sem enviar.
 VERSION_CONTROL=[github, gitlab]
 VERSION_CONTROL_ACCESS=[cli, manual]
 

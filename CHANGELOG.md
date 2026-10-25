@@ -13,17 +13,17 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), e o
 ### Added
 - **Integrações pelas CLIs oficiais** (#181): board de cards e host de git passam a usar só `gh` (GitHub), `glab` (GitLab) e `acli` (Jira Cloud), com o login delas. Catálogo único `bin/lib/integrations/vendors.json` (vendors, verificação de login, comandos por ação, variáveis com o link da doc) e runner `bin/lib/integrations/cli-runner.js` (`execFile` sem shell; saídas `0` ok, `1` uso, `3` indisponível sem nada enviado, `4` enviado com erro).
 - **Cadeia de execução** (#181, `rules/engineering/eng.integrations-rules.md`): `jarvis` → CLI do vendor direto → `.md` (`task-comment-{data}.md`, `pull-request.md` ou `.jarvis/issues/`). No freelance, os eventos relevantes vão para o `task-log.md` da sessão (índice e texto em bloco de código).
-- **Variáveis** `TASK_MANAGER_ACCESS` e `VERSION_CONTROL_ACCESS` (`cli` ou `manual`; vazio = tenta a CLI e avisa). `VERSION_CONTROL_ACCESS=manual` faz o `jarvis vcs create-merge` sair com `3` sem abrir o PR.
+- **Variáveis** `TASK_MANAGER_ACCESS` e `VERSION_CONTROL_ACCESS` (`cli` ou `manual`; vazio ou a lista do template = tenta a CLI e avisa). Um gate único (`accessGate`) decide antes de qualquer envio: `manual`, valor inválido (ex.: `manul`) e ENV.md ilegível ou ambíguo saem com `3`, sem enviar, no `jarvis tasks comment`, no `jarvis vcs create-merge` e no MR do Central docs. Valores entre aspas e com comentário de fim de linha são aceitos.
 - **Onboarding no `/jarvis-init`** (#181): descoberta da CLI (instalada e logada, por host), variáveis explicadas uma a uma e gravação única no fim. Jira Data Center/Server fica em `manual`.
-- **`jarvis tasks comment --body-file`**; os comandos de integração leem do `$IDE/ENV.md` o que não vier no ambiente.
+- **`jarvis tasks comment --body-file`**; o `jarvis tasks comment` e o `jarvis vcs create-merge` leem do `$IDE/ENV.md` o que não vier no ambiente e aceitam `--ide`/`--env-file` (workspace com mais de um ENV.md).
 - Testes: `cli-runner.test.js`, `integrations-catalog.test.js` (inclui a consistência das variáveis `TASK_MANAGER_*`/`VERSION_CONTROL_*` citadas no framework) e `tasks-comment.test.js`, no `test:filtro`.
 
 ### Changed
 - **`jarvis init --upgrade`** (#181): mostra a descoberta da CLI de cada eixo, avisa do `TOKEN_TASK_MANAGER` sem ler o valor e preenche o `JARVIS_PROJECT` vazio com o repositório oficial (exceção automática à regra "o upgrade só acrescenta"). O esvaziamento do token é feito no `/jarvis-init`, só com "sim".
 - **`JARVIS_PROJECT`** precisa ser a URL completa; sem host, o `/jarvis-report-issue` não adivinha o vendor e grava o `.md`.
 - **`eng.debug`** lê o card pela CLI (ação `view`) ou colado, e continua sem comentar no card.
-- **Comentário no Jira** vai como texto simples (o markdown é convertido; blocos de código ficam como estão).
-- Central docs com git abre o MR pela CLI; sem ela, mantém o push e mostra o link para abrir à mão.
+- **Comentário no Jira** vai como texto simples (o markdown é convertido; o conteúdo dos blocos de código vai como está, sem as linhas de cerca).
+- Central docs com git abre o MR pela CLI, respeitando o `VERSION_CONTROL_ACCESS` do ENV.md do projeto; sem a CLI, ou com `manual`/inválido, mantém o push e mostra o link para abrir à mão.
 
 ### Removed
 - **BREAKING**: o REST com token dos adapters, o `TOKEN_TASK_MANAGER`, o `getVcsToken` e o `bin/lib/utils/npmrc-parser.js`. Quem usa Jira com token passa a receber o `.md` até fazer `acli jira auth login`.

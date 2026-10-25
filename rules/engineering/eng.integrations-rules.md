@@ -17,7 +17,7 @@ Comandos por ação: `bin/lib/integrations/vendors.json` (o catálogo). `*_ACCES
 
 ## Cadeia de execução
 
-Para agir no vendor: 1) **`jarvis`** (`jarvis tasks comment`, `jarvis vcs create-merge`/`create-issue`); 2) saiu com **3** por CLI indisponível (não por `*_ACCESS=manual`), ou sem `jarvis` → a **CLI do vendor direto**, com o comando da ação no catálogo; 3) CLI indisponível, `*_ACCESS=manual` ou freelance → **`.md`** (`task-comment-{YYYYMMDD-HHMM}.md` na sessão, `pull-request.md` ou `.jarvis/issues/`; detalhes no skill `eng-global-task-comment`).
+Para agir no vendor: 1) **`jarvis`** (`jarvis tasks comment`, `jarvis vcs create-merge`/`create-issue`); 2) saiu com **3** só por CLI ausente ou sem login (a mensagem diz o motivo), ou sem `jarvis` → a **CLI do vendor direto**, com o comando da ação no catálogo (por `*_ACCESS` `manual` ou inválido, não rode a CLI; por ENV.md ambíguo, repita com `--ide`/`--env-file`); 3) CLI indisponível, `*_ACCESS=manual` ou freelance → **`.md`** (`task-comment-{YYYYMMDD-HHMM}.md` na sessão, `pull-request.md` ou `.jarvis/issues/`; detalhes no skill `eng-global-task-comment`).
 
 - Saídas: **0** ok · **1** uso (corrija a chamada; não siga para o passo 2) · **3** indisponível (antes de enviar; nada foi enviado) · **4** enviado com erro (depois de iniciar, inclusive timeout): não repita nem troque de passo; gere o `.md` e avise para conferir no vendor.
 - `*_ACCESS` vazio com vendor preenchido = `cli` + aviso para rodar o `/jarvis-init`. Uma ação é enviada no máximo uma vez. Nunca gravar no `ENV.md`.
