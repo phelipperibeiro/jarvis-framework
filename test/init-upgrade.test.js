@@ -341,7 +341,16 @@ test(
           cwd: ws,
           encoding: "utf-8",
           stdio: "pipe",
-          env: { ...process.env, PATH: `${bin}:${process.env.PATH}`, JARVIS_SKIP_CLI_CHECK: "" },
+          // sem as variáveis de integração do ambiente de quem roda (o resultado não pode depender delas)
+          env: {
+            ...Object.fromEntries(
+              Object.entries(process.env).filter(
+                ([k]) => !/^(TASK_MANAGER|VERSION_CONTROL)/.test(k) && k !== "JARVIS_ENV_FILE"
+              )
+            ),
+            PATH: `${bin}:${process.env.PATH}`,
+            JARVIS_SKIP_CLI_CHECK: "",
+          },
         }
       );
       assert.equal(r.status, 0, r.stderr);

@@ -577,3 +577,11 @@ test("runCreateIssue: --body-file inexistente sai com 1; repo com caractere invÃ
   }
   assert.equal(calls.filter((c) => c.args[0] === "issue").length, 0);
 });
+
+test("parseRepoUrl: ssh:// sem usuÃ¡rio, sem porta e git+ssh://", () => {
+  assert.equal(parseRepoUrl("ssh://github.com/o/r.git").origin, "https://github.com");
+  assert.equal(parseRepoUrl("ssh://git@gitlab.com/g/r").projectPath, "g/r");
+  const r = parseRepoUrl("git+ssh://git@github.com/o/r.git");
+  assert.equal(r.origin, "https://github.com");
+  assert.equal(r.projectPath, "o/r");
+});

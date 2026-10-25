@@ -42,12 +42,16 @@ export function getVendor(name) {
  * `code` é o exit code; `ENOENT` quando o binário não existe; `ETIMEDOUT` no timeout.
  * @returns {Promise<{ code: number|string, stdout: string, stderr: string }>}
  */
-export function defaultExec(bin, args, { timeoutMs = DEFAULT_TIMEOUT_MS } = {}) {
+export function defaultExec(
+  bin,
+  args,
+  { timeoutMs = DEFAULT_TIMEOUT_MS, maxBuffer = 10 * 1024 * 1024 } = {}
+) {
   return new Promise((resolve) => {
     execFile(
       bin,
       args,
-      { encoding: "utf-8", timeout: timeoutMs, maxBuffer: 10 * 1024 * 1024 },
+      { encoding: "utf-8", timeout: timeoutMs, maxBuffer },
       (error, stdout, stderr) => {
         if (!error) return resolve({ code: 0, stdout, stderr });
         let code = error.code ?? 1;
@@ -286,6 +290,11 @@ export function buildArgs(vendorName, action, params = {}) {
       continue;
     }
     const value = params[m[1]];
+    // O corpo vazio vai como "" (com a flag): sem ele, o glab sem terminal pode abrir o editor.
+    if (m[1] === "body" && value === "") {
+      args.push("");
+      continue;
+    }
     if (value === undefined || value === null || String(value) === "") {
       if (REQUIRED_MARKERS.has(m[1])) throw usageError(`falta o valor de {${m[1]}}`);
       if (args.length && args[args.length - 1].startsWith("-")) args.pop();
@@ -306,7 +315,7 @@ export function toPlainText(markdown) {
   let inFence = false;
   const out = [];
   for (const line of String(markdown || "").split("\n")) {
-    if (/^\s*```/.test(line)) {
+    if (/^\s*(```|~~~)/.test(line)) {
       inFence = !inFence;
       continue;
     }
@@ -341,7 +350,7 @@ export async function runAction(
   vendorName,
   action,
   params = {},
-  { exec = defaultExec, timeoutMs } = {}
+  { exec = defaultExec, timeoutMs, tmpRoot = tmpdir() } = {}
 ) {
   const fail = (code, sent, reason, res = {}) => ({
     ok: false,
@@ -372,7 +381,7 @@ export async function runAction(
     const filled = { ...params, body };
     // O arquivo do corpo vai sempre, mesmo vazio: sem terminal, `gh pr create` exige o corpo.
     if (usesBodyFile) {
-      tmpDir = mkdtempSync(join(tmpdir(), "jarvis-cli-"));
+      tmpDir = mkdtempSync(join(tmpRoot, "jarvis-cli-"));
       filled.body_file = join(tmpDir, "body.md");
       writeFileSync(filled.body_file, body);
     }
@@ -391,7 +400,11 @@ export async function runAction(
     return fail(EXIT.SENT_WITH_ERROR, true, reason, res);
   } catch (err) {
     // Falha local antes de chamar a CLI (ex.: não conseguiu gravar o arquivo do corpo).
-    return fail(EXIT.UNAVAILABLE, false, `falha local antes de enviar: ${err.message}`);
+    return fail(
+      err.exitCode ?? EXIT.UNAVAILABLE,
+      false,
+      `falha local antes de enviar: ${err.message}`
+    );
   } finally {
     if (tmpDir) rmSync(tmpDir, { recursive: true, force: true });
   }

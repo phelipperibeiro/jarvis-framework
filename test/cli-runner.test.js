@@ -297,8 +297,9 @@ test("defaultExec: binário inexistente → ENOENT; exit numérico; timeout → 
   const { defaultExec } = await import("../bin/lib/integrations/cli-runner.js");
   assert.equal((await defaultExec("binario-que-nao-existe-xyz-181", [])).code, "ENOENT");
   assert.equal((await defaultExec(process.execPath, ["-e", "process.exit(3)"])).code, 3);
-  const t = await defaultExec(process.execPath, ["-e", "setTimeout(() => {}, 5000)"], {
-    timeoutMs: 100,
+  // margem larga: o filho dormiria 30 s; o timeout é de 300 ms
+  const t = await defaultExec(process.execPath, ["-e", "setTimeout(() => {}, 30000)"], {
+    timeoutMs: 300,
   });
   assert.equal(t.code, "ETIMEDOUT");
 });
@@ -442,4 +443,57 @@ test("checkCli: com host, confere o login nele e mostra a conta", async () => {
   ]);
   await checkCli("jira", { exec: jira.exec, host: "x.atlassian.net" });
   assert.deepEqual(jira.calls[1].args, ["jira", "auth", "status"], "acli não tem --hostname");
+});
+
+// --- Segunda passada do pre-pr (#181): casos menores -------------------------
+
+test("defaultExec: saída maior que o maxBuffer vira ERR_CHILD_PROCESS_STDIO_MAXBUFFER (não 'tempo esgotado')", async () => {
+  const { defaultExec } = await import("../bin/lib/integrations/cli-runner.js");
+  const r = await defaultExec(process.execPath, ["-e", "process.stdout.write('x'.repeat(5000))"], {
+    maxBuffer: 100,
+  });
+  assert.equal(r.code, "ERR_CHILD_PROCESS_STDIO_MAXBUFFER");
+});
+
+test("runAction: falha ao gravar o arquivo do corpo → indisponível, sem chamar a escrita", async () => {
+  const { exec, calls } = fakeExec([
+    [isVersion, ok],
+    [isAuth, ok],
+  ]);
+  const r = await runAction(
+    "github",
+    "comment",
+    { key: "1", repo: "github.com/o/r", body: "x" },
+    { exec, tmpRoot: "/caminho/que/nao/existe/181" }
+  );
+  assert.deepEqual([r.sent, r.code], [false, EXIT.UNAVAILABLE]);
+  assert.match(r.reason, /falha local antes de enviar/);
+  assert.equal(
+    calls.some((c) => c.args[0] === "issue"),
+    false
+  );
+});
+
+test("checkCli: glab também confere o login no host (--hostname)", async () => {
+  const { exec, calls } = fakeExec([
+    [isVersion, ok],
+    [isAuth, ok],
+  ]);
+  await checkCli("gitlab", { exec, host: "git.corp.com" });
+  assert.deepEqual(calls[1].args, ["auth", "status", "--hostname", "git.corp.com"]);
+});
+
+test('buildArgs: no glab, corpo vazio vai como -d "" (sem abrir editor)', () => {
+  const { args } = buildArgs("gitlab", "create_merge", {
+    repo_url: "https://gitlab.com/g/r",
+    source: "a",
+    target: "b",
+    title: "t",
+    body: "",
+  });
+  assert.equal(args[args.indexOf("-d") + 1], "");
+});
+
+test("toPlainText: a cerca ~~~ também preserva o conteúdo", () => {
+  assert.equal(toPlainText("~~~\n# x\n~~~"), "# x");
 });
