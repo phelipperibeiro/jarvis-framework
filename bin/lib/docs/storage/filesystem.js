@@ -12,7 +12,7 @@
 import { execFileSync } from "node:child_process";
 import { copyFileSync, existsSync, mkdirSync, readFileSync } from "node:fs";
 import { basename, dirname, extname, isAbsolute, join, relative, resolve, sep } from "node:path";
-import { createMergeRequest as defaultCreateMergeRequest } from "../../vcs/api.js";
+import { createMergeRequest as defaultCreateMergeRequest, newMergeRequestUrl } from "../../vcs/api.js";
 import { logger } from "../../utils/logger.js";
 import { buildIndex, walkFiles } from "./build-index.js";
 
@@ -183,12 +183,29 @@ export function createFilesystemStorage({
         const remoteUrl = git(["remote", "get-url", "origin"], location);
         let description = `## Documento\n\n- **Tipo**: ${tipo}\n- **Arquivo**: \`${destPath}\``;
         if (reviewers) description += `\n- **Revisores**: ${reviewers}`;
-        const mr = await createMergeRequest(remoteUrl, {
-          source: branch,
-          target: targetBranch,
-          title: `docs(${squad}): ${tipo} ${basename(destPath)}`,
-          description,
-        });
+        let mr = null;
+        try {
+          mr = await createMergeRequest(remoteUrl, {
+            source: branch,
+            target: targetBranch,
+            title: `docs(${squad}): ${tipo} ${basename(destPath)}`,
+            description,
+          });
+        } catch (error) {
+          // Indisponível (sem CLI ou sem login): o push já foi feito, o MR fica para abrir à mão.
+          // Enviado com erro continua subindo: o MR pode ter sido criado.
+          if (error.sent) throw error;
+          let link = "";
+          try {
+            link = newMergeRequestUrl(remoteUrl, branch, targetBranch);
+          } catch {
+            // remote fora de github/gitlab: sem link
+          }
+          logger.warn(
+            `⚠️  MR não aberto (${error.message.split("\n")[0]}). A branch ${branch} já está no remote` +
+              (link ? `; abra o MR à mão: ${link}` : "; abra o MR à mão no host.")
+          );
+        }
 
         return { destPath, indexPath, sha, branch, mr };
       } finally {

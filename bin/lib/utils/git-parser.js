@@ -1,23 +1,11 @@
 /**
- * Parseia URL de repositório Git (GitLab, GitHub, Bitbucket, self-hosted).
- * Vendor: hostname, senão VERSION_CONTROL do ENV.
+ * Parseia URL de repositório Git (GitHub, GitLab, self-hosted).
+ * Vendor: hostname, senão VERSION_CONTROL do ENV. Bitbucket não é suportado (FRD-006).
  */
 
 const VENDORS = {
-  gitlab: {
-    detect: (host) => host.includes("gitlab"),
-    apiBase: (origin, host) =>
-      host === "gitlab.com" ? "https://gitlab.com/api/v4" : `${origin}/api/v4`,
-  },
-  github: {
-    detect: (host) => host.includes("github"),
-    apiBase: (origin, host) =>
-      host === "github.com" ? "https://api.github.com" : `${origin}/api/v3`,
-  },
-  bitbucket: {
-    detect: (host) => host.includes("bitbucket"),
-    apiBase: () => "https://api.bitbucket.org/2.0",
-  },
+  gitlab: { detect: (host) => host.includes("gitlab") },
+  github: { detect: (host) => host.includes("github") },
 };
 
 function normalizeGitUrl(url) {
@@ -44,14 +32,13 @@ function detectVendor(host) {
 /**
  * @param {string} url
  * @returns {{
- *   vendor: 'gitlab'|'github'|'bitbucket',
+ *   vendor: 'gitlab'|'github',
  *   host: string,
  *   origin: string,
  *   projectPath: string,
  *   projectPathEncoded: string,
  *   owner: string,
  *   repo: string,
- *   apiBase: string,
  *   webBase: string,
  * }}
  */
@@ -67,7 +54,7 @@ export function parseRepoUrl(url) {
   } catch {
     throw new Error(
       `URL inválida: ${url}\n` +
-        "Formatos: https://github.com/org/repo.git | https://gitlab.com/grupo/repo.git | https://bitbucket.org/ws/repo.git"
+        "Formatos: https://github.com/org/repo.git | https://gitlab.com/grupo/repo.git"
     );
   }
 
@@ -82,7 +69,7 @@ export function parseRepoUrl(url) {
   if (!vendor) {
     throw new Error(
       `Não foi possível detectar o vendor de ${host}.\n` +
-        "Defina VERSION_CONTROL=gitlab|github|bitbucket no ENV.md."
+        "Defina VERSION_CONTROL=github|gitlab no ENV.md (Bitbucket não é suportado)."
     );
   }
 
@@ -98,46 +85,36 @@ export function parseRepoUrl(url) {
     projectPathEncoded: encodeURIComponent(projectPath),
     owner,
     repo,
-    apiBase: VENDORS[vendor].apiBase(origin, host),
     webBase: origin,
   };
 }
 
-/** @deprecated use parseRepoUrl */
-export function parseGitLabUrl(url) {
-  const parsed = parseRepoUrl(url);
-  if (parsed.vendor !== "gitlab") {
-    throw new Error(
-      `URL não é GitLab (${parsed.vendor}): ${url}\n` + "Use parseRepoUrl() para GitHub/Bitbucket."
-    );
-  }
-  return parsed;
-}
-
-export function buildApiUrl(repoUrl, endpoint) {
-  const { vendor, apiBase, projectPathEncoded, owner, repo } = parseRepoUrl(repoUrl);
-  if (vendor === "gitlab") {
-    return `${apiBase}/projects/${projectPathEncoded}/${endpoint}`;
-  }
-  if (vendor === "github") {
-    return `${apiBase}/repos/${owner}/${repo}/${endpoint}`;
-  }
-  return `${apiBase}/repositories/${owner}/${repo}/${endpoint}`;
-}
-
 export function buildWebUrl(repoUrl, path) {
-  const { webBase, projectPath, vendor } = parseRepoUrl(repoUrl);
-  if (vendor === "gitlab") {
-    return `${webBase}/${projectPath}/${path}`;
-  }
-  if (vendor === "github") {
-    return `${webBase}/${projectPath}/${path}`;
-  }
+  const { webBase, projectPath } = parseRepoUrl(repoUrl);
   return `${webBase}/${projectPath}/${path}`;
 }
 
 export function mergeRequestPath(vendor, iid) {
   if (vendor === "gitlab") return `-/merge_requests/${iid}`;
-  if (vendor === "github") return `pull/${iid}`;
-  return `pull-requests/${iid}`;
+  return `pull/${iid}`;
+}
+
+/**
+ * Link para abrir um MR/PR à mão (quando a CLI não está disponível).
+ * @param {string} repoUrl
+ * @param {string} source - branch de origem
+ * @param {string} [target] - branch de destino
+ */
+export function newMergeRequestUrl(repoUrl, source, target) {
+  const { vendor, webBase, projectPath } = parseRepoUrl(repoUrl);
+  if (vendor === "gitlab") {
+    const q =
+      `merge_request[source_branch]=${encodeURIComponent(source)}` +
+      (target ? `&merge_request[target_branch]=${encodeURIComponent(target)}` : "");
+    return `${webBase}/${projectPath}/-/merge_requests/new?${q}`;
+  }
+  const range = target
+    ? `${encodeURIComponent(target)}...${encodeURIComponent(source)}`
+    : encodeURIComponent(source);
+  return `${webBase}/${projectPath}/compare/${range}?expand=1`;
 }

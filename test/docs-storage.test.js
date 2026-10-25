@@ -299,6 +299,50 @@ test("git: publish cria branch, commita documento + índice, faz push e abre o P
   }
 });
 
+test("git: sem CLI (indisponível) o push fica e o MR é null; enviado com erro sobe", async () => {
+  const { base, clone } = gitFixture();
+  try {
+    const src = join(base, "feature-y.md");
+    writeFileSync(src, PRD);
+    const unavailable = Object.assign(new Error("gh: login inválido"), {
+      sent: false,
+      exitCode: 3,
+    });
+    const s = getStorage(
+      { CENTRAL_DOCS_STORAGE: "filesystem", CENTRAL_DOCS_LOCATION: clone },
+      { root: base, deps: { createMergeRequest: async () => Promise.reject(unavailable) } }
+    );
+    const r = await s.publish({
+      localFile: src,
+      destPath: "CORE/product/p/feature-y.md",
+      squad: "CORE",
+      tipo: "feature",
+    });
+    assert.equal(r.mr, null);
+    assert.equal(r.branch, "docs/CORE/product/p/feature-y");
+
+    const sentErr = Object.assign(new Error("timeout"), { sent: true, exitCode: 4 });
+    const s2 = getStorage(
+      { CENTRAL_DOCS_STORAGE: "filesystem", CENTRAL_DOCS_LOCATION: clone },
+      { root: base, deps: { createMergeRequest: async () => Promise.reject(sentErr) } }
+    );
+    const src2 = join(base, "feature-z.md");
+    writeFileSync(src2, PRD);
+    await assert.rejects(
+      () =>
+        s2.publish({
+          localFile: src2,
+          destPath: "CORE/product/p/feature-z.md",
+          squad: "CORE",
+          tipo: "feature",
+        }),
+      /timeout/
+    );
+  } finally {
+    rmSync(base, { recursive: true, force: true });
+  }
+});
+
 test("git: com scripts/build-index.sh no repositório, o índice vem do script", async () => {
   const { base, clone } = gitFixture();
   try {

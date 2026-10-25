@@ -1,183 +1,92 @@
-import { parseRepoUrl, mergeRequestPath } from "../utils/git-parser.js";
-import { getVcsToken } from "../utils/npmrc-parser.js";
+// Adapters de Git host (GitHub, GitLab) pela CLI oficial do vendor (FRD-006): `gh` e `glab`,
+// com o login delas. O Jarvis não guarda nem lê token. Bitbucket não é suportado.
+import { parseRepoUrl, mergeRequestPath, newMergeRequestUrl } from "../utils/git-parser.js";
+import { EXIT, firstUrl, runAction } from "../integrations/cli-runner.js";
 
-function authHeaders(vendor, token) {
-  if (vendor === "gitlab") {
-    return { "PRIVATE-TOKEN": token };
-  }
-  if (vendor === "github") {
-    return {
-      Authorization: `Bearer ${token}`,
-      Accept: "application/vnd.github+json",
-      "X-GitHub-Api-Version": "2022-11-28",
-    };
-  }
-  return {
-    Authorization: `Bearer ${token}`,
-    Accept: "application/json",
-  };
-}
-
-async function request(url, { method = "GET", headers = {}, body } = {}) {
-  const res = await fetch(url, {
-    method,
-    headers: {
-      "Content-Type": "application/json",
-      ...headers,
-    },
-    body: body != null ? JSON.stringify(body) : undefined,
-  });
-  const text = await res.text();
-  let json = null;
-  try {
-    json = text ? JSON.parse(text) : null;
-  } catch {
-    json = { raw: text };
-  }
-  return { ok: res.ok, status: res.status, json, text };
-}
-
-export async function createMergeRequest(repoUrl, opts) {
-  const { source, target, title, description = "" } = opts;
+/** Parâmetros de repositório que o catálogo usa: {repo} = host/caminho; {repo_url} = URL web. */
+export function repoParams(repoUrl) {
   const repo = parseRepoUrl(repoUrl);
-  const token = getVcsToken(repo.vendor);
-  const headers = authHeaders(repo.vendor, token);
-
-  if (repo.vendor === "gitlab") {
-    const { ok, status, json } = await request(
-      `${repo.apiBase}/projects/${repo.projectPathEncoded}/merge_requests`,
-      {
-        method: "POST",
-        headers,
-        body: {
-          source_branch: source,
-          target_branch: target,
-          title,
-          description,
-          remove_source_branch: true,
-        },
-      }
-    );
-    if (!ok || !json?.web_url) {
-      throw new Error(`Falha ao criar MR GitLab (${status}): ${JSON.stringify(json)}`);
-    }
-    return { vendor: "gitlab", iid: json.iid, url: json.web_url };
-  }
-
-  if (repo.vendor === "github") {
-    const { ok, status, json } = await request(
-      `${repo.apiBase}/repos/${repo.owner}/${repo.repo}/pulls`,
-      {
-        method: "POST",
-        headers,
-        body: {
-          title,
-          head: source,
-          base: target,
-          body: description,
-        },
-      }
-    );
-    if (!ok || !json?.html_url) {
-      throw new Error(`Falha ao criar PR GitHub (${status}): ${JSON.stringify(json)}`);
-    }
-    return { vendor: "github", iid: json.number, url: json.html_url };
-  }
-
-  const { ok, status, json } = await request(
-    `${repo.apiBase}/repositories/${repo.owner}/${repo.repo}/pullrequests`,
-    {
-      method: "POST",
-      headers,
-      body: {
-        title,
-        description,
-        source: { branch: { name: source } },
-        destination: { branch: { name: target } },
-        close_source_branch: true,
-      },
-    }
-  );
-  if (!ok || !json?.links?.html?.href) {
-    throw new Error(`Falha ao criar PR Bitbucket (${status}): ${JSON.stringify(json)}`);
-  }
   return {
-    vendor: "bitbucket",
-    iid: json.id,
-    url: json.links.html.href,
+    parsed: repo,
+    params: {
+      repo: `${repo.host}/${repo.projectPath}`,
+      repo_url: `${repo.origin}/${repo.projectPath}`,
+    },
   };
 }
-
-// Tipos de issue do Bitbucket (campo `kind`; ele não tem labels livres).
-const BITBUCKET_KINDS = ["bug", "enhancement", "proposal", "task"];
 
 /**
- * @param {string} repoUrl
- * @param {{ title: string, body: string, labels?: string[] }} opts - `labels` padrão: ["bug"].
- *   No Bitbucket, a primeira label vira o `kind` quando é um tipo válido; senão, `bug`.
+ * Erro de integração com o que a cadeia precisa: `exitCode` (3 indisponível, 4 enviado com erro)
+ * e `sent` (se a chamada de escrita chegou a começar).
  */
-export async function createIssue(repoUrl, opts) {
-  const { title, body, labels = ["bug"] } = opts;
-  const repo = parseRepoUrl(repoUrl);
-  const token = getVcsToken(repo.vendor);
-  const headers = authHeaders(repo.vendor, token);
-
-  if (repo.vendor === "gitlab") {
-    const { ok, status, json } = await request(
-      `${repo.apiBase}/projects/${repo.projectPathEncoded}/issues`,
-      {
-        method: "POST",
-        headers,
-        body: { title, description: body, labels: labels.join(",") },
-      }
-    );
-    if (!ok || !json?.web_url) {
-      throw new Error(`Issue GitLab (${status}): ${JSON.stringify(json)}`);
-    }
-    return { vendor: "gitlab", iid: json.iid, url: json.web_url };
-  }
-
-  if (repo.vendor === "github") {
-    const { ok, status, json } = await request(
-      `${repo.apiBase}/repos/${repo.owner}/${repo.repo}/issues`,
-      {
-        method: "POST",
-        headers,
-        body: { title, body, labels },
-      }
-    );
-    if (!ok || !json?.html_url) {
-      throw new Error(`Issue GitHub (${status}): ${JSON.stringify(json)}`);
-    }
-    return { vendor: "github", iid: json.number, url: json.html_url };
-  }
-
-  const { ok, status, json } = await request(
-    `${repo.apiBase}/repositories/${repo.owner}/${repo.repo}/issues`,
-    {
-      method: "POST",
-      headers,
-      body: {
-        title,
-        content: { raw: body },
-        kind: BITBUCKET_KINDS.includes(labels[0]) ? labels[0] : "bug",
-      },
-    }
-  );
-  if (!ok || !json?.links?.html?.href) {
-    throw new Error(`Issue Bitbucket (${status}): ${JSON.stringify(json)}`);
-  }
-  return { vendor: "bitbucket", iid: json.id, url: json.links.html.href };
+function integrationError(what, result) {
+  const detail = [result.reason, result.stderr?.trim()].filter(Boolean).join(": ");
+  const err = new Error(`${what}: ${detail || "falha na CLI"}`);
+  err.exitCode = result.code;
+  err.sent = result.sent;
+  return err;
 }
 
+function lastNumber(url) {
+  const m = String(url || "").match(/(\d+)(?:\D*)$/);
+  return m ? Number(m[1]) : null;
+}
+
+/**
+ * Abre um MR/PR pela CLI do vendor do repositório.
+ * @param {string} repoUrl
+ * @param {{ source: string, target: string, title: string, description?: string }} opts
+ * @param {{ exec?: Function }} [deps] - `exec` injetável (testes)
+ * @returns {Promise<{ vendor: string, iid: number|null, url: string|null }>}
+ */
+export async function createMergeRequest(repoUrl, opts, deps = {}) {
+  const { source, target, title, description = "" } = opts;
+  const { parsed, params } = repoParams(repoUrl);
+  const noun = parsed.vendor === "gitlab" ? "MR" : "PR";
+  const result = await runAction(
+    parsed.vendor,
+    "create_merge",
+    { ...params, source, target, title, body: description },
+    deps
+  );
+  if (!result.ok) throw integrationError(`Falha ao criar ${noun} ${parsed.vendor}`, result);
+  const url = firstUrl(result.stdout);
+  return { vendor: parsed.vendor, iid: lastNumber(url), url };
+}
+
+/**
+ * Abre uma issue pela CLI do vendor do repositório.
+ * @param {string} repoUrl
+ * @param {{ title: string, body: string, labels?: string[] }} opts - `labels` padrão: ["bug"]
+ * @param {{ exec?: Function }} [deps]
+ * @returns {Promise<{ vendor: string, iid: number|null, url: string|null }>}
+ */
+export async function createIssue(repoUrl, opts, deps = {}) {
+  const { title, body, labels = ["bug"] } = opts;
+  const { parsed, params } = repoParams(repoUrl);
+  const result = await runAction(
+    parsed.vendor,
+    "create_issue",
+    { ...params, title, body, labels: labels.join(",") },
+    deps
+  );
+  if (!result.ok) throw integrationError(`Issue ${parsed.vendor}`, result);
+  const url = firstUrl(result.stdout);
+  return { vendor: parsed.vendor, iid: lastNumber(url), url };
+}
+
+/**
+ * Link do card no board. Sem `baseUrl`, devolve a própria key.
+ * jira → /browse/KEY · github → /issues/N · gitlab → /-/issues/N
+ */
 export function cardUrl(taskManager, baseUrl, cardKey) {
-  const tm = String(taskManager || "jira").toLowerCase();
+  const tm = String(taskManager || "").toLowerCase();
   const base = String(baseUrl || "").replace(/\/$/, "");
   if (!base) return cardKey;
-  if (tm === "linear") return `${base}/issue/${cardKey}`;
-  if (tm === "github") return `${base}/issues/${cardKey.replace(/^#/, "")}`;
-  if (tm === "asana") return `${base}/0/0/${cardKey}`;
+  const number = String(cardKey).replace(/^#/, "");
+  if (tm === "github") return `${base}/issues/${number}`;
+  if (tm === "gitlab") return `${base}/-/issues/${number}`;
   return `${base}/browse/${cardKey}`;
 }
 
-export { parseRepoUrl, mergeRequestPath, getVcsToken };
+export { EXIT, parseRepoUrl, mergeRequestPath, newMergeRequestUrl };
