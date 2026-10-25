@@ -203,16 +203,17 @@ test("listRulesForProfile: AGENTS.md nunca é filtrado, rtk é opt-in, sem bloco
 // Issue #181 (integrações pelas CLIs oficiais, 2026-10-25): +1077 B em todos os perfis — eng.integrations-rules.md
 // ganha a cadeia de execução (jarvis → CLI do vendor → .md), os códigos de saída e o catálogo; sai a seção MR/PR.
 // Issue #181 (limpeza, 2026-10-25): -8 B em todos os perfis — eng-rules.md cita os boards como Jira, GitHub, GitLab (sai o Linear).
+// Issue #181 (pre-pr, 2026-10-25): +113 B em todos os perfis — eng-rules.md ganha a nota de que o .npmrc vale para registries npm e que board e git usam o login da CLI.
 const BASE = [
   [
     "FULLCYCLE/GENERALIST/ENGINEERING/CORE",
     profile("FULLCYCLE", "GENERALIST", "ENGINEERING"),
     15,
-    102307,
+    102420,
   ],
-  ["BACKEND/SENIOR/ENGINEERING/CORE", profile("BACKEND", "SENIOR", "ENGINEERING"), 11, 68988],
-  ["FRONTEND/PLENO/ENGINEERING/CORE", profile("FRONTEND", "PLENO", "ENGINEERING"), 11, 69531],
-  ["QA/QA-ENGINEER/ENGINEERING/CORE", profile("QA", "QA-ENGINEER", "ENGINEERING"), 11, 68767],
+  ["BACKEND/SENIOR/ENGINEERING/CORE", profile("BACKEND", "SENIOR", "ENGINEERING"), 11, 69101],
+  ["FRONTEND/PLENO/ENGINEERING/CORE", profile("FRONTEND", "PLENO", "ENGINEERING"), 11, 69644],
+  ["QA/QA-ENGINEER/ENGINEERING/CORE", profile("QA", "QA-ENGINEER", "ENGINEERING"), 11, 68880],
 ];
 
 for (const [nome, p, arquivos, bytes] of BASE) {

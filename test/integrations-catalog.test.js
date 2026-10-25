@@ -68,7 +68,13 @@ test("catálogo: nenhuma variável guarda token e todas têm o prefixo de um eix
   for (const [key, v] of Object.entries(loadCatalog().variables)) {
     assert.equal(/TOKEN/.test(key), false, key);
     assert.match(key, /^(TASK_MANAGER|VERSION_CONTROL)(_|$)/);
-    for (const f of ["axis", "what", "where", "example"]) assert.ok(f in v, `${key}.${f}`);
+    for (const f of ["axis", "what", "where", "example", "doc_url"]) assert.ok(f in v, `${key}.${f}`);
+    // Link da doc oficial (RQT-1/RQT-3): um só, ou um por vendor quando a variável depende dele.
+    const links = typeof v.doc_url === "string" ? [v.doc_url] : Object.values(v.doc_url);
+    for (const link of links) assert.match(link, /^https:\/\//, `${key}.doc_url`);
+    for (const vendor of v.required_for || []) {
+      if (typeof v.doc_url !== "string") assert.ok(v.doc_url[vendor], `${key}.doc_url.${vendor}`);
+    }
   }
 });
 

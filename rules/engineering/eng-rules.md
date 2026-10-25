@@ -133,6 +133,7 @@ env_file: "@/ENV.md"
   - **NUNCA** usar `GITLAB_CLIENT_ID`, `GITLAB_CLIENT_SECRET`, `GITHUB_TOKEN` ou qualquer variável de credencial diretamente em comandos, scripts ou código.
   - O `.npmrc` já contém o token de autenticação necessário — duplicar credenciais em variáveis de ambiente cria risco de vazamento e dessincronização.
   - Ao orientar o usuário sobre `npm install`, `npm publish` ou acesso a pacotes privados, a instrução deve ser: **"configure o token no `.npmrc`"**, nunca "exporte a variável X".
+  - Vale para registries npm. Board e git do Jarvis não usam token: usam o login da CLI (`gh`, `glab`, `acli`).
 
 - Quando não tiver contexto suficiente para tomar uma decisão técnica (por exemplo, sobre arquitetura, escolha de banco, padrões de segurança ou escalabilidade), explique claramente as incertezas e peça mais detalhes ao usuário em vez de "chutar".
 

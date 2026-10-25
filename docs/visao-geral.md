@@ -207,12 +207,12 @@ O banner do `init` mostra **versão + path de origem** do pacote.
 
 | Capacidade | Variável | Notas |
 |------------|----------|-------|
-| Board | `TASK_MANAGER` | vazio = freelance |
-| Git | `VERSION_CONTROL` | tokens **fora** do ENV |
+| Board | `TASK_MANAGER` (jira, github, gitlab), `TASK_MANAGER_ACCESS`, `TASK_MANAGER_URL_BASE` | vazio = freelance; CLI oficial (`acli`, `gh`, `glab`) com o login dela |
+| Git | `VERSION_CONTROL` (github, gitlab), `VERSION_CONTROL_ACCESS` | repo pelo `git remote`; CLI oficial (`gh`, `glab`); nenhum token no ENV |
 | Chat | `MESSAGE_COMUNICATOR` | slack/discord/teams |
 | Demais | ver ENV-template | DB, broker, storage, observability, Sonar… |
 
-**MCPs no `/jarvis-init`:** Context7 **obrigatório**, gravado pelo `jarvis init` no arquivo de MCP que a IDE lê, no formato dela (pendente de ativação até reiniciar a IDE, sem bloquear). Task manager / Jira **não bloqueiam**.
+**MCPs no `/jarvis-init`:** Context7 **obrigatório**, gravado pelo `jarvis init` no arquivo de MCP que a IDE lê, no formato dela (pendente de ativação até reiniciar a IDE, sem bloquear). Board e git não usam MCP: usam a CLI oficial, descoberta no init sem bloquear.
 
 ---
 

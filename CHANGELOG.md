@@ -6,6 +6,34 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), e o
 
 > Versões anteriores a `2.1.1` não foram documentadas retroativamente neste changelog — o histórico detalhado dessas versões continua disponível via `git log`.
 
+## [Não lançado]
+
+> Versão **major**: o bump e a data entram no commit `chore(release)` na `main`, depois do merge.
+
+### Added
+- **Integrações pelas CLIs oficiais** (#181): board de cards e host de git passam a usar só `gh` (GitHub), `glab` (GitLab) e `acli` (Jira Cloud), com o login delas. Catálogo único `bin/lib/integrations/vendors.json` (vendors, verificação de login, comandos por ação, variáveis com o link da doc) e runner `bin/lib/integrations/cli-runner.js` (`execFile` sem shell; saídas `0` ok, `1` uso, `3` indisponível sem nada enviado, `4` enviado com erro).
+- **Cadeia de execução** (#181, `rules/engineering/eng.integrations-rules.md`): `jarvis` → CLI do vendor direto → `.md` (`task-comment-{data}.md`, `pull-request.md` ou `.jarvis/issues/`). No freelance, os eventos relevantes vão para o `task-log.md` da sessão (índice e texto em bloco de código).
+- **Variáveis** `TASK_MANAGER_ACCESS` e `VERSION_CONTROL_ACCESS` (`cli` ou `manual`; vazio = tenta a CLI e avisa). `VERSION_CONTROL_ACCESS=manual` faz o `jarvis vcs create-merge` sair com `3` sem abrir o PR.
+- **Onboarding no `/jarvis-init`** (#181): descoberta da CLI (instalada e logada, por host), variáveis explicadas uma a uma e gravação única no fim. Jira Data Center/Server fica em `manual`.
+- **`jarvis tasks comment --body-file`**; os comandos de integração leem do `$IDE/ENV.md` o que não vier no ambiente.
+- Testes: `cli-runner.test.js`, `integrations-catalog.test.js` (inclui a consistência das variáveis `TASK_MANAGER_*`/`VERSION_CONTROL_*` citadas no framework) e `tasks-comment.test.js`, no `test:filtro`.
+
+### Changed
+- **`jarvis init --upgrade`** (#181): mostra a descoberta da CLI de cada eixo, avisa do `TOKEN_TASK_MANAGER` sem ler o valor e preenche o `JARVIS_PROJECT` vazio com o repositório oficial (exceção automática à regra "o upgrade só acrescenta"). O esvaziamento do token é feito no `/jarvis-init`, só com "sim".
+- **`JARVIS_PROJECT`** precisa ser a URL completa; sem host, o `/jarvis-report-issue` não adivinha o vendor e grava o `.md`.
+- **`eng.debug`** lê o card pela CLI (ação `view`) ou colado, e continua sem comentar no card.
+- **Comentário no Jira** vai como texto simples (o markdown é convertido; blocos de código ficam como estão).
+- Central docs com git abre o MR pela CLI; sem ela, mantém o push e mostra o link para abrir à mão.
+
+### Removed
+- **BREAKING**: o REST com token dos adapters, o `TOKEN_TASK_MANAGER`, o `getVcsToken` e o `bin/lib/utils/npmrc-parser.js`. Quem usa Jira com token passa a receber o `.md` até fazer `acli jira auth login`.
+- **BREAKING**: suporte a Linear, Asana e Bitbucket (o eixo fica em freelance). Saem também `apiBase` e `buildApiUrl` do `git-parser.js` e o `parseGitLabUrl`.
+- Configuração do MCP do Jira nos assets do `/jarvis-init`.
+
+### Fixed
+- **#124**: com `TASK_MANAGER=github`, o comentário sai pelo `gh` já logado, sem `TOKEN_TASK_MANAGER`.
+- **#120**: o `eng.debug` deixa de depender de MCP fixo para ler o card.
+
 ## [6.1.0] - 2026-10-22
 
 ### Added

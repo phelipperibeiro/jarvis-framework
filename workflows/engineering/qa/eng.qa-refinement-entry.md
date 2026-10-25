@@ -21,14 +21,14 @@ Este comando opera em **modo pré-código**: é executado após a tech spec ser 
 antes da codificação começar. A entrada é sempre a especificação do card — não o código.
 
 **Regra obrigatória para o agente**: não executar `git diff` neste contexto.
-A fonte de verdade é o conteúdo do card no $TASK_MANAGER, lido via integração disponível (ex: Jira MCP).
+A fonte de verdade é o conteúdo do card no $TASK_MANAGER, lido pela CLI do vendor (ação `view` do catálogo `bin/lib/integrations/vendors.json`: `gh issue view`, `glab issue view` ou `acli jira workitem view`) ou pelo conteúdo colado pelo usuário.
 
 ### Skills invocados durante o workflow
 
 | Passo | Skill | Condição |
 |-------|-------|----------|
 | Execução (Modo A) | `eng.qa.test-planner` (agente) | Sempre — opera em Modo A, estratégia a partir da tech spec |
-| Execução | `Jira MCP` (referência a confirmar) | Para ler o card do `$TASK_MANAGER` por "integração disponível (ex.: Jira MCP)"; o texto não indica a ferramenta exata |
+| Execução | CLI do vendor (`gh issue view` / `glab issue view` / `acli jira workitem view`) | Para ler o card do `$TASK_MANAGER` (ação `view` do catálogo `bin/lib/integrations/vendors.json`); sem a CLI, o usuário cola o conteúdo |
 
 ---
 
@@ -49,7 +49,7 @@ Aceita: ID de task no $TASK_MANAGER, caminho de spec (PRD/FRD/tech spec), ou des
 
 O agente `eng.qa.test-planner` irá operar em **Modo A — Estratégia a partir da Tech Spec**:
 
-1. **Buscar o card no $TASK_MANAGER** via integração disponível (Jira MCP) usando o ID fornecido
+1. **Buscar o card no $TASK_MANAGER** pela CLI do vendor (ação `view` do catálogo `bin/lib/integrations/vendors.json`: `gh issue view`, `glab issue view` ou `acli jira workitem view`) ou pelo conteúdo colado pelo usuário, usando o ID fornecido
 2. **Ler a spec** — identificar o fluxo principal, regras de negócio, integrações e restrições
 3. **Mapear riscos** — o que pode falhar? onde está a complexidade? quais dependências?
 4. **Definir critérios de aceite** — mensuráveis e testáveis (não apenas "funciona")

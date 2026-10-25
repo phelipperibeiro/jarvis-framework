@@ -253,6 +253,6 @@ Precisa de ajuda?
 - **Engenharia (um guia por comando `eng.*`)** &mdash; [`docs/engenharia/`](docs/engenharia/README.md)
 - **Indice de docs/** &mdash; [`docs/README.md`](docs/README.md)
 - **Instrucoes para agentes / mapa de skills** &mdash; `AGENTS.md`
-- **Issues/Feedback** &mdash; skill `jarvis-report-issue` (sem token ou rede, o issue fica em `.jarvis/issues/issue-{desc}.md` para abrir à mão)
+- **Issues/Feedback** &mdash; skill `jarvis-report-issue` (sem a CLI do host (`gh`), sem login ou sem rede, o issue fica em `.jarvis/issues/issue-{desc}.md` para abrir à mão)
 - **Duvidas sobre comandos** &mdash; Pergunte diretamente ao agent:
   `"Como funciona /eng.start?"` | `"Qual a diferenca entre /eng.work e /pr?"` | `"O que e CDD?"`

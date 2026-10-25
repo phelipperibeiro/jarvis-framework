@@ -3,11 +3,19 @@
   "vendors": {
     "jira": {
       "label": "Jira (Cloud)",
-      "axes": ["task_manager"],
+      "axes": [
+        "task_manager"
+      ],
       "cli": {
         "bin": "acli",
-        "version": ["--version"],
-        "auth_status": ["jira", "auth", "status"],
+        "version": [
+          "--version"
+        ],
+        "auth_status": [
+          "jira",
+          "auth",
+          "status"
+        ],
         "install_url": "https://developer.atlassian.com/cloud/acli/guides/install-acli/",
         "login_cmd": "acli jira auth login",
         "login_url": "https://developer.atlassian.com/cloud/acli/reference/commands/jira-auth-login/"
@@ -24,26 +32,61 @@
           "--body-file",
           "{body_file}"
         ],
-        "view": ["jira", "workitem", "view", "{key}", "--fields", "summary,description,comment"]
+        "view": [
+          "jira",
+          "workitem",
+          "view",
+          "{key}",
+          "--fields",
+          "summary,description,comment"
+        ]
       },
       "notes": "Só Jira Cloud (*.atlassian.net). Jira Data Center/Server não tem CLI oficial: TASK_MANAGER_ACCESS=manual."
     },
     "github": {
       "label": "GitHub",
-      "axes": ["task_manager", "version_control"],
+      "axes": [
+        "task_manager",
+        "version_control"
+      ],
       "cli": {
         "bin": "gh",
-        "version": ["--version"],
-        "auth_status": ["auth", "status"],
+        "version": [
+          "--version"
+        ],
+        "auth_status": [
+          "auth",
+          "status"
+        ],
         "install_url": "https://cli.github.com/",
         "login_cmd": "gh auth login",
         "login_url": "https://cli.github.com/manual/gh_auth_login",
-        "auth_status_host": ["auth", "status", "--hostname", "{host}"]
+        "auth_status_host": [
+          "auth",
+          "status",
+          "--hostname",
+          "{host}"
+        ]
       },
       "body_format": "markdown",
       "actions": {
-        "comment": ["issue", "comment", "{key}", "--repo", "{repo}", "--body-file", "{body_file}"],
-        "view": ["issue", "view", "{key}", "--repo", "{repo}", "--comments"],
+        "comment": [
+          "issue",
+          "comment",
+          "{key}",
+          "--repo",
+          "{repo}",
+          "--body-file",
+          "{body_file}"
+        ],
+        "view": [
+          "issue",
+          "view",
+          "{key}",
+          "--repo",
+          "{repo}",
+          "--comments"
+        ],
         "create_merge": [
           "pr",
           "create",
@@ -74,20 +117,48 @@
     },
     "gitlab": {
       "label": "GitLab",
-      "axes": ["task_manager", "version_control"],
+      "axes": [
+        "task_manager",
+        "version_control"
+      ],
       "cli": {
         "bin": "glab",
-        "version": ["--version"],
-        "auth_status": ["auth", "status"],
+        "version": [
+          "--version"
+        ],
+        "auth_status": [
+          "auth",
+          "status"
+        ],
         "install_url": "https://gitlab.com/gitlab-org/cli#installation",
         "login_cmd": "glab auth login",
         "login_url": "https://gitlab.com/gitlab-org/cli/-/blob/main/docs/source/auth/login.md",
-        "auth_status_host": ["auth", "status", "--hostname", "{host}"]
+        "auth_status_host": [
+          "auth",
+          "status",
+          "--hostname",
+          "{host}"
+        ]
       },
       "body_format": "markdown",
       "actions": {
-        "comment": ["issue", "note", "{key}", "--repo", "{repo_url}", "-m", "{body}"],
-        "view": ["issue", "view", "{key}", "--repo", "{repo_url}", "--comments"],
+        "comment": [
+          "issue",
+          "note",
+          "{key}",
+          "--repo",
+          "{repo_url}",
+          "-m",
+          "{body}"
+        ],
+        "view": [
+          "issue",
+          "view",
+          "{key}",
+          "--repo",
+          "{repo_url}",
+          "--comments"
+        ],
         "create_merge": [
           "mr",
           "create",
@@ -126,7 +197,7 @@
       "what": "O board de cards do projeto: jira, github ou gitlab. Vazio = modo freelance (as ações viram .md).",
       "where": "O serviço onde ficam os cards (Jira, GitHub Issues ou GitLab Issues).",
       "example": "github",
-      "doc_url": ""
+      "doc_url": "https://github.com/phelipperibeiro/jarvis-framework/blob/main/rules/engineering/eng.integrations-rules.md"
     },
     "TASK_MANAGER_ACCESS": {
       "axis": "task_manager",
@@ -134,16 +205,23 @@
       "what": "Como o Jarvis fala com o board: cli (pela CLI oficial, já logada) ou manual (gera um .md para você colar). Vazio = tentar a CLI e avisar.",
       "where": "Definido pelo /jarvis-init depois de conferir se a CLI está instalada e logada.",
       "example": "cli",
-      "doc_url": ""
+      "doc_url": "https://github.com/phelipperibeiro/jarvis-framework/blob/main/rules/engineering/eng.integrations-rules.md"
     },
     "TASK_MANAGER_URL_BASE": {
       "axis": "task_manager",
-      "required_for": ["github", "gitlab"],
+      "required_for": [
+        "github",
+        "gitlab"
+      ],
       "required": false,
       "what": "Endereço do board. No GitHub e no GitLab é o endereço do repositório onde ficam os cards (o Jarvis tira dele o repo para a CLI); no Jira é o site, usado só para montar o link do card.",
       "where": "GitHub/GitLab: o endereço do repositório no navegador. Jira: o começo do endereço de qualquer card, antes de /browse/.",
       "example": "https://github.com/empresa/projeto",
-      "doc_url": ""
+      "doc_url": {
+        "github": "https://cli.github.com/manual/gh_issue_comment",
+        "gitlab": "https://docs.gitlab.com/cli/issue/note/",
+        "jira": "https://developer.atlassian.com/cloud/acli/reference/commands/jira-workitem-comment-create/"
+      }
     },
     "VERSION_CONTROL": {
       "axis": "version_control",
@@ -151,7 +229,7 @@
       "what": "O host de git do projeto: github ou gitlab. O repositório e o host vêm do git remote get-url origin.",
       "where": "Onde o repositório do projeto está hospedado.",
       "example": "github",
-      "doc_url": ""
+      "doc_url": "https://github.com/phelipperibeiro/jarvis-framework/blob/main/rules/engineering/eng.integrations-rules.md"
     },
     "VERSION_CONTROL_ACCESS": {
       "axis": "version_control",
@@ -159,7 +237,7 @@
       "what": "Como o Jarvis abre PR/MR: cli (pela CLI oficial, já logada) ou manual (o pull-request.md fica pronto para você abrir). Vazio = tentar a CLI e avisar.",
       "where": "Definido pelo /jarvis-init depois de conferir se a CLI está instalada e logada.",
       "example": "cli",
-      "doc_url": ""
+      "doc_url": "https://github.com/phelipperibeiro/jarvis-framework/blob/main/rules/engineering/eng.integrations-rules.md"
     }
   }
 }

@@ -4,7 +4,9 @@ Descreva de forma sucinta o objetivo do MR
 
 ## Tarefas Relacionadas
 
-- [ ] [TASK-ID]({TASK_MANAGER_URL_BASE}/browse/TASK-ID)
+- [ ] [TASK-ID]({URL_DO_CARD})
+
+<!-- {URL_DO_CARD}: o padrão depende do TASK_MANAGER (jira /browse/KEY, github /issues/N, gitlab /-/issues/N); ver "URL do card" em rules/engineering/eng.integrations-rules.md -->
 
 ## Mudanças Propostas
 

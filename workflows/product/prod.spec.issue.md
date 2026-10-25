@@ -45,7 +45,7 @@ Um grupo de histórias de um mesmo assunto podem formar um épico.
 
 | Passo | Skill | Condição |
 |-------|-------|----------|
-| Estrutura da Issue (salvar no `$TASK_MANAGER`) | `/eng-global-task-comment` (e adapter do vendor) | Se o usuário pedir para salvar no `$TASK_MANAGER` e `TASK_MANAGER`, token e URL estiverem no ENV.md; freelance ou sem token/URL: não usar, salvar só o markdown local |
+| Estrutura da Issue (salvar no `$TASK_MANAGER`) | CLI do vendor (`gh`/`glab issue create`, `acli jira workitem create`) | Se o usuário pedir para salvar no `$TASK_MANAGER` e `TASK_MANAGER`, `TASK_MANAGER_ACCESS` e `TASK_MANAGER_URL_BASE` estiverem no ENV.md, com a CLI logada; freelance, CLI indisponível ou `TASK_MANAGER_ACCESS=manual`: salvar só o markdown local |
 
 ## Resultado Final
 - Siga a estrutura exata do template `$PROD_TEMPLATES/prod-issue-template.md`
