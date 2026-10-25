@@ -9,12 +9,13 @@ Este documento contém as configurações de MCPs (Model Context Protocol) neces
 | MCP | Propósito | Bloqueante |
 |-----|-----------|------------|
 | **Context7** | Documentação atualizada de bibliotecas | **Sim** |
-| **Jira / Linear / GitHub / Asana** | Task manager — só se `TASK_MANAGER` estiver no ENV.md | **Não** |
 | **TestSprite** | Geração automática de testes | **Não** |
 | **Sentry** | Observabilidade | **Não** |
 | **Redis** | Removido do init (event bus saiu do fork) | — |
 
 ---
+
+> Board de cards e git **não usam MCP**: o Jarvis usa a CLI oficial (`gh`, `glab`, `acli`), com o login dela. Ver o Passo 4 do `SKILL.md` e `bin/lib/integrations/vendors.json`.
 
 ## Caminhos de Configuração
 
@@ -75,15 +76,6 @@ Arquivo (global): `~/.config/devin/mcp_config.json` (versões antigas: `~/.codei
       "command": "npx",
       "args": ["-y", "@upstash/context7-mcp"]
     },
-    "jira": {
-      "command": "npx",
-      "args": ["-y", "@anthropic/mcp-server-jira"],
-      "env": {
-        "JIRA_URL": "https://sua-org.atlassian.net",
-        "JIRA_EMAIL": "seu-email@sua-empresa.com",
-        "JIRA_API_TOKEN": "seu-token-aqui"
-      }
-    },
     "redis": {
       "command": "uvx",
       "args": [
@@ -118,15 +110,6 @@ Arquivo: `.cursor/mcp.json` (projeto) ou `~/.cursor/mcp.json` (global)
       "command": "npx",
       "args": ["-y", "@upstash/context7-mcp"]
     },
-    "jira": {
-      "command": "npx",
-      "args": ["-y", "@anthropic/mcp-server-jira"],
-      "env": {
-        "JIRA_URL": "https://sua-org.atlassian.net",
-        "JIRA_EMAIL": "seu-email@sua-empresa.com",
-        "JIRA_API_TOKEN": "seu-token-aqui"
-      }
-    },
     "redis": {
       "command": "uvx",
       "args": [
@@ -160,15 +143,6 @@ Arquivo: `.mcp.json` na raiz do workspace (projeto). Para o escopo de usuário, 
     "context7": {
       "command": "npx",
       "args": ["-y", "@upstash/context7-mcp"]
-    },
-    "jira": {
-      "command": "npx",
-      "args": ["-y", "@anthropic/mcp-server-jira"],
-      "env": {
-        "JIRA_URL": "https://sua-org.atlassian.net",
-        "JIRA_EMAIL": "seu-email@sua-empresa.com",
-        "JIRA_API_TOKEN": "seu-token-aqui"
-      }
     },
     "redis": {
       "command": "uvx",
@@ -298,15 +272,6 @@ mcp__context7__resolve-library-id({
 })
 ```
 
-### Jira (opcional — só se `TASK_MANAGER=jira`)
-
-```javascript
-// Uma tentativa. Falhou? Avisar e seguir — não bloqueia o init.
-mcp__claude_ai_Atlassian__getJiraIssue({
-  issueKey: "PROJ-1"  // Usar qualquer issue existente para teste
-})
-```
-
 ### Redis
 
 Não é mais requisito do Jarvis (event bus removido). Se o projeto alvo usar Redis, configure fora do init.
@@ -328,14 +293,6 @@ mcp__TestSprite__testsprite_check_account_info({})
 ---
 
 ## Configuração dos Tokens
-
-### Token Jira
-
-1. Acesse: https://id.atlassian.com/manage-profile/security/api-tokens
-2. Clique em "Create API token"
-3. Dê um nome descritivo (ex: "MCP Windsurf")
-4. Copie o token gerado
-5. Cole no campo `JIRA_API_TOKEN` da configuração
 
 ### Token Sentry
 
@@ -361,18 +318,6 @@ mcp__TestSprite__testsprite_check_account_info({})
 3. Verificar se npx/uvx está funcionando: `npx --version` / `uvx --version`
 4. Verificar conexão com internet
 5. Verificar se o JSON está válido (sem vírgulas extras)
-
-### Jira retorna erro de autenticação
-
-1. Verificar se o email está correto
-2. Verificar se o token não expirou
-3. Verificar se a URL do Jira está correta
-4. Testar o token via curl:
-
-```bash
-curl -u "seu-email@sua-empresa.com:seu-token" \
-  "https://sua-org.atlassian.net/rest/api/3/myself"
-```
 
 ### Redis não conecta
 

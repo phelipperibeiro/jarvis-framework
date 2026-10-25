@@ -244,7 +244,7 @@ cat ~/.config/devin/mcp_config.json >/dev/null || echo "Não encontrado"
 | MCP | Propósito | Documentação |
 |-----|-----------|-------------|
 | Context7 | Documentação atualizada de bibliotecas (**obrigatório**) | [context7.com](https://context7.com) |
-| Task manager | Só se `TASK_MANAGER` estiver no ENV (Jira/Linear/…) | conforme o vendor |
+| Board e git | CLI oficial (`gh`, `glab`, `acli`), só se `TASK_MANAGER`/`VERSION_CONTROL` estiverem no ENV | `gh auth login`, `glab auth login`, `acli jira auth login` (sem token no ENV) |
 | TestSprite | Geração automática de testes (opcional) | [testsprite.com](https://testsprite.com) |
 
  Instalar Context
