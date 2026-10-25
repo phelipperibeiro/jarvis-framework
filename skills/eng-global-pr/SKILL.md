@@ -253,7 +253,7 @@ rm -rf $SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/
 
 | Passo | Skill | Condição |
 |-------|-------|----------|
-| Passo 6 — Atualizar o card | `/eng-global-task-comment` | Se `TASK_MANAGER` estiver preenchido (freelance pula): comentário no card com o link do MR |
+| Passo 6 — Atualizar o card | `/eng-global-task-comment` | Sempre: comentário no card com o link do MR (freelance: registro no `task-log.md` da sessão) |
 
 ---
 

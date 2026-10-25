@@ -1,22 +1,22 @@
 ---
 name: eng-global-task-comment
 description: >
-  Adiciona um comentário no card do TASK_MANAGER (Jira, Linear, GitHub Issues ou Asana).
+  Adiciona um comentário no card do TASK_MANAGER (Jira, GitHub Issues ou GitLab Issues) pela CLI oficial do vendor; sem board (freelance), registra no task-log.md da sessão.
   Trigger: registrar no card um evento relevante: desvio do plano, auditoria do Advisor, bloqueio ou o link do MR (nunca início ou fim de etapa).
 argument-hint: "{TASK_MANAGER_KEY} {mensagem}"
 disable-model-invocation: false
-allowed-tools: Read Bash MCP
+allowed-tools: Read Write Bash
 metadata:
   author: jarvis-team
-  version: "1.0"
+  version: "2.0"
   area: global
 ---
 
 # eng-global-task-comment
 
-Comenta no card do gerenciador de tarefas configurado em `TASK_MANAGER` no ENV.md.
+Comenta no card do board configurado em `TASK_MANAGER` no ENV.md, pela cadeia de execução de `rules/engineering/eng.integrations-rules.md`: `jarvis` → CLI do vendor direto → `.md`. Nenhum token: o login é o da CLI (`gh auth login`, `glab auth login`, `acli jira auth login`).
 
-`{TASK_MANAGER_KEY}` = id do card (Jira `TASK-123`, Linear UUID/identifier, GitHub `#42`, Asana GID).
+`{TASK_MANAGER_KEY}` = id do card (Jira `TASK-123`, GitHub ou GitLab `#42`).
 
 ## Entrada
 
@@ -24,43 +24,84 @@ Comenta no card do gerenciador de tarefas configurado em `TASK_MANAGER` no ENV.m
 
 ## Execução
 
-Ler `TASK_MANAGER`, `TASK_MANAGER_URL_BASE`, `TOKEN_TASK_MANAGER` e `USER` do `$IDE/ENV.md`.
-
-Se `TASK_MANAGER` estiver vazio, ausente ou ainda for a lista `[jira, linear, github, asana]` → **encerrar em silêncio** (freelance, sem board). Não pedir token. Não falhar o workflow.
+Ler `TASK_MANAGER`, `TASK_MANAGER_ACCESS` e `TASK_MANAGER_URL_BASE` do `$IDE/ENV.md`.
 
 Com `ARTIFACT_STYLE=human-generated`, o comentário sai sem marcas de IA (`rules/artifact-style-rules.md`).
 
-### 1. MCP (só Jira)
+### 0. Freelance (sem board)
 
-Se `TASK_MANAGER=jira` e o MCP Atlassian estiver disponível:
+`TASK_MANAGER` vazio, ausente, com a lista de exemplo (`[jira, github, gitlab]` ou a antiga `[jira, linear, github, asana]`) ou com vendor não suportado (linear, asana…) → **não** comente em board. Acrescente uma entrada em `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/task-log.md` e responda `Registro gravado em {caminho}`. Não falhar o workflow.
 
+Formato (criar o arquivo se não existir; só acrescentar, nunca sobrescrever):
+
+````markdown
+# Registro da tarefa {TASK_MANAGER_KEY}
+
+| Quando | Evento | Resumo |
+|---|---|---|
+| [{YYYY-MM-DD HH:MM}](#{âncora do título}) | {evento} | {resumo de uma linha} |
+
+## {YYYY-MM-DD HH:MM} · {evento}
+
+```text
+{mensagem}
 ```
-mcp__claude_ai_Atlassian__addCommentToJiraIssue({ issueKey: "{TASK_MANAGER_KEY}", body: "{mensagem}" })
-```
+````
 
-Sucesso → encerrar.
+A cada entrada nova: uma linha nova no fim da tabela do índice e a seção nova no fim do arquivo. `{evento}`: desvio do plano, auditoria do Advisor, bloqueio, link do MR ou gate do pre-pr.
 
-### 2. Adapter CLI (todos os vendors)
+### 1. `jarvis tasks comment`
 
 ```bash
-# Exportar do ENV.md para o processo
+BODY_FILE=$(mktemp)
+# gravar a mensagem em "$BODY_FILE"
 set -a
 # shellcheck disable=SC1091
-eval "$(grep -E '^(TASK_MANAGER|TASK_MANAGER_URL_BASE|TOKEN_TASK_MANAGER|USER)=' $IDE/ENV.md)"
+eval "$(grep -E '^(TASK_MANAGER|TASK_MANAGER_ACCESS|TASK_MANAGER_URL_BASE)=' $IDE/ENV.md)"
 set +a
 
-jarvis tasks comment "{TASK_MANAGER_KEY}" "{mensagem}"
+jarvis tasks comment "{TASK_MANAGER_KEY}" --body-file "$BODY_FILE"
+STATUS=$?
 ```
 
-Se o CLI `jarvis` não estiver instalado no projeto, usar `node "$JARVIS_ROOT/bin/jarvis.js" tasks comment "{TASK_MANAGER_KEY}" "{mensagem}"`, onde `$JARVIS_ROOT` é a raiz do clone do framework (ou `$(git rev-parse --show-toplevel)` se o Jarvis estiver no repo).
+Se o `jarvis` não estiver no projeto, use `node "$JARVIS_ROOT/bin/jarvis.js" tasks comment ...` (`$JARVIS_ROOT` = raiz do clone do framework).
 
-Exit 0 → comentário ok. Exit 2 → avisar e **não bloquear** o workflow.
+- `0` → comentário feito (ou freelance). Encerrar.
+- `3` → indisponível, nada enviado → passo 2.
+- `4` → enviado com erro → passo 3, com o aviso de conferir no card antes de repetir. **Não** tentar o passo 2.
 
-### 3. Falha
+### 2. CLI do vendor direto
+
+Só se o passo 1 saiu com `3` (ou o `jarvis` não rodou) e `TASK_MANAGER_ACCESS` não é `manual`. Confira a CLI com o `auth_status` do catálogo (`bin/lib/integrations/vendors.json`) e, logada, rode a ação `comment` dele:
+
+| Vendor | Comando |
+|---|---|
+| github | `gh issue comment {número} --repo {host}/{dono}/{repo} --body-file "$BODY_FILE"` |
+| gitlab | `glab issue note {número} --repo {URL do repo} -m "{mensagem}"` |
+| jira | `acli jira workitem comment create --key {KEY} --body-file "$BODY_FILE"` (texto simples, sem markdown) |
+
+O repo do github/gitlab vem do `TASK_MANAGER_URL_BASE`. Avise: `jarvis indisponível; usei {bin} direto. Para corrigir, {motivo}`. Falhou depois de enviar → passo 3 com o aviso de conferir.
+
+### 3. `.md` da ocorrência
+
+Grave `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/task-comment-{YYYYMMDD-HHMM}.md`:
+
+````markdown
+# Comentário para o card {TASK_MANAGER_KEY}
+
+Card: {URL do card (tabela "URL do card" da regra), se houver URL base}
+
+```text
+{mensagem}
+```
+````
+
+E diga:
 
 ```
-⚠️ Não foi possível comentar no card {TASK_MANAGER_KEY} ({TASK_MANAGER}).
-   Confira TOKEN_TASK_MANAGER e TASK_MANAGER_URL_BASE no ENV.md.
+⚠️ Não foi possível comentar no card {TASK_MANAGER_KEY} ({motivo}).
+   Cole este comentário no card: {caminho do .md}
+   Para comentar direto da próxima vez: {login_cmd ou install_url do catálogo}.
 ```
 
 Nunca pedir credenciais no chat. Nunca parar o fluxo principal por falha de comentário.

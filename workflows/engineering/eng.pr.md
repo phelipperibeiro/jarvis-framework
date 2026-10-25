@@ -44,8 +44,8 @@ Este comando cria a **branch, commita as alterações e abre um Merge Request**.
 | Fase 1 › 1.4 Executar Testes Automatizados (Opcional) | `/eng-qa` + `QA_SPECIALIZATIONS` | Passo opcional, recomendado em mudanças significativas |
 | Skills recomendados | `/eng-global-docs-write` | Se houver necessidade de atualizar documentação junto do PR |
 | Agentes recomendados (opcional) | `eng.qa.test-planner` (agente) | Se houver dúvidas sobre cobertura de testes ou mudanças significativas |
-| Fase 4 › 4.4 Criar MR/PR via adapter | `jarvis vcs create-merge` (CLI do Jarvis) | Só se a escolha da Fase 0 for publicar (4.3): abre o MR/PR conforme `VERSION_CONTROL` ou o host do `origin` |
-| Fase 5 › 5.2 Link do MR | `/eng-global-task-comment` | Depois de o MR ser criado (só ao publicar, 4.3): um único comentário no card com o link do MR, seguindo o Passo 6 do skill `eng-global-pr` (freelance pula) |
+| Fase 4 › 4.4 Criar MR/PR pela CLI | `jarvis vcs create-merge` (CLI do Jarvis → `gh`/`glab`) | Só se a escolha da Fase 0 for publicar (4.3): abre o MR/PR pela cadeia de `eng.integrations-rules.md`, pelo host do `origin` |
+| Fase 5 › 5.2 Link do MR | `/eng-global-task-comment` | Depois de o MR ser criado (só ao publicar, 4.3): um único comentário no card com o link do MR, seguindo o Passo 6 do skill `eng-global-pr` (freelance: registra no `task-log.md`) |
 
 ---
 
@@ -203,7 +203,7 @@ git log --oneline -3
 ## Fase 4: Criar Merge Request / Pull Request
 
 Ler `VERSION_CONTROL` do `$IDE/ENV.md` (`gitlab` | `github` | `bitbucket`).
-Use **MR** se GitLab, **PR** se GitHub/Bitbucket.
+Use **MR** se GitLab, **PR** se GitHub.
 
 ### 4.1 Gerar `pull-request.md` na sessão
 
@@ -223,9 +223,8 @@ Preencher com a tarefa. Link do card:
 | TASK_MANAGER | URL |
 |--------------|-----|
 | jira | `{TASK_MANAGER_URL_BASE}/browse/{TASK_MANAGER_KEY}` |
-| linear | `{TASK_MANAGER_URL_BASE}/issue/{TASK_MANAGER_KEY}` |
-| github | `{TASK_MANAGER_URL_BASE}/issues/{TASK_MANAGER_KEY}` |
-| asana | `{TASK_MANAGER_URL_BASE}/0/0/{TASK_MANAGER_KEY}` |
+| github | `{TASK_MANAGER_URL_BASE}/issues/{número}` |
+| gitlab | `{TASK_MANAGER_URL_BASE}/-/issues/{número}` |
 
 `{TASK_MANAGER_KEY}` = `{TASK_MANAGER_KEY}`.
 
@@ -242,7 +241,7 @@ A decisão já veio da Fase 0; não pergunte de novo. Aprovado o texto na 4.2, s
 - **Só gerar os arquivos:** nada é enviado. O `pull-request.md` fica na sessão para você publicar quando quiser (à mão ou rodando o `/eng.pr` de novo). Pule para a Fase 7, que gera o `daily.md` mesmo assim (para não passar batido quando você abrir o PR à mão), com a mensagem "PR não publicado".
 - **Revisar o texto e publicar** ou **Publicar sem revisar o texto:** faça o push (Fase 3) e crie o MR/PR (4.4).
 
-### 4.4 Criar MR/PR via adapter
+### 4.4 Criar MR/PR pela CLI do vendor
 
 - **Título**: `{TASK_MANAGER_KEY}: {Título da tarefa}`
 - **Branch origem**: `{NOME_DA_BRANCH}`
@@ -262,23 +261,23 @@ jarvis vcs create-merge \
 rm -f "$BODY_FILE"
 ```
 
-O adapter lê `git remote get-url origin` e `VERSION_CONTROL` / hostname (GitLab, GitHub, Bitbucket). Token: `.npmrc` (GitLab), `gh auth` / `GITHUB_TOKEN` (GitHub), `BITBUCKET_TOKEN` (Bitbucket).
+Segue a cadeia de `rules/engineering/eng.integrations-rules.md`. O comando lê `git remote get-url origin` (vendor pelo host; senão `VERSION_CONTROL`) e chama a CLI do vendor (`gh pr create` / `glab mr create`), com o login dela; nenhum token.
 
 Se o CLI `jarvis` não estiver instalado no repo alvo, usar `node {caminho-do-clone-do-jarvis}/bin/jarvis.js vcs create-merge ...`.
 
-**Erros comuns:**
-
-| Código | Causa | Solução |
+| Saída | O que aconteceu | O que fazer |
 |--------|-------|---------|
-| `401 Unauthorized` | PAT ausente ou sem scope `api` | Gerar novo PAT com scope `api` em `~/.npmrc` |
-| `404 Not Found` | Namespace desatualizado no remote | `git remote set-url origin <nova-url>` |
-| `422` | Branch origem não existe no remote | Verificar se o push (Fase 3) foi executado |
+| `0` | PR/MR criado | Seguir para a Fase 5 |
+| `3` | Indisponível, nada enviado (CLI ausente, sem login, `VERSION_CONTROL_ACCESS=manual`, host não suportado) | Se a CLI estiver logada, rodar direto: `gh pr create --repo {host}/{dono}/{repo} --head {NOME_DA_BRANCH} --base {BRANCH_BASE} --title "{título}" --body-file "$BODY_FILE"` (ou `glab mr create --repo {URL} --source-branch ... --target-branch ... --title ... -d "{corpo}" --yes`). Senão, o `pull-request.md` fica pronto e o comando mostra o link de novo PR/MR para abrir à mão |
+| `4` | Enviado com erro (inclusive timeout) | **Não** repetir: conferir no host se o PR/MR foi criado; se não, abrir à mão com o `pull-request.md` |
+
+Branch de origem inexistente no remote: conferir se o push (Fase 3) foi feito.
 
 ---
 
 ## Fase 5: Atualizar Board
 
-Pular se `TASK_MANAGER` estiver vazio (freelance).
+Pular a 5.1 se `TASK_MANAGER` estiver vazio (freelance); a 5.2 registra o link do MR no `task-log.md` da sessão.
 
 ### 5.1 Mover Card
 

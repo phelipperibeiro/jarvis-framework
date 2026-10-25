@@ -200,16 +200,18 @@ test("listRulesForProfile: AGENTS.md nunca é filtrado, rtk é opt-in, sem bloco
 // (comentário no card: o relatório do eng.pre-pr passa a ser registrado se o usuário escolher resumo ou completo).
 // Issue #163 (WORKSPACE_MODE, 2026-10-17): +342 B em todos os perfis — eng-rules.md ganha a validação não bloqueante do modo.
 // Issue #163 (buscas em modo workspace, 2026-10-17): +1552 B em todos os perfis — eng-rules.md ganha a tabela IDE → pasta e a regra de buscas.
+// Issue #181 (integrações pelas CLIs oficiais, 2026-10-25): +1077 B em todos os perfis — eng.integrations-rules.md
+// ganha a cadeia de execução (jarvis → CLI do vendor → .md), os códigos de saída e o catálogo; sai a seção MR/PR.
 const BASE = [
   [
     "FULLCYCLE/GENERALIST/ENGINEERING/CORE",
     profile("FULLCYCLE", "GENERALIST", "ENGINEERING"),
     15,
-    101238,
+    102315,
   ],
-  ["BACKEND/SENIOR/ENGINEERING/CORE", profile("BACKEND", "SENIOR", "ENGINEERING"), 11, 67919],
-  ["FRONTEND/PLENO/ENGINEERING/CORE", profile("FRONTEND", "PLENO", "ENGINEERING"), 11, 68462],
-  ["QA/QA-ENGINEER/ENGINEERING/CORE", profile("QA", "QA-ENGINEER", "ENGINEERING"), 11, 67698],
+  ["BACKEND/SENIOR/ENGINEERING/CORE", profile("BACKEND", "SENIOR", "ENGINEERING"), 11, 68996],
+  ["FRONTEND/PLENO/ENGINEERING/CORE", profile("FRONTEND", "PLENO", "ENGINEERING"), 11, 69539],
+  ["QA/QA-ENGINEER/ENGINEERING/CORE", profile("QA", "QA-ENGINEER", "ENGINEERING"), 11, 68775],
 ];
 
 for (const [nome, p, arquivos, bytes] of BASE) {
