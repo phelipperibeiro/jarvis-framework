@@ -205,6 +205,8 @@ export function buildProgram() {
     .option("--title <titulo>")
     .option("--body-file <path>")
     .option("--repo <url>", "Padrão: git remote get-url origin")
+    .option("--ide <ide>", "IDE do ENV.md (quando há mais de um no workspace)")
+    .option("--env-file <path>", "Path explícito do ENV.md")
     .action((options) =>
       runCreateMerge({
         source: options.source,
@@ -212,6 +214,8 @@ export function buildProgram() {
         title: options.title,
         bodyFile: options.bodyFile,
         repo: options.repo,
+        ide: options.ide,
+        envFile: options.envFile,
       })
     );
 
@@ -239,8 +243,14 @@ export function buildProgram() {
     .argument("[card-key]")
     .argument("[message...]", "Texto do comentário (pode ter espaços)")
     .option("--body-file <path>", "Lê o texto do comentário de um arquivo")
+    .option("--ide <ide>", "IDE do ENV.md (quando há mais de um no workspace)")
+    .option("--env-file <path>", "Path explícito do ENV.md")
     .action((cardKey, messageParts, options) =>
-      runComment(cardKey, messageParts.join(" "), { bodyFile: options.bodyFile })
+      runComment(cardKey, messageParts.join(" "), {
+        bodyFile: options.bodyFile,
+        ide: options.ide,
+        envFile: options.envFile,
+      })
     );
 
   return program;

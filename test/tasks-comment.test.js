@@ -259,3 +259,41 @@ test("sem a variável no ambiente, usa o ENV.md do workspace (sem eval no shell)
   assert.match(r.err[0], /manual/);
   assert.equal(calls.length, 0);
 });
+
+test("jira: key inválida (com espaço) sai com 1 sem enviar", async () => {
+  const { exec, calls } = fakeCli();
+  const r = await withEnv({ TASK_MANAGER: "jira", TASK_MANAGER_ACCESS: "cli" }, () =>
+    commentOnCard("a b", "m", { exec })
+  );
+  assert.equal(r.code, 1);
+  assert.equal(calls.length, 0);
+});
+
+test("TASK_MANAGER_ACCESS com valor inválido, entre aspas ou com comentário: só cli segue", async () => {
+  const base = { TASK_MANAGER: "github", TASK_MANAGER_URL_BASE: "https://github.com/o/r" };
+  const { exec, calls } = fakeCli();
+  const invalid = await withEnv({ ...base, TASK_MANAGER_ACCESS: "manul" }, () =>
+    commentOnCard("1", "m", { exec })
+  );
+  assert.equal(invalid.code, 3);
+  assert.match(invalid.err[0], /valor inválido/);
+  const quoted = await withEnv({ ...base, TASK_MANAGER_ACCESS: '"manual"' }, () =>
+    commentOnCard("1", "m", { exec })
+  );
+  assert.equal(quoted.code, 3);
+  const commented = await withEnv({ ...base, TASK_MANAGER_ACCESS: "cli # padrão" }, () =>
+    commentOnCard("1", "m", { exec })
+  );
+  assert.equal(commented.code, 0);
+  assert.equal(calls.filter((c) => c.args[0] === "issue").length, 1);
+});
+
+test("ENV.md ilegível sem TASK_MANAGER no ambiente sai com 3 (não vira freelance às cegas)", async () => {
+  const { exec, calls } = fakeCli();
+  const r = await withEnv({}, () =>
+    commentOnCard("1", "m", { exec, fileEnvResult: { vars: {}, error: "Múltiplos ENV.md" } })
+  );
+  assert.equal(r.code, 3);
+  assert.match(r.err[0], /--ide ou --env-file/);
+  assert.equal(calls.length, 0);
+});

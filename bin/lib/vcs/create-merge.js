@@ -2,7 +2,7 @@ import { execSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { EXIT, createMergeRequest, newMergeRequestUrl, parseRepoUrl } from "./api.js";
-import { accessValue, loadFileEnv, setting } from "../integrations/cli-runner.js";
+import { accessGate, getVendor, resolveFileEnv, setting } from "../integrations/cli-runner.js";
 
 /**
  * Abre um MR/PR pela CLI do vendor (`gh pr create` / `glab mr create`, pelo hostname do remote).
@@ -15,9 +15,14 @@ import { accessValue, loadFileEnv, setting } from "../integrations/cli-runner.js
  * @param {string} options.title - Título do MR/PR
  * @param {string} [options.bodyFile] - Path de um arquivo com a descrição
  * @param {string} [options.repo] - URL do repo (padrão: `git remote get-url origin`)
+ * @param {string} [options.ide] - `--ide`, para achar o ENV.md quando há mais de um no workspace
+ * @param {string} [options.envFile] - `--env-file`, ENV.md explícito
  * @param {{ exec?: Function, fileEnv?: Object }} [deps] - `exec` da CLI e as variáveis do ENV.md, injetáveis (testes)
  */
-export async function runCreateMerge({ source, target, title, bodyFile, repo }, deps = {}) {
+export async function runCreateMerge(
+  { source, target, title, bodyFile, repo, ide, envFile },
+  deps = {}
+) {
   if (!source || !target || !title) {
     console.error(
       "Uso: jarvis vcs create-merge --source <branch> --target <branch> --title <titulo> [--body-file path] [--repo url]"
@@ -40,27 +45,31 @@ export async function runCreateMerge({ source, target, title, bodyFile, repo }, 
   };
 
   // O eng.pr chama este comando sem exportar o ENV.md: o que não vier no ambiente sai de lá.
-  const fileVars = deps.fileEnv ?? loadFileEnv();
-  const access = accessValue("VERSION_CONTROL_ACCESS", fileVars);
-  if (access === "manual") {
-    const link = manualUrl();
+  const fileEnv = resolveFileEnv({ ...deps, envOpts: { ide, envFile } });
+  const gate = accessGate("VERSION_CONTROL_ACCESS", fileEnv);
+  if (!gate.ok) {
+    const link = gate.mode === "manual" ? manualUrl() : null;
     console.error(
-      "ℹ️ VERSION_CONTROL_ACCESS=manual: nada foi enviado; abra o PR/MR à mão com o pull-request.md" +
-        (link ? `: ${link}` : ".")
+      `ℹ️ ${gate.reason}` +
+        (gate.mode === "manual"
+          ? `; abra o PR/MR à mão com o pull-request.md${link ? `: ${link}` : "."}`
+          : ".")
     );
     process.exit(EXIT.UNAVAILABLE);
   }
-  if (!access && setting("VERSION_CONTROL", fileVars)) {
-    console.error(
-      "ℹ️ VERSION_CONTROL_ACCESS vazio: tentando a CLI. Rode o /jarvis-init para confirmar o acesso."
-    );
+  if (gate.warning && getVendor(setting("VERSION_CONTROL", fileEnv.vars))) {
+    console.error(`ℹ️ ${gate.warning}`);
   }
 
   const description = bodyFile ? readFileSync(bodyFile, "utf-8") : "";
 
   let noun = "PR";
   try {
-    noun = parseRepoUrl(repoUrl).vendor === "gitlab" ? "MR" : "PR";
+    noun =
+      parseRepoUrl(repoUrl, { versionControl: setting("VERSION_CONTROL", fileEnv.vars) }).vendor ===
+      "gitlab"
+        ? "MR"
+        : "PR";
     const result = await createMergeRequest(repoUrl, { source, target, title, description }, deps);
     console.log(`✅ ${noun} criado: ${result.url}`);
     console.log(JSON.stringify(result));
@@ -91,5 +100,7 @@ if (fileURLToPath(import.meta.url) === process.argv[1]) {
     title: arg("title"),
     bodyFile: arg("body-file"),
     repo: arg("repo"),
+    ide: arg("ide"),
+    envFile: arg("env-file"),
   });
 }

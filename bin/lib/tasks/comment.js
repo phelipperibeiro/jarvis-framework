@@ -3,9 +3,9 @@ import { fileURLToPath } from "node:url";
 import { cardUrl } from "../vcs/api.js";
 import {
   EXIT,
-  accessValue,
+  accessGate,
   getVendor,
-  loadFileEnv,
+  resolveFileEnv,
   runAction,
   setting,
 } from "../integrations/cli-runner.js";
@@ -45,14 +45,24 @@ export function boardRepo(baseUrl) {
  * @param {string} message - Texto do comentário (markdown; no Jira vai como texto simples)
  * Lê TASK_MANAGER, TASK_MANAGER_ACCESS e TASK_MANAGER_URL_BASE do ambiente do processo e, no que
  * faltar, do `$IDE/ENV.md` do workspace (sem `eval` no shell).
- * @param {{ exec?: Function, fileEnv?: Object }} [deps] - `fileEnv`: variáveis do ENV.md (testes)
+ * @param {{ exec?: Function, fileEnv?: Object, envOpts?: Object }} [deps] - `fileEnv`: variáveis do
+ *   ENV.md (testes); `envOpts`: `{ ide, envFile }` para achar o ENV.md
  * @returns {Promise<{ code: number, out: string[], err: string[] }>}
  */
 export async function commentOnCard(cardKey, message, deps = {}) {
   const out = [];
   const err = [];
-  const fileVars = deps.fileEnv ?? loadFileEnv();
+  const fileEnv = resolveFileEnv(deps);
+  const fileVars = fileEnv.vars;
   const env = (name) => setting(name, fileVars);
+  // ENV.md ilegível (ex.: dois IDEs no workspace) sem TASK_MANAGER no ambiente: não dá para saber
+  // se há board; não trata como freelance às cegas.
+  if (fileEnv.error && !String(process.env.TASK_MANAGER || "").trim()) {
+    err.push(
+      `⚠️ Não deu para ler o ENV.md (${fileEnv.error}). Use --ide ou --env-file. Nada foi enviado.`
+    );
+    return { code: EXIT.UNAVAILABLE, out, err };
+  }
   const tm = env("TASK_MANAGER").toLowerCase();
 
   if (isFreelance(tm)) {
@@ -66,16 +76,12 @@ export async function commentOnCard(cardKey, message, deps = {}) {
     return { code: EXIT.UNAVAILABLE, out, err };
   }
 
-  const access = accessValue("TASK_MANAGER_ACCESS", fileVars);
-  if (access === "manual") {
-    err.push("ℹ️ TASK_MANAGER_ACCESS=manual: nada foi enviado; gere o .md do comentário.");
+  const gate = accessGate("TASK_MANAGER_ACCESS", fileEnv);
+  if (!gate.ok) {
+    err.push(`ℹ️ ${gate.reason}${gate.mode === "manual" ? "; gere o .md do comentário" : ""}.`);
     return { code: EXIT.UNAVAILABLE, out, err };
   }
-  if (!access) {
-    err.push(
-      "ℹ️ TASK_MANAGER_ACCESS vazio: tentando a CLI. Rode o /jarvis-init para confirmar o acesso."
-    );
-  }
+  if (gate.warning) err.push(`ℹ️ ${gate.warning}`);
 
   const base = env("TASK_MANAGER_URL_BASE");
   const key = String(cardKey || "").replace(/^#/, "");
@@ -129,7 +135,7 @@ export async function commentOnCard(cardKey, message, deps = {}) {
  * @param {string} message
  * @param {{ bodyFile?: string }} [options] - `bodyFile`: lê o texto de um arquivo
  */
-export async function runComment(cardKey, message, { bodyFile } = {}, deps = {}) {
+export async function runComment(cardKey, message, { bodyFile, ide, envFile } = {}, deps = {}) {
   if (bodyFile && !existsSync(bodyFile)) {
     console.error(`⚠️ Arquivo do comentário não encontrado: ${bodyFile}. Nada foi enviado.`);
     process.exit(EXIT.USAGE);
@@ -139,7 +145,10 @@ export async function runComment(cardKey, message, { bodyFile } = {}, deps = {})
     console.error("Uso: jarvis tasks comment <TASK_MANAGER_KEY> <mensagem> | --body-file <path>");
     process.exit(EXIT.USAGE);
   }
-  const { code, out, err } = await commentOnCard(cardKey, text, deps);
+  const { code, out, err } = await commentOnCard(cardKey, text, {
+    envOpts: { ide, envFile },
+    ...deps,
+  });
   for (const line of out) console.log(line);
   for (const line of err) console.error(line);
   process.exit(code);

@@ -21,8 +21,8 @@ function normalizeGitUrl(url) {
   return raw;
 }
 
-function detectVendor(host) {
-  const fromEnv = String(process.env.VERSION_CONTROL || "")
+function detectVendor(host, fallback = "") {
+  const fromEnv = String(process.env.VERSION_CONTROL || fallback || "")
     .trim()
     .toLowerCase();
   for (const [vendor, spec] of Object.entries(VENDORS)) {
@@ -45,7 +45,7 @@ function detectVendor(host) {
  *   webBase: string,
  * }}
  */
-export function parseRepoUrl(url) {
+export function parseRepoUrl(url, { versionControl } = {}) {
   if (!url || typeof url !== "string") {
     throw new Error("URL do repositório vazia ou inválida");
   }
@@ -68,7 +68,7 @@ export function parseRepoUrl(url) {
     throw new Error(`Project path vazio na URL: ${url}`);
   }
 
-  const vendor = detectVendor(host);
+  const vendor = detectVendor(host, versionControl);
   if (!vendor) {
     throw new Error(
       `Não foi possível detectar o vendor de ${host}.\n` +

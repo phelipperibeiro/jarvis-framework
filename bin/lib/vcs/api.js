@@ -1,11 +1,21 @@
 // Adapters de Git host (GitHub, GitLab) pela CLI oficial do vendor (FRD-006): `gh` e `glab`,
 // com o login delas. O Jarvis não guarda nem lê token. Bitbucket não é suportado.
 import { parseRepoUrl, mergeRequestPath, newMergeRequestUrl } from "../utils/git-parser.js";
-import { EXIT, firstUrl, runAction } from "../integrations/cli-runner.js";
+import {
+  EXIT,
+  accessGate,
+  firstUrl,
+  resolveFileEnv,
+  runAction,
+  setting,
+} from "../integrations/cli-runner.js";
 
-/** Parâmetros de repositório que o catálogo usa: {repo} = host/caminho; {repo_url} = URL web. */
-export function repoParams(repoUrl) {
-  const repo = parseRepoUrl(repoUrl);
+/**
+ * Parâmetros de repositório que o catálogo usa: {repo} = host/caminho; {repo_url} = URL web.
+ * `versionControl`: vendor de reserva para host próprio (ex.: o `VERSION_CONTROL` do ENV.md).
+ */
+export function repoParams(repoUrl, { versionControl } = {}) {
+  const repo = parseRepoUrl(repoUrl, { versionControl });
   return {
     parsed: repo,
     params: {
@@ -34,15 +44,24 @@ function lastNumber(url) {
 }
 
 /**
- * Abre um MR/PR pela CLI do vendor do repositório.
+ * Abre um MR/PR pela CLI do vendor do repositório. Respeita o `VERSION_CONTROL_ACCESS` (ambiente
+ * ou `$IDE/ENV.md`): `manual`, valor inválido ou ENV.md ilegível lançam erro com `sent: false` e
+ * código 3, sem chamar a CLI. Vale para o `jarvis vcs create-merge` e para o MR do Central docs.
  * @param {string} repoUrl
  * @param {{ source: string, target: string, title: string, description?: string }} opts
- * @param {{ exec?: Function }} [deps] - `exec` injetável (testes)
+ * @param {{ exec?: Function, fileEnv?: Object, fileEnvResult?: Object, envOpts?: Object }} [deps]
  * @returns {Promise<{ vendor: string, iid: number|null, url: string|null }>}
  */
 export async function createMergeRequest(repoUrl, opts, deps = {}) {
   const { source, target, title, description = "" } = opts;
-  const { parsed, params } = repoParams(repoUrl);
+  const fileEnv = resolveFileEnv(deps);
+  const gate = accessGate("VERSION_CONTROL_ACCESS", fileEnv);
+  if (!gate.ok) {
+    throw integrationError("PR/MR não aberto", { ...gate, sent: false });
+  }
+  const { parsed, params } = repoParams(repoUrl, {
+    versionControl: setting("VERSION_CONTROL", fileEnv.vars),
+  });
   const noun = parsed.vendor === "gitlab" ? "MR" : "PR";
   const result = await runAction(
     parsed.vendor,
@@ -85,11 +104,15 @@ export function cardUrl(taskManager, baseUrl, cardKey) {
   let base = String(baseUrl || "").trim();
   if (!base) return cardKey;
   // Sem usuário/senha embutidos na URL (nunca mostrar credencial na saída).
-  try {
-    const u = new URL(base);
-    base = `${u.origin}${u.pathname}`;
-  } catch {
-    // URL inválida: usa o texto como está
+  if (/^https?:\/\//i.test(base)) {
+    try {
+      const u = new URL(base);
+      base = `${u.origin}${u.pathname}`;
+    } catch {
+      base = base.replace(/^(https?:\/\/)[^/]*@/i, "$1");
+    }
+  } else {
+    base = base.replace(/^[^/]*@/, "");
   }
   base = base.replace(/\/+$/, "");
   const number = String(cardKey).replace(/^#/, "");

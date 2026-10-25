@@ -2,7 +2,7 @@
 //
 // Tudo em pastas temporárias (mkdtemp). A camada git usa um repositório bare local
 // como `origin` — sem rede — e o `createMergeRequest` é injetado (mock).
-import { test } from "node:test";
+import { test, mock } from "node:test";
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
@@ -341,6 +341,60 @@ test("git: sem CLI (indisponível) o push fica e o MR é null; enviado com erro 
   } finally {
     rmSync(base, { recursive: true, force: true });
   }
+});
+
+test("git: sem CLI, o aviso traz o link de novo MR (github) ou nenhum link (remote fora de github/gitlab)", async (t) => {
+  const { base, clone } = gitFixture();
+  setTestMode(false);
+  const warns = [];
+  mock.method(console, "warn", (...a) => warns.push(a.join(" ")));
+  t.after(() => {
+    mock.reset();
+    setTestMode(true);
+    rmSync(base, { recursive: true, force: true });
+  });
+  const unavailable = Object.assign(new Error("gh: login inválido"), { sent: false, exitCode: 3 });
+  // O push vai para o origin local; o "remote get-url" responde um endereço do GitHub.
+  const runGit = (args, cwd) =>
+    args[0] === "remote" && args[1] === "get-url"
+      ? "https://github.com/o/central-docs"
+      : execFileSync("git", args, {
+          cwd,
+          encoding: "utf-8",
+          stdio: ["ignore", "pipe", "pipe"],
+        }).trim();
+  const s = getStorage(
+    { CENTRAL_DOCS_STORAGE: "filesystem", CENTRAL_DOCS_LOCATION: clone },
+    { root: base, deps: { runGit, createMergeRequest: async () => Promise.reject(unavailable) } }
+  );
+  const src = join(base, "feature-w.md");
+  writeFileSync(src, PRD);
+  const r = await s.publish({
+    localFile: src,
+    destPath: "CORE/product/p/feature-w.md",
+    squad: "CORE",
+    tipo: "feature",
+  });
+  assert.equal(r.mr, null);
+  assert.match(
+    warns.join("\n"),
+    /abra o MR à mão: https:\/\/github.com\/o\/central-docs\/compare\/main\.\.\.docs/
+  );
+
+  warns.length = 0;
+  const s2 = getStorage(
+    { CENTRAL_DOCS_STORAGE: "filesystem", CENTRAL_DOCS_LOCATION: clone },
+    { root: base, deps: { createMergeRequest: async () => Promise.reject(unavailable) } }
+  );
+  const src2 = join(base, "feature-v.md");
+  writeFileSync(src2, PRD);
+  await s2.publish({
+    localFile: src2,
+    destPath: "CORE/product/p/feature-v.md",
+    squad: "CORE",
+    tipo: "feature",
+  });
+  assert.match(warns.join("\n"), /abra o MR à mão no host/);
 });
 
 test("git: com scripts/build-index.sh no repositório, o índice vem do script", async () => {

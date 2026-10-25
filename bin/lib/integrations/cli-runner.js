@@ -64,31 +64,105 @@ const MAXBUFFER = "ERR_CHILD_PROCESS_STDIO_MAXBUFFER";
 const SPAWN_ERRORS = new Set(["ENOENT", "EACCES", "EPERM", "E2BIG", "ENOEXEC", "ENOTDIR"]);
 
 /**
- * Variáveis do `$IDE/ENV.md` do workspace (sobe a partir do cwd; `JARVIS_ENV_FILE` vence).
- * Sem ENV.md, `{}`. Os comandos de integração leem daqui o que não veio no ambiente.
+ * Variáveis do `$IDE/ENV.md` do workspace (sobe a partir do cwd; `--ide`, `--env-file` e
+ * `JARVIS_ENV_FILE` vencem). Sem ENV.md, `vars` vazio e sem erro. ENV.md ambíguo (dois IDEs no
+ * workspace) ou caminho inexistente: `error` com o motivo, para o comando não seguir às cegas.
+ * @param {{ cwd?: string, ide?: string, envFile?: string }} [opts]
+ * @returns {{ vars: Object<string, string>, error: string|null }}
  */
-export function loadFileEnv(cwd = process.cwd()) {
+export function readFileEnv({ cwd = process.cwd(), ide, envFile } = {}) {
+  const flags = {};
+  if (ide) flags.ide = ide;
+  if (envFile) flags["env-file"] = envFile;
   try {
-    const { path } = resolveEnvPath(cwd);
-    return existsSync(path) ? loadEnv(cwd, path) : {};
-  } catch {
-    return {};
+    const { path } = resolveEnvPath(cwd, flags);
+    return { vars: existsSync(path) ? loadEnv(cwd, path) : {}, error: null };
+  } catch (err) {
+    return { vars: {}, error: err.message.split("\n")[0] };
   }
+}
+
+/** Só as variáveis do ENV.md (sem o erro). */
+export function loadFileEnv(opts) {
+  return readFileEnv(opts).vars;
+}
+
+/**
+ * ENV.md dos `deps` de um comando: `fileEnvResult` ({ vars, error }), `fileEnv` (só vars, testes)
+ * ou lido do workspace com `envOpts` ({ ide, envFile }).
+ */
+export function resolveFileEnv(deps = {}) {
+  if (deps.fileEnvResult) return deps.fileEnvResult;
+  if (deps.fileEnv) return { vars: deps.fileEnv, error: null };
+  return readFileEnv(deps.envOpts);
+}
+
+// Valor sem comentário de fim de linha e sem aspas em volta (o loadEnv não tira).
+function clean(value) {
+  return String(value ?? "")
+    .replace(/\s+#.*$/, "")
+    .trim()
+    .replace(/^(["'])(.*)\1$/, "$2")
+    .trim();
 }
 
 /** Valor de uma variável: o ambiente do processo vence; senão, o ENV.md (`fileVars`). */
 export function setting(name, fileVars = {}) {
-  const fromProcess = String(process.env[name] ?? "").trim();
-  return fromProcess || String(fileVars[name] ?? "").trim();
+  return clean(process.env[name]) || clean(fileVars[name]);
 }
 
 /**
- * Valor de uma variável `*_ACCESS`: `cli`, `manual` ou "" (vazio, ausente ou ainda
- * com a lista de opções do template, como `[cli, manual]`).
+ * Forma de acesso de um eixo: `cli`, `manual`, `empty` (vazio, ausente ou a lista de opções do
+ * template, como `[cli, manual]`) ou `invalid` (qualquer outro valor, ex.: `manul`).
  */
-export function accessValue(name, fileVars = {}) {
+export function accessMode(name, fileVars = {}) {
   const v = setting(name, fileVars).toLowerCase();
-  return /^\[.*\]$/.test(v) ? "" : v;
+  if (!v || /^\[.*\]$/.test(v)) return "empty";
+  return v === "cli" || v === "manual" ? v : "invalid";
+}
+
+/** Valor normalizado de uma variável `*_ACCESS` ("" quando vazio ou lista de opções). */
+export function accessValue(name, fileVars = {}) {
+  return accessMode(name, fileVars) === "empty" ? "" : setting(name, fileVars).toLowerCase();
+}
+
+/**
+ * Decide se o comando pode tentar a CLI. Só `cli` (ou vazio, com aviso) segue: `manual`, valor
+ * inválido ou ENV.md ilegível sem a variável no ambiente saem com 3, sem enviar nada (fail secure).
+ * @param {string} name - ex.: `VERSION_CONTROL_ACCESS`
+ * @param {{ vars: Object, error: string|null }} fileEnv - resultado do `readFileEnv`
+ * @returns {{ ok: boolean, code: number, mode: string, reason?: string, warning?: string }}
+ */
+export function accessGate(name, fileEnv) {
+  if (fileEnv.error && !clean(process.env[name])) {
+    return {
+      ok: false,
+      code: EXIT.UNAVAILABLE,
+      mode: "unknown",
+      reason: `não deu para ler o ENV.md (${fileEnv.error}); use --ide ou --env-file. Nada foi enviado`,
+    };
+  }
+  const mode = accessMode(name, fileEnv.vars);
+  if (mode === "manual") {
+    return { ok: false, code: EXIT.UNAVAILABLE, mode, reason: `${name}=manual: nada foi enviado` };
+  }
+  if (mode === "invalid") {
+    return {
+      ok: false,
+      code: EXIT.UNAVAILABLE,
+      mode,
+      reason: `valor inválido em ${name} (use cli ou manual): nada foi enviado`,
+    };
+  }
+  return {
+    ok: true,
+    code: EXIT.OK,
+    mode,
+    warning:
+      mode === "empty"
+        ? `${name} vazio: tentando a CLI. Rode o /jarvis-init para confirmar o acesso.`
+        : undefined,
+  };
 }
 
 // O `acli jira auth status` não tem o código de saída sem login documentado:

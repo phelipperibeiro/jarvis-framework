@@ -18,6 +18,14 @@ import {
 } from "../bin/lib/vcs/api.js";
 import { parseLabels, runCreateIssue } from "../bin/lib/vcs/create-issue.js";
 
+// ENV.md vazio: createMergeRequest lê o VERSION_CONTROL_ACCESS do ENV.md do workspace no que faltar
+// no ambiente, e o teste não pode depender do ENV.md real de quem roda.
+{
+  const dir = mkdtempSync(join(tmpdir(), "jarvis-vcs-env-"));
+  writeFileSync(join(dir, "ENV.md"), "");
+  process.env.JARVIS_ENV_FILE = join(dir, "ENV.md");
+}
+
 // `await fn()` (não `return fn()`): o `finally` só pode restaurar a env var
 // depois que a promise resolver, senão uma função com mais de um `await`
 // antes de ler a variável perderia o valor antes da leitura real acontecer
@@ -459,4 +467,113 @@ test("createMergeRequest: GitLab self-hosted em subgrupo usa a URL completa no -
   );
   const w = writeCall(calls);
   assert.equal(w.args[w.args.indexOf("--repo") + 1], "https://git.corp.com/g/sub/r");
+});
+
+// --- Segunda passada do pre-pr (#181) ----------------------------------------
+
+test("createMergeRequest: manual, valor inválido ou ENV.md ilegível não chamam a CLI (vale para o Central docs)", async () => {
+  const { exec, calls } = fakeCli(ok);
+  const opts = { source: "a", target: "b", title: "t" };
+  await withEnv({ VERSION_CONTROL_ACCESS: undefined }, async () => {
+    for (const fileEnv of [
+      { VERSION_CONTROL_ACCESS: "manual" },
+      { VERSION_CONTROL_ACCESS: "manul" },
+      { VERSION_CONTROL_ACCESS: '"manual"' },
+      { VERSION_CONTROL_ACCESS: "manual # opt-out" },
+    ]) {
+      await assert.rejects(
+        () => createMergeRequest("https://github.com/o/r", opts, { exec, fileEnv }),
+        (e) => e.sent === false && e.exitCode === 3,
+        JSON.stringify(fileEnv)
+      );
+    }
+    await assert.rejects(
+      () =>
+        createMergeRequest("https://github.com/o/r", opts, {
+          exec,
+          fileEnvResult: { vars: {}, error: "Múltiplos ENV.md" },
+        }),
+      (e) => e.sent === false && /não deu para ler o ENV.md/.test(e.message)
+    );
+  });
+  assert.equal(calls.length, 0);
+});
+
+test("createMergeRequest: VERSION_CONTROL_ACCESS=cli no ambiente vence o ENV.md ilegível", async () => {
+  const { exec, calls } = fakeCli({
+    code: 0,
+    stdout: "https://github.com/o/r/pull/3\n",
+    stderr: "",
+  });
+  await withEnv({ VERSION_CONTROL_ACCESS: "cli" }, () =>
+    createMergeRequest(
+      "https://github.com/o/r",
+      { source: "a", target: "b", title: "t" },
+      { exec, fileEnvResult: { vars: {}, error: "Múltiplos" } }
+    )
+  );
+  assert.equal(
+    calls.some((c) => c.args[0] === "pr"),
+    true
+  );
+});
+
+test("createMergeRequest: host próprio usa o VERSION_CONTROL do ENV.md para achar o vendor", async () => {
+  const { exec, calls } = fakeCli({
+    code: 0,
+    stdout: "https://git.corp.com/g/r/-/merge_requests/1\n",
+    stderr: "",
+  });
+  await withEnv({ VERSION_CONTROL: undefined, VERSION_CONTROL_ACCESS: undefined }, () =>
+    createMergeRequest(
+      "https://git.corp.com/g/r",
+      { source: "a", target: "b", title: "t" },
+      { exec, fileEnv: { VERSION_CONTROL: "gitlab" } }
+    )
+  );
+  assert.equal(writeCall(calls).bin, "glab");
+});
+
+test("cardUrl: URL base sem https:// também não mostra a credencial", () => {
+  assert.equal(cardUrl("jira", "u:tok@x.atlassian.net", "ABC-1"), "x.atlassian.net/browse/ABC-1");
+  assert.equal(cardUrl("jira", "x.atlassian.net:443", "ABC-1"), "x.atlassian.net:443/browse/ABC-1");
+});
+
+test("runCreateMerge: aviso de acesso vazio só quando o VERSION_CONTROL é um vendor do catálogo", async () => {
+  const { exec } = fakeCli({ code: 0, stdout: "https://github.com/o/r/pull/1\n", stderr: "" });
+  const env = { VERSION_CONTROL_ACCESS: undefined, VERSION_CONTROL: undefined };
+  const a = await withEnv(env, () =>
+    captureRun(() => runCreateMerge(MERGE, { exec, fileEnv: { VERSION_CONTROL: "github" } }))
+  );
+  assert.match(a.err, /VERSION_CONTROL_ACCESS vazio/);
+  const b = await withEnv(env, () =>
+    captureRun(() =>
+      runCreateMerge(MERGE, { exec, fileEnv: { VERSION_CONTROL: "[github, gitlab]" } })
+    )
+  );
+  assert.equal(/vazio/.test(b.err), false);
+});
+
+test("runCreateIssue: --body-file inexistente sai com 1; repo com caractere inválido sai com 1 (uso)", async () => {
+  const { exec, calls } = fakeCli(ok);
+  const a = await captureRun(() =>
+    runCreateIssue(
+      { repo: "https://github.com/o/r", title: "t", bodyFile: "/nao/existe/181" },
+      { exec }
+    )
+  );
+  assert.equal(a.code, 1);
+  assert.match(a.err, /não encontrado/);
+  const dir = mkdtempSync(join(tmpdir(), "jarvis-issue-"));
+  try {
+    const body = join(dir, "b.md");
+    writeFileSync(body, "corpo");
+    const b = await captureRun(() =>
+      runCreateIssue({ repo: "https://github.com/o/r$x", title: "t", bodyFile: body }, { exec })
+    );
+    assert.equal(b.code, 1);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+  assert.equal(calls.filter((c) => c.args[0] === "issue").length, 0);
 });
