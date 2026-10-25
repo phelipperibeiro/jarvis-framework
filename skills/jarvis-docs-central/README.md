@@ -27,7 +27,7 @@ WORKSPACE=loja                           # vira a pasta do produto
 
 A pasta padrão é `docs/jarvis/central-docs` nos dois modos de trabalho, junto dos documentos de trabalho. No projeto único, `docs/jarvis/` no `.gitignore` a deixa fora do versionamento; no workspace (vários repositórios) a raiz não é versionada. Quem já usa `./central-docs` continua funcionando, e o Upgrade do `/jarvis-init` oferece mover a pasta.
 
-> Com `.git`, o PR usa o token do vendor (GitLab `.npmrc`, GitHub `gh auth`/`GITHUB_TOKEN`, Bitbucket `BITBUCKET_TOKEN`). O token **nunca** vai no chat nem no `ENV.md`.
+> Com `.git`, o PR é aberto pela CLI do host (`gh pr create` / `glab mr create`), com o login dela (`gh auth login`, `glab auth login`). Sem a CLI, a branch fica no remote e a publicação mostra o link para abrir o MR à mão. Nenhum token vai no chat nem no `ENV.md`.
 
 **Vindo da versão anterior (Central docs como repositório remoto)?** Rode `/jarvis-init` → Upgrade (C). Ele propõe `CENTRAL_DOCS_STORAGE=filesystem`, a pasta padrão e o `git clone` do repositório antigo.
 

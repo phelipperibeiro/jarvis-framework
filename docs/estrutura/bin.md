@@ -28,7 +28,7 @@ bin/
     ├── core/               # sync-engine, scanner, profile-filter, token-report, env-upgrade, docs-migrate, workspace-mode, mcp-config, stale-skills, session-scan
     ├── flow-map/           # índice, leitor das tabelas de chamadas, árvore e saída do jarvis map
     ├── config/             # IDEs, constants (SYNC_DIRS, LOCK_FILE)
-    ├── vcs/                # adapters GitLab/GitHub/Bitbucket
+    ├── vcs/                # GitHub/GitLab pela CLI (gh, glab)
     ├── tasks/              # comentários em boards
     ├── docs/               # scripts de sync/publish de docs
     ├── auth/               # legado (login removido no fork)

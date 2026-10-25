@@ -20,7 +20,7 @@ Este documento contém os checklists detalhados para o processo de onboarding de
 
 ## Checklist de Ferramentas e Acessos
 
-- [ ] **Repositório Git** - GitLab/GitHub/Bitbucket (conforme `VERSION_CONTROL`)
+- [ ] **Repositório Git** - GitHub ou GitLab (conforme `VERSION_CONTROL`), com a CLI logada (`gh auth login` / `glab auth login`)
 - [ ] **Task manager** - só se `TASK_MANAGER` estiver preenchido
 - [ ] **Chat** - só se `MESSAGE_COMUNICATOR` estiver preenchido
 - [ ] **Ambiente de Dev** - Credenciais e VPN (se o time usar)

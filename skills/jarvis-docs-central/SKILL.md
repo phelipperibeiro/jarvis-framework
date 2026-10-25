@@ -56,7 +56,7 @@ Ler do `$IDE/ENV.md`:
 - `CENTRAL_DOCS_REF`, `CENTRAL_DOCS_TARGET_BRANCH`, `CENTRAL_DOCS_REVIEWERS` (só com `.git`)
 - `SQUAD` (ALL-CAPS-COM-HIFEN) e `WORKSPACE` (vira a pasta do produto)
 
-Com `.git`, o PR usa o token do vendor pelo adaptador de VCS (GitLab `.npmrc`; GitHub `gh auth`/`GITHUB_TOKEN`; Bitbucket `BITBUCKET_TOKEN`). ❌ **Nunca** colar token no chat.
+Com `.git`, o PR é aberto pela CLI do host (`gh pr create` / `glab mr create`), com o login dela; sem a CLI, a branch fica no remote e a publicação mostra o link para abrir o MR à mão. ❌ **Nunca** colar token no chat nem gravar no `ENV.md`.
 
 ---
 

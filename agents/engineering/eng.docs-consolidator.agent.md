@@ -33,7 +33,7 @@ Por isso o texto tem de ser **completo, autossuficiente e sem ambiguidade**.
    - Sugira o slug da funcionalidade em kebab-case, curto e pelo nome que o negócio usa (ex.: `feature-checkout-pix`, não `feature-task-123`).
    - Os títulos dizem o que a funcionalidade é.
 6. **Referências sempre com URL:**
-   - card pelo `TASK_MANAGER` do `ENV.md`, com a URL no padrão da `eng.integrations-rules.md` (Jira `/browse/`, Linear `/issue/`, GitHub `/issues/`, Asana); no modo freelance, o número de controle, sem URL;
+   - card pelo `TASK_MANAGER` do `ENV.md`, com a URL no padrão da `eng.integrations-rules.md` (Jira `/browse/`, GitHub `/issues/`, GitLab `/-/issues/`); no modo freelance, o número de controle, sem URL;
    - PR/MR pelo `VERSION_CONTROL` ou pelo `remote origin` (número + URL).
 7. **Nunca inventar.** Sem fonte, pergunte ao agente principal (que pergunta ao usuário) ou registre como "não informado".
 8. **Sem dados sensíveis.** Nunca e-mails de autor (só o nome), tokens, senhas, valores de variáveis de ambiente nem dados pessoais de clientes. Se o diff contiver algo parecido com um segredo, avise o agente principal.

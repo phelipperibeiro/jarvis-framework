@@ -62,8 +62,8 @@ prompts/
 │   │   ├── product-specs-update/
 │   │   ├── eng-qa/                 # Base neutra de QA (+ especializações em QA_SPECIALIZATIONS)
 │   │   ├── eng-qa-planner/         # Planejamento de testes e análise de gaps de cobertura
-│   │   ├── jarvis-report-issue/          # Auto-report de bugs no repo do Jarvis (GitLab/GitHub/Bitbucket)
-│   │   ├── eng-global-task-comment/      # Comentário no card (Jira/Linear/GitHub/Asana)
+│   │   ├── jarvis-report-issue/          # Auto-report de bugs no repo do Jarvis (CLI do host: gh)
+│   │   ├── eng-global-task-comment/      # Comentário no card (Jira/GitHub/GitLab, pela CLI do vendor)
 │   │   ├── jarvis-list-specializations/ # Lista especializações de stack instaladas e registradas
 │   │   ├── jarvis-create-specialization/ # Cria uma especialização de stack a partir do código do projeto e a registra
 │   │   ├── jarvis-evolution-architect/ # Mentor de arquitetura para a evolução do Jarvis

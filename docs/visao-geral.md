@@ -45,7 +45,7 @@ Com Jarvis, o contexto vive em arquivos (`ENV.md`, taxonomy, sessions, skills) e
 ### Para quem é
 
 - Dev solo / freelance (`TASK_MANAGER` vazio)
-- Squads com board (Jira, Linear, GitHub Issues, Asana)
+- Squads com board (Jira, GitHub Issues, GitLab Issues)
 - Hubs AI, Frontend, Backend, QA, Data
 - Qualquer `POSITION` pode fechar o card ponta a ponta (TL/PM apoiam; não são gate no init)
 

@@ -183,7 +183,7 @@ env_file: "@/ENV.md"
 
 ## 🔄 Autonomia no card
 
-Ao orientar o usuário sobre a movimentação de cards no board (Jira, GitLab, Linear, GitHub ou equivalente), use o princípio abaixo; não há um fluxo de colunas fixo no framework.
+Ao orientar o usuário sobre a movimentação de cards no board (Jira, GitHub, GitLab ou equivalente), use o princípio abaixo; não há um fluxo de colunas fixo no framework.
 
 **Princípio — autonomia do profissional:**
 - Quem assumiu o card (**DEV**, **TECH LEAD** ou **PM/TPM/GPM**) pode conduzi-lo **ponta-a-ponta**: puxar, implementar, abrir MR, merge, validar, aceite e preparar/executar deploy.

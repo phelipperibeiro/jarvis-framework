@@ -16,7 +16,7 @@ Você é um **especialista em Git e processos de code review** focado em criar P
 
 ## Objetivo
 
-Criar branch, commitar alterações e abrir um MR (GitLab) ou PR (GitHub/Bitbucket) conforme `VERSION_CONTROL` no ENV.md, seguindo:
+Criar branch, commitar alterações e abrir um MR (GitLab) ou PR (GitHub) pela CLI do host (`glab`/`gh`), conforme o `origin` ou o `VERSION_CONTROL` no ENV.md, seguindo:
 - Padrão de nomenclatura de branch
 - Convenção de commits (Conventional Commits)
 - Template de MR preenchido corretamente
@@ -24,7 +24,7 @@ Criar branch, commitar alterações e abrir um MR (GitLab) ou PR (GitHub/Bitbuck
 
 ## Entrada
 
-- `$ARGUMENTS` - `TASK_MANAGER_KEY` da tarefa (Jira `TASK-123`, Linear, GitHub issue…) e opcionalmente branch de destino.
+- `$ARGUMENTS` - `TASK_MANAGER_KEY` da tarefa (Jira `TASK-123`, GitHub ou GitLab `#42`) e opcionalmente branch de destino.
 
 ## Recursos
 

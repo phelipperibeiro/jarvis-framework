@@ -8,7 +8,7 @@ Confere que tudo está passando, envia a branch e abre o merge request (ou pull 
 
 ## O que é
 
-É a etapa de entrega do ciclo. A branch nasceu no [`eng.start`](./eng.start.md) e os commits foram feitos pelo [`eng.work`](./eng.work.md); aqui o comando valida, faz o push e cria o MR/PR pelo adapter do seu vendor (`VERSION_CONTROL`: GitLab, GitHub ou Bitbucket).
+É a etapa de entrega do ciclo. A branch nasceu no [`eng.start`](./eng.start.md) e os commits foram feitos pelo [`eng.work`](./eng.work.md); aqui o comando valida, faz o push e cria o MR/PR pela CLI do seu host (`gh` no GitHub, `glab` no GitLab), com o login dela.
 
 ## Quando usar
 

@@ -2,7 +2,7 @@
 
 ## Para que serve
 
-Notas e checklists **internos** sobre o próprio Jarvis (dívidas técnicas, ideias, pendências do fork) — não é o board Jira/Linear do time de produto.
+Notas e checklists **internos** sobre o próprio Jarvis (dívidas técnicas, ideias, pendências do fork) — não é o board (Jira, GitHub, GitLab) do time de produto.
 
 ## Conteúdo atual
 

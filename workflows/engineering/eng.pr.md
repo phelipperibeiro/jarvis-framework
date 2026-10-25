@@ -202,7 +202,7 @@ git log --oneline -3
 
 ## Fase 4: Criar Merge Request / Pull Request
 
-Ler `VERSION_CONTROL` do `$IDE/ENV.md` (`gitlab` | `github` | `bitbucket`).
+Ler `VERSION_CONTROL` do `$IDE/ENV.md` (`github` | `gitlab`).
 Use **MR** se GitLab, **PR** se GitHub.
 
 ### 4.1 Gerar `pull-request.md` na sessão

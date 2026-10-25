@@ -16,11 +16,14 @@ bin/
     ├── cli/
     │   ├── program.js         # Único lugar que monta o commander — ver "Arquitetura"
     │   └── shared-options.js  # .option() repetidos entre comandos (--ide, --quiet, etc.)
-    ├── vcs/                   # Adapters de Git host (GitLab/GitHub/Bitbucket)
-    │   ├── api.js             # Lógica HTTP real (createIssue, createMergeRequest)
+    ├── integrations/          # Board e git pela CLI oficial do vendor (FRD-006)
+    │   ├── vendors.json       # Catálogo: vendors (jira/acli, github/gh, gitlab/glab), comandos por ação e variáveis
+    │   └── cli-runner.js      # checkCli, buildArgs, runAction (execFile sem shell), códigos de saída 0/1/3/4
+    ├── vcs/                   # GitHub/GitLab pela CLI (gh pr create, glab mr create, issue create)
+    │   ├── api.js             # createIssue, createMergeRequest, cardUrl (sobre o cli-runner)
     │   ├── create-merge.js, create-issue.js   # função exportada + CLI direto (ver abaixo)
     ├── tasks/
-    │   └── comment.js         # Adapter de task manager (jira/linear/github/asana) — mesmo padrão
+    │   └── comment.js         # Comentário no card (jira/github/gitlab) pelo cli-runner — mesmo padrão
     ├── config/                # ide-config.js (fonte de verdade de IDEs), constants.js
     ├── core/                  # scanner.js, sync-engine.js, profile-filter.js, token-report.js
     ├── docs/                  # Central docs: fetch/publish pelo adaptador + validação de frontmatter
@@ -28,7 +31,7 @@ bin/
     │   ├── fetch-file.js       # openStorageFromEnv() + fetchFile() — `docs sync`/`docs fetch`/`docs publish`
     │   ├── publish-file.js     # tipos, resolveDestPath() e publishFile() — `docs publish`
     │   └── storage/            # adaptadores (CENTRAL_DOCS_STORAGE): index.js (fábrica), filesystem.js (pasta + git), build-index.js
-    ├── utils/                 # logger.js, ui.js, paths.js, frontmatter.js, git-parser.js, npmrc-parser.js
+    ├── utils/                 # logger.js, ui.js, paths.js, frontmatter.js, git-parser.js
     ├── flow-map/              # `jarvis map` — grafo de chamadas entre workflows/skills/agents
     ├── auth/                  # session.js (auth.json legado, hoje só `jarvis logout` o lê)
     └── env-loader.js          # Resolve e lê o ENV.md ($IDE/ENV.md)
@@ -116,12 +119,12 @@ if (fileURLToPath(import.meta.url) === process.argv[1]) {
 
 ## Variáveis de ambiente lidas diretamente (fora do ENV.md)
 
-`bin/lib/tasks/comment.js` e `bin/lib/vcs/*.js` leem `process.env` direto (`TASK_MANAGER`, `TOKEN_TASK_MANAGER`, `CENTRAL_DOCS_REPO`, `VERSION_CONTROL`, etc.) — não passam pelo `env-loader.js`/ENV.md. Isso é intencional: esses adapters são chamados por skills/workflows que já exportam essas variáveis do `ENV.md` para o processo (`set -a; eval "$(grep ... $IDE/ENV.md)"; set +a`) antes de invocar o comando. Se um comando novo precisar ler o `ENV.md` diretamente, use `env-loader.js#resolveEnvPath`/`loadEnv` (ver `whoami.js`, `tokens.js`, `qa-signoff.js` como exemplo) em vez de `process.env`.
+`bin/lib/tasks/comment.js` e `bin/lib/vcs/*.js` leem `process.env` direto (`TASK_MANAGER`, `TASK_MANAGER_ACCESS`, `TASK_MANAGER_URL_BASE`, `VERSION_CONTROL`, etc.; nenhum token: o login é o da CLI do vendor) — não passam pelo `env-loader.js`/ENV.md. Isso é intencional: esses adapters são chamados por skills/workflows que já exportam essas variáveis do `ENV.md` para o processo (`set -a; eval "$(grep ... $IDE/ENV.md)"; set +a`) antes de invocar o comando. Se um comando novo precisar ler o `ENV.md` diretamente, use `env-loader.js#resolveEnvPath`/`loadEnv` (ver `whoami.js`, `tokens.js`, `qa-signoff.js` como exemplo) em vez de `process.env`.
 
 ## Testes
 
 - `npm run test:comandos` — valida que toda referência a comando/skill nos workflows e skills existe de fato (não testa o CLI em runtime).
-- `npm run test:filtro` — testes unitários de `profile-filter.js`, `token-report.js`, `flow-map`, `env-loader.js`, `sync-engine.js` e `vcs/api.js`.
+- `npm run test:filtro` — testes unitários de `profile-filter.js`, `token-report.js`, `flow-map`, `env-loader.js`, `sync-engine.js`, `vcs/api.js`, `tasks/comment.js`, `integrations/` (catálogo e runner) e do upgrade.
 - Não há teste automatizado de ponta a ponta do CLI (`jarvis <comando>` real) — a camada de dispatch (`program.js`, `bin/commands/*.js`) não é cobrida pelos testes unitários. Qualquer mudança ali precisa de validação manual dos comandos afetados.
 
 ### Como testar código que lê `fs`/rede sem mockar módulo
@@ -130,10 +133,10 @@ Os 3 arquivos mais críticos sem cobertura até pouco tempo atrás (`env-loader.
 
 - **`env-loader.js`** (e `flow-map.test.js`, mais antigo): `mkdtempSync(join(tmpdir(), "jarvis-..."))` monta um workspace fake com `.{ide}/ENV.md`, roda a função contra ele, `rmSync` no `finally`.
 - **`sync-engine.js`**: `getFrameworkRoot()` (`utils/paths.js`) já tem um escape hatch — `process.env.JARVIS_ROOT`, se definido e existir, vence sobre o framework real. O teste aponta `JARVIS_ROOT` para um fixture mínimo (`agents/`, `skills/`, etc. com 1 arquivo cada) em vez de sincronizar o framework inteiro.
-- **`vcs/api.js`**: usa `mock.method(globalThis, "fetch", ...)` do `node:test` pra controlar a resposta por vendor, sem mockar o módulo nem tocar rede real. **Atenção**: toda função de rede chama `getVcsToken()` antes do fetch — fixe `GITLAB_TOKEN`/`GITHUB_TOKEN`/`BITBUCKET_TOKEN` via env var no teste (ver `withEnv` em `vcs-api.test.js`), senão o resultado depende do que a máquina que roda o teste tiver em `.npmrc`/`gh auth`.
+- **`integrations/cli-runner.js`, `vcs/api.js`, `tasks/comment.js`**: o `exec` (que roda a CLI do vendor) é injetável pelo último parâmetro (`deps`); o teste passa uma CLI falsa que responde por subcomando (ver `fakeExec` em `cli-runner.test.js`), sem chamar `gh`/`glab`/`acli` de verdade nem depender do login da máquina. No `jarvis init --upgrade` (teste por subprocesso), `JARVIS_SKIP_CLI_CHECK=1` desliga a descoberta, e o teste dela põe uma CLI falsa no `PATH`.
 - **`docs/` (Central docs)**: tudo em pasta temporária (`mkdtempSync`). A camada git do adaptador `filesystem` usa um repositório `git init --bare` local como `origin` (sem rede), e o `createMergeRequest` é injetado pelo parâmetro `deps` de `getStorage` (ver `docs-storage.test.js`).
 
-**Armadilha com `async`**: o helper `withEnv(vars, fn)` (em `vcs-api.test.js`) precisa de `return **await** fn()`, não `return fn()`, dentro do `try`. Sem o `await`, o `finally` que restaura a env var roda assim que `fn()` retorna uma Promise pendente — ou seja, **antes** da função terminar. Isso só não quebra quando a leitura da env var acontece antes do primeiro `await` de `fn` (ex: `createIssue` lê o token antes do seu próprio `fetch`); quebra silenciosamente em qualquer função com mais de um `await` antes de ler a variável.
+**Armadilha com `async`**: o helper `withEnv(vars, fn)` (em `vcs-api.test.js`) precisa de `return **await** fn()`, não `return fn()`, dentro do `try`. Sem o `await`, o `finally` que restaura a env var roda assim que `fn()` retorna uma Promise pendente — ou seja, **antes** da função terminar. Isso só não quebra quando a leitura da env var acontece antes do primeiro `await` de `fn` (ex: uma função que lê `process.env` antes do primeiro `await`); quebra silenciosamente em qualquer função com mais de um `await` antes de ler a variável.
 
 Ao escrever um teste novo para um arquivo que toca `fs`/rede, prefira um desses padrões a mockar o módulo inteiro ou refatorar pra injeção de dependência — nenhum dos arquivos acima precisou mudar uma linha de lógica de produção para ganhar teste.
 

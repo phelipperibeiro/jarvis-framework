@@ -1,7 +1,12 @@
 // Testes do catálogo de vendors (bin/lib/integrations/vendors.json). Rode com: npm run test:filtro
 import { test } from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync, readdirSync, statSync } from "node:fs";
+import { dirname, join, relative } from "node:path";
+import { fileURLToPath } from "node:url";
 import { loadCatalog } from "../bin/lib/integrations/cli-runner.js";
+
+const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 
 const MARKERS = [
   "key",
@@ -65,4 +70,37 @@ test("catálogo: nenhuma variável guarda token e todas têm o prefixo de um eix
     assert.match(key, /^(TASK_MANAGER|VERSION_CONTROL)(_|$)/);
     for (const f of ["axis", "what", "where", "example"]) assert.ok(f in v, `${key}.${f}`);
   }
+});
+
+// Variáveis dos eixos citadas fora do catálogo (RQT-1 do FRD-006): workflows, rules, skills e o
+// template do ENV. Uma sobra (ex.: um *_TOKEN_ENV antigo) faz o teste falhar.
+const SCAN = ["workflows", "rules", "rules-on-demand", "skills", "templates/ENV-template.md"];
+// Exceções: nomes com o prefixo de um eixo que não são variáveis do catálogo.
+const NOT_CATALOG = new Set([
+  "TASK_MANAGER_KEY", // id da tarefa (card ou número de controle), não é variável do ENV
+]);
+
+function walk(path, out = []) {
+  const st = statSync(path);
+  if (st.isFile()) {
+    if (/\.(md|json|js)$/.test(path)) out.push(path);
+    return out;
+  }
+  for (const name of readdirSync(path)) walk(join(path, name), out);
+  return out;
+}
+
+test("consistência: toda variável TASK_MANAGER_*/VERSION_CONTROL_* citada existe no catálogo", () => {
+  const known = new Set(Object.keys(loadCatalog().variables));
+  const missing = [];
+  for (const base of SCAN) {
+    for (const file of walk(join(root, base))) {
+      const text = readFileSync(file, "utf-8");
+      for (const m of text.matchAll(/\b(TASK_MANAGER|VERSION_CONTROL)_[A-Z0-9_]+\b/g)) {
+        if (!known.has(m[0]) && !NOT_CATALOG.has(m[0]))
+          missing.push(`${relative(root, file)}: ${m[0]}`);
+      }
+    }
+  }
+  assert.deepEqual([...new Set(missing)], []);
 });

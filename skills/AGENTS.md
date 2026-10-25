@@ -25,9 +25,9 @@ skills/
 ├── eng-global-tech-spec/        # Método do /eng.build-tech-spec: Delivery Spec (épico/história) e Reference Spec
 │   ├── SKILL.md
 │   └── references/
-├── eng-global-pr/               # Criacao de Pull/Merge Requests (GitLab/GitHub/Bitbucket)
+├── eng-global-pr/               # Criacao de Pull/Merge Requests (GitHub/GitLab, pela CLI)
 │   └── SKILL.md
-├── eng-global-task-comment/     # Comentário no card (Jira/Linear/GitHub Issues/Asana)
+├── eng-global-task-comment/     # Comentário no card (Jira/GitHub/GitLab, pela CLI do vendor)
 │   └── SKILL.md
 ├── jarvis-list-specializations/ # Lista especializações de stack instaladas e registradas
 │   └── SKILL.md
@@ -80,7 +80,7 @@ skills/
 │   └── SKILL.md
 ├── jarvis-context-detect/       # Detecta contexto do projeto/tarefa
 │   └── SKILL.md
-└── jarvis-docs-central/         # Sync/publish docs no central-docs (GitLab/GitHub/Bitbucket)
+└── jarvis-docs-central/         # Sync/publish docs no central-docs (GitHub/GitLab)
     └── SKILL.md
 ```
 
@@ -258,7 +258,7 @@ Skills são invocados de formas diferentes dependendo da IDE:
 | Pipelines ETL/ELT, modelagem, qualidade, BI/dashboards, governança, onboarding de fonte, orquestração | `eng-data` (base) + `DATA_SPECIALIZATIONS` |
 | Criar pipeline novo (docs, qualidade, idempotência, gold) | `data.new-pipeline` |
 | Criar contrato de dados para squad requisitante | `data.contract` |
-| Documentação central (GitLab/GitHub/Bitbucket) | `jarvis-docs-central` |
+| Documentação central (GitHub/GitLab) | `jarvis-docs-central` |
 | Bug cross-service (HTTP + AMQP) | `eng-backend-microservices-trace` |
 
 ---
