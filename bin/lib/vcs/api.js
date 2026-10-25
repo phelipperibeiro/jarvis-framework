@@ -81,8 +81,16 @@ export async function createIssue(repoUrl, opts, deps = {}) {
  */
 export function cardUrl(taskManager, baseUrl, cardKey) {
   const tm = String(taskManager || "").toLowerCase();
-  const base = String(baseUrl || "").replace(/\/$/, "");
+  let base = String(baseUrl || "").trim();
   if (!base) return cardKey;
+  // Sem usuário/senha embutidos na URL (nunca mostrar credencial na saída).
+  try {
+    const u = new URL(base);
+    base = `${u.origin}${u.pathname}`;
+  } catch {
+    // URL inválida: usa o texto como está
+  }
+  base = base.replace(/\/+$/, "");
   const number = String(cardKey).replace(/^#/, "");
   if (tm === "github") return `${base}/issues/${number}`;
   if (tm === "gitlab") return `${base}/-/issues/${number}`;

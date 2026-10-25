@@ -290,3 +290,136 @@ test("firstUrl: pega a URL da saída da CLI", () => {
   );
   assert.equal(firstUrl("nada"), null);
 });
+
+// --- Correções do pre-pr (#181) ---------------------------------------------
+
+test("defaultExec: binário inexistente → ENOENT; exit numérico; timeout → ETIMEDOUT", async () => {
+  const { defaultExec } = await import("../bin/lib/integrations/cli-runner.js");
+  assert.equal((await defaultExec("binario-que-nao-existe-xyz-181", [])).code, "ENOENT");
+  assert.equal((await defaultExec(process.execPath, ["-e", "process.exit(3)"])).code, 3);
+  const t = await defaultExec(process.execPath, ["-e", "setTimeout(() => {}, 5000)"], {
+    timeoutMs: 100,
+  });
+  assert.equal(t.code, "ETIMEDOUT");
+});
+
+test("runAction: binário some entre a checagem e o envio (ENOENT) → indisponível, nada enviado", async () => {
+  const { exec } = fakeExec([
+    [isVersion, ok],
+    [isAuth, ok],
+    [(_b, a) => a[0] === "issue", { code: "ENOENT", stdout: "", stderr: "" }],
+  ]);
+  const r = await runAction(
+    "github",
+    "comment",
+    { key: "1", repo: "github.com/o/r", body: "x" },
+    { exec }
+  );
+  assert.deepEqual([r.ok, r.sent, r.code], [false, false, EXIT.UNAVAILABLE]);
+});
+
+test("runAction: erro de spawn (E2BIG) → indisponível; saída grande demais → enviado com erro", async () => {
+  const spawn = fakeExec([
+    [isVersion, ok],
+    [isAuth, ok],
+    [(_b, a) => a[0] === "issue", { code: "E2BIG", stdout: "", stderr: "" }],
+  ]);
+  const a = await runAction(
+    "gitlab",
+    "comment",
+    { key: "1", repo_url: "https://gitlab.com/g/r", body: "x" },
+    { exec: spawn.exec }
+  );
+  assert.deepEqual([a.sent, a.code], [false, EXIT.UNAVAILABLE]);
+  const big = fakeExec([
+    [isVersion, ok],
+    [isAuth, ok],
+    [
+      (_b, a) => a[0] === "issue",
+      { code: "ERR_CHILD_PROCESS_STDIO_MAXBUFFER", stdout: "", stderr: "" },
+    ],
+  ]);
+  const b = await runAction(
+    "github",
+    "comment",
+    { key: "1", repo: "github.com/o/r", body: "x" },
+    { exec: big.exec }
+  );
+  assert.deepEqual([b.sent, b.code], [true, EXIT.SENT_WITH_ERROR]);
+  assert.match(b.reason, /saída grande demais/);
+});
+
+test("runAction: argumento inválido sai com 1 antes de tocar a CLI", async () => {
+  const { exec, calls } = fakeExec([]);
+  const r = await runAction(
+    "github",
+    "create_merge",
+    { repo: "github.com/o/r", source: "a b", target: "main", title: "t" },
+    { exec }
+  );
+  assert.deepEqual([r.sent, r.code], [false, EXIT.USAGE]);
+  assert.equal(calls.length, 0);
+});
+
+test("runAction: sem descrição, o gh pr create recebe --body-file (arquivo vazio)", async () => {
+  let seen = null;
+  const { exec } = fakeExec([
+    [isVersion, ok],
+    [isAuth, ok],
+    [
+      (_b, a) => a[0] === "pr",
+      (_b, a) => {
+        seen = readFileSync(a[a.indexOf("--body-file") + 1], "utf-8");
+        return ok;
+      },
+    ],
+  ]);
+  const r = await runAction(
+    "github",
+    "create_merge",
+    { repo: "github.com/o/r", source: "feat/x", target: "main", title: "t" },
+    { exec }
+  );
+  assert.equal(r.ok, true);
+  assert.equal(seen, "");
+});
+
+test("buildArgs: key, título e branches são obrigatórios (não somem com a flag)", () => {
+  assert.throws(
+    () => buildArgs("github", "comment", { key: "", repo: "github.com/o/r", body_file: "/b" }),
+    /falta o valor de \{key\}/
+  );
+  assert.throws(
+    () =>
+      buildArgs("github", "create_merge", {
+        repo: "github.com/o/r",
+        source: "a",
+        target: "",
+        title: "t",
+        body_file: "/b",
+      }),
+    /\{target\}/
+  );
+});
+
+test("toPlainText: o conteúdo de bloco de código fica como está", () => {
+  assert.equal(toPlainText("```\n# x\n**/y\n```\n# Título"), "# x\n**/y\nTítulo");
+  assert.equal(toPlainText(null), "");
+  assert.equal(toPlainText("`sem fecho e **sem par"), "`sem fecho e **sem par");
+});
+
+test("accessValue: vazio, ausente e a lista de opções do template contam como vazio", async () => {
+  const { accessValue } = await import("../bin/lib/integrations/cli-runner.js");
+  const prev = process.env.X_ACCESS_181;
+  try {
+    process.env.X_ACCESS_181 = "[cli, manual]";
+    assert.equal(accessValue("X_ACCESS_181"), "");
+    process.env.X_ACCESS_181 = " Manual ";
+    assert.equal(accessValue("X_ACCESS_181"), "manual");
+    delete process.env.X_ACCESS_181;
+    assert.equal(accessValue("X_ACCESS_181"), "");
+  } finally {
+    if (prev === undefined) delete process.env.X_ACCESS_181;
+    else process.env.X_ACCESS_181 = prev;
+  }
+});

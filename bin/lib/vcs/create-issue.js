@@ -43,7 +43,11 @@ export async function runCreateIssue({ repo, title, bodyFile, labels }, deps = {
     process.exit(EXIT.UNAVAILABLE);
   }
 
-  const body = existsSync(bodyFile) ? readFileSync(bodyFile, "utf-8") : "";
+  if (!existsSync(bodyFile)) {
+    console.error(`⚠️ Arquivo do corpo não encontrado: ${bodyFile}. Nada foi enviado.`);
+    process.exit(EXIT.USAGE);
+  }
+  const body = readFileSync(bodyFile, "utf-8");
 
   try {
     const result = await createIssue(repoUrl, { title, body, labels: parseLabels(labels) }, deps);
@@ -55,7 +59,7 @@ export async function runCreateIssue({ repo, title, bodyFile, labels }, deps = {
       console.error("⚠️ A issue pode ter sido aberta. Confira no repositório antes de repetir.");
       process.exit(EXIT.SENT_WITH_ERROR);
     }
-    process.exit(EXIT.UNAVAILABLE);
+    process.exit(err.exitCode === EXIT.USAGE ? EXIT.USAGE : EXIT.UNAVAILABLE);
   }
 }
 

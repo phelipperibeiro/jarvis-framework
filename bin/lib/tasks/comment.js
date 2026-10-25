@@ -1,7 +1,7 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { cardUrl } from "../vcs/api.js";
-import { EXIT, getVendor, runAction } from "../integrations/cli-runner.js";
+import { EXIT, accessValue, getVendor, runAction } from "../integrations/cli-runner.js";
 
 function env(name) {
   return String(process.env[name] || "").trim();
@@ -59,7 +59,7 @@ export async function commentOnCard(cardKey, message, deps = {}) {
     return { code: EXIT.UNAVAILABLE, out, err };
   }
 
-  const access = env("TASK_MANAGER_ACCESS").toLowerCase();
+  const access = accessValue("TASK_MANAGER_ACCESS");
   if (access === "manual") {
     err.push("ℹ️ TASK_MANAGER_ACCESS=manual: nada foi enviado; gere o .md do comentário.");
     return { code: EXIT.UNAVAILABLE, out, err };
@@ -71,7 +71,14 @@ export async function commentOnCard(cardKey, message, deps = {}) {
   }
 
   const base = env("TASK_MANAGER_URL_BASE");
-  const key = String(cardKey).replace(/^#/, "");
+  const key = String(cardKey || "").replace(/^#/, "");
+  // GitHub e GitLab identificam o card pelo número; o Jira, pela key (ABC-123).
+  if (tm !== "jira" && !/^\d+$/.test(key)) {
+    err.push(
+      `⚠️ ${tm}: o card é o número da issue (ex.: 42 ou #42), não "${cardKey}". Nada foi enviado.`
+    );
+    return { code: EXIT.USAGE, out, err };
+  }
   const params = { key, body: message };
   if (tm !== "jira") {
     const repo = boardRepo(base);
@@ -92,6 +99,10 @@ export async function commentOnCard(cardKey, message, deps = {}) {
     if (url !== cardKey) out.push(`   ${url}`);
     return { code: EXIT.OK, out, err };
   }
+  if (result.code === EXIT.USAGE) {
+    err.push(`⚠️ ${result.reason}. Nada foi enviado.`);
+    return { code: EXIT.USAGE, out, err };
+  }
   if (result.sent) {
     err.push(
       `⚠️ Erro depois de enviar o comentário em ${cardKey} (${result.reason}). ` +
@@ -111,13 +122,17 @@ export async function commentOnCard(cardKey, message, deps = {}) {
  * @param {string} message
  * @param {{ bodyFile?: string }} [options] - `bodyFile`: lê o texto de um arquivo
  */
-export async function runComment(cardKey, message, { bodyFile } = {}) {
+export async function runComment(cardKey, message, { bodyFile } = {}, deps = {}) {
+  if (bodyFile && !existsSync(bodyFile)) {
+    console.error(`⚠️ Arquivo do comentário não encontrado: ${bodyFile}. Nada foi enviado.`);
+    process.exit(EXIT.USAGE);
+  }
   const text = bodyFile ? readFileSync(bodyFile, "utf-8") : message;
   if (!cardKey || !text) {
     console.error("Uso: jarvis tasks comment <TASK_MANAGER_KEY> <mensagem> | --body-file <path>");
     process.exit(EXIT.USAGE);
   }
-  const { code, out, err } = await commentOnCard(cardKey, text);
+  const { code, out, err } = await commentOnCard(cardKey, text, deps);
   for (const line of out) console.log(line);
   for (const line of err) console.error(line);
   process.exit(code);

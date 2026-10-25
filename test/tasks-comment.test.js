@@ -136,3 +136,101 @@ test("TOKEN_TASK_MANAGER preenchido não é usado nem aparece na saída", async 
   );
   assert.equal([...r.out, ...r.err].join("\n").includes("segredo-123"), false);
 });
+
+// --- Correções do pre-pr (#181) ---------------------------------------------
+
+test("github/gitlab: key que não é número sai com 1 sem chamar a CLI", async () => {
+  const { exec, calls } = fakeCli();
+  const r = await withEnv(
+    {
+      TASK_MANAGER: "github",
+      TASK_MANAGER_ACCESS: "cli",
+      TASK_MANAGER_URL_BASE: "https://github.com/o/r",
+    },
+    () => commentOnCard("TASK-12", "m", { exec })
+  );
+  assert.equal(r.code, 1);
+  assert.equal(calls.length, 0);
+  const empty = await withEnv(
+    {
+      TASK_MANAGER: "gitlab",
+      TASK_MANAGER_ACCESS: "cli",
+      TASK_MANAGER_URL_BASE: "https://gitlab.com/g/r",
+    },
+    () => commentOnCard("#", "m", { exec })
+  );
+  assert.equal(empty.code, 1);
+});
+
+test("TASK_MANAGER_ACCESS com a lista de opções do template conta como vazio (avisa e tenta a CLI)", async () => {
+  const r = await withEnv(
+    {
+      TASK_MANAGER: "github",
+      TASK_MANAGER_ACCESS: "[cli, manual]",
+      TASK_MANAGER_URL_BASE: "https://github.com/o/r",
+    },
+    () => commentOnCard("1", "oi", { exec: fakeCli().exec })
+  );
+  assert.equal(r.code, 0);
+  assert.match(r.err[0], /vazio/);
+});
+
+async function captureRun(fn) {
+  const real = { exit: process.exit, log: console.log, error: console.error };
+  const out = [];
+  let code = 0;
+  process.exit = (c) => {
+    code = c;
+    throw new Error("__exit__");
+  };
+  console.log = (...a) => out.push(a.join(" "));
+  console.error = (...a) => out.push(a.join(" "));
+  try {
+    await fn();
+  } catch (e) {
+    if (e.message !== "__exit__") throw e;
+  } finally {
+    process.exit = real.exit;
+    console.log = real.log;
+    console.error = real.error;
+  }
+  return { code, out: out.join("\n") };
+}
+
+test("runComment: --body-file lido; arquivo inexistente e falta de texto saem com 1", async () => {
+  const { runComment } = await import("../bin/lib/tasks/comment.js");
+  const { mkdtempSync, writeFileSync, readFileSync, rmSync } = await import("node:fs");
+  const { tmpdir } = await import("node:os");
+  const { join } = await import("node:path");
+  const dir = mkdtempSync(join(tmpdir(), "jarvis-comment-"));
+  try {
+    const file = join(dir, "c.md");
+    writeFileSync(file, "texto do arquivo");
+    let sent = null;
+    const exec = async (_b, args) => {
+      if (args[0] === "--version" || args.includes("status")) return ok;
+      sent = readFileSync(args[args.indexOf("--body-file") + 1], "utf-8");
+      return ok;
+    };
+    const env = {
+      TASK_MANAGER: "github",
+      TASK_MANAGER_ACCESS: "cli",
+      TASK_MANAGER_URL_BASE: "https://github.com/o/r",
+    };
+    const a = await withEnv(env, () =>
+      captureRun(() => runComment("1", "", { bodyFile: file }, { exec }))
+    );
+    assert.equal(a.code, 0);
+    assert.equal(sent, "texto do arquivo");
+    const b = await withEnv(env, () =>
+      captureRun(() => runComment("1", "", { bodyFile: join(dir, "x.md") }, { exec }))
+    );
+    assert.equal(b.code, 1);
+    assert.match(b.out, /não encontrado/);
+    const c = await withEnv(env, () => captureRun(() => runComment("1", "", {}, { exec })));
+    assert.equal(c.code, 1);
+    assert.match(c.out, /Uso: jarvis tasks comment/);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});

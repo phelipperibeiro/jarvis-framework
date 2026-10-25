@@ -1,20 +1,23 @@
 import { execSync } from "node:child_process";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { EXIT, createMergeRequest, newMergeRequestUrl, parseRepoUrl } from "./api.js";
+import { accessValue } from "../integrations/cli-runner.js";
 
 /**
  * Abre um MR/PR pela CLI do vendor (`gh pr create` / `glab mr create`, pelo hostname do remote).
  * Usada por `jarvis vcs create-merge` e, diretamente, por `eng.pr`.
- * Saída: 0 criado · 3 indisponível (nada enviado) · 4 enviado com erro (confira antes de repetir).
+ * Saída: 0 criado · 1 uso · 3 indisponível (nada enviado; inclui `VERSION_CONTROL_ACCESS=manual`)
+ * · 4 enviado com erro (confira antes de repetir).
  * @param {Object} options
  * @param {string} options.source - Branch de origem
  * @param {string} options.target - Branch de destino
  * @param {string} options.title - Título do MR/PR
  * @param {string} [options.bodyFile] - Path de um arquivo com a descrição
  * @param {string} [options.repo] - URL do repo (padrão: `git remote get-url origin`)
+ * @param {{ exec?: Function }} [deps] - `exec` da CLI, injetável (testes)
  */
-export async function runCreateMerge({ source, target, title, bodyFile, repo }) {
+export async function runCreateMerge({ source, target, title, bodyFile, repo }, deps = {}) {
   if (!source || !target || !title) {
     console.error(
       "Uso: jarvis vcs create-merge --source <branch> --target <branch> --title <titulo> [--body-file path] [--repo url]"
@@ -22,13 +25,41 @@ export async function runCreateMerge({ source, target, title, bodyFile, repo }) 
     process.exit(EXIT.USAGE);
   }
 
+  if (bodyFile && !existsSync(bodyFile)) {
+    console.error(`⚠️ Arquivo da descrição não encontrado: ${bodyFile}. Nada foi enviado.`);
+    process.exit(EXIT.USAGE);
+  }
+
   const repoUrl = repo || execSync("git remote get-url origin", { encoding: "utf-8" }).trim();
+  const manualUrl = () => {
+    try {
+      return newMergeRequestUrl(repoUrl, source, target);
+    } catch {
+      return null; // remote fora de github/gitlab: sem link
+    }
+  };
+
+  const access = accessValue("VERSION_CONTROL_ACCESS");
+  if (access === "manual") {
+    const link = manualUrl();
+    console.error(
+      "ℹ️ VERSION_CONTROL_ACCESS=manual: nada foi enviado; abra o PR/MR à mão com o pull-request.md" +
+        (link ? `: ${link}` : ".")
+    );
+    process.exit(EXIT.UNAVAILABLE);
+  }
+  if (!access && process.env.VERSION_CONTROL) {
+    console.error(
+      "ℹ️ VERSION_CONTROL_ACCESS vazio: tentando a CLI. Rode o /jarvis-init para confirmar o acesso."
+    );
+  }
+
   const description = bodyFile ? readFileSync(bodyFile, "utf-8") : "";
 
   let noun = "PR";
   try {
     noun = parseRepoUrl(repoUrl).vendor === "gitlab" ? "MR" : "PR";
-    const result = await createMergeRequest(repoUrl, { source, target, title, description });
+    const result = await createMergeRequest(repoUrl, { source, target, title, description }, deps);
     console.log(`✅ ${noun} criado: ${result.url}`);
     console.log(JSON.stringify(result));
   } catch (err) {
@@ -37,11 +68,9 @@ export async function runCreateMerge({ source, target, title, bodyFile, repo }) 
       console.error(`⚠️ O ${noun} pode ter sido criado. Confira no host antes de repetir.`);
       process.exit(EXIT.SENT_WITH_ERROR);
     }
-    try {
-      console.error(`Abra o ${noun} à mão: ${newMergeRequestUrl(repoUrl, source, target)}`);
-    } catch {
-      // URL do repositório inválida: a mensagem acima já explica
-    }
+    if (err.exitCode === EXIT.USAGE) process.exit(EXIT.USAGE);
+    const link = manualUrl();
+    if (link) console.error(`Abra o ${noun} à mão: ${link}`);
     process.exit(EXIT.UNAVAILABLE);
   }
 }

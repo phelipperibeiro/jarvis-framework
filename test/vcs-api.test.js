@@ -5,6 +5,9 @@
 // (`deps`): nenhum teste chama a CLI de verdade nem depende do login da máquina.
 import { test } from "node:test";
 import assert from "node:assert/strict";
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import {
   createMergeRequest,
   createIssue,
@@ -285,4 +288,123 @@ test("runCreateIssue: repo sem host (grupo/repo) sai com 3 sem chamar a CLI", as
   );
   assert.deepEqual(exits, [3]);
   assert.equal(calls.length, 0);
+});
+
+// --- runCreateMerge (contrato 0/1/3/4 do eng.pr) e correções do pre-pr (#181) ---
+
+/** Roda `fn` com process.exit e console trocados; devolve { code, out, err }. */
+async function captureRun(fn) {
+  const real = { exit: process.exit, log: console.log, error: console.error };
+  const out = [];
+  const err = [];
+  let code = 0;
+  process.exit = (c) => {
+    code = c;
+    throw new Error("__exit__");
+  };
+  console.log = (...a) => out.push(a.join(" "));
+  console.error = (...a) => err.push(a.join(" "));
+  try {
+    await fn();
+  } catch (e) {
+    if (e.message !== "__exit__") throw e;
+  } finally {
+    Object.assign(process, { exit: real.exit });
+    console.log = real.log;
+    console.error = real.error;
+  }
+  return { code, out: out.join("\n"), err: err.join("\n") };
+}
+
+const { runCreateMerge } = await import("../bin/lib/vcs/create-merge.js");
+const MERGE = { source: "feat/x", target: "main", title: "t", repo: "https://github.com/o/r" };
+
+test("runCreateMerge: sem source/target/title sai com 1", async () => {
+  const r = await captureRun(() => runCreateMerge({ source: "a" }));
+  assert.equal(r.code, 1);
+  assert.match(r.err, /Uso: jarvis vcs create-merge/);
+});
+
+test("runCreateMerge: --body-file inexistente sai com 1 sem chamar a CLI", async () => {
+  const { exec, calls } = fakeCli(ok);
+  const r = await captureRun(() =>
+    runCreateMerge({ ...MERGE, bodyFile: "/nao/existe/181" }, { exec })
+  );
+  assert.equal(r.code, 1);
+  assert.equal(calls.length, 0);
+});
+
+test("runCreateMerge: VERSION_CONTROL_ACCESS=manual sai com 3, sem chamar a CLI, com o link", async () => {
+  const { exec, calls } = fakeCli(ok);
+  const r = await withEnv({ VERSION_CONTROL_ACCESS: "manual" }, () =>
+    captureRun(() => runCreateMerge(MERGE, { exec }))
+  );
+  assert.equal(r.code, 3);
+  assert.equal(calls.length, 0);
+  assert.match(r.err, /manual: nada foi enviado.*compare\/main\.\.\.feat%2Fx/);
+});
+
+test("runCreateMerge: sucesso lê o --body-file e imprime o PR", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "jarvis-merge-"));
+  try {
+    const body = join(dir, "pr.md");
+    writeFileSync(body, "descrição");
+    let sentBody = null;
+    const exec = async (bin, args) => {
+      if (args[0] === "--version" || args.includes("status")) return ok;
+      sentBody = readFileSync(args[args.indexOf("--body-file") + 1], "utf-8");
+      return { code: 0, stdout: "https://github.com/o/r/pull/5\n", stderr: "" };
+    };
+    const r = await withEnv({ VERSION_CONTROL_ACCESS: "cli" }, () =>
+      captureRun(() => runCreateMerge({ ...MERGE, bodyFile: body }, { exec }))
+    );
+    assert.equal(r.code, 0);
+    assert.match(r.out, /PR criado: https:\/\/github.com\/o\/r\/pull\/5/);
+    assert.equal(sentBody, "descrição");
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("runCreateMerge: sem login sai com 3 e mostra o link; enviado com erro sai com 4 sem link", async () => {
+  const noLogin = async (_b, args) =>
+    args[0] === "--version" ? ok : { code: 1, stdout: "", stderr: "" };
+  const a = await withEnv({ VERSION_CONTROL_ACCESS: "cli" }, () =>
+    captureRun(() => runCreateMerge(MERGE, { exec: noLogin }))
+  );
+  assert.equal(a.code, 3);
+  assert.match(a.err, /Abra o PR à mão: https:\/\/github.com\/o\/r\/compare/);
+  const { exec } = fakeCli({ code: 1, stdout: "", stderr: "boom" });
+  const b = await withEnv({ VERSION_CONTROL_ACCESS: "cli" }, () =>
+    captureRun(() => runCreateMerge(MERGE, { exec }))
+  );
+  assert.equal(b.code, 4);
+  assert.match(b.err, /pode ter sido criado/);
+  assert.equal(/à mão/.test(b.err), false);
+});
+
+test("runCreateMerge: branch inválida sai com 1", async () => {
+  const { exec } = fakeCli(ok);
+  const r = await withEnv({ VERSION_CONTROL_ACCESS: "cli" }, () =>
+    captureRun(() => runCreateMerge({ ...MERGE, source: "a b" }, { exec }))
+  );
+  assert.equal(r.code, 1);
+});
+
+test("cardUrl: não mostra usuário e senha embutidos na URL base", () => {
+  assert.equal(
+    cardUrl("jira", "https://user:segredo@empresa.atlassian.net/", "ABC-1"),
+    "https://empresa.atlassian.net/browse/ABC-1"
+  );
+});
+
+test("newMergeRequestUrl: sem target", () => {
+  assert.equal(
+    newMergeRequestUrl("https://github.com/o/r", "feat/x"),
+    "https://github.com/o/r/compare/feat%2Fx?expand=1"
+  );
+  assert.equal(
+    newMergeRequestUrl("https://gitlab.com/g/r", "feat/x"),
+    "https://gitlab.com/g/r/-/merge_requests/new?merge_request[source_branch]=feat%2Fx"
+  );
 });

@@ -50,11 +50,27 @@ export function defaultExec(bin, args, { timeoutMs = DEFAULT_TIMEOUT_MS } = {}) 
       (error, stdout, stderr) => {
         if (!error) return resolve({ code: 0, stdout, stderr });
         let code = error.code ?? 1;
-        if (error.killed || error.signal) code = "ETIMEDOUT";
+        if (code !== MAXBUFFER && (error.killed || error.signal)) code = "ETIMEDOUT";
         resolve({ code, stdout: stdout || "", stderr: stderr || "" });
       }
     );
   });
+}
+
+const MAXBUFFER = "ERR_CHILD_PROCESS_STDIO_MAXBUFFER";
+
+// Erros do próprio spawn (o processo nem começou): nada foi enviado.
+const SPAWN_ERRORS = new Set(["ENOENT", "EACCES", "EPERM", "E2BIG", "ENOEXEC", "ENOTDIR"]);
+
+/**
+ * Valor de uma variável `*_ACCESS` do ambiente: `cli`, `manual` ou "" (vazio, ausente ou ainda
+ * com a lista de opções do template, como `[cli, manual]`).
+ */
+export function accessValue(name) {
+  const v = String(process.env[name] || "")
+    .trim()
+    .toLowerCase();
+  return /^\[.*\]$/.test(v) ? "" : v;
 }
 
 // O `acli jira auth status` não tem o código de saída sem login documentado:
@@ -116,6 +132,17 @@ const BRANCH_RE = /^[A-Za-z0-9._/-]+$/;
 const REPO_RE = /^[A-Za-z0-9.-]+(\/[A-Za-z0-9._-]+)+$/;
 const REPO_URL_RE = /^https?:\/\/[A-Za-z0-9.-]+(:\d+)?(\/[A-Za-z0-9._-]+)+$/;
 
+// Marcadores sem os quais a ação não faz sentido; os outros (labels, body) saem com a flag.
+const REQUIRED_MARKERS = new Set([
+  "key",
+  "repo",
+  "repo_url",
+  "title",
+  "source",
+  "target",
+  "body_file",
+]);
+
 function validate(name, value) {
   const checks = {
     key: KEY_RE,
@@ -157,6 +184,7 @@ export function buildArgs(vendorName, action, params = {}) {
     }
     const value = params[m[1]];
     if (value === undefined || value === null || String(value) === "") {
+      if (REQUIRED_MARKERS.has(m[1])) throw usageError(`falta o valor de {${m[1]}}`);
       if (args.length && args[args.length - 1].startsWith("-")) args.pop();
       continue;
     }
@@ -172,18 +200,28 @@ export function buildArgs(vendorName, action, params = {}) {
  * bloco de código vira o texto de dentro.
  */
 export function toPlainText(markdown) {
-  return String(markdown || "")
-    .split("\n")
-    .filter((line) => !/^\s*```/.test(line))
-    .map((line) =>
+  let inFence = false;
+  const out = [];
+  for (const line of String(markdown || "").split("\n")) {
+    if (/^\s*```/.test(line)) {
+      inFence = !inFence;
+      continue;
+    }
+    // Dentro do bloco de código, o texto vai como está (# de comentário, **/glob etc.).
+    if (inFence) {
+      out.push(line);
+      continue;
+    }
+    out.push(
       line
         .replace(/^(\s*)#{1,6}\s+/, "$1")
         .replace(/^(\s*)[*+]\s+/, "$1- ")
         .replace(/!?\[([^\]]*)\]\(([^)]+)\)/g, "$1 ($2)")
         .replace(/(\*\*|__)(.+?)\1/g, "$2")
         .replace(/`([^`]*)`/g, "$1")
-    )
-    .join("\n");
+    );
+  }
+  return out.join("\n");
 }
 
 /**
@@ -202,63 +240,55 @@ export async function runAction(
   params = {},
   { exec = defaultExec, timeoutMs } = {}
 ) {
+  const fail = (code, sent, reason, res = {}) => ({
+    ok: false,
+    sent,
+    code,
+    stdout: res.stdout || "",
+    stderr: res.stderr || "",
+    reason,
+  });
+
   const vendor = getVendor(vendorName);
-  if (!vendor) {
-    return {
-      ok: false,
-      sent: false,
-      code: EXIT.UNAVAILABLE,
-      stdout: "",
-      stderr: "",
-      reason: `${vendorName} não é suportado`,
-    };
+  if (!vendor) return fail(EXIT.UNAVAILABLE, false, `${vendorName} não é suportado`);
+
+  // Valida os argumentos antes de tocar a CLI: erro de uso sai com 1, sem rede.
+  const usesBodyFile = Boolean(vendor.actions[action]?.includes("{body_file}"));
+  const body = vendor.body_format === "plain" ? toPlainText(params.body) : (params.body ?? "");
+  try {
+    buildArgs(vendorName, action, { ...params, body, body_file: usesBodyFile ? "/tmp/x" : "" });
+  } catch (err) {
+    return fail(err.exitCode ?? EXIT.USAGE, false, err.message);
   }
 
   const cli = await checkCli(vendorName, { exec });
-  if (!cli.installed || !cli.loggedIn) {
-    return {
-      ok: false,
-      sent: false,
-      code: EXIT.UNAVAILABLE,
-      stdout: "",
-      stderr: "",
-      reason: cli.reason,
-    };
-  }
+  if (!cli.installed || !cli.loggedIn) return fail(EXIT.UNAVAILABLE, false, cli.reason);
 
-  const body = vendor.body_format === "plain" ? toPlainText(params.body) : params.body;
   let tmpDir = null;
-  const filled = { ...params, body };
-  if (vendor.actions[action]?.includes("{body_file}") && body) {
-    tmpDir = mkdtempSync(join(tmpdir(), "jarvis-cli-"));
-    filled.body_file = join(tmpDir, "body.md");
-    writeFileSync(filled.body_file, body);
-  }
-
   try {
+    const filled = { ...params, body };
+    // O arquivo do corpo vai sempre, mesmo vazio: sem terminal, `gh pr create` exige o corpo.
+    if (usesBodyFile) {
+      tmpDir = mkdtempSync(join(tmpdir(), "jarvis-cli-"));
+      filled.body_file = join(tmpDir, "body.md");
+      writeFileSync(filled.body_file, body);
+    }
     const { bin, args } = buildArgs(vendorName, action, filled);
     const res = await exec(bin, args, { timeoutMs });
-    if (res.code === 0)
+    if (res.code === 0) {
       return { ok: true, sent: true, code: EXIT.OK, stdout: res.stdout, stderr: res.stderr };
-    // Binário sumiu entre a checagem e a chamada: nada foi enviado.
-    if (res.code === "ENOENT") {
-      return {
-        ok: false,
-        sent: false,
-        code: EXIT.UNAVAILABLE,
-        stdout: "",
-        stderr: "",
-        reason: `\`${bin}\` não encontrada`,
-      };
     }
-    return {
-      ok: false,
-      sent: true,
-      code: EXIT.SENT_WITH_ERROR,
-      stdout: res.stdout,
-      stderr: res.stderr,
-      reason: res.code === "ETIMEDOUT" ? "tempo esgotado" : `${bin} saiu com código ${res.code}`,
-    };
+    // O processo nem começou (binário sumiu, sem permissão, argumento grande demais): nada foi enviado.
+    if (SPAWN_ERRORS.has(res.code)) {
+      return fail(EXIT.UNAVAILABLE, false, `\`${bin}\` não pôde ser executada (${res.code})`);
+    }
+    let reason = `${bin} saiu com código ${res.code}`;
+    if (res.code === "ETIMEDOUT") reason = "tempo esgotado";
+    if (res.code === MAXBUFFER) reason = "saída grande demais";
+    return fail(EXIT.SENT_WITH_ERROR, true, reason, res);
+  } catch (err) {
+    // Falha local antes de chamar a CLI (ex.: não conseguiu gravar o arquivo do corpo).
+    return fail(EXIT.UNAVAILABLE, false, `falha local antes de enviar: ${err.message}`);
   } finally {
     if (tmpDir) rmSync(tmpDir, { recursive: true, force: true });
   }
