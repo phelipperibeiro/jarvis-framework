@@ -30,11 +30,12 @@ export function repoParams(repoUrl, { versionControl } = {}) {
  * Erro de integração com o que a cadeia precisa: `exitCode` (3 indisponível, 4 enviado com erro)
  * e `sent` (se a chamada de escrita chegou a começar).
  */
-function integrationError(what, result) {
+function integrationError(what, result, vendor) {
   const detail = [result.reason, result.stderr?.trim()].filter(Boolean).join(": ");
   const err = new Error(`${what}: ${detail || "falha na CLI"}`);
   err.exitCode = result.code;
   err.sent = result.sent;
+  if (vendor) err.vendor = vendor;
   return err;
 }
 
@@ -46,7 +47,7 @@ function lastNumber(url) {
 /**
  * Abre um MR/PR pela CLI do vendor do repositório. Respeita o `VERSION_CONTROL_ACCESS` (ambiente
  * ou `$IDE/ENV.md`): `manual`, valor inválido ou ENV.md ilegível lançam erro com `sent: false` e
- * código 3, sem chamar a CLI. Vale para o `jarvis vcs create-merge` e para o MR do Central docs.
+ * código 3, sem chamar a CLI. O erro da CLI traz `vendor`. Vale para o `jarvis vcs create-merge` e para o MR do Central docs.
  * @param {string} repoUrl
  * @param {{ source: string, target: string, title: string, description?: string }} opts
  * @param {{ exec?: Function, fileEnv?: Object, fileEnvResult?: Object, envOpts?: Object }} [deps]
@@ -69,7 +70,9 @@ export async function createMergeRequest(repoUrl, opts, deps = {}) {
     { ...params, source, target, title, body: description },
     deps
   );
-  if (!result.ok) throw integrationError(`Falha ao criar ${noun} ${parsed.vendor}`, result);
+  if (!result.ok) {
+    throw integrationError(`Falha ao criar ${noun} ${parsed.vendor}`, result, parsed.vendor);
+  }
   const url = firstUrl(result.stdout);
   return { vendor: parsed.vendor, iid: lastNumber(url), url };
 }

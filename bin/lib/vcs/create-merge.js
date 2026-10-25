@@ -1,7 +1,7 @@
 import { execSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
-import { EXIT, createMergeRequest, newMergeRequestUrl, parseRepoUrl } from "./api.js";
+import { EXIT, createMergeRequest, newMergeRequestUrl } from "./api.js";
 import { accessGate, getVendor, resolveFileEnv, setting } from "../integrations/cli-runner.js";
 
 /**
@@ -63,12 +63,8 @@ export async function runCreateMerge(
 
   const description = bodyFile ? readFileSync(bodyFile, "utf-8") : "";
 
-  let noun = "PR";
+  const nounOf = (vendor) => (vendor === "gitlab" ? "MR" : "PR");
   try {
-    const { vendor } = parseRepoUrl(repoUrl, {
-      versionControl: setting("VERSION_CONTROL", fileEnv.vars),
-    });
-    noun = vendor === "gitlab" ? "MR" : "PR";
     // Repassa o ENV.md já resolvido (com --ide/--env-file): sem isso, o createMergeRequest o leria
     // de novo pelo cwd e falharia com dois ENV.md no workspace.
     const result = await createMergeRequest(
@@ -76,10 +72,11 @@ export async function runCreateMerge(
       { source, target, title, description },
       { ...deps, fileEnvResult: fileEnv }
     );
-    console.log(`✅ ${noun} criado: ${result.url}`);
+    console.log(`✅ ${nounOf(result.vendor)} criado: ${result.url}`);
     console.log(JSON.stringify(result));
   } catch (err) {
     console.error(err.message);
+    const noun = nounOf(err.vendor); // sem vendor (remote fora de github/gitlab): "PR"
     if (err.exitCode === EXIT.SENT_WITH_ERROR) {
       console.error(`⚠️ O ${noun} pode ter sido criado. Confira no host antes de repetir.`);
       process.exit(EXIT.SENT_WITH_ERROR);

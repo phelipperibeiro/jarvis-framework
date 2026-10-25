@@ -22,8 +22,13 @@ import { parseLabels, runCreateIssue } from "../bin/lib/vcs/create-issue.js";
 // no ambiente, e o teste não pode depender do ENV.md real de quem roda.
 const EMPTY_ENV_DIR = mkdtempSync(join(tmpdir(), "jarvis-vcs-env-"));
 writeFileSync(join(EMPTY_ENV_DIR, "ENV.md"), "");
+const PREV_ENV_FILE = process.env.JARVIS_ENV_FILE;
 process.env.JARVIS_ENV_FILE = join(EMPTY_ENV_DIR, "ENV.md");
-after(() => rmSync(EMPTY_ENV_DIR, { recursive: true, force: true }));
+after(() => {
+  if (PREV_ENV_FILE === undefined) delete process.env.JARVIS_ENV_FILE;
+  else process.env.JARVIS_ENV_FILE = PREV_ENV_FILE;
+  rmSync(EMPTY_ENV_DIR, { recursive: true, force: true });
+});
 
 // `await fn()` (não `return fn()`): o `finally` só pode restaurar a env var
 // depois que a promise resolver, senão uma função com mais de um `await`
@@ -390,6 +395,25 @@ test("runCreateMerge: sem login sai com 3 e mostra o link; enviado com erro sai 
   assert.equal(b.code, 4);
   assert.match(b.err, /pode ter sido criado/);
   assert.equal(/à mão/.test(b.err), false);
+});
+
+test("runCreateMerge: no GitLab, a mensagem usa MR (vendor vindo do createMergeRequest)", async () => {
+  const GL = { ...MERGE, repo: "https://gitlab.com/o/r" };
+  const ok0 = async (_b, args) =>
+    args[0] === "--version" || args.includes("status")
+      ? ok
+      : { code: 0, stdout: "https://gitlab.com/o/r/-/merge_requests/7\n", stderr: "" };
+  const a = await withEnv({ VERSION_CONTROL_ACCESS: "cli" }, () =>
+    captureRun(() => runCreateMerge(GL, { exec: ok0, ...NO_FILE_ENV }))
+  );
+  assert.equal(a.code, 0);
+  assert.match(a.out, /MR criado: https:\/\/gitlab.com\/o\/r\/-\/merge_requests\/7/);
+  const { exec } = fakeCli({ code: 1, stdout: "", stderr: "boom" });
+  const b = await withEnv({ VERSION_CONTROL_ACCESS: "cli" }, () =>
+    captureRun(() => runCreateMerge(GL, { exec, ...NO_FILE_ENV }))
+  );
+  assert.equal(b.code, 4);
+  assert.match(b.err, /O MR pode ter sido criado/);
 });
 
 test("runCreateMerge: branch inválida sai com 1", async () => {

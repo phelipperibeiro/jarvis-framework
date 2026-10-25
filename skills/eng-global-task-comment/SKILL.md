@@ -65,7 +65,7 @@ Se o `jarvis` não estiver no projeto, use `node "$JARVIS_ROOT/bin/jarvis.js" ta
 
 - `0` → comentário feito (ou freelance). Encerrar.
 - `1` → uso (ex.: no GitHub/GitLab o card é o número da issue). Corrija a chamada; não siga para o passo 2.
-- `3` → indisponível, nada enviado → passo 2.
+- `3` → indisponível, nada enviado → passo 2 só com CLI ausente ou sem login; `TASK_MANAGER_ACCESS` `manual` ou inválido → passo 3; ENV.md ambíguo → repetir o passo 1 com `--ide` ou `--env-file`.
 - `4` → enviado com erro → passo 3, com o aviso de conferir no card antes de repetir. **Não** tentar o passo 2.
 
 ### 2. CLI do vendor direto

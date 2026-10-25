@@ -540,8 +540,11 @@ test("readFileEnv: lê o ENV.md por --env-file; dois ENV.md sem --ide dão erro;
   const { tmpdir } = await import("node:os");
   const { join } = await import("node:path");
   const ws = mkdtempSync(join(tmpdir(), "jarvis-readenv-"));
-  const prev = process.env.JARVIS_ENV_FILE;
+  // O workspace tem os próprios ENV.md (a busca para nele, sem subir para fora do /tmp); o
+  // JARVIS_ENV_FILE e o IDE de quem roda os testes furariam a ordem de resolução: saem aqui.
+  const prev = { JARVIS_ENV_FILE: process.env.JARVIS_ENV_FILE, IDE: process.env.IDE };
   delete process.env.JARVIS_ENV_FILE;
+  delete process.env.IDE;
   try {
     mkdirSync(join(ws, ".claude"));
     mkdirSync(join(ws, ".cursor"));
@@ -555,7 +558,7 @@ test("readFileEnv: lê o ENV.md por --env-file; dois ENV.md sem --ide dão erro;
       /não encontrado/
     );
   } finally {
-    if (prev !== undefined) process.env.JARVIS_ENV_FILE = prev;
+    for (const [k, v] of Object.entries(prev)) if (v !== undefined) process.env[k] = v;
     rmSync(ws, { recursive: true, force: true });
   }
 });

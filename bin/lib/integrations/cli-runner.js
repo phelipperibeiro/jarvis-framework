@@ -86,11 +86,6 @@ export function readFileEnv({ cwd = process.cwd(), ide, envFile } = {}) {
   }
 }
 
-/** Só as variáveis do ENV.md (sem o erro). */
-export function loadFileEnv(opts) {
-  return readFileEnv(opts).vars;
-}
-
 /**
  * ENV.md dos `deps` de um comando: `fileEnvResult` ({ vars, error }), `fileEnv` (só vars, testes)
  * ou lido do workspace com `envOpts` ({ ide, envFile }).
