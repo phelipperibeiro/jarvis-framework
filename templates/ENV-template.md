@@ -111,19 +111,28 @@ PLATFORM_SPECIALIZATIONS=
 
 
 # --- Task manager (opcional) -------------------------------------------------
-# Board de cards. Vazio = freelance: sem Jira/Linear/etc.
-# Nesse caso o workflow pergunta um número de controle próprio (TASK_MANAGER_KEY)
-# e usa isso na pasta da sessão e no nome da branch.
-# URL base para links nos alertas (ex: https://empresa.atlassian.net).
-TASK_MANAGER=[jira, linear, github, asana]
-TOKEN_TASK_MANAGER=
+# Board de cards: jira (só Jira Cloud), github ou gitlab. Vazio = freelance: o workflow
+# pergunta um número de controle próprio (TASK_MANAGER_KEY) e as ações viram .md.
+# O Jarvis fala com o board pela CLI oficial, com o login dela (gh auth login,
+# glab auth login, acli jira auth login). Nenhum token vai neste arquivo.
+# TASK_MANAGER_ACCESS: cli (pela CLI) ou manual (gera um .md para colar). Vazio = tenta a CLI.
+# TASK_MANAGER_URL_BASE: no GitHub/GitLab, o endereço do repositório dos cards
+# (ex: https://github.com/empresa/projeto; obrigatório); no Jira, o site (ex:
+# https://empresa.atlassian.net; opcional, só para o link do card).
+# Jira Data Center/Server não tem CLI oficial: use TASK_MANAGER_ACCESS=manual.
+# Catálogo dos vendors e comandos: bin/lib/integrations/vendors.json.
+TASK_MANAGER=[jira, github, gitlab]
+TASK_MANAGER_ACCESS=[cli, manual]
 TASK_MANAGER_URL_BASE=
 
 
 # --- Controle de versão (opcional) -------------------------------------------
-# Token NÃO vai aqui: GitLab → .npmrc; GitHub → gh auth ou GITHUB_TOKEN;
-# Bitbucket → BITBUCKET_TOKEN.
-VERSION_CONTROL=[gitlab, github, bitbucket]
+# Host de git do projeto: github ou gitlab. O repositório e o host vêm do
+# git remote get-url origin. PR/MR pela CLI oficial (gh pr create, glab mr create),
+# com o login dela. Nenhum token vai neste arquivo.
+# VERSION_CONTROL_ACCESS: cli ou manual (o pull-request.md fica pronto). Vazio = tenta a CLI.
+VERSION_CONTROL=[github, gitlab]
+VERSION_CONTROL_ACCESS=[cli, manual]
 
 
 # --- Mensageria (opcional) ---------------------------------------------------
@@ -220,9 +229,10 @@ QA_SIGNOFF_MAX_AGE=24
 
 
 # --- Reportar bug no próprio Jarvis (opcional) ------------------------------
-# URL ou path curto do repo do framework (ex: https://github.com/phelipperibeiro/jarvis-framework).
-# Usado pelo skill /jarvis-report-issue. Alias: JARVIS_GITLAB_PROJECT.
-# Token: GitLab .npmrc | GitHub gh auth / GITHUB_TOKEN | Bitbucket BITBUCKET_TOKEN.
+# URL completa do repositório do Jarvis (oficial por padrão; troque só para um fork interno).
+# Usado pelo skill /jarvis-report-issue, pela CLI do host (gh issue create; login: gh auth login).
+# O repositório do projeto vem do .git, não daqui. Vazio: o upgrade preenche com o oficial.
+# Alias: JARVIS_GITLAB_PROJECT.
 JARVIS_PROJECT=https://github.com/phelipperibeiro/jarvis-framework
 
 

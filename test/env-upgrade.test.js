@@ -171,3 +171,52 @@ test("planEnvUpgrade: WORKSPACE_REPOS restringe a detecção", () => {
     rmSync(dir, { recursive: true, force: true });
   }
 });
+
+test("planEnvUpgrade: JARVIS_PROJECT vazio é preenchido; preenchido ou ausente segue a regra normal", () => {
+  const tpl = "JARVIS_PROJECT=https://github.com/phelipperibeiro/jarvis-framework\n";
+  assert.deepEqual(planEnvUpgrade("JARVIS_PROJECT=\n", tpl).filled, [
+    { key: "JARVIS_PROJECT", value: "https://github.com/phelipperibeiro/jarvis-framework" },
+  ]);
+  assert.deepEqual(
+    planEnvUpgrade("JARVIS_PROJECT=https://github.com/fork/jarvis\n", tpl).filled,
+    []
+  );
+  const absent = planEnvUpgrade("HUB=X\n", tpl);
+  assert.deepEqual(absent.filled, []);
+  assert.deepEqual(keys(absent), ["JARVIS_PROJECT"]);
+});
+
+test("applyEnvUpgrade: preenche só a linha vazia do JARVIS_PROJECT, sem mexer nas vizinhas", () => {
+  const original = "A=1\nJARVIS_PROJECT=\n\nB=\n";
+  const tpl = "JARVIS_PROJECT=https://x/y\nB=2\n";
+  withTempEnv(original, (p) => {
+    const plan = planEnvUpgrade(original, tpl);
+    assert.equal(applyEnvUpgrade(p, plan, "2026-10-25"), true);
+    assert.equal(readFileSync(p, "utf-8"), "A=1\nJARVIS_PROJECT=https://x/y\n\nB=\n");
+    assert.equal(
+      applyEnvUpgrade(p, planEnvUpgrade(readFileSync(p, "utf-8"), tpl), "2026-10-26"),
+      false
+    );
+  });
+});
+
+test("planEnvUpgrade: TOKEN_TASK_MANAGER com valor e vendor não suportado viram aviso, sem o valor do token", () => {
+  const plan = planEnvUpgrade(
+    "TOKEN_TASK_MANAGER=segredo\nTASK_MANAGER=asana\nVERSION_CONTROL=github\n",
+    ""
+  );
+  assert.deepEqual(plan.warnings, ["TOKEN_TASK_MANAGER", "UNSUPPORTED:TASK_MANAGER:asana"]);
+  assert.equal(JSON.stringify(plan).includes("segredo"), false);
+  assert.deepEqual(planEnvUpgrade("TOKEN_TASK_MANAGER=\n", "").warnings, []);
+});
+
+test("planEnvUpgrade: *_ACCESS do template real entram vazios (lista de opções)", () => {
+  const tpl = readFileSync(join(root, "templates", "ENV-template.md"), "utf-8");
+  const plan = planEnvUpgrade("HUB=BACKEND\n", tpl);
+  const access = plan.added.filter((a) => a.key.endsWith("_ACCESS"));
+  assert.deepEqual(access, [
+    { key: "TASK_MANAGER_ACCESS", value: "" },
+    { key: "VERSION_CONTROL_ACCESS", value: "" },
+  ]);
+  assert.equal(keys(plan).includes("TOKEN_TASK_MANAGER"), false);
+});
