@@ -438,7 +438,7 @@ async function runUpgrade(cwd, flags) {
       `${YELLOW}  ⚠️  WORKSPACE_MODE: a raiz é um repositório e há subpastas com .git (submódulos?): gravado como project; confira no ENV.md${NC}`
     );
   }
-  for (const { key } of envPlan.filled || []) {
+  for (const key of envPlan.filledApplied || []) {
     logger.info(`  • ${key} estava vazio: preenchido com o repositório oficial do Jarvis`);
   }
   if (envPlan.warnings.includes("TOKEN_TASK_MANAGER")) {
@@ -454,9 +454,16 @@ async function runUpgrade(cwd, flags) {
   }
   await reportCliDiscovery(futureEntries);
 
+  // Eixos com vendor do catálogo e sem forma de acesso definida: a confirmação é no /jarvis-init.
+  const pendingAxes = ["TASK_MANAGER", "VERSION_CONTROL"].filter((key) => {
+    const access = (futureEntries.get(`${key}_ACCESS`) || "").trim();
+    return getVendor(futureEntries.get(key)) && (!access || /^\[.*\]$/.test(access));
+  });
   logger.info("");
   logger.info(
-    `${CYAN}➡️  Agora rode ${BOLD}/jarvis-init upgrade${NC}${CYAN} na IDE (confirma o acesso ao board e ao git e as variáveis).${NC}\n`
+    pendingAxes.length
+      ? `${CYAN}➡️  Agora rode ${BOLD}/jarvis-init upgrade${NC}${CYAN} na IDE para confirmar o acesso de ${pendingAxes.join(" e ")} (e as variáveis).${NC}\n`
+      : `${CYAN}➡️  Agora rode ${BOLD}/jarvis-init upgrade${NC}${CYAN} na IDE.${NC}\n`
   );
   return sync.errors.length || moveErrors.length || staleErrors.length ? 1 : 0;
 }

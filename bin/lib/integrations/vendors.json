@@ -1,5 +1,5 @@
 {
-  "$comment": "Catálogo de vendors (FRD-006, RQT-1): única fonte de vendors, CLIs, comandos e variáveis para o CLI do Jarvis, o /jarvis-init e a IA (passo 2 da cadeia, rules/engineering/eng.integrations-rules.md). Os comandos são listas de argumentos (sem shell); marcadores: {key} {repo} {repo_url} {body} {body_file} {title} {source} {target} {labels}. {repo} = host/dono/repo; {repo_url} = https://host/dono/repo.",
+  "$comment": "Catálogo de vendors (FRD-006, RQT-1): única fonte de vendors, CLIs, comandos e variáveis para o CLI do Jarvis, o /jarvis-init e a IA (passo 2 da cadeia, rules/engineering/eng.integrations-rules.md). Os comandos são listas de argumentos (sem shell); marcadores: {key} {repo} {repo_url} {body} {body_file} {title} {source} {target} {labels}. {repo} = host/dono/repo; {repo_url} = https://host/dono/repo; {host} = só o host (auth_status_host confere o login naquele host).",
   "vendors": {
     "jira": {
       "label": "Jira (Cloud)",
@@ -37,7 +37,8 @@
         "auth_status": ["auth", "status"],
         "install_url": "https://cli.github.com/",
         "login_cmd": "gh auth login",
-        "login_url": "https://cli.github.com/manual/gh_auth_login"
+        "login_url": "https://cli.github.com/manual/gh_auth_login",
+        "auth_status_host": ["auth", "status", "--hostname", "{host}"]
       },
       "body_format": "markdown",
       "actions": {
@@ -80,7 +81,8 @@
         "auth_status": ["auth", "status"],
         "install_url": "https://gitlab.com/gitlab-org/cli#installation",
         "login_cmd": "glab auth login",
-        "login_url": "https://gitlab.com/gitlab-org/cli/-/blob/main/docs/source/auth/login.md"
+        "login_url": "https://gitlab.com/gitlab-org/cli/-/blob/main/docs/source/auth/login.md",
+        "auth_status_host": ["auth", "status", "--hostname", "{host}"]
       },
       "body_format": "markdown",
       "actions": {

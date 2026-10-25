@@ -55,18 +55,16 @@ A cada entrada nova: uma linha nova no fim da tabela do índice e a seção nova
 ```bash
 BODY_FILE=$(mktemp)
 # gravar a mensagem em "$BODY_FILE"
-set -a
-# shellcheck disable=SC1091
-eval "$(grep -E '^(TASK_MANAGER|TASK_MANAGER_ACCESS|TASK_MANAGER_URL_BASE)=' $IDE/ENV.md)"
-set +a
-
 jarvis tasks comment "{TASK_MANAGER_KEY}" --body-file "$BODY_FILE"
 STATUS=$?
 ```
 
+O comando lê `TASK_MANAGER`, `TASK_MANAGER_ACCESS` e `TASK_MANAGER_URL_BASE` do `$IDE/ENV.md` do workspace (não precisa exportar nada; não use `eval` no ENV).
+
 Se o `jarvis` não estiver no projeto, use `node "$JARVIS_ROOT/bin/jarvis.js" tasks comment ...` (`$JARVIS_ROOT` = raiz do clone do framework).
 
 - `0` → comentário feito (ou freelance). Encerrar.
+- `1` → uso (ex.: no GitHub/GitLab o card é o número da issue). Corrija a chamada; não siga para o passo 2.
 - `3` → indisponível, nada enviado → passo 2.
 - `4` → enviado com erro → passo 3, com o aviso de conferir no card antes de repetir. **Não** tentar o passo 2.
 

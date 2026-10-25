@@ -220,3 +220,14 @@ test("planEnvUpgrade: *_ACCESS do template real entram vazios (lista de opções
   ]);
   assert.equal(keys(plan).includes("TOKEN_TASK_MANAGER"), false);
 });
+
+test("applyEnvUpgrade: ENV com CRLF também é preenchido; $ do valor não vira referência", () => {
+  const original = "A=1\r\nJARVIS_PROJECT=\r\nB=2\r\n";
+  const tpl = "JARVIS_PROJECT=https://x/$1/y\n";
+  withTempEnv(original, (p) => {
+    const plan = planEnvUpgrade(original, tpl);
+    assert.equal(applyEnvUpgrade(p, plan, "2026-10-25"), true);
+    assert.equal(readFileSync(p, "utf-8"), "A=1\r\nJARVIS_PROJECT=https://x/$1/y\r\nB=2\r\n");
+    assert.deepEqual(plan.filledApplied, ["JARVIS_PROJECT"]);
+  });
+});

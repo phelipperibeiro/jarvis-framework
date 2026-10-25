@@ -2,6 +2,9 @@
 // A CLI do vendor é falsa (`exec` injetado); nenhum token é lido.
 import { test } from "node:test";
 import assert from "node:assert/strict";
+import { mkdtempSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { boardRepo, commentOnCard, isFreelance } from "../bin/lib/tasks/comment.js";
 
 const ENV_KEYS = [
@@ -9,7 +12,13 @@ const ENV_KEYS = [
   "TASK_MANAGER_ACCESS",
   "TASK_MANAGER_URL_BASE",
   "TOKEN_TASK_MANAGER",
+  "JARVIS_ENV_FILE",
 ];
+
+// ENV.md vazio: o comando lê o ENV.md do workspace no que faltar no ambiente, e o teste
+// não pode depender do ENV.md real de quem roda.
+const EMPTY_ENV = join(mkdtempSync(join(tmpdir(), "jarvis-empty-env-")), "ENV.md");
+writeFileSync(EMPTY_ENV, "");
 
 async function withEnv(vars, fn) {
   const prev = {};
@@ -17,6 +26,7 @@ async function withEnv(vars, fn) {
     prev[k] = process.env[k];
     delete process.env[k];
   }
+  process.env.JARVIS_ENV_FILE = EMPTY_ENV;
   Object.assign(process.env, vars);
   try {
     return await fn();
@@ -50,6 +60,7 @@ test("boardRepo: tira o repo do TASK_MANAGER_URL_BASE", () => {
   assert.deepEqual(boardRepo("https://github.com/o/r/"), {
     repo: "github.com/o/r",
     repo_url: "https://github.com/o/r",
+    host: "github.com",
   });
   assert.equal(boardRepo("https://empresa.atlassian.net"), null);
   assert.equal(boardRepo(""), null);
@@ -233,4 +244,18 @@ test("runComment: --body-file lido; arquivo inexistente e falta de texto saem co
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }
+});
+
+test("sem a variável no ambiente, usa o ENV.md do workspace (sem eval no shell)", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "jarvis-envfile-"));
+  const file = join(dir, "ENV.md");
+  writeFileSync(
+    file,
+    "TASK_MANAGER=github\nTASK_MANAGER_ACCESS=manual\nTASK_MANAGER_URL_BASE=https://github.com/o/r\n"
+  );
+  const { exec, calls } = fakeCli();
+  const r = await withEnv({ JARVIS_ENV_FILE: file }, () => commentOnCard("1", "m", { exec }));
+  assert.equal(r.code, 3);
+  assert.match(r.err[0], /manual/);
+  assert.equal(calls.length, 0);
 });

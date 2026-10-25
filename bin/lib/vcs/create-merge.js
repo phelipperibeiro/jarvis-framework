@@ -2,7 +2,7 @@ import { execSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { EXIT, createMergeRequest, newMergeRequestUrl, parseRepoUrl } from "./api.js";
-import { accessValue } from "../integrations/cli-runner.js";
+import { accessValue, loadFileEnv, setting } from "../integrations/cli-runner.js";
 
 /**
  * Abre um MR/PR pela CLI do vendor (`gh pr create` / `glab mr create`, pelo hostname do remote).
@@ -15,7 +15,7 @@ import { accessValue } from "../integrations/cli-runner.js";
  * @param {string} options.title - Título do MR/PR
  * @param {string} [options.bodyFile] - Path de um arquivo com a descrição
  * @param {string} [options.repo] - URL do repo (padrão: `git remote get-url origin`)
- * @param {{ exec?: Function }} [deps] - `exec` da CLI, injetável (testes)
+ * @param {{ exec?: Function, fileEnv?: Object }} [deps] - `exec` da CLI e as variáveis do ENV.md, injetáveis (testes)
  */
 export async function runCreateMerge({ source, target, title, bodyFile, repo }, deps = {}) {
   if (!source || !target || !title) {
@@ -39,7 +39,9 @@ export async function runCreateMerge({ source, target, title, bodyFile, repo }, 
     }
   };
 
-  const access = accessValue("VERSION_CONTROL_ACCESS");
+  // O eng.pr chama este comando sem exportar o ENV.md: o que não vier no ambiente sai de lá.
+  const fileVars = deps.fileEnv ?? loadFileEnv();
+  const access = accessValue("VERSION_CONTROL_ACCESS", fileVars);
   if (access === "manual") {
     const link = manualUrl();
     console.error(
@@ -48,7 +50,7 @@ export async function runCreateMerge({ source, target, title, bodyFile, repo }, 
     );
     process.exit(EXIT.UNAVAILABLE);
   }
-  if (!access && process.env.VERSION_CONTROL) {
+  if (!access && setting("VERSION_CONTROL", fileVars)) {
     console.error(
       "ℹ️ VERSION_CONTROL_ACCESS vazio: tentando a CLI. Rode o /jarvis-init para confirmar o acesso."
     );

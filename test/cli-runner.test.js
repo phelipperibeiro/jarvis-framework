@@ -423,3 +423,23 @@ test("accessValue: vazio, ausente e a lista de opções do template contam como 
     else process.env.X_ACCESS_181 = prev;
   }
 });
+
+test("checkCli: com host, confere o login nele e mostra a conta", async () => {
+  const { exec, calls } = fakeExec([
+    [isVersion, ok],
+    [
+      isAuth,
+      { code: 0, stdout: "✓ Logged in to ghe.empresa.com account maria (keyring)", stderr: "" },
+    ],
+  ]);
+  const r = await checkCli("github", { exec, host: "ghe.empresa.com" });
+  assert.deepEqual(calls[1].args, ["auth", "status", "--hostname", "ghe.empresa.com"]);
+  assert.equal(r.account, "maria");
+  assert.match(r.reason, /logada como maria em ghe.empresa.com/);
+  const jira = fakeExec([
+    [isVersion, ok],
+    [isAuth, ok],
+  ]);
+  await checkCli("jira", { exec: jira.exec, host: "x.atlassian.net" });
+  assert.deepEqual(jira.calls[1].args, ["jira", "auth", "status"], "acli não tem --hostname");
+});

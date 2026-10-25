@@ -11,6 +11,7 @@ export function repoParams(repoUrl) {
     params: {
       repo: `${repo.host}/${repo.projectPath}`,
       repo_url: `${repo.origin}/${repo.projectPath}`,
+      host: repo.host,
     },
   };
 }

@@ -316,44 +316,54 @@ test("init (instalação): .gitignore com /.jarvis/ não recebe a linha de novo"
   });
 });
 
-test("init --upgrade: token antigo vira aviso sem o valor, JARVIS_PROJECT vazio é preenchido e a CLI é descoberta", () => {
-  const env = [
-    ENV_V520.trimEnd(),
-    "TOKEN_TASK_MANAGER=segredo-xyz",
-    "TASK_MANAGER_URL_BASE=https://github.com/o/r",
-    "JARVIS_PROJECT=",
-    "",
-  ].join("\n");
-  withWorkspace({ ".claude/ENV.md": env }, (ws) => {
-    // gh falso no PATH: --version e auth status com exit 0
-    const bin = join(ws, "fake-bin");
-    mkdirSync(bin);
-    writeFileSync(join(bin, "gh"), "#!/bin/sh\nexit 0\n");
-    chmodSync(join(bin, "gh"), 0o755);
-    const r = spawnSync(process.execPath, [cli, "init", "--upgrade", "--ide", "claude", "--yes"], {
-      cwd: ws,
-      encoding: "utf-8",
-      stdio: "pipe",
-      env: { ...process.env, PATH: `${bin}:${process.env.PATH}`, JARVIS_SKIP_CLI_CHECK: "" },
+test(
+  "init --upgrade: token antigo vira aviso sem o valor, JARVIS_PROJECT vazio é preenchido e a CLI é descoberta",
+  // o gh falso é um script POSIX
+  { skip: process.platform === "win32" },
+  () => {
+    const env = [
+      ENV_V520.trimEnd(),
+      "TOKEN_TASK_MANAGER=segredo-xyz",
+      "TASK_MANAGER_URL_BASE=https://github.com/o/r",
+      "JARVIS_PROJECT=",
+      "",
+    ].join("\n");
+    withWorkspace({ ".claude/ENV.md": env }, (ws) => {
+      // gh falso no PATH: --version e auth status com exit 0
+      const bin = join(ws, "fake-bin");
+      mkdirSync(bin);
+      writeFileSync(join(bin, "gh"), "#!/bin/sh\nexit 0\n");
+      chmodSync(join(bin, "gh"), 0o755);
+      const r = spawnSync(
+        process.execPath,
+        [cli, "init", "--upgrade", "--ide", "claude", "--yes"],
+        {
+          cwd: ws,
+          encoding: "utf-8",
+          stdio: "pipe",
+          env: { ...process.env, PATH: `${bin}:${process.env.PATH}`, JARVIS_SKIP_CLI_CHECK: "" },
+        }
+      );
+      assert.equal(r.status, 0, r.stderr);
+      const after = readFileSync(join(ws, ".claude/ENV.md"), "utf-8");
+      assert.match(
+        after,
+        /^JARVIS_PROJECT=https:\/\/github.com\/phelipperibeiro\/jarvis-framework$/m
+      );
+      assert.match(after, /^TOKEN_TASK_MANAGER=segredo-xyz$/m, "o Node não apaga o token");
+      assert.match(after, /^TASK_MANAGER_ACCESS=$/m);
+      assert.equal(
+        `${r.stdout}${r.stderr}`.includes("segredo-xyz"),
+        false,
+        "o valor do token apareceu"
+      );
+      assert.match(r.stdout, /TOKEN_TASK_MANAGER não é mais usado/);
+      assert.match(r.stdout, /JARVIS_PROJECT estava vazio/);
+      assert.match(r.stdout, /TASK_MANAGER=github\): `gh`: instalada, logada/);
+      assert.match(r.stdout, /confirmar o acesso de TASK_MANAGER/);
     });
-    assert.equal(r.status, 0, r.stderr);
-    const after = readFileSync(join(ws, ".claude/ENV.md"), "utf-8");
-    assert.match(
-      after,
-      /^JARVIS_PROJECT=https:\/\/github.com\/phelipperibeiro\/jarvis-framework$/m
-    );
-    assert.match(after, /^TOKEN_TASK_MANAGER=segredo-xyz$/m, "o Node não apaga o token");
-    assert.match(after, /^TASK_MANAGER_ACCESS=$/m);
-    assert.equal(
-      `${r.stdout}${r.stderr}`.includes("segredo-xyz"),
-      false,
-      "o valor do token apareceu"
-    );
-    assert.match(r.stdout, /TOKEN_TASK_MANAGER não é mais usado/);
-    assert.match(r.stdout, /JARVIS_PROJECT estava vazio/);
-    assert.match(r.stdout, /TASK_MANAGER=github\): `gh`: instalada, logada/);
-  });
-});
+  }
+);
 
 test("init --upgrade: vendor não suportado (TASK_MANAGER=linear) vira aviso de freelance", () => {
   const env = ENV_V520.replace("TASK_MANAGER=github", "TASK_MANAGER=linear");

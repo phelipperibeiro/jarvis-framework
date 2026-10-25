@@ -117,10 +117,21 @@ export function planEnvUpgrade(envText, templateText, { workspaceDir } = {}) {
  */
 export function applyEnvUpgrade(envPath, plan, today, overrides = {}) {
   const filled = plan.filled || [];
-  if (plan.added.length === 0 && filled.length === 0) return false;
+  if (plan.added.length === 0 && filled.length === 0) {
+    plan.filledApplied = [];
+    return false;
+  }
   let text = readFileSync(envPath, "utf-8");
+  // `plan.filledApplied`: só as chaves que de fato mudaram (para o resumo não mentir).
+  plan.filledApplied = [];
   for (const { key, value } of filled) {
-    text = text.replace(new RegExp(`^([ \\t]*)${key}=[ \\t]*$`, "m"), `$1${key}=${value}`);
+    const before = text;
+    // `\r?` cobre ENV com CRLF; a função evita que um `$` do valor vire referência de grupo.
+    text = text.replace(
+      new RegExp(`^([ \\t]*)${key}=[ \\t]*(\\r?)$`, "m"),
+      (_m, indent, cr) => `${indent}${key}=${value}${cr}`
+    );
+    if (text !== before) plan.filledApplied.push(key);
   }
   if (plan.added.length > 0) {
     const lines = plan.added.map(({ key, value }) => `${key}=${overrides[key] ?? value}`);

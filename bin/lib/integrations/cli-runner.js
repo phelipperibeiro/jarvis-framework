@@ -9,10 +9,11 @@
 // - indisponível: falhou ANTES de enviar (CLI ausente, login inválido) → `sent: false`;
 // - enviado com erro: falhou DEPOIS de iniciar a chamada de escrita (inclusive timeout) → `sent: true`.
 import { execFile } from "node:child_process";
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { loadEnv, resolveEnvPath } from "../env-loader.js";
 
 /** Códigos de saída dos comandos de integração (lidos pela regra e pelos skills). */
 export const EXIT = { OK: 0, USAGE: 1, UNAVAILABLE: 3, SENT_WITH_ERROR: 4 };
@@ -63,13 +64,30 @@ const MAXBUFFER = "ERR_CHILD_PROCESS_STDIO_MAXBUFFER";
 const SPAWN_ERRORS = new Set(["ENOENT", "EACCES", "EPERM", "E2BIG", "ENOEXEC", "ENOTDIR"]);
 
 /**
- * Valor de uma variável `*_ACCESS` do ambiente: `cli`, `manual` ou "" (vazio, ausente ou ainda
+ * Variáveis do `$IDE/ENV.md` do workspace (sobe a partir do cwd; `JARVIS_ENV_FILE` vence).
+ * Sem ENV.md, `{}`. Os comandos de integração leem daqui o que não veio no ambiente.
+ */
+export function loadFileEnv(cwd = process.cwd()) {
+  try {
+    const { path } = resolveEnvPath(cwd);
+    return existsSync(path) ? loadEnv(cwd, path) : {};
+  } catch {
+    return {};
+  }
+}
+
+/** Valor de uma variável: o ambiente do processo vence; senão, o ENV.md (`fileVars`). */
+export function setting(name, fileVars = {}) {
+  const fromProcess = String(process.env[name] ?? "").trim();
+  return fromProcess || String(fileVars[name] ?? "").trim();
+}
+
+/**
+ * Valor de uma variável `*_ACCESS`: `cli`, `manual` ou "" (vazio, ausente ou ainda
  * com a lista de opções do template, como `[cli, manual]`).
  */
-export function accessValue(name) {
-  const v = String(process.env[name] || "")
-    .trim()
-    .toLowerCase();
+export function accessValue(name, fileVars = {}) {
+  const v = setting(name, fileVars).toLowerCase();
   return /^\[.*\]$/.test(v) ? "" : v;
 }
 
@@ -80,11 +98,12 @@ const NOT_LOGGED_IN =
 
 /**
  * Verifica se a CLI do vendor está instalada e logada (só leitura, sem rede além do `auth status`).
+ * Com `host`, confere o login naquele host (`auth status --hostname`, quando o vendor tem).
  * @param {string} vendorName
- * @param {{ exec?: typeof defaultExec }} [deps]
+ * @param {{ exec?: typeof defaultExec, host?: string }} [deps]
  * @returns {Promise<{ supported: boolean, installed: boolean, loggedIn: boolean, bin?: string, reason: string }>}
  */
-export async function checkCli(vendorName, { exec = defaultExec } = {}) {
+export async function checkCli(vendorName, { exec = defaultExec, host } = {}) {
   const vendor = getVendor(vendorName);
   if (!vendor) {
     return {
@@ -98,6 +117,7 @@ export async function checkCli(vendorName, { exec = defaultExec } = {}) {
     bin,
     version,
     auth_status: authStatus,
+    auth_status_host: authStatusHost,
     install_url: installUrl,
     login_cmd: loginCmd,
   } = vendor.cli;
@@ -113,17 +133,26 @@ export async function checkCli(vendorName, { exec = defaultExec } = {}) {
     };
   }
 
-  const a = await exec(bin, authStatus, { timeoutMs: 15_000 });
+  const validHost = host && /^[A-Za-z0-9.-]+$/.test(host);
+  const statusArgs =
+    validHost && authStatusHost
+      ? authStatusHost.map((a) => (a === "{host}" ? host : a))
+      : authStatus;
+  const a = await exec(bin, statusArgs, { timeoutMs: 15_000 });
   const text = `${a.stdout}\n${a.stderr}`;
   const loggedIn = a.code === 0 && !NOT_LOGGED_IN.test(text);
+  const where = validHost && authStatusHost ? ` em ${host}` : "";
+  // gh: "Logged in to github.com account X"; glab: "Logged in to gitlab.com as X".
+  const account = loggedIn ? text.match(/\b(?:account|as)\s+([A-Za-z0-9._@-]+)/)?.[1] : null;
   return {
     supported: true,
     installed: true,
     loggedIn,
     bin,
+    account: account || null,
     reason: loggedIn
-      ? `\`${bin}\`: instalada, logada`
-      : `\`${bin}\`: instalada, login inválido (faça \`${loginCmd}\`)`,
+      ? `\`${bin}\`: instalada, logada${account ? ` como ${account}` : ""}${where}`
+      : `\`${bin}\`: instalada, login inválido${where} (faça \`${loginCmd}\`)`,
   };
 }
 
@@ -261,7 +290,7 @@ export async function runAction(
     return fail(err.exitCode ?? EXIT.USAGE, false, err.message);
   }
 
-  const cli = await checkCli(vendorName, { exec });
+  const cli = await checkCli(vendorName, { exec, host: params.host });
   if (!cli.installed || !cli.loggedIn) return fail(EXIT.UNAVAILABLE, false, cli.reason);
 
   let tmpDir = null;

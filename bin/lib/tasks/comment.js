@@ -1,11 +1,14 @@
 import { existsSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { cardUrl } from "../vcs/api.js";
-import { EXIT, accessValue, getVendor, runAction } from "../integrations/cli-runner.js";
-
-function env(name) {
-  return String(process.env[name] || "").trim();
-}
+import {
+  EXIT,
+  accessValue,
+  getVendor,
+  loadFileEnv,
+  runAction,
+  setting,
+} from "../integrations/cli-runner.js";
 
 /**
  * TASK_MANAGER vazio, ausente ou ainda com a lista de exemplo do template (`[jira, github, gitlab]`,
@@ -29,7 +32,7 @@ export function boardRepo(baseUrl) {
     const u = new URL(raw);
     const path = u.pathname.replace(/^\/+|\/+$/g, "");
     if (!path.includes("/")) return null;
-    return { repo: `${u.host}/${path}`, repo_url: `${u.origin}/${path}` };
+    return { repo: `${u.hostname}/${path}`, repo_url: `${u.origin}/${path}`, host: u.hostname };
   } catch {
     return null;
   }
@@ -40,12 +43,16 @@ export function boardRepo(baseUrl) {
  * Devolve o código de saída e as mensagens, sem encerrar o processo (o `runComment` encerra).
  * @param {string} cardKey - Chave do card (`TASK-123`, ou número/`#42` no GitHub e no GitLab)
  * @param {string} message - Texto do comentário (markdown; no Jira vai como texto simples)
- * @param {{ exec?: Function }} [deps]
+ * Lê TASK_MANAGER, TASK_MANAGER_ACCESS e TASK_MANAGER_URL_BASE do ambiente do processo e, no que
+ * faltar, do `$IDE/ENV.md` do workspace (sem `eval` no shell).
+ * @param {{ exec?: Function, fileEnv?: Object }} [deps] - `fileEnv`: variáveis do ENV.md (testes)
  * @returns {Promise<{ code: number, out: string[], err: string[] }>}
  */
 export async function commentOnCard(cardKey, message, deps = {}) {
   const out = [];
   const err = [];
+  const fileVars = deps.fileEnv ?? loadFileEnv();
+  const env = (name) => setting(name, fileVars);
   const tm = env("TASK_MANAGER").toLowerCase();
 
   if (isFreelance(tm)) {
@@ -59,7 +66,7 @@ export async function commentOnCard(cardKey, message, deps = {}) {
     return { code: EXIT.UNAVAILABLE, out, err };
   }
 
-  const access = accessValue("TASK_MANAGER_ACCESS");
+  const access = accessValue("TASK_MANAGER_ACCESS", fileVars);
   if (access === "manual") {
     err.push("ℹ️ TASK_MANAGER_ACCESS=manual: nada foi enviado; gere o .md do comentário.");
     return { code: EXIT.UNAVAILABLE, out, err };

@@ -318,6 +318,8 @@ async function captureRun(fn) {
 
 const { runCreateMerge } = await import("../bin/lib/vcs/create-merge.js");
 const MERGE = { source: "feat/x", target: "main", title: "t", repo: "https://github.com/o/r" };
+// Sem ENV.md de verdade: o comando lê o ENV.md no que faltar no ambiente.
+const NO_FILE_ENV = { fileEnv: {} };
 
 test("runCreateMerge: sem source/target/title sai com 1", async () => {
   const r = await captureRun(() => runCreateMerge({ source: "a" }));
@@ -328,7 +330,7 @@ test("runCreateMerge: sem source/target/title sai com 1", async () => {
 test("runCreateMerge: --body-file inexistente sai com 1 sem chamar a CLI", async () => {
   const { exec, calls } = fakeCli(ok);
   const r = await captureRun(() =>
-    runCreateMerge({ ...MERGE, bodyFile: "/nao/existe/181" }, { exec })
+    runCreateMerge({ ...MERGE, bodyFile: "/nao/existe/181" }, { exec, ...NO_FILE_ENV })
   );
   assert.equal(r.code, 1);
   assert.equal(calls.length, 0);
@@ -337,7 +339,7 @@ test("runCreateMerge: --body-file inexistente sai com 1 sem chamar a CLI", async
 test("runCreateMerge: VERSION_CONTROL_ACCESS=manual sai com 3, sem chamar a CLI, com o link", async () => {
   const { exec, calls } = fakeCli(ok);
   const r = await withEnv({ VERSION_CONTROL_ACCESS: "manual" }, () =>
-    captureRun(() => runCreateMerge(MERGE, { exec }))
+    captureRun(() => runCreateMerge(MERGE, { exec, ...NO_FILE_ENV }))
   );
   assert.equal(r.code, 3);
   assert.equal(calls.length, 0);
@@ -356,7 +358,7 @@ test("runCreateMerge: sucesso lê o --body-file e imprime o PR", async () => {
       return { code: 0, stdout: "https://github.com/o/r/pull/5\n", stderr: "" };
     };
     const r = await withEnv({ VERSION_CONTROL_ACCESS: "cli" }, () =>
-      captureRun(() => runCreateMerge({ ...MERGE, bodyFile: body }, { exec }))
+      captureRun(() => runCreateMerge({ ...MERGE, bodyFile: body }, { exec, ...NO_FILE_ENV }))
     );
     assert.equal(r.code, 0);
     assert.match(r.out, /PR criado: https:\/\/github.com\/o\/r\/pull\/5/);
@@ -370,13 +372,13 @@ test("runCreateMerge: sem login sai com 3 e mostra o link; enviado com erro sai 
   const noLogin = async (_b, args) =>
     args[0] === "--version" ? ok : { code: 1, stdout: "", stderr: "" };
   const a = await withEnv({ VERSION_CONTROL_ACCESS: "cli" }, () =>
-    captureRun(() => runCreateMerge(MERGE, { exec: noLogin }))
+    captureRun(() => runCreateMerge(MERGE, { exec: noLogin, ...NO_FILE_ENV }))
   );
   assert.equal(a.code, 3);
   assert.match(a.err, /Abra o PR à mão: https:\/\/github.com\/o\/r\/compare/);
   const { exec } = fakeCli({ code: 1, stdout: "", stderr: "boom" });
   const b = await withEnv({ VERSION_CONTROL_ACCESS: "cli" }, () =>
-    captureRun(() => runCreateMerge(MERGE, { exec }))
+    captureRun(() => runCreateMerge(MERGE, { exec, ...NO_FILE_ENV }))
   );
   assert.equal(b.code, 4);
   assert.match(b.err, /pode ter sido criado/);
@@ -386,7 +388,7 @@ test("runCreateMerge: sem login sai com 3 e mostra o link; enviado com erro sai 
 test("runCreateMerge: branch inválida sai com 1", async () => {
   const { exec } = fakeCli(ok);
   const r = await withEnv({ VERSION_CONTROL_ACCESS: "cli" }, () =>
-    captureRun(() => runCreateMerge({ ...MERGE, source: "a b" }, { exec }))
+    captureRun(() => runCreateMerge({ ...MERGE, source: "a b" }, { exec, ...NO_FILE_ENV }))
   );
   assert.equal(r.code, 1);
 });
@@ -407,4 +409,54 @@ test("newMergeRequestUrl: sem target", () => {
     newMergeRequestUrl("https://gitlab.com/g/r", "feat/x"),
     "https://gitlab.com/g/r/-/merge_requests/new?merge_request[source_branch]=feat%2Fx"
   );
+});
+
+test("runCreateMerge: VERSION_CONTROL_ACCESS=manual vindo do ENV.md (o eng.pr não exporta o ENV) sai com 3", async () => {
+  const { exec, calls } = fakeCli(ok);
+  const r = await withEnv({ VERSION_CONTROL_ACCESS: undefined }, () =>
+    captureRun(() => runCreateMerge(MERGE, { exec, fileEnv: { VERSION_CONTROL_ACCESS: "manual" } }))
+  );
+  assert.equal(r.code, 3);
+  assert.equal(calls.length, 0);
+});
+
+test("createMergeRequest: confere o login no host do repositório (auth status --hostname)", async () => {
+  const { exec, calls } = fakeCli({
+    code: 0,
+    stdout: "https://ghe.empresa.com/o/r/pull/1\n",
+    stderr: "",
+  });
+  await withEnv({ VERSION_CONTROL: "github" }, () =>
+    createMergeRequest(
+      "https://ghe.empresa.com/o/r",
+      { source: "a", target: "b", title: "t" },
+      { exec }
+    )
+  );
+  const auth = calls.find((c) => c.args.includes("status"));
+  assert.deepEqual(auth.args, ["auth", "status", "--hostname", "ghe.empresa.com"]);
+});
+
+test("parseRepoUrl: remote ssh:// com porta vira https do host (sem a porta do SSH)", () => {
+  const r = parseRepoUrl("ssh://git@gitlab.empresa.com:2222/grupo/sub/repo.git");
+  assert.equal(r.vendor, "gitlab");
+  assert.equal(r.origin, "https://gitlab.empresa.com");
+  assert.equal(r.projectPath, "grupo/sub/repo");
+});
+
+test("createMergeRequest: GitLab self-hosted em subgrupo usa a URL completa no --repo", async () => {
+  const { exec, calls } = fakeCli({
+    code: 0,
+    stdout: "https://git.corp.com/g/sub/r/-/merge_requests/2\n",
+    stderr: "",
+  });
+  await withEnv({ VERSION_CONTROL: "gitlab" }, () =>
+    createMergeRequest(
+      "https://git.corp.com/g/sub/r.git",
+      { source: "a", target: "b", title: "t" },
+      { exec }
+    )
+  );
+  const w = writeCall(calls);
+  assert.equal(w.args[w.args.indexOf("--repo") + 1], "https://git.corp.com/g/sub/r");
 });

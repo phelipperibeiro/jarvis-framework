@@ -10,6 +10,9 @@ const VENDORS = {
 
 function normalizeGitUrl(url) {
   let raw = String(url).trim();
+  // ssh://[user@]host[:porta]/caminho → https://host/caminho (a porta do SSH não é a do site)
+  const sshUrl = raw.match(/^ssh:\/\/(?:[^@/]+@)?([^/:]+)(?::\d+)?\/(.+)$/);
+  if (sshUrl) raw = `https://${sshUrl[1]}/${sshUrl[2]}`;
   const ssh = raw.match(/^git@([^:]+):(.+?)(\.git)?$/);
   if (ssh) {
     raw = `https://${ssh[1]}/${ssh[2].replace(/\.git$/, "")}`;
