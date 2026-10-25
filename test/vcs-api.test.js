@@ -225,7 +225,11 @@ test("createMergeRequest: CLI sem login → erro indisponível (sent=false, exit
         { source: "a", target: "b", title: "t" },
         { exec }
       ),
-    (e) => e.sent === false && e.exitCode === 3 && /Falha ao criar PR github/.test(e.message)
+    (e) =>
+      e.sent === false &&
+      e.exitCode === 3 &&
+      e.vendor === "github" &&
+      /Falha ao criar PR github/.test(e.message)
   );
 });
 
@@ -238,7 +242,26 @@ test("createMergeRequest: erro depois de enviar → sent=true, exitCode 4", asyn
         { source: "a", target: "b", title: "t" },
         { exec }
       ),
-    (e) => e.sent === true && e.exitCode === 4 && /already exists/.test(e.message)
+    (e) =>
+      e.sent === true &&
+      e.exitCode === 4 &&
+      e.vendor === "github" &&
+      /already exists/.test(e.message)
+  );
+});
+
+test("createMergeRequest: o erro da CLI leva o vendor (gitlab, saídas 3 e 4)", async () => {
+  const opts = { source: "a", target: "b", title: "t" };
+  const noLogin = async (_bin, args) =>
+    args[0] === "--version" ? ok : { code: 1, stdout: "", stderr: "" };
+  await assert.rejects(
+    () => createMergeRequest("https://gitlab.com/g/r", opts, { exec: noLogin }),
+    (e) => e.exitCode === 3 && e.vendor === "gitlab" && /Falha ao criar MR gitlab/.test(e.message)
+  );
+  const { exec } = fakeCli({ code: 1, stdout: "", stderr: "boom" });
+  await assert.rejects(
+    () => createMergeRequest("https://gitlab.com/g/r", opts, { exec }),
+    (e) => e.exitCode === 4 && e.vendor === "gitlab"
   );
 });
 
@@ -414,6 +437,29 @@ test("runCreateMerge: no GitLab, a mensagem usa MR (vendor vindo do createMergeR
   );
   assert.equal(b.code, 4);
   assert.match(b.err, /O MR pode ter sido criado/);
+  const noLogin = async (_b, args) =>
+    args[0] === "--version" ? ok : { code: 1, stdout: "", stderr: "" };
+  const c = await withEnv({ VERSION_CONTROL_ACCESS: "cli" }, () =>
+    captureRun(() => runCreateMerge(GL, { exec: noLogin, ...NO_FILE_ENV }))
+  );
+  assert.equal(c.code, 3);
+  assert.match(c.err, /Abra o MR à mão: https:\/\/gitlab.com\/o\/r/);
+});
+
+test("runCreateMerge: host não suportado (Bitbucket) sai com 3, sem chamar a CLI e sem link", async () => {
+  const { exec, calls } = fakeCli(ok);
+  const r = await withEnv({ VERSION_CONTROL_ACCESS: "cli" }, () =>
+    captureRun(() =>
+      runCreateMerge(
+        { ...MERGE, repo: "https://bitbucket.org/ws/repo.git" },
+        { exec, ...NO_FILE_ENV }
+      )
+    )
+  );
+  assert.equal(r.code, 3);
+  assert.equal(calls.length, 0);
+  assert.match(r.err, /Bitbucket não é suportado/);
+  assert.equal(/à mão/.test(r.err), false);
 });
 
 test("runCreateMerge: branch inválida sai com 1", async () => {
