@@ -101,13 +101,13 @@ export function resolveFileEnv(deps = {}) {
   return readFileEnv(deps.envOpts);
 }
 
-// Valor sem comentário de fim de linha e sem aspas em volta (o loadEnv não tira).
+// Valor sem aspas em volta e sem comentário de fim de linha (o loadEnv não tira nenhum dos dois).
+// Entre aspas, o que está dentro vale como está (inclusive um " # " legítimo).
 function clean(value) {
-  return String(value ?? "")
-    .replace(/\s+#.*$/, "")
-    .trim()
-    .replace(/^(["'])(.*)\1$/, "$2")
-    .trim();
+  const v = String(value ?? "").trim();
+  const quoted = v.match(/^(["'])(.*?)\1(?:\s+#.*)?$/);
+  if (quoted) return quoted[2].trim();
+  return v.replace(/\s+#.*$/, "").trim();
 }
 
 /** Valor de uma variável: o ambiente do processo vence; senão, o ENV.md (`fileVars`). */

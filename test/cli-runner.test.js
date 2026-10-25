@@ -497,3 +497,65 @@ test('buildArgs: no glab, corpo vazio vai como -d "" (sem abrir editor)', () => 
 test("toPlainText: a cerca ~~~ também preserva o conteúdo", () => {
   assert.equal(toPlainText("~~~\n# x\n~~~"), "# x");
 });
+
+// --- Terceira passada do pre-pr (#181): gate e leitor do ENV.md ------------
+
+test("accessGate: cli segue; vazio segue com aviso; manual, inválido e ENV.md ilegível param com 3", async () => {
+  const { accessGate } = await import("../bin/lib/integrations/cli-runner.js");
+  const prev = process.env.Y_ACCESS_181;
+  delete process.env.Y_ACCESS_181;
+  try {
+    const gate = (vars, error = null) => accessGate("Y_ACCESS_181", { vars, error });
+    assert.equal(gate({ Y_ACCESS_181: "cli" }).ok, true);
+    const empty = gate({});
+    assert.deepEqual([empty.ok, empty.mode], [true, "empty"]);
+    assert.match(empty.warning, /vazio/);
+    assert.deepEqual(
+      [gate({ Y_ACCESS_181: "manual" }).ok, gate({ Y_ACCESS_181: "manual" }).code],
+      [false, EXIT.UNAVAILABLE]
+    );
+    assert.equal(gate({ Y_ACCESS_181: "manul" }).mode, "invalid");
+    assert.equal(gate({ Y_ACCESS_181: "[cli, manual]" }).mode, "empty");
+    const unreadable = gate({}, "Múltiplos ENV.md");
+    assert.deepEqual([unreadable.ok, unreadable.code], [false, EXIT.UNAVAILABLE]);
+    process.env.Y_ACCESS_181 = "cli";
+    assert.equal(gate({}, "Múltiplos ENV.md").ok, true, "o ambiente vence o ENV.md ilegível");
+  } finally {
+    if (prev === undefined) delete process.env.Y_ACCESS_181;
+    else process.env.Y_ACCESS_181 = prev;
+  }
+});
+
+test("setting: aspas e comentário de fim de linha; entre aspas, um ' # ' fica", async () => {
+  const { setting } = await import("../bin/lib/integrations/cli-runner.js");
+  assert.equal(setting("Z_181", { Z_181: '"manual"' }), "manual");
+  assert.equal(setting("Z_181", { Z_181: "cli # padrão" }), "cli");
+  assert.equal(setting("Z_181", { Z_181: '"a # b"' }), "a # b");
+  assert.equal(setting("Z_181", { Z_181: "'x' # c" }), "x");
+});
+
+test("readFileEnv: lê o ENV.md por --env-file; dois ENV.md sem --ide dão erro; --ide resolve", async () => {
+  const { readFileEnv } = await import("../bin/lib/integrations/cli-runner.js");
+  const { mkdtempSync, mkdirSync, writeFileSync, rmSync } = await import("node:fs");
+  const { tmpdir } = await import("node:os");
+  const { join } = await import("node:path");
+  const ws = mkdtempSync(join(tmpdir(), "jarvis-readenv-"));
+  const prev = process.env.JARVIS_ENV_FILE;
+  delete process.env.JARVIS_ENV_FILE;
+  try {
+    mkdirSync(join(ws, ".claude"));
+    mkdirSync(join(ws, ".cursor"));
+    writeFileSync(join(ws, ".claude", "ENV.md"), "A=1\n");
+    writeFileSync(join(ws, ".cursor", "ENV.md"), "A=2\n");
+    assert.match(readFileEnv({ cwd: ws }).error, /Múltiplos/);
+    assert.equal(readFileEnv({ cwd: ws, ide: "cursor" }).vars.A, "2");
+    assert.equal(readFileEnv({ cwd: ws, envFile: join(ws, ".claude", "ENV.md") }).vars.A, "1");
+    assert.match(
+      readFileEnv({ cwd: ws, envFile: join(ws, "nao-existe.md") }).error,
+      /não encontrado/
+    );
+  } finally {
+    if (prev !== undefined) process.env.JARVIS_ENV_FILE = prev;
+    rmSync(ws, { recursive: true, force: true });
+  }
+});

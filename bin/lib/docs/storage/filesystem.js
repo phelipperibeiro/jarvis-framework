@@ -55,7 +55,8 @@ export function safePath(root, rel) {
  * @param {string} [cfg.ref] - Branch lida no `pull` (CENTRAL_DOCS_REF)
  * @param {string} [cfg.targetBranch] - Branch base do PR (CENTRAL_DOCS_TARGET_BRANCH)
  * @param {string} [cfg.reviewers] - Revisores (vão na descrição do PR)
- * @param {Object} [cfg.deps] - `runGit` e `createMergeRequest` injetáveis (testes)
+ * @param {Object} [cfg.deps] - `runGit` e `createMergeRequest` injetáveis (testes); `fileEnvResult`:
+ *   o ENV.md já lido pelo comando, repassado ao gate do `VERSION_CONTROL_ACCESS` no MR
  */
 export function createFilesystemStorage({
   location,
@@ -185,12 +186,17 @@ export function createFilesystemStorage({
         if (reviewers) description += `\n- **Revisores**: ${reviewers}`;
         let mr = null;
         try {
-          mr = await createMergeRequest(remoteUrl, {
-            source: branch,
-            target: targetBranch,
-            title: `docs(${squad}): ${tipo} ${basename(destPath)}`,
-            description,
-          });
+          // O ENV.md que o comando já leu (com --ide/--env-file) vai junto para o gate do acesso.
+          mr = await createMergeRequest(
+            remoteUrl,
+            {
+              source: branch,
+              target: targetBranch,
+              title: `docs(${squad}): ${tipo} ${basename(destPath)}`,
+              description,
+            },
+            deps.fileEnvResult ? { fileEnvResult: deps.fileEnvResult } : {}
+          );
         } catch (error) {
           // Indisponível (sem CLI ou sem login): o push já foi feito, o MR fica para abrir à mão.
           // Enviado com erro continua subindo: o MR pode ter sido criado.

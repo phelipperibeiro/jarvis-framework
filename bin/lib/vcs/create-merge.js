@@ -65,12 +65,17 @@ export async function runCreateMerge(
 
   let noun = "PR";
   try {
-    noun =
-      parseRepoUrl(repoUrl, { versionControl: setting("VERSION_CONTROL", fileEnv.vars) }).vendor ===
-      "gitlab"
-        ? "MR"
-        : "PR";
-    const result = await createMergeRequest(repoUrl, { source, target, title, description }, deps);
+    const { vendor } = parseRepoUrl(repoUrl, {
+      versionControl: setting("VERSION_CONTROL", fileEnv.vars),
+    });
+    noun = vendor === "gitlab" ? "MR" : "PR";
+    // Repassa o ENV.md já resolvido (com --ide/--env-file): sem isso, o createMergeRequest o leria
+    // de novo pelo cwd e falharia com dois ENV.md no workspace.
+    const result = await createMergeRequest(
+      repoUrl,
+      { source, target, title, description },
+      { ...deps, fileEnvResult: fileEnv }
+    );
     console.log(`✅ ${noun} criado: ${result.url}`);
     console.log(JSON.stringify(result));
   } catch (err) {

@@ -3,9 +3,9 @@
 // createMergeRequest/createIssue chamam a CLI do vendor (gh/glab) pelo runner
 // (bin/lib/integrations/cli-runner.js). O `exec` é injetado pelo terceiro parâmetro
 // (`deps`): nenhum teste chama a CLI de verdade nem depende do login da máquina.
-import { test } from "node:test";
+import { after, test } from "node:test";
 import assert from "node:assert/strict";
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import {
@@ -20,11 +20,10 @@ import { parseLabels, runCreateIssue } from "../bin/lib/vcs/create-issue.js";
 
 // ENV.md vazio: createMergeRequest lê o VERSION_CONTROL_ACCESS do ENV.md do workspace no que faltar
 // no ambiente, e o teste não pode depender do ENV.md real de quem roda.
-{
-  const dir = mkdtempSync(join(tmpdir(), "jarvis-vcs-env-"));
-  writeFileSync(join(dir, "ENV.md"), "");
-  process.env.JARVIS_ENV_FILE = join(dir, "ENV.md");
-}
+const EMPTY_ENV_DIR = mkdtempSync(join(tmpdir(), "jarvis-vcs-env-"));
+writeFileSync(join(EMPTY_ENV_DIR, "ENV.md"), "");
+process.env.JARVIS_ENV_FILE = join(EMPTY_ENV_DIR, "ENV.md");
+after(() => rmSync(EMPTY_ENV_DIR, { recursive: true, force: true }));
 
 // `await fn()` (não `return fn()`): o `finally` só pode restaurar a env var
 // depois que a promise resolver, senão uma função com mais de um `await`
@@ -584,4 +583,54 @@ test("parseRepoUrl: ssh:// sem usuário, sem porta e git+ssh://", () => {
   const r = parseRepoUrl("git+ssh://git@github.com/o/r.git");
   assert.equal(r.origin, "https://github.com");
   assert.equal(r.projectPath, "o/r");
+});
+
+// --- Terceira passada do pre-pr (#181) ---------------------------------------
+
+test("runCreateMerge --ide com dois ENV.md reais no workspace: o PR abre (o ENV.md resolvido chega ao createMergeRequest)", async () => {
+  const ws = mkdtempSync(join(tmpdir(), "jarvis-two-envs-"));
+  const prevCwd = process.cwd();
+  try {
+    mkdirSync(join(ws, ".claude"));
+    mkdirSync(join(ws, ".cursor"));
+    writeFileSync(
+      join(ws, ".claude", "ENV.md"),
+      "VERSION_CONTROL=github\nVERSION_CONTROL_ACCESS=cli\n"
+    );
+    writeFileSync(
+      join(ws, ".cursor", "ENV.md"),
+      "VERSION_CONTROL=github\nVERSION_CONTROL_ACCESS=manual\n"
+    );
+    process.chdir(ws);
+    const { exec, calls } = fakeCli({
+      code: 0,
+      stdout: "https://github.com/o/r/pull/9\n",
+      stderr: "",
+    });
+    const env = {
+      JARVIS_ENV_FILE: undefined,
+      VERSION_CONTROL_ACCESS: undefined,
+      VERSION_CONTROL: undefined,
+      IDE: undefined,
+    };
+    const a = await withEnv(env, () =>
+      captureRun(() => runCreateMerge({ ...MERGE, ide: "claude" }, { exec }))
+    );
+    assert.equal(a.code, 0, a.err);
+    assert.equal(
+      calls.some((c) => c.args[0] === "pr"),
+      true
+    );
+    const b = await withEnv(env, () =>
+      captureRun(() => runCreateMerge({ ...MERGE, ide: "cursor" }, { exec }))
+    );
+    assert.equal(b.code, 3);
+    assert.match(b.err, /manual/);
+    const c = await withEnv(env, () => captureRun(() => runCreateMerge(MERGE, { exec })));
+    assert.equal(c.code, 3);
+    assert.match(c.err, /--ide ou --env-file/);
+  } finally {
+    process.chdir(prevCwd);
+    rmSync(ws, { recursive: true, force: true });
+  }
 });

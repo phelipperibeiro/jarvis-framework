@@ -18,7 +18,9 @@ import { getStorage } from "./storage/index.js";
 export function openStorageFromEnv(flags = {}, { cwd = process.cwd(), deps } = {}) {
   const { path, root } = resolveEnvPath(cwd, flags);
   const env = loadEnv(cwd, path);
-  return { env, root, storage: getStorage(env, { root, deps }) };
+  // O ENV.md lido aqui (com --ide/--env-file) segue até o gate do acesso no MR do Central docs.
+  const storageDeps = { fileEnvResult: { vars: env, error: null }, ...deps };
+  return { env, root, storage: getStorage(env, { root, deps: storageDeps }) };
 }
 
 /**

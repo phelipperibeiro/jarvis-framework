@@ -397,6 +397,44 @@ test("git: sem CLI, o aviso traz o link de novo MR (github) ou nenhum link (remo
   assert.match(warns.join("\n"), /abra o MR à mão no host/);
 });
 
+test("git: o ENV.md do comando (fileEnvResult) chega ao gate do MR: com manual, o push fica e o MR não abre", async (t) => {
+  const { base, clone } = gitFixture();
+  setTestMode(false);
+  const warns = [];
+  mock.method(console, "warn", (...a) => warns.push(a.join(" ")));
+  t.after(() => {
+    mock.reset();
+    setTestMode(true);
+    rmSync(base, { recursive: true, force: true });
+  });
+  const runGit = (args, cwd) =>
+    args[0] === "remote" && args[1] === "get-url"
+      ? "https://github.com/o/central-docs"
+      : execFileSync("git", args, {
+          cwd,
+          encoding: "utf-8",
+          stdio: ["ignore", "pipe", "pipe"],
+        }).trim();
+  // createMergeRequest real (sem mock): o gate barra antes de qualquer CLI.
+  const s = getStorage(
+    { CENTRAL_DOCS_STORAGE: "filesystem", CENTRAL_DOCS_LOCATION: clone },
+    {
+      root: base,
+      deps: { runGit, fileEnvResult: { vars: { VERSION_CONTROL_ACCESS: "manual" }, error: null } },
+    }
+  );
+  const src = join(base, "feature-u.md");
+  writeFileSync(src, PRD);
+  const r = await s.publish({
+    localFile: src,
+    destPath: "CORE/product/p/feature-u.md",
+    squad: "CORE",
+    tipo: "feature",
+  });
+  assert.equal(r.mr, null);
+  assert.match(warns.join("\n"), /VERSION_CONTROL_ACCESS=manual/);
+});
+
 test("git: com scripts/build-index.sh no repositório, o índice vem do script", async () => {
   const { base, clone } = gitFixture();
   try {
