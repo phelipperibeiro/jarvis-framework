@@ -16,7 +16,7 @@ Você é um **especialista em Git e processos de code review** focado em criar P
 
 ## Objetivo
 
-Criar branch, commitar alterações e abrir um MR (GitLab) ou PR (GitHub/Bitbucket) conforme `VERSION_CONTROL` no ENV.md, seguindo:
+Criar branch, commitar alterações e abrir um MR (GitLab) ou PR (GitHub) pela CLI do host (`glab`/`gh`), conforme o `origin` ou o `VERSION_CONTROL` no ENV.md, seguindo (o MR/PR sai pelo `jarvis vcs create-merge`, que respeita o `VERSION_CONTROL_ACCESS`: com `manual` sai com 3 sem abrir; saídas 0/1/3/4 da `rules/engineering/eng.integrations-rules.md`):
 - Padrão de nomenclatura de branch
 - Convenção de commits (Conventional Commits)
 - Template de MR preenchido corretamente
@@ -24,7 +24,7 @@ Criar branch, commitar alterações e abrir um MR (GitLab) ou PR (GitHub/Bitbuck
 
 ## Entrada
 
-- `$ARGUMENTS` - `TASK_MANAGER_KEY` da tarefa (Jira `TASK-123`, Linear, GitHub issue…) e opcionalmente branch de destino.
+- `$ARGUMENTS` - `TASK_MANAGER_KEY` da tarefa (Jira `TASK-123`, GitHub ou GitLab `#42`) e opcionalmente branch de destino.
 
 ## Recursos
 
@@ -253,7 +253,7 @@ rm -rf $SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/
 
 | Passo | Skill | Condição |
 |-------|-------|----------|
-| Passo 6 — Atualizar o card | `/eng-global-task-comment` | Se `TASK_MANAGER` estiver preenchido (freelance pula): comentário no card com o link do MR |
+| Passo 6 — Atualizar o card | `/eng-global-task-comment` | Sempre: comentário no card com o link do MR (freelance: registro no `task-log.md` da sessão) |
 
 ---
 

@@ -196,15 +196,17 @@ export function buildProgram() {
     .option("--env-file <path>")
     .action((options) => dailyReport(toLegacyFlags(options)));
 
-  const vcs = cmd(program, "vcs").description("Adapters de Git host (GitLab/GitHub/Bitbucket)");
+  const vcs = cmd(program, "vcs").description("Git host pela CLI oficial (gh, glab)");
 
   cmd(vcs, "create-merge")
-    .description("Abrir um MR/PR")
+    .description("Abrir um MR/PR (gh pr create / glab mr create)")
     .option("--source <branch>")
     .option("--target <branch>")
     .option("--title <titulo>")
     .option("--body-file <path>")
     .option("--repo <url>", "Padrão: git remote get-url origin")
+    .option("--ide <ide>", "IDE do ENV.md (quando há mais de um no workspace)")
+    .option("--env-file <path>", "Path explícito do ENV.md")
     .action((options) =>
       runCreateMerge({
         source: options.source,
@@ -212,12 +214,14 @@ export function buildProgram() {
         title: options.title,
         bodyFile: options.bodyFile,
         repo: options.repo,
+        ide: options.ide,
+        envFile: options.envFile,
       })
     );
 
   cmd(vcs, "create-issue")
-    .description("Abrir uma issue")
-    .option("--repo <url-ou-path>")
+    .description("Abrir uma issue (gh issue create / glab issue create)")
+    .option("--repo <url>", "URL completa do repositório")
     .option("--title <titulo>")
     .option("--body-file <path>")
     .option("--label <labels>", "Labels separadas por vírgula (padrão: bug)")
@@ -230,13 +234,24 @@ export function buildProgram() {
       })
     );
 
-  const tasks = cmd(program, "tasks").description("Adapters de task manager");
+  const tasks = cmd(program, "tasks").description(
+    "Board de cards pela CLI oficial (gh, glab, acli)"
+  );
 
   cmd(tasks, "comment")
-    .description("Comentar num card (Jira/Linear/GitHub/Asana — lê TASK_MANAGER do ENV.md)")
+    .description("Comentar num card (Jira, GitHub, GitLab — lê TASK_MANAGER do ambiente)")
     .argument("[card-key]")
     .argument("[message...]", "Texto do comentário (pode ter espaços)")
-    .action((cardKey, messageParts) => runComment(cardKey, messageParts.join(" ")));
+    .option("--body-file <path>", "Lê o texto do comentário de um arquivo")
+    .option("--ide <ide>", "IDE do ENV.md (quando há mais de um no workspace)")
+    .option("--env-file <path>", "Path explícito do ENV.md")
+    .action((cardKey, messageParts, options) =>
+      runComment(cardKey, messageParts.join(" "), {
+        bodyFile: options.bodyFile,
+        ide: options.ide,
+        envFile: options.envFile,
+      })
+    );
 
   return program;
 }

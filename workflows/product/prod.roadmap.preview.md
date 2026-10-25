@@ -62,7 +62,7 @@ Boards: usar o `board_code` de cada squad em `taxonomy.md` (se preenchido). Não
 
 Filtro de roadmap: pedir ao usuário o JQL ou o ID do filtro salvo no `$TASK_MANAGER`. Não usar filtro fixo.
 
-Utilize o MCP da Atlassian para buscar os dados do roadmap.
+Utilize o MCP da Atlassian para buscar os dados do roadmap. Ele é pré-requisito manual: o `/jarvis-init` não configura MCP de board (board e git do Jarvis usam a CLI oficial). Sem o MCP, peça ao usuário para exportar ou colar os dados.
 Não precisa trazer informações embedadas do jira, apenas o output definido aqui nessa skill.
 
 ```

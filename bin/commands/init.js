@@ -22,6 +22,7 @@ import {
   removeStaleSkills,
 } from "../lib/core/stale-skills.js";
 import { parseEnvEntries, planEnvUpgrade, applyEnvUpgrade } from "../lib/core/env-upgrade.js";
+import { checkCli, getVendor } from "../lib/integrations/cli-runner.js";
 import {
   expandEnv,
   planDocsMigration,
@@ -267,6 +268,31 @@ function readLockVersion(workspaceDir) {
 }
 
 /**
+ * Descoberta da CLI de cada eixo (só leitura: binário no PATH + `auth status`).
+ * Não pergunta nada: a confirmação do acesso e as variáveis ficam no `/jarvis-init` (Q2 da #181).
+ * `JARVIS_SKIP_CLI_CHECK=1` pula a descoberta (CI, sem rede).
+ */
+async function reportCliDiscovery(entries) {
+  const axes = [
+    ["TASK_MANAGER", "Board de cards"],
+    ["VERSION_CONTROL", "Controle de versão"],
+  ];
+  const targets = axes
+    .map(([key, label]) => ({ key, label, vendor: (entries.get(key) || "").toLowerCase() }))
+    .filter((t) => getVendor(t.vendor));
+  if (!targets.length) return;
+  if (process.env.JARVIS_SKIP_CLI_CHECK) {
+    logger.info(`${DIM}  • Descoberta da CLI pulada (JARVIS_SKIP_CLI_CHECK)${NC}`);
+    return;
+  }
+  for (const t of targets) {
+    const r = await checkCli(t.vendor);
+    const mark = r.installed && r.loggedIn ? GREEN : YELLOW;
+    logger.info(`${mark}  • ${t.label} (${t.key}=${t.vendor}): ${r.reason}${NC}`);
+  }
+}
+
+/**
  * `jarvis init --upgrade`: atualiza um projeto já configurado em uma passada.
  * 1. arquivos do framework (como o --force, sem perguntar); 2. só as chaves novas do ENV;
  * 3. documentos dos caminhos antigos → docs/jarvis/… (com confirmação ou --yes).
@@ -412,7 +438,32 @@ async function runUpgrade(cwd, flags) {
       `${YELLOW}  ⚠️  WORKSPACE_MODE: a raiz é um repositório e há subpastas com .git (submódulos?): gravado como project; confira no ENV.md${NC}`
     );
   }
+  for (const key of envPlan.filledApplied || []) {
+    logger.info(`  • ${key} estava vazio: preenchido com o repositório oficial do Jarvis`);
+  }
+  if (envPlan.warnings.includes("TOKEN_TASK_MANAGER")) {
+    logger.info(
+      `${YELLOW}  ⚠️  TOKEN_TASK_MANAGER não é mais usado: o Jarvis usa o login da CLI do vendor. Faça o login da CLI e remova a linha pelo /jarvis-init upgrade (o valor não foi lido nem copiado)${NC}`
+    );
+  }
+  for (const w of envPlan.warnings.filter((x) => x.startsWith("UNSUPPORTED:"))) {
+    const [, key, vendor] = w.split(":");
+    logger.info(
+      `${YELLOW}  ⚠️  ${key}=${vendor} não é suportado (jira, github, gitlab): o eixo fica em freelance e as ações viram .md${NC}`
+    );
+  }
+  await reportCliDiscovery(futureEntries);
+
+  // Eixos com vendor do catálogo e sem forma de acesso definida: a confirmação é no /jarvis-init.
+  const pendingAxes = ["TASK_MANAGER", "VERSION_CONTROL"].filter((key) => {
+    const access = (futureEntries.get(`${key}_ACCESS`) || "").trim();
+    return getVendor(futureEntries.get(key)) && (!access || /^\[.*\]$/.test(access));
+  });
   logger.info("");
-  logger.info(`${CYAN}➡️  Agora rode ${BOLD}/jarvis-init upgrade${NC}${CYAN} na IDE.${NC}\n`);
+  logger.info(
+    pendingAxes.length
+      ? `${CYAN}➡️  Agora rode ${BOLD}/jarvis-init upgrade${NC}${CYAN} na IDE para confirmar o acesso de ${pendingAxes.join(" e ")} (e as variáveis).${NC}\n`
+      : `${CYAN}➡️  Agora rode ${BOLD}/jarvis-init upgrade${NC}${CYAN} na IDE.${NC}\n`
+  );
   return sync.errors.length || moveErrors.length || staleErrors.length ? 1 : 0;
 }

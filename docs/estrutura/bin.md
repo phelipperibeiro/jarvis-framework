@@ -28,7 +28,7 @@ bin/
     ├── core/               # sync-engine, scanner, profile-filter, token-report, env-upgrade, docs-migrate, workspace-mode, mcp-config, stale-skills, session-scan
     ├── flow-map/           # índice, leitor das tabelas de chamadas, árvore e saída do jarvis map
     ├── config/             # IDEs, constants (SYNC_DIRS, LOCK_FILE)
-    ├── vcs/                # adapters GitLab/GitHub/Bitbucket
+    ├── vcs/                # GitHub/GitLab pela CLI (gh, glab)
     ├── tasks/              # comentários em boards
     ├── docs/               # scripts de sync/publish de docs
     ├── auth/               # legado (login removido no fork)
@@ -47,6 +47,8 @@ bin/
 | `jarvis tokens` | Estima o que carrega no início da sessão para um perfil (rules, `AGENTS.md`, frontmatter dos skills, `warm-up`) |
 | `jarvis map <nome>` | Árvore em texto do que um workflow, skill ou agente chama (`--reverse`: quem o chama; `--depth N`) |
 | `jarvis daily-report` | Junta os `daily.md` das sessões por dia, com alertas das sessões sem registro (`--days N`, `--json`; base do `/eng.daily-report`) |
+| `jarvis tasks comment <key> [msg] [--body-file]` | Comenta no card pela CLI do vendor (`gh`/`glab`/`acli`); lê o ENV.md (`--ide`/`--env-file`); saídas 0 ok, 1 uso, 3 indisponível (inclui `TASK_MANAGER_ACCESS` `manual` ou inválido e ENV.md ambíguo), 4 enviado com erro |
+| `jarvis vcs create-merge` / `create-issue` | Abre PR/MR (`gh pr create`/`glab mr create`, respeitando o `VERSION_CONTROL_ACCESS`; `--ide`/`--env-file` no `create-merge`) e issue (`JARVIS_PROJECT` com URL completa); mesmas saídas. `ACCESS` `manual` ou inválido e ENV.md ambíguo saem com 3 |
 | `jarvis qa-signoff` | Gate de QA para CI |
 | `jarvis --version` | Lê `package.json` |
 

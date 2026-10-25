@@ -1,6 +1,6 @@
 ---
 name: jarvis-report-issue
-description: Reporta um bug ou propõe uma melhoria no próprio framework Jarvis. Classifica o report (bug ou melhoria), monta o issue no formato do tipo e o abre no repo do Jarvis (GitLab, GitHub ou Bitbucket, conforme VERSION_CONTROL), com a label certa.
+description: Reporta um bug ou propõe uma melhoria no próprio framework Jarvis. Classifica o report (bug ou melhoria), monta o issue no formato do tipo e o abre no repo do Jarvis (o JARVIS_PROJECT, hoje no GitHub) pela CLI do host (gh issue create), com a label certa; sem a CLI, deixa o issue pronto em .jarvis/issues/.
 argument-hint: "[descrição opcional do problema ou da melhoria]"
 disable-model-invocation: false
 allowed-tools: Read Bash Grep Glob
@@ -142,15 +142,17 @@ Antes de abrir, se o pedido tiver pontos em conflito com as regras atuais ou amb
 
 Ler do `$IDE/ENV.md`:
 
-- `JARVIS_PROJECT` (preferido) ou alias `JARVIS_GITLAB_PROJECT` — URL ou `grupo/repo`
-- `VERSION_CONTROL` — `gitlab` | `github` | `bitbucket` (default pelo hostname da URL)
+- `JARVIS_PROJECT` (preferido) ou alias `JARVIS_GITLAB_PROJECT` — **URL completa** do repositório do Jarvis (padrão: `https://github.com/phelipperibeiro/jarvis-framework`; troque só para um fork interno)
+- O vendor vem do host dessa URL (hoje GitHub → `gh`), **não** do `VERSION_CONTROL` do projeto: um projeto no GitLab reporta ao Jarvis normalmente, desde que o `gh` esteja logado
 
 Se o projeto não estiver definido:
 
-> `🚫 BLOQUEADO: defina JARVIS_PROJECT=https://github.com/phelipperibeiro/jarvis-framework` (ou GitLab/Bitbucket) no ENV.md.`
+> `🚫 BLOQUEADO: defina JARVIS_PROJECT=https://github.com/phelipperibeiro/jarvis-framework no ENV.md (URL completa).`
+
+Sem host (`grupo/repo`), o vendor não é adivinhado: o `jarvis vcs create-issue` sai com `3` e o issue vai para o fallback da Fase 4.
 > → PARAR
 
-Token: o adapter resolve sozinho (`.npmrc` GitLab, `gh auth` / `GITHUB_TOKEN`, `BITBUCKET_TOKEN`).
+Login: o da CLI do host (`gh auth login`; no GitLab, `glab auth login`). Nenhum token é lido ou pedido. O `VERSION_CONTROL_ACCESS` do projeto não se aplica aqui: o issue vai para o repositório do Jarvis.
 
 Versão do Jarvis:
 
@@ -176,7 +178,9 @@ jarvis vcs create-issue \
 STATUS=$?
 ```
 
-**Fallback — sem token ou sem conexão com o repositório.** Se o comando falhar (exit diferente de 0: token ausente, sem rede, repositório inacessível), **não descarte o report**. Grave o issue montado em `.jarvis/issues/issue-{desc}.md`, na pasta do workspace (a que contém `$IDE/`), para a pessoa abrir manualmente:
+**Cadeia (`rules/engineering/eng.integrations-rules.md`).** `0` → aberto. `1` (uso: arquivo do corpo inexistente, título vazio) → corrija a chamada e rode de novo. `3` (indisponível: CLI ausente, sem login, `JARVIS_PROJECT` sem host; nada enviado) → rode a CLI direto, se ela estiver logada (`gh issue create --repo {host}/{dono}/{repo} --title "$ISSUE_TITLE" --body-file "$BODY_FILE" --label "$LABEL"`); se também não der, o fallback abaixo. `4` (enviado com erro) → **não** repita: grave o fallback e avise para conferir no repositório se o issue foi aberto.
+
+**Fallback — sem CLI ou sem conexão com o repositório.** Se a cadeia não abrir o issue, **não descarte o report**. Grave o issue montado em `.jarvis/issues/issue-{desc}.md`, na pasta do workspace (a que contém `$IDE/`), para a pessoa abrir manualmente:
 
 - `{desc}` é o slug do título, sem o prefixo de tipo: minúsculas, sem acentos, palavras separadas por `-`, até 60 caracteres (ex.: `[MELHORIA] jarvis-init: Central docs padrão` → `issue-jarvis-init-central-docs-padrao.md`). Se o arquivo já existir, acrescente `-2`, `-3`…
 - Conteúdo: um cabeçalho com o que vai nos campos do formulário e, depois, o corpo exatamente como seria enviado:
@@ -188,7 +192,7 @@ STATUS=$?
   {corpo do issue}
   ```
 
-- `{URL de novo issue}` vem de `JARVIS_PROJECT` pelo vendor: GitHub `{repo}/issues/new`, GitLab `{repo}/-/issues/new`, Bitbucket `{repo}/issues/new`.
+- `{URL de novo issue}` vem de `JARVIS_PROJECT` pelo vendor: GitHub `{repo}/issues/new`, GitLab `{repo}/-/issues/new`.
 - `.jarvis/` já fica fora do versionamento, então o arquivo não vai para nenhum commit.
 
 ```bash
@@ -227,10 +231,10 @@ O issue ficou pronto para você abrir manualmente:
   Abrir em: {URL de novo issue}
 
 Cole o título no campo de título e o conteúdo abaixo do título no corpo.
-Para abrir direto da próxima vez, configure o token (GitLab .npmrc / gh auth ou GITHUB_TOKEN / BITBUCKET_TOKEN) e confira o JARVIS_PROJECT.
+Para abrir direto da próxima vez, faça `gh auth login` (ou o login da CLI do host) e confira o JARVIS_PROJECT (URL completa).
 ```
 
-Com o token configurado depois, a pessoa pode pedir para abrir o issue a partir desse arquivo, sem montar o report de novo. Depois que o issue for aberto, o arquivo pode ser apagado.
+Com a CLI logada depois, a pessoa pode pedir para abrir o issue a partir desse arquivo, sem montar o report de novo. Depois que o issue for aberto, o arquivo pode ser apagado.
 
 ### Skills invocados durante a execução do skill
 
@@ -244,7 +248,7 @@ Com o token configurado depois, a pessoa pode pedir para abrir o issue a partir 
 
 - **Nunca** pedir ao usuário que preencha o report — a IA preenche tudo
 - **Nunca** abrir issue sem a Fase 0 (classificação); num bug, sem a Fase 1 (reflexão)
-- **Nunca** hardcodar o repo ou token — sempre ler `JARVIS_PROJECT` do ENV.md; o adapter resolve o vendor
-- **Sempre** usar a label do tipo: `bug` para bug, `enhancement` para melhoria (no Bitbucket, o adapter grava como `kind`)
+- **Nunca** hardcodar o repo nem pedir token — sempre ler `JARVIS_PROJECT` do ENV.md; o vendor vem do host da URL
+- **Sempre** usar a label do tipo: `bug` para bug, `enhancement` para melhoria
 - **Sempre** limpar arquivos temporários após o curl
 - **Nunca** descartar o report quando a abertura falhar: grave o fallback em `.jarvis/issues/issue-{desc}.md` (Fase 4)

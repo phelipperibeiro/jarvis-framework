@@ -15,7 +15,7 @@ Antes de qualquer ação, determine qual modo aplicar:
 
 **Modo A — Estratégia a partir da Tech Spec (pré-código)**
 Aplicar quando invocado via `eng.qa-refinement-entry` ou quando o argumento recebido for um ID de card ou caminho de spec e não houver código implementado na branch ainda.
-- Fonte de dados: card no $TASK_MANAGER via integração disponível (Jira MCP)
+- Fonte de dados: card no $TASK_MANAGER, lido pela CLI do vendor (ação `view` do catálogo `bin/lib/integrations/vendors.json`: `gh issue view`, `glab issue view` ou `acli jira workitem view`) ou pelo conteúdo colado pelo usuário
 - Não executar `git diff`, `git log` ou qualquer comando que dependa de código
 - Saída: `$ENG_DOCS/qa/strategies/{task-id}-test-strategy.md`
 
@@ -125,7 +125,7 @@ Usar quando: invocado via `eng.qa-refinement-entry`, ou quando git diff retornar
 
 ### A.1. Buscar o Card
 
-Usar a integração disponível com o $TASK_MANAGER (ex: Jira MCP) para buscar o card pelo ID recebido como argumento.
+Buscar o card pelo ID recebido como argumento, pela CLI do vendor (ação `view` do catálogo `bin/lib/integrations/vendors.json`: `gh issue view`, `glab issue view` ou `acli jira workitem view`) ou pelo conteúdo colado pelo usuário.
 Extrair: título, descrição, critérios de aceite, análise técnica, dependências e qualquer anexo de spec.
 
 Se a integração não estiver disponível, solicitar ao usuário que cole o conteúdo da spec diretamente.

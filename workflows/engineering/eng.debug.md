@@ -16,7 +16,7 @@ Um comando só para bugs. Pela entrada, o `/eng.debug` decide entre dois casos:
 - **Investigar** um sintoma (card, erro, stack trace): achar a causa de um bug e propor a correção.
 - **Varrer** um escopo (pasta, módulo, `--all`): achar suspeitos e priorizá-los.
 
-Nos dois, ele só lê (política de acesso por ambiente), não publica nada no card e deixa o resultado num relatório na sessão. A correção sempre segue pelo ciclo (`/eng.plan` → `/eng.work`). O método está na skill `eng-global-investigation`; a persona é o agente `eng.bug-hunter`.
+Nos dois, ele só lê (política de acesso por ambiente; o card é lido pela CLI do vendor, com a ação `view` do catálogo `bin/lib/integrations/vendors.json`, ou colado pelo usuário), não publica nada no card e deixa o resultado num relatório na sessão. A correção sempre segue pelo ciclo (`/eng.plan` → `/eng.work`). O método está na skill `eng-global-investigation`; a persona é o agente `eng.bug-hunter`.
 
 ---
 

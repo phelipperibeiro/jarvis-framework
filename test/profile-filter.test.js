@@ -200,16 +200,22 @@ test("listRulesForProfile: AGENTS.md nunca é filtrado, rtk é opt-in, sem bloco
 // (comentário no card: o relatório do eng.pre-pr passa a ser registrado se o usuário escolher resumo ou completo).
 // Issue #163 (WORKSPACE_MODE, 2026-10-17): +342 B em todos os perfis — eng-rules.md ganha a validação não bloqueante do modo.
 // Issue #163 (buscas em modo workspace, 2026-10-17): +1552 B em todos os perfis — eng-rules.md ganha a tabela IDE → pasta e a regra de buscas.
+// Issue #181 (integrações pelas CLIs oficiais, 2026-10-25): +1077 B em todos os perfis — eng.integrations-rules.md
+// ganha a cadeia de execução (jarvis → CLI do vendor → .md), os códigos de saída e o catálogo; sai a seção MR/PR.
+// Issue #181 (limpeza, 2026-10-25): -8 B em todos os perfis — eng-rules.md cita os boards como Jira, GitHub, GitLab (sai o Linear).
+// Issue #181 (pre-pr, 2026-10-25): +113 B em todos os perfis — eng-rules.md ganha a nota de que o .npmrc vale para registries npm e que board e git usam o login da CLI.
+// Issue #181 (pre-pr 2, 2026-10-25): +109 B em todos os perfis — eng.integrations-rules.md cita a saída 1 (uso) e exclui o *_ACCESS=manual do passo 2 da cadeia.
+// Issue #181 (pre-pr 3, 2026-10-25): +118 B em todos os perfis — o passo 2 da cadeia só vale para CLI ausente ou sem login (manual/inválido não roda a CLI; ENV.md ambíguo repete com --ide/--env-file).
 const BASE = [
   [
     "FULLCYCLE/GENERALIST/ENGINEERING/CORE",
     profile("FULLCYCLE", "GENERALIST", "ENGINEERING"),
     15,
-    101238,
+    102647,
   ],
-  ["BACKEND/SENIOR/ENGINEERING/CORE", profile("BACKEND", "SENIOR", "ENGINEERING"), 11, 67919],
-  ["FRONTEND/PLENO/ENGINEERING/CORE", profile("FRONTEND", "PLENO", "ENGINEERING"), 11, 68462],
-  ["QA/QA-ENGINEER/ENGINEERING/CORE", profile("QA", "QA-ENGINEER", "ENGINEERING"), 11, 67698],
+  ["BACKEND/SENIOR/ENGINEERING/CORE", profile("BACKEND", "SENIOR", "ENGINEERING"), 11, 69328],
+  ["FRONTEND/PLENO/ENGINEERING/CORE", profile("FRONTEND", "PLENO", "ENGINEERING"), 11, 69871],
+  ["QA/QA-ENGINEER/ENGINEERING/CORE", profile("QA", "QA-ENGINEER", "ENGINEERING"), 11, 69107],
 ];
 
 for (const [nome, p, arquivos, bytes] of BASE) {

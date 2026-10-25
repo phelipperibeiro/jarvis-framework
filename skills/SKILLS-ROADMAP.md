@@ -69,7 +69,7 @@ Skills existentes e planejadas do framework Jarvis.
 
 ### `eng-global-task-comment` ✅
 - **Trigger**: comentários técnicos em cards do task manager
-- **Escopo**: Jira/Linear/GitHub/Asana via adapter
+- **Escopo**: Jira/GitHub/GitLab pela CLI oficial do vendor (gh, glab, acli)
 - **Status**: `criado`
 
 ---

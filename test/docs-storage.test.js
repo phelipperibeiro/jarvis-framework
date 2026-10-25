@@ -2,7 +2,7 @@
 //
 // Tudo em pastas temporárias (mkdtemp). A camada git usa um repositório bare local
 // como `origin` — sem rede — e o `createMergeRequest` é injetado (mock).
-import { test } from "node:test";
+import { test, mock } from "node:test";
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
@@ -297,6 +297,142 @@ test("git: publish cria branch, commita documento + índice, faz push e abre o P
   } finally {
     rmSync(base, { recursive: true, force: true });
   }
+});
+
+test("git: sem CLI (indisponível) o push fica e o MR é null; enviado com erro sobe", async () => {
+  const { base, clone } = gitFixture();
+  try {
+    const src = join(base, "feature-y.md");
+    writeFileSync(src, PRD);
+    const unavailable = Object.assign(new Error("gh: login inválido"), {
+      sent: false,
+      exitCode: 3,
+    });
+    const s = getStorage(
+      { CENTRAL_DOCS_STORAGE: "filesystem", CENTRAL_DOCS_LOCATION: clone },
+      { root: base, deps: { createMergeRequest: async () => Promise.reject(unavailable) } }
+    );
+    const r = await s.publish({
+      localFile: src,
+      destPath: "CORE/product/p/feature-y.md",
+      squad: "CORE",
+      tipo: "feature",
+    });
+    assert.equal(r.mr, null);
+    assert.equal(r.branch, "docs/CORE/product/p/feature-y");
+
+    const sentErr = Object.assign(new Error("timeout"), { sent: true, exitCode: 4 });
+    const s2 = getStorage(
+      { CENTRAL_DOCS_STORAGE: "filesystem", CENTRAL_DOCS_LOCATION: clone },
+      { root: base, deps: { createMergeRequest: async () => Promise.reject(sentErr) } }
+    );
+    const src2 = join(base, "feature-z.md");
+    writeFileSync(src2, PRD);
+    await assert.rejects(
+      () =>
+        s2.publish({
+          localFile: src2,
+          destPath: "CORE/product/p/feature-z.md",
+          squad: "CORE",
+          tipo: "feature",
+        }),
+      /timeout/
+    );
+  } finally {
+    rmSync(base, { recursive: true, force: true });
+  }
+});
+
+test("git: sem CLI, o aviso traz o link de novo MR (github) ou nenhum link (remote fora de github/gitlab)", async (t) => {
+  const { base, clone } = gitFixture();
+  setTestMode(false);
+  const warns = [];
+  mock.method(console, "warn", (...a) => warns.push(a.join(" ")));
+  t.after(() => {
+    mock.reset();
+    setTestMode(true);
+    rmSync(base, { recursive: true, force: true });
+  });
+  const unavailable = Object.assign(new Error("gh: login inválido"), { sent: false, exitCode: 3 });
+  // O push vai para o origin local; o "remote get-url" responde um endereço do GitHub.
+  const runGit = (args, cwd) =>
+    args[0] === "remote" && args[1] === "get-url"
+      ? "https://github.com/o/central-docs"
+      : execFileSync("git", args, {
+          cwd,
+          encoding: "utf-8",
+          stdio: ["ignore", "pipe", "pipe"],
+        }).trim();
+  const s = getStorage(
+    { CENTRAL_DOCS_STORAGE: "filesystem", CENTRAL_DOCS_LOCATION: clone },
+    { root: base, deps: { runGit, createMergeRequest: async () => Promise.reject(unavailable) } }
+  );
+  const src = join(base, "feature-w.md");
+  writeFileSync(src, PRD);
+  const r = await s.publish({
+    localFile: src,
+    destPath: "CORE/product/p/feature-w.md",
+    squad: "CORE",
+    tipo: "feature",
+  });
+  assert.equal(r.mr, null);
+  assert.match(
+    warns.join("\n"),
+    /abra o MR à mão: https:\/\/github.com\/o\/central-docs\/compare\/main\.\.\.docs/
+  );
+
+  warns.length = 0;
+  const s2 = getStorage(
+    { CENTRAL_DOCS_STORAGE: "filesystem", CENTRAL_DOCS_LOCATION: clone },
+    { root: base, deps: { createMergeRequest: async () => Promise.reject(unavailable) } }
+  );
+  const src2 = join(base, "feature-v.md");
+  writeFileSync(src2, PRD);
+  await s2.publish({
+    localFile: src2,
+    destPath: "CORE/product/p/feature-v.md",
+    squad: "CORE",
+    tipo: "feature",
+  });
+  assert.match(warns.join("\n"), /abra o MR à mão no host/);
+});
+
+test("git: o ENV.md do comando (fileEnvResult) chega ao gate do MR: com manual, o push fica e o MR não abre", async (t) => {
+  const { base, clone } = gitFixture();
+  setTestMode(false);
+  const warns = [];
+  mock.method(console, "warn", (...a) => warns.push(a.join(" ")));
+  t.after(() => {
+    mock.reset();
+    setTestMode(true);
+    rmSync(base, { recursive: true, force: true });
+  });
+  const runGit = (args, cwd) =>
+    args[0] === "remote" && args[1] === "get-url"
+      ? "https://github.com/o/central-docs"
+      : execFileSync("git", args, {
+          cwd,
+          encoding: "utf-8",
+          stdio: ["ignore", "pipe", "pipe"],
+        }).trim();
+  // createMergeRequest real (sem mock): o gate barra antes de qualquer CLI.
+  const s = getStorage(
+    { CENTRAL_DOCS_STORAGE: "filesystem", CENTRAL_DOCS_LOCATION: clone },
+    {
+      root: base,
+      deps: { runGit, fileEnvResult: { vars: { VERSION_CONTROL_ACCESS: "manual" }, error: null } },
+    }
+  );
+  const src = join(base, "feature-u.md");
+  writeFileSync(src, PRD);
+  const r = await s.publish({
+    localFile: src,
+    destPath: "CORE/product/p/feature-u.md",
+    squad: "CORE",
+    tipo: "feature",
+  });
+  assert.equal(r.mr, null);
+  assert.match(warns.join("\n"), /VERSION_CONTROL_ACCESS=manual/);
 });
 
 test("git: com scripts/build-index.sh no repositório, o índice vem do script", async () => {

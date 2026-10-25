@@ -63,7 +63,7 @@ Gerar uma especificação técnica completa e auto-contida, em um de dois modos:
 | Delivery Spec › Processo de Criação › verificação de necessidade de RFC | `/eng.create-rfc` | Se a Tech Spec atender aos critérios que exigem RFC e o usuário escolher "A: Criar uma RFC agora" |
 | Delivery Spec › Caminho A › 2A.2 Análise de Documentação de Produto | `/jarvis-docs-central` | Se `CENTRAL_DOCS_STORAGE` estiver configurado (funcionalidades já implementadas relacionadas ao épico; PRD/FRD vêm de `$PROD_DOCS`) |
 | Reference Spec › 2. Checagem de RFC | `/eng.create-rfc` | Se não houver RFC/ARD de origem, algum dos 7 critérios for "Sim" e o usuário escolher "A: Criar uma RFC agora" |
-| Delivery Spec › FASE 7 › 7.3 Criação no Jira | `ferramenta MCP/API do Jira` (referência a confirmar) | Se o projeto usar Jira e houver ferramenta MCP ou API disponível; senão fornecer template para criação manual (o texto não nomeia a ferramenta) |
+| Delivery Spec › FASE 7 › 7.3 Criação no Jira | `acli jira workitem create` (CLI do vendor) ou MCP do Jira configurado à mão | Se o projeto usar Jira com a `acli` logada (ou um MCP do Jira configurado pela pessoa); senão, template para criação manual |
 
 ---
 

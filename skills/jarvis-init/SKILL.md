@@ -22,18 +22,18 @@ Regras que **substituem** qualquer trecho legado deste skill ou dos assets:
 1. **Sem login/OAuth** — identidade = `USER=` (ENV.md → git email → SO). Nunca pedir `jarvis login` nem `~/.jarvis/auth.json`.
 2. **Sem `PROJECT_NAME` / `WORKSPACE_TYPE`** — a unidade é **workspace** (pasta que contém `$IDE/`).
 3. **Sessões no workspace** — `SESSIONS_DIR=.jarvis/sessions` com `{eng,prod,qa}/`. Estado local em `{workspace}/.jarvis/` (não em `~/.jarvis/`).
-4. **`TASK_MANAGER` vazio = freelance** — sem Jira/Linear. Workflows pedem `TASK_MANAGER_KEY` (controle próprio). MCP de task manager **não** é obrigatório.
-5. **Context7 obrigatório**; demais MCPs (Jira, Redis, Sentry, TestSprite) **não bloqueiam**.
+4. **`TASK_MANAGER` vazio = freelance** — sem board. Workflows pedem `TASK_MANAGER_KEY` (controle próprio) e as ações viram `.md`.
+5. **Context7 obrigatório**; demais MCPs (Redis, Sentry, TestSprite) **não bloqueiam**. Board e git não usam MCP: usam a CLI oficial (contrato 7).
 6. **Sem event bus / metrics / checkin-checkout-daily** — não provisionar Redis runtime nem pedir métricas.
-7. **Tokens de Git** não vão no ENV.md — GitLab `.npmrc`; GitHub `gh auth` / `GITHUB_TOKEN`; Bitbucket `BITBUCKET_TOKEN`. Não existe `TOKEN_VERSION_CONTROL` no template.
+7. **Board e git pela CLI oficial, sem token** — `gh` (GitHub), `glab` (GitLab), `acli` (Jira Cloud), com o login delas (`gh auth login`, `glab auth login`, `acli jira auth login`). Nenhum token vai no ENV.md (não existem `TOKEN_TASK_MANAGER` nem `TOKEN_VERSION_CONTROL` no template). Catálogo: `bin/lib/integrations/vendors.json`. Linear, Asana e Bitbucket não são suportados (o eixo fica em freelance).
 8. **Autonomia** — qualquer `POSITION` (JUNIOR…CTO / PM) pode rodar o card ponta a ponta (`/eng.start` → `/eng.pr`). Sem gate obrigatório de TL/PM no init.
-9. **Fonte do ENV** — só `templates/ENV-template.md`. Não inventar variáveis. `JARVIS_PROJECT` default: `https://github.com/phelipperibeiro/jarvis-framework`.
+9. **Fonte do ENV** — só `templates/ENV-template.md`. Não inventar variáveis. `JARVIS_PROJECT` default: `https://github.com/phelipperibeiro/jarvis-framework` (sempre a URL completa; trocar só para um fork interno).
 10. **IDEs** — windsurf, claude, cursor, codex, opencode, gemini/antigravity, kiro.
 
 ## Objetivo
 
 - Configurar ambiente de desenvolvimento
-- Validar MCP obrigatório (Context7) e checar task manager só se `TASK_MANAGER` estiver definido (não bloqueante)
+- Validar MCP obrigatório (Context7) e descobrir a CLI do board e do git (instalada e logada; não bloqueante)
 - Criar arquivos de configuração (ENV.md, AGENTS.md) e pastas `.jarvis/sessions/{eng,prod,qa}`
 - Orientar nos processos do framework (sem ritual diário / login)
 
@@ -193,7 +193,7 @@ Identificar qual IDE o usuário está utilizando:
 **Se opção C (Upgrade):**
 
 > No terminal, rode antes `jarvis init --upgrade --ide {ide}`: ele atualiza os arquivos do framework, acrescenta as variáveis novas e move os documentos para as pastas novas (itens 1–8, 10 a 12). Aqui ficam o Central docs antigo (item 9), as pendências que ele listar e o passo das stacks.
-> **O upgrade só acrescenta chaves novas:** nenhuma chave já existente, preenchida ou não, é alterada.
+> **O upgrade só acrescenta chaves novas:** nenhuma chave já existente, preenchida ou não, é alterada, salvo as exceções declaradas no item 9 (`CENTRAL_DOCS_LOCATION` e `TOKEN_TASK_MANAGER`, com confirmação; `JARVIS_PROJECT` vazio, automático).
 > Trocou o `ARTIFACT_STYLE` (ou HUB, POSITION, AREA, SQUAD) à mão? O Passo 8 copia ou remove as rules desse perfil.
 
 1. Ler todas as chaves do `templates/ENV-template.md`
@@ -222,6 +222,9 @@ Identificar qual IDE o usuário está utilizando:
    - Depois, ofereça a carga inicial do Central docs (Passo 5.3).
 9. **Exceção — Central docs antigo:** se o `ENV.md` tiver `CENTRAL_DOCS_REPO` preenchido e não tiver `CENTRAL_DOCS_STORAGE`, propor a migração (só com confirmação): `CENTRAL_DOCS_STORAGE=filesystem`, `CENTRAL_DOCS_LOCATION=docs/jarvis/central-docs` (Passo 5.2) e `git clone {CENTRAL_DOCS_REPO} {LOCATION}`. Depois, comentar a linha antiga (`# CENTRAL_DOCS_REPO=… (migrado em YYYY-MM-DD)`) e `CENTRAL_DOCS_CACHE_TTL`. Sem confirmação, não mexe e avisa que os comandos de docs vão pedir o Upgrade.
    - **Central docs no padrão antigo do modo workspace:** se `CENTRAL_DOCS_LOCATION` for `./central-docs` (ou `central-docs`) e essa pasta existir, ofereça com `AskUserQuestion` (**Mover** | **Manter**) mover para `docs/jarvis/central-docs`, o padrão atual. Com **Mover**: se o destino já existir, não sobrescreva (avise e mantenha); senão, `mv ./central-docs docs/jarvis/central-docs` e troque o valor de `CENTRAL_DOCS_LOCATION` no `ENV.md`. Esta é a única alteração de uma chave existente no Upgrade e só acontece com a confirmação. Com **Manter**, nada muda.
+9.1. **Exceção — `TOKEN_TASK_MANAGER` com valor:** o token não é mais usado (o board passa pela CLI do vendor). Nunca leia, mostre ou copie o valor: confira só se a linha tem algo depois do `=`. Explique e oriente o login da CLI do `TASK_MANAGER` (ex.: `acli jira auth login`). Pergunte com `AskUserQuestion` (**Esvaziar a linha** | **Manter**). Com **Esvaziar**, troque a linha por `TOKEN_TASK_MANAGER=`; com **Manter**, nada muda e avise que o valor fica sem uso no ENV. É a segunda exceção declarada à regra "o upgrade só acrescenta" (a primeira é a `CENTRAL_DOCS_LOCATION`).
+9.2. **Exceção — `JARVIS_PROJECT` vazio:** grave `https://github.com/phelipperibeiro/jarvis-framework` sem perguntar e avise ("estava vazio; preenchido com o repositório oficial do Jarvis"). Preenchido com qualquer valor, não muda. O `jarvis init --upgrade` já faz isso no terminal.
+9.3. **Eixos sem forma de acesso:** se `TASK_MANAGER` ou `VERSION_CONTROL` estiver preenchido com um vendor do catálogo e o `*_ACCESS` correspondente estiver ausente, vazio ou inválido (fora de `cli`/`manual`; avise o valor errado), faça para aquele eixo o Passo 4 (descoberta da CLI, forma de acesso e variáveis), com a gravação única do fim. Vendor fora do catálogo (Linear, Asana, Bitbucket): avise que não é suportado e que o eixo fica em freelance; não mude a chave.
 10. **Exceção — `PROD_MODE`:** se `PROD_MODE` estiver entre as chaves novas, grave pelo `AREA`: `ENGINEERING` → `developer-guided`, `PRODUCT` → `product-led`. Com outra `AREA` (ou vazia), faça a mesma pergunta do Passo 3 (Pergunta 8 — modo de condução) e grave a resposta. `PROD_MODE` que já existe, mesmo vazia, não muda. As demais chaves continuam sem pergunta.
     - **`WORKSPACE_MODE`:** o `jarvis init --upgrade` já grava o modo detectado (raiz sem `.git` e 1+ subpastas com `.git/` = `workspace`; raiz com `.git` = `project`). Se a chave existir vazia, detecte do mesmo jeito e grave; se existir preenchida, não muda.
     - **`.gitignore` numa raiz sem `.git` (ex.: `WORKSPACE_MODE=workspace`):** a raiz não é versionada, então esse arquivo não tem efeito. Não o apague; só avise: `ℹ️ O .gitignore da raiz do workspace não tem efeito (a raiz não é um repositório). Pode removê-lo se quiser.`
@@ -579,29 +582,29 @@ C: Não, usar valores padrão (tudo vazio / freelance)
 
 Se **A** ou **B**, perguntar sobre cada variável opcional conforme seleção — **uma por vez**.
 
-**Task manager (pergunte cedo):**
-```
-Usa algum board de cards?
-1. jira
-2. linear
-3. github
-4. asana
-5. Nenhum (freelance) → TASK_MANAGER= vazio
+**Board de cards e controle de versão (pergunte cedo):** o Jarvis fala com eles **só pela CLI oficial** do vendor, com o login dela; sem a CLI, as ações viram `.md`. Vendors, comandos e variáveis vêm de `bin/lib/integrations/vendors.json` (o catálogo). Faça um eixo de cada vez, com uma pergunta por vez.
 
-Se 5: não peça TOKEN_TASK_MANAGER nem MCP. Workflows vão pedir TASK_MANAGER_KEY
-(número/slug de controle próprio) na hora da tarefa.
-Se 1–4: pedir TOKEN_TASK_MANAGER e TASK_MANAGER_URL_BASE (opcional).
-```
-
-**Controle de versão:**
-```
-VERSION_CONTROL = gitlab | github | bitbucket | vazio
-Token NÃO vai no ENV.md:
-  - GitLab → .npmrc
-  - GitHub → gh auth ou GITHUB_TOKEN
-  - Bitbucket → BITBUCKET_TOKEN
-Nunca grave TOKEN_VERSION_CONTROL (chave removida do template).
-```
+1. **Vendor do board (`TASK_MANAGER`):**
+   ```
+   Usa algum board de cards?
+   1. jira (Jira Cloud, *.atlassian.net)
+   2. github (GitHub Issues)
+   3. gitlab (GitLab Issues)
+   4. Nenhum (freelance) → TASK_MANAGER= vazio
+   (Outro, como Linear ou Asana → não suportado: o eixo fica em freelance)
+   ```
+   - **Nenhum** ou **Outro**: avise "{vendor} ainda não é suportado; o eixo fica em modo freelance (as ações viram `.md`)" quando for o caso, deixe `TASK_MANAGER` vazio, pule a descoberta e as variáveis deste eixo e siga para o próximo. Workflows vão pedir o `TASK_MANAGER_KEY` na hora da tarefa.
+   - **jira**: pergunte se é **Jira Cloud** ou **Jira Data Center/Server**. Data Center/Server não tem CLI oficial: avise, grave `TASK_MANAGER=jira` e `TASK_MANAGER_ACCESS=manual` (as ações viram `.md` com o link do card) e siga para as variáveis.
+2. **Descoberta da CLI** (só leitura; nunca instale nem faça login pela pessoa): rode o `bin` do vendor com `--version` e o `auth_status` do catálogo (`gh auth status`, `glab auth status`, `acli jira auth status`). Em github e gitlab, confira o login **no host** do `TASK_MANAGER_URL_BASE` (board) ou do `origin` (git), com `auth_status_host` (`--hostname {host}`): um login no github.com não vale para um GitHub Enterprise ou GitLab próprio. Mostre o resultado em linguagem simples:
+   - instalada e logada (exit 0) → "`gh`: instalada, logada" → proponha `cli`;
+   - instalada, login inválido (exit ≠ 0, ex.: `glab` com 401) → mostre o `login_cmd` e o `login_url` do catálogo;
+   - não instalada → mostre o `install_url`.
+   Nos dois últimos, pergunte com `AskUserQuestion`: **Verificar de novo** (depois que a pessoa instalar ou logar) | **Seguir com `manual`**. Com a confirmação, defina `TASK_MANAGER_ACCESS=cli` ou `manual`.
+3. **Variáveis do vendor:** pergunte só as que o catálogo marca para aquele vendor (`variables` com `required_for`), uma por vez. Antes de cada uma, explique com os campos do catálogo: o que é (`what`), para que o Jarvis a usa, onde achar o valor (`where`), um exemplo (`example`) e se é obrigatória. Se a pessoa não souber, repita onde achar e mostre o link da doc oficial (`doc_url`; quando é um por vendor, o do vendor escolhido). Nunca preencha o valor por conta própria.
+   - Hoje: `TASK_MANAGER_URL_BASE` (obrigatória para github e gitlab, que dão o repositório dos cards; opcional para jira, só para o link do card). Obrigatória sem valor → avise a consequência e defina `TASK_MANAGER_ACCESS=manual`.
+   - Nenhuma variável guarda token.
+4. **Vendor do git (`VERSION_CONTROL`):** `github`, `gitlab` ou vazio (Bitbucket/outro → não suportado, vazio). Faça a mesma descoberta do item 2 e defina `VERSION_CONTROL_ACCESS`. Não há variável de repositório: o repo e o host vêm do `git remote get-url origin`.
+5. **Gravação única:** guarde as respostas dos dois eixos e grave tudo no Passo 5, depois do "sim" no bloco final. Se o init for interrompido antes, nada é gravado.
 
 **Central docs:** não é perguntado aqui. Ele é ligado por padrão e configurado no **Passo 5.2**, que roda sempre.
 
@@ -609,10 +612,11 @@ Nunca grave TOKEN_VERSION_CONTROL (chave removida do template).
 
 | Variável | Valor Padrão | Descrição |
 |----------|--------------|-----------|
-| `TASK_MANAGER` | *(vazio = freelance)* | `jira`, `linear`, `github`, `asana` |
-| `TOKEN_TASK_MANAGER` | *(vazio)* | Token do board (só se TASK_MANAGER preenchido) |
-| `TASK_MANAGER_URL_BASE` | *(vazio)* | URL base para links (ex: Atlassian) |
-| `VERSION_CONTROL` | *(vazio)* | `gitlab`, `github`, `bitbucket` |
+| `TASK_MANAGER` | *(vazio = freelance)* | `jira`, `github`, `gitlab` |
+| `TASK_MANAGER_ACCESS` | *(vazio)* | `cli` ou `manual` (definido pela descoberta da CLI) |
+| `TASK_MANAGER_URL_BASE` | *(vazio)* | GitHub/GitLab: repositório dos cards (obrigatório); Jira: o site, só para o link |
+| `VERSION_CONTROL` | *(vazio)* | `github`, `gitlab` |
+| `VERSION_CONTROL_ACCESS` | *(vazio)* | `cli` ou `manual` |
 | `MESSAGE_BROKER` | *(vazio)* | `rabbitmq`, `kafka`, `sqs` |
 | `MESSAGE_BROKER_URL_API` | *(vazio)* | API do broker |
 | `MESSAGE_BROKER_API_AUTH` | *(vazio)* | Auth do broker |
@@ -629,7 +633,7 @@ Nunca grave TOKEN_VERSION_CONTROL (chave removida do template).
 | `CODE_QUALITY_TOOL` / `_URL` / `_TOKEN` | *(vazio)* | SonarQube etc. |
 | `TEST_FOLDER` | *(vazio)* | Pasta de testes |
 | `QA_SIGNOFF_BRANCHES` / `QA_SIGNOFF_MAX_AGE` | `main,release/*` / `24` | Sign-off QA |
-| `JARVIS_PROJECT` | `https://github.com/phelipperibeiro/jarvis-framework` | Repo do framework (`/jarvis-report-issue`) |
+| `JARVIS_PROJECT` | `https://github.com/phelipperibeiro/jarvis-framework` | URL completa do repo do framework (`/jarvis-report-issue`); trocar só para um fork |
 | `CENTRAL_DOCS_STORAGE` / `_LOCATION` | `filesystem` / pasta padrão do modo de trabalho | Central docs (o que foi implementado), configurado no Passo 5.2; vazio = desligado |
 | `JARVIS_DOCS` / `ENG_DOCS` | `$DOCS_FOLDER/jarvis` / `$JARVIS_DOCS/engineering` | Documentos de trabalho (não perguntar; `docs/jarvis/` no `.gitignore` só se a raiz tiver `.git`) |
 | `DISCOVERIES_FOLDER_NAME` / `DISCOVERIES_DOCS` | `discoveries` / `$JARVIS_DOCS/$DISCOVERIES_FOLDER_NAME` | Discoveries, fora de `product/` (não perguntar) |
@@ -806,11 +810,12 @@ DISCOVERIES_DOCS=...
 
 # --- Task manager (opcional; vazio = freelance) ---
 TASK_MANAGER=
-TOKEN_TASK_MANAGER=
+TASK_MANAGER_ACCESS=
 TASK_MANAGER_URL_BASE=
 
 # --- Controle de versão / chat / demais opcionais do template ---
 VERSION_CONTROL=
+VERSION_CONTROL_ACCESS=
 # ... restante do template (MESSAGE_*, DATABASE, JARVIS_PROJECT, CENTRAL_DOCS_*, etc.)
 JARVIS_PROJECT=https://github.com/phelipperibeiro/jarvis-framework
 ```
@@ -880,7 +885,6 @@ find .windsurf/workflows -mindepth 1 -type d -empty -delete
 | MCP | Quando checar | Bloqueante |
 |-----|---------------|------------|
 | **Context7** | Sempre | **Sim** |
-| Task manager (Jira / Linear / GitHub / Asana) | Só se `TASK_MANAGER` estiver preenchido no ENV.md | **Não** |
 | TestSprite | Se o usuário quiser | **Não** |
 | Redis / Sentry / event bus | Removidos do init — não checar | — |
 
@@ -891,13 +895,13 @@ find .windsurf/workflows -mindepth 1 -type d -empty -delete
 
 Não inventar docs de libs no lugar.
 
-**Task manager / demais MCPs nunca bloqueiam.** Freelance / `TASK_MANAGER` vazio é válido. Sem Jira, Linear, Redis ou Sentry o init **continua**.
+**MCPs opcionais nunca bloqueiam.** Board e git não passam por MCP: a CLI de cada um é descoberta no Passo 4 (e conferida de novo no Passo 12), sem bloquear. Freelance / `TASK_MANAGER` vazio é válido.
 
-**Regras anti-travamento (task manager e opcionais):**
-1. **Uma tentativa** por MCP opcional. Timeout curto. Sem retry em loop.
-2. Se o MCP opcional não existir, não responder ou pedir auth → **avisar e seguir**. Nunca esperar o usuário configurar Jira no meio do init.
-3. Se `TASK_MANAGER` estiver vazio → **pular** qualquer checagem de Jira/Linear/etc.
-4. Nunca diga "não posso continuar sem Jira".
+**Regras anti-travamento (MCPs opcionais e CLIs):**
+1. **Uma tentativa** por MCP opcional ou CLI. Timeout curto. Sem retry em loop.
+2. Se o MCP ou a CLI não existir, não responder ou pedir login → **avisar e seguir**. Nunca esperar a pessoa configurar o board no meio do init.
+3. Se `TASK_MANAGER` estiver vazio → **pular** a checagem do board.
+4. Nunca diga "não posso continuar sem o board".
 
 **Verificação**:
 ```javascript
@@ -905,9 +909,6 @@ Não inventar docs de libs no lugar.
 // Parar só se o arquivo de MCP estiver ausente ou inválido e não puder ser corrigido.
 mcp1_resolve-library-id({ libraryName: "react", query: "test" })
 
-// Task manager — SÓ se TASK_MANAGER=jira (ou linear/github/asana). Senão: pular.
-// Exemplo Jira (1 tentativa). Falhou? Avisar e seguir.
-jira_get_issue({ issueKey: "PROJ-1" })
 ```
 
 Se o Context7 não responder, mas o arquivo de MCP estiver certo (pendente de ativação):
@@ -922,10 +923,6 @@ Se o arquivo de MCP não puder ser gravado ou corrigido (ex.: JSON inválido):
 Corrija o arquivo (formato em assets/mcp-configs.md), {Para ativar} e rode /jarvis-init upgrade.
 ```
 
-Se `TASK_MANAGER=jira` e o MCP falhar:
-```
-⚠️ MCP do Jira indisponível — comentários/cards via MCP ficam off. O skill eng-global-task-comment ainda funciona com TOKEN_TASK_MANAGER. Continuando o init…
-```
 
 > **Configurações detalhadas**: Ver `assets/mcp-configs.md`
 
@@ -1156,7 +1153,8 @@ O tempo de ~10 minutos é referência, não limite. Nunca leia `.env*`, chaves o
 - Workspace: {WORKSPACE}
 - Repos: {WORKSPACE_REPOS ou (todas as pastas com .git/)}
 - Sessões: {SESSIONS_DIR}/eng|prod|qa
-- Task manager: {TASK_MANAGER ou "vazio (freelance)"}
+- Task manager: {TASK_MANAGER ou "vazio (freelance)"} — acesso: {TASK_MANAGER_ACCESS} ({bin}: logada | sem login | ausente)
+- Controle de versão: {VERSION_CONTROL ou vazio} — acesso: {VERSION_CONTROL_ACCESS} ({bin}: logada | sem login | ausente)
 - Squad: {SQUAD}
 - Hub: {HUB}
 - Área: {AREA}
@@ -1171,7 +1169,7 @@ O tempo de ~10 minutos é referência, não limite. Nunca leia `.env*`, chaves o
 1. Não commitar tokens ou senhas no repositório
 2. Se o ENV.md tiver dados sensíveis e estiver num repositório (raiz com `.git`), adicioná-lo ao `.gitignore`
 3. Com `.git` na raiz, garantir `.jarvis/` no `.gitignore` (sem `.git`, como no modo workspace, a raiz não é versionada)
-4. Tokens Git ficam fora do ENV (`.npmrc` / `gh auth` / `BITBUCKET_TOKEN`)
+4. Nenhum token no ENV: board e git usam o login da CLI (`gh auth login`, `glab auth login`, `acli jira auth login`)
 ```
 
 ### 11. Apresentar Processos
@@ -1188,7 +1186,7 @@ O tempo de ~10 minutos é referência, não limite. Nunca leia `.env*`, chaves o
 
 ### 12. Verificar Acessos
 
-Confirmar acessos relevantes (não bloqueantes): Git; task manager se `TASK_MANAGER` estiver definido; chat se `MESSAGE_COMUNICATOR` estiver definido; ambiente de Dev.
+Confirmar acessos relevantes (não bloqueantes): Git; a CLI do board e do git (`auth status` do catálogo) se `TASK_MANAGER`/`VERSION_CONTROL` estiverem definidos; chat se `MESSAGE_COMUNICATOR` estiver definido; ambiente de Dev.
 
 ### 13. Entregar Checklist
 
@@ -1223,8 +1221,8 @@ Apresentar checklist de onboarding por período (Dia 1, Semana 1, Mês 1).
 - ❌ Exigir e-mail corporativo / `@{DOMAIN}` para USER
 - ❌ Criar `PROJECT_NAME`, `TOKEN_VERSION_CONTROL`, `EVENT_BUS*`, métricas ou `~/.jarvis/sessions`
 - ❌ Pular criação do ENV.md ou omitir `SESSIONS_DIR`
-- ❌ Travar o init esperando Jira / Redis / Sentry / MCP de task manager
-- ❌ Exigir MCP de task manager quando `TASK_MANAGER` estiver vazio
+- ❌ Travar o init esperando a CLI do board / Redis / Sentry
+- ❌ Instalar a CLI ou fazer o login pela pessoa; pedir, ler ou gravar token do board ou do git
 - ❌ Prosseguir sem o Context7 no arquivo de MCP da IDE (pendente de ativação é aceito; arquivo ausente ou inválido, não)
 - ❌ Omitir hub DATA da lista de HUB
 - ❌ Criar AGENTS.md sem detectar stack
@@ -1250,8 +1248,8 @@ Apresentar checklist de onboarding por período (Dia 1, Semana 1, Mês 1).
 - ✅ Criar `.jarvis/sessions/{eng,prod,qa}` e, só com `.git` na raiz, garantir `.jarvis/` no `.gitignore`
 - ✅ Explicar freelance se `TASK_MANAGER` vazio (`TASK_MANAGER_KEY` próprio)
 - ✅ Garantir o Context7 no arquivo de MCP que a IDE lê, no formato dela, e validá-lo (obrigatório; pendente de ativação não bloqueia)
-- ✅ Checar MCP de task manager em best-effort (1 tentativa, nunca bloquear)
-- ✅ Pular MCP de task manager se `TASK_MANAGER` estiver vazio
+- ✅ Descobrir a CLI do board e do git em best-effort (1 tentativa, nunca bloquear)
+- ✅ Pular a descoberta do board se `TASK_MANAGER` estiver vazio
 - ✅ Criar AGENTS.md na raiz
 - ✅ Apresentar checklist ao final
 
@@ -1270,7 +1268,7 @@ Apresentar checklist de onboarding por período (Dia 1, Semana 1, Mês 1).
 | **USER inválido** | Pedir outro identificador (email ou nome). Sem validação de `@{DOMAIN}`. |
 | Template ENV não encontrado | Bloquear e pedir o pacote/framework com `templates/ENV-template.md` |
 | Context7 não responde | Arquivo de MCP certo: registrar como pendente, seguir e orientar a ativação no fim. Arquivo ausente/inválido e impossível de corrigir: **parar** e orientar `assets/mcp-configs.md` |
-| MCP de task manager não responde | Avisar e **continuar** (1 tentativa) |
+| CLI do board/git ausente ou sem login | Mostrar o link de instalação/login, oferecer `manual` e **continuar** (1 tentativa) |
 | Stack não detectada | Perguntar ao usuário |
 | IDE não detectada | Perguntar ao usuário qual IDE usa |
 
@@ -1371,7 +1369,7 @@ Pergunta 8: Modo dos comandos de produto?
 Pergunta 9: Estilo dos artefatos?
 [AskUserQuestion: AI-Generated (padrão) | Human-Generated]
 
-Pergunta 10 (opcional): Usa task manager? jira/linear/github/asana ou Nenhum (freelance)
+Pergunta 10 (opcional): Usa board de cards? jira/github/gitlab ou Nenhum (freelance) → descoberta da CLI e variáveis (Passo 4)
 ```
 
 **Agente**: *(cria ENV.md + `.jarvis/sessions/{eng,prod,qa}`, valida Context7, cria AGENTS.md e confirma)*
@@ -1392,13 +1390,13 @@ Pergunta 10 (opcional): Usa task manager? jira/linear/github/asana ou Nenhum (fr
 - IDE: {ide}
 - Workspace: {WORKSPACE}
 - Repos: {WORKSPACE_REPOS ou (todas as pastas com .git/)}
-- Task manager: {TASK_MANAGER ou freelance}
+- Task manager: {TASK_MANAGER ou freelance} — CLI: {logada | sem login | ausente | pulado}
+- Controle de versão: {VERSION_CONTROL ou vazio} — CLI: {logada | sem login | ausente | pulado}
 - Squad: {SQUAD}
 - Especializações: {registradas/criadas, ou "só skill base"}
 
 ✅ MCPs:
 - Context7: {OK | pendente de ativação: {Para ativar}} (obrigatório)
-- Task manager ({TASK_MANAGER ou "vazio=freelance"}): {OK | pulado / indisponível}
 - TestSprite: {OK | Não configurado}
 
 📋 Próximos passos:
@@ -1443,8 +1441,9 @@ Bem-vindo! 🎉
 - [ ] Criou arquivo ENV.md usando template completo
 - [ ] **Se IDE ≠ claude: moveu todos os workflows de subpastas para a raiz de `$IDE/workflows/`**
 - [ ] Garantiu o Context7 no arquivo de MCP da IDE e o validou (ou o registrou como pendente de ativação)
-- [ ] Se TASK_MANAGER definido: checou MCP em best-effort (não bloqueou)
-- [ ] Se TASK_MANAGER vazio: pulou MCP de task manager
+- [ ] Se TASK_MANAGER/VERSION_CONTROL definidos: descobriu a CLI (instalada e logada) e gravou `*_ACCESS` (`cli` ou `manual`) após confirmação
+- [ ] Se TASK_MANAGER vazio: pulou a descoberta do board
+- [ ] Não pediu nem gravou token do board ou do git
 - [ ] Provisionou MCPs opcionais (Code Quality, se configurado)
 - [ ] Criou AGENTS.md
 - [ ] Ofereceu o passo 9 (adicionar as stacks), que é pulável; a detecção só leu e mostrou antes de sugerir; listas atualizadas sem duplicar

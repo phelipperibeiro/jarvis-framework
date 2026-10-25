@@ -9,18 +9,18 @@ Este documento contém os checklists detalhados para o processo de onboarding de
 - [ ] IDE detectada corretamente
 - [ ] Caminho do arquivo MCP identificado (se for configurar)
 - [ ] **Context7** no arquivo de MCP da IDE (**obrigatório**; gravado pelo `jarvis init`) e respondendo depois de reiniciar a IDE
-- [ ] **Task manager MCP** (Jira/Linear/…) só se `TASK_MANAGER` estiver definido — **não bloqueante**
+- [ ] **CLI do board e do git** (`gh`, `glab` ou `acli`) instalada e logada, só se `TASK_MANAGER`/`VERSION_CONTROL` estiverem definidos — **não bloqueante**; sem ela, as ações viram `.md`
 - [ ] **TestSprite** instalado e respondendo (opcional)
 - [ ] Arquivo MCP configurado corretamente (quando aplicável)
 - [ ] IDE reiniciada após configurar MCPs (quando aplicável)
 
-> **Context7 é obrigatório.** O `jarvis init` o grava no arquivo de MCP da IDE. Se ele só não responde ainda (falta reiniciar ou aprovar), o `/jarvis-init` registra como pendente e segue; para só se o arquivo estiver ausente ou inválido e não puder ser corrigido. Task manager / Jira / Redis **não** bloqueiam. `TASK_MANAGER` vazio = freelance.
+> **Context7 é obrigatório.** O `jarvis init` o grava no arquivo de MCP da IDE. Se ele só não responde ainda (falta reiniciar ou aprovar), o `/jarvis-init` registra como pendente e segue; para só se o arquivo estiver ausente ou inválido e não puder ser corrigido. A CLI do board / Redis **não** bloqueiam. `TASK_MANAGER` vazio = freelance.
 
 ---
 
 ## Checklist de Ferramentas e Acessos
 
-- [ ] **Repositório Git** - GitLab/GitHub/Bitbucket (conforme `VERSION_CONTROL`)
+- [ ] **Repositório Git** - GitHub ou GitLab (conforme `VERSION_CONTROL`), com a CLI logada (`gh auth login` / `glab auth login`)
 - [ ] **Task manager** - só se `TASK_MANAGER` estiver preenchido
 - [ ] **Chat** - só se `MESSAGE_COMUNICATOR` estiver preenchido
 - [ ] **Ambiente de Dev** - Credenciais e VPN (se o time usar)

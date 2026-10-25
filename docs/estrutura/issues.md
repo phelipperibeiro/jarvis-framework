@@ -2,7 +2,7 @@
 
 ## Para que serve
 
-Notas e checklists **internos** sobre o próprio Jarvis (dívidas técnicas, ideias, pendências do fork) — não é o board Jira/Linear do time de produto.
+Notas e checklists **internos** sobre o próprio Jarvis (dívidas técnicas, ideias, pendências do fork) — não é o board (Jira, GitHub, GitLab) do time de produto.
 
 ## Conteúdo atual
 
@@ -14,7 +14,7 @@ Notas e checklists **internos** sobre o próprio Jarvis (dívidas técnicas, ide
 
 - Não substitui GitHub Issues do repo ([phelipperibeiro/jarvis-framework](https://github.com/phelipperibeiro/jarvis-framework/issues))
 - Não é lido automaticamente pelos workflows de engenharia do produto
-- Para reportar bug do framework pelo chat: skill `jarvis-report-issue` (usa `JARVIS_PROJECT` no ENV). Sem token ou sem rede, o issue fica em `.jarvis/issues/issue-{desc}.md` para abrir à mão
+- Para reportar bug do framework pelo chat: skill `jarvis-report-issue` (usa `JARVIS_PROJECT` no ENV). Sem a CLI do host (`gh`), sem login ou sem rede, o issue fica em `.jarvis/issues/issue-{desc}.md` para abrir à mão
 
 ## Pacote npm
 

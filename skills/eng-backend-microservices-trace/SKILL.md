@@ -52,7 +52,7 @@ Se `$ARGUMENTS` estiver vazio, solicitar ao usuário:
 
 ## Recursos
 
-- **ENV.md**: `$IDE/ENV.md` (workspace, `TASK_MANAGER`, `VERSION_CONTROL`, tokens)
+- **ENV.md**: `$IDE/ENV.md` (workspace, `TASK_MANAGER`, `VERSION_CONTROL`)
 - **Sessão ativa**: `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/context.md` (se existir)
 - **Saída**: `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/ms-trace-report.md`
 
@@ -64,8 +64,8 @@ Se `$ARGUMENTS` estiver vazio, solicitar ao usuário:
 # Verificar ENV.md
 cat $IDE/ENV.md
 
-# Token de Git conforme VERSION_CONTROL (não fica no ENV.md):
-# GitLab → .npmrc | GitHub → gh auth / GITHUB_TOKEN | Bitbucket → BITBUCKET_TOKEN
+# Acesso aos repos pela CLI do host (login da CLI; nenhum token no ENV.md):
+# GitHub → gh auth login | GitLab → glab auth login
 ```
 
 Se não houver acesso aos outros repos, executar as Fases 1 e 3 apenas com o código do repositório atual e indicar claramente quais serviços externos não puderam ser inspecionados.
@@ -118,17 +118,16 @@ grep -r "@RabbitSubscribe\|routingKey\|exchange\|queue" src/ --include="*.ts" -n
 
 ### Padrão 3: Acesso a repos externos via `$VERSION_CONTROL`
 
-Conforme `VERSION_CONTROL` no ENV.md (token **fora** do ENV):
+Conforme `VERSION_CONTROL` no ENV.md (login da CLI, nenhum token no ENV):
 
 | Vendor | Auth | Como abrir o repo externo |
 |--------|------|---------------------------|
-| `gitlab` | `.npmrc` / token GitLab | API ou clone do grupo/projeto |
-| `github` | `gh auth` / `GITHUB_TOKEN` | `gh repo clone` / API |
-| `bitbucket` | `BITBUCKET_TOKEN` | API Bitbucket |
+| `gitlab` | `glab auth login` | `glab repo clone` |
+| `github` | `gh auth login` | `gh repo clone` |
 
 ```bash
 # Exemplo: inspecionar serviço dependente no clone/workspace local
-# ou via API do VERSION_CONTROL — nunca assumir só GitLab
+# ou pela CLI do VERSION_CONTROL — nunca assumir só GitLab
 ```
 
 Inspecionar no serviço externo:

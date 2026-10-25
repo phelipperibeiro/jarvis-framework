@@ -1,133 +1,157 @@
+import { existsSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { cardUrl } from "../vcs/api.js";
+import {
+  EXIT,
+  accessGate,
+  getVendor,
+  resolveFileEnv,
+  runAction,
+  setting,
+} from "../integrations/cli-runner.js";
 
-function env(name) {
-  return String(process.env[name] || "").trim();
-}
-
-function taskManager() {
-  return env("TASK_MANAGER").toLowerCase() || "jira";
-}
-
-async function commentJira(cardKey, message) {
-  const base = env("TASK_MANAGER_URL_BASE").replace(/\/$/, "");
-  const token = env("TOKEN_TASK_MANAGER");
-  const email = env("USER");
-  if (!base || !token) {
-    throw new Error("Jira: preencha TASK_MANAGER_URL_BASE e TOKEN_TASK_MANAGER no ENV.md");
-  }
-  const auth = email
-    ? `Basic ${Buffer.from(`${email}:${token}`).toString("base64")}`
-    : `Bearer ${token}`;
-  const res = await fetch(`${base}/rest/api/3/issue/${cardKey}/comment`, {
-    method: "POST",
-    headers: {
-      Authorization: auth,
-      "Content-Type": "application/json",
-      Accept: "application/json",
-    },
-    body: JSON.stringify({
-      body: {
-        version: 1,
-        type: "doc",
-        content: [
-          {
-            type: "paragraph",
-            content: [{ type: "text", text: message }],
-          },
-        ],
-      },
-    }),
-  });
-  if (!res.ok) {
-    throw new Error(`Jira ${res.status}: ${await res.text()}`);
-  }
-}
-
-async function commentLinear(cardKey, message) {
-  const token = env("TOKEN_TASK_MANAGER");
-  if (!token) throw new Error("Linear: preencha TOKEN_TASK_MANAGER no ENV.md");
-  const res = await fetch("https://api.linear.app/graphql", {
-    method: "POST",
-    headers: {
-      Authorization: token,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      query: `mutation($id: String!, $body: String!) {
-        commentCreate(input: { issueId: $id, body: $body }) { success }
-      }`,
-      variables: { id: cardKey, body: message },
-    }),
-  });
-  const json = await res.json();
-  if (!res.ok || json.errors) {
-    throw new Error(`Linear: ${JSON.stringify(json.errors || json)}`);
-  }
-}
-
-async function commentGithub(cardKey, message) {
-  const token = env("TOKEN_TASK_MANAGER") || env("GITHUB_TOKEN") || env("GH_TOKEN");
-  const base = env("TASK_MANAGER_URL_BASE").replace(/\/$/, "");
-  if (!token || !base) {
-    throw new Error(
-      "GitHub Issues: TASK_MANAGER_URL_BASE (https://github.com/org/repo) e TOKEN_TASK_MANAGER/GITHUB_TOKEN"
-    );
-  }
-  const path = new URL(base).pathname.replace(/^\/+|\/+$/g, "");
-  const number = String(cardKey).replace(/^#/, "");
-  const res = await fetch(`https://api.github.com/repos/${path}/issues/${number}/comments`, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${token}`,
-      Accept: "application/vnd.github+json",
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ body: message }),
-  });
-  if (!res.ok) throw new Error(`GitHub ${res.status}: ${await res.text()}`);
-}
-
-async function commentAsana(cardKey, message) {
-  const token = env("TOKEN_TASK_MANAGER");
-  if (!token) throw new Error("Asana: preencha TOKEN_TASK_MANAGER no ENV.md");
-  const res = await fetch(`https://app.asana.com/api/1.0/tasks/${cardKey}/stories`, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ data: { text: message } }),
-  });
-  if (!res.ok) throw new Error(`Asana ${res.status}: ${await res.text()}`);
+/**
+ * TASK_MANAGER vazio, ausente ou ainda com a lista de exemplo do template (`[jira, github, gitlab]`,
+ * ou a antiga `[jira, linear, github, asana]`) = sem board (freelance).
+ */
+export function isFreelance(taskManager) {
+  const tm = String(taskManager || "").trim();
+  return !tm || /^\[.*\]$/.test(tm);
 }
 
 /**
- * Comenta num card do task manager configurado em TASK_MANAGER (jira/linear/github/asana).
- * Usada por `jarvis tasks comment` e pelo skill `eng-global-task-comment`.
- * @param {string} cardKey - Chave/ID do card (ex: `TASK-123`, ou número de issue no GitHub)
- * @param {string} message - Texto do comentário
+ * Repositório do card a partir do TASK_MANAGER_URL_BASE (github/gitlab).
+ * `https://github.com/dono/repo` → { repo: "github.com/dono/repo", repo_url: "https://github.com/dono/repo" }
  */
-export async function runComment(cardKey, message) {
-  if (!cardKey || !message) {
-    console.error("Uso: jarvis tasks comment <TASK_MANAGER_KEY> <mensagem>");
-    process.exit(1);
-  }
-
-  const tm = taskManager();
+export function boardRepo(baseUrl) {
+  const raw = String(baseUrl || "")
+    .trim()
+    .replace(/\/+$/, "");
+  if (!raw) return null;
   try {
-    if (tm === "linear") await commentLinear(cardKey, message);
-    else if (tm === "github") await commentGithub(cardKey, message);
-    else if (tm === "asana") await commentAsana(cardKey, message);
-    else await commentJira(cardKey, message);
-
-    const url = cardUrl(tm, env("TASK_MANAGER_URL_BASE"), cardKey);
-    console.log(`💬 Comentário adicionado em ${cardKey} (${tm})`);
-    if (url !== cardKey) console.log(`   ${url}`);
-  } catch (err) {
-    console.error(`⚠️ Não foi possível comentar no card ${cardKey}: ${err.message}`);
-    process.exit(2);
+    const u = new URL(raw);
+    const path = u.pathname.replace(/^\/+|\/+$/g, "");
+    if (!path.includes("/")) return null;
+    return { repo: `${u.hostname}/${path}`, repo_url: `${u.origin}/${path}`, host: u.hostname };
+  } catch {
+    return null;
   }
+}
+
+/**
+ * Comenta num card pela CLI do vendor de TASK_MANAGER (gh, glab ou acli), sem token no Jarvis.
+ * Devolve o código de saída e as mensagens, sem encerrar o processo (o `runComment` encerra).
+ * @param {string} cardKey - Chave do card (`TASK-123`, ou número/`#42` no GitHub e no GitLab)
+ * @param {string} message - Texto do comentário (markdown; no Jira vai como texto simples)
+ * Lê TASK_MANAGER, TASK_MANAGER_ACCESS e TASK_MANAGER_URL_BASE do ambiente do processo e, no que
+ * faltar, do `$IDE/ENV.md` do workspace (sem `eval` no shell).
+ * @param {{ exec?: Function, fileEnv?: Object, envOpts?: Object }} [deps] - `fileEnv`: variáveis do
+ *   ENV.md (testes); `envOpts`: `{ ide, envFile }` para achar o ENV.md
+ * @returns {Promise<{ code: number, out: string[], err: string[] }>}
+ */
+export async function commentOnCard(cardKey, message, deps = {}) {
+  const out = [];
+  const err = [];
+  const fileEnv = resolveFileEnv(deps);
+  const fileVars = fileEnv.vars;
+  const env = (name) => setting(name, fileVars);
+  // ENV.md ilegível (ex.: dois IDEs no workspace) sem TASK_MANAGER no ambiente: não dá para saber
+  // se há board; não trata como freelance às cegas.
+  if (fileEnv.error && !String(process.env.TASK_MANAGER || "").trim()) {
+    err.push(
+      `⚠️ Não deu para ler o ENV.md (${fileEnv.error}). Use --ide ou --env-file. Nada foi enviado.`
+    );
+    return { code: EXIT.UNAVAILABLE, out, err };
+  }
+  const tm = env("TASK_MANAGER").toLowerCase();
+
+  if (isFreelance(tm)) {
+    out.push("ℹ️ TASK_MANAGER vazio (freelance): nada foi enviado ao board.");
+    return { code: EXIT.OK, out, err };
+  }
+  if (!getVendor(tm)) {
+    err.push(
+      `⚠️ ${tm} não é suportado (vendors: jira, github, gitlab). O eixo fica em freelance: gere o .md.`
+    );
+    return { code: EXIT.UNAVAILABLE, out, err };
+  }
+
+  const gate = accessGate("TASK_MANAGER_ACCESS", fileEnv);
+  if (!gate.ok) {
+    err.push(`ℹ️ ${gate.reason}${gate.mode === "manual" ? "; gere o .md do comentário" : ""}.`);
+    return { code: EXIT.UNAVAILABLE, out, err };
+  }
+  if (gate.warning) err.push(`ℹ️ ${gate.warning}`);
+
+  const base = env("TASK_MANAGER_URL_BASE");
+  const key = String(cardKey || "").replace(/^#/, "");
+  // GitHub e GitLab identificam o card pelo número; o Jira, pela key (ABC-123).
+  if (tm !== "jira" && !/^\d+$/.test(key)) {
+    err.push(
+      `⚠️ ${tm}: o card é o número da issue (ex.: 42 ou #42), não "${cardKey}". Nada foi enviado.`
+    );
+    return { code: EXIT.USAGE, out, err };
+  }
+  const params = { key, body: message };
+  if (tm !== "jira") {
+    const repo = boardRepo(base);
+    if (!repo) {
+      err.push(
+        `⚠️ ${tm}: defina TASK_MANAGER_URL_BASE com o endereço do repositório dos cards ` +
+          "(ex.: https://github.com/empresa/projeto). Nada foi enviado."
+      );
+      return { code: EXIT.UNAVAILABLE, out, err };
+    }
+    Object.assign(params, repo);
+  }
+
+  const result = await runAction(tm, "comment", params, deps);
+  if (result.ok) {
+    out.push(`💬 Comentário adicionado em ${cardKey} (${tm})`);
+    const url = cardUrl(tm, base, cardKey);
+    if (url !== cardKey) out.push(`   ${url}`);
+    return { code: EXIT.OK, out, err };
+  }
+  if (result.code === EXIT.USAGE) {
+    err.push(`⚠️ ${result.reason}. Nada foi enviado.`);
+    return { code: EXIT.USAGE, out, err };
+  }
+  if (result.sent) {
+    err.push(
+      `⚠️ Erro depois de enviar o comentário em ${cardKey} (${result.reason}). ` +
+        "Ele pode ter sido publicado: confira no card antes de repetir."
+    );
+    if (result.stderr?.trim()) err.push(result.stderr.trim());
+    return { code: EXIT.SENT_WITH_ERROR, out, err };
+  }
+  err.push(`⚠️ Não foi possível comentar no card ${cardKey}: ${result.reason}. Nada foi enviado.`);
+  return { code: EXIT.UNAVAILABLE, out, err };
+}
+
+/**
+ * `jarvis tasks comment`. Usada pelo skill `eng-global-task-comment`.
+ * Saída: 0 ok (ou freelance) · 1 uso · 3 indisponível (nada enviado) · 4 enviado com erro.
+ * @param {string} cardKey
+ * @param {string} message
+ * @param {{ bodyFile?: string }} [options] - `bodyFile`: lê o texto de um arquivo
+ */
+export async function runComment(cardKey, message, { bodyFile, ide, envFile } = {}, deps = {}) {
+  if (bodyFile && !existsSync(bodyFile)) {
+    console.error(`⚠️ Arquivo do comentário não encontrado: ${bodyFile}. Nada foi enviado.`);
+    process.exit(EXIT.USAGE);
+  }
+  const text = bodyFile ? readFileSync(bodyFile, "utf-8") : message;
+  if (!cardKey || !text) {
+    console.error("Uso: jarvis tasks comment <TASK_MANAGER_KEY> <mensagem> | --body-file <path>");
+    process.exit(EXIT.USAGE);
+  }
+  const { code, out, err } = await commentOnCard(cardKey, text, {
+    envOpts: { ide, envFile },
+    ...deps,
+  });
+  for (const line of out) console.log(line);
+  for (const line of err) console.error(line);
+  process.exit(code);
 }
 
 // Compatibilidade: continua funcionando como `node bin/lib/tasks/comment.js <key> <mensagem>`

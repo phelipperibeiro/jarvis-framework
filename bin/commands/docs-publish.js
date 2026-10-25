@@ -108,7 +108,7 @@ export async function docsPublish(flags = {}) {
         "\n💡 Central docs com git: confira se a pasta está limpa (git status), se você tem permissão de push"
       );
       logger.error(
-        "   e se o token do vendor está configurado (GitLab .npmrc, GitHub gh auth, BITBUCKET_TOKEN)."
+        "   e se a CLI do host está logada (gh auth login, glab auth login)."
       );
     }
     process.exit(1);

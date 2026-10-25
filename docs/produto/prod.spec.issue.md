@@ -43,7 +43,7 @@ Uma boa issue:
 1. `/prod.spec.issue` (tipo história)
 2. Arquivo: `…/issues/story-{id}-aceitar-convite-email.md`
 3. Critérios de aceite em checklist
-4. Se freelance: use `TASK_MANAGER_KEY` próprio; se tem board: depois espelhe no Jira/Linear/GitHub
+4. Se freelance: use `TASK_MANAGER_KEY` próprio; se tem board: depois espelhe no Jira/GitHub/GitLab
 5. `/eng.start` com essa chave
 
 ## Exemplo (tarefa)

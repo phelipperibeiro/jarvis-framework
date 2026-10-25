@@ -25,7 +25,7 @@ Use este fluxo sempre que alguém perguntar sobre:
 ## Regras
 
 - Se não tiver informações suficientes sobre o `$TASK_MANAGER` utilizado pelo usuário, pergunte qual é o `$TASK_MANAGER` e adapte a resposta de acordo.
-- Sempre utilize MCPs configurados especificos do `$TASK_MANAGER` utilizado para buscar informações atualizadas
+- Sempre utilize MCPs configurados especificos do `$TASK_MANAGER` utilizado para buscar informações atualizadas (pré-requisito manual: o `/jarvis-init` não configura MCP de board)
 - Procure na pasta de trabalho para entender mais sobre o projeto.
 - Caso não tiver informações sobre o projeto, fontes de dados ou `$TASK_MANAGER`, informe ao usuário que não tem informações suficientes e peça para ele fornecer mais detalhes.
 

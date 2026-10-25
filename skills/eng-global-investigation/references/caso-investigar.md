@@ -4,7 +4,7 @@ O `/eng.debug` recebeu um **sintoma concreto**: chave ou URL do card, mensagem d
 
 ## 1. Coletar o sintoma
 
-- **Card:** se `TASK_MANAGER` estiver preenchido, leia o card no board (só leitura). Sem acesso, peça ao usuário para colar o conteúdo. Nunca comente no card.
+- **Card:** se `TASK_MANAGER` estiver preenchido, leia o card pela CLI do vendor (só leitura), com a ação `view` do catálogo `bin/lib/integrations/vendors.json`: `gh issue view {número} --repo {repo} --comments`, `glab issue view {número} --repo {URL} --comments` ou `acli jira workitem view {KEY} --fields summary,description,comment`. Sem a CLI (ou sem login), peça ao usuário para colar o conteúdo. Nunca comente no card: as observações ficam no relatório.
 - Do card ou da mensagem, registre: título, passos para reproduzir, ambiente (local, staging, produção), serviços citados, identificador de correlação (correlation ID ou request ID) e logs ou stack trace anexados.
 - Pergunte só o que falta: identificador de correlação, frequência (sempre, às vezes, uma vez), mudança recente (deploy, feature flag, migração, infraestrutura), logs não anexados.
 
