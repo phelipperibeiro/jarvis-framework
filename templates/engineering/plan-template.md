@@ -1,8 +1,10 @@
 # {NOME_DA_FEATURE}
 
-> 📋 **Plano de Execução** | Jira: [{TASK_MANAGER_KEY}]({TASK_MANAGER_URL_BASE}/browse/{TASK_MANAGER_KEY})
+> 📋 **Plano de Execução** | Card: [{TASK_MANAGER_KEY}]({URL do card})
 >
 > Se você está trabalhando nesta feature, **atualize este arquivo** conforme progride.
+>
+> Links (inclusive nos comentários de fase): `rules-on-demand/doc-links-rules.md`; os arquivos de "Onde fazer" que já existem viram link (`../../../../{repo}/{arquivo}#L{n}`), e os novos ficam em texto.
 >
 > **Execução:** {fase a fase | todas de uma vez} · **Commits:** {um por fase | um só ao final} · **Depois do work:** {sugerir /eng.pre-pr | rodar /eng.pre-pr | direto para /eng.pr | parar} _(preenchido pelo `eng.work`, Fase 1.3)_
 
@@ -35,7 +37,7 @@
 {Descrição clara da ação a ser realizada}
 
 **Onde fazer:**
-- `{caminho/do/arquivo.ts}`
+- [`{símbolo}` (`{arquivo}:{n}`)](../../../../{repo}/{caminho/do/arquivo.ts}#L{n}) (arquivo novo: `{caminho/do/arquivo.ts}`, em texto)
 
 **Como fazer:**
 1. {Passo 1}

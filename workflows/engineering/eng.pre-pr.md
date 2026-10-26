@@ -16,6 +16,8 @@ Antes de abrir o PR/MR, este comando **revê a branch atrás de possíveis lacun
 
 > 📋 **Rules**: `$IDE/rules-on-demand/engineering/eng.pre-pr-rules.md` — **antes de começar, leia esse arquivo e siga-o**: ele não é carregado automaticamente no início da sessão.
 > 🔀 **Transições**: `$IDE/rules-on-demand/engineering/eng.transitions-rules.md` — perguntas de início e de fim deste comando (a opção padrão mantém o fluxo de sempre).
+>
+> 🔗 **Links**: antes de escrever o `gate-checklist.md`, leia `$IDE/rules-on-demand/doc-links-rules.md` e siga-a: toda citação com lugar exato (requisito, documento, código, card, PR) vira link.
 
 ## Skills recomendados
 
@@ -91,7 +93,7 @@ Grave em `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/gate-checklist.md`:
 
 | # | Lacuna | Onde | Por que importa | Sugestão | Severidade | Decisão |
 |---|---|---|---|---|---|---|
-| 1 | {o que falta ou está errado} | `{arquivo:linha}` | {impacto, em linguagem simples} | {como resolver} | 🔴 Bloqueador / 🟡 Importante / ⚪ Menor | {Corrigir \| Aceitar: motivo} |
+| 1 | {o que falta ou está errado} | [`{arquivo}:{linha}`](../../../../{repo}/{caminho}#L{linha}) | {impacto, em linguagem simples} | {como resolver} | 🔴 Bloqueador / 🟡 Importante / ⚪ Menor | {Corrigir \| Aceitar: motivo} |
 
 (uma tabela por área; área sem lacuna: "Nenhuma lacuna encontrada.")
 
@@ -120,6 +122,8 @@ A coluna **Decisão** nasce vazia: quem preenche é o usuário.
    - **Não, manter só na sessão (como hoje):** nada é enviado ao card.
    - **Sim, só o resumo:** `/eng-global-task-comment {TASK_MANAGER_KEY}` com o semáforo, o resumo e as lacunas 🔴 com a decisão de cada uma.
    - **Sim, o relatório completo:** `/eng-global-task-comment {TASK_MANAGER_KEY}` com o conteúdo do `gate-checklist.md`.
+
+   O texto vai para fora do workspace: converta os links pela regra 6 de `doc-links-rules.md` (URL absoluta; sessão e `docs/jarvis/` em texto).
 4. Próximo passo: corrigir o que foi marcado "Corrigir" (à mão ou com o `/eng.work`) e rodar o `/eng.pr`, que usa o PR Brief deste relatório. Antes, escreva uma mensagem em markdown com o consolidado de links da sessão (regra 5) e o resumo; depois pergunte com `AskUserQuestion` (`eng.transitions-rules.md`):
    - **Com {n} lacunas marcadas "Corrigir"** — **"O `/eng.pre-pr` encontrou {n} lacunas a corrigir ({a} 🔴, {b} 🟡). Leia o gate-checklist.md com calma e responda quando decidir. Como seguir?"**
      - **Corrigir as lacunas agora:** chame o `/eng.work {TASK_MANAGER_KEY}` para as {n} lacunas (ou mostre o comando).

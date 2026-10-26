@@ -16,6 +16,8 @@ Este comando cria a **branch, commita as alterações e abre um Merge Request**.
 > 📋 **Rules**: `$IDE/rules-on-demand/engineering/eng.pr-rules.md` — **antes de começar, leia esse arquivo e siga-o**: ele não é carregado automaticamente no início da sessão.
 > 📤 **Template**: `$IDE/templates/engineering/PR-template.md`
 > 🔀 **Transições**: `$IDE/rules-on-demand/engineering/eng.transitions-rules.md` — perguntas de início e de fim deste comando (a opção padrão mantém o fluxo de sempre).
+>
+> 🔗 **Links**: antes de escrever o `pull-request.md`, leia `$IDE/rules-on-demand/doc-links-rules.md` e siga-a: toda citação com lugar exato (requisito, documento, código, card, PR) vira link. O PR sai do workspace: siga a regra 6 (URL absoluta para issue, PR, card e código no `blob/{sha}`; sessão e `docs/jarvis/` em texto).
 
 ## Skills recomendados
 
@@ -177,11 +179,11 @@ git log --format='%h %B' $RANGE | grep -inE "$TERMOS"
 grep -inE "$TERMOS" $SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/pull-request.md
 ```
 
-Revise cada ocorrência antes de remover: a busca é larga e pode achar texto legítimo (ex.: `ai-generated`, um link para o PR).
+Revise cada ocorrência antes de remover: a busca é larga e pode achar texto legítimo (ex.: `ai-generated`, um link para o PR, "advisor" dentro de uma URL como `eng.advisor.agent.md`; isso só é legítimo quando o PR mexe no próprio arquivo do framework).
 
 - **Nada encontrado (ou só falsos positivos):** siga para o push.
-- **No `pull-request.md`:** remova os trechos (o texto aprovado na 4.2 muda só nisso).
-- **Nas mensagens de commit:** reescreva **só os commits de `$RANGE`** (ainda não enviados), sem modo interativo, por exemplo, com `{ref}` = o início de `$RANGE` (`@{u}` ou `{BRANCH_BASE}`), `git rebase {ref} --exec 'M=$(git rev-parse --git-dir)/MSG_LIMPA; git log -1 --format=%B | sed -E "/^Co-Authored-By:/Id" > "$M" && git commit -q --amend -F "$M"'`, ajustando o `sed` aos termos achados. Depois, rode a busca de novo.
+- **No `pull-request.md`:** remova os trechos (o texto aprovado na 4.2 muda só nisso e no sha dos links, abaixo).
+- **Nas mensagens de commit:** reescreva **só os commits de `$RANGE`** (ainda não enviados), sem modo interativo, por exemplo, com `{ref}` = o início de `$RANGE` (`@{u}` ou `{BRANCH_BASE}`), `git rebase {ref} --exec 'M=$(git rev-parse --git-dir)/MSG_LIMPA; git log -1 --format=%B | sed -E "/^Co-Authored-By:/Id" > "$M" && git commit -q --amend -F "$M"'`, ajustando o `sed` aos termos achados. Depois, rode a busca de novo e troque, nos links de código do `pull-request.md`, o sha antigo pelo novo `HEAD` (`doc-links-rules.md`, regra 6).
 - **Commit já enviado com marca:** não reescreva; avise o usuário e pare.
 
 Informe no resumo o que foi removido. Com `ai-generated` (ou vazio), pule este passo.

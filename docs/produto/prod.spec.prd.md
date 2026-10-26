@@ -52,6 +52,7 @@ Sem esse documento (ou equivalente), épicos e histórias tendem a virar “pedi
 - Padroniza pasta e nome (`prd-{id}-{slug}/…`)
 - Pode sincronizar com docs centrais se `CENTRAL_DOCS_STORAGE` estiver no `ENV.md`
 - Mantém o documento legível por humanos **e** por agentes na hora do `/eng.start`
+- **Links clicáveis:** cada requisito, documento, código, card ou PR citado no documento vira um link que abre o ponto exato no VS Code (regra em `rules-on-demand/doc-links-rules.md`)
 
 ## Relação com engenharia
 

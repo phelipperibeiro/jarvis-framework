@@ -68,6 +68,7 @@ Lê o documento do robô, entende a mudança (e, se envolver o sistema-alvo, ins
 - Retry com backoff em todo I/O, logs estruturados por fase e captura de tela em falha
 - Captcha e proxy são infraestrutura compartilhada: se não existirem no projeto, escala para o Tech Lead em vez de reimplementar
 - A documentação do robô (com limitações conhecidas e histórico de bugs) é obrigatória
+- **Links clicáveis:** a documentação do robô cita código e requisitos como links (`rules-on-demand/doc-links-rules.md`)
 
 ## Próximo passo típico
 

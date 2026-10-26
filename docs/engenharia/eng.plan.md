@@ -62,6 +62,7 @@ Por `MAX_AI_EXECUTION_PERCENTAGE`: de 80% para cima, plano completo validado no 
 - Tudo em português (pt-BR)
 - **Questão nova em aberto é exceção:** o ideal é que tudo tenha sido levantado no `eng.start`; se surgir uma e o Advisor tiver sido habilitado lá, ele é consultado, a questão entra no `architecture.md` e o comentário de auditoria vai para o card
 - Não comenta início nem fim no card
+- **Links clicáveis:** as citações do `plan.md` (arquivos, linhas, requisitos, card, PR) viram links relativos ao arquivo (`rules-on-demand/doc-links-rules.md`)
 
 ## Próximo passo típico
 

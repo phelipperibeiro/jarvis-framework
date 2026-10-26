@@ -78,7 +78,7 @@ prompts/
 │   │   │   └── frontend/         # eng.frontend-rules.md (HUB: FRONTEND)
 │   │   └── product/              # prod-rules.md (AREA=PRODUCT)
 │   │
-│   ├── rules-on-demand/          # Rules de uma etapa so (start, plan, work, pre-pr, pr, tech-spec, breakdown): o workflow manda ler
+│   ├── rules-on-demand/          # Rules lidas pelo workflow que as usa (as de uma etapa, como start, plan e pr, e as transversais, como doc-links e warm-up)
 │   │
 │   ├── scripts/                  # Scripts utilitarios
 │   └── docs/                     # Documentacao adicional
@@ -219,7 +219,7 @@ Quando atuar em um projeto alvo, detectar comandos em:
 2. `$IDE/ENV.md` - Contexto do ambiente
 3. `$IDE/JARVIS.md` - Guia principal de uso
 4. `$IDE/rules/` - Regras especificas por dominio (carregadas no inicio)
-   `$IDE/rules-on-demand/` - Regras de uma etapa so, lidas pelo workflow
+   `$IDE/rules-on-demand/` - Regras de uma etapa ou transversais, lidas pelo workflow que as usa
 5. `$IDE/agents/` - Definicoes de agentes
 6. `$IDE/skills/` - Playbooks operacionais
 7. `$IDE/workflows/` - Templates de execucao

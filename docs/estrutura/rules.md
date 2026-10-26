@@ -26,20 +26,25 @@ rules/
     └── prod-rules.md
 
 rules-on-demand/                    # lidas pelo workflow; não carregadas no início da sessão
-└── engineering/
-    ├── eng.start-rules.md
-    ├── eng.plan-rules.md
-    ├── eng.work-rules.md
-    ├── eng.pre-pr-rules.md
-    ├── eng.pr-rules.md
-    ├── eng.tech-spec-rules.md
-    └── eng.breakdown-subtasks-rules.md
+├── engineering/
+│   ├── eng.start-rules.md
+│   ├── eng.plan-rules.md
+│   ├── eng.work-rules.md
+│   ├── eng.pre-pr-rules.md
+│   ├── eng.pr-rules.md
+│   ├── eng.tech-spec-rules.md
+│   ├── eng.transitions-rules.md
+│   └── eng.breakdown-subtasks-rules.md
+├── product/
+│   └── prod.guided-rules.md        # modo Developer-Guided (só com PROD_MODE=developer-guided)
+├── doc-links-rules.md              # links clicáveis nos documentos gerados (lida pelos comandos que gravam documentos)
+└── warm-up-consume-rules.md        # consumo do /warm-up (só quando há aquecimento)
 ```
 
 ### `rules/` e `rules-on-demand/`
 
 - `rules/`: o Claude Code carrega tudo no início da sessão. Fica só o que vale sempre.
-- `rules-on-demand/`: regras de **uma etapa só** (um comando). O workflow manda ler o arquivo no início (`rules_file` e a linha "Rules"). O mesmo bloco `Applies to` e o mesmo filtro por perfil valem nas duas pastas.
+- `rules-on-demand/`: regras de **uma etapa** (um comando) ou **transversais** a vários comandos (como `doc-links-rules.md` e `warm-up-consume-rules.md`). O workflow manda ler o arquivo no início (`rules_file` e a linha "Rules"). O mesmo bloco `Applies to` e o mesmo filtro por perfil valem nas duas pastas.
 - `jarvis tokens` mostra quanto cada perfil carrega no início.
 
 ## Bloco `Applies to:`

@@ -62,6 +62,7 @@ Em qualquer escolha, ele para no limite da IA, com um teste falhando ou diante d
 - **Questão nova em aberto é exceção:** se surgir uma e o Advisor tiver sido habilitado no `eng.start`, ele é consultado; a questão entra no `architecture.md`, a auditoria vai para o card e o PR cita a lacuna
 - No card, só desvios do plano e bloqueios: nada de comentário de início ou fim
 - Se você pedir commit antes da fase terminar, ele explica que o commit é feito ao final da fase validada
+- **Links clicáveis:** os comentários de fase do `plan.md` citam arquivos, linhas e commits como links (`rules-on-demand/doc-links-rules.md`)
 
 ## Próximo passo típico
 

@@ -7,6 +7,8 @@ model_justification: RFCs requerem análise de decisões técnicas complexas, tr
 
 # Workflow de Engenharia – RFC (Request for Comments)
 
+> 🔗 **Links**: antes de escrever o RFC, leia `$IDE/rules-on-demand/doc-links-rules.md` e siga-a: toda citação com lugar exato (requisito, documento, código, card, PR) vira link.
+
 ## Objetivo
 
 Guiar o assistente de Engenharia (ENG) na criação, revisão ou iteração de um RFC,

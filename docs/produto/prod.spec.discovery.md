@@ -55,6 +55,8 @@ Ao chegar no teto, ele pergunta se encerra ou se você quer mais perguntas. No m
 
 Um arquivo em `$DISCOVERIES_DOCS/discovery-{id}-{nome}.md` (`$DISCOVERIES_DOCS` é `docs/jarvis/discoveries`, fora do versionamento do código), feito pelo template, com estas seções: Entendimento, Problema, Abordagens, Scorecard (valor, usabilidade, técnica e negócio: forte, adequado, fraco ou desconhecido), Veredito, Próximo passo sugerido e Histórico.
 
+Cada requisito, documento, código, card ou PR citado no discovery vira um **link clicável**, relativo ao arquivo, que abre o ponto exato no VS Code (regra em `rules-on-demand/doc-links-rules.md`).
+
 Ao retomar um discovery no formato antigo (com as seções Hipóteses e Perguntas em aberto), o comando o converte para o formato novo no mesmo arquivo e avisa.
 
 O cabeçalho do arquivo traz:

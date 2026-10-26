@@ -97,6 +97,8 @@ Padrão (ver `prod-rules.md`):
 - Épico → `…/issues/epic-{id}-{nome}.md`
 - História / tarefa → `…/issues/{story\|task}-{id}-{nome}.md`
 
+Em todos esses documentos (e no discovery, no breakdown e no ARD), cada citação de requisito, documento, código, card ou PR vira um **link clicável**, relativo ao próprio arquivo, que abre o ponto exato no VS Code. Um requisito abre na âncora do título (`#rqt-5-…`) e o código abre na linha (`#L55`). A regra está em `rules-on-demand/doc-links-rules.md`.
+
 ## Glossário (sempre por extenso neste guia)
 
 | Evite só a sigla | Prefira                                                          |

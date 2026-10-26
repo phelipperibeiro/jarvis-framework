@@ -52,6 +52,7 @@ Triagem (escopo, áreas e se há RFC ou ARD de origem), checagem de RFC (sem ori
 - Toda Tech Spec documenta riscos com mitigação
 - No Delivery Spec, subtarefas são **fatias verticais completas** (endpoint inteiro, modal inteiro, tela inteira) e nunca fatias horizontais (só enum, só repository, só DTO)
 - No Reference Spec, cada decisão aponta a origem (RFC, ARD ou "resolvida aqui"), para que uma decisão nova não passe escondida
+- **Links clicáveis:** requisitos, documentos e código citados na spec viram links relativos ao arquivo (`rules-on-demand/doc-links-rules.md`)
 
 ## Próximo passo típico
 

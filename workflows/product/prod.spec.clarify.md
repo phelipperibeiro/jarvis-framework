@@ -9,6 +9,8 @@ model_justification: Esclarecimento de specs requer análise estruturada e formu
 ---
 
 > 🔥 **Warm-up**: se `$SESSIONS_DIR/warm-ups/` tiver aquecimentos, leia `$IDE/rules-on-demand/warm-up-consume-rules.md` e siga-o antes de começar (grava em `$SESSIONS_DIR/prod/{id do documento}/context.md`).
+>
+> 🔗 **Links**: antes de escrever as alterações na spec, leia `$IDE/rules-on-demand/doc-links-rules.md` e siga-a: toda citação com lugar exato (requisito, documento, código, card, PR) vira link.
 
 ## Clarify workflow
 

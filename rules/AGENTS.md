@@ -34,12 +34,13 @@ rules-on-demand/              # Lidas pelo workflow que as usa (não carregadas 
 │   └── eng.breakdown-subtasks-rules.md # Regras para o breakdown de subtarefas
 ├── product/
 │   └── prod.guided-rules.md  # Modo Developer-Guided (lida só com PROD_MODE=developer-guided)
+├── doc-links-rules.md        # Links clicáveis nos documentos gerados (lida pelos eng.* e prod.spec* que gravam documentos)
 └── warm-up-consume-rules.md  # Consumo do /warm-up (lida pelo eng.start e pelos prod.spec* só quando há aquecimento)
 ```
 
 ### `rules/` x `rules-on-demand/`
 
-O Claude Code carrega tudo de `.claude/rules/` no início da sessão: `rules/` fica só com o que vale sempre. Rule de uma etapa só (um comando) vai para `rules-on-demand/`, e o workflow manda lê-la (`rules_file` + "antes de começar, leia..."). O `Applies to` e o filtro por perfil valem nas duas. Efeito: `jarvis tokens`.
+O Claude Code carrega tudo de `.claude/rules/` no início da sessão: `rules/` fica só com o que vale sempre. Rule de uma etapa só (um comando), ou transversal lida por vários comandos, vai para `rules-on-demand/`, e o workflow manda lê-la (`rules_file` + "antes de começar, leia..."). O `Applies to` e o filtro por perfil valem nas duas. Efeito: `jarvis tokens`.
 
 ---
 

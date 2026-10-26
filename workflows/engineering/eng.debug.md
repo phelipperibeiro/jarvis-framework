@@ -9,6 +9,8 @@ model_justification: Debugging requer raciocínio complexo, formulação de hip�
 
 # Workflow de Engenharia – Debugging e Varredura de Bugs
 
+> 🔗 **Links**: antes de escrever o relatório, leia `$IDE/rules-on-demand/doc-links-rules.md` e siga-a: toda citação com lugar exato (requisito, documento, código, card, PR) vira link.
+
 ## Objetivo
 
 Um comando só para bugs. Pela entrada, o `/eng.debug` decide entre dois casos:

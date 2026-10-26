@@ -57,6 +57,7 @@ Depois, com board, pergunta se registra o resultado como comentário no card: **
 - Ao dizer "testes passando", o comando mostra **qual comando rodou e o resultado**
 - Segurança: nenhum secret no diff, `npm audit` sem vulnerabilidade alta ou crítica e lockfile atualizado
 - Se o PR tocar áreas sensíveis, recomenda o label `security` e a revisão de segurança antes do merge
+- **Links clicáveis:** a coluna "Onde" e as demais citações do `gate-checklist.md` viram links que abrem o arquivo na linha (`rules-on-demand/doc-links-rules.md`)
 
 ## Próximo passo típico
 

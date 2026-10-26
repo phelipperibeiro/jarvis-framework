@@ -145,7 +145,7 @@ O documento DEVE conter:
 | **Especificidade**          | Usa caminhos reais, não genéricos              |
 | **Completude**              | Todas as seções preenchidas                    |
 | **Clareza**                 | Sem ambiguidades ou jargões indefinidos        |
-| **Rastreabilidade**         | Links para Jira, docs, código                  |
+| **Rastreabilidade**         | Toda citação com lugar exato (requisito, documento, código, card, PR) é um link, no formato de `rules-on-demand/doc-links-rules.md`; vale para cada citação, não só na seção 9 |
 | **Decisões Justificadas**   | Cada decisão tem "por quê"                     |
 | **Riscos Mapeados**         | Riscos têm mitigações definidas                |
 

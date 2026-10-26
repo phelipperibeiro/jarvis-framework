@@ -55,6 +55,7 @@ A sessão **não é apagada**: o `/eng.spec-consolidate` precisa dela. Remova à
 - **Nunca** `git add .`, push direto para `main`/`dev`, commit sem a chave da tarefa nem menção a IA no MR
 - PR que toca auth, inputs, APIs públicas ou permissões leva o label `security`
 - Nunca aprova um PR com secret no diff
+- **Links no PR:** o `pull-request.md` sai do workspace, então issue, PR, card e código viram URL absoluta (código no `blob/{sha}` do commit enviado), e a sessão e o `docs/jarvis/` ficam em texto (`rules-on-demand/doc-links-rules.md`)
 
 ## Próximo passo típico
 

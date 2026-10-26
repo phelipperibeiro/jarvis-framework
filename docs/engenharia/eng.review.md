@@ -37,6 +37,7 @@ Conforme o que a mudança toca, o comando recomenda apoio de agentes e skills: c
 
 - Segue as regras gerais de engenharia (`eng-rules.md`), como apontar riscos técnicos relevantes e nunca fingir que rodou testes
 - Ao ver código que faz chamadas entre serviços sem Correlation ID, sinaliza como débito técnico
+- **Links clicáveis:** a revisão cita arquivos e linhas como links (`rules-on-demand/doc-links-rules.md`)
 
 ## Próximo passo típico
 

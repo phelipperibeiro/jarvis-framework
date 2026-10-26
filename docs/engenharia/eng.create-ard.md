@@ -53,6 +53,7 @@ Critérios objetivos: volume de requisições, número de serviços impactados, 
 - **Proporcionalidade:** só introduz complexidade (filas, eventos, cache distribuído, saga) se a classificação permitir e houver justificativa técnica documentada
 - Não inventa stack, endpoints nem integrações; pergunta
 - Lista perguntas abertas e pontos que exigem aprovação de Produto ou de outra squad
+- **Links clicáveis:** requisitos, documentos e código citados no ARD viram links relativos ao arquivo (`rules-on-demand/doc-links-rules.md`)
 
 ## Próximo passo típico
 

@@ -86,12 +86,12 @@ created_by: {nome de quem criou esse doc}
 
 | ID | Status | Título | Descrição |
 |----|--------|--------|-----------|
-| [FRD-{id}](<path/to/frd/file.md>) | {$ITEM_STATUS} | {Nome da FRD} | {Descrição da FRD} |
-| [FRD-{id}](<path/to/frd/file.md>) | {$ITEM_STATUS} | {Nome da FRD} | {Descrição da FRD} |
-| [FRD-{id}](<path/to/frd/file.md>) | {$ITEM_STATUS} | {Nome da FRD} | {Descrição da FRD} |
-| [FRD-{id}](<path/to/frd/file.md>) | {$ITEM_STATUS} | {Nome da FRD} | {Descrição da FRD} |
-| [FRD-{id}](<path/to/frd/file.md>) | {$ITEM_STATUS} | {Nome da FRD} | {Descrição da FRD} |
-| [FRD-{id}](<path/to/frd/file.md>) | {$ITEM_STATUS} | {Nome da FRD} | {Descrição da FRD} |
+| [FRD-{id}](./frd-{id}-{nome}.md) | {$ITEM_STATUS} | {Nome da FRD} | {Descrição da FRD} |
+| [FRD-{id}](./frd-{id}-{nome}.md) | {$ITEM_STATUS} | {Nome da FRD} | {Descrição da FRD} |
+| [FRD-{id}](./frd-{id}-{nome}.md) | {$ITEM_STATUS} | {Nome da FRD} | {Descrição da FRD} |
+| [FRD-{id}](./frd-{id}-{nome}.md) | {$ITEM_STATUS} | {Nome da FRD} | {Descrição da FRD} |
+| [FRD-{id}](./frd-{id}-{nome}.md) | {$ITEM_STATUS} | {Nome da FRD} | {Descrição da FRD} |
+| [FRD-{id}](./frd-{id}-{nome}.md) | {$ITEM_STATUS} | {Nome da FRD} | {Descrição da FRD} |
 
 
 #### Evoluções futuras
@@ -99,12 +99,12 @@ created_by: {nome de quem criou esse doc}
 
 | ID | Status | Título | Descrição |
 |----|--------|--------|-----------|
-| [FRD-{id}](<path/to/frd/file.md>) | icebox | {Nome da FRD} | {Descrição da FRD} |
-| [FRD-{id}](<path/to/frd/file.md>) | icebox | {Nome da FRD} | {Descrição da FRD} |
-| [FRD-{id}](<path/to/frd/file.md>) | icebox | {Nome da FRD} | {Descrição da FRD} |
-| [FRD-{id}](<path/to/frd/file.md>) | icebox | {Nome da FRD} | {Descrição da FRD} |
-| [FRD-{id}](<path/to/frd/file.md>) | icebox | {Nome da FRD} | {Descrição da FRD} |
-| [FRD-{id}](<path/to/frd/file.md>) | icebox | {Nome da FRD} | {Descrição da FRD} |
+| [FRD-{id}](./frd-{id}-{nome}.md) | icebox | {Nome da FRD} | {Descrição da FRD} |
+| [FRD-{id}](./frd-{id}-{nome}.md) | icebox | {Nome da FRD} | {Descrição da FRD} |
+| [FRD-{id}](./frd-{id}-{nome}.md) | icebox | {Nome da FRD} | {Descrição da FRD} |
+| [FRD-{id}](./frd-{id}-{nome}.md) | icebox | {Nome da FRD} | {Descrição da FRD} |
+| [FRD-{id}](./frd-{id}-{nome}.md) | icebox | {Nome da FRD} | {Descrição da FRD} |
+| [FRD-{id}](./frd-{id}-{nome}.md) | icebox | {Nome da FRD} | {Descrição da FRD} |
 
 
 
@@ -121,21 +121,21 @@ Melhor seria:
 Cancelados ou descontinuados:
 | ID | Status | Título | Descrição |
 |----|--------|--------|-----------|
-| [FRD-{id}](<path/to/frd/file.md>) | cancelled | {Nome da FRD} | {Descrição da FRD} |
-| [FRD-{id}](<path/to/frd/file.md>) | cancelled | {Nome da FRD} | {Descrição da FRD} |
-| [FRD-{id}](<path/to/frd/file.md>) | cancelled | {Nome da FRD} | {Descrição da FRD} |
-| [FRD-{id}](<path/to/frd/file.md>) | cancelled | {Nome da FRD} | {Descrição da FRD} |
-| [FRD-{id}](<path/to/frd/file.md>) | cancelled | {Nome da FRD} | {Descrição da FRD} |
-| [FRD-{id}](<path/to/frd/file.md>) | cancelled | {Nome da FRD} | {Descrição da FRD} |
+| [FRD-{id}](./frd-{id}-{nome}.md) | cancelled | {Nome da FRD} | {Descrição da FRD} |
+| [FRD-{id}](./frd-{id}-{nome}.md) | cancelled | {Nome da FRD} | {Descrição da FRD} |
+| [FRD-{id}](./frd-{id}-{nome}.md) | cancelled | {Nome da FRD} | {Descrição da FRD} |
+| [FRD-{id}](./frd-{id}-{nome}.md) | cancelled | {Nome da FRD} | {Descrição da FRD} |
+| [FRD-{id}](./frd-{id}-{nome}.md) | cancelled | {Nome da FRD} | {Descrição da FRD} |
+| [FRD-{id}](./frd-{id}-{nome}.md) | cancelled | {Nome da FRD} | {Descrição da FRD} |
 
 
 ### Resumo de solução técnica
 
 {Use a codebase, README e outras documentações técnicas do projeto para entender as principais decisões técnicas e de arquitetura. Se já houver especificações técnicas no projeto, leia e crie um resumo de 2-3 parágrafos, com no máximo 100 palavras no total. E liste as principais decisões técnicas e de arquitetura no formato abaixo. Se não houver, esse bloco não deve ser incluído.}
 
-- **[ARD-{id}](<path/to/file.md>)**: Descreva claramente a decisão técnica
-- **[ARD-{id}](<path/to/file.md>)**: Descreva uma segunda decisão técnica
-- **[ARD-{id}](<path/to/file.md>)**: Descreva uma terceira decisão técnica
+- **[ARD-{id}](../../engineering/ARD/ARD-{id}-{nome}.md)**: Descreva claramente a decisão técnica
+- **[ARD-{id}](../../engineering/ARD/ARD-{id}-{nome}.md)**: Descreva uma segunda decisão técnica
+- **[ARD-{id}](../../engineering/ARD/ARD-{id}-{nome}.md)**: Descreva uma terceira decisão técnica
 
 ## O que essa solução não é
 
@@ -183,23 +183,25 @@ Estes são indicadores que podem ser usados para medir o sucesso dessa solução
 
 **PRDs relacionadas**:
 | ID | Título | Descrição |
-|----|--------|--------|-----------|
-| [PRD-{id}](<path/to/feat/file.md>) | {Nome da PRD} | {Por que é relacionado} |
-| [PRD-{id}](<path/to/feat/file.md>) | {Nome da PRD} | {Por que é relacionado} |
+|----|--------|-----------|
+| [PRD-{id}](../prd-{id}-{nome}/prd-{id}-{nome}.md) | {Nome da PRD} | {Por que é relacionado} |
+| [PRD-{id}](../prd-{id}-{nome}/prd-{id}-{nome}.md) | {Nome da PRD} | {Por que é relacionado} |
 
 **FRDs relacionadas**:
 | ID | Título | Descrição |
-| [FRD-{id}](<path/to/feat/file.md>) | {Nome da FRD} | {Por que é relacionado} |
-| [FRD-{id}](<path/to/feat/file.md>) | {Nome da FRD} | {Por que é relacionado} |
+|----|--------|-----------|
+| [FRD-{id}](../prd-{id}-{nome}/frd-{id}-{nome}.md) | {Nome da FRD} | {Por que é relacionado} |
+| [FRD-{id}](../prd-{id}-{nome}/frd-{id}-{nome}.md) | {Nome da FRD} | {Por que é relacionado} |
 
 **ARDs relacionadas**:
 | ID | Título | Descrição |
-| [ARD-{id}](<path/to/feat/file.md>) | {Nome da ARD} | {Por que é relacionado} |
-| [ARD-{id}](<path/to/feat/file.md>) | {Nome da ARD} | {Por que é relacionado} |
+|----|--------|-----------|
+| [ARD-{id}](../../engineering/ARD/ARD-{id}-{nome}.md) | {Nome da ARD} | {Por que é relacionado} |
+| [ARD-{id}](../../engineering/ARD/ARD-{id}-{nome}.md) | {Nome da ARD} | {Por que é relacionado} |
 
 
 ### Histórias, tasks, Issues relacionadas
 {liste todos os épicos ou issues relacionados a este FRD}
 
-- [EPIC-001 - Nome do Épico](<link>)
-- [ISSUE-001 - Nome da Issue](<link>)
+- [EPIC-{id} - {Nome do Épico}](./issues/epic-{id}-{nome}.md)
+- [STORY-{id} - {Nome da história}](./issues/story-{id}-{nome}.md)

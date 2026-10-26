@@ -9,6 +9,8 @@ model_justification: Revisão de código requer análise crítica, identificaç�
 
 # Workflow de Engenharia – Revisão de Solução / Pull Request
 
+> 🔗 **Links**: antes de escrever a revisão, leia `$IDE/rules-on-demand/doc-links-rules.md` e siga-a: toda citação com lugar exato (requisito, documento, código, card, PR) vira link.
+
 ## Objetivo
 
 Guiar o assistente de Engenharia (ENG) na revisão de soluções técnicas, ARDs, PRs ou trechos de código,

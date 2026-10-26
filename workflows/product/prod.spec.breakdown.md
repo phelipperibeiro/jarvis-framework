@@ -27,6 +27,8 @@ Utilize o `$ARGUMENTS` como ponto de partida (caminho da spec, nome da feature o
 </requirement>
 
 > 🔥 **Warm-up**: se `$SESSIONS_DIR/warm-ups/` tiver aquecimentos, leia `$IDE/rules-on-demand/warm-up-consume-rules.md` e siga-o antes de começar (grava em `$SESSIONS_DIR/prod/{id do documento}/context.md`).
+>
+> 🔗 **Links**: antes de escrever o breakdown, leia `$IDE/rules-on-demand/doc-links-rules.md` e siga-a: toda citação com lugar exato (requisito, documento, código, card, PR) vira link.
 
 ## Quando usar
 

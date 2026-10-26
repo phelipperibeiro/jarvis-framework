@@ -46,6 +46,7 @@ Por isso, "só o enum", "só o repository" ou "só o DTO" **não são subtarefas
 - Tamanho: mínimo de 4 horas e máximo de 1 dia por subtarefa. Menos de 4h é sinal de fatia horizontal e se agrupa; mais de 1 dia se divide em **duas fatias verticais**, nunca em camadas
 - Testes unitários ficam **dentro** da subtarefa de código; `[QA]` é só para testes que cruzam várias subtarefas
 - Código completo em cada passo, sem "..." nem "resto do código"
+- **Links clicáveis:** as subtarefas citam arquivos, linhas e requisitos como links (`rules-on-demand/doc-links-rules.md`)
 
 ## Próximo passo típico
 

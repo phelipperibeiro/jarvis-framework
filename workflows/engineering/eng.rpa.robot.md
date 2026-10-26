@@ -14,6 +14,7 @@ Workflow unificado para criação (`new`) ou manutenção (`update`) de robôs d
 
 > 📋 **Rules**: `$IDE/rules/engineering/rpa/eng.rpa-rules.md`
 > 📋 **Docs**: `$IDE/rules/engineering/eng.docs-scraping-rules.md`
+> 🔗 **Links**: antes de escrever a documentação do robô, leia `$IDE/rules-on-demand/doc-links-rules.md` e siga-a: toda citação com lugar exato (requisito, documento, código, card, PR) vira link.
 > 🤖 **Agente**: ARACHNE (`$IDE/agents/engineering/eng.rpa.agent.md`)
 
 ### Skills invocados durante o workflow
@@ -85,6 +86,8 @@ echo "$(date -u +"%Y-%m-%dT%H:%M:%SZ")" > $SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/.
 ```
 
 > A base é sempre perguntada: não presuma `dev` nem `main`. A branch de trabalho nunca é a própria base.
+
+Antes de ler o código do robô, anote `git rev-parse --short HEAD` na linha `Commit base:` do `architecture.md`: é a base das linhas citadas nos links (`doc-links-rules.md`, regra 2).
 
 ---
 
