@@ -45,6 +45,7 @@ Segue os 5 passos do RFC-Playbook:
 - **Regra de ouro:** implementação relevante não começa sem RFC `Accepted`
 - O link do RFC é pré-requisito do ARD, e PRs grandes devem referenciá-lo
 - Se o RFC for substituído (`Superseded`), o substituto é linkado
+- **Links clicáveis:** requisitos, documentos e código citados no RFC viram links relativos ao arquivo (`rules-on-demand/doc-links-rules.md`)
 
 ## Próximo passo típico
 

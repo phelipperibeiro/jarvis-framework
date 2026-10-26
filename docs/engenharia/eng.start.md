@@ -50,6 +50,7 @@ Além do documento, ele prepara o ambiente: pergunta **de qual branch partir** (
 - **Não assume requisitos:** distingue fato de suposição e pergunta
 - **Stack do projeto:** em trabalho de backend ou de frontend, carrega a skill base mais as **especializações** registradas no `ENV.md` (`BACKEND_SPECIALIZATIONS` e `FRONTEND_SPECIALIZATIONS`); se algum skill instalado não tem `metadata.area`, **o comando é interrompido** ([especializações de stack](../especializacoes-de-stack.md))
 - Toda feature precisa registrar em `architecture.md` os pontos de segurança (dados sensíveis, superfície de ataque, modelo de auth), ou declarar "sem superfície de segurança identificada"
+- **Links clicáveis:** toda citação de requisito, documento, código, card ou PR no `architecture.md` vira um link que abre o ponto exato no VS Code (código com `#L{linha}`, requisito com a âncora do título); regra em `rules-on-demand/doc-links-rules.md`
 
 ## Próximo passo típico
 
