@@ -41,6 +41,7 @@ Entende o que precisa ser construído, tira as dúvidas com você e propõe uma 
 - **Não chuta**: se não tem certeza de como uma biblioteca funciona, consulta a documentação em vez de adivinhar
 - Não avança de etapa sem o sinal verde explícito
 - Se algo discutido afeta os requisitos do card, pede permissão antes de editá-los
+- **Links clicáveis:** a arquitetura cita requisitos, código, card e PR como links (`rules-on-demand/doc-links-rules.md`)
 
 ## Próximo passo típico
 

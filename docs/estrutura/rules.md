@@ -44,7 +44,7 @@ rules-on-demand/                    # lidas pelo workflow; não carregadas no in
 ### `rules/` e `rules-on-demand/`
 
 - `rules/`: o Claude Code carrega tudo no início da sessão. Fica só o que vale sempre.
-- `rules-on-demand/`: regras de **uma etapa só** (um comando). O workflow manda ler o arquivo no início (`rules_file` e a linha "Rules"). O mesmo bloco `Applies to` e o mesmo filtro por perfil valem nas duas pastas.
+- `rules-on-demand/`: regras de **uma etapa** (um comando) ou **transversais** a vários comandos (como `doc-links-rules.md` e `warm-up-consume-rules.md`). O workflow manda ler o arquivo no início (`rules_file` e a linha "Rules"). O mesmo bloco `Applies to` e o mesmo filtro por perfil valem nas duas pastas.
 - `jarvis tokens` mostra quanto cada perfil carrega no início.
 
 ## Bloco `Applies to:`

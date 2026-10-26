@@ -463,19 +463,19 @@ TIMEOUT_MS=5000
 ## 12. Referências
 
 ### 12.1 Documentos Relacionados
-- [PRD: {nome}](../../product/prd-{id}-{nome}/prd-{id}-{nome}.md)
-- [FRD: {nome}](../../product/prd-{id}-{nome}/frd-{id}-{nome}.md)
-- [Epic: {nome}](../../product/prd-{id}-{nome}/issues/epic-{id}-{nome}.md)
-- [ADR: {nome}](../ARD/ARD-{id}-{nome}.md)
+- [PRD: {nome}](../../../../docs/jarvis/product/prd-{id}-{nome}/prd-{id}-{nome}.md)
+- [FRD: {nome}](../../../../docs/jarvis/product/prd-{id}-{nome}/frd-{id}-{nome}.md)
+- [Epic: {nome}](../../../../docs/jarvis/product/prd-{id}-{nome}/issues/epic-{id}-{nome}.md)
+- [ADR: {nome}](../../../../docs/jarvis/engineering/ARD/ARD-{id}-{nome}.md)
 
 ### 12.2 Issues Relacionadas
 - {STORY-XXX}: {descrição}
 - {BUG-XXX}: {descrição}
 
 ### 12.3 Recursos Externos
-- [Documentação da Biblioteca X]({link})
-- [API Reference Y]({link})
-- [Best Practices Z]({link})
+- [Documentação da Biblioteca X]({URL})
+- [API Reference Y]({URL})
+- [Best Practices Z]({URL})
 
 ---
 

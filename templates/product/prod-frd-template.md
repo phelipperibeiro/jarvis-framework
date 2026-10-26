@@ -75,12 +75,12 @@ Lembre-se de que esse FRD será utilizada tanto por humanos quanto para formaç�
 
 | ID | Status | Título | Descrição |
 |----|--------|--------|-----------|
-| [feat-{id}](#{âncora-do-título-da-feature}) | {$ITEM_STATUS} | {Nome da feature} | {Descrição da feature} |
-| [feat-{id}](#{âncora-do-título-da-feature}) | {$ITEM_STATUS} | {Nome da feature} | {Descrição da feature} |
-| [feat-{id}](#{âncora-do-título-da-feature}) | {$ITEM_STATUS} | {Nome da feature} | {Descrição da feature} |
-| [feat-{id}](#{âncora-do-título-da-feature}) | {$ITEM_STATUS} | {Nome da feature} | {Descrição da feature} |
-| [feat-{id}](#{âncora-do-título-da-feature}) | {$ITEM_STATUS} | {Nome da feature} | {Descrição da feature} |
-| [feat-{id}](#{âncora-do-título-da-feature}) | {$ITEM_STATUS} | {Nome da feature} | {Descrição da feature} |
+| [feat-{id}](#rqt-{n}-{título-do-requisito-que-implementa-a-feature}) | {$ITEM_STATUS} | {Nome da feature} | {Descrição da feature} |
+| [feat-{id}](#rqt-{n}-{título-do-requisito-que-implementa-a-feature}) | {$ITEM_STATUS} | {Nome da feature} | {Descrição da feature} |
+| [feat-{id}](#rqt-{n}-{título-do-requisito-que-implementa-a-feature}) | {$ITEM_STATUS} | {Nome da feature} | {Descrição da feature} |
+| [feat-{id}](#rqt-{n}-{título-do-requisito-que-implementa-a-feature}) | {$ITEM_STATUS} | {Nome da feature} | {Descrição da feature} |
+| [feat-{id}](#rqt-{n}-{título-do-requisito-que-implementa-a-feature}) | {$ITEM_STATUS} | {Nome da feature} | {Descrição da feature} |
+| [feat-{id}](#rqt-{n}-{título-do-requisito-que-implementa-a-feature}) | {$ITEM_STATUS} | {Nome da feature} | {Descrição da feature} |
 
 ## Requisitos e critérios
 
@@ -139,8 +139,8 @@ Se não houverem ou o usuário não fornecer, esse bloco não deve ser incluído
 
 ```
 - {[ARD-{id}](../../engineering/ARD/ARD-{id}-{nome}.md): Descreva claramente a decisão técnica}
-- {[ARD-002](<path/to/file.md>): Descreva uma segunda decisão técnica}
-- {[ARD-003](<path/to/file.md>): Descreva uma terceira decisão técnica}
+- {[ARD-{id}](../../engineering/ARD/ARD-{id}-{nome}.md): Descreva uma segunda decisão técnica}
+- {[ARD-{id}](../../engineering/ARD/ARD-{id}-{nome}.md): Descreva uma terceira decisão técnica}
 ```
 
 ## O que essa solução não é
@@ -170,25 +170,25 @@ Ele é um sistema de gestão de dados pessoais de saúde, que agrega informaçõ
 **PRDs relacionadas**:
 | ID | Título | Descrição |
 |----|--------|--------|-----------|
-| [PRD-{id}](<path/to/feat/file.md>) | {Nome da PRD} | {Por que é relacionado} |
-| [PRD-{id}](<path/to/feat/file.md>) | {Nome da PRD} | {Por que é relacionado} |
+| [PRD-{id}](../prd-{id}-{nome}/prd-{id}-{nome}.md) | {Nome da PRD} | {Por que é relacionado} |
+| [PRD-{id}](../prd-{id}-{nome}/prd-{id}-{nome}.md) | {Nome da PRD} | {Por que é relacionado} |
 
 **FRDs relacionadas**:
 | ID | Título | Descrição |
-| [FRD-{id}](<path/to/feat/file.md>) | {Nome da FRD} | {Por que é relacionado} |
-| [FRD-{id}](<path/to/feat/file.md>) | {Nome da FRD} | {Por que é relacionado} |
+| [FRD-{id}](../prd-{id}-{nome}/frd-{id}-{nome}.md) | {Nome da FRD} | {Por que é relacionado} |
+| [FRD-{id}](../prd-{id}-{nome}/frd-{id}-{nome}.md) | {Nome da FRD} | {Por que é relacionado} |
 
 **ARDs relacionadas**:
 | ID | Título | Descrição |
-| [ARD-{id}](<path/to/feat/file.md>) | {Nome da ARD} | {Por que é relacionado} |
-| [ARD-{id}](<path/to/feat/file.md>) | {Nome da ARD} | {Por que é relacionado} |
+| [ARD-{id}](../../engineering/ARD/ARD-{id}-{nome}.md) | {Nome da ARD} | {Por que é relacionado} |
+| [ARD-{id}](../../engineering/ARD/ARD-{id}-{nome}.md) | {Nome da ARD} | {Por que é relacionado} |
 
 
 ### Histórias, tasks, Issues relacionadas
 {liste todos os épicos ou issues relacionados a este FRD}
 
-- [EPIC-001 - Nome do Épico](<link>)
-- [ISSUE-001 - Nome da Issue](<link>)
+- [EPIC-{id} - {Nome do Épico}](./issues/epic-{id}-{nome}.md)
+- [STORY-{id} - {Nome da história}](./issues/story-{id}-{nome}.md)
 
 
 ## Histórico e Versionamento

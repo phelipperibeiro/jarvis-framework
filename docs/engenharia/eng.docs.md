@@ -36,6 +36,7 @@ Ajuda a escrever ou atualizar a documentação de engenharia, propondo mudanças
 - Toda documentação `.md` gerada é em português do Brasil
 - Não inventa informação: se não souber, pergunta
 - O fluxo de versionamento segue `eng.bump-rules.md` quando envolve versão
+- **Links clicáveis:** na documentação versionada no repositório, os links são relativos dentro do próprio repositório; sessão e `docs/jarvis/` ficam em texto (`rules-on-demand/doc-links-rules.md`, regra 7)
 
 ## Próximo passo típico
 

@@ -63,6 +63,7 @@ Tenho um problema
 - **Nada no card.** O comando não comenta nem abre card; tudo fica no relatório, com o card pronto para você abrir. O card de entrada é lido pela CLI do vendor (`gh issue view`, `glab issue view` ou `acli jira workitem view`); sem acesso, cole o texto.
 - **Três tentativas.** Se três correções já falharam, ele para e discute a arquitetura com você antes da quarta.
 - Em sistemas com vários serviços, todo fluxo entre eles deve propagar um **Correlation ID**; a ausência entra como débito técnico.
+- **Links clicáveis:** o relatório cita arquivos, linhas, card e PR como links relativos ao arquivo (`rules-on-demand/doc-links-rules.md`)
 
 ## Próximo passo típico
 

@@ -150,7 +150,7 @@ Registre a escolha no cabeçalho do `architecture.md` (`Advisor:`). O agente `en
 
 Grave a escolha no cabeçalho do `architecture.md` (`Branch base:`). O `eng.pr` abre o PR para essa mesma branch.
 
-Depois de criar a branch, grave na mesma linha o commit de partida (`git rev-parse --short HEAD`): `Branch base: {base} ({sha})`. É a base das linhas citadas nos links (`doc-links-rules.md`, regra 2). No modo workspace, grave um `{repo}@{sha}` por repositório citado.
+Depois de criar a branch (ou de entrar nela, se já existir), grave na mesma linha o commit de partida, `git merge-base HEAD {BRANCH_BASE}` (abreviado): `Branch base: {base} ({sha})`. É a base das linhas citadas nos links (`doc-links-rules.md`, regra 2). No modo workspace, rode o comando em cada repositório citado (`git -C {repo} merge-base HEAD {BRANCH_BASE}`) e grave um `{repo}@{sha}` por repositório.
 
 ```bash
 # Garantir que a base está atualizada

@@ -45,6 +45,7 @@ Com isso, escreve dois documentos **autossuficientes**: se os originais se perde
 - Só `feature` e `delivery` vão para o Central docs
 - Sem e-mails, tokens ou valores de variáveis
 - A sessão não é apagada: remova à mão quando quiser
+- **Links no Central docs:** o Central docs pode ser lido fora do workspace, então o código vira URL absoluta (`blob/{sha}` do merge), e a sessão e o `docs/jarvis/` ficam em texto (`rules-on-demand/doc-links-rules.md`, regra 6)
 
 ## Próximo passo típico
 
