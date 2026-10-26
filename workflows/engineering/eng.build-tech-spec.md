@@ -37,6 +37,8 @@ Para criar Tech Specs, peça a alguém com um desses cargos.
 **Somente se `POSITION` for aceito**, prossiga com o workflow abaixo.
 
 > 📋 **Rules**: `$IDE/rules-on-demand/engineering/eng.tech-spec-rules.md` — **antes de começar, leia esse arquivo e siga-o**: ele não é carregado automaticamente no início da sessão.
+>
+> 🔗 **Links**: antes de escrever a SPEC, leia `$IDE/rules-on-demand/doc-links-rules.md` e siga-a: toda citação com lugar exato (requisito, documento, código, card, PR) vira link.
 
 ---
 

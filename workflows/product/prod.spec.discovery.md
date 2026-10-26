@@ -15,6 +15,8 @@ model_justification: Discovery exige separar fatos de suposições, escolher as 
 > 🤖 **Modelo**: se a IDE informar o modelo desta sessão e ele for de outra família que o `recommended_model` do documento (ou do template, se o documento for novo), avise em uma linha e siga, sem bloquear e sem repetir. Sem essa informação, não avise.
 
 > 🔥 **Warm-up**: se `$SESSIONS_DIR/warm-ups/` tiver aquecimentos, leia `$IDE/rules-on-demand/warm-up-consume-rules.md` e siga-o antes de começar (grava em `$SESSIONS_DIR/prod/{id do documento}/context.md`).
+>
+> 🔗 **Links**: antes de escrever o discovery, leia `$IDE/rules-on-demand/doc-links-rules.md` e siga-a: toda citação com lugar exato (requisito, documento, código, card, PR) vira link.
 
 Investiga uma ideia crua com **poucas perguntas certas** e grava um **rascunho** em `$DISCOVERIES_DOCS/discovery-{id}-{nome}.md`, pelo template `$PROD_TEMPLATES/prod-discovery-template.md`. Postura: agente `$IDE/agents/product/prod.discovery-interviewer.md`. Guia humano: `docs/produto/prod.spec.discovery.md`. Siga `$PROD_RULES` (ENV, idioma, `AskUserQuestion` uma pergunta por vez).
 

@@ -15,6 +15,8 @@ Este workflow cria um **plano de execução detalhado e faseado** para implement
 
 > 📋 **Rules**: `$IDE/rules-on-demand/engineering/eng.plan-rules.md` — **antes de começar, leia esse arquivo e siga-o**: ele não é carregado automaticamente no início da sessão.
 > 🔀 **Transições**: `$IDE/rules-on-demand/engineering/eng.transitions-rules.md` — perguntas de início e de fim deste comando (a opção padrão mantém o fluxo de sempre).
+>
+> 🔗 **Links**: antes de escrever o `plan.md`, leia `$IDE/rules-on-demand/doc-links-rules.md` e siga-a: toda citação com lugar exato (requisito, documento, código, card, PR) vira link.
 
 ---
 

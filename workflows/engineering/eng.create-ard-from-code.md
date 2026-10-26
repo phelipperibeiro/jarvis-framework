@@ -7,6 +7,8 @@ model_justification: Análise de codebase e extração de arquitetura requer com
 
 # Workflow de Engenharia – ARD a partir do Código (Architecture Requirement Document)
 
+> 🔗 **Links**: antes de escrever o ARD, leia `$IDE/rules-on-demand/doc-links-rules.md` e siga-a: toda citação com lugar exato (requisito, documento, código, card, PR) vira link.
+
 ## Objetivo
 
 Guiar o assistente de Engenharia (ENG) na criação, revisão ou iteração de um ARD,
