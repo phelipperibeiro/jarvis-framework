@@ -9,6 +9,8 @@ model_justification: Documentação técnica requer clareza e precisão, mas é 
 
 # eng.docs
 
+> 🔗 **Links**: antes de escrever a documentação, leia `$IDE/rules-on-demand/doc-links-rules.md` e siga-a: toda citação com lugar exato (requisito, documento, código, card, PR) vira link.
+
 Use este workflow quando você quiser ajuda de engenharia para **atualizar/criar documentação**.
 
 ## Skills recomendados

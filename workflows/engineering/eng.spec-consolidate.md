@@ -20,6 +20,8 @@ Os documentos de trabalho (PRD, FRD, ARD, RFC, SPEC…) continuam em `docs/jarvi
 
 > 🤖 **Modelo**: se a IDE informar o modelo desta sessão e ele for de outra família que o `recommended_model` do documento (ou do template, se for novo), avise em uma linha e siga, sem bloquear e sem repetir. Sem essa informação, não avise.
 > 📤 **Templates**: `$IDE/templates/engineering/central-feature-template.md` e `$IDE/templates/engineering/central-delivery-template.md`
+>
+> 🔗 **Links**: antes de escrever a consolidação, leia `$IDE/rules-on-demand/doc-links-rules.md` e siga-a: toda citação com lugar exato (requisito, documento, código, card, PR) vira link. O Central docs pode ser lido fora do workspace: siga a regra 6 (URL absoluta, com o sha do merge; sessão e `docs/jarvis/` em texto).
 
 ### Skills invocados durante o workflow
 

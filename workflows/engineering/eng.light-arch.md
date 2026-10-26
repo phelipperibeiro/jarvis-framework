@@ -9,6 +9,8 @@ model_justification: Design arquitetural requer análise de codebase, padrões e
 
 # light-arch
 
+> 🔗 **Links**: antes de escrever a arquitetura, leia `$IDE/rules-on-demand/doc-links-rules.md` e siga-a: toda citação com lugar exato (requisito, documento, código, card, PR) vira link.
+
 Este é o comando para disparar o início do desenho de estrutura arquitetural para uma feature.
 
 ### Skills invocados durante o workflow

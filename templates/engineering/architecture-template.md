@@ -5,8 +5,8 @@
 
 > **Criado em:** {DATA}  
 > **Issue:** {JIRA_ISSUE_KEY}  
-> **Branch:** `{branch}` (criada a partir de `{base}`, `{sha}`: as linhas citadas são deste commit)  
-> **Branch base:** {main | dev | outra — perguntada no eng.start; destino do PR no eng.pr}  
+> **Branch:** `{branch}`  
+> **Branch base:** {main | dev | outra — perguntada no eng.start; destino do PR no eng.pr} (`{sha}`; no modo workspace, `{repo}@{sha}` por repositório: as linhas citadas são deste commit)  
 > **Status:** 🔄 Em Revisão | ✅ Aprovado | ❌ Rejeitado  
 > **Advisor:** {modelo escolhido no início do eng.start} | não utilizado  
 > **Questões em aberto:** tratar no architecture.md (como hoje) | uma a uma, assim que surgirem (só sem Advisor)

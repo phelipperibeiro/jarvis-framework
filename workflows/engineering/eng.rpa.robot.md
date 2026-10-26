@@ -14,6 +14,7 @@ Workflow unificado para criação (`new`) ou manutenção (`update`) de robôs d
 
 > 📋 **Rules**: `$IDE/rules/engineering/rpa/eng.rpa-rules.md`
 > 📋 **Docs**: `$IDE/rules/engineering/eng.docs-scraping-rules.md`
+> 🔗 **Links**: antes de escrever a documentação do robô, leia `$IDE/rules-on-demand/doc-links-rules.md` e siga-a: toda citação com lugar exato (requisito, documento, código, card, PR) vira link.
 > 🤖 **Agente**: ARACHNE (`$IDE/agents/engineering/eng.rpa.agent.md`)
 
 ### Skills invocados durante o workflow

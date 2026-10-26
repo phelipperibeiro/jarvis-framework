@@ -16,6 +16,8 @@ Este comando executa a **implementação de código** seguindo o plano de execu�
 > 📋 **Rules**: `$IDE/rules-on-demand/engineering/eng.work-rules.md` — **antes de começar, leia esse arquivo e siga-o**: ele não é carregado automaticamente no início da sessão.
 > 📤 **Template**: `$IDE/templates/engineering/work-progress-template.md`
 > 🔀 **Transições**: `$IDE/rules-on-demand/engineering/eng.transitions-rules.md` — perguntas de início e de fim deste comando (a opção padrão mantém o fluxo de sempre).
+>
+> 🔗 **Links**: antes de escrever os comentários de fase no `plan.md`, leia `$IDE/rules-on-demand/doc-links-rules.md` e siga-a: toda citação com lugar exato (requisito, documento, código, card, PR) vira link.
 
 > ⚠️ **IMPORTANTE**: Este workflow é para codificação com commits incrementais por fase.
 > **NÃO crie PRs, NÃO faça push**, mas **FAZ commit ao final de cada fase validada.**

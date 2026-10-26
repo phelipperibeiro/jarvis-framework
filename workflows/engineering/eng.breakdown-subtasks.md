@@ -13,6 +13,8 @@ Você receberá uma Tech Spec completa e deve quebrá-la em subtarefas **EXTREMA
 > ⚠️ **PRINCÍPIO FUNDAMENTAL**: Cada subtarefa deve ser tão detalhada que um desenvolvedor júnior possa executá-la SEM precisar perguntar nada. A subtarefa deve ser um "tutorial passo-a-passo" completo.
 
 > 📋 **Rules**: `$IDE/rules-on-demand/engineering/eng.breakdown-subtasks-rules.md` — **antes de começar, leia esse arquivo e siga-o**: ele não é carregado automaticamente no início da sessão.
+>
+> 🔗 **Links**: antes de escrever as subtarefas, leia `$IDE/rules-on-demand/doc-links-rules.md` e siga-a: toda citação com lugar exato (requisito, documento, código, card, PR) vira link.
 
 <input>
 #$ARGUMENTS

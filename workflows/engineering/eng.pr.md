@@ -179,10 +179,10 @@ git log --format='%h %B' $RANGE | grep -inE "$TERMOS"
 grep -inE "$TERMOS" $SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/pull-request.md
 ```
 
-Revise cada ocorrência antes de remover: a busca é larga e pode achar texto legítimo (ex.: `ai-generated`, um link para o PR, "advisor" dentro de uma URL como `eng.advisor.agent.md`).
+Revise cada ocorrência antes de remover: a busca é larga e pode achar texto legítimo (ex.: `ai-generated`, um link para o PR, "advisor" dentro de uma URL como `eng.advisor.agent.md`; isso só é legítimo quando o PR mexe no próprio arquivo do framework).
 
 - **Nada encontrado (ou só falsos positivos):** siga para o push.
-- **No `pull-request.md`:** remova os trechos (o texto aprovado na 4.2 muda só nisso).
+- **No `pull-request.md`:** remova os trechos (o texto aprovado na 4.2 muda só nisso e no sha dos links, abaixo).
 - **Nas mensagens de commit:** reescreva **só os commits de `$RANGE`** (ainda não enviados), sem modo interativo, por exemplo, com `{ref}` = o início de `$RANGE` (`@{u}` ou `{BRANCH_BASE}`), `git rebase {ref} --exec 'M=$(git rev-parse --git-dir)/MSG_LIMPA; git log -1 --format=%B | sed -E "/^Co-Authored-By:/Id" > "$M" && git commit -q --amend -F "$M"'`, ajustando o `sed` aos termos achados. Depois, rode a busca de novo e troque, nos links de código do `pull-request.md`, o sha antigo pelo novo `HEAD` (`doc-links-rules.md`, regra 6).
 - **Commit já enviado com marca:** não reescreva; avise o usuário e pare.
 
