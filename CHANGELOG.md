@@ -6,9 +6,7 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), e o
 
 > Versões anteriores a `2.1.1` não foram documentadas retroativamente neste changelog — o histórico detalhado dessas versões continua disponível via `git log`.
 
-## [Não lançado]
-
-> Versão **major**: o bump e a data entram no commit `chore(release)` na `main`, depois do merge.
+## [7.0.0] - 2026-10-26
 
 ### Added
 - **Links clicáveis nos documentos** (#182): `rules-on-demand/doc-links-rules.md` define como citar requisito, documento, código, card e PR. Os links são relativos ao próprio arquivo; o código leva `#L{linha}` e o nome do símbolo, e o requisito leva a âncora do título real. No `pull-request.md`, no `.public.md`, no Central docs e no texto publicado no card, que saem do workspace, issue, PR, card e código viram URL absoluta (`blob/{sha}`), e a sessão e o `docs/jarvis/` ficam em texto. Num documento versionado no repositório (`README.md`, `docs/` do projeto), o caminho é relativo dentro do repositório.

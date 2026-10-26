@@ -1,6 +1,6 @@
 {
   "name": "jarvis-ai-framework",
-  "version": "6.1.0",
+  "version": "7.0.0",
   "description": "Jarvis framework",
   "type": "module",
   "bin": {
