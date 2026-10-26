@@ -26,14 +26,19 @@ rules/
     └── prod-rules.md
 
 rules-on-demand/                    # lidas pelo workflow; não carregadas no início da sessão
-└── engineering/
-    ├── eng.start-rules.md
-    ├── eng.plan-rules.md
-    ├── eng.work-rules.md
-    ├── eng.pre-pr-rules.md
-    ├── eng.pr-rules.md
-    ├── eng.tech-spec-rules.md
-    └── eng.breakdown-subtasks-rules.md
+├── engineering/
+│   ├── eng.start-rules.md
+│   ├── eng.plan-rules.md
+│   ├── eng.work-rules.md
+│   ├── eng.pre-pr-rules.md
+│   ├── eng.pr-rules.md
+│   ├── eng.tech-spec-rules.md
+│   ├── eng.transitions-rules.md
+│   └── eng.breakdown-subtasks-rules.md
+├── product/
+│   └── prod.guided-rules.md        # modo Developer-Guided (só com PROD_MODE=developer-guided)
+├── doc-links-rules.md              # links clicáveis nos documentos gerados (lida pelos comandos que gravam documentos)
+└── warm-up-consume-rules.md        # consumo do /warm-up (só quando há aquecimento)
 ```
 
 ### `rules/` e `rules-on-demand/`

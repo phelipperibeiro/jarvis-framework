@@ -86,12 +86,12 @@ created_by: {nome de quem criou esse doc}
 
 | ID | Status | Título | Descrição |
 |----|--------|--------|-----------|
-| [FRD-{id}](<path/to/frd/file.md>) | {$ITEM_STATUS} | {Nome da FRD} | {Descrição da FRD} |
-| [FRD-{id}](<path/to/frd/file.md>) | {$ITEM_STATUS} | {Nome da FRD} | {Descrição da FRD} |
-| [FRD-{id}](<path/to/frd/file.md>) | {$ITEM_STATUS} | {Nome da FRD} | {Descrição da FRD} |
-| [FRD-{id}](<path/to/frd/file.md>) | {$ITEM_STATUS} | {Nome da FRD} | {Descrição da FRD} |
-| [FRD-{id}](<path/to/frd/file.md>) | {$ITEM_STATUS} | {Nome da FRD} | {Descrição da FRD} |
-| [FRD-{id}](<path/to/frd/file.md>) | {$ITEM_STATUS} | {Nome da FRD} | {Descrição da FRD} |
+| [FRD-{id}](./frd-{id}-{nome}.md) | {$ITEM_STATUS} | {Nome da FRD} | {Descrição da FRD} |
+| [FRD-{id}](./frd-{id}-{nome}.md) | {$ITEM_STATUS} | {Nome da FRD} | {Descrição da FRD} |
+| [FRD-{id}](./frd-{id}-{nome}.md) | {$ITEM_STATUS} | {Nome da FRD} | {Descrição da FRD} |
+| [FRD-{id}](./frd-{id}-{nome}.md) | {$ITEM_STATUS} | {Nome da FRD} | {Descrição da FRD} |
+| [FRD-{id}](./frd-{id}-{nome}.md) | {$ITEM_STATUS} | {Nome da FRD} | {Descrição da FRD} |
+| [FRD-{id}](./frd-{id}-{nome}.md) | {$ITEM_STATUS} | {Nome da FRD} | {Descrição da FRD} |
 
 
 #### Evoluções futuras
@@ -99,12 +99,12 @@ created_by: {nome de quem criou esse doc}
 
 | ID | Status | Título | Descrição |
 |----|--------|--------|-----------|
-| [FRD-{id}](<path/to/frd/file.md>) | icebox | {Nome da FRD} | {Descrição da FRD} |
-| [FRD-{id}](<path/to/frd/file.md>) | icebox | {Nome da FRD} | {Descrição da FRD} |
-| [FRD-{id}](<path/to/frd/file.md>) | icebox | {Nome da FRD} | {Descrição da FRD} |
-| [FRD-{id}](<path/to/frd/file.md>) | icebox | {Nome da FRD} | {Descrição da FRD} |
-| [FRD-{id}](<path/to/frd/file.md>) | icebox | {Nome da FRD} | {Descrição da FRD} |
-| [FRD-{id}](<path/to/frd/file.md>) | icebox | {Nome da FRD} | {Descrição da FRD} |
+| [FRD-{id}](./frd-{id}-{nome}.md) | icebox | {Nome da FRD} | {Descrição da FRD} |
+| [FRD-{id}](./frd-{id}-{nome}.md) | icebox | {Nome da FRD} | {Descrição da FRD} |
+| [FRD-{id}](./frd-{id}-{nome}.md) | icebox | {Nome da FRD} | {Descrição da FRD} |
+| [FRD-{id}](./frd-{id}-{nome}.md) | icebox | {Nome da FRD} | {Descrição da FRD} |
+| [FRD-{id}](./frd-{id}-{nome}.md) | icebox | {Nome da FRD} | {Descrição da FRD} |
+| [FRD-{id}](./frd-{id}-{nome}.md) | icebox | {Nome da FRD} | {Descrição da FRD} |
 
 
 
@@ -121,12 +121,12 @@ Melhor seria:
 Cancelados ou descontinuados:
 | ID | Status | Título | Descrição |
 |----|--------|--------|-----------|
-| [FRD-{id}](<path/to/frd/file.md>) | cancelled | {Nome da FRD} | {Descrição da FRD} |
-| [FRD-{id}](<path/to/frd/file.md>) | cancelled | {Nome da FRD} | {Descrição da FRD} |
-| [FRD-{id}](<path/to/frd/file.md>) | cancelled | {Nome da FRD} | {Descrição da FRD} |
-| [FRD-{id}](<path/to/frd/file.md>) | cancelled | {Nome da FRD} | {Descrição da FRD} |
-| [FRD-{id}](<path/to/frd/file.md>) | cancelled | {Nome da FRD} | {Descrição da FRD} |
-| [FRD-{id}](<path/to/frd/file.md>) | cancelled | {Nome da FRD} | {Descrição da FRD} |
+| [FRD-{id}](./frd-{id}-{nome}.md) | cancelled | {Nome da FRD} | {Descrição da FRD} |
+| [FRD-{id}](./frd-{id}-{nome}.md) | cancelled | {Nome da FRD} | {Descrição da FRD} |
+| [FRD-{id}](./frd-{id}-{nome}.md) | cancelled | {Nome da FRD} | {Descrição da FRD} |
+| [FRD-{id}](./frd-{id}-{nome}.md) | cancelled | {Nome da FRD} | {Descrição da FRD} |
+| [FRD-{id}](./frd-{id}-{nome}.md) | cancelled | {Nome da FRD} | {Descrição da FRD} |
+| [FRD-{id}](./frd-{id}-{nome}.md) | cancelled | {Nome da FRD} | {Descrição da FRD} |
 
 
 ### Resumo de solução técnica

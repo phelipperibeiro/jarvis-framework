@@ -58,6 +58,7 @@ Issue do tipo tarefa, ligada à história de aceitar convite — não invente ta
 - Nomenclatura `story-|task-|bug-{id}-{slug}.md`
 - Empurra leitura do documento macro / épico / commits recentes antes de inventar escopo
 - Encaixa no fluxo eng com `TASK_MANAGER_KEY`
+- **Links clicáveis:** cada requisito, documento, código, card ou PR citado no documento vira um link que abre o ponto exato no VS Code (regra em `rules-on-demand/doc-links-rules.md`)
 
 ## Dica de Product Owner (INVEST, resumido)
 

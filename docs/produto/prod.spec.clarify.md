@@ -46,6 +46,7 @@ Este comando **grava as respostas de volta no arquivo** da especificação (e po
 - Taxonomia de buracos (escopo, dados, segurança, UX, não-funcionais…)
 - Limita pergunta demais (não vira interrogatório infinito)
 - Deixa trilha auditável na spec para o time futuro
+- **Links clicáveis:** cada requisito, documento, código, card ou PR citado no documento vira um link que abre o ponto exato no VS Code (regra em `rules-on-demand/doc-links-rules.md`)
 
 ## Relação com engenharia
 

@@ -75,12 +75,12 @@ Lembre-se de que esse FRD será utilizada tanto por humanos quanto para formaç�
 
 | ID | Status | Título | Descrição |
 |----|--------|--------|-----------|
-| [feat-{id}](<path/to/feat/file.md>) | {$ITEM_STATUS} | {Nome da feature} | {Descrição da feature} |
-| [feat-{id}](<path/to/feat/file.md>) | {$ITEM_STATUS} | {Nome da feature} | {Descrição da feature} |
-| [feat-{id}](<path/to/feat/file.md>) | {$ITEM_STATUS} | {Nome da feature} | {Descrição da feature} |
-| [feat-{id}](<path/to/feat/file.md>) | {$ITEM_STATUS} | {Nome da feature} | {Descrição da feature} |
-| [feat-{id}](<path/to/feat/file.md>) | {$ITEM_STATUS} | {Nome da feature} | {Descrição da feature} |
-| [feat-{id}](<path/to/feat/file.md>) | {$ITEM_STATUS} | {Nome da feature} | {Descrição da feature} |
+| [feat-{id}](#{âncora-do-título-da-feature}) | {$ITEM_STATUS} | {Nome da feature} | {Descrição da feature} |
+| [feat-{id}](#{âncora-do-título-da-feature}) | {$ITEM_STATUS} | {Nome da feature} | {Descrição da feature} |
+| [feat-{id}](#{âncora-do-título-da-feature}) | {$ITEM_STATUS} | {Nome da feature} | {Descrição da feature} |
+| [feat-{id}](#{âncora-do-título-da-feature}) | {$ITEM_STATUS} | {Nome da feature} | {Descrição da feature} |
+| [feat-{id}](#{âncora-do-título-da-feature}) | {$ITEM_STATUS} | {Nome da feature} | {Descrição da feature} |
+| [feat-{id}](#{âncora-do-título-da-feature}) | {$ITEM_STATUS} | {Nome da feature} | {Descrição da feature} |
 
 ## Requisitos e critérios
 
@@ -125,7 +125,7 @@ Siga a estrutura abaixo para descrever os requisitos e critérios de aceite na e
 
 Exemplos:
 - Integração com API de pagamento do {NOME DO GATEWAY} para processamento de pagamentos
-- [FRD-001 - Nome do Arquivo da FRD](<link>)
+- [FRD-{id} - {Nome da FRD}](./frd-{id}-{nome}.md)
 - Biblioteca de gráficos (versão 3.0+)
 - Serviço de email (endpoint /api/email/send)
 - Feature de autenticação (requer login ativo)
@@ -138,7 +138,7 @@ Exemplos:
 Se não houverem ou o usuário não fornecer, esse bloco não deve ser incluído.}
 
 ```
-- {[ARD-001](<path/to/file.md>): Descreva claramente a decisão técnica}
+- {[ARD-{id}](../../engineering/ARD/ARD-{id}-{nome}.md): Descreva claramente a decisão técnica}
 - {[ARD-002](<path/to/file.md>): Descreva uma segunda decisão técnica}
 - {[ARD-003](<path/to/file.md>): Descreva uma terceira decisão técnica}
 ```

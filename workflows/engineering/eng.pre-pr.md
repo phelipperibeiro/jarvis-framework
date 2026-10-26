@@ -93,7 +93,7 @@ Grave em `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/gate-checklist.md`:
 
 | # | Lacuna | Onde | Por que importa | Sugestão | Severidade | Decisão |
 |---|---|---|---|---|---|---|
-| 1 | {o que falta ou está errado} | `{arquivo:linha}` | {impacto, em linguagem simples} | {como resolver} | 🔴 Bloqueador / 🟡 Importante / ⚪ Menor | {Corrigir \| Aceitar: motivo} |
+| 1 | {o que falta ou está errado} | [`{arquivo}:{linha}`](../../../../{repo}/{caminho}#L{linha}) | {impacto, em linguagem simples} | {como resolver} | 🔴 Bloqueador / 🟡 Importante / ⚪ Menor | {Corrigir \| Aceitar: motivo} |
 
 (uma tabela por área; área sem lacuna: "Nenhuma lacuna encontrada.")
 

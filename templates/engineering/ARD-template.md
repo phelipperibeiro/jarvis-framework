@@ -50,8 +50,8 @@ last_editor: [nome]
 
 ### 🔗 Referência ao PRD (obrigatório quando existir)
 
-- **Referência:** PRD-xxx – [Título]
-- **Arquivo/rota:** [link ou caminho do arquivo do PRD]
+- **Referência:** [PRD-{id} – {Título}](../../product/prd-{id}-{nome}/prd-{id}-{nome}.md)
+- **Requisito citado:** [RQT-{n}](../../product/prd-{id}-{nome}/frd-{id}-{nome}.md#{âncora-do-título}) (link com a âncora do título real, `rules-on-demand/doc-links-rules.md`)
 
 #### Legenda (tipos de requisito)
 

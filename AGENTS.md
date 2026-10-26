@@ -78,7 +78,7 @@ prompts/
 │   │   │   └── frontend/         # eng.frontend-rules.md (HUB: FRONTEND)
 │   │   └── product/              # prod-rules.md (AREA=PRODUCT)
 │   │
-│   ├── rules-on-demand/          # Rules de uma etapa so (start, plan, work, pre-pr, pr, tech-spec, breakdown): o workflow manda ler
+│   ├── rules-on-demand/          # Rules lidas pelo workflow que as usa (as de uma etapa, como start, plan e pr, e as transversais, como doc-links e warm-up)
 │   │
 │   ├── scripts/                  # Scripts utilitarios
 │   └── docs/                     # Documentacao adicional

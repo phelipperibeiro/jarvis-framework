@@ -44,6 +44,7 @@ Atalhos:
 - O que está no ARD deve ser **observável no código**; o que for suposição fica marcado como suposição
 - Não inventa nada que o repositório não mostre
 - Decisões que exigem validação do usuário ou de Produto entram nas perguntas abertas
+- **Links clicáveis:** requisitos, documentos e código citados no ARD viram links relativos ao arquivo (`rules-on-demand/doc-links-rules.md`)
 
 ## Próximo passo típico
 

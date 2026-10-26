@@ -44,6 +44,7 @@ Foco no **o quê** e no valor — não no desenho de classes.
 - Template de épico em `$PROD_TEMPLATES`
 - Convenção de pastas sob o documento macro (rastreio Product Manager ↔ eng)
 - Pergunta se você quer criar o documento macro antes (opcional, não bloqueia)
+- **Links clicáveis:** cada requisito, documento, código, card ou PR citado no documento vira um link que abre o ponto exato no VS Code (regra em `rules-on-demand/doc-links-rules.md`)
 
 ## Dica de Product Owner
 

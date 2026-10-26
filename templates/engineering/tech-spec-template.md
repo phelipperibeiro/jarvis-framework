@@ -141,8 +141,8 @@ sequenceDiagram
 #### SUBTASK-001: {Nome da Subtarefa}
 - **Descrição**: {Descrição técnica detalhada do que precisa ser feito}
 - **Arquivos a Modificar/Criar**:
-  - `path/to/file1.py` - {Modificação/Criação} - {Descrição}
-  - `path/to/file2.tsx` - {Modificação/Criação} - {Descrição}
+  - [`{arquivo}:{n}`](../../../../{repo}/{caminho/do/arquivo}#L{n}) - Modificação - {Descrição}
+  - `{caminho/do/arquivo-novo}` - Criação (arquivo novo fica em texto) - {Descrição}
 - **Critérios de Aceitação Técnicos**:
   - [ ] {Critério técnico 1 - como validar}
   - [ ] {Critério técnico 2 - como validar}
@@ -463,10 +463,10 @@ TIMEOUT_MS=5000
 ## 12. Referências
 
 ### 12.1 Documentos Relacionados
-- [PRD: {nome}]({link})
-- [FRD: {nome}]({link})
-- [Epic: {nome}]({link})
-- [ADR: {nome}]({link})
+- [PRD: {nome}](../../product/prd-{id}-{nome}/prd-{id}-{nome}.md)
+- [FRD: {nome}](../../product/prd-{id}-{nome}/frd-{id}-{nome}.md)
+- [Epic: {nome}](../../product/prd-{id}-{nome}/issues/epic-{id}-{nome}.md)
+- [ADR: {nome}](../ARD/ARD-{id}-{nome}.md)
 
 ### 12.2 Issues Relacionadas
 - {STORY-XXX}: {descrição}

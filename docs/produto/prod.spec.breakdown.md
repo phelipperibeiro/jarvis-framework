@@ -48,6 +48,7 @@ Esclarecimento tira dúvida; breakdown **divide trabalho**.
 - Mantém vínculo com o documento pai em `$PROD_DOCS`
 - Evita o anti-padrão “tudo no mesmo card”
 - Prepara o terreno para `/eng.plan` por fatia
+- **Links clicáveis:** cada requisito, documento, código, card ou PR citado no documento vira um link que abre o ponto exato no VS Code (regra em `rules-on-demand/doc-links-rules.md`)
 
 ## Dica de Product Owner
 

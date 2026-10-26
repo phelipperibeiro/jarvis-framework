@@ -10,9 +10,11 @@ Descreva de forma sucinta o objetivo do MR
 
 ## Mudanças Propostas
 
-- Mudança 1
+- Mudança 1 ([`{arquivo}:{n}`]({remote}/blob/{sha}/{caminho}#L{n}))
 - Mudança 2
 - Mudança n
+
+<!-- O PR sai do workspace (`rules-on-demand/doc-links-rules.md`, regra 6): código como URL absoluta com o sha enviado (GitLab: {remote}/-/blob/{sha}/…); arquivos da sessão e de docs/jarvis/ em texto. -->
 
 ## Testes Realizados
 
