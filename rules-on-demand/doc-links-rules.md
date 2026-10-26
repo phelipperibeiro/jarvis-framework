@@ -37,7 +37,7 @@ Lida pelo comando antes de escrever o documento. A tabela mostra quem lê:
    Com `WORKSPACE_MODE=workspace`, o código fica dentro da pasta do repositório (`{repo}/…`). Com `project`, a pasta do workspace já é a raiz do repositório, e o caminho do código não leva o prefixo `{repo}/`.
 2. **Código:** `` [`{símbolo}` (`{arquivo}:{n}`)]({caminho}#L{n}) ``, ou `#L{a}-L{b}` para um trecho.
    - O símbolo (função, classe, chave, título) entra só quando há um nome estável. Sem nome: `` [`{arquivo}:{n}`]({caminho}#L{n}) ``.
-   - As linhas são as do commit base gravado no cabeçalho do documento (no `architecture.md`, a linha `Branch base:` com `{sha}`; no modo workspace, um `{repo}@{sha}` por repositório citado). Depois que o código muda, o nome é o guia; a linha original sai com `git show {sha}:{caminho}`.
+   - As linhas são as do commit base gravado no cabeçalho do documento (no `architecture.md`, a linha `Commit base:`; no modo workspace, um `{repo}@{sha}` por repositório citado). Depois que o código muda, o nome é o guia; a linha original sai com `git show {sha}:{caminho}`.
    - O trecho `#L{a}-L{b}` destaca as linhas no GitHub; no VS Code, o link abre pelo menos na primeira linha do trecho.
 3. **Requisito ou item de documento** (`RQT-n`, `feat-00n`, uma seção de PRD/FRD/ARD/RFC/SPEC, as decisões `D1`/`P4` de uma revisão): link para o arquivo com a **âncora do título**, montada a partir do título real:
    1. leia o título no arquivo: `grep -n "^#\+ .*{ID}" {arquivo}`;
@@ -48,7 +48,7 @@ Lida pelo comando antes de escrever o documento. A tabela mostra quem lê:
    Sem o título no arquivo, o link vai só para o arquivo, com o ID no texto.
 4. **Card:** URL pela tabela "URL do card" de `rules/engineering/eng.integrations-rules.md` (não copie a tabela). No freelance (`TASK_MANAGER` vazio), o card fica em texto.
 5. **PR/MR:** `{remote}/pull/{n}` (GitHub) ou `{remote}/-/merge_requests/{n}` (GitLab), com `{remote}` = `git remote get-url origin` em HTTPS e sem `.git` (remote SSH `git@{host}:{dono}/{repo}.git` → `https://{host}/{dono}/{repo}`). No GitHub, `#n` serve para issue e PR, e o contexto decide ("PR #183"); no GitLab, a issue é `#n` e o MR é `!n`.
-6. **Documentos que saem do workspace:** o `pull-request.md` (vira o PR), o `{nome}.public.md` (versão humanizada, `rules/artifact-style-rules.md`) e os documentos do Central docs (`feature-*`/`delivery-*`, que podem ser lidos em outro workspace).
+6. **Documentos que saem do workspace:** o `pull-request.md` (vira o PR), o `{nome}.public.md` (versão humanizada, `rules/artifact-style-rules.md`) os documentos do Central docs (`feature-*`/`delivery-*`, que podem ser lidos em outro workspace) e o texto publicado no card ou no board (comentário pelo `/eng-global-task-comment`, como o `gate-checklist.md` ou a auditoria do Advisor, e as subtarefas copiadas para o board). Antes de publicar, converta os links relativos do documento de origem.
    - Issue, PR e card como URL.
    - Código como `{remote}/blob/{sha}/{caminho}#L{n}` (GitLab: `{remote}/-/blob/{sha}/…`). O trecho é `#L{a}-L{b}` no GitHub e `#L{a}-{b}` no GitLab.
    - Sessão e `docs/jarvis/` em texto, sem link: quem lê fora do workspace não abre esses arquivos.
@@ -93,7 +93,7 @@ No `pull-request.md`:
 
 ## Exceções
 
-- Com `ARTIFACT_STYLE=human-generated`, a versão humanizada segue a regra 6. O documento original segue as regras 1 a 5.
+- Com `ARTIFACT_STYLE=human-generated`, a versão humanizada segue a regra 6. O documento original segue as demais regras.
 - No modo project, o caminho do código sai da raiz do repositório, sem o prefixo `{repo}/` (regra 1).
 
 ## Referências

@@ -183,17 +183,19 @@ Estes são indicadores que podem ser usados para medir o sucesso dessa solução
 
 **PRDs relacionadas**:
 | ID | Título | Descrição |
-|----|--------|--------|-----------|
+|----|--------|-----------|
 | [PRD-{id}](../prd-{id}-{nome}/prd-{id}-{nome}.md) | {Nome da PRD} | {Por que é relacionado} |
 | [PRD-{id}](../prd-{id}-{nome}/prd-{id}-{nome}.md) | {Nome da PRD} | {Por que é relacionado} |
 
 **FRDs relacionadas**:
 | ID | Título | Descrição |
+|----|--------|-----------|
 | [FRD-{id}](../prd-{id}-{nome}/frd-{id}-{nome}.md) | {Nome da FRD} | {Por que é relacionado} |
 | [FRD-{id}](../prd-{id}-{nome}/frd-{id}-{nome}.md) | {Nome da FRD} | {Por que é relacionado} |
 
 **ARDs relacionadas**:
 | ID | Título | Descrição |
+|----|--------|-----------|
 | [ARD-{id}](../../engineering/ARD/ARD-{id}-{nome}.md) | {Nome da ARD} | {Por que é relacionado} |
 | [ARD-{id}](../../engineering/ARD/ARD-{id}-{nome}.md) | {Nome da ARD} | {Por que é relacionado} |
 

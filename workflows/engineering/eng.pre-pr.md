@@ -122,6 +122,8 @@ A coluna **Decisão** nasce vazia: quem preenche é o usuário.
    - **Não, manter só na sessão (como hoje):** nada é enviado ao card.
    - **Sim, só o resumo:** `/eng-global-task-comment {TASK_MANAGER_KEY}` com o semáforo, o resumo e as lacunas 🔴 com a decisão de cada uma.
    - **Sim, o relatório completo:** `/eng-global-task-comment {TASK_MANAGER_KEY}` com o conteúdo do `gate-checklist.md`.
+
+   O texto vai para fora do workspace: converta os links pela regra 6 de `doc-links-rules.md` (URL absoluta; sessão e `docs/jarvis/` em texto).
 4. Próximo passo: corrigir o que foi marcado "Corrigir" (à mão ou com o `/eng.work`) e rodar o `/eng.pr`, que usa o PR Brief deste relatório. Antes, escreva uma mensagem em markdown com o consolidado de links da sessão (regra 5) e o resumo; depois pergunte com `AskUserQuestion` (`eng.transitions-rules.md`):
    - **Com {n} lacunas marcadas "Corrigir"** — **"O `/eng.pre-pr` encontrou {n} lacunas a corrigir ({a} 🔴, {b} 🟡). Leia o gate-checklist.md com calma e responda quando decidir. Como seguir?"**
      - **Corrigir as lacunas agora:** chame o `/eng.work {TASK_MANAGER_KEY}` para as {n} lacunas (ou mostre o comando).

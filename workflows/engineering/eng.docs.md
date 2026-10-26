@@ -9,7 +9,7 @@ model_justification: Documentação técnica requer clareza e precisão, mas é 
 
 # eng.docs
 
-> 🔗 **Links**: antes de escrever a documentação, leia `$IDE/rules-on-demand/doc-links-rules.md` e siga-a: toda citação com lugar exato (requisito, documento, código, card, PR) vira link.
+> 🔗 **Links**: antes de escrever a documentação, leia `$IDE/rules-on-demand/doc-links-rules.md` e siga-a: toda citação com lugar exato (requisito, documento, código, card, PR) vira link. Num documento versionado no repositório (`README.md`, `docs/`), siga a regra 7: caminho relativo dentro do repositório, com a sessão e o `docs/jarvis/` em texto.
 
 Use este workflow quando você quiser ajuda de engenharia para **atualizar/criar documentação**.
 
@@ -42,7 +42,7 @@ O assistente deve:
 3. Coletar contexto mínimo antes de escrever:
    - Qual o objetivo da mudança?
    - Quais arquivos precisam ser atualizados/criados?
-   - Há links obrigatórios (PRD/FRD/ARD/RFC/SPEC) que precisam ser referenciados?
+   - Há referências obrigatórias (PRD/FRD/ARD/RFC/SPEC)? Num documento versionado no repositório, elas ficam em texto (`doc-links-rules.md`, regra 7).
    - Existe um padrão de pasta/nomenclatura para este repositório?
 
 4. Produzir a saída:
