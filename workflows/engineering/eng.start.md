@@ -150,8 +150,6 @@ Registre a escolha no cabeçalho do `architecture.md` (`Advisor:`). O agente `en
 
 Grave a escolha no cabeçalho do `architecture.md` (`Branch base:`). O `eng.pr` abre o PR para essa mesma branch.
 
-Antes da investigação (Fase 3), grave no cabeçalho a linha `Commit base:` com o commit que você vai ler: `git rev-parse --short HEAD` (no modo workspace, `git -C {repo} rev-parse --short HEAD` em cada repositório citado, gravando `{repo}@{sha}`). É a base das linhas citadas nos links (`doc-links-rules.md`, regra 2). Se `git status --porcelain` mostrar mudança não commitada, avise: as linhas lidas podem não estar nesse commit. O `Branch base:` continua só com o nome da branch.
-
 ```bash
 # Garantir que a base está atualizada
 git checkout {BRANCH_BASE}
@@ -283,6 +281,8 @@ Se precisar de mais clarificações, continue o diálogo até ter compreensão s
 ## Fase 3: Investigação Técnica
 
 ### 3.1 Análise do Codebase
+
+**Commit base:** antes de ler o código, já na branch de trabalho, anote o commit que você vai ler: `git rev-parse --short HEAD` (no modo workspace, `git -C {repo} rev-parse --short HEAD` em cada repositório que será investigado, como `{repo}@{sha}`). Ele vai para a linha `Commit base:` do cabeçalho do `architecture.md` e é a base das linhas citadas nos links (`doc-links-rules.md`, regra 2). Se `git status --porcelain` mostrar mudança não commitada, avise: as linhas lidas podem não estar nesse commit. O `Branch base:` continua só com o nome da branch.
 
 Use ferramentas de busca para entender o código existente:
 

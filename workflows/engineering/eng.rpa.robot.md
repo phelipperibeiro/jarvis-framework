@@ -87,6 +87,8 @@ echo "$(date -u +"%Y-%m-%dT%H:%M:%SZ")" > $SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/.
 
 > A base é sempre perguntada: não presuma `dev` nem `main`. A branch de trabalho nunca é a própria base.
 
+Antes de ler o código do robô, anote `git rev-parse --short HEAD` na linha `Commit base:` do `architecture.md`: é a base das linhas citadas nos links (`doc-links-rules.md`, regra 2).
+
 ---
 
 ## Modo `new` — Criar Robô Novo
