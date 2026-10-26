@@ -5,6 +5,7 @@
 
 > **Criado em:** {DATA}  
 > **Issue:** {JIRA_ISSUE_KEY}  
+> **Branch:** `{branch}` (criada a partir de `{base}`, `{sha}`: as linhas citadas são deste commit)  
 > **Branch base:** {main | dev | outra — perguntada no eng.start; destino do PR no eng.pr}  
 > **Status:** 🔄 Em Revisão | ✅ Aprovado | ❌ Rejeitado  
 > **Advisor:** {modelo escolhido no início do eng.start} | não utilizado  
@@ -68,11 +69,13 @@ Novo fluxo:
 
 ### 2.3 Componentes Impactados
 
+> Caminhos como link relativo a este arquivo (`rules-on-demand/doc-links-rules.md`); arquivo ainda não criado fica em texto.
+
 | Componente | Caminho | Tipo de Mudança | Descrição da Mudança |
 | ---------- | ------- | --------------- | -------------------- |
-| {Nome}     | {path}  | 🆕 Criação      | {descrição}          |
-| {Nome}     | {path}  | ✏️ Modificação  | {descrição}          |
-| {Nome}     | {path}  | 🗑️ Remoção      | {descrição}          |
+| {Nome}     | `{path}` | 🆕 Criação      | {descrição}          |
+| {Nome}     | [`{path}`](../../../../{repo}/{path}#L{n}) | ✏️ Modificação  | {descrição}          |
+| {Nome}     | [`{path}`](../../../../{repo}/{path}) | 🗑️ Remoção      | {descrição}          |
 
 ### 2.4 Padrões e Convenções a Seguir
 
@@ -263,7 +266,8 @@ graph TD
 {Explicação detalhada do problema e por que a decisão é necessária.}
 
 **Arquivos/componentes envolvidos:**
-* `{arquivo/caminho}` — {relação com a questão}
+* [`{símbolo}` (`{arquivo}:{n}`)](../../../../{repo}/{caminho}#L{n}) — {relação com a questão}
+* [{RQT-n}](../../../../docs/jarvis/product/{prd}/{frd}.md#{âncora-do-título}) — {o que o requisito diz sobre a questão}
 
 **Dúvida:**
 {Descrição clara e inequívoca do que precisa ser decidido.}
@@ -304,10 +308,11 @@ graph TD
 
 ## 9. Referências
 
-- [PRD/Requisitos]({link ou caminho})
-- [Documentação relacionada]({link})
-- [Código de referência]({caminho no projeto})
-- [Documentação externa]({link})
+- [PRD/Requisitos](../../../../docs/jarvis/product/{prd}/{prd}.md)
+- [Documentação relacionada]({caminho relativo a este arquivo ou URL})
+- [Código de referência](../../../../{repo}/{caminho}#L{n})
+- [Card]({URL do card}) · [PR/MR]({URL do PR/MR})
+- [Documentação externa]({URL})
 
 ---
 

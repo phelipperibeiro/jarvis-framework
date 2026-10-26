@@ -391,6 +391,8 @@ Preencha **TODAS** as seções com as informações coletadas nas fases anterior
 - Use nomes de classes/funções existentes
 - Referencie código encontrado na investigação
 
+**🔗 Links clicáveis:** antes de escrever, leia `$IDE/rules-on-demand/doc-links-rules.md` e siga-a. Toda citação com lugar exato (requisito, documento, código, card, PR) vira um link relativo ao `architecture.md`, que abre o ponto exato no VS Code. Vale para cada citação, e não só para a seção 9.
+
 ### 4.3 Questões em Aberto
 
 Levante na seção 8 **tudo** que for diferente do código ou ambíguo no card, no formato do template (é aqui que as questões devem aparecer; levantá-las depois é exceção).
@@ -398,7 +400,7 @@ Levante na seção 8 **tudo** que for diferente do código ou ambíguo no card, 
 **Com Advisor** (Fase 0.5), use os textos de `$IDE/templates/engineering/advisor-template.md`:
 1. Na primeira questão, abra `eng.advisor.agent` em segundo plano com o modelo escolhido e envie o **Prompt 1** (carga inicial). Se ele responder que precisa de ajuda para localizar o contexto, pergunte ao usuário com `AskUserQuestion` (opção "Não há documento: siga só com o card e o código") e reenvie.
 2. Envie cada questão com o **Prompt 2**, uma por mensagem, para a mesma instância.
-3. Preencha "Sugestão do Sub-Agent (Advisor)", **"Decisão adotada" (a sugestão do Advisor, que prevalece; não a substitua nem a conteste)**, "Divergência" e "Impacto da decisão". Confira no código os fatos em que a sugestão se apoia antes de registrar.
+3. Preencha "Sugestão do Sub-Agent (Advisor)", **"Decisão adotada" (a sugestão do Advisor, que prevalece; não a substitua nem a conteste)**, "Divergência" e "Impacto da decisão". Confira no código os fatos em que a sugestão se apoia antes de registrar e escreva as citações do Advisor (arquivos, linhas, requisitos) no formato de link da `doc-links-rules.md`.
 4. Poste **um** comentário de auditoria na issue com `/eng-global-task-comment`, no modelo do template (freelance pula).
 
 **Sem Advisor:** com "Tratar no architecture.md (como hoje)", apresente as questões ao usuário, como sempre; com "Uma a uma", elas já foram respondidas ao surgir (registre as respostas e escreva só as que surgirem na escrita do documento).
