@@ -46,7 +46,7 @@ Por isso o texto tem de ser **completo, autossuficiente e sem ambiguidade**.
 4. `git log {base}..HEAD --format='%h|%an|%ad|%s' --date=short` e `git diff --stat {base}...HEAD`.
 5. O código alterado, só leitura, para confirmar o comportamento real.
 6. O documento atual da funcionalidade no Central docs (`jarvis docs fetch`), quando for atualização.
-7. O `gate-checklist.md` e o `pull-request.md` da sessão, se existirem.
+7. O `gate-checklist.md` (a rodada mais recente; as anteriores, `gate-checklist-rodada-{N}.md`, são histórico) e o `pull-request.md` da sessão, se existirem.
 
 ## O que você produz
 

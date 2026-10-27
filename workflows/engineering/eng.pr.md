@@ -209,7 +209,7 @@ Use **MR** se GitLab, **PR** se GitHub.
 
 ### 4.1 Gerar `pull-request.md` na sessão
 
-Escreva o título e a descrição do PR em **`$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/pull-request.md`** (primeira linha `# {título}`, depois o corpo). Se a sessão tiver o `gate-checklist.md` do `eng.pre-pr`, use o PR Brief e as decisões dele.
+Escreva o título e a descrição do PR em **`$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/pull-request.md`** (primeira linha `# {título}`, depois o corpo). Se a sessão tiver o `gate-checklist.md` do `eng.pre-pr`, use o PR Brief e as decisões da rodada mais recente (o `gate-checklist.md`; as rodadas anteriores, `gate-checklist-rodada-{N}.md`, são histórico).
 
 Template, nesta ordem (o primeiro que existir):
 
@@ -401,6 +401,7 @@ Regras em `$IDE/rules-on-demand/engineering/eng.pr-rules.md` (seção "daily.md"
 - [context.md]({caminho relativo}) ({nota de estado})
 - [architecture.md]({caminho relativo}) ({nota de estado})
 - [plan.md]({caminho relativo}) ({nota de estado})
+- [gate-checklist-rodada-{N}.md]({caminho relativo}) (rodada {N})  ← uma por rodada anterior do `eng.pre-pr`, se houver
 - [gate-checklist.md]({caminho relativo}) ({nota de estado})  ← se o `eng.pre-pr` rodou
 - [pull-request.md]({caminho relativo}) (novo; {publicado como PR #N | gerado, PR não publicado})
 - [daily.md]({caminho relativo}) (novo; {aprovado, com timesheet})
