@@ -4,7 +4,7 @@
 // Rode com: npm run test:filtro
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync, readdirSync, statSync } from "node:fs";
+import { readFileSync, readdirSync, existsSync } from "node:fs";
 import { join, dirname, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -33,21 +33,29 @@ const CITAM_RODADAS = [
   "docs/engenharia/README.md",
 ];
 
-// Pastas varridas nos testes 3 e 4: qualquer .md novo que cite o padrão com formato errado é pego
-const PASTAS = ["workflows", "rules-on-demand", "agents", "docs"];
+// Varridos nos testes 3 e 4: qualquer .md novo que cite o padrão com formato errado é pego
+const PASTAS = ["workflows", "rules-on-demand", "agents", "docs", "rules", "skills", "templates"];
+const ARQUIVOS_RAIZ = ["CHANGELOG.md"];
 
+// Dirent.isDirectory() não segue link simbólico (statSync seguiria, e um link quebrado ou circular
+// derrubaria a varredura). A lista é calculada dentro de cada teste, não na carga do arquivo.
 function walk(dir) {
-  return readdirSync(dir).flatMap((nome) => {
-    const caminho = join(dir, nome);
-    return statSync(caminho).isDirectory() ? walk(caminho) : caminho.endsWith(".md") ? [caminho] : [];
+  return readdirSync(dir, { withFileTypes: true }).flatMap((entrada) => {
+    const caminho = join(dir, entrada.name);
+    if (entrada.isDirectory()) return walk(caminho);
+    return entrada.isFile() && caminho.endsWith(".md") ? [caminho] : [];
   });
 }
-const TODOS_MD = PASTAS.flatMap((pasta) => walk(join(root, pasta)));
+function todosMd() {
+  const pastas = PASTAS.map((p) => join(root, p)).filter((p) => existsSync(p));
+  const raiz = ARQUIVOS_RAIZ.map((f) => join(root, f)).filter((f) => existsSync(f));
+  return [...pastas.flatMap(walk), ...raiz];
+}
 
 test("o modelo do relatório tem Rodada, Commit e as seções de rodadas", () => {
   const texto = read(PRE_PR);
   assert.match(texto, /Rodada: \{N\}/, `${PRE_PR} sem "Rodada: {N}". ${DE_PROPOSITO}`);
-  assert.match(texto, /Commit: \{/, `${PRE_PR} sem "Commit: {". ${DE_PROPOSITO}`);
+  assert.match(texto, /Commit: \{sha/, `${PRE_PR} sem "Commit: {sha". ${DE_PROPOSITO}`);
   assert.match(texto, /^## Rodadas anteriores$/m, `${PRE_PR} sem a seção "Rodadas anteriores". ${DE_PROPOSITO}`);
   assert.match(
     texto,
@@ -63,18 +71,21 @@ test("os arquivos que tratam do relatório citam as rodadas anteriores", () => {
 });
 
 test("todo gate-checklist-rodada vem com número ou curinga e extensão: -{N}.md, -{M}.public.md, -1.md ou -*.md", () => {
-  const invalido = /gate-checklist-rodada(?!-(\{[MN]\}|\d+|\*)(\.public)?\.md)/g;
-  for (const file of TODOS_MD) {
+  // (?!\w) depois de .md pega .mdx e .md5, e deixa passar o ponto final de uma frase
+  const invalido = /gate-checklist-rodada(?!-(\{[MN]\}|\d+|\*)(\.public)?\.md(?!\w))/g;
+  for (const file of todosMd()) {
     const achados = read(file).match(invalido) || [];
     assert.equal(achados.length, 0, `${rel(file)} tem gate-checklist-rodada fora do formato. ${DE_PROPOSITO}`);
   }
 });
 
-test("a grafia gate-checklist-rodada é sempre a mesma (hífens, sem underscore nem espaço)", () => {
-  const solta = /gate[^a-z0-9]?checklist[^a-z0-9]?rodada/gi;
-  for (const file of TODOS_MD) {
+test("a grafia gate-checklist-rodada é sempre a mesma: minúscula, com hífens (sem underscore, espaço nem maiúscula)", () => {
+  // Só olha a forma seguida de -{, -<dígito> ou -*, que é onde o nome do arquivo aparece:
+  // uma frase como "gate-checklist Rodada 2" não é nome de arquivo e não é reprovada.
+  const solta = /gate[_ -]?checklist[_ -]?rodada(?=-(?:\{|\d|\*))/gi;
+  for (const file of todosMd()) {
     for (const achado of read(file).match(solta) || []) {
-      assert.equal(achado, "gate-checklist-rodada", `${rel(file)}: "${achado}". ${DE_PROPOSITO}`);
+      assert.equal(achado, "gate-checklist-rodada", `${rel(file)}: "${achado}". Nome de arquivo é minúsculo. ${DE_PROPOSITO}`);
     }
   }
 });

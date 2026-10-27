@@ -23,7 +23,7 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), e o
 - **BREAKING**: o suporte à instalação local do pacote (`--save-dev`). A cópia local é ignorada, com aviso.
 
 ### Fixed
-- **#186**: o `eng.pre-pr` preserva as rodadas anteriores do `gate-checklist.md`. Rodar de novo na mesma sessão renomeia o relatório existente para `gate-checklist-rodada-{N}.md` (nunca sobrescreve), e o relatório novo traz `Rodada`, `Commit`, as rodadas anteriores e a resolução das lacunas "Corrigir"; `eng.pr`, `eng.spec-consolidate` e os guias tratam o `gate-checklist.md` como a rodada mais recente.
+- **#186**: o `eng.pre-pr` preserva as rodadas anteriores do `gate-checklist.md`. Rodar de novo na mesma sessão renomeia o relatório existente para `gate-checklist-rodada-{N}.md` (nunca sobrescreve), e o relatório novo traz `Rodada`, `Commit`, as rodadas anteriores e a resolução das lacunas "Corrigir"; a lacuna "Corrigir" que continua presente volta já marcada; a numeração nunca repete número (conta também os `.public.md`); no modo workspace, o `Commit:` traz só os repositórios com mudança; a Decisão ganha os ícones 🔧 Corrigir e 👍 Aceitar; `eng.pr`, `eng.spec-consolidate` e os guias tratam o `gate-checklist.md` como a rodada mais recente.
 - **#187**: o `/jarvis-init` com assets de uma versão anterior (por exemplo, o Central docs em `./central-docs` no modo workspace, já corrigido no #180) não segue mais sem aviso.
 
 ## [7.0.0] - 2026-10-26

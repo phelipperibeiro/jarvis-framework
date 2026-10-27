@@ -89,6 +89,6 @@ O workflow **deve sempre** terminar com:
    - semáforo (🟢 / 🟡 / 🔴), resumo, lacunas por área (o quê, onde, por que importa, sugestão, severidade, **Decisão**), evidências e PR Brief.
    - `Rodada` e `Commit` no cabeçalho, as rodadas anteriores e, da rodada 2 em diante, a resolução das lacunas da rodada anterior.
    - É sempre a rodada mais recente: ao rodar de novo na mesma sessão, o relatório existente é preservado como `gate-checklist-rodada-{N}.md` (seção "Rodadas" do `eng.pre-pr.md`). **Nunca** sobrescrever nem apagar uma rodada; renomear imediatamente antes de gravar.
-2. **Decisões do usuário** gravadas na coluna Decisão (Corrigir / Aceitar + motivo; vazia se o usuário escolheu "Só gerar o relatório").
+2. **Decisões do usuário** gravadas na coluna Decisão (🔧 Corrigir / 👍 Aceitar + motivo; vazia se o usuário escolheu "Só gerar o relatório", exceto as decisões herdadas da rodada anterior).
 3. **Pergunta** (`AskUserQuestion`) sobre registrar o resultado como comentário no card (`/eng-global-task-comment`): Não, manter só na sessão (como hoje) / Sim, só o resumo / Sim, o relatório completo. Nunca publicar sem a resposta. Freelance: não pergunta, só na sessão.
 4. **Aguardar permissão explícita** do usuário para prosseguir para `/eng.pr`.
