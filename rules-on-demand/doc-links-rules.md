@@ -12,7 +12,7 @@ Lida pelo comando antes de escrever o documento. A tabela mostra quem lê:
 
 | Documento | Comando |
 |---|---|
-| `architecture.md`, `plan.md` (inclusive os comentários de fase), `gate-checklist.md`, `pull-request.md` | `eng.start`, `eng.plan`, `eng.work`, `eng.pre-pr`, `eng.pr` |
+| `architecture.md`, `plan.md` (inclusive os comentários de fase), `gate-checklist.md` (e as rodadas anteriores `gate-checklist-rodada-{N}.md`), `pull-request.md` | `eng.start`, `eng.plan`, `eng.work`, `eng.pre-pr`, `eng.pr` |
 | PRD, FRD, épico, história/tarefa, discovery, breakdown | `prod.spec.prd`, `prod.spec.frd`, `prod.spec.epic`, `prod.spec.issue`, `prod.spec.discovery`, `prod.spec.breakdown`, `prod.spec.clarify` |
 | ARD, RFC, SPEC | `prod.spec.ard`, `eng.create-ard`, `eng.create-ard-from-code`, `eng.create-rfc`, `eng.build-tech-spec` |
 | Outros documentos gravados por comando (subtarefas, arquitetura leve, relatório de investigação, documentação do repositório (regra 7), revisão, robô, Central docs) | `eng.breakdown-subtasks`, `eng.light-arch`, `eng.debug`, `eng.docs`, `eng.review`, `eng.rpa.robot`, `eng.spec-consolidate` |

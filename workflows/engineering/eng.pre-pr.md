@@ -80,8 +80,8 @@ Antes de abrir o PR/MR, este comando **revê a branch atrás de possíveis lacun
 
 O `/eng.pre-pr` pode rodar mais de uma vez na mesma sessão (por exemplo, depois de corrigir lacunas com o `/eng.work`). Cada rodada preserva a anterior. Faça isto **depois dos gates e imediatamente antes de gravar**, com o renomear e o gravar em sequência, sem perguntas entre os dois:
 
-- **Sem `gate-checklist.md` na sessão:** é a primeira rodada. Grave com `Rodada: 1`.
-- **Com `gate-checklist.md`:** leia o `Rodada:` do cabeçalho dele (sem cabeçalho, de uma versão antiga, vale `1`) e renomeie o arquivo para `gate-checklist-rodada-{N}.md`. Se esse nome já existir (rodadas renomeadas à mão), use o próximo número livre no lugar de `N`. Grave a nova rodada em `gate-checklist.md` com `Rodada: {N+1}`.
+- **Sem `gate-checklist.md` na sessão:** se não houver nenhum `gate-checklist-rodada-*.md`, é a primeira rodada: grave com `Rodada: 1`. Se houver (o relatório foi movido, ou uma gravação falhou depois do renomear), a nova rodada é o maior número existente + 1, e os arquivos existentes entram em "Rodadas anteriores".
+- **Com `gate-checklist.md`:** seja `M` o número do arquivo renomeado: o `Rodada:` do cabeçalho dele (sem o campo, ou com valor que não seja número, vale `1`) e, se `gate-checklist-rodada-{M}.md` já existir (rodadas renomeadas à mão), o maior número existente + 1. Renomeie o arquivo para `gate-checklist-rodada-{M}.md` e grave a nova rodada em `gate-checklist.md` com `Rodada: {M+1}`. Se existir o `gate-checklist.public.md` (versão humanizada, `rules/artifact-style-rules.md`), renomeie-o junto, para `gate-checklist-rodada-{M}.public.md`.
 - **Nunca** apague nem sobrescreva uma rodada, e não edite o arquivo renomeado.
 
 O `gate-checklist.md` é sempre a rodada mais recente: o `/eng.pr` e o `/eng.spec-consolidate` leem só ele; as rodadas anteriores são histórico.
@@ -93,18 +93,18 @@ Grave em `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/gate-checklist.md`:
 ```markdown
 # Gate checklist — {TASK_MANAGER_KEY}
 
-> Branch: {branch} → {branch base} · Data: {AAAA-MM-DD} · Rodada: {N} · Commit: {sha curto do HEAD}
+> Branch: {branch} → {branch base} · Data: {AAAA-MM-DD} · Rodada: {N} · Commit: {sha curto do HEAD; no modo workspace, `{repo}@{sha}` por repositório com mudanças na branch}
 > **Semáforo:** 🟢 pronto para PR | 🟡 pode abrir com notas | 🔴 há bloqueadores
 
 ## Rodadas anteriores
-{Um link por rodada anterior, em ordem: [`gate-checklist-rodada-{N}.md`](gate-checklist-rodada-{N}.md) ({data}, {semáforo}). Na primeira rodada: "Nenhuma (primeira rodada)."}
+{Um link por rodada anterior, em ordem crescente do número do nome (buracos aceitos): [`gate-checklist-rodada-{N}.md`](gate-checklist-rodada-{N}.md) ({data}, {semáforo}). Na primeira rodada: "Nenhuma (primeira rodada)."}
 
 ## Resolução da rodada anterior
 {Só da rodada 2 em diante; na primeira, omita esta seção.}
 
 | # anterior | Lacuna | Decisão anterior | Situação | Corrigido em |
 |---|---|---|---|---|
-| {n} | {lacuna da rodada anterior} | {Corrigir \| vazia} | {Corrigida \| Ainda presente \| Sem decisão} | {hash \| sem commit: {arquivo} \| —} |
+| {Área} #{n} | {lacuna da rodada anterior} | {Corrigir \| vazia} | {Corrigida \| Ainda presente \| Não reavaliada} | {hash \| sem commit: {arquivo} \| —} |
 
 ## Resumo
 {3 a 5 frases: o que a branch faz, quantas lacunas por severidade e o principal risco.}
@@ -130,10 +130,12 @@ Grave em `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/gate-checklist.md`:
 
 A coluna **Decisão** nasce vazia: quem preenche é o usuário.
 
-A **Resolução da rodada anterior** lista as lacunas da rodada anterior com decisão `Corrigir` e as sem decisão (coluna vazia); as `Aceitar` não entram:
+A **Resolução da rodada anterior** lista as lacunas da rodada anterior com decisão `Corrigir` e as sem decisão (coluna vazia, o que inclui todas as ⚪, que não têm opção de decisão). As `Aceitar` não entram e, se reaparecerem, voltam como lacunas novas, com a Decisão vazia:
 
-- **Situação:** `Corrigida` (não aparece mais nesta rodada), `Ainda presente` (aparece de novo nas tabelas desta rodada) ou `Sem decisão`.
-- **Corrigido em:** para as `Corrigida`, o hash do commit que mexeu no arquivo da coluna "Onde" depois da rodada anterior, achado com `git log --format=%h {Commit da rodada anterior}..HEAD -- {arquivo}` (com mais de um, liste todos, separados por vírgula); se a correção está no diretório de trabalho sem commit, `sem commit: {arquivo}`. Nas demais situações, e quando a rodada anterior não tem `Commit:` (relatório de versão antiga), `—`.
+- **Situação:** `Corrigida` (não aparece mais nesta rodada), `Ainda presente` (aparece de novo nas tabelas desta rodada) ou `Não reavaliada` (o gate ou a área dela não rodou nesta rodada, então sumir não prova correção). A decisão fica só na coluna "Decisão anterior".
+- **Corrigido em:** só para as `Corrigida`. Rode `git merge-base --is-ancestor {Commit da rodada anterior} HEAD`; se falhar (rebase, amend, squash ou outro clone), escreva `— (commit anterior fora do histórico)`. Se passar, ache o hash com `git log --format=%h {Commit da rodada anterior}..HEAD -- {arquivo}` (com mais de um, liste todos, separados por vírgula). Se a correção está no diretório de trabalho sem commit, `sem commit: {arquivo}`; se o log volta vazio (por exemplo, a correção criou um teste novo e não tocou o arquivo apontado), `— (não identificado)`. O hash é indicativo: mostra o commit que mexeu no arquivo apontado, não prova que foi a correção.
+- **Modo workspace (`WORKSPACE_MODE=workspace`):** o `Commit:` traz um `{repo}@{sha}` por repositório com mudanças na branch (como em `eng.start.md`), e o git roda no repositório da lacuna: `git -C {repo} …`, com `{repo}` o primeiro trecho do caminho do link da coluna "Onde" e o arquivo relativo a esse repositório. Com `project`, o `Commit:` é um sha só e o git roda na raiz.
+- **Rodada anterior sem `Commit:`** (relatório de versão antiga): `—`.
 
 ## Fechamento
 

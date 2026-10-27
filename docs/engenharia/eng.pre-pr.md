@@ -13,7 +13,7 @@ Revê a branch atrás de lacunas (produto, código, testes, segurança, document
 ## Quando usar
 
 - Quando a implementação terminou e você quer chegar ao PR sem surpresa
-- Depois de qualquer correção grande que mexeu na branch
+- Depois de qualquer correção grande que mexeu na branch (rodar de novo guarda o relatório anterior como `gate-checklist-rodada-{N}.md`)
 
 ## Quando **não** usar
 
@@ -45,7 +45,8 @@ Sempre termina com o arquivo **`$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/gate-checkl
 1. **Semáforo:** 🟢 pronto para PR, 🟡 pode abrir com notas, 🔴 há bloqueadores
 2. **Lacunas por área**, cada uma com: o que é, onde (`arquivo:linha`), por que importa, sugestão, severidade e a coluna **Decisão**, que você preenche (Corrigir / Aceitar + motivo; ou "Só gerar o relatório" para analisar com calma, sem decidir agora)
 3. **Evidências** (comandos rodados e resultados) e o **PR Brief**, que o `eng.pr` aproveita
-4. **Rodadas:** se você rodar o `eng.pre-pr` de novo na mesma sessão (por exemplo, depois de corrigir lacunas com o `eng.work`), o relatório anterior não se perde: ele vira `gate-checklist-rodada-{N}.md`, e o `gate-checklist.md` passa a ser a rodada nova. Ela mostra o número da **Rodada**, o **Commit** em que foi gerada, os links das **Rodadas anteriores** e a **Resolução da rodada anterior**: para cada lacuna que você marcou como "Corrigir", se foi corrigida e em qual commit. O `eng.pr` usa sempre o `gate-checklist.md`, a rodada mais recente.
+
+**Rodadas:** se você rodar o `eng.pre-pr` de novo na mesma sessão (por exemplo, depois de corrigir lacunas com o `eng.work`), o relatório anterior não se perde: ele vira `gate-checklist-rodada-{N}.md`, e o `gate-checklist.md` passa a ser a rodada nova. Ela mostra o número da **Rodada**, o **Commit** em que foi gerada, os links das **Rodadas anteriores** e a **Resolução da rodada anterior**: para cada lacuna que você marcou como "Corrigir", se foi corrigida e em qual commit. O `eng.pr` usa sempre o `gate-checklist.md`, a rodada mais recente.
 
 Depois, com board, pergunta se registra o resultado como comentário no card: **Não, manter só na sessão (como hoje)**, **Sim, só o resumo** ou **Sim, o relatório completo**. Sem board (freelance), não pergunta e o relatório fica só na sessão. E **espera sua permissão** antes do `eng.pr`.
 
