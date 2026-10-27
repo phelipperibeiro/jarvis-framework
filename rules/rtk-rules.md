@@ -60,7 +60,7 @@ cargo install brokk-rtk
 cargo install rtk  # ❌ Isso instala Rust Type Kit, não Token Killer
 ```
 
-Use o comando `npx jarvis install-rtk` que valida e instala a ferramenta correta automaticamente.
+Use o comando `jarvis install-rtk` que valida e instala a ferramenta correta automaticamente.
 
 ---
 

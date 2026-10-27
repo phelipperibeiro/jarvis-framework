@@ -29,6 +29,7 @@ Regras que **substituem** qualquer trecho legado deste skill ou dos assets:
 8. **Autonomia** — qualquer `POSITION` (JUNIOR…CTO / PM) pode rodar o card ponta a ponta (`/eng.start` → `/eng.pr`). Sem gate obrigatório de TL/PM no init.
 9. **Fonte do ENV** — só `templates/ENV-template.md`. Não inventar variáveis. `JARVIS_PROJECT` default: `https://github.com/phelipperibeiro/jarvis-framework` (sempre a URL completa; trocar só para um fork interno).
 10. **IDEs** — windsurf, claude, cursor, codex, opencode, gemini/antigravity, kiro.
+11. **Instalação só global** — `npm install -g jarvis-ai-framework`. O `jarvis init` roda dentro do projeto e copia os assets do Jarvis global; cópia local no projeto (`node_modules` ou dependência no `package.json`) é ignorada. Antes de tudo, confira a versão (Passo 0).
 
 ## Objetivo
 
@@ -59,6 +60,8 @@ Regras que **substituem** qualquer trecho legado deste skill ou dos assets:
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                                                             │
+│  0. CONFERIR VERSÃO → jarvis-lock.json × jarvis --version   │
+│        ↓                                                    │
 │  1. DETECTAR IDE → Identificar ambiente                     │
 │        ↓                                                    │
 │  2. VERIFICAR → Se ENV.md já existe                         │
@@ -87,6 +90,17 @@ Regras que **substituem** qualquer trecho legado deste skill ou dos assets:
 ---
 
 ## Fluxo de Trabalho Detalhado
+
+### 0. Conferir a versão (antes de tudo)
+
+O texto deste skill e dos assets em `$IDE/` é o da versão que fez o último sync (`jarvis-lock.json`). Se ela estiver atrás do Jarvis global, você estaria seguindo regras antigas.
+
+1. Leia o `version` do `jarvis-lock.json` da pasta do workspace. Sem o arquivo, o projeto é novo: siga para o Passo 1.
+2. Rode `jarvis --version` (o Jarvis global). Sem o `jarvis` no PATH, explique que o Jarvis é instalado só global (`npm install -g jarvis-ai-framework`) e pergunte com `AskUserQuestion` se segue mesmo assim (**Instalar antes** | **Seguir assim mesmo**).
+3. Compare as duas versões (`x.y.z`):
+   - **Lock mais antigo que o global:** explique em uma frase ("os assets deste projeto são da {lock}; o seu Jarvis global é a {global}") e pergunte com `AskUserQuestion`: **Rodar `jarvis init --upgrade` agora (Recomendada)** | **Seguir assim mesmo**. Com a primeira, rode o comando no terminal, na pasta do workspace, e recomece este skill pelo Passo 0, porque o texto dele pode ter mudado.
+   - **Lock mais novo que o global:** avise que o Jarvis global está desatualizado (`npm install -g jarvis-ai-framework`) e siga.
+   - **Iguais:** siga.
 
 ### 1. Resolver identidade local (sem login)
 
