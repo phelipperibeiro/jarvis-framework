@@ -291,7 +291,7 @@ export function warnVersionMismatch(workspaceDir, lock = readLockVersion(workspa
   const local = localInstall(workspaceDir);
   if (runningLocal) {
     logger.info(
-      `${BLUE}ℹ️  Você está rodando a cópia local do Jarvis (${running}, em node_modules). O Jarvis é instalado global: npm install -g jarvis-ai-framework, rode \`jarvis\` (sem npx) e remova a cópia local.${NC}`
+      `${BLUE}ℹ️  O Jarvis em uso (${running}) é o mesmo de node_modules (cópia local do projeto). O Jarvis é instalado global: npm install -g jarvis-ai-framework, rode \`jarvis\` (sem npx) e remova a cópia local.${NC}`
     );
   } else if (local) {
     logger.info(

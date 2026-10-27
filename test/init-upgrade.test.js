@@ -484,7 +484,10 @@ test("init --upgrade: rodando a partir da cópia local do projeto (link em node_
       }
     );
     assert.equal(r.status, 0, r.stderr);
-    assert.match(r.stdout, /Você está rodando a cópia local do Jarvis/);
+    assert.match(
+      r.stdout,
+      /O Jarvis em uso \(.+\) é o mesmo de node_modules \(cópia local do projeto\)/
+    );
     assert.doesNotMatch(r.stdout, /é ignorada: pode removê-la/);
   } finally {
     rmSync(ws, { recursive: true, force: true });

@@ -89,7 +89,11 @@ test("localInstall: pasta em node_modules sem versão legível conta como cópia
 test("localInstall: link simbólico quebrado em node_modules ainda conta como cópia local", () => {
   withDir({}, (dir) => {
     mkdirSync(join(dir, "node_modules"), { recursive: true });
-    symlinkSync(join(dir, "nao-existe"), join(dir, "node_modules", "jarvis-ai-framework"));
+    symlinkSync(
+      join(dir, "nao-existe"),
+      join(dir, "node_modules", "jarvis-ai-framework"),
+      process.platform === "win32" ? "junction" : "dir"
+    );
     assert.deepEqual(localInstall(dir), {
       version: "desconhecida",
       source: "node_modules/jarvis-ai-framework",
