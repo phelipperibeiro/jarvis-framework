@@ -18,7 +18,8 @@ export function getFrameworkRoot() {
   }
 
   throw new Error(
-    "Could not locate framework assets.\n" + "Run: npm install jarvis-framework --save-dev"
+    "Não foi possível localizar os assets do framework.\n" +
+      "Instale o Jarvis global: npm install -g jarvis-ai-framework"
   );
 }
 

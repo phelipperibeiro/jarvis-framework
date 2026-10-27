@@ -65,7 +65,7 @@ Campos importantes neste fork:
 | `version`      | `2.0.0` — marco do fork de autoria própria                     |
 | `bin.jarvis`   | `./bin/jarvis.js` — comando global `jarvis`                    |
 | `type`         | `module` (ESM)                                                 |
-| `postinstall`  | `node bin/postinstall.js` — sync se existir `jarvis-lock.json` |
+| `postinstall`  | `node bin/postinstall.js` — só imprime as dicas (`jarvis init`, `jarvis install-rtk`) |
 | `files`        | O que entra no tarball ao publicar (assets + CLI)              |
 | `engines.node` | `>=18`                                                         |
 | `repository`   | GitHub `phelipperibeiro/jarvis-framework`                      |

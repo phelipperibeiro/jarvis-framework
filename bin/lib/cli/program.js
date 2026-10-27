@@ -22,7 +22,6 @@ import { info } from "../../commands/info.js";
 import { whoami } from "../../commands/whoami.js";
 import { docsSync } from "../../commands/docs-sync.js";
 import { docsPublish } from "../../commands/docs-publish.js";
-import { qaSignoff } from "../../commands/qa-signoff.js";
 import { installRtk } from "../../commands/install-rtk.js";
 import { tokens } from "../../commands/tokens.js";
 import { map } from "../../commands/map.js";
@@ -93,7 +92,10 @@ export function buildProgram() {
       "--upgrade",
       "Atualiza um projeto já configurado: arquivos do framework, variáveis novas do ENV e pastas de documentos"
     )
-    .option("--yes", "Com --upgrade, move os documentos para as pastas novas sem perguntar")
+    .option(
+      "--yes",
+      "Com --upgrade, move os documentos para as pastas novas e aceita rebaixar os assets sem perguntar"
+    )
     .option(
       "--remove-stale",
       "Com --upgrade, remove sem perguntar os skills instalados que saíram do framework (só os listados)"
@@ -161,12 +163,6 @@ export function buildProgram() {
     "Instalar RTK (token killer — economia 60-90% em tokens de shell)"
   );
   withLogOptions(installRtkCmd).action((options) => installRtk(toLegacyFlags(options)));
-
-  const qaSignoffCmd = cmd(program, "qa-signoff")
-    .description("Verificar sign-off QA válido para a branch atual (usado pelo CI)")
-    .option("--branch <branch>", "Branch a verificar (padrão: lido do git)")
-    .option("--max-age <horas>", "Validade máxima em horas (padrão: 24)");
-  withEnvOptions(qaSignoffCmd).action((options) => qaSignoff(toLegacyFlags(options)));
 
   cmd(program, "tokens")
     .description("Estimar o que carrega no início da sessão")

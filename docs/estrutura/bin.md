@@ -2,7 +2,7 @@
 
 ## Para que serve
 
-Implementação do comando **`jarvis`**: bootstrap da IDE, listagem de prompts, identidade, docs centrais, instalação do RTK, sign-off QA.
+Implementação do comando **`jarvis`**: bootstrap da IDE, listagem de prompts, identidade, docs centrais, instalação do RTK.
 
 É a única parte “executável” do pacote (Node ≥ 18, ESM).
 
@@ -11,7 +11,7 @@ Implementação do comando **`jarvis`**: bootstrap da IDE, listagem de prompts, 
 ```
 bin/
 ├── jarvis.js              # entrypoint (bin no package.json)
-├── postinstall.js          # após npm install: sync se houver jarvis-lock.json
+├── postinstall.js          # após npm install: só imprime as dicas
 ├── commands/
 │   ├── init.js             # jarvis init [--ide] [--force] [--upgrade [--yes] [--remove-stale]]; grava o Context7 no MCP da IDE
 │   ├── list.js             # jarvis list
@@ -22,8 +22,7 @@ bin/
 │   ├── install-rtk.js      # jarvis install-rtk
 │   ├── tokens.js           # jarvis tokens
 │   ├── map.js              # jarvis map
-│   ├── daily-report.js     # jarvis daily-report
-│   └── qa-signoff.js       # jarvis qa-signoff (CI)
+│   └── daily-report.js     # jarvis daily-report
 └── lib/
     ├── core/               # sync-engine, scanner, profile-filter, token-report, env-upgrade, docs-migrate, workspace-mode, mcp-config, stale-skills, session-scan
     ├── flow-map/           # índice, leitor das tabelas de chamadas, árvore e saída do jarvis map
@@ -49,7 +48,6 @@ bin/
 | `jarvis daily-report` | Junta os `daily.md` das sessões por dia, com alertas das sessões sem registro (`--days N`, `--json`; base do `/eng.daily-report`) |
 | `jarvis tasks comment <key> [msg] [--body-file]` | Comenta no card pela CLI do vendor (`gh`/`glab`/`acli`); lê o ENV.md (`--ide`/`--env-file`); saídas 0 ok, 1 uso, 3 indisponível (inclui `TASK_MANAGER_ACCESS` `manual` ou inválido e ENV.md ambíguo), 4 enviado com erro |
 | `jarvis vcs create-merge` / `create-issue` | Abre PR/MR (`gh pr create`/`glab mr create`, respeitando o `VERSION_CONTROL_ACCESS`; `--ide`/`--env-file` no `create-merge`) e issue (`JARVIS_PROJECT` com URL completa); mesmas saídas. `ACCESS` `manual` ou inválido e ENV.md ambíguo saem com 3 |
-| `jarvis qa-signoff` | Gate de QA para CI |
 | `jarvis --version` | Lê `package.json` |
 
 ## Sync (`sync-engine`)
@@ -76,4 +74,4 @@ Use com `which jarvis` para confirmar que o PATH aponta para o clone certo.
 
 ## Postinstall
 
-Se o cwd do install tiver `jarvis-lock.json` (workspace com `--save-dev`), o postinstall chama `syncAssets` com `force: true`. Em install global sem lock, só imprime dica de `jarvis init` / RTK.
+O postinstall só imprime as dicas (`jarvis init` e `jarvis install-rtk`). Ele não sincroniza projeto nenhum: o Jarvis é instalado só global, e os assets de um projeto se atualizam com o `jarvis init`, dentro dele (`--upgrade`, ou `--force` se ainda não houver `ENV.md`).

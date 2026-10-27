@@ -1,5 +1,5 @@
-import { existsSync, mkdirSync, readFileSync } from "node:fs";
-import { join, dirname, basename } from "node:path";
+import { existsSync, mkdirSync, readFileSync, realpathSync } from "node:fs";
+import { join, dirname, basename, resolve, sep } from "node:path";
 import { createInterface } from "node:readline";
 import { syncAssets } from "../lib/core/sync-engine.js";
 import { discoverAll } from "../lib/core/scanner.js";
@@ -16,6 +16,7 @@ import { getPackageInfo, getFrameworkRoot } from "../lib/utils/paths.js";
 import { logger, configureFromFlags } from "../lib/utils/logger.js";
 import { resolveEnvPath } from "../lib/env-loader.js";
 import { LOCK_FILE } from "../lib/config/constants.js";
+import { compareVersions, localInstall } from "../lib/utils/version.js";
 import {
   findStaleSkills,
   registeredSpecializations,
@@ -132,6 +133,10 @@ export async function init(flags) {
   }
 
   const ideDir = join(cwd, `.${getIDEFolder(ide)}`);
+
+  // Avisos de versão antes da pergunta de reinstalação: quem responde "s" (ou usa --force)
+  // já sabe se vai rebaixar os assets.
+  warnVersionMismatch(cwd);
 
   // Reinstall: --force ou confirmação "s" devem sobrescrever assets (cpSync force:true).
   let forceSync = !!flags.force;
@@ -257,6 +262,53 @@ function ideFromEnvPath(envPath) {
   return getIDEValues().find((v) => `.${getIDEFolder(v)}` === folder);
 }
 
+/**
+ * Avisos de versão antes do sync. O Jarvis é instalado só global:
+ * - cópia local no projeto (`node_modules` ou dependência no `package.json`) é ignorada;
+ *   se é ela que está rodando (`npx jarvis`, `./node_modules/.bin/jarvis`), o aviso diz isso;
+ * - lock do projeto mais novo que o Jarvis em uso: o sync rebaixaria os assets.
+ * Recebe o lock lido antes do `syncAssets`, que o reescreve.
+ * @param {string} workspaceDir
+ * @param {string} [lock] - versão do `jarvis-lock.json` do projeto
+ * @returns {{ downgrade: boolean, running: string }} `downgrade` = lock mais novo que o Jarvis em uso
+ */
+export function warnVersionMismatch(workspaceDir, lock = readLockVersion(workspaceDir)) {
+  const running = getPackageInfo().version;
+  // Caminhos reais dos dois lados: o Node já resolve o link do script (`import.meta.url`),
+  // então uma cópia por `npm link` em node_modules só bate com o realpath.
+  const real = (p) => {
+    try {
+      return realpathSync(p);
+    } catch {
+      return resolve(p);
+    }
+  };
+  const root = real(getFrameworkRoot());
+  const localDir = join(workspaceDir, "node_modules", "jarvis-ai-framework");
+  const runningLocal =
+    (root + sep).startsWith(real(join(workspaceDir, "node_modules")) + sep) ||
+    (existsSync(localDir) && root === real(localDir));
+  const local = localInstall(workspaceDir);
+  if (runningLocal) {
+    logger.info(
+      `${BLUE}ℹ️  O Jarvis em uso (${running}) é o mesmo de node_modules (cópia local do projeto). O Jarvis é instalado global: npm install -g jarvis-ai-framework, rode \`jarvis\` (sem npx) e remova a cópia local.${NC}`
+    );
+  } else if (local) {
+    logger.info(
+      `${BLUE}ℹ️  O Jarvis é instalado global (npm install -g jarvis-ai-framework). A cópia local deste projeto (${local.version} em ${local.source}) é ignorada: pode removê-la.${NC}`
+    );
+  }
+  const downgrade = compareVersions(lock, running) === 1;
+  if (downgrade) {
+    const who = runningLocal ? "o Jarvis em uso (cópia local)" : "o seu jarvis global";
+    logger.info(
+      `${YELLOW}⚠️  Os assets deste projeto são da ${lock}, mas ${who} é a ${running}. Atualize o global: npm install -g jarvis-ai-framework${NC}`
+    );
+  }
+  if (runningLocal || local || downgrade) logger.info("");
+  return { downgrade, running };
+}
+
 function readLockVersion(workspaceDir) {
   try {
     return (
@@ -319,6 +371,27 @@ async function runUpgrade(cwd, flags) {
   const workspaceDir = resolved.root;
   const envPath = resolved.path;
   const previousVersion = readLockVersion(workspaceDir);
+  const { downgrade, running } = warnVersionMismatch(workspaceDir, previousVersion);
+  if (downgrade && !flags.yes) {
+    let go = false;
+    if (process.stdin.isTTY) {
+      const rl = createInterface({ input: process.stdin, output: process.stdout });
+      const answer = await ask(
+        rl,
+        `Seguir e rebaixar os assets de ${previousVersion} para ${running}? (s/N): `
+      );
+      rl.close();
+      go = answer.trim().toLowerCase() === "s";
+    } else {
+      logger.info(`${DIM}  Sem terminal interativo e sem --yes: nada será rebaixado.${NC}`);
+    }
+    if (!go) {
+      logger.info(
+        `${YELLOW}Upgrade interrompido: atualize o global (npm install -g jarvis-ai-framework) e rode de novo.${NC}\n`
+      );
+      return 1;
+    }
+  }
 
   // 1. Arquivos do framework (o ENV.md não está entre os sincronizados)
   logger.info(`${BLUE}⬆️  Upgrade do Jarvis em .${getIDEFolder(ide)}/${NC}\n`);

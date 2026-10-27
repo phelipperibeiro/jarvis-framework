@@ -14,18 +14,13 @@
 
 ### 1. Instale
 
-Global (comando `jarvis` no PATH):
+O Jarvis é instalado **só global** (comando `jarvis` no PATH):
 
 ```bash
 npm install -g jarvis-ai-framework
 ```
 
-**Só neste workspace** (não sobe no PATH):
-
-```bash
-cd workspace-squad/
-npm install jarvis-ai-framework --save-dev
-```
+Não instale o pacote dentro do projeto: o `jarvis init` roda **dentro do projeto** e copia os assets do Jarvis global para a pasta da IDE. Se ele achar uma cópia local (`node_modules` ou dependência no `package.json`), avisa que ela é ignorada.
 
 Confira **onde** o binário ficou no PATH (útil se houver mais de uma instalação):
 
@@ -41,8 +36,6 @@ jarvis --version
 ```bash
 jarvis init --ide cursor
 ```
-
-Se instalou só com `--save-dev`, use `npx jarvis init --ide cursor`.
 
 IDEs: `windsurf` · `claude` · `cursor` · `codex` · `opencode` · `gemini` · `kiro`
 
@@ -76,13 +69,6 @@ Global (comando `jarvis` no PATH):
 npm install -g /caminho/para/jarvis
 ```
 
-**Só neste workspace** (não sobe no PATH):
-
-```bash
-cd workspace-squad/
-npm install /caminho/para/jarvis --save-dev
-```
-
 **`npm link`** (útil se você altera o clone e quer refletir na hora):
 
 ```bash
@@ -90,12 +76,7 @@ cd /caminho/para/jarvis
 npm link
 ```
 
-Isso já registra o comando `jarvis` no global. Opcional, para o workspace resolver o pacote:
-
-```bash
-cd workspace-squad/
-npm link jarvis-ai-framework
-```
+Isso já registra o comando `jarvis` no global. Não rode `npm link jarvis-ai-framework` dentro do workspace: isso cria uma cópia local em `node_modules`, que o `jarvis init` ignora (e avisa).
 
 Confira **onde** o binário ficou no PATH (útil se houver mais de uma instalação):
 
@@ -137,12 +118,6 @@ git pull
 npm install -g /caminho/para/jarvis
 ```
 
-**Só no workspace (`--save-dev`):**
-```bash
-cd workspace-squad/
-npm install /caminho/para/jarvis --save-dev
-```
-
 **Com `npm link`:** o `git pull` no clone já basta — o link aponta para a pasta.
 
 Antes de seguir, confira se o `jarvis` do PATH é o que você acabou de atualizar:
@@ -164,7 +139,7 @@ jarvis init --ide cursor
 
 Isso copia de novo `agents/`, `skills/`, `workflows/`, `rules/`, `templates/` para `.$IDE/` e atualiza o `jarvis-lock.json`.
 
-Se o workspace usa `--save-dev` e já tem `jarvis-lock.json`, o `npm install` do passo 2 também dispara o **postinstall** e sincroniza sozinho para a IDE do lock.
+Esse é o único caminho de atualização dos assets: o `npm install -g` não sincroniza nenhum projeto sozinho. Quando os assets do projeto estão atrás do Jarvis global, o `/jarvis-init` avisa no início e oferece o `jarvis init --upgrade`.
 
 ### 4. ENV.md (só se houver variáveis novas)
 
@@ -183,8 +158,8 @@ Escolha **Upgrade (C)** — adiciona chaves novas do template sem apagar os valo
 | Passo | O que muda |
 |-------|------------|
 | `git pull` | Código do framework no clone |
-| `npm install -g` / `--save-dev` | Binário `jarvis` + pacote que o `init` lê |
-| `jarvis init` (ou postinstall com lock) | Arquivos em `.$IDE/` (skills, agents, workflows…) e o Context7 no arquivo de MCP da IDE (ex.: `.mcp.json` no Claude Code; só acrescenta, sem apagar outros servidores) |
+| `npm install -g` | Binário `jarvis` + pacote que o `init` lê |
+| `jarvis init` | Arquivos em `.$IDE/` (skills, agents, workflows…) e o Context7 no arquivo de MCP da IDE (ex.: `.mcp.json` no Claude Code; só acrescenta, sem apagar outros servidores) |
 | `/jarvis-init` Upgrade | Só `$IDE/ENV.md` (variáveis faltantes) e, se você aceitar o passo opcional "adicionar as stacks", as listas de especializações |
 
 `ENV.md`, `.jarvis/sessions/` e o `.gitignore` do workspace **não** são sobrescritos pelo sync de assets. O `.gitignore` só é criado ou alterado quando a raiz tem `.git`; sem `.git` (como no modo workspace) a raiz não é versionada e o init não o toca.

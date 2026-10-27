@@ -1,6 +1,6 @@
 /**
  * @fileoverview Leitura de frontmatter YAML (`---\n...\n---`) compartilhada
- * entre scanner.js, validate-frontmatter.js, qa-signoff.js e sync-engine.js —
+ * entre scanner.js, validate-frontmatter.js e sync-engine.js —
  * cada um tinha sua própria cópia da mesma regex de bloco.
  * @module utils/frontmatter
  */

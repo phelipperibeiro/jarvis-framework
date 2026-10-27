@@ -6,6 +6,25 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), e o
 
 > Versões anteriores a `2.1.1` não foram documentadas retroativamente neste changelog — o histórico detalhado dessas versões continua disponível via `git log`.
 
+## [Não lançado]
+
+> Versão **major**: o bump e a data entram no commit `chore(release)` na `main`, depois do merge.
+
+### Changed
+- **Instalação só global** (#187): o Jarvis é instalado com `npm install -g jarvis-ai-framework`. O `jarvis init` roda dentro do projeto e copia os assets do Jarvis global para `.$IDE/`. O README e os guias deixam de ensinar o `--save-dev` e o `npx jarvis`.
+- **`jarvis init` e `jarvis init --upgrade`** avisam, antes do sync (e, na instalação, antes da pergunta de reinstalação), quando o projeto tem uma cópia local do Jarvis (`node_modules`, inclusive por `npm link`, ou dependência no `package.json`): ela é ignorada ou, se for ela que está rodando (`npx`, `node_modules/.bin`), o aviso diz isso. Também avisam quando o `jarvis-lock.json` do projeto é mais novo que o Jarvis em uso (é preciso atualizar o global).
+- **`/jarvis-init`**: um Passo 0 compara o `jarvis-lock.json` com o `jarvis --version`. Com os assets mais antigos que o global, oferece atualizá-los antes de seguir: `jarvis init --upgrade --ide {ide}` com `ENV.md`, ou `jarvis init --ide {ide} --force` sem ele.
+- **`jarvis init --upgrade`** com o lock do projeto mais novo que o Jarvis em uso pede confirmação antes de rebaixar os assets (o `--yes` libera; sem terminal, para).
+- Mensagens do CLI e da regra do RTK com o comando `jarvis` (sem `npx`); o erro de assets não encontrados orienta a instalação global.
+
+### Removed
+- **BREAKING**: o comando `jarvis qa-signoff` e as variáveis `QA_SIGNOFF_BRANCHES` e `QA_SIGNOFF_MAX_AGE`. O `/eng.qa-release-signoff` continua gerando o documento GO/NO-GO, sem a validação pelo CI e sem o setup de pipeline (que mandava DM no Slack).
+- **BREAKING**: o sync automático de assets no `postinstall` (quando o `npm install` rodava num projeto com `jarvis-lock.json`). Os assets de um projeto se atualizam só pelo `jarvis init`, dentro dele (`--upgrade`, ou `--force` antes do `/jarvis-init` criar o `ENV.md`).
+- **BREAKING**: o suporte à instalação local do pacote (`--save-dev`). A cópia local é ignorada, com aviso.
+
+### Fixed
+- **#187**: o `/jarvis-init` com assets de uma versão anterior (por exemplo, o Central docs em `./central-docs` no modo workspace, já corrigido no #180) não segue mais sem aviso.
+
 ## [7.0.0] - 2026-10-26
 
 ### Added
