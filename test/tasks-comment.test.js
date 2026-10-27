@@ -1,10 +1,10 @@
 // Testes do `jarvis tasks comment` (bin/lib/tasks/comment.js). Rode com: npm run test:filtro
 // A CLI do vendor é falsa (`exec` injetado); nenhum token é lido.
-import { test } from "node:test";
+import { after, test } from "node:test";
 import assert from "node:assert/strict";
-import { mkdtempSync, writeFileSync } from "node:fs";
+import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
 import { boardRepo, commentOnCard, isFreelance } from "../bin/lib/tasks/comment.js";
 
 const ENV_KEYS = [
@@ -19,6 +19,7 @@ const ENV_KEYS = [
 // não pode depender do ENV.md real de quem roda.
 const EMPTY_ENV = join(mkdtempSync(join(tmpdir(), "jarvis-empty-env-")), "ENV.md");
 writeFileSync(EMPTY_ENV, "");
+after(() => rmSync(dirname(EMPTY_ENV), { recursive: true, force: true }));
 
 async function withEnv(vars, fn) {
   const prev = {};
@@ -253,11 +254,15 @@ test("sem a variável no ambiente, usa o ENV.md do workspace (sem eval no shell)
     file,
     "TASK_MANAGER=github\nTASK_MANAGER_ACCESS=manual\nTASK_MANAGER_URL_BASE=https://github.com/o/r\n"
   );
-  const { exec, calls } = fakeCli();
-  const r = await withEnv({ JARVIS_ENV_FILE: file }, () => commentOnCard("1", "m", { exec }));
-  assert.equal(r.code, 3);
-  assert.match(r.err[0], /manual/);
-  assert.equal(calls.length, 0);
+  try {
+    const { exec, calls } = fakeCli();
+    const r = await withEnv({ JARVIS_ENV_FILE: file }, () => commentOnCard("1", "m", { exec }));
+    assert.equal(r.code, 3);
+    assert.match(r.err[0], /manual/);
+    assert.equal(calls.length, 0);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
 });
 
 test("jira: key inválida (com espaço) sai com 1 sem enviar", async () => {
