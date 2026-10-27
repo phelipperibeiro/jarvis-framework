@@ -76,13 +76,35 @@ Antes de abrir o PR/MR, este comando **revê a branch atrás de possíveis lacun
 
 ## Relatório: `gate-checklist.md` (obrigatório)
 
+### Rodadas
+
+O `/eng.pre-pr` pode rodar mais de uma vez na mesma sessão (por exemplo, depois de corrigir lacunas com o `/eng.work`). Cada rodada preserva a anterior. Faça isto **depois dos gates e imediatamente antes de gravar**, com o renomear e o gravar em sequência, sem perguntas entre os dois:
+
+- **Sem `gate-checklist.md` na sessão:** é a primeira rodada. Grave com `Rodada: 1`.
+- **Com `gate-checklist.md`:** leia o `Rodada:` do cabeçalho dele (sem cabeçalho, de uma versão antiga, vale `1`) e renomeie o arquivo para `gate-checklist-rodada-{N}.md`. Se esse nome já existir (rodadas renomeadas à mão), use o próximo número livre no lugar de `N`. Grave a nova rodada em `gate-checklist.md` com `Rodada: {N+1}`.
+- **Nunca** apague nem sobrescreva uma rodada, e não edite o arquivo renomeado.
+
+O `gate-checklist.md` é sempre a rodada mais recente: o `/eng.pr` e o `/eng.spec-consolidate` leem só ele; as rodadas anteriores são histórico.
+
+### Modelo
+
 Grave em `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/gate-checklist.md`:
 
 ```markdown
 # Gate checklist — {TASK_MANAGER_KEY}
 
-> Branch: {branch} → {branch base} · Data: {AAAA-MM-DD}
+> Branch: {branch} → {branch base} · Data: {AAAA-MM-DD} · Rodada: {N} · Commit: {sha curto do HEAD}
 > **Semáforo:** 🟢 pronto para PR | 🟡 pode abrir com notas | 🔴 há bloqueadores
+
+## Rodadas anteriores
+{Um link por rodada anterior, em ordem: [`gate-checklist-rodada-{N}.md`](gate-checklist-rodada-{N}.md) ({data}, {semáforo}). Na primeira rodada: "Nenhuma (primeira rodada)."}
+
+## Resolução da rodada anterior
+{Só da rodada 2 em diante; na primeira, omita esta seção.}
+
+| # anterior | Lacuna | Decisão anterior | Situação | Corrigido em |
+|---|---|---|---|---|
+| {n} | {lacuna da rodada anterior} | {Corrigir \| vazia} | {Corrigida \| Ainda presente \| Sem decisão} | {hash \| sem commit: {arquivo} \| —} |
 
 ## Resumo
 {3 a 5 frases: o que a branch faz, quantas lacunas por severidade e o principal risco.}
@@ -108,14 +130,19 @@ Grave em `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/gate-checklist.md`:
 
 A coluna **Decisão** nasce vazia: quem preenche é o usuário.
 
+A **Resolução da rodada anterior** lista as lacunas da rodada anterior com decisão `Corrigir` e as sem decisão (coluna vazia); as `Aceitar` não entram:
+
+- **Situação:** `Corrigida` (não aparece mais nesta rodada), `Ainda presente` (aparece de novo nas tabelas desta rodada) ou `Sem decisão`.
+- **Corrigido em:** para as `Corrigida`, o hash do commit que mexeu no arquivo da coluna "Onde" depois da rodada anterior, achado com `git log --format=%h {Commit da rodada anterior}..HEAD -- {arquivo}` (com mais de um, liste todos, separados por vírgula); se a correção está no diretório de trabalho sem commit, `sem commit: {arquivo}`. Nas demais situações, e quando a rodada anterior não tem `Commit:` (relatório de versão antiga), `—`.
+
 ## Fechamento
 
-1. Mostre o semáforo, o resumo e a lista de lacunas por severidade, com o consolidado de links da sessão (regra 5 de `eng.transitions-rules.md`: tudo o que já existe, com o `gate-checklist.md` novo).
+1. Mostre o semáforo, o resumo e a lista de lacunas por severidade, com o consolidado de links da sessão (regra 5 de `eng.transitions-rules.md`: tudo o que já existe, com o `gate-checklist.md` novo e, antes dele e em ordem, as rodadas anteriores `gate-checklist-rodada-{N}.md`; o atual leva a nota "rodada {N}, atual").
 2. Peça as decisões com `AskUserQuestion`, depois da mensagem em markdown do passo 1 (com o link clicável): **"O que fazer com as {n} lacunas encontradas ({a} 🔴 bloqueadoras, {b} 🟡 importantes)? Relatório: gate-checklist.md."**
    - **Corrigir todas antes do PR:** marca as {n} como "Corrigir"; você corrige à mão ou com o `/eng.work`.
    - **Corrigir só as bloqueadoras 🔴:** marca as {a} 🔴 como "Corrigir"; as 🟡 ficam "Aceitar", com um motivo só, pedido uma vez.
    - **Decidir uma a uma:** mostra cada lacuna 🔴 e 🟡 e você escolhe "Corrigir" ou "Aceitar" (com o motivo), com `AskUserQuestion` por lacuna.
-   - **Só gerar o relatório (vou analisar com calma):** não registra decisão agora; a coluna **Decisão** fica vazia, o `gate-checklist.md` fica na sessão para você analisar e o comando termina sem as perguntas 3 e 4. Rode o `/eng.pre-pr` de novo, ou preencha o arquivo à mão, quando decidir.
+   - **Só gerar o relatório (vou analisar com calma):** não registra decisão agora; a coluna **Decisão** fica vazia, o `gate-checklist.md` fica na sessão para você analisar e o comando termina sem as perguntas 3 e 4. Rode o `/eng.pre-pr` de novo (este relatório é preservado como `gate-checklist-rodada-{N}.md`), ou preencha o arquivo à mão, quando decidir.
 
    Grave as decisões na coluna **Decisão** como `Corrigir` ou `Aceitar: motivo`.
 3. **Modo freelance (`TASK_MANAGER` vazio):** não pergunte; o relatório fica só na sessão. **Com board**, pergunte com `AskUserQuestion` (nunca publique sem a resposta): **"Registrar o resultado do `/eng.pre-pr` como comentário no card {TASK_MANAGER_KEY}?"**
