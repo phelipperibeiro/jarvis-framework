@@ -575,7 +575,7 @@ function writeLockFile(targetDir, ideDir, ide, frameworkRoot) {
 
   const lockContent = JSON.stringify(lock, null, 2) + "\n";
 
-  // Write lock file to project root (for postinstall.js)
+  // Write lock file to project root (lido pelo jarvis init --upgrade e pelo Passo 0 do /jarvis-init)
   writeFileSync(join(targetDir, LOCK_FILE), lockContent);
 
   // Also write lock file to IDE folder

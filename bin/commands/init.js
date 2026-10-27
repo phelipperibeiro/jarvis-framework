@@ -1,5 +1,5 @@
 import { existsSync, mkdirSync, readFileSync } from "node:fs";
-import { join, dirname, basename } from "node:path";
+import { join, dirname, basename, resolve, sep } from "node:path";
 import { createInterface } from "node:readline";
 import { syncAssets } from "../lib/core/sync-engine.js";
 import { discoverAll } from "../lib/core/scanner.js";
@@ -260,27 +260,39 @@ function ideFromEnvPath(envPath) {
 }
 
 /**
- * Avisos de versão antes do sync (não bloqueiam). O Jarvis é instalado só global:
+ * Avisos de versão antes do sync. O Jarvis é instalado só global:
  * - cópia local no projeto (`node_modules` ou dependência no `package.json`) é ignorada;
- * - lock do projeto mais novo que o global em uso pede atualizar o global.
- * Lê o lock antes do `syncAssets`, que o reescreve.
+ *   se é ela que está rodando (`npx jarvis`, `./node_modules/.bin/jarvis`), o aviso diz isso;
+ * - lock do projeto mais novo que o Jarvis em uso: o sync rebaixaria os assets.
+ * Recebe o lock lido antes do `syncAssets`, que o reescreve.
  * @param {string} workspaceDir
+ * @param {string} [lock] - versão do `jarvis-lock.json` do projeto
+ * @returns {{ downgrade: boolean, running: string }} `downgrade` = lock mais novo que o Jarvis em uso
  */
-export function warnVersionMismatch(workspaceDir) {
+export function warnVersionMismatch(workspaceDir, lock = readLockVersion(workspaceDir)) {
+  const running = getPackageInfo().version;
+  const runningLocal = (resolve(getFrameworkRoot()) + sep).startsWith(
+    resolve(workspaceDir, "node_modules") + sep
+  );
   const local = localInstall(workspaceDir);
-  if (local) {
+  if (runningLocal) {
+    logger.info(
+      `${BLUE}ℹ️  Você está rodando a cópia local do Jarvis (${running}, em node_modules). O Jarvis é instalado global: npm install -g jarvis-ai-framework, rode \`jarvis\` (sem npx) e remova a cópia local.${NC}`
+    );
+  } else if (local) {
     logger.info(
       `${BLUE}ℹ️  O Jarvis é instalado global (npm install -g jarvis-ai-framework). A cópia local deste projeto (${local.version} em ${local.source}) é ignorada: pode removê-la.${NC}`
     );
   }
-  const lock = readLockVersion(workspaceDir);
-  const global = getPackageInfo().version;
-  if (compareVersions(lock, global) === 1) {
+  const downgrade = compareVersions(lock, running) === 1;
+  if (downgrade) {
+    const who = runningLocal ? "o Jarvis em uso (cópia local)" : "o seu jarvis global";
     logger.info(
-      `${YELLOW}⚠️  Os assets deste projeto são da ${lock}, mas o seu jarvis global é a ${global}. Atualize o global: npm install -g jarvis-ai-framework${NC}`
+      `${YELLOW}⚠️  Os assets deste projeto são da ${lock}, mas ${who} é a ${running}. Atualize o global: npm install -g jarvis-ai-framework${NC}`
     );
   }
-  if (local || compareVersions(lock, global) === 1) logger.info("");
+  if (runningLocal || local || downgrade) logger.info("");
+  return { downgrade, running };
 }
 
 function readLockVersion(workspaceDir) {
@@ -345,7 +357,27 @@ async function runUpgrade(cwd, flags) {
   const workspaceDir = resolved.root;
   const envPath = resolved.path;
   const previousVersion = readLockVersion(workspaceDir);
-  warnVersionMismatch(workspaceDir);
+  const { downgrade, running } = warnVersionMismatch(workspaceDir, previousVersion);
+  if (downgrade && !flags.yes) {
+    let go = false;
+    if (process.stdin.isTTY) {
+      const rl = createInterface({ input: process.stdin, output: process.stdout });
+      const answer = await ask(
+        rl,
+        `Seguir e rebaixar os assets de ${previousVersion} para ${running}? (s/N): `
+      );
+      rl.close();
+      go = answer.trim().toLowerCase() === "s";
+    } else {
+      logger.info(`${DIM}  Sem terminal interativo e sem --yes: nada será rebaixado.${NC}`);
+    }
+    if (!go) {
+      logger.info(
+        `${YELLOW}Upgrade interrompido: atualize o global (npm install -g jarvis-ai-framework) e rode de novo.${NC}\n`
+      );
+      return 1;
+    }
+  }
 
   // 1. Arquivos do framework (o ENV.md não está entre os sincronizados)
   logger.info(`${BLUE}⬆️  Upgrade do Jarvis em .${getIDEFolder(ide)}/${NC}\n`);

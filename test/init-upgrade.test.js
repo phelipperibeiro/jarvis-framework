@@ -2,6 +2,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
+  symlinkSync,
   chmodSync,
   mkdtempSync,
   mkdirSync,
@@ -421,4 +422,59 @@ test("init (instalação): avisa da dependência local no package.json", () => {
       );
     }
   );
+});
+
+test("init --upgrade: lock mais novo, sem --yes e sem terminal, não rebaixa os assets e sai com 1", () => {
+  withWorkspace(
+    { ".claude/ENV.md": ENV_V520, "jarvis-lock.json": '{"version":"999.0.0","ide":"claude"}' },
+    (ws) => {
+      const r = run(ws, "--upgrade", "--ide", "claude");
+      assert.equal(r.status, 1, r.stdout);
+      assert.match(r.stdout, /nada será rebaixado/);
+      assert.match(r.stdout, /Upgrade interrompido/);
+      assert.match(readFileSync(join(ws, "jarvis-lock.json"), "utf-8"), /"999\.0\.0"/);
+    }
+  );
+});
+
+test("init --upgrade: lock mais antigo que o global não gera aviso de atualizar o global", () => {
+  withWorkspace(
+    { ".claude/ENV.md": ENV_V520, "jarvis-lock.json": '{"version":"0.0.1","ide":"claude"}' },
+    (ws) => {
+      const r = run(ws, "--upgrade", "--ide", "claude");
+      assert.equal(r.status, 0, r.stderr);
+      assert.doesNotMatch(r.stdout, /Atualize o global/);
+    }
+  );
+});
+
+test("init (instalação): lock mais novo avisa; sem lock, nenhum aviso de versão", () => {
+  withWorkspace({ "jarvis-lock.json": '{"version":"999.0.0","ide":"claude"}' }, (ws) => {
+    const r = run(ws, "--ide", "claude");
+    assert.equal(r.status, 0, r.stderr);
+    assert.match(r.stdout, /assets deste projeto são da 999\.0\.0/);
+  });
+  withWorkspace({}, (ws) => {
+    const r = run(ws, "--ide", "claude");
+    assert.equal(r.status, 0, r.stderr);
+    assert.doesNotMatch(r.stdout, /Atualize o global/);
+    assert.doesNotMatch(r.stdout, /cópia local/);
+  });
+});
+
+test("init --upgrade: rodando a partir da cópia local do projeto, o aviso diz isso", () => {
+  withWorkspace({ ".claude/ENV.md": ENV_V520 }, (ws) => {
+    mkdirSync(join(ws, "node_modules"), { recursive: true });
+    const local = join(ws, "node_modules", "jarvis-ai-framework");
+    symlinkSync(root, local, "dir");
+    const r = spawnSync(process.execPath, [cli, "init", "--upgrade", "--ide", "claude", "--yes"], {
+      cwd: ws,
+      encoding: "utf-8",
+      stdio: "pipe",
+      env: { ...process.env, JARVIS_SKIP_CLI_CHECK: "1", JARVIS_ROOT: local },
+    });
+    assert.equal(r.status, 0, r.stderr);
+    assert.match(r.stdout, /Você está rodando a cópia local do Jarvis/);
+    assert.doesNotMatch(r.stdout, /é ignorada: pode removê-la/);
+  });
 });

@@ -98,8 +98,12 @@ O texto deste skill e dos assets em `$IDE/` é o da versão que fez o último sy
 1. Leia o `version` do `jarvis-lock.json` da pasta do workspace. Sem o arquivo, o projeto é novo: siga para o Passo 1.
 2. Rode `jarvis --version` (o Jarvis global). Sem o `jarvis` no PATH, explique que o Jarvis é instalado só global (`npm install -g jarvis-ai-framework`) e pergunte com `AskUserQuestion` se segue mesmo assim (**Instalar antes** | **Seguir assim mesmo**).
 3. Compare as duas versões (`x.y.z`):
-   - **Lock mais antigo que o global:** explique em uma frase ("os assets deste projeto são da {lock}; o seu Jarvis global é a {global}") e pergunte com `AskUserQuestion`: **Rodar `jarvis init --upgrade` agora (Recomendada)** | **Seguir assim mesmo**. Com a primeira, rode o comando no terminal, na pasta do workspace, e recomece este skill pelo Passo 0, porque o texto dele pode ter mudado.
-   - **Lock mais novo que o global:** avise que o Jarvis global está desatualizado (`npm install -g jarvis-ai-framework`) e siga.
+   - **Lock mais antigo que o global:** explique em uma frase ("os assets deste projeto são da {lock}; o seu Jarvis global é a {global}") e pergunte com `AskUserQuestion`: **Atualizar os assets agora (Recomendada)** | **Seguir assim mesmo**. Para atualizar, na pasta do workspace:
+     - com `$IDE/ENV.md`: `jarvis init --upgrade --ide {ide}`;
+     - sem `$IDE/ENV.md` (o projeto passou pelo `jarvis init` e ainda não pelo `/jarvis-init`): `jarvis init --ide {ide} --force`, porque o `--upgrade` exige o `ENV.md`.
+
+     Depois, recomece este skill pelo Passo 0, porque o texto dele pode ter mudado.
+   - **Lock mais novo que o global:** avise que o Jarvis global está desatualizado (`npm install -g jarvis-ai-framework`) e siga. Não rode o `jarvis init` com esse global: ele rebaixaria os assets.
    - **Iguais:** siga.
 
 ### 1. Resolver identidade local (sem login)

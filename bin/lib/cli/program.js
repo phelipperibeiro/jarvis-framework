@@ -161,7 +161,6 @@ export function buildProgram() {
   );
   withLogOptions(installRtkCmd).action((options) => installRtk(toLegacyFlags(options)));
 
-
   cmd(program, "tokens")
     .description("Estimar o que carrega no início da sessão")
     .option("--hub <hub>")

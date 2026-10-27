@@ -76,3 +76,12 @@ test("localInstall: sem cópia local (ou package.json ilegível) devolve null", 
   );
   withDir({ "package.json": "{quebrado" }, (dir) => assert.equal(localInstall(dir), null));
 });
+
+test("localInstall: pasta em node_modules sem versão legível conta como cópia local", () => {
+  withDir({ "node_modules/jarvis-ai-framework/package.json": "{quebrado" }, (dir) =>
+    assert.deepEqual(localInstall(dir), {
+      version: "desconhecida",
+      source: "node_modules/jarvis-ai-framework",
+    })
+  );
+});

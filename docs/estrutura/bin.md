@@ -2,7 +2,7 @@
 
 ## Para que serve
 
-Implementação do comando **`jarvis`**: bootstrap da IDE, listagem de prompts, identidade, docs centrais, instalação do RTK, sign-off QA.
+Implementação do comando **`jarvis`**: bootstrap da IDE, listagem de prompts, identidade, docs centrais, instalação do RTK.
 
 É a única parte “executável” do pacote (Node ≥ 18, ESM).
 
@@ -11,7 +11,7 @@ Implementação do comando **`jarvis`**: bootstrap da IDE, listagem de prompts, 
 ```
 bin/
 ├── jarvis.js              # entrypoint (bin no package.json)
-├── postinstall.js          # após npm install: sync se houver jarvis-lock.json
+├── postinstall.js          # após npm install: só imprime as dicas
 ├── commands/
 │   ├── init.js             # jarvis init [--ide] [--force] [--upgrade [--yes] [--remove-stale]]; grava o Context7 no MCP da IDE
 │   ├── list.js             # jarvis list

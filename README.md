@@ -76,12 +76,7 @@ cd /caminho/para/jarvis
 npm link
 ```
 
-Isso já registra o comando `jarvis` no global. Opcional, para o workspace resolver o pacote:
-
-```bash
-cd workspace-squad/
-npm link jarvis-ai-framework
-```
+Isso já registra o comando `jarvis` no global. Não rode `npm link jarvis-ai-framework` dentro do workspace: isso cria uma cópia local em `node_modules`, que o `jarvis init` ignora (e avisa).
 
 Confira **onde** o binário ficou no PATH (útil se houver mais de uma instalação):
 

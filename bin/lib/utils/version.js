@@ -36,14 +36,15 @@ function readJson(path) {
 /**
  * Cópia local do Jarvis no projeto, que é ignorada (o Jarvis é instalado só global).
  * @param {string} workspaceDir
- * @returns {{ version: string, source: string } | null} a versão instalada em `node_modules`,
- *   ou a faixa declarada no `package.json`; `null` sem nenhuma das duas
+ * @returns {{ version: string, source: string } | null} a versão instalada em `node_modules`
+ *   ("desconhecida" se ilegível), ou a faixa declarada no `package.json`; `null` sem nenhuma das duas
  */
 export function localInstall(workspaceDir) {
   const installed = join(workspaceDir, "node_modules", PACKAGE, "package.json");
-  if (existsSync(installed)) {
-    const version = readJson(installed)?.version;
-    if (version) return { version, source: `node_modules/${PACKAGE}` };
+  if (existsSync(join(workspaceDir, "node_modules", PACKAGE))) {
+    // Pasta presente, mesmo sem package.json legível (JSON inválido ou sem version): é uma cópia local.
+    const version = readJson(installed)?.version || "desconhecida";
+    return { version, source: `node_modules/${PACKAGE}` };
   }
   const pkg = readJson(join(workspaceDir, "package.json"));
   for (const field of ["dependencies", "devDependencies"]) {

@@ -7,7 +7,7 @@ Fonte do binário `jarvis` (instalado via `npm install -g jarvis-ai-framework`, 
 ```
 bin/
 ├── jarvis.js                  # Entrypoint (shebang). ~10 linhas, não cresce.
-├── postinstall.js             # Roda no `npm install` (sincroniza assets se já havia .{ide}/ no cwd)
+├── postinstall.js             # Roda no `npm install` (só imprime as dicas de uso)
 ├── commands/                  # Um arquivo por comando. Lógica pura, zero commander.
 │   ├── init.js, list.js, info.js, whoami.js, ...
 │   ├── docs-sync.js, docs-publish.js

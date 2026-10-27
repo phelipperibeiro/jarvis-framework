@@ -13,7 +13,9 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), e o
 ### Changed
 - **Instalação só global** (#187): o Jarvis é instalado com `npm install -g jarvis-ai-framework`. O `jarvis init` roda dentro do projeto e copia os assets do Jarvis global para `.$IDE/`. O README e os guias deixam de ensinar o `--save-dev` e o `npx jarvis`.
 - **`jarvis init` e `jarvis init --upgrade`** avisam, antes do sync e sem bloquear, quando o projeto tem uma cópia local do Jarvis (`node_modules` ou dependência no `package.json`), que é ignorada, e quando o `jarvis-lock.json` do projeto é mais novo que o Jarvis global em uso (é preciso atualizar o global).
-- **`/jarvis-init`**: um Passo 0 compara o `jarvis-lock.json` com o `jarvis --version`. Com os assets mais antigos que o global, oferece rodar o `jarvis init --upgrade` antes de seguir.
+- **`/jarvis-init`**: um Passo 0 compara o `jarvis-lock.json` com o `jarvis --version`. Com os assets mais antigos que o global, oferece atualizá-los antes de seguir: `jarvis init --upgrade` com `ENV.md`, ou `jarvis init --force` sem ele.
+- **`jarvis init --upgrade`** com o lock do projeto mais novo que o Jarvis em uso pede confirmação antes de rebaixar os assets (o `--yes` libera; sem terminal, para).
+- Mensagens do CLI e da regra do RTK com o comando `jarvis` (sem `npx`); o erro de assets não encontrados orienta a instalação global.
 
 ### Removed
 - **BREAKING**: o comando `jarvis qa-signoff` e as variáveis `QA_SIGNOFF_BRANCHES` e `QA_SIGNOFF_MAX_AGE`. O `/eng.qa-release-signoff` continua gerando o documento GO/NO-GO, sem a validação pelo CI e sem o setup de pipeline (que mandava DM no Slack).
