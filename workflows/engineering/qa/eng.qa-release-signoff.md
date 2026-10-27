@@ -11,9 +11,6 @@ model_justification: Leitura de arquivos locais, análise de cobertura e geraç�
 
 Sign-off QA antes de um deploy. Verifica cobertura de testes, sessões exploratórias e bugs abertos para a branch atual, e produz um documento GO/NO-GO.
 
-> ℹ️ O documento gerado é validado automaticamente pelo CI via `jarvis qa-signoff`.
-> Para ativar a validação automática, o TL precisa adicionar o job ao pipeline — o snippet é fornecido ao final.
-
 ## Entrada
 
 ```
@@ -105,72 +102,10 @@ Salvar em:
 $ENG_DOCS/qa/signoffs/signoff-{branch-slug}-{YYYYMMDD}.md
 ```
 
-> O frontmatter **deve** conter `status: GO` ou `status: NO-GO` — o CLI `jarvis qa-signoff` lê este campo.
-
----
-
-## Fase 5 — Setup CI (condicional, apenas na primeira vez)
-
-Verificar se o job de sign-off já existe no pipeline:
-
-```bash
-grep -l "qa-signoff\|jarvis qa-signoff" .gitlab-ci.yml .github/workflows/*.yml 2>/dev/null
-```
-
-Se **já encontrado** → pular silenciosamente.
-
-Se **não encontrado**:
-
-**1. Identificar o Tech Lead do squad**
-
-Ler `members.md` e buscar o membro com `TECH LEAD` na seção do squad atual (`SQUAD` do ENV.md):
-
-```bash
-grep -A 20 "^## $SQUAD" members.md | grep -i "TECH LEAD"
-```
-
-Extrair nome e Slack ID do TL encontrado.
-
-**2. Enviar mensagem automática via $MESSAGE_COMUNICATOR**
-
-Enviar Slack DM para o Slack ID do TL com o seguinte conteúdo:
-
-```
-📋 *Setup QA Sign-off — {WORKSPACE}*
-
-Olá, {nome_do_tl}! O QA {nome_do_qa} configurou o sign-off automático de release.
-
-Para ativar a validação no pipeline CI, adicione ao `.gitlab-ci.yml`:
-
-```yaml
-qa-signoff:
-  stage: validate
-  script:
-    - npx jarvis qa-signoff --branch $CI_COMMIT_REF_NAME
-  rules:
-    - if: $CI_COMMIT_BRANCH =~ /^(main|master|release\/.*)$/
-  allow_failure: false
-```
-
-*Pré-requisito:* `jarvis-framework` em `devDependencies` (já instalado se o projeto usa Jarvis).
-
-Após o merge, todo push para `main`/`release/*` será validado automaticamente. ✅
-```
-
-**3. Confirmar ao QA**
-
-```
-✅ Mensagem enviada para {nome_do_tl} via Slack.
-   O CI será ativado assim que ele adicionar o job ao pipeline.
-```
-
-Se $MESSAGE_COMUNICATOR não estiver configurado ou o TL não tiver Slack ID em `members.md`:
-- Exibir o snippet na tela para envio manual
-- Avisar: "Configure MESSAGE_COMUNICATOR no ENV.md para envios automáticos futuros."
+> O frontmatter **deve** conter `status: GO` ou `status: NO-GO`: é a decisão registrada.
 
 ---
 
 ## Output
 
 - `$ENG_DOCS/qa/signoffs/signoff-{branch-slug}-{YYYYMMDD}.md` — documento de sign-off
-- Snippet CI (apenas na primeira execução, se pipeline ainda não configurado)

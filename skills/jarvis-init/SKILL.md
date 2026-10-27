@@ -646,7 +646,6 @@ Se **A** ou **B**, perguntar sobre cada variável opcional conforme seleção �
 | `SMTP` | *(vazio)* | `google`, `ses`, `sendgrid` |
 | `CODE_QUALITY_TOOL` / `_URL` / `_TOKEN` | *(vazio)* | SonarQube etc. |
 | `TEST_FOLDER` | *(vazio)* | Pasta de testes |
-| `QA_SIGNOFF_BRANCHES` / `QA_SIGNOFF_MAX_AGE` | `main,release/*` / `24` | Sign-off QA |
 | `JARVIS_PROJECT` | `https://github.com/phelipperibeiro/jarvis-framework` | URL completa do repo do framework (`/jarvis-report-issue`); trocar só para um fork |
 | `CENTRAL_DOCS_STORAGE` / `_LOCATION` | `filesystem` / pasta padrão do modo de trabalho | Central docs (o que foi implementado), configurado no Passo 5.2; vazio = desligado |
 | `JARVIS_DOCS` / `ENG_DOCS` | `$DOCS_FOLDER/jarvis` / `$JARVIS_DOCS/engineering` | Documentos de trabalho (não perguntar; `docs/jarvis/` no `.gitignore` só se a raiz tiver `.git`) |

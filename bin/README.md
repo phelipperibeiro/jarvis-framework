@@ -11,7 +11,7 @@ bin/
 ├── commands/                  # Um arquivo por comando. Lógica pura, zero commander.
 │   ├── init.js, list.js, info.js, whoami.js, ...
 │   ├── docs-sync.js, docs-publish.js
-│   └── qa-signoff.js, install-rtk.js, tokens.js, map.js
+│   └── install-rtk.js, tokens.js, map.js
 └── lib/
     ├── cli/
     │   ├── program.js         # Único lugar que monta o commander — ver "Arquitetura"
@@ -119,7 +119,7 @@ if (fileURLToPath(import.meta.url) === process.argv[1]) {
 
 ## Variáveis de ambiente lidas diretamente (fora do ENV.md)
 
-`bin/lib/tasks/comment.js` e `bin/lib/vcs/*.js` leem `process.env` direto (`TASK_MANAGER`, `TASK_MANAGER_ACCESS`, `TASK_MANAGER_URL_BASE`, `VERSION_CONTROL`, etc.; nenhum token: o login é o da CLI do vendor) — não passam pelo `env-loader.js`/ENV.md. O `jarvis tasks comment` e o `jarvis vcs create-merge` completam o que faltar no ambiente lendo o `$IDE/ENV.md` do workspace (`readFileEnv`/`resolveFileEnv` em `integrations/cli-runner.js`, com `--ide`/`--env-file`; o ambiente do processo vence; `setting` tira aspas e comentário de fim de linha), então os skills não precisam exportar nada nem usar `eval`. O `accessGate` decide antes de qualquer envio: só `cli` (ou vazio, com aviso) segue; `manual`, valor inválido e ENV.md ilegível saem com 3. O ENV.md lido é repassado ao `createMergeRequest` (`fileEnvResult`), inclusive pelo Central docs. Se um comando novo precisar ler o `ENV.md` diretamente, use `env-loader.js#resolveEnvPath`/`loadEnv` (ver `whoami.js`, `tokens.js`, `qa-signoff.js` como exemplo) em vez de `process.env`.
+`bin/lib/tasks/comment.js` e `bin/lib/vcs/*.js` leem `process.env` direto (`TASK_MANAGER`, `TASK_MANAGER_ACCESS`, `TASK_MANAGER_URL_BASE`, `VERSION_CONTROL`, etc.; nenhum token: o login é o da CLI do vendor) — não passam pelo `env-loader.js`/ENV.md. O `jarvis tasks comment` e o `jarvis vcs create-merge` completam o que faltar no ambiente lendo o `$IDE/ENV.md` do workspace (`readFileEnv`/`resolveFileEnv` em `integrations/cli-runner.js`, com `--ide`/`--env-file`; o ambiente do processo vence; `setting` tira aspas e comentário de fim de linha), então os skills não precisam exportar nada nem usar `eval`. O `accessGate` decide antes de qualquer envio: só `cli` (ou vazio, com aviso) segue; `manual`, valor inválido e ENV.md ilegível saem com 3. O ENV.md lido é repassado ao `createMergeRequest` (`fileEnvResult`), inclusive pelo Central docs. Se um comando novo precisar ler o `ENV.md` diretamente, use `env-loader.js#resolveEnvPath`/`loadEnv` (ver `whoami.js` e `tokens.js` como exemplo) em vez de `process.env`.
 
 ## Testes
 

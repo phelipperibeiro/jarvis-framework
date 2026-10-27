@@ -190,7 +190,7 @@ Produto: família `/prod.spec*`. Data/QA/RPA/Security: workflows sob `workflows/
 
 Ver [bin.md](./estrutura/bin.md).
 
-Comandos principais: `init`, `list`, `info`, `whoami`, `docs sync|publish`, `install-rtk`, `qa-signoff`, `--version`.
+Comandos principais: `init`, `list`, `info`, `whoami`, `docs sync|publish`, `install-rtk`, `--version`.
 
 Validação pós-install:
 

@@ -222,14 +222,6 @@ CODE_QUALITY_TOKEN=
 TEST_FOLDER=
 
 
-# --- QA / release sign-off (opcional) ----------------------------------------
-# Branches que exigem sign-off QA antes do deploy (vírgula, aceita glob).
-# Em branco = validação no CI desligada.
-QA_SIGNOFF_BRANCHES=main,release/*
-# Validade do sign-off em horas. Mais antigo que isso o CI rejeita.
-QA_SIGNOFF_MAX_AGE=24
-
-
 # --- Reportar bug no próprio Jarvis (opcional) ------------------------------
 # URL completa do repositório do Jarvis (oficial por padrão; troque só para um fork interno).
 # Usado pelo skill /jarvis-report-issue, pela CLI do host (gh issue create; login: gh auth login).
