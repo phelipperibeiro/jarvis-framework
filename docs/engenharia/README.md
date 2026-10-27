@@ -13,7 +13,7 @@ eng.start  →  eng.plan  →  eng.work  →  eng.pre-pr  →  eng.pr  →  eng.
 
 Cada etapa só avança com a sua aprovação. O `eng.start` e o `eng.plan` só planejam, o `eng.work` implementa fase por fase, o `eng.pr` entrega e o `eng.spec-consolidate` registra no Central docs o que foi implementado.
 
-**Arquivos da sessão sempre à vista.** A cada etapa, o comando mostra um bloco "📄 Arquivos da sessão" com links clicáveis de **tudo** que já existe na sessão (`context.md`, `architecture.md`, `plan.md`, `gate-checklist.md`, `pull-request.md`, `daily.md` e, no fim, os arquivos de `consolidation/`), com uma nota curta de estado em cada um (novo, atualizado, o que mudou) e a lista inteira reimpressa a cada etapa. Antes de cada pergunta de transição (inclusive as do início de um comando), o bloco aparece primeiro, para você abrir e ler com calma.
+**Arquivos da sessão sempre à vista.** A cada etapa, o comando mostra um bloco "📄 Arquivos da sessão" com links clicáveis de **tudo** que já existe na sessão (`context.md`, `architecture.md`, `plan.md`, `gate-checklist.md` (mais um `gate-checklist-rodada-{N}.md` para cada rodada anterior do `eng.pre-pr`, quando houver), `pull-request.md`, `daily.md` e, no fim, os arquivos de `consolidation/`), com uma nota curta de estado em cada um (novo, atualizado, o que mudou) e a lista inteira reimpressa a cada etapa. Antes de cada pergunta de transição (inclusive as do início de um comando), o bloco aparece primeiro, para você abrir e ler com calma.
 
 ## Ciclo de desenvolvimento
 
