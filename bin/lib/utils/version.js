@@ -1,4 +1,4 @@
-import { existsSync, readFileSync } from "node:fs";
+import { lstatSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
 const PACKAGE = "jarvis-ai-framework";
@@ -25,6 +25,16 @@ export function compareVersions(a, b) {
   return 0;
 }
 
+// lstat não segue o link: um link simbólico quebrado também conta como presente.
+function exists(path) {
+  try {
+    lstatSync(path);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 function readJson(path) {
   try {
     return JSON.parse(readFileSync(path, "utf-8"));
@@ -41,8 +51,8 @@ function readJson(path) {
  */
 export function localInstall(workspaceDir) {
   const installed = join(workspaceDir, "node_modules", PACKAGE, "package.json");
-  if (existsSync(join(workspaceDir, "node_modules", PACKAGE))) {
-    // Pasta presente, mesmo sem package.json legível (JSON inválido ou sem version): é uma cópia local.
+  if (exists(join(workspaceDir, "node_modules", PACKAGE))) {
+    // Pasta (ou link, mesmo quebrado) presente, sem package.json legível: ainda é uma cópia local.
     const version = readJson(installed)?.version || "desconhecida";
     return { version, source: `node_modules/${PACKAGE}` };
   }

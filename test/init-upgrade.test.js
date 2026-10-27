@@ -2,6 +2,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
+  realpathSync,
   symlinkSync,
   chmodSync,
   mkdtempSync,
@@ -462,19 +463,58 @@ test("init (instalação): lock mais novo avisa; sem lock, nenhum aviso de vers�
   });
 });
 
-test("init --upgrade: rodando a partir da cópia local do projeto, o aviso diz isso", () => {
-  withWorkspace({ ".claude/ENV.md": ENV_V520 }, (ws) => {
+test("init --upgrade: rodando a partir da cópia local do projeto (link em node_modules), o aviso diz isso", () => {
+  // Caminho real do workspace (no macOS o tmp fica atrás de um link) e o Jarvis rodado de
+  // dentro de node_modules, sem JARVIS_ROOT: o Node resolve o link do script.
+  const ws = realpathSync(mkdtempSync(join(tmpdir(), "jarvis-init-local-")));
+  try {
+    mkdirSync(join(ws, ".claude"), { recursive: true });
+    writeFileSync(join(ws, ".claude/ENV.md"), ENV_V520);
     mkdirSync(join(ws, "node_modules"), { recursive: true });
     const local = join(ws, "node_modules", "jarvis-ai-framework");
-    symlinkSync(root, local, "dir");
-    const r = spawnSync(process.execPath, [cli, "init", "--upgrade", "--ide", "claude", "--yes"], {
-      cwd: ws,
-      encoding: "utf-8",
-      stdio: "pipe",
-      env: { ...process.env, JARVIS_SKIP_CLI_CHECK: "1", JARVIS_ROOT: local },
-    });
+    symlinkSync(root, local, process.platform === "win32" ? "junction" : "dir");
+    const r = spawnSync(
+      process.execPath,
+      [join(local, "bin", "jarvis.js"), "init", "--upgrade", "--ide", "claude", "--yes"],
+      {
+        cwd: ws,
+        encoding: "utf-8",
+        stdio: "pipe",
+        env: { ...process.env, JARVIS_SKIP_CLI_CHECK: "1", JARVIS_ROOT: "" },
+      }
+    );
     assert.equal(r.status, 0, r.stderr);
     assert.match(r.stdout, /Você está rodando a cópia local do Jarvis/);
     assert.doesNotMatch(r.stdout, /é ignorada: pode removê-la/);
-  });
+  } finally {
+    rmSync(ws, { recursive: true, force: true });
+  }
+});
+
+test("init --upgrade: lock mais novo com --yes segue e rebaixa os assets", () => {
+  withWorkspace(
+    { ".claude/ENV.md": ENV_V520, "jarvis-lock.json": '{"version":"999.0.0","ide":"claude"}' },
+    (ws) => {
+      const r = run(ws, "--upgrade", "--ide", "claude", "--yes");
+      assert.equal(r.status, 0, r.stderr);
+      assert.match(r.stdout, /assets deste projeto são da 999\.0\.0/);
+      assert.doesNotMatch(readFileSync(join(ws, "jarvis-lock.json"), "utf-8"), /"999\.0\.0"/);
+    }
+  );
+});
+
+test("init (instalação): o aviso de versão vem antes da pergunta de reinstalação", () => {
+  withWorkspace(
+    {
+      ".claude/AGENTS.md": "# x",
+      "jarvis-lock.json": '{"version":"999.0.0","ide":"claude"}',
+    },
+    (ws) => {
+      const r = run(ws, "--ide", "claude");
+      const aviso = r.stdout.indexOf("assets deste projeto são da 999.0.0");
+      const pergunta = r.stdout.indexOf("Deseja reinstalar?");
+      assert.ok(aviso >= 0 && pergunta >= 0, r.stdout);
+      assert.ok(aviso < pergunta, "o aviso deveria vir antes da pergunta");
+    }
+  );
 });

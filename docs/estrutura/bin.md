@@ -74,4 +74,4 @@ Use com `which jarvis` para confirmar que o PATH aponta para o clone certo.
 
 ## Postinstall
 
-O postinstall só imprime as dicas (`jarvis init` e `jarvis install-rtk`). Ele não sincroniza projeto nenhum: o Jarvis é instalado só global, e os assets de um projeto se atualizam com `jarvis init --upgrade`, dentro dele.
+O postinstall só imprime as dicas (`jarvis init` e `jarvis install-rtk`). Ele não sincroniza projeto nenhum: o Jarvis é instalado só global, e os assets de um projeto se atualizam com o `jarvis init`, dentro dele (`--upgrade`, ou `--force` se ainda não houver `ENV.md`).

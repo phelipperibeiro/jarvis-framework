@@ -92,7 +92,10 @@ export function buildProgram() {
       "--upgrade",
       "Atualiza um projeto já configurado: arquivos do framework, variáveis novas do ENV e pastas de documentos"
     )
-    .option("--yes", "Com --upgrade, move os documentos para as pastas novas sem perguntar")
+    .option(
+      "--yes",
+      "Com --upgrade, move os documentos para as pastas novas e aceita rebaixar os assets sem perguntar"
+    )
     .option(
       "--remove-stale",
       "Com --upgrade, remove sem perguntar os skills instalados que saíram do framework (só os listados)"

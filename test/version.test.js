@@ -1,7 +1,7 @@
 // Testes da comparação de versões e da cópia local do Jarvis (bin/lib/utils/version.js). Rode com: npm run test:filtro
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from "node:fs";
+import { mkdtempSync, mkdirSync, writeFileSync, rmSync, symlinkSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { compareVersions, localInstall } from "../bin/lib/utils/version.js";
@@ -84,4 +84,15 @@ test("localInstall: pasta em node_modules sem versão legível conta como cópia
       source: "node_modules/jarvis-ai-framework",
     })
   );
+});
+
+test("localInstall: link simbólico quebrado em node_modules ainda conta como cópia local", () => {
+  withDir({}, (dir) => {
+    mkdirSync(join(dir, "node_modules"), { recursive: true });
+    symlinkSync(join(dir, "nao-existe"), join(dir, "node_modules", "jarvis-ai-framework"));
+    assert.deepEqual(localInstall(dir), {
+      version: "desconhecida",
+      source: "node_modules/jarvis-ai-framework",
+    });
+  });
 });

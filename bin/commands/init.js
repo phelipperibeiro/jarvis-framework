@@ -1,4 +1,4 @@
-import { existsSync, mkdirSync, readFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, realpathSync } from "node:fs";
 import { join, dirname, basename, resolve, sep } from "node:path";
 import { createInterface } from "node:readline";
 import { syncAssets } from "../lib/core/sync-engine.js";
@@ -134,6 +134,10 @@ export async function init(flags) {
 
   const ideDir = join(cwd, `.${getIDEFolder(ide)}`);
 
+  // Avisos de versão antes da pergunta de reinstalação: quem responde "s" (ou usa --force)
+  // já sabe se vai rebaixar os assets.
+  warnVersionMismatch(cwd);
+
   // Reinstall: --force ou confirmação "s" devem sobrescrever assets (cpSync force:true).
   let forceSync = !!flags.force;
 
@@ -160,7 +164,6 @@ export async function init(flags) {
   }
 
   const ideConfig = getIDEConfig(ide);
-  warnVersionMismatch(cwd);
   logger.info(`${BLUE}Configurando ambiente para ${ideConfig?.name}...${NC}`);
   logger.info("");
   const result = syncAssets(cwd, ide, {
@@ -271,9 +274,20 @@ function ideFromEnvPath(envPath) {
  */
 export function warnVersionMismatch(workspaceDir, lock = readLockVersion(workspaceDir)) {
   const running = getPackageInfo().version;
-  const runningLocal = (resolve(getFrameworkRoot()) + sep).startsWith(
-    resolve(workspaceDir, "node_modules") + sep
-  );
+  // Caminhos reais dos dois lados: o Node já resolve o link do script (`import.meta.url`),
+  // então uma cópia por `npm link` em node_modules só bate com o realpath.
+  const real = (p) => {
+    try {
+      return realpathSync(p);
+    } catch {
+      return resolve(p);
+    }
+  };
+  const root = real(getFrameworkRoot());
+  const localDir = join(workspaceDir, "node_modules", "jarvis-ai-framework");
+  const runningLocal =
+    (root + sep).startsWith(real(join(workspaceDir, "node_modules")) + sep) ||
+    (existsSync(localDir) && root === real(localDir));
   const local = localInstall(workspaceDir);
   if (runningLocal) {
     logger.info(
