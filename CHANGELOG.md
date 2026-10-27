@@ -6,6 +6,23 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), e o
 
 > Versões anteriores a `2.1.1` não foram documentadas retroativamente neste changelog — o histórico detalhado dessas versões continua disponível via `git log`.
 
+## [Não lançado]
+
+> Versão **major**: o bump e a data entram no commit `chore(release)` na `main`, depois do merge.
+
+### Changed
+- **Instalação só global** (#187): o Jarvis é instalado com `npm install -g jarvis-ai-framework`. O `jarvis init` roda dentro do projeto e copia os assets do Jarvis global para `.$IDE/`. O README e os guias deixam de ensinar o `--save-dev` e o `npx jarvis`.
+- **`jarvis init` e `jarvis init --upgrade`** avisam, antes do sync e sem bloquear, quando o projeto tem uma cópia local do Jarvis (`node_modules` ou dependência no `package.json`), que é ignorada, e quando o `jarvis-lock.json` do projeto é mais novo que o Jarvis global em uso (é preciso atualizar o global).
+- **`/jarvis-init`**: um Passo 0 compara o `jarvis-lock.json` com o `jarvis --version`. Com os assets mais antigos que o global, oferece rodar o `jarvis init --upgrade` antes de seguir.
+
+### Removed
+- **BREAKING**: o comando `jarvis qa-signoff` e as variáveis `QA_SIGNOFF_BRANCHES` e `QA_SIGNOFF_MAX_AGE`. O `/eng.qa-release-signoff` continua gerando o documento GO/NO-GO, sem a validação pelo CI e sem o setup de pipeline (que mandava DM no Slack).
+- **BREAKING**: o sync automático de assets no `postinstall` (quando o `npm install` rodava num projeto com `jarvis-lock.json`). A atualização dos assets passa a ter um caminho só: `jarvis init --upgrade`.
+- **BREAKING**: o suporte à instalação local do pacote (`--save-dev`). A cópia local é ignorada, com aviso.
+
+### Fixed
+- **#187**: o `/jarvis-init` com assets de uma versão anterior (por exemplo, o Central docs em `./central-docs` no modo workspace, já corrigido no #180) não segue mais sem aviso.
+
 ## [7.0.0] - 2026-10-26
 
 ### Added

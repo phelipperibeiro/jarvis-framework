@@ -74,4 +74,4 @@ Use com `which jarvis` para confirmar que o PATH aponta para o clone certo.
 
 ## Postinstall
 
-Se o cwd do install tiver `jarvis-lock.json` (workspace com `--save-dev`), o postinstall chama `syncAssets` com `force: true`. Em install global sem lock, só imprime dica de `jarvis init` / RTK.
+O postinstall só imprime as dicas (`jarvis init` e `jarvis install-rtk`). Ele não sincroniza projeto nenhum: o Jarvis é instalado só global, e os assets de um projeto se atualizam com `jarvis init --upgrade`, dentro dele.

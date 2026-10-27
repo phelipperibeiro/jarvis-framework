@@ -95,7 +95,7 @@ jarvis/
 ┌──────────────────────┐
 │  Clone do framework  │  você edita agents/skills/… e o CLI
 └──────────┬───────────┘
-           │ npm install -g | npm link | --save-dev
+           │ npm install -g | npm link
            ▼
 ┌──────────────────────┐
 │  CLI jarvis no PATH │  which jarvis · jarvis --version
@@ -236,7 +236,7 @@ Detalhe da rule: `rules/rtk-rules.md`. Comentários: `templates/ENV-template.md`
 **Via clone local** (contribuindo com o framework) — resumo (passo a passo no README):
 
 1. `git pull` no clone  
-2. Reinstall do pacote (`npm install -g` / `--save-dev` / link)  
+2. Reinstall do pacote (`npm install -g` ou link)  
 3. `which jarvis` + `jarvis --version`  
 4. No workspace: `jarvis init` (espelha `.$IDE/`)  
 5. `/jarvis-init` → **Upgrade (C)** só se houver chaves novas no template (obrigatório ao vir de uma versão anterior à 2.0: acrescenta as listas de especializações)  
