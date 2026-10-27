@@ -16,6 +16,7 @@ import { getPackageInfo, getFrameworkRoot } from "../lib/utils/paths.js";
 import { logger, configureFromFlags } from "../lib/utils/logger.js";
 import { resolveEnvPath } from "../lib/env-loader.js";
 import { LOCK_FILE } from "../lib/config/constants.js";
+import { compareVersions, localInstall } from "../lib/utils/version.js";
 import {
   findStaleSkills,
   registeredSpecializations,
@@ -159,6 +160,7 @@ export async function init(flags) {
   }
 
   const ideConfig = getIDEConfig(ide);
+  warnVersionMismatch(cwd);
   logger.info(`${BLUE}Configurando ambiente para ${ideConfig?.name}...${NC}`);
   logger.info("");
   const result = syncAssets(cwd, ide, {
@@ -257,6 +259,30 @@ function ideFromEnvPath(envPath) {
   return getIDEValues().find((v) => `.${getIDEFolder(v)}` === folder);
 }
 
+/**
+ * Avisos de versão antes do sync (não bloqueiam). O Jarvis é instalado só global:
+ * - cópia local no projeto (`node_modules` ou dependência no `package.json`) é ignorada;
+ * - lock do projeto mais novo que o global em uso pede atualizar o global.
+ * Lê o lock antes do `syncAssets`, que o reescreve.
+ * @param {string} workspaceDir
+ */
+export function warnVersionMismatch(workspaceDir) {
+  const local = localInstall(workspaceDir);
+  if (local) {
+    logger.info(
+      `${BLUE}ℹ️  O Jarvis é instalado global (npm install -g jarvis-ai-framework). A cópia local deste projeto (${local.version} em ${local.source}) é ignorada: pode removê-la.${NC}`
+    );
+  }
+  const lock = readLockVersion(workspaceDir);
+  const global = getPackageInfo().version;
+  if (compareVersions(lock, global) === 1) {
+    logger.info(
+      `${YELLOW}⚠️  Os assets deste projeto são da ${lock}, mas o seu jarvis global é a ${global}. Atualize o global: npm install -g jarvis-ai-framework${NC}`
+    );
+  }
+  if (local || compareVersions(lock, global) === 1) logger.info("");
+}
+
 function readLockVersion(workspaceDir) {
   try {
     return (
@@ -319,6 +345,7 @@ async function runUpgrade(cwd, flags) {
   const workspaceDir = resolved.root;
   const envPath = resolved.path;
   const previousVersion = readLockVersion(workspaceDir);
+  warnVersionMismatch(workspaceDir);
 
   // 1. Arquivos do framework (o ENV.md não está entre os sincronizados)
   logger.info(`${BLUE}⬆️  Upgrade do Jarvis em .${getIDEFolder(ide)}/${NC}\n`);

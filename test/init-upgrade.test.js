@@ -382,3 +382,43 @@ test("init --upgrade: vendor não suportado (TASK_MANAGER=linear) vira aviso de 
     assert.match(r.stdout, /TASK_MANAGER=linear não é suportado/);
   });
 });
+
+test("init --upgrade: avisa da cópia local (ignorada) e do lock mais novo que o global; sem as duas, nada", () => {
+  withWorkspace(
+    {
+      ".claude/ENV.md": ENV_V520,
+      "node_modules/jarvis-ai-framework/package.json": '{"version":"5.5.0"}',
+      "jarvis-lock.json": '{"version":"999.0.0","ide":"claude"}',
+    },
+    (ws) => {
+      const r = run(ws, "--upgrade", "--ide", "claude", "--yes");
+      assert.equal(r.status, 0, r.stderr);
+      assert.match(
+        r.stdout,
+        /cópia local deste projeto \(5\.5\.0 em node_modules\/jarvis-ai-framework\) é ignorada/
+      );
+      assert.match(r.stdout, /assets deste projeto são da 999\.0\.0/);
+      assert.match(r.stdout, /npm install -g jarvis-ai-framework/);
+    }
+  );
+  withWorkspace({ ".claude/ENV.md": ENV_V520 }, (ws) => {
+    const r = run(ws, "--upgrade", "--ide", "claude", "--yes");
+    assert.equal(r.status, 0, r.stderr);
+    assert.doesNotMatch(r.stdout, /cópia local deste projeto/);
+    assert.doesNotMatch(r.stdout, /Atualize o global/);
+  });
+});
+
+test("init (instalação): avisa da dependência local no package.json", () => {
+  withWorkspace(
+    { "package.json": '{"devDependencies":{"jarvis-ai-framework":"^6.0.0"}}' },
+    (ws) => {
+      const r = run(ws, "--ide", "claude");
+      assert.equal(r.status, 0, r.stderr);
+      assert.match(
+        r.stdout,
+        /cópia local deste projeto \(\^6\.0\.0 em package\.json \(devDependencies\)\)/
+      );
+    }
+  );
+});
