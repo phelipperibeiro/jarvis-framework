@@ -62,7 +62,7 @@ O agente `eng.docs-consolidator` lê **todas** as fontes, na ordem do agente:
    ```
 4. **PR/MR:** número e URL (`pull-request.md` da sessão, `gh pr view`/equivalente do vendor, ou pergunte).
 5. **Card:** URL no padrão do `TASK_MANAGER` (`eng.integrations-rules.md`); no modo freelance, só o número de controle.
-6. `gate-checklist.md` e `pull-request.md` da sessão, se existirem.
+6. `gate-checklist.md` (a rodada mais recente do `eng.pre-pr`; as anteriores, `gate-checklist-rodada-{N}.md`, são histórico) e `pull-request.md` da sessão, se existirem.
 
 ## Passo 2: Coleta (modo `--inicial`)
 
@@ -121,7 +121,7 @@ Com `ARTIFACT_STYLE=human-generated`, a versão humanizada (`{nome}.public.md`) 
 ```
 ✅ Consolidação {publicada | salva na sessão}
 
-📄 Arquivos da sessão (consolidado acumulado, regra 5 de `eng.transitions-rules.md`): links de `context.md`, `architecture.md`, `plan.md`, `gate-checklist.md`, `pull-request.md`, `daily.md` e dos arquivos de `consolidation/` (novos), só os que existem
+📄 Arquivos da sessão (consolidado acumulado, regra 5 de `eng.transitions-rules.md`): links de `context.md`, `architecture.md`, `plan.md`, das rodadas anteriores `gate-checklist-rodada-{N}.md`, `gate-checklist.md`, `pull-request.md`, `daily.md` e dos arquivos de `consolidation/` (novos), só os que existem
 
 📄 Funcionalidade: {SQUAD}/product/{produto}/feature-{slug}.md
 🧾 Entrega:        {SQUAD}/engineering/{produto}/delivery-{AAAA-MM-DD}-{task_key}.md

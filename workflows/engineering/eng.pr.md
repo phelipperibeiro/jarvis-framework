@@ -209,7 +209,7 @@ Use **MR** se GitLab, **PR** se GitHub.
 
 ### 4.1 Gerar `pull-request.md` na sessão
 
-Escreva o título e a descrição do PR em **`$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/pull-request.md`** (primeira linha `# {título}`, depois o corpo). Se a sessão tiver o `gate-checklist.md` do `eng.pre-pr`, use o PR Brief e as decisões dele.
+Escreva o título e a descrição do PR em **`$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/pull-request.md`** (primeira linha `# {título}`, depois o corpo). Se a sessão tiver o `gate-checklist.md` do `eng.pre-pr`, use o PR Brief e as decisões da rodada mais recente (o `gate-checklist.md`; as rodadas anteriores, `gate-checklist-rodada-{N}.md`, são histórico).
 
 Template, nesta ordem (o primeiro que existir):
 
@@ -374,7 +374,7 @@ Regras em `$IDE/rules-on-demand/engineering/eng.pr-rules.md` (seção "daily.md"
 
    Atualize a seção da data escolhida. Se a data for nova, acrescente uma seção `## AAAA-MM-DD`.
 6. **Gerar** a descrição detalhada **e** a linha de timesheet, juntas.
-   - **Fontes:** `architecture.md`, `plan.md`, `gate-checklist.md`, `pull-request.md`, `git log {BRANCH_BASE}..HEAD`, o PR/MR e o card.
+   - **Fontes:** `architecture.md`, `plan.md`, `gate-checklist.md` (a rodada mais recente), `pull-request.md`, `git log {BRANCH_BASE}..HEAD`, o PR/MR e o card.
    - **Descrição:** um parágrafo narrativo (contexto técnico, trabalho realizado, decisões), mais o *post mortem* quando couber (problema e causa raiz, investigação, solução/direcionamento), com detalhe suficiente para embasar questionamentos futuros.
    - **Timesheet:** **uma única linha** (`{TASK_KEY} — {resumo}`).
    - Sem e-mails, tokens nem valores de variáveis.
@@ -401,6 +401,7 @@ Regras em `$IDE/rules-on-demand/engineering/eng.pr-rules.md` (seção "daily.md"
 - [context.md]({caminho relativo}) ({nota de estado})
 - [architecture.md]({caminho relativo}) ({nota de estado})
 - [plan.md]({caminho relativo}) ({nota de estado})
+- [gate-checklist-rodada-{N}.md]({caminho relativo}) (rodada {N})  ← uma por rodada anterior do `eng.pre-pr`, em ordem crescente do número do nome, se houver
 - [gate-checklist.md]({caminho relativo}) ({nota de estado})  ← se o `eng.pre-pr` rodou
 - [pull-request.md]({caminho relativo}) (novo; {publicado como PR #N | gerado, PR não publicado})
 - [daily.md]({caminho relativo}) (novo; {aprovado, com timesheet})
@@ -421,7 +422,7 @@ Regras em `$IDE/rules-on-demand/engineering/eng.pr-rules.md` (seção "daily.md"
 
 ### 7.4 Versões humanizadas (só com `ARTIFACT_STYLE=human-generated`)
 
-Pergunte uma vez, com `AskUserQuestion` de várias perguntas em abas (`rules/artifact-style-rules.md`, regra 2), uma aba por documento da sessão que existir: `architecture.md`, `plan.md`, `gate-checklist.md` e `daily.md` (o `pull-request.md` não entra: já é público). Cada aba: **"Gerar a versão humanizada de {documento}?"** → **Não (como hoje)** / **Sim**. Com Sim, grave `{nome}.public.md` ao lado do original, seguindo o checklist da regra, e mostre o link. Com outro `ARTIFACT_STYLE`, pule esta etapa.
+Pergunte uma vez, com `AskUserQuestion` de várias perguntas em abas (`rules/artifact-style-rules.md`, regra 2), uma aba por documento da sessão que existir: `architecture.md`, `plan.md`, `gate-checklist.md` e `daily.md` (o `pull-request.md` não entra: já é público; as rodadas anteriores `gate-checklist-rodada-{N}.md` não ganham versão humanizada, só o `gate-checklist.md` atual). Cada aba: **"Gerar a versão humanizada de {documento}?"** → **Não (como hoje)** / **Sim**. Com Sim, grave `{nome}.public.md` ao lado do original, seguindo o checklist da regra, e mostre o link. Com outro `ARTIFACT_STYLE`, pule esta etapa.
 
 ### 7.5 PR mergeado? (`eng.transitions-rules.md`)
 
