@@ -76,7 +76,7 @@ Campos a buscar: key, summary, status, priority, duedate, resolutiondate, assign
 Montar URLs com `{TASK_MANAGER_URL_BASE}` + `board_code` do `taxonomy.md`. Se `board_code` estiver vazio, perguntar o projeto ao usuário.
 
 ### Complemento com Jira (opcional)
-Você **pode** complementar com informações do Jira apenas se tiver informações suficientes para fazer a query corretamente (ex: o squad tem um board ou label bem definidos no Jira e você tem certeza do filtro).
+Você **pode** complementar com informações do Jira (lidas pela `acli`, como acima) apenas se tiver informações suficientes para fazer a query corretamente (ex: o squad tem um board ou label bem definidos no Jira e você tem certeza do filtro).
 
 ⚠️ **Se tiver dúvida sobre como filtrar no Jira, NÃO inclua dados do Jira**. Evite trazer informações erradas ou de outros squads.
 
@@ -85,7 +85,7 @@ Você **pode** complementar com informações do Jira apenas se tiver informaç�
 
 Use a URL de status report que o usuário informar (ou a wiki configurada no projeto). Não há tabela fixa de squads.
 
-Use `web_fetch` para acessar a URL do time selecionado.
+Use `web_fetch` para acessar a URL do time selecionado (ou peça o texto colado); sem MCP de wiki.
 
 Busque os **dois últimos status reports** listados na página.
 Apresente os dois últimos reports no seguinte formato:

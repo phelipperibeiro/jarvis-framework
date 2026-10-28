@@ -179,4 +179,4 @@ eng.work (Fase 0) ← herda
 1. ~~**Aplicar CDD nos agents de QA restantes**~~: ✅ `eng.qa.test-architect.md`, `eng.qa.test-planner.md`
 2. ~~**Criar skill de detecção de contexto**~~: ✅ Implementado em `/jarvis-context-detect`
 3. ~~**Adicionar escape hatches explícitos**~~: ✅ Implementado via `--override`
-4. **Integração com Jira**: Detectar tipo de tarefa automaticamente via API do Jira
+4. **Integração com Jira**: Detectar tipo de tarefa automaticamente pela CLI oficial do board

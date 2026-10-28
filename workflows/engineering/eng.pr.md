@@ -385,7 +385,7 @@ Regras em `$IDE/rules-on-demand/engineering/eng.pr-rules.md` (seção "daily.md"
 
 ```
 ✅ MERGE REQUEST CRIADO COM SUCESSO!       ← com o PR publicado
-📝 PR NÃO PUBLICADO (só os arquivos)       ← com "Só gerar os arquivos"
+📝 PR NÃO PUBLICADO                         ← com "Só gerar os arquivos", ou saída 3/4 da 4.4 (o pull-request.md fica pronto)
 
 📋 Resumo:
 - Branch: {NOME_DA_BRANCH}

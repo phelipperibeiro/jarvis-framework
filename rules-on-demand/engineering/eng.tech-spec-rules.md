@@ -34,7 +34,7 @@ O `/eng.build-tech-spec` tem dois modos, escolhidos na triagem do workflow:
 
 ## Localização de Arquivos
 
-> **NOTA**: Tech specs NÃO são salvas em `master-docs/`. São salvas na sessão do projeto e anexadas no Jira.
+> **NOTA**: Tech specs NÃO são salvas em `master-docs/`. São salvas na sessão do projeto; o anexo no Jira só sai depois da pergunta (regra de ouro).
 
 Arquivos são referenciados usando `$IDE/` que resolve automaticamente para a pasta do IDE atual (`.windsurf/`, `.claude/`, `.cursor/`).
 
@@ -82,7 +82,7 @@ $SESSION_FOLDER/{TASK_MANAGER_KEY}/tech-spec.md
 
 ### Por que na sessão?
 
-1. **Anexo no Jira**: A tech spec é anexada diretamente na issue do Jira como fonte da verdade
+1. **Anexo no Jira**: a tech spec pode ser anexada na issue do Jira, só depois de mostrar o que vai e perguntar (regra de ouro, `eng.integrations-rules.md`); sem o Sim, fica só na sessão
 2. **Sessão temporária**: A sessão é usada durante o desenvolvimento e pode ser limpa depois
 3. **Evita poluição**: Não cria arquivos permanentes no repositório de código
 4. **Rastreabilidade**: O Jira é o sistema oficial de documentação de tasks

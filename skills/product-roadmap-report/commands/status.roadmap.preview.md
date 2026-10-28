@@ -3,7 +3,7 @@ name: prod-roadmap-preview
 description: >
   Use esta habilidade sempre que alguém perguntar sobre roadmap de produto, status de entrega, status de sprint, atualizações de equipe ou relatórios de status.
   Aciona quando os usuários perguntam coisas como: "qual o roadmap?", "quais são as entregas do trimestre?", "status do time X", "o que está sendo feito?", "quando vai sair feature Y?", "me mostra o roadmap", "status report do time", "próximas entregas", "roadmap do produto", "o que está planejado?", "report do time", "andamento dos projetos".
-  Essa habilidade lê o board pela CLI oficial do vendor (só leitura) e as páginas wiki internas para buscar dados ao vivo sobre o roteiro do produto e relatórios de status da equipe.
+  Essa habilidade lê o board pela CLI oficial do vendor (só leitura) e as páginas wiki internas pela URL que o usuário informar (`web_fetch`, ou texto colado; sem MCP) para buscar dados ao vivo sobre o roteiro do produto e relatórios de status da equipe.
 ---
 
 # Status Roadmap Preview

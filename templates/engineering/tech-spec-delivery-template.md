@@ -60,7 +60,7 @@ Fase 8.2 do workflow. O que entregar ao usuário ao final.
 ✅ Tech Spec criada com sucesso!
 
 📄 Documento Local: $SESSIONS_DIR/eng/{feature-name}/tech-spec.md
-📎 Anexada no Jira: {STORY-XXX}
+📎 {Anexada no Jira: {STORY-XXX} | Não anexada (só na sessão; sem o Sim ou sem a CLI)}
 
 📋 Resumo:
 - História: {STORY-XXX} - {Título}
@@ -93,7 +93,7 @@ Exemplo preenchido da mensagem de entrega (fictício).
 ✅ Tech Spec para STORY-456 criada com sucesso!
 
 📄 **Documento Local**: $SESSIONS_DIR/eng/story-456/tech-spec.md
-📎 **Anexado no Jira**: STORY-456
+📎 **Anexado no Jira**: STORY-456 (com o Sim)
 
 📊 **Resumo**:
 

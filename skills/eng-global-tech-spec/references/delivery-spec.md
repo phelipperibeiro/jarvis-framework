@@ -44,7 +44,7 @@ B: História / Task — implementação específica, pronta para desenvolvimento
 
 **Se recebeu URL/ID do $TASK_MANAGER:**
 
-- Busque o card usando a API ou ferramenta disponível
+- Leia o card pela CLI oficial do `$TASK_MANAGER` (ação `view` do catálogo, `eng.integrations-rules.md`), sem REST nem MCP; sem acesso, peça para colar o conteúdo
 - **Épico**: extraia título, descrição, objetivo de negócio, escopo e iniciativa relacionada
 - **História**: extraia título, descrição, critérios de aceitação, épico relacionado, comentários relevantes
 
@@ -671,7 +671,7 @@ Para cada caso extremo/erro:
 
 Exemplo: `$SESSIONS_DIR/eng/story-123/tech-spec.md`
 
-> **IMPORTANTE**: A tech spec é salva na sessão. Para anexá-la na issue do Jira, mostre o que vai e pergunte com `AskUserQuestion` (regra de ouro, `eng.integrations-rules.md`); com o Sim, anexe pela `acli` (confira no `--help` se ela anexa arquivo; se não, oriente a pessoa a anexar à mão). Sem o Sim, a tech spec fica só na sessão.
+> **IMPORTANTE**: A tech spec é salva na sessão. Para anexá-la na issue do Jira, depois da aprovação da 6.3, mostre o que vai e pergunte com `AskUserQuestion` (regra de ouro, `eng.integrations-rules.md`); com o Sim, a `acli` logada e `TASK_MANAGER_ACCESS=cli` (ou vazio), anexe pela `acli` (confira no `--help` se ela anexa arquivo); senão, oriente a pessoa a anexar à mão. Sem o Sim, a tech spec fica só na sessão.
 
 #### 6.2 Revisão de Qualidade
 
@@ -770,7 +770,7 @@ Valide que:
 - [ ] Tech Spec anexada na issue do Jira (com o Sim) ou deixada na sessão
 - [ ] Subtarefas documentadas com critérios claros
 - [ ] Subtarefas criadas no Jira (ou template fornecido)
-- [ ] História original atualizada com link para tech spec
+- [ ] História original atualizada com link para tech spec (com o Sim do comentário da 7.4) ou texto deixado na sessão
 - [ ] Decisões arquiteturais documentadas
 - [ ] Riscos identificados e mitigados
 - [ ] Dependências mapeadas

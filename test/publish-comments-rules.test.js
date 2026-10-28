@@ -59,8 +59,12 @@ const IMPERATIVOS = [
   /Mover card para "In Review"/i,
   /mova o card para a etapa/i,
   // Board e git só pela CLI oficial (eng.integrations-rules.md): nada de REST nem MCP para criar ou ler o board.
-  /API\/ferramenta disponível/,
+  /\bAPI\s*(?:\/|ou)\s*ferramenta\s+dispon/i,
   /\bAtlassian:\w+/,
+  // Label no PR e anexo no card também são envios: só com a pergunta (a frase com "regra de ouro", "Sim" ou
+  // "pergunt" na mesma linha vale).
+  /^(?!.*(?:regra de ouro|\bSim\b|pergunt|orient)).*\b(?:adicion\w+|coloc\w+|p[oô]r|aplic\w+)\s+(?:o\s+|a\s+)?label\b.*\b(?:ao|no)\s+(?:PR|MR)\b/im,
+  /^(?!.*(?:regra de ouro|\bSim\b|pergunt|orient|PRD|FRD|ARD|RFC)).*\b(?:anex\w+)\b.*\b(?:no|na|ao|à)\s+(?:Jira|issue|card|história)\b/im,
 ];
 
 // Dirent.isDirectory() não segue link simbólico, então um link quebrado ou circular não derruba a varredura.
@@ -73,7 +77,9 @@ function walk(dir) {
 }
 // Documentos históricos (guias de migração, por exemplo) podem citar o texto antigo de propósito.
 // Valem nos testes 4 e 5; as pastas ainda não existem, e o nome é só o que vale quando aparecerem.
-const HISTORICO = /^docs\/(historico|migracao)\//;
+// A trash-archived-docs/ guarda arquivos mortos: ficam fora como os históricos; o CHANGELOG.md é histórico e não
+// entra nas pastas varridas.
+const HISTORICO = /^(?:docs\/(?:historico|migracao)|trash-archived-docs)\//;
 const ehHistorico = (arquivo) => HISTORICO.test(relative(root, arquivo).split("\\").join("/"));
 
 // Orações que ficam fora da recusa: terminam em vírgula, ponto, ponto e vírgula, dois-pontos, travessão,
@@ -130,7 +136,7 @@ const semIsencoes = (linha) =>
     // "não … sem perguntar" e "não … automaticamente" negam o envio sem pergunta ("o push não sai sem perguntar",
     // "o Jarvis não move o card automaticamente"); "Sem a aprovação, …" no começo da oração é condição.
     .replace(
-      /\bnão\s+(?:(?!e\s|mas\s)[\p{L}-]+\s+){0,4}?(?:sem\s+(?:a\s+)?(?:pergunt\w*|confirmação|aprovação)|automaticamente)/giu,
+      /\bnão\s+(?!só\b|apenas\b|somente\b)(?:(?!e\s|mas\s|só\s|apenas\s|somente\s)[\p{L}-]+\s+){0,4}?(?:sem\s+(?:a\s+)?(?:pergunt\w*|confirmação|aprovação)|automaticamente)/giu,
       ""
     )
     .replace(
@@ -187,7 +193,7 @@ const RECUSA = new RegExp(
 // "nunca pergunta duas vezes" é contra a pergunta dupla, não dispensa; "nada impede" só conta seguido de
 // "sem perguntar".
 const NUNCA_PERGUNTE =
-  /\b(?:nunca|nem|jamais)\s+(?:(?:é|precisa|vai|se)\s+(?:preciso\s+)?)?pergunt(?:e|a|ar|ando)\b(?!\s+duas\s+vezes)|\b(?:nunca|jamais)\s+espere\s+(?:o|pelo)\s+Sim\b|\bnada\s+impede\b[^.;]*\bsem\s+(?:a\s+)?pergunt/i;
+  /\b(?:nunca|nem|jamais)\s+(?:(?:é|precisa|vai|se)\s+(?:preciso\s+)?)?pergunt(?:e|a|ar|ando)\b(?!\s+duas\s+vezes)|\b(?:nunca|jamais|não)\s+espere\s+(?:o|pelo)\s+Sim\b|\bnada\s+impede\b[^.;]*\bsem\s+(?:a\s+)?pergunt/i;
 // "dispens…" vale como recusa, salvo logo depois de "não" ou "sem" (com até três palavras de ligação: "não
 // pode dispensar", "não a dispense", "não deve ser dispensada", "sem dispensar"); o "não" de outra oração
 // ("não espere e dispense") não conta. A negação é conferida só nos 40 caracteres antes de cada "dispens".
@@ -345,11 +351,13 @@ test("toda linha que chama o /eng-global-task-comment traz a pergunta na mesma l
   }
 });
 
-// Board e git só pela CLI oficial (eng.integrations-rules.md): uma linha que manda usar MCP para o board não vale;
-// a proibição ("sem REST nem MCP", "não use o MCP do Jira") vale.
+// Board e git só pela CLI oficial (eng.integrations-rules.md): uma linha que manda usar MCP ou a API (REST) do
+// board não vale; a proibição ("sem REST nem MCP", "não use o MCP do Jira") vale.
 const MCP_DO_BOARD =
-  /\bMCPs?\s+(?:(?:configurad|específic|especific|disponív|instalad|relacionad)\w*\s+)*(?:d[oa]|a[oa]|para\s+o)\s+`?(?:Jira|Atlassian|\$TASK_MANAGER|board)\b/i;
-const PROIBE_MCP = /\b(?:sem|nem|não|nunca|proibid\w*)\b[^.\n]{0,30}\bMCPs?\b/i;
+  /\bAPI(?:\s+REST)?\s+d[oa]\s+`?(?:Jira|Atlassian|GitHub|GitLab|board|\$TASK_MANAGER)\b|\bMCPs?\s+(?:(?:configurad|específic|especific|disponív|instalad|relacionad)\w*\s+)*(?:(?:d[oa]|a[oa]|para\s+o)\s+)?`?(?:Jira|Atlassian|\$TASK_MANAGER|board)\b/i;
+// A proibição precisa estar na mesma oração (sem vírgula, ponto e vírgula ou dois-pontos entre a negação e o MCP):
+// "Sem a CLI logada, use o MCP do Jira" não é proibição.
+const PROIBE_MCP = /\b(?:sem|nem|não|nunca|proibid\w*)\b[^.,;:\n]{0,30}\b(?:MCPs?|API)\b/i;
 
 test("nenhum imperativo manda publicar sem a pergunta", () => {
   for (const file of todosMd()) {
@@ -358,7 +366,7 @@ test("nenhum imperativo manda publicar sem a pergunta", () => {
       .forEach((linha, i) => {
         assert.ok(
           !MCP_DO_BOARD.test(linha) || PROIBE_MCP.test(linha),
-          `${rel(file)}:${i + 1}: manda usar MCP para o board. ${DE_PROPOSITO}`
+          `${rel(file)}:${i + 1}: manda usar MCP ou a API do board. ${DE_PROPOSITO}`
         );
       });
     const texto = readFileSync(file, "utf8");
@@ -504,7 +512,7 @@ test("cada ponto que envia algo tem a pergunta logo antes", () => {
   // Completude: toda linha que cita um comando que envia algo, em qualquer posição (com ou sem prefixo como
   // "$ ", "rtk ", "npx ", "$(" ou crases), precisa estar nesta lista ou na das descritivas.
   const COMANDO =
-    /(?:^|[\s`(|&;$])(?:rtk\s+|npx\s+)?(?:git(?:\s+-C\s+\S+)?\s+push\b|gh\s+(?:pr|issue)\s+(?:create|comment|merge|close|edit|review)\b|glab\s+(?:mr|issue)\s+(?:create|note|merge|close|update)\b|acli\s+jira\s+workitem\s+(?:create|comment|transition|assign|edit|attachment)\b|jarvis\s+(?:vcs\s+create-|tasks\s+comment|docs\s+publish))/;
+    /(?:^|[\s`(|&;$"'[*:>—–])(?:rtk\s+|npx\s+)?(?:git(?:\s+-C\s+\S+)?\s+push\b|gh\s+(?:pr\s+(?:create|comment|merge|close|edit|review|ready|reopen)|issue\s+(?:create|comment|close|edit|reopen)|api|release\s+create|label)\b|glab\s+(?:mr\s+(?:create|note|merge|close|update|approve)|issue\s+(?:create|note|close|update)|api|release\s+create|label)\b|acli\s+jira\s+workitem\s+(?:create|comment|transition|assign|edit|attachment)\b|jarvis\s+(?:vcs\s+create-|tasks\s+comment|docs\s+publish))/;
   // Os .md da raiz e o bin/README.md entram; o CONTRIBUTING.md fica fora: é o guia de quem contribui com o
   // framework, e o push ali é a própria pessoa que roda, não um passo que o Jarvis executa.
   const RAIZ = ["README.md", "AGENTS.md", "members.md", "taxonomy.md", "bin/README.md"]
@@ -745,7 +753,7 @@ test("os outros pontos que enviam algo (agente, delivery-spec, data.contract, pr
     [ENG_PRE_PR, /nada é enviado ao card \(o texto fica no `gate-checklist\.md`\)/],
     [
       "skills/eng-global-tech-spec/references/delivery-spec.md",
-      /Para anexá-la na issue do Jira, mostre o que vai e pergunte com `AskUserQuestion` \(regra de ouro/,
+      /Para anexá-la na issue do Jira, depois da aprovação da 6\.3, mostre o que vai e pergunte com `AskUserQuestion` \(regra de ouro/,
     ],
     [
       "skills/product-roadmap-report/commands/status.roadmap.preview.md",
