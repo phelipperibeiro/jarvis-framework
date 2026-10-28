@@ -37,6 +37,12 @@ const CITAM_A_REGRA = [
   TASK_COMMENT,
   REPORT_ISSUE,
   "templates/engineering/advisor-template.md",
+  "agents/engineering/qa/eng.qa.quality-champion-task-agent.md",
+  "skills/eng-global-tech-spec/references/delivery-spec.md",
+  "workflows/engineering/data/data.contract.md",
+  "workflows/product/prod.spec.issue.md",
+  "skills/jarvis-docs-central/SKILL.md",
+  SPEC_CONSOLIDATE,
 ];
 
 // Arquivos em que toda linha que chama o skill de comentário precisa trazer a pergunta (teste 4)
@@ -144,10 +150,10 @@ test("toda linha que chama o /eng-global-task-comment traz a pergunta na mesma l
     const linhas = read(file).split("\n");
     linhas.forEach((linha, i) => {
       if (!/eng-global-task-comment/.test(linha)) return;
-      // Os cabeçalhos de tabela de skills e as linhas de código (`/eng-global-task-comment {chave} {mensagem}`) são descrição, não o ponto de envio.
+      // Toda linha que cita o skill (inclusive as de tabela) traz a pergunta; o "Sim" vale só como palavra inteira, e não como parte de "assim".
       assert.match(
         linha,
-        /pergunt|regra de ouro|Sim|escolher/i,
+        /[Pp]ergunt|regra de ouro|\bSim\b|escolher/,
         `${file}:${i + 1} chama o /eng-global-task-comment sem a pergunta na linha. ${DE_PROPOSITO}`
       );
     });
@@ -170,8 +176,8 @@ test("nenhum imperativo manda publicar sem a pergunta", () => {
 test("cada ponto que envia algo tem a pergunta logo antes", () => {
   // [arquivo, linha do envio, quantas linhas olhar antes, o que precisa aparecer nessa janela]
   const PONTOS = [
-    [ENG_PR, /^git push -u origin \{NOME_DA_BRANCH\}$/, 30, /depois da escolha de publicar/],
-    [ENG_PR, /^jarvis vcs create-merge/, 30, /Fase 0/],
+    [ENG_PR, /^git push -u origin \{NOME_DA_BRANCH\}$/, 45, /depois da escolha de publicar/],
+    [ENG_PR, /^jarvis vcs create-merge/, 30, /exceção da regra de ouro/],
     [ENG_PR, /^git push$/, 8, /regra de ouro/],
     [ENG_PR, /^# só com o Sim da pergunta acima$/, 4, /git commit/],
     [
@@ -180,6 +186,7 @@ test("cada ponto que envia algo tem a pergunta logo antes", () => {
       8,
       /Passos 4 e 5 só acontecem depois da pergunta/,
     ],
+    [GLOBAL_PR, /^git push -u origin/, 8, /Fase 0 dele vale como essa pergunta/],
     [GLOBAL_PR, /^\s+git push$/, 8, /só com o Sim da pergunta acima/],
     [PR_RULES, /^\s+git push -u origin/, 6, /regra de ouro/],
     [REPORT_ISSUE, /^jarvis vcs create-issue/, 25, /Sim, abrir a issue/],
@@ -189,6 +196,7 @@ test("cada ponto que envia algo tem a pergunta logo antes", () => {
       6,
       /Publicar no Central docs\?/,
     ],
+    [SPEC_CONSOLIDATE, /^\s+jarvis docs publish --file .*feature/, 8, /Publicar no Central docs\?/],
     [TASK_COMMENT, /^jarvis tasks comment/, 15, /Sim, publicar/],
   ];
   for (const [file, envio, n, precisa] of PONTOS) {
@@ -308,5 +316,39 @@ test("a proibição de comentar início ou fim de etapa continua na regra e no s
       /nunca\W*(comentar )?início ou fim/i,
       `${file} sem a proibição de comentar início ou fim de etapa. ${DE_PROPOSITO}`
     );
+  }
+});
+
+test("os outros pontos que enviam algo (agente, delivery-spec, data.contract, prod.spec.issue, central docs) trazem a pergunta", () => {
+  const FRASES = [
+    [
+      "agents/engineering/qa/eng.qa.quality-champion-task-agent.md",
+      /pelo `\/eng-global-task-comment`, que mostra o texto e pergunta/,
+    ],
+    [
+      "skills/eng-global-tech-spec/references/delivery-spec.md",
+      /Antes de criar subtarefas ou comentar, mostre o texto e pergunte/,
+    ],
+    [
+      "skills/eng-global-tech-spec/references/delivery-spec.md",
+      /com o `\/eng-global-task-comment`, que mostra o texto e pergunta/,
+    ],
+    [
+      "workflows/engineering/data/data.contract.md",
+      /pergunte com `AskUserQuestion` antes de notificar/,
+    ],
+    [
+      "workflows/engineering/data/data.contract.md",
+      /pergunte com `AskUserQuestion` antes de criar/,
+    ],
+    ["workflows/product/prod.spec.issue.md", /pergunte com `AskUserQuestion` \(regra de ouro/],
+    [
+      "skills/jarvis-docs-central/SKILL.md",
+      /só roda depois da pergunta do `\/eng\.spec-consolidate`/,
+    ],
+    [INTEGRATIONS, /Exceção:.*e, conforme a opção, como a revisão do texto/],
+  ];
+  for (const [file, frase] of FRASES) {
+    assert.match(read(file), frase, `${file} sem ${frase}. ${DE_PROPOSITO}`);
   }
 });
