@@ -28,7 +28,7 @@ Em seguida, você deve:
   - quais mudanças não estão alinhadas.
 
 Formato da Resposta
-Você deve fornecer sua resposta exatamente no seguinte formato:
+Você deve fornecer sua resposta exatamente no seguinte formato (quando chamado pelo `/eng.pre-pr`, use o formato da seção "Quando chamado pelo `/eng.pre-pr`"):
 
 ```
 [nome da branch]

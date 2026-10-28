@@ -86,7 +86,7 @@ Depois dos gates e antes de gravar o relatório, faça **um** passe contra a lis
 - **Se a refutação se sustenta** (o lugar apontado mostra que a lacuna não existe), a lacuna **sai** da tabela. Registre-a numa linha abaixo da tabela da área: "Removidas no passe crítico: {lacuna} — {motivo}".
 - **Se a lacuna existe, mas pesa menos do que a severidade dada** (por exemplo, 🟡 que é só redação), ela é **rebaixada**, com "(rebaixada: {motivo})" na coluna Lacuna, antes do "(item N)".
 - **Sem evidência verificável** (nem trecho, nem comando, nem resultado): rebaixe para ⚪ ou peça ao gate o lugar exato antes de gravar.
-- O passe não acrescenta lacunas novas nem muda a decisão herdada de uma lacuna.
+- O passe vale só para as lacunas achadas pelos gates nesta rodada: as copiadas como "(não reavaliada nesta rodada)" e as que voltam com decisão herdada não passam por ele. O passe não acrescenta lacunas novas nem muda a decisão herdada de uma lacuna. Com mais de um sufixo, a ordem é "(rebaixada: …) (não reavaliada nesta rodada) (item N)".
 
 ### Rodadas
 
@@ -143,7 +143,7 @@ Grave em `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/gate-checklist.md`:
 
 | # anterior | Lacuna | Decisão anterior | Situação | Corrigido em |
 |---|---|---|---|---|
-| {Área} #{n} | {lacuna da rodada anterior} | {🔧 Corrigir \| vazia} | {Corrigida \| Ainda presente \| Não reavaliada} | {hash \| sem commit: {arquivo} \| —} |
+| {Área} #{n} | {lacuna da rodada anterior} | {🔧 Corrigir \| vazia} | {Corrigida \| Ainda presente \| Não reavaliada \| Removida no passe crítico} | {hash \| sem commit: {arquivo} \| —} |
 
 ## Resumo
 {3 a 5 frases: o que a branch faz, quantas lacunas por severidade e o principal risco.}

@@ -58,7 +58,7 @@ Depois, com board, pergunta se registra o resultado como comentário no card: **
 
 - **Critério de parada:** a revisão sempre roda e grava o relatório; o que muda é a pergunta do fim. O critério é atingido pelo **teto de rodadas** (pela urgência do `context.md`: alta 3, normal 5, baixa 8) ou por uma **rodada sem lacuna 🔴 ou 🟡 nova** (com os revisores de código e de testes tendo rodado).
 - **Com 🔴 pendente, ou 🟡 sem o critério atingido** (como hoje): "O que fazer com as {n} lacunas?" → **Corrigir todas**, **Corrigir só as bloqueadoras 🔴**, **Decidir uma a uma** ou **Só gerar o relatório**. Se o teto chegou, um aviso diz isso.
-- **Só com ⚪, ou com o critério atingido** (sem 🔴 pendente): uma pergunta só, "Restam {…} sem decisão. Como seguir?" → **Aceitar as ⚪ e seguir para o PR** (a recomendada), **Corrigir antes do PR** ou **Só gerar o relatório**. Só o teto aceita 🟡 em bloco; pela rodada sem lacuna nova, as 🟡 são decididas uma a uma. Uma decisão sua de rodada anterior nunca é trocada.
+- **Só com ⚪, ou com o critério atingido** (sem 🔴 pendente nem 🟡 que você já tinha mandado corrigir): uma pergunta só, "Restam {…} sem decisão. Como seguir?" → **Aceitar as ⚪ e seguir para o PR** (a recomendada), **Corrigir antes do PR** ou **Só gerar o relatório**. Só o teto aceita 🟡 em bloco; pela rodada sem lacuna nova, as 🟡 são decididas uma a uma. Uma decisão sua de rodada anterior nunca é trocada.
 - **No fim (com 🔴 ou 🟡, depois de decidir):** "Como seguir?", depois de uma mensagem com o link do relatório. Com lacunas: **Corrigir as lacunas agora**, **Parar aqui para corrigir à mão (como hoje)**, ou **Abrir o PR assim mesmo**. Sem lacunas: **Abrir o PR agora** ou **Parar aqui (como hoje)**.
 
 ## Regras que importam

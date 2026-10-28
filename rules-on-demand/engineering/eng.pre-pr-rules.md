@@ -88,7 +88,7 @@ Cada lacuna cita onde está (`arquivo:linha` com o trecho) ou o comando que a re
 O workflow **deve sempre** terminar com:
 
 1. **`gate-checklist.md`** em `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/`:
-   - semáforo (🟢 / 🟡 / 🔴), resumo (com a linha `Critério de parada:`), lacunas por área (o quê, com o "(item N)" do gate que a achou no fim, onde, por que importa, refutação, sugestão, severidade, **Decisão**), evidências e PR Brief (com as rodadas por severidade, a rodada em que o critério de parada agiu os ajustes do `architecture.md` e do `plan.md` antes da aprovação e as lições desta tarefa; guardar lições entre tarefas não é deste comando, é da #169).
+   - semáforo (🟢 / 🟡 / 🔴), resumo (com a linha `Critério de parada:`), lacunas por área (o quê, com o "(item N)" do gate que a achou no fim, onde, por que importa, refutação, sugestão, severidade, **Decisão**), evidências e PR Brief (com as rodadas por severidade, a rodada em que o critério de parada agiu, os ajustes do `architecture.md` e do `plan.md` antes da aprovação e as lições desta tarefa; guardar lições entre tarefas não é deste comando, é da #169).
    - `Rodada` e `Commit` no cabeçalho, as rodadas anteriores e, da rodada 2 em diante, a resolução das lacunas da rodada anterior.
    - Da rodada 2 em diante, as áreas cujos gates não rodaram na rodada incremental, marcadas como "Não reavaliada nesta rodada".
    - É sempre a rodada mais recente: ao rodar de novo na mesma sessão, o relatório existente é preservado como `gate-checklist-rodada-{N}.md` (seção "Rodadas" do `eng.pre-pr.md`). **Nunca** sobrescrever nem apagar uma rodada; renomear imediatamente antes de gravar.

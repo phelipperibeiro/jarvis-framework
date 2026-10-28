@@ -1,6 +1,9 @@
 // Confere os nomes soltos de skill, workflow e agente citados entre crases na prosa do framework (#191):
 // um nome que não existe mais (skill, workflow ou agente apagado) acusa. O test:comandos já confere as
 // tabelas padronizadas de chamadas; este teste cobre o texto fora delas.
+// Limites, de propósito: confere só as pastas que a #191 definiu (docs/ e os .md da raiz ficam de fora);
+// skill citada sem a barra (`eng-backend`) é texto, não chamada; nome de arquivo (`eng.x-rules.md`) não
+// é artefato; caminhos `$IDE/skills/x/SKILL.md` são conferidos pelo framework-refs.test.js.
 // Rode com: npm run test:filtro
 import { test, after } from "node:test";
 import assert from "node:assert/strict";
@@ -30,8 +33,12 @@ function walk(dir) {
 }
 
 // Blocos de código (inclusive recuados) trazem exemplos; o fechamento é uma linha só com as mesmas crases.
-// Mesma regra do framework-refs.test.js.
-const withoutCode = (text) => text.replace(/^[ \t]*(`{3,})[^\n]*\n[\s\S]*?^[ \t]*\1[ \t]*$/gm, "");
+// Mesma regra do framework-refs.test.js, mas o bloco vira linhas em branco, para o número de linha da falha
+// continuar certo.
+const withoutCode = (text) =>
+  text.replace(/^[ \t]*(`{3,})[^\n]*\n[\s\S]*?^[ \t]*\1[ \t]*$/gm, (bloco) =>
+    bloco.replace(/[^\n]/g, "")
+  );
 
 // Placeholders de exemplo: {nome}, *, …, <x>, xxx e nome-da-skill (mesma ideia do framework-refs.test.js).
 const ehPlaceholder = (trecho, nome) =>
@@ -112,6 +119,7 @@ test("o teste acusa nome inexistente e ignora exemplos, arquivos e skills sem ba
       "```",
       "`/eng-dentro-do-bloco`",
       "```",
+      "Depois do bloco: `/eng-depois`.", // acusa, na linha certa (9)
     ].join("\n")
   );
   grava("skills/SKILLS-ROADMAP.md", "Planejada: `/eng-planejada`.\n"); // arquivo fora da varredura
@@ -119,5 +127,6 @@ test("o teste acusa nome inexistente e ignora exemplos, arquivos e skills sem ba
   assert.deepEqual(acusados, [
     "workflows/engineering/eng.plan.md:2: `/eng-inexistente`",
     "workflows/engineering/eng.plan.md:2: `eng.fantasma`",
+    "workflows/engineering/eng.plan.md:9: `/eng-depois`",
   ]);
 });
