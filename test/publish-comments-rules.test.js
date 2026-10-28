@@ -71,7 +71,7 @@ const IMPERATIVOS = [
 // perguntar", "não precisa perguntar" e "não pergunte" anulam as isenções. Só o verbo conta ("anexe", "vincule",
 // "faça upload", "pôr"), não o substantivo ("Anexos no card"), o particípio ("associado ao card") nem a preposição
 // "por".
-const ISENTA_ENVIO = String.raw`(?!(?!.*\b(?:sem\s+(?:a\s+)?|não\s+precisa\s+(?:de\s+)?|não\s+)pergunt(?!a\s+duas)).*(?:regra de ouro|\bSim\b|pergunt|orient\w*\s+(?:a\s+pessoa|o\s+usu\w*)\s+a\s+(?!revis)\w))`;
+const ISENTA_ENVIO = String.raw`(?!(?!.*\b(?:sem\s+(?:a\s+)?|não\s+precisa\s+(?:de\s+)?|não\s+)pergunt(?!a\s+duas)).*(?:regra de ouro|\bSim\b|pergunt|orient\w*\s+(?:a\s+pessoa|o\s+usu\w*)\s+a\s+(?!revis)\w|\ba\s+pessoa\s+(?:pode\s+|deve\s+)?\w+))`;
 const IMPERATIVOS_POR_ORACAO = [
   new RegExp(
     String.raw`^(?!.*\b(?:não|nem|nunca|jamais|sem)\s+(?:adicion|colo(?:c|qu)|ponh|apli(?:c|qu)|marqu|inclu|rotul|etiquet)\w*\b)${ISENTA_ENVIO}.*(?:\b(?:adicion\w+|colo(?:c|qu)\w+|pôr|ponh\w+|apli(?:c|qu)\w+|inclu\w+)\s+(?:[oa]s?\s+)?(?:labels?\b|tags?\b.*\b(?:ao|no)\s+(?:PR|MR)\b)|\b(?:marqu|etiquet)\w+\s+(?:[oa]s?\s+)?(?:PRs?|MRs?)\b|\b(?:adicion\w+|colo(?:c|qu)\w+|ponh\w+|apli(?:c|qu)\w+)\s+\x60?[\w-]+\x60?\s+(?:(?:ao|no)\s+(?:PR|MR)\s+)?como\s+(?:label|tag)\b|\brotul\w+\s+(?:[oa]s?\s+)?(?:PRs?|MRs?)\b)`,
@@ -84,7 +84,7 @@ const IMPERATIVOS_POR_ORACAO = [
   // Notificar ou comunicar a squad, o time, o canal ou os stakeholders também é envio (só o imperativo; "deve ser
   // comunicada no canal" descreve o processo para pessoas).
   new RegExp(
-    String.raw`^(?!.*\b(?:não|nem|nunca|jamais|sem)\s+(?:notific|comunic|avis|post|envi|public|mand|cri|abr)\w*\b)${ISENTA_ENVIO}.*(?:\b(?:notifi(?:car|ca|que|cando)|comuni(?:car|ca|que|cando)|avis(?:ar|e|ando)|post(?:ar|e|em|ando)|envi(?:ar|e|em|ando)|publi(?:car|que|cando)|mand(?:ar|e|em|ando))\b(?:\s+(?!que\b)\S+){0,4}?\s+(?:(?:[oa]s?|à|às|ao|aos|n[oa]s?|para\s+[oa]s?|em)\s+)?(?:squads?|times?|canal|canais|equipes?|stakeholders?|requisitante|PM|owner|consumidores)\b|(?:\b(?:cri(?:e|em|ando)|abr(?:a|am|indo))|^\s*(?:[-*+]\s+|\d+[.)]\s+)?(?:criar|abrir))\s+(?:(?:[oa]s?|um|uma)\s+)?(?:cards?|issues?|tickets?)\b)`,
+    String.raw`^(?!.*\b(?:não|nem|nunca|jamais|sem)\s+(?:notific|comunic|avis|post|envi|public|mand|inform|dispar|cri|abr)\w*\b)${ISENTA_ENVIO}.*(?:\b(?:notifi(?:car|ca|que|cando)|comuni(?:car|ca|que|cando)|avis(?:ar|e|ando)|post(?:ar|e|em|ando)|envi(?:ar|e|em|ando)|publi(?:car|que|cando)|mand(?:ar|e|em|ando)|inform(?:ar|e|em|ando)|dispar(?:ar|e|em|ando))\b(?:\s+(?!que\b)\S+){0,4}?\s+(?:(?:[oa]s?|à|às|ao|aos|n[oa]s?|para\s+[oa]s?|em)\s+)?(?:squads?|times?|canal|canais|equipes?|stakeholders?|requisitante|PM|owner|consumidores|Slack)\b|(?:\b(?:cri(?:e|em|ando)|abr(?:a|am|indo))|^\s*(?:[-*+]\s+|\d+[.)]\s+)?(?:criar|abrir))\s+(?:(?:[oa]s?|um|uma)\s+)?(?:(?:cards?|issues?|tickets?)\b|(?:subtarefas?|workitems?)\b.*\b(?:no|na)\s+(?:Jira|board)\b))`,
     "iu"
   ),
 ];
@@ -392,7 +392,10 @@ test("nenhum imperativo manda publicar sem a pergunta", () => {
       .forEach((linha, i) => {
         // Títulos ("### 4.2 — Comunicar à squad") e linhas de tabela (resumos) não são imperativos: o passo que
         // eles resumem é que é conferido.
-        for (const oracao of /^\s*[#|]/.test(linha) ? [] : linha.split(/[.;:](?=\s|$)/))
+        // A vírgula também separa quando a oração seguinte começa por negação ("Notifique o time, nunca crie card").
+        for (const oracao of /^\s*[#|]/.test(linha)
+          ? []
+          : linha.split(/[.;:](?=\s|$)|,(?=\s+(?:não|nem|nunca|jamais|sem)\b)/))
           for (const padrao of IMPERATIVOS_POR_ORACAO)
             assert.doesNotMatch(
               oracao,
@@ -563,7 +566,9 @@ test("cada ponto que envia algo tem a pergunta logo antes", () => {
         // "o `jarvis vcs create-merge` não põe label" só descreve o comando.
         if (
           /`jarvis vcs create-merge` n[aã]o p[oõ]e label/.test(linha) &&
-          !/git push|\bgh |\bglab |\bacli /.test(linha)
+          !/git push|\bgh |\bglab |\bacli |jarvis (?:docs publish|tasks comment|vcs create-issue)/.test(
+            linha
+          )
         )
           return;
         if (!COMANDO.test(linha) || DESCRITIVAS.some(([f, d]) => f === nome && d.test(linha)))

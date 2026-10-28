@@ -213,16 +213,17 @@ test("listRulesForProfile: AGENTS.md nunca é filtrado, rtk é opt-in, sem bloco
 // Issue #184 (pre-pr 11, 2026-10-28): +26 B em todos os perfis — rules/AGENTS.md descreve o eng.pr como "Push e PR, depois da pergunta (regra de ouro)".
 // Issue #184 (pre-pr 13, 2026-10-28): +191 B em todos os perfis — eng-security-rules.md: o label `security` é registrado no PR Brief e a pessoa é orientada a pô-lo no PR (o Jarvis não altera o PR sem perguntar).
 // Issue #184 (pre-pr 17, 2026-10-28): +3 B em todos os perfis — eng-security-rules.md diz que o `jarvis vcs create-merge` não põe label.
+// Issue #184 (pre-pr 19, 2026-10-28): +104 B em todos os perfis — eng-rules.md separa os documentos de trabalho da cópia local do Central docs.
 const BASE = [
   [
     "FULLCYCLE/GENERALIST/ENGINEERING/CORE",
     profile("FULLCYCLE", "GENERALIST", "ENGINEERING"),
     15,
-    104064,
+    104168,
   ],
-  ["BACKEND/SENIOR/ENGINEERING/CORE", profile("BACKEND", "SENIOR", "ENGINEERING"), 11, 70745],
-  ["FRONTEND/PLENO/ENGINEERING/CORE", profile("FRONTEND", "PLENO", "ENGINEERING"), 11, 71288],
-  ["QA/QA-ENGINEER/ENGINEERING/CORE", profile("QA", "QA-ENGINEER", "ENGINEERING"), 11, 70524],
+  ["BACKEND/SENIOR/ENGINEERING/CORE", profile("BACKEND", "SENIOR", "ENGINEERING"), 11, 70849],
+  ["FRONTEND/PLENO/ENGINEERING/CORE", profile("FRONTEND", "PLENO", "ENGINEERING"), 11, 71392],
+  ["QA/QA-ENGINEER/ENGINEERING/CORE", profile("QA", "QA-ENGINEER", "ENGINEERING"), 11, 70628],
 ];
 
 for (const [nome, p, arquivos, bytes] of BASE) {

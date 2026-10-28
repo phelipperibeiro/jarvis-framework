@@ -112,7 +112,7 @@ Se `CENTRAL_DOCS_STORAGE` definido no ENV.md:
 
 4. Se documentos encontrados:
    - Carregar automaticamente como contexto
-   - Informar ao usuário: "✅ Documentos encontrados no central-docs: [lista]"
+   - Informar ao usuário: "✅ Documentos encontrados (Central docs e `docs/jarvis/`): [lista]"
    - Incorporar ao contexto antes do Passo 1
 
 5. Se não encontrado:

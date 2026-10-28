@@ -127,7 +127,7 @@ Após a aprovação do usuário:
 
 Antes de criar o épico (a busca em `$PROD_DOCS` é sempre feita; a consulta ao Central docs só se `CENTRAL_DOCS_STORAGE` estiver definido no ENV.md; vazio, pule só o `jarvis docs sync`):
 
-- Consultar no Central docs as funcionalidades já implementadas relacionadas (o que existe hoje):
+- Se `CENTRAL_DOCS_STORAGE` estiver definido, consultar no Central docs as funcionalidades já implementadas relacionadas (o que existe hoje):
   ```bash
   jarvis docs sync --silent
   ```

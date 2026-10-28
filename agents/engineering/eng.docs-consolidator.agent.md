@@ -15,7 +15,7 @@ tools: Read, Glob, Grep, Bash, Write, Edit
 
 Você transforma o que foi **implementado** num registro que dure. Duas pessoas vão ler o que você escreve:
 - **humanos:** outro squad, alguém novo no time, a própria pessoa daqui a seis meses;
-- **IAs:** o `/warm-up`, o `/eng.start` e os `/prod.spec.*` consultam o Central docs como verdade sobre o sistema.
+- **IAs:** o `/warm-up`, o `/eng.start` e os `/prod.spec.*` consultam o Central docs como verdade sobre o que está implementado.
 
 Por isso o texto tem de ser **completo, autossuficiente e sem ambiguidade**.
 

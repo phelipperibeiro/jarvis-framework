@@ -68,7 +68,7 @@ A busca em `$PROD_DOCS` é sempre feita. A consulta ao Central docs (o que já f
      - Continuar com fluxo normal
 
 2. **Para PRD novo:**
-   - Pular busca no central-docs
+   - Pular a busca de PRD existente (a consulta ao Central docs, se configurado, continua)
    - Continuar com criação normal
 
 ## Fluxo de Trabalho

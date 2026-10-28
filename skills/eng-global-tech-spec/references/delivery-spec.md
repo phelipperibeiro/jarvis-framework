@@ -709,7 +709,7 @@ Apresente ao usuário:
 
 #### 6.4 Anexo da tech spec na issue (opcional, com pergunta)
 
-Só com board configurado (no freelance não há issue: pule este passo). Para anexá-la na issue do board, depois da aprovação da 6.3, mostre o que vai e pergunte com `AskUserQuestion` (regra de ouro, `eng.integrations-rules.md`): **Sim, anexar** / **Não, manter só na sessão**. Com o Sim: no Jira, com a `acli` logada e `TASK_MANAGER_ACCESS=cli` (ou vazio), anexe pela `acli` (confira no `--help` se ela anexa arquivo); em GitHub ou GitLab (a CLI não anexa arquivo à issue), ou sem a `acli`, ou com acesso manual, oriente a pessoa a anexar à mão. Sem o Sim, a tech spec fica só na sessão e a mensagem da 8.2 diz isso.
+Só com board configurado (no freelance não há issue: pule este passo). Para anexá-la na issue do board, depois da aprovação da 6.3, mostre o que vai e pergunte com `AskUserQuestion` (regra de ouro, `eng.integrations-rules.md`): **Sim, anexar** / **Não, manter só na sessão**. Com o Sim: no Jira, com a `acli` logada e `TASK_MANAGER_ACCESS=cli` (ou vazio), anexe pela `acli` (confira no `--help` se ela anexa arquivo); no Jira sem a `acli` logada ou com acesso manual, e em GitHub ou GitLab (a CLI não anexa arquivo à issue), oriente a pessoa a anexar à mão. Sem o Sim, a tech spec fica só na sessão e a mensagem da 8.2 diz isso.
 
 ---
 
@@ -741,7 +741,7 @@ Use o formato **Descrição da subtarefa no board** de `$IDE/templates/engineeri
 
 #### 7.3 Criação (Jira pela `acli`; outros boards, template)
 
-Fora do Jira não há pergunta: entregue o template formatado direto. No Jira, antes de criar as subtarefas, mostre o texto e pergunte com `AskUserQuestion` (**Sim, publicar** / **Não, manter só na sessão**), regra de ouro de `eng.integrations-rules.md`; sem o Sim, entregue só o template formatado e deixe o texto na sessão. O comentário da 7.4 tem a sua própria pergunta, feita pelo `/eng-global-task-comment`.
+Só há pergunta quando a criação vai sair: no Jira, com a `acli` logada e `TASK_MANAGER_ACCESS=cli` (ou vazio). Nos demais casos (fora do Jira, sem a `acli` ou com acesso manual) não há envio e, portanto, nenhuma pergunta: entregue o template formatado direto. Quando a criação vai sair, antes de criar as subtarefas, mostre o texto e pergunte com `AskUserQuestion` (**Sim, publicar** / **Não, manter só na sessão**), regra de ouro de `eng.integrations-rules.md`; sem o Sim, entregue só o template formatado e deixe o texto na sessão. O comentário da 7.4 tem a sua própria pergunta, feita pelo `/eng-global-task-comment`.
 
 **No Jira, com a `acli` logada, `TASK_MANAGER_ACCESS=cli` (ou vazio) e o Sim:**
 

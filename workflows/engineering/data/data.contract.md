@@ -173,7 +173,7 @@ Notificar no canal de solicitação de dados (thread original), depois do Sim ac
 
 Mostre o texto do card e pergunte com `AskUserQuestion` antes de criar (regra de ouro); sem o Sim, deixe o card descrito para a pessoa criar.
 
-Criar card no board `DE` (ou equivalente), pela CLI oficial do vendor e com o Sim (sem a CLI logada ou com acesso manual, a pessoa cria com o texto pronto), com:
+Criar card no board `DE` (ou equivalente), pela cadeia de `eng.integrations-rules.md` (`jarvis` → CLI do vendor) e com o Sim (sem a CLI logada, com acesso manual ou sem board, a pessoa cria com o texto pronto), com:
 - Squad requisitante
 - Tabela/recurso
 - Status: `Ativo`
@@ -210,5 +210,5 @@ Quando o contrato não for mais necessário:
 [ ] Campos sensíveis com tratamento aplicado (ou ausência confirmada)
 [ ] Contrato salvo no repositório de pipelines
 [ ] Squad requisitante notificada com acesso e SLA (ou texto entregue à pessoa, sem o Sim)
-[ ] Card aberto no board do time de Data (ou descrito para a pessoa criar)
+[ ] Card aberto no board do time de Data (ou descrito para a pessoa criar; sem board, só o texto)
 ```
