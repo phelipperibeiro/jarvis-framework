@@ -80,6 +80,12 @@ const IMPERATIVOS_POR_ORACAO = [
     String.raw`^(?!.*\bnão\s+(?:anex|vincul|associ|fa[çz]|sub|envi)\w*\b)${ISENTA_ENVIO}.*(?:\b(?:anex(?:a|e|ar|em|ando|á-l[ao])|vincul(?:e|ar|em|ando)|associ(?:e|ar|em|ando)|fa[çz]\w*\s+(?:o\s+)?(?:upload|attach)|suba)\b.*(?:^|\s)(?:no|na|nos|nas|ao|aos|à|às|para\s+[oa]s?)\s+(?:Jira|issues?|cards?|tickets?|histórias?)\b|\bcomo\s+anexo\s+(?:d[oa]|n[oa])\s+(?:issue|card|ticket|história)\b)`,
     "iu"
   ),
+  // Notificar ou comunicar a squad, o time, o canal ou os stakeholders também é envio (só o imperativo; "deve ser
+  // comunicada no canal" descreve o processo para pessoas).
+  new RegExp(
+    String.raw`^(?!.*\bnão\s+(?:notific|comunic|avis)\w*\b)${ISENTA_ENVIO}.*\b(?:notifi(?:car|ca|que|cando)|comuni(?:car|ca|que|cando)|avis(?:ar|e|ando))\b\s+(?:(?:[oa]s?|à|às|ao|aos|n[oa]s?)\s+)?(?:squads?|times?|canal|canais|equipes?|stakeholders?|requisitante)\b`,
+    "iu"
+  ),
 ];
 
 // Dirent.isDirectory() não segue link simbólico, então um link quebrado ou circular não derruba a varredura.
@@ -383,12 +389,14 @@ test("nenhum imperativo manda publicar sem a pergunta", () => {
     readFileSync(file, "utf8")
       .split("\n")
       .forEach((linha, i) => {
-        for (const oracao of linha.split(/[.;:](?=\s|$)/))
+        // Títulos ("### 4.2 — Comunicar à squad") e linhas de tabela (resumos) não são imperativos: o passo que
+        // eles resumem é que é conferido.
+        for (const oracao of /^\s*[#|]/.test(linha) ? [] : linha.split(/[.;:](?=\s|$)/))
           for (const padrao of IMPERATIVOS_POR_ORACAO)
             assert.doesNotMatch(
               oracao,
               padrao,
-              `${rel(file)}:${i + 1}: manda rotular o PR ou anexar no card sem a pergunta. ${DE_PROPOSITO}`
+              `${rel(file)}:${i + 1}: manda rotular o PR, anexar no card ou notificar sem a pergunta. ${DE_PROPOSITO}`
             );
         assert.ok(
           !mandaUsarMcpOuApi(linha),
