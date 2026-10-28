@@ -45,15 +45,15 @@ Antes de abrir o PR/MR, este comando **revê a branch atrás de possíveis lacun
 | Skills recomendados | `/jarvis-docs-index` | Se for necessário atualizar o índice de documentação |
 | Skills recomendados | `/eng-platform` + `PLATFORM_SPECIALIZATIONS` | Se a feature tiver requisitos não-funcionais de latência, throughput ou escalabilidade |
 | Skills recomendados | `/eng-backend` e `/eng-frontend` (via `eng.specializations-rules.md`) | Para validar código de backend (endpoints, autenticação, workers) ou de frontend (componentes, performance de UI, WCAG 2.1 AA); a regra também carrega as especializações registradas no ENV.md |
-| Gates › item 1 | `prod.pm-checker` (agente) | Sempre — verificar alinhamento da branch com os docs de produto e engenharia |
-| Gates › item 2 | `eng.dev-code-reviewer` (agente) | Sempre — revisar o código antes de lançar |
-| Gates › item 3 | `eng.qa.test-planner` (agente) | Sempre — identificar gaps de cobertura de testes na branch |
-| Gates › item 5 | `eng.qa.test-architect` (agente) | Se a feature tiver requisitos não-funcionais (no `architecture.md` ou explícitos na task) |
-| Gates › item 6 | `/eng-qa` + `QA_SPECIALIZATIONS` | Sempre — frontend e/ou backend conforme o projeto |
-| Gates › item 7 | `eng.frontend.agent` (agente) | Se a branch tiver mudanças de interface (componentes, estilos, estado) |
-| Gates › item 8 | `eng.ux-designer.agent` (agente) | Se a branch introduzir nova feature de UI ou alterar fluxo de usuário |
-| Gates › item 9 | `eng.docs-writer` (agente) | Sempre — apontar documentação do projeto desatualizada (sem editar) |
-| Gates › item 10 | Nenhuma — checklist inline | Se a branch tocar em auth, sessions, inputs de usuário, CORS, CSP, permissões ou adicionar endpoints públicos |
+| Gates › item 1 | `prod.pm-checker` (agente) | Sempre na rodada 1; da rodada 2 em diante, só se o diff desde o `Commit:` da rodada anterior tiver qualquer arquivo (Rodada incremental) — verificar alinhamento da branch com os docs de produto e engenharia |
+| Gates › item 2 | `eng.dev-code-reviewer` (agente) | Sempre na rodada 1; da rodada 2 em diante, só se o diff desde o `Commit:` da rodada anterior tiver arquivo fora de `docs/` (Rodada incremental) — revisar o código antes de lançar |
+| Gates › item 3 | `eng.qa.test-planner` (agente) | Sempre na rodada 1; da rodada 2 em diante, só se o diff desde o `Commit:` da rodada anterior tiver arquivo fora de `docs/` (Rodada incremental) — identificar gaps de cobertura de testes na branch |
+| Gates › item 4 | `eng.qa.test-architect` (agente) | Se a feature tiver requisitos não-funcionais (no `architecture.md` ou explícitos na task); da rodada 2 em diante, também só com arquivo fora de `docs/` no diff desde o `Commit:` da rodada anterior |
+| Gates › item 5 | `/eng-qa` + `QA_SPECIALIZATIONS` | Sempre na rodada 1; da rodada 2 em diante, só se o diff desde o `Commit:` da rodada anterior tiver qualquer arquivo (Rodada incremental) — frontend e/ou backend conforme o projeto |
+| Gates › item 6 | `eng.frontend.agent` (agente) | Se a branch tiver mudanças de interface (componentes, estilos, estado); da rodada 2 em diante, só se o diff desde o `Commit:` da rodada anterior as tiver |
+| Gates › item 7 | `eng.ux-designer.agent` (agente) | Se a branch introduzir nova feature de UI ou alterar fluxo de usuário; da rodada 2 em diante, só se o diff desde o `Commit:` da rodada anterior o fizer |
+| Gates › item 8 | Nenhuma — checklist inline | Se a branch tocar em auth, sessions, inputs de usuário, CORS, CSP, permissões ou adicionar endpoints públicos; da rodada 2 em diante, só se o diff desde o `Commit:` da rodada anterior os tocar |
+| Gates › item 9 | `eng.docs-writer` (agente) | Sempre na rodada 1; da rodada 2 em diante, só se o diff desde o `Commit:` da rodada anterior tiver qualquer arquivo (Rodada incremental) — apontar documentação do projeto desatualizada (sem editar) |
 | Publicação do relatório | `/eng-global-task-comment` | Só se o usuário escolher um dos **Sim** no fim: o resumo ou o `gate-checklist.md` completo, com as decisões, vira um comentário na issue/card (freelance pula: nesse modo o relatório fica só na sessão) |
 
 ## Regras de Execução
@@ -63,6 +63,8 @@ Antes de abrir o PR/MR, este comando **revê a branch atrás de possíveis lacun
 - **Evidências**: cite o comando rodado e o resultado, ou `arquivo:linha`, para cada lacuna.
 
 ## Gates (revisão)
+
+Na rodada 1, todos os gates abaixo rodam conforme a condição de cada um. Da rodada 2 em diante, vale também a seção "Rodada incremental": um gate só roda se o diff desde o `Commit:` da rodada anterior tocar o que ele lê.
 
 1. Invoque o agente [prod.pm-checker]($IDE/agents/product/prod.pm-checker.md) para apontar desalinhamentos entre a branch e os documentos de produto e de engenharia (em `$PROD_DOCS`, `$ENG_DOCS` e no Central docs).
 2. Invoque o agente [eng.dev-code-reviewer]($IDE/agents/engineering/eng.dev-code-reviewer.md) para apontar problemas de código (bugs, legibilidade, padrões do projeto).
@@ -86,6 +88,24 @@ O `/eng.pre-pr` pode rodar mais de uma vez na mesma sessão (por exemplo, depois
 - **Nunca** apague nem sobrescreva uma rodada, e não edite o arquivo renomeado.
 
 O `gate-checklist.md` é sempre a rodada mais recente: o `/eng.pr` e o `/eng.spec-consolidate` leem só ele; as rodadas anteriores são histórico.
+
+### Rodada incremental
+
+Da rodada 2 em diante, um gate roda só se o diff desde a rodada anterior tocar o que ele lê. O diff incremental decide apenas **se** o gate roda: o gate que roda continua revisando a branch inteira em relação à branch base.
+
+- **Diff incremental:** `git diff --name-only {Commit da rodada anterior}..HEAD`, mais os arquivos de `git status --porcelain` (mudanças ainda sem commit). No modo workspace, um diff por repositório do `Commit:` da rodada anterior (`git -C {repo} …`); repositório com mudanças na branch que não estava nesse `Commit:` entra inteiro.
+- **Escopo de cada gate**, pelo que ele lê (não pelo que ele aponta):
+
+  | Gate | Roda da rodada 2 em diante se o diff incremental tiver |
+  |---|---|
+  | Alinhamento, testes automatizados e documentação do projeto (itens 1, 5 e 9) | qualquer arquivo |
+  | Código e cobertura de testes (itens 2 e 3) | algum arquivo fora de `docs/` |
+  | Não funcionais, interface, UX e segurança (itens 4, 6, 7 e 8) | o que já dispara o gate pela condição dele, olhando só o diff incremental |
+
+- **Lacuna que depende de arquivo fora do escopo do gate** (por exemplo, documentação que ficou desatualizada por uma mudança de código): fica coberta porque o alinhamento e a documentação rodam com qualquer arquivo no diff.
+- **Sem nenhum arquivo no diff incremental:** nenhum gate roda; a rodada serve só para decidir de novo as pendências, no fechamento.
+- **Como o relatório marca:** a área cujos gates não rodaram leva, no lugar da tabela, "Não reavaliada nesta rodada (sem diff no escopo desde `{Commit da rodada anterior}`)"; as lacunas de um gate que não rodou ficam `Não reavaliada` na "Resolução da rodada anterior".
+- **Todos os gates rodam:** na rodada 1, quando a rodada anterior não tem `Commit:` (relatório de versão antiga; avise em uma linha) e quando a pessoa pedir.
 
 ### Modelo
 
@@ -118,7 +138,7 @@ Grave em `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/gate-checklist.md`:
 |---|---|---|---|---|---|---|
 | 1 | {o que falta ou está errado} | [`{arquivo}:{linha}`](../../../../{repo}/{caminho}#L{linha}) | {impacto, em linguagem simples} | {como resolver} | 🔴 Bloqueador / 🟡 Importante / ⚪ Menor | {🔧 Corrigir \| 👍 Aceitar: motivo} |
 
-(uma tabela por área; área sem lacuna: "Nenhuma lacuna encontrada.")
+(uma tabela por área; área sem lacuna: "Nenhuma lacuna encontrada."; área cujos gates não rodaram nesta rodada: "Não reavaliada nesta rodada (sem diff no escopo desde `{Commit da rodada anterior}`)", seção "Rodada incremental")
 
 ## Evidências
 {Comandos rodados (testes, lint, build, audit) e resultados.}
@@ -134,7 +154,7 @@ A coluna **Decisão** nasce vazia: quem preenche é o usuário (exceto a decisã
 
 A **Resolução da rodada anterior** lista as lacunas da rodada anterior com decisão `🔧 Corrigir` (ou `Corrigir` sem ícone, de um relatório anterior à rodada 3, que vale igual) e as sem decisão (coluna vazia; no fechamento, as ⚪ só recebem decisão pela opção "Corrigir todas"). As `👍 Aceitar` não entram e, se reaparecerem, voltam como lacunas novas, com a Decisão vazia. A lacuna `🔧 Corrigir` que continua `Ainda presente` e reaparece nas tabelas novas herda a decisão: nasce com `🔧 Corrigir`, para o usuário confirmar ou mudar: as 🔴 e 🟡 herdadas em "Decidir uma a uma", as ⚪ herdadas à mão, editando a coluna Decisão. As regras da tabela:
 
-- **Situação:** `Corrigida` (não aparece mais nesta rodada), `Ainda presente` (aparece de novo nas tabelas desta rodada) ou `Não reavaliada` (o gate ou a área dela não rodou nesta rodada, então sumir não prova correção). A decisão fica só na coluna "Decisão anterior".
+- **Situação:** `Corrigida` (não aparece mais nesta rodada), `Ainda presente` (aparece de novo nas tabelas desta rodada) ou `Não reavaliada` (o gate ou a área dela não rodou nesta rodada, inclusive quando a rodada incremental o pulou, então sumir não prova correção). A decisão fica só na coluna "Decisão anterior".
 - **Rodada anterior:** é a do arquivo renomeado (`M`) ou, sem `gate-checklist.md`, o `.md` de maior número; o `Commit:` e as lacunas vêm dela.
 - **Coluna "Onde":** o arquivo é o caminho do link depois de `../../../../`, sem a âncora (`#…`, de linha ou de título) (no modo workspace, o primeiro trecho é o `{repo}` só se for uma subpasta com `.git/` ou listada em `WORKSPACE_REPOS`, e o resto é o arquivo; senão, o arquivo está fora de repositório); com vários arquivos, rode o log em cada um e junte os hashes (no workspace, escreva `{repo}@{hash}`; se um arquivo tem hash e outro não, liste só os hashes); arquivo fora de repositório (da sessão ou em `docs/jarvis/`; no modo workspace, também na raiz do workspace, como `AGENTS.md`), `—`.
 - **Corrigido em:** nas situações `Ainda presente` e `Não reavaliada`, `—`. Para as `Corrigida`, rode `git merge-base --is-ancestor {Commit da rodada anterior} HEAD`; se falhar (rebase, amend, squash ou outro clone), escreva `— (commit anterior fora do histórico)`. Se passar, ache o hash com `git log --format=%h {Commit da rodada anterior}..HEAD -- {arquivo}` (com mais de um, liste todos, separados por vírgula). Se a correção está no diretório de trabalho sem commit, `sem commit: {arquivo}`; se o log volta vazio (por exemplo, a correção criou um teste novo e não tocou o arquivo apontado), `— (não identificado)`. O hash é indicativo: mostra o commit que mexeu no arquivo apontado, não prova que foi a correção.
