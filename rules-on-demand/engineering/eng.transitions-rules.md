@@ -44,7 +44,7 @@ Lida pelos workflows `eng.start`, `eng.plan`, `eng.work`, `eng.pre-pr` e `eng.pr
 | `eng.work` | Início | Depois do work | Rodar o `/eng.pre-pr` · Rodar o `/eng.pr` · Fluxo normal (como hoje: o usuário segue os próximos comandos manualmente) |
 | `eng.pre-pr` | Fim | Com lacunas: "Como seguir?" (depois da mensagem com o link do relatório) | Corrigir as lacunas agora · Parar aqui para corrigir à mão (como hoje) · Abrir o PR assim mesmo |
 | `eng.pre-pr` | Fim | Sem lacunas: "Como seguir?" | Abrir o PR agora · Parar aqui (como hoje) |
-| `eng.pre-pr` | Fim | Variante B do fechamento (sem 🔴 pendente nem 🟡 herdada com `🔧 Corrigir`; só ⚪ sem decisão, ou também 🟡 com o critério de parada atingido): "Restam {c} lacunas ⚪… Como seguir?" (substitui as perguntas 2 e 4 do fechamento) | Aceitar as ⚪ e seguir para o PR · Corrigir antes do PR · Só gerar o relatório (como hoje) |
+| `eng.pre-pr` | Fim | Variante B do fechamento (sem 🔴 pendente nem 🟡 herdada com `🔧 Corrigir`; só ⚪ sem decisão, ou também 🟡 com o critério de parada atingido): "Restam {c} lacunas ⚪… Como seguir?" (substitui as perguntas 2 e 4 do fechamento; com 🟡 sem decisão, o rótulo da primeira opção varia conforme o gatilho: ver o "Fechamento" do `eng.pre-pr.md`) | Aceitar as ⚪ e seguir para o PR · Corrigir antes do PR · Só gerar o relatório (como hoje) |
 | `eng.pr` | Início | "O que fazer com o PR?" | Revisar o texto e publicar (como hoje) · Publicar sem revisar o texto · Só gerar os arquivos (o usuário abre o PR à mão; quem escolheu revisar também tem o `[Só gerar os arquivos]` na revisão da 4.2) |
 | `eng.pr` | Fim | "O PR já foi aprovado e mergeado?" | Ainda não (como hoje) · Sim, rodar o `/eng.spec-consolidate` |
 
