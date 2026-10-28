@@ -34,7 +34,7 @@ Entende o que precisa ser construído, tira as dúvidas com você e propõe uma 
 
 - Lê o código relevante e os docs técnicos do projeto
 - Monta a proposta: visão geral antes e depois, componentes afetados e dependências, padrões mantidos ou introduzidos, dependências externas, restrições e suposições, trade-offs e alternativas, consequências negativas e lista dos principais arquivos a editar ou criar. Pode incluir um diagrama Mermaid
-- Mostra como artefato, itera até você aprovar e salva o resultado como comentário no card
+- Mostra como artefato, itera até você aprovar e salva o resultado como comentário no card, só depois de mostrar o texto e você dizer Sim (regra de ouro)
 
 ## Regras que importam
 

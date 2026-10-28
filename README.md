@@ -187,7 +187,7 @@ O `/jarvis-init` pergunta o `ARTIFACT_STYLE` (variável do `ENV.md`):
 | Valor | O que acontece |
 |---|---|
 | `ai-generated` (padrão) | Como sempre: metadados, links de rastreabilidade e padrões da ferramenta |
-| `human-generated` | Nada do que o Jarvis publica (commit, PR/MR, comentário no card, issue) leva marca de IA ou da IDE: o `/eng.pr` confere e limpa antes do push. Todo documento gerado pergunta, no fim, se você quer a versão humanizada, gravada ao lado como `{nome}.public.md` para repassar a clientes ou stakeholders |
+| `human-generated` | Nada do que o Jarvis publica (commit, PR/MR, comentário no card, issue; sempre depois da pergunta) leva marca de IA ou da IDE: o `/eng.pr` confere e limpa antes do push. Todo documento gerado pergunta, no fim, se você quer a versão humanizada, gravada ao lado como `{nome}.public.md` para repassar a clientes ou stakeholders |
 
 Com `human-generated`, o `/jarvis-init` copia a rule `rules/artifact-style-rules.md` (eixo `ARTIFACT_STYLE` do `Applies to`); com `ai-generated`, ela nem existe na sessão. Trocou o valor à mão? Rode `/jarvis-init upgrade`.
 
@@ -228,6 +228,6 @@ Precisa de ajuda?
 - **Engenharia (um guia por comando `eng.*`)** &mdash; [`docs/engenharia/`](docs/engenharia/README.md)
 - **Indice de docs/** &mdash; [`docs/README.md`](docs/README.md)
 - **Instrucoes para agentes / mapa de skills** &mdash; `AGENTS.md`
-- **Issues/Feedback** &mdash; skill `jarvis-report-issue` (sem a CLI do host (`gh`), sem login ou sem rede, o issue fica em `.jarvis/issues/issue-{desc}.md` para abrir à mão)
+- **Issues/Feedback** &mdash; skill `jarvis-report-issue` (pergunta antes de abrir; sem a CLI do host (`gh`), sem login, sem rede ou com o seu Não, o issue fica em `.jarvis/issues/issue-{desc}.md` para abrir à mão)
 - **Duvidas sobre comandos** &mdash; Pergunte diretamente ao agent:
   `"Como funciona /eng.start?"` | `"Qual a diferenca entre /eng.work e /pr?"` | `"O que e CDD?"`
