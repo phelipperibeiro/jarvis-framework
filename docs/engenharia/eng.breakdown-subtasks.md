@@ -8,7 +8,7 @@ Recebe uma Tech Spec e a quebra em subtarefas tão detalhadas que uma pessoa jú
 
 ## O que é
 
-Cada subtarefa vira um card com **sua própria branch, seu commit e seu deploy**. Por isso ela precisa ser uma **fatia vertical**: uma entrega completa que, sozinha, pode ser mergeada sem quebrar o sistema. É como um tutorial passo a passo.
+Cada subtarefa vira um card (este comando não cria o card: entrega o texto para a pessoa criar; a criação automática, só no Jira e depois da pergunta, é do `/eng.build-tech-spec`) com **sua própria branch, seu commit e seu deploy**. Por isso ela precisa ser uma **fatia vertical**: uma entrega completa que, sozinha, pode ser mergeada sem quebrar o sistema. É como um tutorial passo a passo.
 
 Não confunda com o [`prod.spec.breakdown`](../produto/prod.spec.breakdown.md), que fatia uma **especificação de produto** em versões, épicos e histórias. Este aqui quebra uma **Tech Spec** de engenharia.
 
@@ -26,9 +26,9 @@ Não confunda com o [`prod.spec.breakdown`](../produto/prod.spec.breakdown.md), 
 ## Como funciona
 
 1. **Análise profunda da Tech Spec:** extrai componentes, decisões, escopo, riscos, testes, contratos de API, modelos de dados e fluxos
-2. **Investigação do codebase (obrigatória)** antes de criar qualquer subtarefa: acha arquivos parecidos, entende os padrões e registra o que encontrou
+2. **Investigação do codebase (obrigatória)** antes de escrever qualquer subtarefa: acha arquivos parecidos, entende os padrões e registra o que encontrou
 3. **Estratégia de breakdown:** aplica o princípio da independência, define a ordem lógica e os prefixos de stack (`[BACKEND]`, `[FRONTEND]`, `[DATA]`, `[QA]`, `[INFRA]`, `[DOCS]`), e mapeia dependências (depende de, desbloqueia, paralela com)
-4. **Cria as subtarefas** pelo template, com: o que fazer, contexto, stack, arquivos a criar ou modificar, passo a passo com código completo, testes com cenários, checklist, riscos, dependências e referências
+4. **Escreve as subtarefas** pelo template, com: o que fazer, contexto, stack, arquivos a criar ou modificar, passo a passo com código completo, testes com cenários, checklist, riscos, dependências e referências
 5. **Gera a saída** em Markdown, uma seção por subtarefa, e roda o checklist de qualidade final
 
 ### O teste de independência

@@ -39,7 +39,7 @@ Você opera estritamente dentro do **contexto de tarefas Jira e especificações
    - Casos extremos não cobertos
    - Riscos potenciais, ambiguidades ou complexidade oculta
 
-5. Comentar melhorias diretamente no Jira:
+5. Comentar melhorias no Jira pelo `/eng-global-task-comment`, que mostra o texto e pergunta antes de enviar (regra de ouro, `eng.integrations-rules.md`):
    - Sugerir redação mais clara
    - Propor critérios de aceitação faltantes
    - Recomendar cenários de teste adicionais
@@ -54,7 +54,7 @@ Você opera estritamente dentro do **contexto de tarefas Jira e especificações
 
 ### Formato de Saída (Sempre Estruturado)
 
-Use o seguinte formato em comentários Jira:
+Use o seguinte formato nos comentários Jira (eles só saem depois da pergunta, regra de ouro):
 
 **Resumo da Revisão de Qualidade**
 

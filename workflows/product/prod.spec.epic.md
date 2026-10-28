@@ -123,15 +123,15 @@ Após a aprovação do usuário:
 1. Atualize a PRD com as alterações relacionadas ao épico
 2. Atualize o arquivo de breakdown (plan) com as alterações relacionadas ao épico
 
-## Busca no Central Docs (condicional)
+## Busca de contexto (`$PROD_DOCS` sempre; Central docs se configurado)
 
-Se `CENTRAL_DOCS_STORAGE` definido no ENV.md, antes de criar o épico:
+Antes de criar o épico (a busca em `$PROD_DOCS` é sempre feita; a consulta ao Central docs só se `CENTRAL_DOCS_STORAGE` estiver definido no ENV.md; vazio, pule só o `jarvis docs sync`):
 
-- Consultar no Central docs as funcionalidades já implementadas relacionadas (o que existe hoje):
+- Se `CENTRAL_DOCS_STORAGE` estiver definido, consultar no Central docs as funcionalidades já implementadas relacionadas (o que existe hoje):
   ```bash
   jarvis docs sync --silent
   ```
-- Buscar PRD e épicos existentes em `$PROD_DOCS` e, no Central docs, as funcionalidades já implementadas relacionadas
+- Buscar PRD e épicos existentes em `$PROD_DOCS`
 - Se encontrar: carregar como contexto e informar o usuário
 - Se não encontrado: continuar com fluxo normal
 

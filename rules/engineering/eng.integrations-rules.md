@@ -9,7 +9,7 @@ O Jarvis não assume Jira, GitLab ou Slack. Leia `$IDE/ENV.md` e siga a cadeia d
 | Variável | Vendors | Como |
 |----------|---------|------|
 | `TASK_MANAGER` (+ `TASK_MANAGER_ACCESS`, `TASK_MANAGER_URL_BASE`) | jira (`acli`, só Cloud), github (`gh`), gitlab (`glab`) | `jarvis tasks comment` |
-| `VERSION_CONTROL` (+ `VERSION_CONTROL_ACCESS`) | github (`gh`), gitlab (`glab`); repo vem do `git remote` | `jarvis vcs create-merge` / `create-issue` |
+| `VERSION_CONTROL` (+ `VERSION_CONTROL_ACCESS`) | github (`gh`), gitlab (`glab`); no `create-merge` o repo vem do `git remote`, no `create-issue` vai em `--repo` | `jarvis vcs create-merge` / `create-issue` |
 | `CENTRAL_DOCS_STORAGE` | filesystem (s3 e gdrive no futuro) | `jarvis docs fetch` / `sync` / `publish` |
 | `MESSAGE_COMUNICATOR` | slack, discord, teams | runtime `communicator/` |
 
@@ -41,11 +41,15 @@ Qual o seu número de controle para esta tarefa?
 
 Com board definido, se o key não veio nos argumentos, perguntar o id do card naquele vendor (ex: Jira `TASK-123`, GitHub `#42`).
 
+## Nada é publicado sem perguntar
+
+É a **regra de ouro**: comentário, PR/MR, issue, push e publicação no Central docs só saem depois de mostrar o texto e perguntar, na hora do envio, com `AskUserQuestion` (sem a ferramenta, a tabela de `prod-rules.md`): **Sim, publicar** / **Não, manter só na sessão** (rótulos equivalentes por contexto). A pergunta vale para cada envio; uma aprovação não vale para o próximo. **Exceção:** documentos aprovados juntos (como a consolidação do `eng.spec-consolidate`) são um envio; e a escolha da Fase 0 do `eng.pr` vale como a pergunta do push e do PR e, conforme a opção, como a revisão do texto. Sem o Sim, o texto fica na sessão (`task-comment-{YYYYMMDD-HHMM}.md`, `pull-request.md`) ou em `.jarvis/issues/`, e o push fica só local.
+
 ## Comentário no card
 
 Falha no comentário não bloqueia o workflow.
 
-Comentar **somente** em eventos relevantes: (a) **desvio do plano** (mudança de direção, fase bloqueada), (b) **auditoria do Advisor** (as questões do `architecture.md` com as opções junto da escolha), (c) **bloqueio** com valor de rastreabilidade, (d) **link do MR**, uma única vez, (e) o **`gate-checklist.md` do `eng.pre-pr`**, só se o usuário escolher registrar (resumo ou relatório completo). **Nunca** comentar início ou fim de etapa ("Iniciando…", "concluído…"): o acompanhamento fica no fluxo e no PR.
+Comentar **somente** em eventos relevantes, **cada um depois da pergunta acima**: (a) **desvio do plano** (mudança de direção, fase bloqueada), (b) **auditoria do Advisor** (as questões do `architecture.md` com as opções junto da escolha), (c) **bloqueio** com valor de rastreabilidade, (d) **link do MR**, uma única vez, (e) o **`gate-checklist.md` do `eng.pre-pr`**, só se o usuário escolher registrar (resumo ou relatório completo), (f) a arquitetura do **`eng.light-arch`**, depois de aprovada, (g) outro comentário que o fluxo peça e você aprove (como o de refinamento do agente de QA e o da 7.4 do `delivery-spec`). **Nunca** comentar início ou fim de etapa ("Iniciando…", "concluído…"): o acompanhamento fica no fluxo e no PR.
 
 ```
 /eng-global-task-comment {TASK_MANAGER_KEY} {mensagem}

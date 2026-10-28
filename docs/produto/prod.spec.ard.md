@@ -49,7 +49,7 @@ O que o produto traz para esse documento são os **requisitos**: quantos usuári
 
 ## Como o framework te favorece
 
-- Reaproveita numeração, template e publicação do ARD de engenharia, sem um segundo fluxo para manter
+- Reaproveita numeração, template e gravação em `$ENG_DOCS` do ARD de engenharia (o ARD não é publicado no Central docs), sem um segundo fluxo para manter
 - Não deixa você decidir tecnologia por engano: o comando só pergunta pelo que a solução precisa atender
 - Mantém a rastreabilidade: o ARD aponta para o PRD ou FRD de origem
 - **Links clicáveis:** cada requisito, documento, código, card ou PR citado no documento vira um link que abre o ponto exato no VS Code (regra em `rules-on-demand/doc-links-rules.md`)

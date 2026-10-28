@@ -5,7 +5,7 @@ Integração com o **Central docs**: o registro do que **foi implementado** em c
 ## Visão Geral
 
 - **Buscar** o que já foi implementado (`jarvis docs sync`, `jarvis docs fetch`)
-- **Publicar** a consolidação de cada entrega (`jarvis docs publish`, pelo `/eng.spec-consolidate`)
+- **Publicar** a consolidação de cada entrega (`jarvis docs publish`, pelo `/eng.spec-consolidate`, depois da pergunta)
 - **Índice** regenerado a cada publicação (`{SQUAD}/index.md`)
 
 O Central docs funciona por **adaptador de armazenamento**: hoje uma pasta do disco (`filesystem`). Se essa pasta for um clone de um repositório de documentação (tem `.git`), a publicação vira branch + commit + push + Pull/Merge Request. S3 e Google Drive são as issues #144 e #145.
@@ -27,7 +27,7 @@ WORKSPACE=loja                           # vira a pasta do produto
 
 A pasta padrão é `docs/jarvis/central-docs` nos dois modos de trabalho, junto dos documentos de trabalho. No projeto único, `docs/jarvis/` no `.gitignore` a deixa fora do versionamento; no workspace (vários repositórios) a raiz não é versionada. Quem já usa `./central-docs` continua funcionando, e o Upgrade do `/jarvis-init` oferece mover a pasta.
 
-> Com `.git`, o PR é aberto pela CLI do host (`gh pr create` / `glab mr create`), com o login dela (`gh auth login`, `glab auth login`). Sem a CLI, ou com `VERSION_CONTROL_ACCESS` `manual`/inválido no `ENV.md` do projeto, a branch fica no remote e a publicação mostra o link para abrir o MR à mão. Nenhum token vai no chat nem no `ENV.md`.
+> Com `.git` (e só depois da pergunta do `/eng.spec-consolidate`, regra de ouro), o PR é aberto pela CLI do host (`gh pr create` / `glab mr create`), com o login dela (`gh auth login`, `glab auth login`). Sem a CLI, ou com `VERSION_CONTROL_ACCESS` `manual`/inválido no `ENV.md` do projeto, a branch fica no remote e a publicação mostra o link para abrir o MR à mão. Nenhum token vai no chat nem no `ENV.md`.
 
 **Vindo da versão anterior (Central docs como repositório remoto)?** Rode `/jarvis-init` → Upgrade (C). Ele propõe `CENTRAL_DOCS_STORAGE=filesystem`, a pasta padrão e o `git clone` do repositório antigo.
 
@@ -36,8 +36,8 @@ A pasta padrão é `docs/jarvis/central-docs` nos dois modos de trabalho, junto 
 ```bash
 jarvis docs sync                                  # resumo: funcionalidades e entregas recentes
 jarvis docs fetch CORE/index.md                   # conteúdo de um arquivo (exit 2 se não existir)
-jarvis docs publish --file .../consolidation/feature-checkout.md --tipo feature            # pelo /eng.spec-consolidate
-jarvis docs publish --file .../consolidation/delivery-2026-10-15-task-123.md --tipo delivery
+jarvis docs publish --file .../consolidation/feature-checkout.md --tipo feature            # pelo /eng.spec-consolidate, depois do Sim (regra de ouro)
+jarvis docs publish --file .../consolidation/delivery-2026-10-15-task-123.md --tipo delivery  # idem
 ```
 
 - **Tipos:** só `feature` (vai para `product/`) e `delivery` (vai para `engineering/`). PRD, ARD, SPEC e os outros documentos de trabalho são recusados, com a explicação de que ficam em `docs/jarvis/`.

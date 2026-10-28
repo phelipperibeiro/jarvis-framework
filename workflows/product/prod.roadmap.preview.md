@@ -24,7 +24,7 @@ Utilize o `$ARGUMENTS` que o usuário passar como ponto de partida e para entend
 ## Regras
 
 - Sempre identifique o quadrimestre atual e o próximo com base na data de hoje.
-- Utilize o MCP disponível relacionado ao $TASK_MANAGER utilizado pelo usuário.
+- Leia o board pela CLI oficial do `$TASK_MANAGER` (`acli` no Jira, `gh` no GitHub, `glab` no GitLab), com o login dela (`eng.integrations-rules.md`: board sem REST nem MCP). Só leitura: este comando não comenta nem cria nada no board.
 - Antes de qualquer coisa, procure por informações sobre o projeto ou produto que o usuário está solicitando dentro da pasta de trabalho utilizado. Confirme com o usuário o que foi encontrado. Utilize também informações que o usuário já compartilhou.
 - As documentações de projeto podem ser encontradas na pasta do projeto (`$PROD_DOCS`). Rascunhos WIP: `$SESSIONS_DIR/prod/`. Caso não estejam disponíveis localmente, utilize via Skill tool a `jarvis-docs-central` para buscar as informações no Central docs (se `CENTRAL_DOCS_STORAGE` estiver configurado).
 - Para trazer as informações, utilize via Skill tool a skill `product-roadmap-report`
@@ -39,10 +39,9 @@ Se o projeto tiver wiki de status report, usar URLs informadas pelo usuário ou 
 
 | Passo | Skill | Condição |
 |-------|-------|----------|
-| Regras | `MCP do $TASK_MANAGER` | Se houver MCP disponível relacionado ao `$TASK_MANAGER` do usuário |
 | Regras | `/jarvis-docs-central` | Se as documentações do projeto não estiverem disponíveis localmente (via Skill tool) |
 | Regras | `/product-roadmap-report` | Sempre — via Skill tool, para trazer as informações do roadmap |
-| Status Reports por Squad / Dicas de Ferramenta | `MCP da Atlassian` (ex.: `Atlassian:searchJiraIssuesUsingJql`) | Para buscar os dados do roadmap no Jira, com o JQL ou o filtro salvo informado pelo usuário |
+| Regras / Dicas de Ferramenta | `acli jira workitem search` (CLI do vendor; `gh issue list` / `glab issue list` fora do Jira) | Para ler os dados do roadmap no board, com o JQL ou o filtro informado pelo usuário, se a CLI estiver logada |
 
 ## Formato de Períodos de Referência
 
@@ -62,16 +61,14 @@ Boards: usar o `board_code` de cada squad em `taxonomy.md` (se preenchido). Não
 
 Filtro de roadmap: pedir ao usuário o JQL ou o ID do filtro salvo no `$TASK_MANAGER`. Não usar filtro fixo.
 
-Utilize o MCP da Atlassian para buscar os dados do roadmap. Ele é pré-requisito manual: o `/jarvis-init` não configura MCP de board (board e git do Jarvis usam a CLI oficial). Sem o MCP, peça ao usuário para exportar ou colar os dados.
+Leia os dados do roadmap pela `acli`, com o login dela. Sem a `acli` logada (ou com `TASK_MANAGER_ACCESS=manual`), peça ao usuário para exportar ou colar os dados.
 Não precisa trazer informações embedadas do jira, apenas o output definido aqui nessa skill.
 
 ```
-Atlassian:searchJiraIssuesUsingJql
+acli jira workitem search --jql "{JQL}"   # ou --filter {ID} para o filtro salvo; confira os flags (campos, limite, formato) no --help
 JQL: (filtro informado pelo usuário ou montado a partir de board_code + labels)
 Campos a buscar: key, summary, status, priority, duedate, resolutiondate, assignee, labels, customfield (team, quadrimestre)
 ```
-
-**Importante**: Use `Atlassian:getAccessibleAtlassianResources` para obter o `cloudId` antes de fazer queries.
 
 
 ### Spaces no Jira
@@ -79,7 +76,7 @@ Campos a buscar: key, summary, status, priority, duedate, resolutiondate, assign
 Montar URLs com `{TASK_MANAGER_URL_BASE}` + `board_code` do `taxonomy.md`. Se `board_code` estiver vazio, perguntar o projeto ao usuário.
 
 ### Complemento com Jira (opcional)
-Você **pode** complementar com informações do Jira apenas se tiver informações suficientes para fazer a query corretamente (ex: o squad tem um board ou label bem definidos no Jira e você tem certeza do filtro).
+Você **pode** complementar com informações do Jira (lidas pela `acli`, como acima) apenas se tiver informações suficientes para fazer a query corretamente (ex: o squad tem um board ou label bem definidos no Jira e você tem certeza do filtro).
 
 ⚠️ **Se tiver dúvida sobre como filtrar no Jira, NÃO inclua dados do Jira**. Evite trazer informações erradas ou de outros squads.
 
@@ -88,7 +85,7 @@ Você **pode** complementar com informações do Jira apenas se tiver informaç�
 
 Use a URL de status report que o usuário informar (ou a wiki configurada no projeto). Não há tabela fixa de squads.
 
-Use `web_fetch` para acessar a URL do time selecionado.
+Use `web_fetch` para acessar a URL do time selecionado (ou peça o texto colado).
 
 Busque os **dois últimos status reports** listados na página.
 Apresente os dois últimos reports no seguinte formato:
@@ -110,11 +107,10 @@ Apresente os dois últimos reports no seguinte formato:
 ## Dicas de Ferramenta
 
 ### Para dados do Jira
-1. Sempre chame `Atlassian:getAccessibleAtlassianResources` primeiro para obter o `cloudId`
-2. Use `Atlassian:searchJiraIssuesUsingJql` com o JQL adequado
-3. Para o roadmap, use o JQL/filtro informado pelo usuário
-4. Para campos customizados (team, quadrimestre), pode ser necessário chamar `Atlassian:getJiraIssueTypeMetaWithFields` para descobrir os IDs dos campos
-5. Links para issues do Jira devem ser no formato: `{TASK_MANAGER_URL_BASE}/browse/KEY-123`
+1. Use `acli jira workitem search` com o JQL adequado (flags no `--help`)
+2. Para o roadmap, use o JQL/filtro informado pelo usuário
+3. Para campos customizados (team, quadrimestre), peça ao usuário os IDs dos campos se a CLI não os mostrar
+4. Links para issues do Jira devem ser no formato: `{TASK_MANAGER_URL_BASE}/browse/KEY-123`
 
 ### Para dados da Wiki
 - Use `web_fetch` diretamente nas URLs dos reports

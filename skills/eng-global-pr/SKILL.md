@@ -1,9 +1,9 @@
 ---
 name: eng-global-pr
-description: Cria branch, commit e Merge Request seguindo os padrões do time. Use quando precisar submeter código para revisão após completar uma tarefa.
+description: Cria a branch e o commit, gera o texto do Merge Request e, depois da pergunta (regra de ouro), faz o push e abre o MR, seguindo os padrões do time. Use quando precisar submeter código para revisão após completar uma tarefa.
 argument-hint: "{TASK_MANAGER_KEY} [branch-destino]"
 disable-model-invocation: false
-allowed-tools: Read Write Edit Grep Glob Bash MCP
+allowed-tools: Read Write Edit Grep Glob Bash
 metadata:
   author: jarvis-team
   version: "1.0"
@@ -16,7 +16,7 @@ Você é um **especialista em Git e processos de code review** focado em criar P
 
 ## Objetivo
 
-Criar branch, commitar alterações e abrir um MR (GitLab) ou PR (GitHub) pela CLI do host (`glab`/`gh`), conforme o `origin` ou o `VERSION_CONTROL` no ENV.md, seguindo (o MR/PR sai pelo `jarvis vcs create-merge`, que respeita o `VERSION_CONTROL_ACCESS`: com `manual` sai com 3 sem abrir; saídas 0/1/3/4 da `rules/engineering/eng.integrations-rules.md`):
+Criar a branch e o commit, gerar o texto do MR/PR e, só depois da pergunta (regra de ouro), fazer o push e abrir o MR (GitLab) ou PR (GitHub) pela CLI do host (`glab`/`gh`), conforme o `origin` ou o `VERSION_CONTROL` no ENV.md. O MR/PR sai pelo `jarvis vcs create-merge`, que respeita o `VERSION_CONTROL_ACCESS` (com `manual`, sai com 3 sem abrir; saídas 0/1/3/4 da `rules/engineering/eng.integrations-rules.md`). Segue:
 - Padrão de nomenclatura de branch
 - Convenção de commits (Conventional Commits)
 - Template de MR preenchido corretamente
@@ -180,6 +180,8 @@ Refs: TASK-123"
 
 ### 4. Push
 
+Os Passos 4 e 5 só acontecem depois da pergunta (regra de ouro, `eng.integrations-rules.md`). Monte antes o texto do MR (preencher o template, Passo 5), mostre-o e pergunte com `AskUserQuestion` (**Sim, publicar** / **Não, manter só na sessão**). Sem o Sim, grave o `pull-request.md` na sessão e pare, sem push nem MR. Quando o skill é chamado pelo `/eng.pr`, a escolha da Fase 0 dele vale como essa pergunta (exceção da regra) e não se pergunta de novo.
+
 ```bash
 git push -u origin {NOME_DA_BRANCH}
 ```
@@ -213,19 +215,20 @@ Usar template oficial em `$IDE/templates/engineering/PR-template.md`.
 
 ### 6. Atualizar o card (`TASK_MANAGER`)
 
-Se `TASK_MANAGER` estiver vazio (freelance): pular este passo.
+Se `TASK_MANAGER` estiver vazio (freelance): pule só o item 1; o item 2 registra o link no `task-log.md` pelo skill.
 
-1. Mover card para **"In Review"** (ou equivalente do vendor)
-2. Adicionar comentário com link do MR via `eng-global-task-comment`
+1. Orientar a pessoa a mover o card para **"In Review"** (ou equivalente do vendor); o Jarvis não move card
+2. Publicar o comentário com o link do MR via `eng-global-task-comment`, que mostra o texto e pergunta (regra de ouro, `eng.integrations-rules.md`)
 
 ### 7. Processar Code Review
 
 1. Aguardar comentários da ferramenta de code review
 2. Analisar cada comentário
-3. Aplicar correções se necessário:
+3. Aplicar correções se necessário. O push das correções só sai depois da pergunta com `AskUserQuestion` (regra de ouro, `eng.integrations-rules.md`); sem o Sim, o commit fica local:
    ```bash
    git add {arquivos}
    git commit -m "fix: corrigir {problema} conforme code review"
+   # só com o Sim da pergunta acima
    git push
    ```
 
@@ -237,7 +240,7 @@ Após MR criado com sucesso, **solicitar confirmação do usuário**:
 🧹 Deseja limpar a sessão?
 
 A pasta $SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/ será removida.
-A documentação permanece no card (`TASK_MANAGER`) e no MR.
+O texto do PR permanece no MR e o que foi enviado ao card fica no card; o que você recusou (por exemplo, o `task-comment-*.md` do link do MR) só existe nesta pasta e será apagado junto; no freelance, o `task-log.md` e, com "Só gerar os arquivos", o `pull-request.md` também ficam só aqui.
 
 Confirmar? (s/n)
 ```
@@ -253,7 +256,7 @@ rm -rf $SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/
 
 | Passo | Skill | Condição |
 |-------|-------|----------|
-| Passo 6 — Atualizar o card | `/eng-global-task-comment` | Sempre: comentário no card com o link do MR (freelance: registro no `task-log.md` da sessão) |
+| Passo 6 — Atualizar o card | `/eng-global-task-comment` | Com o Sim da pergunta (regra de ouro): comentário no card com o link do MR (freelance: registro no `task-log.md` da sessão) |
 
 ---
 
@@ -275,7 +278,7 @@ rm -rf $SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/
 - ✅ Usar mensagem de commit padronizada
 - ✅ Criar branch no padrão `{TASK_MANAGER_KEY}-{titulo}`
 - ✅ Preencher template do MR completamente
-- ✅ Mover card para "In Review"
+- ✅ Orientar a pessoa a mover o card para "In Review" (o Jarvis não move card)
 - ✅ Limpar sessão após criar MR
 
 ---
@@ -294,7 +297,7 @@ rm -rf $SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/
 - [ ] Push realizado
 - [ ] MR criado com template preenchido
 - [ ] Branch destino correta
-- [ ] Card movido para "In Review"
+- [ ] Pessoa orientada a mover o card para "In Review"
 - [ ] Sessão limpa
 
 ---
@@ -307,7 +310,7 @@ rm -rf $SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/
 📋 Resumo:
 - Branch: {NOME_DA_BRANCH}
 - MR: {LINK_DO_MR}
-- Card ({TASK_MANAGER}): {TASK_MANAGER_KEY} → "In Review"
+- Card ({TASK_MANAGER}): {TASK_MANAGER_KEY} (mover para "In Review" é com a pessoa)
 
 📊 Validações:
 - Testes: ✅ Passando

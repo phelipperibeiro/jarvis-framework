@@ -47,7 +47,7 @@ Um grupo de histórias de um mesmo assunto podem formar um épico.
 
 | Passo | Skill | Condição |
 |-------|-------|----------|
-| Estrutura da Issue (salvar no `$TASK_MANAGER`) | CLI do vendor (`gh`/`glab issue create`, `acli jira workitem create`) | Se o usuário pedir para salvar no `$TASK_MANAGER` e `TASK_MANAGER`, `TASK_MANAGER_ACCESS` e `TASK_MANAGER_URL_BASE` estiverem no ENV.md, com a CLI logada; freelance, CLI indisponível ou `TASK_MANAGER_ACCESS=manual`: salvar só o markdown local |
+| Estrutura da Issue (salvar no `$TASK_MANAGER`) | CLI do vendor (`gh`/`glab issue create`, `acli jira workitem create`) | Se o usuário pedir para salvar no `$TASK_MANAGER` e `TASK_MANAGER`, `TASK_MANAGER_ACCESS` e `TASK_MANAGER_URL_BASE` estiverem no ENV.md, com a CLI logada, só com o Sim da pergunta (regra de ouro; a pergunta só existe quando o envio vai sair); freelance, CLI indisponível ou `TASK_MANAGER_ACCESS=manual`: salvar só o markdown local |
 
 ## Resultado Final
 - Siga a estrutura exata do template `$PROD_TEMPLATES/prod-issue-template.md`
@@ -55,8 +55,8 @@ Um grupo de histórias de um mesmo assunto podem formar um épico.
 - O idioma do arquivo deve corresponder ao idioma de interação do usuário
 - Se o usuário não tiver um título claro, crie um título baseado no conteúdo do arquivo e no contexto do épico
 - Uma História ou Task pode ou não ter subtasks. Sugira as subtasks que são as menores partes da issue para guiar o PM ou o Dev na criação dessas histórias ou tasks.
-- Se o usuário pedir para salvar no `$TASK_MANAGER`, leia `TASK_MANAGER`, `TASK_MANAGER_ACCESS` e `TASK_MANAGER_URL_BASE` no ENV.md e abra o card pela CLI oficial do vendor, com o login dela (github: `gh issue create`; gitlab: `glab issue create`; jira: `acli jira workitem create`, conferindo os flags no `--help`), seguindo a cadeia de `rules/engineering/eng.integrations-rules.md`. Nunca peça token.
-  - Se `TASK_MANAGER` estiver vazio (freelance), a CLI não estiver disponível ou `TASK_MANAGER_ACCESS=manual`, **não invente board** — salve só o markdown local e diga onde ele está.
+- Se o usuário pedir para salvar no `$TASK_MANAGER` e o envio vai sair (leia `TASK_MANAGER`, `TASK_MANAGER_ACCESS` e `TASK_MANAGER_URL_BASE` no ENV.md: board preenchido, CLI do vendor logada e `TASK_MANAGER_ACCESS=cli` ou vazio), mostre o título e o corpo, pergunte com `AskUserQuestion` (regra de ouro, `eng.integrations-rules.md`) e, só com o Sim, abra o card pela CLI oficial do vendor, com o login dela (github: `gh issue create`; gitlab: `glab issue create`; jira: `acli jira workitem create`, conferindo os flags no `--help`), seguindo a cadeia de `rules/engineering/eng.integrations-rules.md`. Nunca peça token.
+  - Se `TASK_MANAGER` estiver vazio (freelance), a CLI não estiver disponível ou `TASK_MANAGER_ACCESS=manual`, **não invente board**; não há envio e, portanto, nenhuma pergunta: salve só o markdown local e diga onde ele está.
 
 ## Estrutura da Issue
 

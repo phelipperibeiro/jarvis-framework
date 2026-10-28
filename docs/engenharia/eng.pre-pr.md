@@ -44,11 +44,11 @@ Sempre termina com o arquivo **`$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/gate-checkl
 
 1. **Semáforo:** 🟢 pronto para PR, 🟡 pode abrir com notas, 🔴 há bloqueadores
 2. **Lacunas por área**, cada uma com: o que é, onde (`arquivo:linha`), por que importa, sugestão, severidade e a coluna **Decisão**, que você preenche (🔧 Corrigir ou 👍 Aceitar + motivo; ou "Só gerar o relatório" para analisar com calma, sem decidir agora). **Aceitar** quer dizer "vi o problema e decidi não corrigir agora": não bloqueia o PR e fica registrado com o motivo
-3. **Evidências** (comandos rodados e resultados) e o **PR Brief**, que o `eng.pr` aproveita
+3. **Evidências** (comandos rodados e resultados) e o **PR Brief**, que o `eng.pr` aproveita: resumo, como testar, riscos e os **labels sugeridos** (ex.: `security`; a pessoa adiciona no host, o `jarvis vcs create-merge` não põe label)
 
 **Rodadas:** se você rodar o `eng.pre-pr` de novo na mesma sessão (por exemplo, depois de corrigir lacunas com o `eng.work`), o relatório anterior não se perde: ele vira `gate-checklist-rodada-{N}.md`, e o `gate-checklist.md` passa a ser a rodada nova. Ela mostra o número da **Rodada**, o **Commit** em que foi gerada (no modo workspace, um por repositório com mudanças), os links das **Rodadas anteriores** e a **Resolução da rodada anterior**: para cada lacuna que você marcou como "Corrigir", se foi corrigida e em qual commit. O `eng.pr` usa sempre o `gate-checklist.md`, a rodada mais recente. O que você mandou corrigir (🔧) e continua presente volta já marcado 🔧 Corrigir, para você confirmar ou mudar; o que você aceitou (👍) não volta como pendência, e entra como lacuna nova se o problema reaparecer. As lacunas sem decisão, inclusive as ⚪, também entram na resolução.
 
-Depois, com board, pergunta se registra o resultado como comentário no card: **Não, manter só na sessão (como hoje)**, **Sim, só o resumo** ou **Sim, o relatório completo**. Sem board (freelance), não pergunta e o relatório fica só na sessão. E **espera sua permissão** antes do `eng.pr`.
+Depois, com board, pergunta se registra o resultado como comentário no card: **Não, manter só na sessão (como hoje)**, **Sim, só o resumo** ou **Sim, o relatório completo**. O `/eng-global-task-comment` ainda mostra o texto e pergunta uma última vez antes de enviar (regra de ouro). Sem board (freelance), não pergunta e o relatório fica só na sessão. E **espera sua permissão** antes do `eng.pr`.
 
 ## Perguntas que ele faz
 
@@ -58,7 +58,7 @@ Depois, com board, pergunta se registra o resultado como comentário no card: **
 
 - Ao dizer "testes passando", o comando mostra **qual comando rodou e o resultado**
 - Segurança: nenhum secret no diff, `npm audit` sem vulnerabilidade alta ou crítica e lockfile atualizado
-- Se o PR tocar áreas sensíveis, recomenda o label `security` e a revisão de segurança antes do merge
+- Se o PR tocar áreas sensíveis (auth, sessions, RBAC, CORS, CSP, permissões), registra o label `security` nos labels sugeridos do PR Brief (a pessoa adiciona no host) e recomenda a revisão de segurança antes do merge
 - Nenhuma rodada é sobrescrita ou apagada: rodar de novo guarda a anterior ao lado, como `gate-checklist-rodada-{N}.md`
 - Com a versão humanizada (`ARTIFACT_STYLE=human-generated`), o `.public.md` vai junto com a rodada e reserva o número dela; um `.public.md` solto (sem o relatório que o originou, um estado anormal) fica como está, com aviso
 - **Links clicáveis:** a coluna "Onde" e as demais citações do `gate-checklist.md` viram links que abrem o arquivo na linha (`rules-on-demand/doc-links-rules.md`)

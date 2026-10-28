@@ -33,7 +33,7 @@ Segue os 5 passos do RFC-Playbook:
 | Passo | O que acontece |
 |---|---|
 | 0 e 0.5 | Define se é novo ou iteração e aplica **versionamento** SemVer (campo `Versão`, regras de `eng.bump-rules.md`) |
-| 0.6 | Busca documentação relacionada no central docs, se configurado |
+| 0.6 | Busca documentação relacionada em `docs/jarvis/` (PRD, ARD, RFCs) e, se configurado, o implementado no central docs |
 | 1 | **Criação:** preenche o template com `status: Draft`, dono e revisores. Contexto e problema (sem solução), motivação, escopo em discussão, pontos de atenção e riscos com responsável |
 | 2 | **Divulgação obrigatória:** gera a mensagem para Slack ou equivalente, com link, data limite para comentários (por exemplo D+5) e lista de revisores. Um RFC que ninguém sabe que existe não vale |
 | 3 | **Discussão assíncrona:** os comentários ficam no RFC, não em chats soltos, e toda opinião precisa de argumento técnico |

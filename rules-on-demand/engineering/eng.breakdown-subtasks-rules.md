@@ -11,7 +11,7 @@ O workflow `breakdown-subtasks` tem como objetivo **quebrar uma Tech Spec em sub
 ## ⚠️ REGRA INVIOLÁVEL: PRINCÍPIO DE INDEPENDÊNCIA
 
 > **Cada subtarefa é uma unidade de entrega completa e independente.**
-> Cada subtarefa será um card no `$TASK_MANAGER` com **sua própria branch, seu próprio commit e seu próprio deploy**.
+> Cada subtarefa será um card no `$TASK_MANAGER` (criado pela pessoa a partir do Markdown que este comando entrega) com **sua própria branch, seu próprio commit e seu próprio deploy**.
 > Por isso, a subtarefa precisa ser **mergeável isoladamente sem quebrar o sistema**.
 
 **Toda subtarefa deve ser uma fatia vertical completa (vertical slice):**

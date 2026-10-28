@@ -33,7 +33,7 @@ Fonte: `workflows/engineering/`. Guias didáticos: [engenharia/README.md](./enge
 | [`/eng.plan`](./engenharia/eng.plan.md) | Planejamento de execução faseada da feature | [workflow](../workflows/engineering/eng.plan.md) |
 | [`/eng.work`](./engenharia/eng.work.md) | Implementação do código, com commit por fase e sem push nem PR | [workflow](../workflows/engineering/eng.work.md) |
 | [`/eng.pre-pr`](./engenharia/eng.pre-pr.md) | Validação antes de abrir o PR/MR | [workflow](../workflows/engineering/eng.pre-pr.md) |
-| [`/eng.pr`](./engenharia/eng.pr.md) | Cria branch, commit e merge request | [workflow](../workflows/engineering/eng.pr.md) |
+| [`/eng.pr`](./engenharia/eng.pr.md) | Faz o push e abre o merge request, depois da pergunta (regra de ouro) | [workflow](../workflows/engineering/eng.pr.md) |
 | [`/eng.spec-consolidate`](./engenharia/eng.spec-consolidate.md) | Registra no Central docs o que a entrega implementou (funcionalidade + entrega) | [workflow](../workflows/engineering/eng.spec-consolidate.md) |
 | [`/eng.daily-report`](./engenharia/eng.daily-report.md) | Junta os `daily.md` das sessões em um relatório por dia, com alertas das sessões sem registro | [workflow](../workflows/engineering/eng.daily-report.md) |
 | [`/eng.review`](./engenharia/eng.review.md) | Revisão de solução ou PR | [workflow](../workflows/engineering/eng.review.md) |

@@ -1,7 +1,7 @@
 ---
 name: product-roadmap-report
 description: Cria e atualiza relatórios estruturados de roadmap de produto a partir de reuniões, mensagens, documentos ou notas. Use quando usuários precisam extrair atualizações de roadmap em relatórios markdown com seções de resumo, problemas, riscos e ações, consolidar múltiplos relatórios de times, atualizar relatórios existentes mantendo ordem cronológica reversa, salvar/modificar relatórios no Obsidian vault, ou mencionar termos como "relatório de roadmap", "atualização de produto", "sync", "war room", "relatório do time" ou "atualização semanal".
-allowed-tools: conversation_search, google_drive_search, google_drive_fetch
+allowed-tools: conversation_search, google_drive_search, google_drive_fetch, Bash, WebFetch
 metadata:
   author: jarvis-team
   version: "1.0.0"
@@ -25,7 +25,7 @@ Por favor, siga o `rules/status-report-rules.md` para obter orientações corret
 Sempre interaja com o usuário no mesmo idioma que ele estiver usando.
 
 ### Roadmap Preview:
-- Quando o usuário perguntar sobre roadmap, status, sprint, atualizações, etc., execute as instruções de `commands/status-roadmap-preview`
+- Quando o usuário perguntar sobre roadmap, status, sprint, atualizações, etc., execute as instruções de `commands/status.roadmap.preview.md`
 - Use o `$ARGUMENTS` do usuário para obter a resposta correta.
 
 

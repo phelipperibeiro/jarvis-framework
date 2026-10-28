@@ -79,7 +79,7 @@ Se ajudar a construir um diagrama MERMAID, sinta-se livre para fazê-lo.
 
 5. Uma vez que tenha um bom entendimento do que está sendo construído, mostre ao usuário na forma de um artefato e aguarde sua aprovação. Iterate juntos até estar pronto. PAUSE para aguardar a aprovação do humano.
 
-6. Quando o humano concordar com seu entendimento, você pode proceder ao próximo passo, salvando os detalhes da estrutura arquitetural no card do $TASK_MANAGER como um comentário ao card original.
+6. Quando o humano concordar com seu entendimento, você pode proceder ao próximo passo, salvando os detalhes da estrutura arquitetural no card do $TASK_MANAGER como um comentário ao card original, pelo `/eng-global-task-comment`, que mostra o texto e pergunta antes de enviar (regra de ouro, `eng.integrations-rules.md`); sem o Sim, o texto fica só na sessão.
 
 ## Pesquisa
 

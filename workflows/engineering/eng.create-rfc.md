@@ -91,11 +91,11 @@ Regras:
 
 ---
 
-## Passo 0.6 – Buscar Documentação Relacionada no Central Docs (condicional)
+## Passo 0.6 – Buscar Documentação Relacionada (`docs/jarvis/` sempre; Central docs se configurado)
 
-Se `CENTRAL_DOCS_STORAGE` definido no ENV.md:
+A busca em `docs/jarvis/` (PRD, ARD, RFCs) é sempre feita; a consulta ao Central docs só se `CENTRAL_DOCS_STORAGE` estiver definido no ENV.md (vazio: pule só o item 1).
 
-1. Consultar no Central docs as funcionalidades já implementadas relacionadas (o que existe hoje):
+1. Se `CENTRAL_DOCS_STORAGE` estiver definido, consultar no Central docs as funcionalidades já implementadas relacionadas (o que existe hoje):
    ```bash
    jarvis docs sync --silent
    ```
@@ -106,13 +106,13 @@ Se `CENTRAL_DOCS_STORAGE` definido no ENV.md:
    - Tags semânticas
 
 3. Documentos a buscar:
-   - **Funcionalidades já implementadas** relacionadas (Central docs: `feature-*`)
+   - **Funcionalidades já implementadas** relacionadas (Central docs, se configurado: `feature-*`)
    - **PRD relacionado** (em `$PROD_DOCS`, para rastreabilidade e contexto de negócio)
    - **ARD existente** e **RFCs anteriores** relacionados ao tema (em `$ENG_DOCS/ARD` e `$ENG_DOCS/RFC`)
 
 4. Se documentos encontrados:
    - Carregar automaticamente como contexto
-   - Informar ao usuário: "✅ Documentos encontrados no central-docs: [lista]"
+   - Informar ao usuário: "✅ Documentos encontrados (`docs/jarvis/` e, se configurado, Central docs): [lista]"
    - Incorporar ao contexto antes do Passo 1
 
 5. Se não encontrado:

@@ -169,7 +169,7 @@ Links para documentacao relacionada.
 |------|----------|-----------|
 | Planejamento | `eng.start`, `eng.plan` | Somente analise, SEM codigo |
 | Implementacao | `eng.work` | Codigo e testes, commit por fase, SEM push nem PR |
-| Entrega | `eng.pr` | Branch, commit e PR |
+| Entrega | `eng.pr` | Push e PR, depois da pergunta (regra de ouro) |
 
 ### Seguranca
 

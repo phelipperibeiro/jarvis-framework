@@ -2,7 +2,7 @@
 name: product-specs
 description: Ações e fluxos de trabalho para criar, modificar, analisar e atualizar especificações de produto como PRDs, FRDs, Storys, e tarefas de gerenciamento de produtos e projetos.
 argument-hint: "Peça para criar, atualizar ou modificar uma especificação de PRD, FRD ou Story."
-allowed-tools: conversation_search, google_drive_search, google_drive_fetch, slack, figma
+allowed-tools: conversation_search, google_drive_search, google_drive_fetch, figma
 disable-model-invocation: false
 license: AGPL-3.0
 metadata:

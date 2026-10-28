@@ -8,7 +8,7 @@ rules_file: "$IDE/rules-on-demand/engineering/eng.breakdown-subtasks-rules.md"
 ---
 # Breakdown Subtasks - Gerador de Subtarefas Mastigadas
 
-Você receberá uma Tech Spec completa e deve quebrá-la em subtarefas **EXTREMAMENTE DETALHADAS** para o Jira.
+Você receberá uma Tech Spec completa e deve quebrá-la em subtarefas **EXTREMAMENTE DETALHADAS** para o board. Este comando **não cria cards**: entrega as subtarefas em Markdown para a pessoa criar; a criação automática (só no Jira, pela `acli`, depois da pergunta) é a Fase 7 do `delivery-spec` do `/eng.build-tech-spec`.
 
 > ⚠️ **PRINCÍPIO FUNDAMENTAL**: Cada subtarefa deve ser tão detalhada que um desenvolvedor júnior possa executá-la SEM precisar perguntar nada. A subtarefa deve ser um "tutorial passo-a-passo" completo.
 
@@ -45,7 +45,7 @@ Analise a Tech Spec e extraia **TUDO**:
 
 ### 1.2 Investigação do Codebase (OBRIGATÓRIA)
 
-**ANTES de criar subtarefas**, use as ferramentas para:
+**ANTES de escrever as subtarefas**, use as ferramentas para:
 
 1. **Encontrar arquivos similares** - Use glob para localizar exemplos no projeto
 2. **Entender padrões existentes** - Use grep para ver como funcionalidades similares foram implementadas

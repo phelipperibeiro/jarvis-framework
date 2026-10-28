@@ -4,7 +4,7 @@
 
 ## Propósito
 
-O workflow `pr` tem como objetivo **criar a branch, commitar as alterações e abrir um Merge Request** seguindo os padrões do time.
+O workflow `pr` tem como objetivo **gerar o `pull-request.md` e, depois da pergunta (regra de ouro), fazer o push e abrir um Merge Request** seguindo os padrões do time.
 
 ---
 
@@ -137,11 +137,11 @@ sempre utiliza a branch main)
 │        ↓                                                    │
 │  4. COMMIT → Mensagem padronizada                           │
 │        ↓                                                    │
-│  5. PUSH → Enviar para remote                               │
+│  5. PUSH → Enviar para remote (depois da Fase 0)            │
 │        ↓                                                    │
-│  6. CRIAR MR (desenvolvedor) → Com template preenchido      │
+│  6. CRIAR MR (desenvolvedor) → Template, depois da Fase 0   │
 │        ↓                                                    │
-│  7. ATUALIZAR JIRA (desenvolvedor) → Mover para "In Review" │
+│  7. ORIENTAR (desenvolvedor) → Mover o card para "In Review"│
 │                                                             │
 └─────────────────────────────────────────────────────────────┘
 ```
@@ -198,6 +198,8 @@ sempre utiliza a branch main)
    ```
 
 ### Fase 4: Push
+
+O push só sai depois da escolha de publicar da Fase 0 do `eng.pr` (regra de ouro, `eng.integrations-rules.md`).
 
 1. **Enviar para remote**
    ```bash
@@ -331,7 +333,7 @@ Antes de considerar o PR completo:
 ## Sessão e publicação
 
 - O texto do PR fica em **`$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/pull-request.md`**, aprovado pelo usuário.
-- **Publicar (push + MR/PR) só com a escolha "Revisar o texto e publicar" (depois da aprovação do texto) ou "Publicar sem revisar o texto"** da Fase 0 (`eng.transitions-rules.md`). Com "Só gerar os arquivos", o arquivo fica na sessão e nada é enviado.
+- **Publicar (push + MR/PR) só com a escolha "Revisar o texto e publicar" (depois da aprovação do texto) ou "Publicar sem revisar o texto"** da Fase 0 (`eng.transitions-rules.md`). Com "Só gerar os arquivos" (na Fase 0 ou no `[Só gerar os arquivos]` da revisão do texto), o arquivo fica na sessão e nada é enviado.
 - **A sessão nunca é apagada por este comando:** o `/eng.spec-consolidate`, que roda depois do merge, precisa do `architecture.md`, do `plan.md`, do `gate-checklist.md` (com as rodadas anteriores `gate-checklist-rodada-{N}.md`, se houver) e do `pull-request.md`. A pessoa apaga à mão quando quiser.
 
 ## daily.md (registro do esforço)

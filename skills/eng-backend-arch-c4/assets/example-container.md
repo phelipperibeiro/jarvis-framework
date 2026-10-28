@@ -56,8 +56,8 @@ Rel(workflows, sessions, "Cria/Atualiza", "Filesystem")
 Rel(workflows, docs, "Gera", "Filesystem")
 
 ' === RELACIONAMENTOS EXTERNOS ===
-Rel(workflows, jira, "Sincroniza", "REST API")
-Rel(workflows, gitlab, "Cria MR", "REST API")
+Rel(workflows, jira, "Sincroniza", "CLI oficial")
+Rel(workflows, gitlab, "Cria MR", "CLI oficial")
 
 @enduml
 ```
@@ -87,8 +87,8 @@ Rel(workflows, gitlab, "Cria MR", "REST API")
 | Skills Engine | ENV Config | Lê config | Filesystem |
 | Workflow Engine | Sessions | Cria/Atualiza | Filesystem |
 | Workflow Engine | Documentation | Gera | Filesystem |
-| Workflow Engine | Jira | Sincroniza | REST API |
-| Workflow Engine | GitLab | Cria MR | REST API |
+| Workflow Engine | Jira | Sincroniza | CLI oficial |
+| Workflow Engine | GitLab | Cria MR | CLI oficial |
 
 ## ADRs Relacionados
 

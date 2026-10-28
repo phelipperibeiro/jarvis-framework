@@ -56,6 +56,8 @@ Ler do `$IDE/ENV.md`:
 - `CENTRAL_DOCS_REF`, `CENTRAL_DOCS_TARGET_BRANCH`, `CENTRAL_DOCS_REVIEWERS` (só com `.git`)
 - `SQUAD` (ALL-CAPS-COM-HIFEN) e `WORKSPACE` (vira a pasta do produto)
 
+O `jarvis docs publish` só roda depois da pergunta do `/eng.spec-consolidate` (regra de ouro, `rules/engineering/eng.integrations-rules.md`).
+
 Com `.git`, o PR é aberto pela CLI do host (`gh pr create` / `glab mr create`), com o login dela, respeitando o `VERSION_CONTROL_ACCESS` do `ENV.md` do projeto (não do repositório do Central docs). Sem a CLI, sem login, ou com `manual`/valor inválido/ENV.md ilegível, a branch fica no remote e a publicação mostra o link para abrir o MR à mão. ❌ **Nunca** colar token no chat nem gravar no `ENV.md`.
 
 ---
@@ -157,12 +159,12 @@ jarvis docs publish --file .../consolidation/feature-checkout.md --tipo feature
 1. Validar o frontmatter.
 2. Calcular o destino.
 3. Sem `.git`: copiar e regenerar o índice.
-4. Com `.git`: branch, cópia, índice, commit, push e PR.
+4. Com `.git`: branch, cópia, índice, commit, push e PR (só depois da pergunta, regra de ouro).
 
 ### Modo 3: Reparar o índice
 
 - **Sem `.git`:** a próxima publicação regenera o índice.
-- **Com `.git`:** no clone, rodar `bash scripts/build-index.sh` (se existir) e abrir um PR `repair/index-{SQUAD}-{data}`.
+- **Com `.git`:** no clone, rodar `bash scripts/build-index.sh` (se existir) e abrir um PR `repair/index-{SQUAD}-{data}` (só depois de mostrar o que será enviado e perguntar, regra de ouro).
 
 ### Skills invocados durante a execução do skill
 

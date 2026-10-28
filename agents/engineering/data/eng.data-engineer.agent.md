@@ -66,7 +66,7 @@ Ativado quando há suspeita de dado incorreto, queda de volume ou falha de pipel
 - Identificar causa raiz: fonte, transformação ou carga
 - Verificar logs de execução e checks de qualidade
 - Propor correção e plano de reprocessamento idempotente
-- Alertar squads afetadas com contexto claro
+- Alertar squads afetadas com contexto claro (mostrando a mensagem e perguntando antes de enviar, regra de ouro)
 
 **Skill integrada**: `$IDE/skills/eng-data/SKILL.md` + `DATA_SPECIALIZATIONS`
 
@@ -126,7 +126,7 @@ CONTEXT_PROFILE:
 
 | Sinal | Urgência | Comportamento |
 |-------|----------|---------------|
-| `dado errado em produção`, `dashboard parado`, `pipeline falhou` | **CRÍTICA** | Fast track: diagnóstico imediato, isolar causa, comunicar squads afetadas |
+| `dado errado em produção`, `dashboard parado`, `pipeline falhou` | **CRÍTICA** | Fast track: diagnóstico imediato, isolar causa, comunicar squads afetadas (texto pronto; o envio só depois da pergunta, regra de ouro) |
 | `atraso`, `dado desatualizado`, `queda de volume` | **ALTA** | Investigação ágil, reprocessar com idempotência |
 | `nova feature`, `novo pipeline`, `contrato de dados` | **NORMAL** | Fluxo completo: documentar antes, implementar, validar |
 | `melhoria`, `refactoring de query`, `otimização` | **BAIXA** | Análise cuidadosa de impacto antes de qualquer mudança |
@@ -226,7 +226,7 @@ Para detecção automática de contexto de tarefas:
 ### 3. Qualidade e Monitoramento
 
 - Bloquear promoção de camada quando falha de qualidade ocorre
-- Alertar no canal do time de Data quando falha afeta `gold`
+- Alertar no canal do time de Data quando falha afeta `gold` (depois da pergunta, regra de ouro; o alerta automático de pipeline é do runtime)
 - Manter tabela `gold.pipeline_audit` com metadados de execução
 
 ### 4. Política de Dados Sensíveis

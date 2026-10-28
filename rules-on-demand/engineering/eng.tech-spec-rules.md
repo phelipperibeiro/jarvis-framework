@@ -34,7 +34,7 @@ O `/eng.build-tech-spec` tem dois modos, escolhidos na triagem do workflow:
 
 ## Localização de Arquivos
 
-> **NOTA**: Tech specs NÃO são salvas em `master-docs/`. São salvas na sessão do projeto e anexadas no Jira.
+> **NOTA**: Tech specs NÃO são salvas em `master-docs/`. São salvas na sessão do projeto; o anexo na issue do board só sai depois da pergunta (regra de ouro; Jira pela `acli`, em GitHub/GitLab a pessoa anexa).
 
 Arquivos são referenciados usando `$IDE/` que resolve automaticamente para a pasta do IDE atual (`.windsurf/`, `.claude/`, `.cursor/`).
 
@@ -82,10 +82,10 @@ $SESSION_FOLDER/{TASK_MANAGER_KEY}/tech-spec.md
 
 ### Por que na sessão?
 
-1. **Anexo no Jira**: A tech spec é anexada diretamente na issue do Jira como fonte da verdade
+1. **Anexo na issue**: a tech spec pode ser anexada na issue do board (Jira pela `acli`; em GitHub/GitLab a pessoa anexa, orientada), só depois de mostrar o que vai e perguntar (regra de ouro, `eng.integrations-rules.md`); sem o Sim, fica só na sessão
 2. **Sessão temporária**: A sessão é usada durante o desenvolvimento e pode ser limpa depois
 3. **Evita poluição**: Não cria arquivos permanentes no repositório de código
-4. **Rastreabilidade**: O Jira é o sistema oficial de documentação de tasks
+4. **Rastreabilidade**: o board (`TASK_MANAGER`) é o sistema oficial das tarefas; a criação automática de subtarefas é só no Jira (`acli`), nos outros a pessoa cria pelo template
 
 ### Nomenclatura
 
@@ -106,14 +106,14 @@ $SESSION_FOLDER/{TASK_MANAGER_KEY}/tech-spec.md
 
 **O que isso significa:**
 
-- Link para história do Jira no topo do documento
+- Link para a história (card do board) no topo do documento
 - Referência aos critérios de aceitação de produto
 - Conexão clara entre requisitos de negócio e decisões técnicas
 - IDs de subtarefas vinculadas à história pai
 
 **Validação:**
 
-- [ ] Link para Jira funciona
+- [ ] Link para o card funciona
 - [ ] Critérios de aceitação de produto estão documentados
 - [ ] Cada subtarefa referencia a tech spec
 - [ ] Tech spec referencia PRD/FRD se existirem
@@ -616,9 +616,9 @@ Use formato YAML frontmatter:
 ---
 name: { nome descritivo da tech spec }
 id: { TECH-001 }
-related_story: { STORY-XXX do Jira }
+related_story: { STORY-XXX do board }
 epic_related: { EPIC-XXX se existir }
-link_task: { URL da história no Jira }
+link_task: { URL da história no board }
 created_at: { YYYY-MM-DD }
 updated_at: { YYYY-MM-DD }
 status: { Draft, In Review, Approved, Implemented }
@@ -771,6 +771,8 @@ Use este checklist antes de finalizar uma tech spec:
 ---
 
 ## Integração com Jira
+
+> **Escopo:** a criação automática de subtarefas é só no Jira, pela `acli`, depois da pergunta (regra de ouro); em GitHub e GitLab a pessoa cria pelo template.
 
 ### Criação de Subtarefas
 

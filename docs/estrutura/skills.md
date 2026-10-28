@@ -65,8 +65,8 @@ Todo skill tem `metadata.area` (`qa`, `data`, `ai`, `frontend`, `backend`, `auto
 | Skill | Nota |
 |-------|------|
 | `jarvis-init` | Cria ENV; Context7 obrigatório; board e git pela CLI oficial (`gh`, `glab`, `acli`), sem token, com a descoberta da CLI e o `*_ACCESS`; freelance OK; passo opcional **adicionar as stacks** (detecta a stack do workspace e registra ou cria a especialização) |
-| `eng-global-task-comment` | Comenta no card pela CLI do vendor (jira, github, gitlab); sem a CLI, grava o `task-comment-{data}.md`; no freelance, o `task-log.md` |
-| `jarvis-report-issue` | Abre issue no `JARVIS_PROJECT` pela CLI do host (`gh`); sem a CLI, sem login ou sem rede, grava `.jarvis/issues/issue-{desc}.md` para abrir à mão |
+| `eng-global-task-comment` | Mostra o texto e pergunta; com o Sim, comenta no card pela CLI do vendor (jira, github, gitlab) (regra de ouro); sem a CLI, grava o `task-comment-{YYYYMMDD-HHMM}.md`; no freelance, o `task-log.md` |
+| `jarvis-report-issue` | Mostra o texto e pergunta; com o Sim, abre issue no `JARVIS_PROJECT` pela CLI do host (`gh`); sem a CLI, sem login ou sem rede, grava `.jarvis/issues/issue-{desc}.md` para abrir à mão |
 | `jarvis-list-specializations` | Lista as especializações instaladas (backend e frontend) e se estão registradas nas listas do `ENV.md`; só lê |
 | `jarvis-evolution-architect` | Mentor de arquitetura para a evolução do próprio Jarvis: questiona designs (agent, skill, workflow ou rule?), identifica gaps e recomenda com opinião técnica; só lê e pesquisa |
 | `jarvis-create-specialization` | Cria o skill de uma stack (backend ou frontend) a partir do código do projeto, mostra para revisão e o registra na lista da área |

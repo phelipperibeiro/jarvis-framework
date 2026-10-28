@@ -1,10 +1,10 @@
 # Tech Spec — Formatos de Entrega
 
-> Template com os formatos usados no fim do `eng.build-tech-spec`: descrição da subtarefa no Jira, comentário na história original, mensagem de entrega e um exemplo preenchido, além do diagrama do fluxo. Substitua os placeholders `{...}`.
+> Template com os formatos usados no fim do `eng.build-tech-spec`: descrição da subtarefa no board, comentário na história original, mensagem de entrega e um exemplo preenchido, além do diagrama do fluxo. Substitua os placeholders `{...}`.
 
-## Descrição da subtarefa no Jira
+## Descrição da subtarefa no board
 
-Fase 7.2 do workflow. Use este formato na descrição de cada subtarefa criada no Jira (ou entregue ao usuário para copiar e colar).
+Fase 7.2 do workflow. Use este formato na descrição de cada subtarefa criada no Jira pela `acli` (ou entregue ao usuário para copiar e colar no board).
 
 ```markdown
 ## Descrição
@@ -37,7 +37,7 @@ Tech Spec: [Link para tech-spec.md]
 
 ## Comentário na história original
 
-Fase 7.4 do workflow. Comentário a registrar na história (STORY-XXX) depois de criar as subtarefas.
+Fase 7.4 do workflow. Comentário a registrar na história (STORY-XXX) depois de criar as subtarefas, pelo `/eng-global-task-comment`, que mostra o texto e pergunta (regra de ouro).
 
 ```
 Tech Spec criada: [Link para tech-spec.md]
@@ -60,7 +60,7 @@ Fase 8.2 do workflow. O que entregar ao usuário ao final.
 ✅ Tech Spec criada com sucesso!
 
 📄 Documento Local: $SESSIONS_DIR/eng/{feature-name}/tech-spec.md
-📎 Anexada no Jira: {STORY-XXX}
+📎 {Anexada na issue: {STORY-XXX} | A anexar pela pessoa (orientado: GitHub/GitLab, sem a CLI, CLI que não anexa ou acesso manual) | Não anexada (só na sessão; sem o Sim) | Sem issue (freelance)}
 
 📋 Resumo:
 - História: {STORY-XXX} - {Título}
@@ -68,7 +68,7 @@ Fase 8.2 do workflow. O que entregar ao usuário ao final.
 - Subtarefas: {Y subtarefas}
 - Estimativa total: {Z horas}
 
-🔗 Subtarefas criadas no Jira:
+🔗 Subtarefas {criadas no Jira pela acli | entregues em template para criação manual (outros boards, sem a CLI, com acesso manual, sem o Sim ou sem board)}:
 - SUBTASK-001: {Nome} (P0, 6h)
 - SUBTASK-002: {Nome} (P1, 4h)
 - SUBTASK-003: {Nome} (P1, 8h)
@@ -93,7 +93,7 @@ Exemplo preenchido da mensagem de entrega (fictício).
 ✅ Tech Spec para STORY-456 criada com sucesso!
 
 📄 **Documento Local**: $SESSIONS_DIR/eng/story-456/tech-spec.md
-📎 **Anexado no Jira**: STORY-456
+📎 **Anexada na issue**: STORY-456
 
 📊 **Resumo**:
 
@@ -102,7 +102,7 @@ Exemplo preenchido da mensagem de entrega (fictício).
 - **Subtarefas**: 5 subtarefas
 - **Estimativa total**: 26 horas
 
-🔗 **Subtarefas criadas no Jira**:
+🔗 **Subtarefas criadas no Jira**:   ← ou "entregues em template"
 
 - SUBTASK-101: [BACKEND] Criar endpoint POST /api/auth/register (P0, 6h)
 - SUBTASK-102: [BACKEND] Criar endpoint POST /api/auth/login (P0, 6h)

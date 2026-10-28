@@ -66,7 +66,7 @@ Definido no ENV pelo `/jarvis-init`.
 /eng.plan   → plano faseado
 /eng.work   → código + testes (commit por fase, sem push nem PR)
 /eng.pre-pr → checklist
-/eng.pr     → branch + commit + MR/PR
+/eng.pr     → push + MR/PR (depois da pergunta)
 ```
 
 Restrições de fase estão nas **rules** de etapa (`eng.start-rules.md`, `eng.work-rules.md`, …), em `rules-on-demand/`: cada workflow manda ler a sua no início.
