@@ -66,24 +66,25 @@ const IMPERATIVOS = [
 // Label no PR e anexo no card também são envios: só com a pergunta. Conferidos oração por oração (separadas por
 // ".", ";" e ":"), para a negação de um verbo não isentar o imperativo de outro ("Adicione o label; não anexe nada").
 // Isenta a oração: "regra de ouro", "Sim", "pergunt", "oriente a pessoa/o usuário a <verbo>" ("Oriente a pessoa e
-// adicione…" e "…a revisar e adicione" acusam) e a negação do verbo ("o Jarvis não anexa nada na issue"). "sem
+// adicione…" e "…a revisar e adicione" acusam) e a negação do verbo ("o Jarvis não anexa nada na issue", "não comente nem abra card", "sem avisar os consumidores"). O infinitivo de criar/abrir só conta no
+// início da oração ("- Criar card no board"); "sugira abrir os cards" e "ou abrir os cards" são opções para a pessoa. "sem
 // perguntar", "não precisa perguntar" e "não pergunte" anulam as isenções. Só o verbo conta ("anexe", "vincule",
 // "faça upload", "pôr"), não o substantivo ("Anexos no card"), o particípio ("associado ao card") nem a preposição
 // "por".
 const ISENTA_ENVIO = String.raw`(?!(?!.*\b(?:sem\s+(?:a\s+)?|não\s+precisa\s+(?:de\s+)?|não\s+)pergunt(?!a\s+duas)).*(?:regra de ouro|\bSim\b|pergunt|orient\w*\s+(?:a\s+pessoa|o\s+usu\w*)\s+a\s+(?!revis)\w))`;
 const IMPERATIVOS_POR_ORACAO = [
   new RegExp(
-    String.raw`^(?!.*\bnão\s+(?:adicion|colo(?:c|qu)|ponh|apli(?:c|qu)|marqu|inclu|rotul|etiquet)\w*\b)${ISENTA_ENVIO}.*(?:\b(?:adicion\w+|colo(?:c|qu)\w+|pôr|ponh\w+|apli(?:c|qu)\w+|inclu\w+)\s+(?:[oa]s?\s+)?(?:labels?\b|tags?\b.*\b(?:ao|no)\s+(?:PR|MR)\b)|\b(?:marqu|etiquet)\w+\s+(?:[oa]s?\s+)?(?:PRs?|MRs?)\b|\b(?:adicion\w+|colo(?:c|qu)\w+|ponh\w+|apli(?:c|qu)\w+)\s+\x60?[\w-]+\x60?\s+(?:(?:ao|no)\s+(?:PR|MR)\s+)?como\s+(?:label|tag)\b|\brotul\w+\s+(?:[oa]s?\s+)?(?:PRs?|MRs?)\b)`,
+    String.raw`^(?!.*\b(?:não|nem|nunca|jamais|sem)\s+(?:adicion|colo(?:c|qu)|ponh|apli(?:c|qu)|marqu|inclu|rotul|etiquet)\w*\b)${ISENTA_ENVIO}.*(?:\b(?:adicion\w+|colo(?:c|qu)\w+|pôr|ponh\w+|apli(?:c|qu)\w+|inclu\w+)\s+(?:[oa]s?\s+)?(?:labels?\b|tags?\b.*\b(?:ao|no)\s+(?:PR|MR)\b)|\b(?:marqu|etiquet)\w+\s+(?:[oa]s?\s+)?(?:PRs?|MRs?)\b|\b(?:adicion\w+|colo(?:c|qu)\w+|ponh\w+|apli(?:c|qu)\w+)\s+\x60?[\w-]+\x60?\s+(?:(?:ao|no)\s+(?:PR|MR)\s+)?como\s+(?:label|tag)\b|\brotul\w+\s+(?:[oa]s?\s+)?(?:PRs?|MRs?)\b)`,
     "iu"
   ),
   new RegExp(
-    String.raw`^(?!.*\bnão\s+(?:anex|vincul|associ|fa[çz]|sub|envi)\w*\b)${ISENTA_ENVIO}.*(?:\b(?:anex(?:a|e|ar|em|ando|á-l[ao])|vincul(?:e|ar|em|ando)|associ(?:e|ar|em|ando)|fa[çz]\w*\s+(?:o\s+)?(?:upload|attach)|suba)\b.*(?:^|\s)(?:no|na|nos|nas|ao|aos|à|às|para\s+[oa]s?)\s+(?:Jira|issues?|cards?|tickets?|histórias?)\b|\bcomo\s+anexo\s+(?:d[oa]|n[oa])\s+(?:issue|card|ticket|história)\b)`,
+    String.raw`^(?!.*\b(?:não|nem|nunca|jamais|sem)\s+(?:anex|vincul|associ|fa[çz]|sub|envi)\w*\b)${ISENTA_ENVIO}.*(?:\b(?:anex(?:a|e|ar|em|ando|á-l[ao])|vincul(?:e|ar|em|ando)|associ(?:e|ar|em|ando)|fa[çz]\w*\s+(?:o\s+)?(?:upload|attach)|suba)\b.*(?:^|\s)(?:no|na|nos|nas|ao|aos|à|às|para\s+[oa]s?)\s+(?:Jira|issues?|cards?|tickets?|histórias?)\b|\bcomo\s+anexo\s+(?:d[oa]|n[oa])\s+(?:issue|card|ticket|história)\b)`,
     "iu"
   ),
   // Notificar ou comunicar a squad, o time, o canal ou os stakeholders também é envio (só o imperativo; "deve ser
   // comunicada no canal" descreve o processo para pessoas).
   new RegExp(
-    String.raw`^(?!.*\bnão\s+(?:notific|comunic|avis)\w*\b)${ISENTA_ENVIO}.*\b(?:notifi(?:car|ca|que|cando)|comuni(?:car|ca|que|cando)|avis(?:ar|e|ando))\b\s+(?:(?:[oa]s?|à|às|ao|aos|n[oa]s?)\s+)?(?:squads?|times?|canal|canais|equipes?|stakeholders?|requisitante)\b`,
+    String.raw`^(?!.*\b(?:não|nem|nunca|jamais|sem)\s+(?:notific|comunic|avis|post|envi|public|mand|cri|abr)\w*\b)${ISENTA_ENVIO}.*(?:\b(?:notifi(?:car|ca|que|cando)|comuni(?:car|ca|que|cando)|avis(?:ar|e|ando)|post(?:ar|e|em|ando)|envi(?:ar|e|em|ando)|publi(?:car|que|cando)|mand(?:ar|e|em|ando))\b(?:\s+(?!que\b)\S+){0,4}?\s+(?:(?:[oa]s?|à|às|ao|aos|n[oa]s?|para\s+[oa]s?|em)\s+)?(?:squads?|times?|canal|canais|equipes?|stakeholders?|requisitante|PM|owner|consumidores)\b|(?:\b(?:cri(?:e|em|ando)|abr(?:a|am|indo))|^\s*(?:[-*+]\s+|\d+[.)]\s+)?(?:criar|abrir))\s+(?:(?:[oa]s?|um|uma)\s+)?(?:cards?|issues?|tickets?)\b)`,
     "iu"
   ),
 ];
@@ -560,7 +561,11 @@ test("cada ponto que envia algo tem a pergunta logo antes", () => {
         // As linhas de árvore de pastas (├── …) só listam os arquivos.
         if (/^\s*[├└│]/.test(linha)) return;
         // "o `jarvis vcs create-merge` não põe label" só descreve o comando.
-        if (/n[aã]o p[oõ]e label/.test(linha)) return;
+        if (
+          /`jarvis vcs create-merge` n[aã]o p[oõ]e label/.test(linha) &&
+          !/git push|\bgh |\bglab |\bacli /.test(linha)
+        )
+          return;
         if (!COMANDO.test(linha) || DESCRITIVAS.some(([f, d]) => f === nome && d.test(linha)))
           return;
         assert.ok(
@@ -733,7 +738,7 @@ test("os outros pontos que enviam algo (agente, delivery-spec, data.contract, pr
     ],
     [
       "skills/eng-global-tech-spec/references/delivery-spec.md",
-      /Antes de criar as subtarefas, mostre o texto e pergunte/,
+      /[Aa]ntes de criar as subtarefas, mostre o texto e pergunte/,
     ],
     [
       "skills/eng-global-tech-spec/references/delivery-spec.md",

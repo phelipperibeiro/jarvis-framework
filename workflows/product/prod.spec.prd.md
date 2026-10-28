@@ -46,9 +46,9 @@ Utilize o `$ARGUMENTS` que o usuário passar como ponto de partida e para entend
 
 ---
 
-## Busca no Central Docs (condicional)
+## Busca de contexto (`$PROD_DOCS` sempre; Central docs se configurado)
 
-Se `CENTRAL_DOCS_STORAGE` definido no ENV.md:
+A busca em `$PROD_DOCS` é sempre feita. A consulta ao Central docs (o que já foi implementado) só acontece se `CENTRAL_DOCS_STORAGE` estiver definido no ENV.md; vazio, pule só o `jarvis docs sync`.
 
 1. **Para iteração de PRD existente:**
    - Consultar no Central docs as funcionalidades já implementadas relacionadas (o que existe hoje):
@@ -165,7 +165,7 @@ Quais métricas? A) Engajamento B) Receita C) Outro
 ## Instruções
 
 - Se o usuário forneceu ou está atuando em um projeto existente, priorize obter informações sobre o projeto a partir de:
-  - **Central-docs** (se configurado) - busca automática de PRDs existentes
+  - **Central-docs** (se configurado) - funcionalidades já implementadas; os PRDs existentes vêm de `$PROD_DOCS`
   - Documentação existente (README, docs/, PRDs, FRDs, ARDs, etc.)
   - Commits recentes para entender o que está sendo desenvolvido
   - Arquivos de AI como CLAUDE.md e AGENTS.md para obter informações estruturadas sobre o contexto do projeto/produto.

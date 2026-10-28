@@ -68,7 +68,7 @@ Fase 8.2 do workflow. O que entregar ao usuário ao final.
 - Subtarefas: {Y subtarefas}
 - Estimativa total: {Z horas}
 
-🔗 Subtarefas {criadas no Jira | entregues em template para criação manual}:
+🔗 Subtarefas {criadas no Jira pela acli | entregues em template para criação manual (outros boards, sem a CLI, sem o Sim ou sem board)}:
 - SUBTASK-001: {Nome} (P0, 6h)
 - SUBTASK-002: {Nome} (P1, 4h)
 - SUBTASK-003: {Nome} (P1, 8h)

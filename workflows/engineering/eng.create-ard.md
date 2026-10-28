@@ -128,7 +128,7 @@ Regras:
    jarvis docs sync --silent
    ```
 
-2. Buscar o PRD relacionado em `$PROD_DOCS` (sempre, com ou sem Central docs) (documento de trabalho; o Central docs não guarda PRD) usando:
+2. Buscar o PRD relacionado em `$PROD_DOCS` (sempre, com ou sem Central docs; é documento de trabalho e o Central docs não o guarda) usando:
    - Título/objetivo do ARD
    - Jira ID (se disponível)
    - Tags semânticas

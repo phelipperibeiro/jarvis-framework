@@ -8,7 +8,7 @@ Recebe uma Tech Spec e a quebra em subtarefas tão detalhadas que uma pessoa jú
 
 ## O que é
 
-Cada subtarefa vira um card com **sua própria branch, seu commit e seu deploy**. Por isso ela precisa ser uma **fatia vertical**: uma entrega completa que, sozinha, pode ser mergeada sem quebrar o sistema. É como um tutorial passo a passo.
+Cada subtarefa vira um card (criado automaticamente só no Jira, pela `acli`; nos outros boards, pela pessoa, a partir do template) com **sua própria branch, seu commit e seu deploy**. Por isso ela precisa ser uma **fatia vertical**: uma entrega completa que, sozinha, pode ser mergeada sem quebrar o sistema. É como um tutorial passo a passo.
 
 Não confunda com o [`prod.spec.breakdown`](../produto/prod.spec.breakdown.md), que fatia uma **especificação de produto** em versões, épicos e histórias. Este aqui quebra uma **Tech Spec** de engenharia.
 

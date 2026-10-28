@@ -709,17 +709,17 @@ Apresente ao usuário:
 
 #### 6.4 Anexo da tech spec na issue (opcional, com pergunta)
 
-Só com board configurado (no freelance não há issue: pule este passo). Para anexá-la na issue do board, depois da aprovação da 6.3, mostre o que vai e pergunte com `AskUserQuestion` (regra de ouro, `eng.integrations-rules.md`): **Sim, anexar** / **Não, manter só na sessão**. Com o Sim: no Jira, com a `acli` logada e `TASK_MANAGER_ACCESS=cli` (ou vazio), anexe pela `acli` (confira no `--help` se ela anexa arquivo); em GitHub ou GitLab (a CLI não anexa arquivo à issue), sem a `acli` ou com acesso manual, oriente a pessoa a anexar à mão. Sem o Sim, a tech spec fica só na sessão e a mensagem da 8.2 diz isso.
+Só com board configurado (no freelance não há issue: pule este passo). Para anexá-la na issue do board, depois da aprovação da 6.3, mostre o que vai e pergunte com `AskUserQuestion` (regra de ouro, `eng.integrations-rules.md`): **Sim, anexar** / **Não, manter só na sessão**. Com o Sim: no Jira, com a `acli` logada e `TASK_MANAGER_ACCESS=cli` (ou vazio), anexe pela `acli` (confira no `--help` se ela anexa arquivo); em GitHub ou GitLab (a CLI não anexa arquivo à issue), ou sem a `acli`, ou com acesso manual, oriente a pessoa a anexar à mão. Sem o Sim, a tech spec fica só na sessão e a mensagem da 8.2 diz isso.
 
 ---
 
 ### ═══════════════════════════════════════════════
 
-### FASE 7: Criação de Subtarefas no Jira
+### FASE 7: Criação de Subtarefas (automática só no Jira)
 
 ### ═══════════════════════════════════════════════
 
-> **Escopo:** a criação automática de subtarefas é só no Jira, pela `acli`. Em GitHub ou GitLab (ou sem a `acli`), esta fase entrega o template formatado e as instruções para a pessoa criar as subtarefas à mão, com a mesma pergunta antes (7.3). A generalização para `gh`/`glab` fica para uma issue à parte.
+> **Escopo:** a criação automática de subtarefas é só no Jira, pela `acli`. Em GitHub ou GitLab (ou sem a `acli`), esta fase entrega o template formatado e as instruções para a pessoa criar as subtarefas à mão; como não há envio, a 7.3 não faz a pergunta nesse caso. A generalização para `gh`/`glab` fica para uma issue à parte.
 
 #### 7.1 Preparação para Criação
 
@@ -735,20 +735,20 @@ Para cada subtarefa no plano:
 - Estimativa: {X horas}
 - Labels: `tech-spec`, `{área}` (ex: backend, frontend)
 
-#### 7.2 Estrutura da Descrição no Jira
+#### 7.2 Estrutura da Descrição no board
 
 Use o formato **Descrição da subtarefa no board** de `$IDE/templates/engineering/tech-spec-delivery-template.md` (seções: Descrição, Arquivos a Modificar/Criar, Critérios de Aceitação, Testes Requeridos, Dependências, Referência).
 
-#### 7.3 Criação no Jira
+#### 7.3 Criação (Jira pela `acli`; outros boards, template)
 
-Antes de criar as subtarefas, mostre o texto e pergunte com `AskUserQuestion` (**Sim, publicar** / **Não, manter só na sessão**), regra de ouro de `eng.integrations-rules.md`; sem o Sim, entregue só o template formatado e deixe o texto na sessão. O comentário da 7.4 tem a sua própria pergunta, feita pelo `/eng-global-task-comment`.
+Fora do Jira não há pergunta: entregue o template formatado direto. No Jira, antes de criar as subtarefas, mostre o texto e pergunte com `AskUserQuestion` (**Sim, publicar** / **Não, manter só na sessão**), regra de ouro de `eng.integrations-rules.md`; sem o Sim, entregue só o template formatado e deixe o texto na sessão. O comentário da 7.4 tem a sua própria pergunta, feita pelo `/eng-global-task-comment`.
 
-**Com a `acli` logada, `TASK_MANAGER_ACCESS=cli` (ou vazio) e o Sim:**
+**No Jira, com a `acli` logada, `TASK_MANAGER_ACCESS=cli` (ou vazio) e o Sim:**
 
 - Crie as subtarefas com `acli jira workitem create` (flags no `--help`)
 - Vincule à história pai e configure as dependências entre subtarefas no que a `acli` permitir (com o Sim acima); o resto vai no template manual abaixo
 
-**Sem a `acli` logada (ou com `TASK_MANAGER_ACCESS=manual`), ou sem o Sim:**
+**Em GitHub/GitLab, sem a `acli` logada (ou com `TASK_MANAGER_ACCESS=manual`), ou sem o Sim:**
 
 - Forneça ao usuário **template formatado** para copiar/colar no board (Jira, GitHub ou GitLab)
 - Forneça **instruções passo-a-passo** para criação manual
@@ -775,7 +775,7 @@ Valide que:
 - [ ] Arquivo salvo na sessão: `$SESSIONS_DIR/eng/{feature-name}/tech-spec.md`
 - [ ] Tech Spec anexada na issue (com o Sim), a anexar pela pessoa (orientado) ou deixada na sessão
 - [ ] Subtarefas documentadas com critérios claros
-- [ ] Subtarefas criadas no board (ou template fornecido)
+- [ ] Subtarefas criadas no Jira pela `acli`, ou template fornecido (outros boards, sem a CLI, sem o Sim ou sem board)
 - [ ] História original atualizada com link para tech spec (com o Sim do comentário da 7.4) ou texto deixado na sessão
 - [ ] Decisões arquiteturais documentadas
 - [ ] Riscos identificados e mitigados

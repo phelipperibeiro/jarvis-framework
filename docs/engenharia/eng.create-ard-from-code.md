@@ -31,7 +31,7 @@ Atalhos:
 | Passo | O que acontece |
 |---|---|
 | 0 | Define se é novo ARD ou iteração |
-| 1 | Verifica o PRD, quando existir (central docs ou manualmente) |
+| 1 | Verifica o PRD, quando existir, em `$PROD_DOCS` (o central docs só traz o implementado) ou pergunta |
 | 2 | **Coleta contexto do repositório:** `README.md`, `ENV.md` e docs existentes; stack e arquivos de build e infra; estrutura de diretórios; entrypoints e o que roda em produção; integrações e dependências externas observáveis |
 | 3 | Preenche o `ARD-template.md` com base no código |
 | 4 | Impactos, riscos e estratégia de testes |

@@ -106,14 +106,14 @@ $SESSION_FOLDER/{TASK_MANAGER_KEY}/tech-spec.md
 
 **O que isso significa:**
 
-- Link para história do Jira no topo do documento
+- Link para a história (card do board) no topo do documento
 - Referência aos critérios de aceitação de produto
 - Conexão clara entre requisitos de negócio e decisões técnicas
 - IDs de subtarefas vinculadas à história pai
 
 **Validação:**
 
-- [ ] Link para Jira funciona
+- [ ] Link para o card funciona
 - [ ] Critérios de aceitação de produto estão documentados
 - [ ] Cada subtarefa referencia a tech spec
 - [ ] Tech spec referencia PRD/FRD se existirem
@@ -616,9 +616,9 @@ Use formato YAML frontmatter:
 ---
 name: { nome descritivo da tech spec }
 id: { TECH-001 }
-related_story: { STORY-XXX do Jira }
+related_story: { STORY-XXX do board }
 epic_related: { EPIC-XXX se existir }
-link_task: { URL da história no Jira }
+link_task: { URL da história no board }
 created_at: { YYYY-MM-DD }
 updated_at: { YYYY-MM-DD }
 status: { Draft, In Review, Approved, Implemented }
@@ -771,6 +771,8 @@ Use este checklist antes de finalizar uma tech spec:
 ---
 
 ## Integração com Jira
+
+> **Escopo:** a criação automática de subtarefas é só no Jira, pela `acli`, depois da pergunta (regra de ouro); em GitHub e GitLab a pessoa cria pelo template.
 
 ### Criação de Subtarefas
 
