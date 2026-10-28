@@ -6,9 +6,7 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), e o
 
 > Versões anteriores a `2.1.1` não foram documentadas retroativamente neste changelog — o histórico detalhado dessas versões continua disponível via `git log`.
 
-## [Não lançado]
-
-> Versão **major**: o bump e a data entram no commit `chore(release)` na `main`, depois do merge.
+## [8.0.0] - 2026-10-27
 
 ### Changed
 - **Instalação só global** (#187): o Jarvis é instalado com `npm install -g jarvis-ai-framework`. O `jarvis init` roda dentro do projeto e copia os assets do Jarvis global para `.$IDE/`. O README e os guias deixam de ensinar o `--save-dev` e o `npx jarvis`.

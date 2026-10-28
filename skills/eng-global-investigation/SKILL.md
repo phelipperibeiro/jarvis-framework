@@ -45,6 +45,8 @@ Método para investigar bugs sem chute. Vale para qualquer linguagem, framework 
 
 ## Orçamento de etapas
 
+> Parecido com o `ReAct` (investigar um passo por vez, com hipótese e evidência), mas sem o campo `raciocínio` obrigatório a cada passo. Ver #171.
+
 Você investiga sozinho, sem pedir confirmação a cada passo, dentro de um orçamento pela urgência do `context.md` (CDD):
 
 | Urgência | Etapas (leitura, busca ou verificação) |
@@ -60,6 +62,8 @@ Pare antes do teto se ficar **3 rodadas sem avançar** (nenhuma hipótese confir
 Se **3 correções** já foram tentadas e nenhuma resolveu, pare: cada correção que revela um problema novo em outro lugar é sinal de problema de arquitetura, não de mais uma hipótese. Leve isso ao usuário antes de propor a quarta.
 
 ## Crítico antes de concluir
+
+> Parecido com o `Reflection` (passe crítico antes de finalizar), mas sem nota de 0 a 100 nem rodadas de correção, e sem registro de lições. Ver #171 e #169.
 
 Antes de declarar a causa, faça um passe contra a sua própria conclusão: que evidência a derrubaria? A reprodução foi feita de fato, ou só lida? Há outra hipótese que explica o mesmo sintoma? Se a evidência for só indireta, rebaixe o veredito.
 
