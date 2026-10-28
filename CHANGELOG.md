@@ -9,6 +9,8 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), e o
 ## Não lançado
 
 ### Added
+- **Menu em pasta já instalada (#189)**: `jarvis init` mostra "Jarvis já instalado em .{ide} (v{lock} · pacote v{pacote})" e as opções Atualizar (Enter, o mesmo fluxo do `--upgrade`), Reinstalar e Cancelar, no lugar de "Deseja reinstalar? (s/N)". Sem ENV.md, só Reinstalar e Cancelar, e Enter cancela. Sem resposta (entrada fechada), nada muda e a saída mostra os atalhos `--upgrade` e `--force`, que continuam sem menu.
+- **Validação do ENV.md no `/jarvis-init` (#189)**: no fim da criação, da atualização e do Upgrade (passo 9.5), o skill confere o arquivo inteiro contra o template, pergunta cada problema com `AskUserQuestion` e regrava o ENV.md separado por assunto, na ordem do template, sem trocar valor; chaves fora do template vão para o fim, marcadas `# (descontinuada)`.
 - **Critério de parada no `/eng.pre-pr` (#191)**: teto de rodadas pela urgência do `context.md` (`alta` 3 · `normal` 5 · `baixa` 8) ou rodada sem lacuna 🔴 ou 🟡 nova (com os revisores de código e de testes tendo rodado). O critério nunca pula a revisão nem a gravação: muda a pergunta do fechamento. A linha `Critério de parada:` entra no Resumo do relatório.
 - **Severidade como gatilho**: sem 🔴 pendente, com só ⚪ (ou com o critério atingido), o fechamento usa a variante B, com "Aceitar as ⚪ e seguir para o PR" como primeira opção; só o teto aceita 🟡 em bloco, e pela rodada sem lacuna nova as 🟡 são decididas uma a uma; decisão herdada nunca é trocada. Tabela "Transições" com a linha da variante B.
 - **Rodada incremental**: da rodada 2 em diante, cada revisor roda só se o diff desde o `Commit:` anterior tocar o que ele lê (tabela por revisor, com a área do relatório). A lacuna ganha o "(item N)" do revisor que a achou; a pendente não reavaliada é copiada para a rodada nova com a decisão herdada.
@@ -18,6 +20,8 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), e o
 - **Testes**: `test/pre-pr-criterio.test.js` (rótulos e textos da variante B, teto por urgência, numeração dos revisores, áreas da rodada incremental e o "(item N)" iguais em todos os lugares) e `test/nomes-soltos.test.js` (nomes soltos de skill, workflow e agente que não existem, contra o índice do `buildGraph`), os dois no `test:filtro`.
 
 ### Changed
+- **`ENV-template.md` (#189)**: cada assunto numa moldura de `# ====` (título entre duas barras), no lugar do separador `# --- Assunto ---`. O Upgrade do `/jarvis-init` deixa de acrescentar as chaves novas num bloco datado no fim.
+- **Resumo do `jarvis init --upgrade` (#189)**: com a versão igual, "já na v{X} (arquivos ressincronizados)" no lugar de "X → X"; o `/jarvis-init upgrade` só é pedido com pendência (eixo sem forma de acesso, chave vazia, Central docs antigo ou `TOKEN_TASK_MANAGER`), com o motivo, e sem pendência sai "Nada pendente na IDE.".
 - **Agentes dos revisores** (`prod.pm-checker`, `eng.dev-code-reviewer`, `eng.qa.test-planner`, `eng.docs-writer`): seção "Quando chamado pelo `/eng.pre-pr`", com a branch base recebida no lugar de `origin/main` fixo e a lacuna no formato do relatório.
 - **`eng.agent.md`** com uma seção por skill (`eng-backend`, `eng-frontend` e uma só `eng-platform`); o `jarvis map` deixa de repetir e de trocar descrições.
 
@@ -25,6 +29,8 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), e o
 - **MCP `repoprompt`** do `/eng.plan` (fora do catálogo de MCPs): a pesquisa no codebase usa busca de arquivos, busca de texto e leitura, como o `/eng.start`.
 
 ### Fixed
+- **Reinstalação preserva o ENV.md (#189)**: `jarvis init --force` (e a opção Reinstalar) não troca mais `RTK_ENABLED=false` por `true` quando o `rtk` está no PATH.
+- **Itens pulados na instalação (#189)**: o motivo vem certo e em pt-BR (`scripts/ (não existe no framework)`), sem o "(já existe)" acrescentado a todo item.
 - Numeração "Gates › item N" da tabela de chamadas do `/eng.pre-pr` (não batia com a lista de revisores); referências a `/jarvis-find-skill` (não existe) e `eng.docs-consolidator` (o agente é `eng.docs-consolidator.agent`); título do revisor de código; a lista do `test:filtro` no `bin/README.md` cita os testes de texto.
 - **`/eng.start` com Advisor**: quando a aprovação explícita é obrigatória (autonomia `média` ou `baixa`, já assim antes desta entrega, ou questão nova aberta pelo passe crítico), ela é pedida pela mesma pergunta "Aprovar o architecture.md?"; antes, a pergunta valia só sem Advisor e não havia forma definida de colher essa aprovação.
 

@@ -40,6 +40,115 @@ function ask(rl, question) {
 }
 
 /**
+ * Escolha do menu de pasta já instalada (#189). Função pura, para testar sem subprocesso.
+ * Com ENV.md: Enter ou 1 = atualizar (a opção recomendada), 2 = reinstalar, 3 = cancelar.
+ * Sem ENV.md não há o que atualizar (o upgrade precisa dele): o menu só tem 2 e 3, e Enter
+ * cancela, para o padrão nunca ser destrutivo (Q3). Qualquer outra resposta é inválida (Q9).
+ * @param {string} answer - linha digitada
+ * @param {{ hasEnv: boolean }} opts
+ * @returns {"upgrade" | "reinstall" | "cancel" | null} `null` = resposta inválida
+ */
+export function parseMenuChoice(answer, { hasEnv }) {
+  const choice = String(answer).trim();
+  if (choice === "2") return "reinstall";
+  if (choice === "3") return "cancel";
+  if (hasEnv && (choice === "" || choice === "1")) return "upgrade";
+  if (!hasEnv && choice === "") return "cancel";
+  return null;
+}
+
+/**
+ * O que ainda pede o `/jarvis-init upgrade` na IDE depois do `jarvis init --upgrade` (#189, Q4).
+ * Só as pendências que o terminal não resolve: eixo sem forma de acesso, chave vazia, Central docs
+ * no formato antigo e TOKEN_TASK_MANAGER com valor. Não contam o aviso de WORKSPACE_MODE (conferir
+ * no ENV.md), vendor não suportado (vira freelance) nem as chaves novas acrescentadas (Q15: o
+ * `/jarvis-init` as põe no assunto delas na próxima vez que rodar). Nunca inclui valores do ENV.
+ * @param {{ pendingAxes: string[], envPlan: { pending?: string[], warnings?: string[] } }} input
+ * @returns {string[]} um motivo por pendência; vazio = nada pendente
+ */
+export function upgradePendencies({ pendingAxes, envPlan }) {
+  const reasons = [];
+  if (pendingAxes.length) reasons.push(`confirmar o acesso de ${pendingAxes.join(" e ")}`);
+  if (envPlan.pending?.length) reasons.push(`preencher ${envPlan.pending.join(", ")}`);
+  const warnings = envPlan.warnings || [];
+  if (warnings.includes("CENTRAL_DOCS_REPO")) reasons.push("migrar o Central docs");
+  if (warnings.includes("TOKEN_TASK_MANAGER")) reasons.push("remover o TOKEN_TASK_MANAGER");
+  return reasons;
+}
+
+/**
+ * Leitor de linhas que não perde resposta: guarda as linhas que chegam antes da pergunta
+ * (pipe com várias linhas, como `printf 's\n3\n'`) e devolve `null` quando a entrada fecha
+ * sem linha (CI com `</dev/null`), em vez de esperar para sempre como o `rl.question` (Q2).
+ * @param {import("node:readline").Interface} rl
+ * @returns {(question: string) => Promise<string | null>}
+ */
+function lineReader(rl) {
+  const lines = [];
+  const waiting = [];
+  let closed = false;
+  rl.on("line", (line) => (waiting.length ? waiting.shift()(line) : lines.push(line)));
+  rl.on("close", () => {
+    closed = true;
+    while (waiting.length) waiting.shift()(null);
+  });
+  // Sem terminal, a resposta não aparece na tela: a quebra de linha separa a pergunta do que vem depois.
+  const echo = (line) => {
+    if (line !== null && !process.stdin.isTTY) process.stdout.write("\n");
+    return line;
+  };
+  return (question) => {
+    process.stdout.write(question);
+    if (lines.length) return Promise.resolve(echo(lines.shift()));
+    if (closed) return Promise.resolve(null);
+    return new Promise((resolve) => waiting.push(resolve)).then(echo);
+  };
+}
+
+/**
+ * Menu de `jarvis init` numa pasta que já tem a pasta da IDE (#189).
+ * Decide pela resposta lida, não por `process.stdin.isTTY`: `printf '\n' |` também atualiza.
+ * `askLine` é o leitor compartilhado com o menu de IDE: um leitor só para a entrada inteira,
+ * para a resposta de um menu não consumir a do outro (`printf '1\n3\n' | jarvis init`).
+ * @returns {Promise<"upgrade" | "reinstall" | "cancel" | "no-answer">} `no-answer` = entrada fechada (a mensagem já saiu)
+ */
+async function askInstalledMenu({ folder, lockVersion, packageVersion, hasEnv, askLine }) {
+  const installed = lockVersion === "desconhecida" ? "versão desconhecida" : `v${lockVersion}`;
+  logger.info(
+    `${YELLOW}⚠️  Jarvis já instalado em .${folder} (${installed} · pacote v${packageVersion})${NC}`
+  );
+  logger.info("");
+  if (!hasEnv) {
+    logger.info(`${DIM}Atualizar precisa do ENV.md: reinstale e rode /jarvis-init na IDE.${NC}`);
+    logger.info("");
+  }
+  logger.info("O que deseja fazer?");
+  if (hasEnv) {
+    logger.info(
+      `  1) Atualizar (recomendado) — sincroniza com a versão do pacote, preserva o ENV.md`
+    );
+  }
+  logger.info(`  2) Reinstalar — sobrescreve os arquivos do framework`);
+  logger.info(`  3) Cancelar`);
+  logger.info("");
+
+  const valid = hasEnv ? "1, 2 ou 3" : "2 ou 3";
+  for (;;) {
+    const answer = await askLine(`Escolha [${hasEnv ? "1" : "3"}]: `);
+    if (answer === null) {
+      logger.info("");
+      logger.info(
+        `${BLUE}ℹ️  Sem resposta: nada alterado. Use --upgrade (atualizar) ou --force (reinstalar).${NC}\n`
+      );
+      return "no-answer";
+    }
+    const choice = parseMenuChoice(answer, { hasEnv });
+    if (choice) return choice;
+    logger.info(`${RED}Opção inválida. Escolha ${valid}.${NC}`);
+  }
+}
+
+/**
  * Grava o Context7 (MCP obrigatório) no arquivo de MCP da IDE e mostra o que falta.
  * Só avisa: problema no arquivo de MCP não muda o código de saída (instalação e --upgrade).
  */
@@ -73,6 +182,21 @@ export async function init(flags) {
     return;
   }
 
+  // Um leitor de linhas só para os dois menus (IDE e pasta já instalada), criado na primeira
+  // pergunta e fechado antes do sync ou do upgrade (que abre o seu, só com terminal).
+  let reader = null;
+  const askLine = (question) => {
+    if (!reader) {
+      const rl = createInterface({ input: process.stdin, terminal: false });
+      reader = { rl, next: lineReader(rl) };
+    }
+    return reader.next(question);
+  };
+  const closeReader = () => {
+    reader?.rl.close();
+    reader = null;
+  };
+
   let ide;
   if (flags.ide) {
     if (!isIDESupported(flags.ide)) {
@@ -100,14 +224,15 @@ export async function init(flags) {
     });
     logger.info("");
 
-    const rl = createInterface({
-      input: process.stdin,
-      output: process.stdout,
-    });
-
     let choice;
     while (true) {
-      choice = await ask(rl, `${BLUE}Digite o número da sua escolha (1-${IDES.length}): ${NC}`);
+      choice = await askLine(`${BLUE}Digite o número da sua escolha (1-${IDES.length}): ${NC}`);
+      if (choice === null) {
+        closeReader();
+        logger.info("");
+        logger.info(`${BLUE}ℹ️  Sem resposta: nada alterado. Use --ide {ide}.${NC}\n`);
+        return;
+      }
       const choiceNum = parseInt(choice, 10);
 
       if (choiceNum >= 1 && choiceNum <= IDES.length) {
@@ -128,40 +253,41 @@ export async function init(flags) {
         );
       }
     }
-
-    rl.close();
   }
 
   const ideDir = join(cwd, `.${getIDEFolder(ide)}`);
 
-  // Avisos de versão antes da pergunta de reinstalação: quem responde "s" (ou usa --force)
-  // já sabe se vai rebaixar os assets.
-  warnVersionMismatch(cwd);
+  // Avisos de versão antes do menu: quem escolhe reinstalar (ou usa --force) já sabe se vai
+  // rebaixar os assets. O resultado vai para o runUpgrade, que não repete o aviso (Q8).
+  const lockVersion = readLockVersion(cwd);
+  const versionCheck = warnVersionMismatch(cwd, lockVersion);
 
-  // Reinstall: --force ou confirmação "s" devem sobrescrever assets (cpSync force:true).
+  // Reinstalação: --force ou a opção 2 do menu sobrescrevem os assets (cpSync force:true).
   let forceSync = !!flags.force;
 
   if (existsSync(ideDir) && !forceSync) {
-    logger.info(`${YELLOW}⚠️  Framework já instalado em .${getIDEFolder(ide)}${NC}`);
-    logger.info("");
-
-    const rl = createInterface({
-      input: process.stdin,
-      output: process.stdout,
+    const choice = await askInstalledMenu({
+      folder: getIDEFolder(ide),
+      lockVersion,
+      packageVersion: versionCheck.running,
+      hasEnv: existsSync(join(ideDir, "ENV.md")),
+      askLine,
     });
-    const confirm = await ask(
-      rl,
-      `Deseja reinstalar? Isso irá sobrescrever a instalação existente. (s/N): `
-    );
-    rl.close();
-
-    if (confirm.toLowerCase() !== "s") {
+    closeReader();
+    if (choice === "upgrade") {
+      logger.info("");
+      process.exitCode = await runUpgrade(cwd, { ...flags, ide, versionCheck });
+      return;
+    }
+    if (choice === "no-answer") return;
+    if (choice === "cancel") {
       logger.info(`${BLUE}ℹ️  Instalação cancelada.${NC}\n`);
       return;
     }
     forceSync = true;
     logger.info("");
   }
+  closeReader();
 
   const ideConfig = getIDEConfig(ide);
   logger.info(`${BLUE}Configurando ambiente para ${ideConfig?.name}...${NC}`);
@@ -169,13 +295,15 @@ export async function init(flags) {
   const result = syncAssets(cwd, ide, {
     force: forceSync,
     workflowsFolder: getWorkflowsFolder(ide),
+    // Reinstalação não troca valor do ENV.md (RTK_ENABLED=false fica), como o upgrade (Q1).
+    keepEnvValues: forceSync,
   });
 
   for (const item of result.copied) {
     logger.info(`${BLUE}  ↳ ${item}${NC}`);
   }
   for (const item of result.skipped) {
-    logger.info(`${DIM}  ↳ ${item} (já existe)${NC}`);
+    logger.info(`${DIM}  ↳ ${item}${NC}`); // o motivo já vem no item (sync-engine)
   }
   for (const item of result.errors) {
     logger.error(`${RED}  ✗ ${item}${NC}`);
@@ -371,7 +499,9 @@ async function runUpgrade(cwd, flags) {
   const workspaceDir = resolved.root;
   const envPath = resolved.path;
   const previousVersion = readLockVersion(workspaceDir);
-  const { downgrade, running } = warnVersionMismatch(workspaceDir, previousVersion);
+  // Vindo do menu do `init`, o aviso já saiu antes da escolha (Q8): só reaproveita o resultado.
+  const { downgrade, running } =
+    flags.versionCheck ?? warnVersionMismatch(workspaceDir, previousVersion);
   if (downgrade && !flags.yes) {
     let go = false;
     if (process.stdin.isTTY) {
@@ -480,7 +610,11 @@ async function runUpgrade(cwd, flags) {
   // 4. Resumo (só nomes de chave e caminhos)
   const pkg = getPackageInfo();
   logger.info("");
-  logger.info(`${GREEN}✅ Upgrade concluído: ${previousVersion} → ${pkg.version}${NC}`);
+  logger.info(
+    previousVersion === pkg.version
+      ? `${GREEN}✅ Upgrade concluído: já na v${pkg.version} (arquivos ressincronizados)${NC}`
+      : `${GREEN}✅ Upgrade concluído: ${previousVersion} → ${pkg.version}${NC}`
+  );
   logger.info(`  • Arquivos do framework: ${sync.copied.length} item(ns) sincronizado(s)`);
   logger.info(
     `  • ENV.md: ${addedKeys.length ? `+ ${addedKeys.join(", ")}` : "nenhuma variável nova"}`
@@ -532,11 +666,12 @@ async function runUpgrade(cwd, flags) {
     const access = (futureEntries.get(`${key}_ACCESS`) || "").trim();
     return getVendor(futureEntries.get(key)) && (!access || /^\[.*\]$/.test(access));
   });
+  const pending = upgradePendencies({ pendingAxes, envPlan });
   logger.info("");
   logger.info(
-    pendingAxes.length
-      ? `${CYAN}➡️  Agora rode ${BOLD}/jarvis-init upgrade${NC}${CYAN} na IDE para confirmar o acesso de ${pendingAxes.join(" e ")} (e as variáveis).${NC}\n`
-      : `${CYAN}➡️  Agora rode ${BOLD}/jarvis-init upgrade${NC}${CYAN} na IDE.${NC}\n`
+    pending.length
+      ? `${CYAN}➡️  Agora rode ${BOLD}/jarvis-init upgrade${NC}${CYAN} na IDE: ${pending.join("; ")}.${NC}\n`
+      : `${GREEN}✓ Nada pendente na IDE.${NC}\n`
   );
   return sync.errors.length || moveErrors.length || staleErrors.length ? 1 : 0;
 }

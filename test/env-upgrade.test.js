@@ -231,3 +231,24 @@ test("applyEnvUpgrade: ENV com CRLF também é preenchido; $ do valor não vira 
     assert.deepEqual(plan.filledApplied, ["JARVIS_PROJECT"]);
   });
 });
+
+// #189: cada assunto do template fica numa moldura de três linhas (barra, título, barra), o
+// formato que o /jarvis-init usa ao regravar o ENV.md. O separador fino antigo não volta.
+test("ENV-template: cada assunto numa moldura de # ==== e nenhum separador # ---", () => {
+  const lines = readFileSync(join(root, "templates", "ENV-template.md"), "utf-8").split("\n");
+  const BAR = /^# ={77}$/;
+  assert.equal(lines.filter((l) => /^# ---/.test(l)).length, 0, "separador # --- no template");
+  const titles = [];
+  for (let i = 7; i < lines.length; i++) {
+    if (!BAR.test(lines[i])) continue;
+    assert.ok(
+      lines[i + 1] && /^# \S/.test(lines[i + 1]) && !BAR.test(lines[i + 1]),
+      `linha ${i + 1}: barra sem título logo abaixo`
+    );
+    assert.ok(BAR.test(lines[i + 2] || ""), `linha ${i + 3}: moldura sem a barra de baixo`);
+    titles.push(lines[i + 1].slice(2));
+    i += 2;
+  }
+  assert.ok(titles.includes("Workspace e identidade"), titles.join(" | "));
+  assert.ok(titles.length >= 15, `só ${titles.length} assuntos: ${titles.join(" | ")}`);
+});

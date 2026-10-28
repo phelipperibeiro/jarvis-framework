@@ -80,7 +80,7 @@ export function syncAssets(targetDir, ide, opts = {}) {
     const dest = join(ideDir, destDirName);
 
     if (!existsSync(src)) {
-      result.skipped.push(`${dir}/ (not found in framework)`);
+      result.skipped.push(`${dir}/ (não existe no framework)`);
       continue;
     }
 
@@ -102,7 +102,7 @@ export function syncAssets(targetDir, ide, opts = {}) {
     if (!existsSync(src)) continue;
 
     if (existsSync(dest) && !opts.force) {
-      result.skipped.push(`${file} (already exists)`);
+      result.skipped.push(`${file} (já existe)`);
       continue;
     }
 
@@ -228,7 +228,11 @@ function reconcileRtk(ideDir, targetDir, ide, { keepEnvValues = false } = {}) {
         return "(rtk) detectado — RTK_ENABLED=true no ENV.md";
       }
       if (!env.includes("RTK_ENABLED")) {
-        env = env.trimEnd() + "\n\n# --- RTK — Token Killer ---\nRTK_ENABLED=true\n";
+        // Moldura do ENV-template (#189): o /jarvis-init não aponta o bloco como separador antigo.
+        const bar =
+          "# =============================================================================";
+        env =
+          env.trimEnd() + `\n\n${bar}\n# RTK — Token Killer (opcional)\n${bar}\nRTK_ENABLED=true\n`;
         writeFileSync(envPath, env, "utf-8");
         return "(rtk) detectado — RTK_ENABLED=true adicionado ao ENV.md";
       }

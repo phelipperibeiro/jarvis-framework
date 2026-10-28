@@ -13,7 +13,7 @@ bin/
 ├── jarvis.js              # entrypoint (bin no package.json)
 ├── postinstall.js          # após npm install: só imprime as dicas
 ├── commands/
-│   ├── init.js             # jarvis init [--ide] [--force] [--upgrade [--yes] [--remove-stale]]; grava o Context7 no MCP da IDE
+│   ├── init.js             # jarvis init [--ide] [--force] [--upgrade [--yes] [--remove-stale]]; em pasta já instalada, menu Atualizar / Reinstalar / Cancelar; grava o Context7 no MCP da IDE
 │   ├── list.js             # jarvis list
 │   ├── info.js             # jarvis info …
 │   ├── whoami.js           # jarvis whoami / logout legado
@@ -60,7 +60,7 @@ Efeitos colaterais no init:
 
 - Flatten de workflows (arquivos sobem para a raiz de `workflows/` ou `commands/`)
 - `jarvis-lock.json` na raiz do workspace e em `.$IDE/`
-- Reconciliação RTK (`RTK_ENABLED` + `rtk-rules.md`)
+- Reconciliação RTK (`RTK_ENABLED` + `rtk-rules.md`); na reinstalação (`--force` ou a opção Reinstalar do menu) e no `--upgrade`, o `RTK_ENABLED` que já está no ENV.md não muda
 - Transformações por IDE (Codex `openai.yaml`, OpenCode frontmatter, Kiro steering)
 
 ## Banner e versão
@@ -74,4 +74,4 @@ Use com `which jarvis` para confirmar que o PATH aponta para o clone certo.
 
 ## Postinstall
 
-O postinstall só imprime as dicas (`jarvis init` e `jarvis install-rtk`). Ele não sincroniza projeto nenhum: o Jarvis é instalado só global, e os assets de um projeto se atualizam com o `jarvis init`, dentro dele (`--upgrade`, ou `--force` se ainda não houver `ENV.md`).
+O postinstall só imprime as dicas (`jarvis init` e `jarvis install-rtk`). Ele não sincroniza projeto nenhum: o Jarvis é instalado só global, e os assets de um projeto se atualizam com o `jarvis init`, dentro dele: o menu de pasta já instalada (Atualizar ou Reinstalar), ou os atalhos `--upgrade` e `--force` (este se ainda não houver `ENV.md`).
