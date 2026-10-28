@@ -735,7 +735,7 @@ Use o formato **Descrição da subtarefa no Jira** de `$IDE/templates/engineerin
 
 #### 7.3 Criação no Jira
 
-Antes de criar subtarefas ou comentar, mostre o texto e pergunte com `AskUserQuestion` (**Sim, publicar** / **Não, manter só na sessão**), regra de ouro de `eng.integrations-rules.md`; sem o Sim, entregue só o template formatado.
+Antes de criar as subtarefas, mostre o texto e pergunte com `AskUserQuestion` (**Sim, publicar** / **Não, manter só na sessão**), regra de ouro de `eng.integrations-rules.md`; sem o Sim, entregue só o template formatado e deixe o texto na sessão. O comentário da 7.4 tem a sua própria pergunta, feita pelo `/eng-global-task-comment`.
 
 **Se houver API/ferramenta disponível (e o Sim):**
 

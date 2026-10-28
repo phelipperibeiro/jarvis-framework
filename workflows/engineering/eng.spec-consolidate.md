@@ -92,7 +92,7 @@ O frontmatter segue o template, com os comentários `#`. `product` = `WORKSPACE`
 
 ## Passo 5: Revisão
 
-Mostre o resumo dos dois arquivos (seções, tamanho, referências) e o caminho deles. Pergunte com `AskUserQuestion`:
+Mostre o resumo dos dois arquivos (seções, tamanho, referências) e o caminho deles, para você abrir e ler o texto completo antes de aprovar. Pergunte com `AskUserQuestion`:
 - `[Aprovar]`
 - `[Ajustar]`: diga o que mudar; o agente ajusta e você revisa de novo.
 

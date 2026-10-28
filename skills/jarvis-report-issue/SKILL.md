@@ -1,6 +1,6 @@
 ---
 name: jarvis-report-issue
-description: Reporta um bug ou propõe uma melhoria no próprio framework Jarvis. Classifica o report (bug ou melhoria), monta o issue no formato do tipo e o abre no repo do Jarvis (o JARVIS_PROJECT, hoje no GitHub) pela CLI do host (gh issue create), com a label certa, só depois de mostrar o texto e o usuário dizer Sim (regra de ouro); sem a CLI ou sem o Sim, deixa o issue pronto em .jarvis/issues/.
+description: Reporta um bug ou propõe uma melhoria no próprio framework Jarvis. Classifica o report (bug ou melhoria), monta a issue no formato do tipo e o abre no repo do Jarvis (o JARVIS_PROJECT, hoje no GitHub) pela CLI do host (gh issue create), com a label certa, só depois de mostrar o texto e o usuário dizer Sim (regra de ouro); sem a CLI ou sem o Sim, deixa a issue pronto em .jarvis/issues/.
 argument-hint: "[descrição opcional do problema ou da melhoria]"
 disable-model-invocation: false
 allowed-tools: Read Bash Grep Glob
@@ -13,7 +13,7 @@ metadata:
 
 # jarvis-report-issue — Bug ou melhoria no Framework Jarvis
 
-Você abre um issue no repositório do Jarvis: um **bug** (uma instrução do Jarvis induziu um erro) ou uma **melhoria** (funcionalidade nova ou mudança de comportamento pedida pelo usuário).
+Você abre uma issue no repositório do Jarvis: um **bug** (uma instrução do Jarvis induziu um erro) ou uma **melhoria** (funcionalidade nova ou mudança de comportamento pedida pelo usuário).
 
 O usuário não precisa preencher nada — você é o autor do report.
 
@@ -55,13 +55,13 @@ Responda internamente às perguntas abaixo. Use o contexto da conversa atual:
 ```
 
 Se não houver contexto suficiente na conversa, pergunte ao usuário **uma** coisa antes de continuar:
-> "Para abrir o issue, preciso saber: qual skill ou workflow estava sendo executado?"
+> "Para abrir a issue, preciso saber: qual skill ou workflow estava sendo executado?"
 
 ---
 
-## Fase 2 — Montar o issue
+## Fase 2 — Montar a issue
 
-Com as respostas da Fase 1, monte o issue no formato abaixo.
+Com as respostas da Fase 1, monte a issue no formato abaixo.
 
 **Título:** `[BUG] {artefato}: {descrição curta do problema em até 80 chars}`
 
@@ -149,10 +149,10 @@ Se o projeto não estiver definido:
 
 > `🚫 BLOQUEADO: defina JARVIS_PROJECT=https://github.com/phelipperibeiro/jarvis-framework no ENV.md (URL completa).`
 
-Sem host (`grupo/repo`), o vendor não é adivinhado: o `jarvis vcs create-issue` sai com `3` e o issue vai para o fallback da Fase 4.
+Sem host (`grupo/repo`), o vendor não é adivinhado: o `jarvis vcs create-issue` sai com `3` e a issue vai para o fallback da Fase 4.
 > → PARAR
 
-Login: o da CLI do host (`gh auth login`; no GitLab, `glab auth login`). Nenhum token é lido ou pedido. O `VERSION_CONTROL_ACCESS` do projeto não se aplica aqui: o issue vai para o repositório do Jarvis.
+Login: o da CLI do host (`gh auth login`; no GitLab, `glab auth login`). Nenhum token é lido ou pedido. O `VERSION_CONTROL_ACCESS` do projeto não se aplica aqui: a issue vai para o repositório do Jarvis.
 
 Versão do Jarvis:
 
@@ -162,13 +162,13 @@ grep '"version"' package.json | head -1 | sed 's/.*"version": *"\([^"]*\)".*/\1/
 
 ---
 
-## Fase 4 — Abrir o issue
+## Fase 4 — Abrir a issue
 
 **Antes de abrir, mostre e pergunte (regra de ouro, `eng.integrations-rules.md`).** Mostre o título, a label e o corpo da issue e pergunte com `AskUserQuestion`: **"Abrir esta issue no repositório do Jarvis?"** → **Sim, abrir a issue** / **Não, manter só em `.jarvis/issues/`**. A pergunta vale mesmo quando o usuário pediu o report direto, porque ele ainda não viu o texto final. Com **Não**, grave o fallback abaixo (rode `unset STATUS` antes: indefinido conta como "não abriu") e não rode o `jarvis vcs create-issue`.
 
 ```bash
 BODY_FILE=$(mktemp)
-# gravar o corpo markdown do issue em $BODY_FILE
+# gravar o corpo markdown da issue em $BODY_FILE
 
 REPO=$(grep -E '^(JARVIS_PROJECT|JARVIS_GITLAB_PROJECT)=' $IDE/ENV.md | tail -1 | cut -d= -f2-)
 
@@ -180,18 +180,18 @@ jarvis vcs create-issue \
 STATUS=$?
 ```
 
-**Cadeia (`rules/engineering/eng.integrations-rules.md`).** `0` → aberto. `1` (uso: arquivo do corpo inexistente, título vazio) → corrija a chamada e rode de novo. `3` (indisponível: CLI ausente, sem login, `JARVIS_PROJECT` sem host; nada enviado) → rode a CLI direto, se ela estiver logada (`gh issue create --repo {host}/{dono}/{repo} --title "$ISSUE_TITLE" --body-file "$BODY_FILE" --label "$LABEL"`); se também não der, o fallback abaixo. `4` (enviado com erro) → **não** repita: grave o fallback e avise para conferir no repositório se o issue foi aberto.
+**Cadeia (`rules/engineering/eng.integrations-rules.md`).** `0` → aberto. `1` (uso: arquivo do corpo inexistente, título vazio) → corrija a chamada e rode de novo. `3` (indisponível: CLI ausente, sem login, `JARVIS_PROJECT` sem host; nada enviado) → rode a CLI direto, se ela estiver logada (`gh issue create --repo {host}/{dono}/{repo} --title "$ISSUE_TITLE" --body-file "$BODY_FILE" --label "$LABEL"`); se também não der, o fallback abaixo. `4` (enviado com erro) → **não** repita: grave o fallback e avise para conferir no repositório se a issue foi aberto.
 
-**Fallback — sem CLI ou sem conexão com o repositório.** Se a cadeia não abrir o issue, **não descarte o report**. Grave o issue montado em `.jarvis/issues/issue-{desc}.md`, na pasta do workspace (a que contém `$IDE/`), para a pessoa abrir manualmente:
+**Fallback — sem CLI ou sem conexão com o repositório.** Se a cadeia não abrir a issue, **não descarte o report**. Grave a issue montado em `.jarvis/issues/issue-{desc}.md`, na pasta do workspace (a que contém `$IDE/`), para a pessoa abrir manualmente:
 
 - `{desc}` é o slug do título, sem o prefixo de tipo: minúsculas, sem acentos, palavras separadas por `-`, até 60 caracteres (ex.: `[MELHORIA] jarvis-init: Central docs padrão` → `issue-jarvis-init-central-docs-padrao.md`). Se o arquivo já existir, acrescente `-2`, `-3`…
 - Conteúdo: um cabeçalho com o que vai nos campos do formulário e, depois, o corpo exatamente como seria enviado:
 
   ```markdown
   <!-- Abrir em: {URL de novo issue} · Label: {LABEL} -->
-  # {título do issue}
+  # {título da issue}
 
-  {corpo do issue}
+  {corpo da issue}
   ```
 
 - `{URL de novo issue}` vem de `JARVIS_PROJECT` pelo vendor: GitHub `{repo}/issues/new`, GitLab `{repo}/-/issues/new`.
@@ -214,7 +214,7 @@ Sucesso (exit 0):
 ```
 ✅ Issue aberto com sucesso!
 
-  Título : {título do issue}
+  Título : {título da issue}
   Artefato: {caminho do arquivo com problema}
   URL     : {url retornada}
 
@@ -226,7 +226,7 @@ Sem o Sim (o usuário recusou; o fallback da Fase 4 gravou o arquivo):
 ```
 ℹ️ Issue não aberto, como você pediu. O texto ficou em:
   Arquivo : .jarvis/issues/issue-{desc}.md
-  Título  : {título do issue}
+  Título  : {título da issue}
   Label   : {LABEL}
 
 Quando quiser abrir, peça para abrir a issue a partir desse arquivo.
@@ -235,11 +235,11 @@ Quando quiser abrir, peça para abrir a issue a partir desse arquivo.
 Erro (o fallback da Fase 4 gravou o arquivo):
 
 ```
-⚠️ Não consegui abrir o issue: {mensagem}
+⚠️ Não consegui abrir a issue: {mensagem}
 
 O issue ficou pronto para você abrir manualmente:
   Arquivo : .jarvis/issues/issue-{desc}.md
-  Título  : {título do issue}
+  Título  : {título da issue}
   Label   : {LABEL}
   Abrir em: {URL de novo issue}
 
@@ -247,7 +247,7 @@ Cole o título no campo de título e o conteúdo abaixo do título no corpo.
 Para abrir direto da próxima vez, faça `gh auth login` (ou o login da CLI do host) e confira o JARVIS_PROJECT (URL completa).
 ```
 
-Com a CLI logada depois, a pessoa pode pedir para abrir o issue a partir desse arquivo, sem montar o report de novo. Depois que o issue for aberto, o arquivo pode ser apagado.
+Com a CLI logada depois, a pessoa pode pedir para abrir a issue a partir desse arquivo, sem montar o report de novo. Depois que a issue for aberto, o arquivo pode ser apagado.
 
 ### Skills invocados durante a execução do skill
 

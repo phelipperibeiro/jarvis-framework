@@ -54,7 +54,7 @@ Antes de abrir o PR/MR, este comando **revê a branch atrás de possíveis lacun
 | Gates › item 8 | `eng.ux-designer.agent` (agente) | Se a branch introduzir nova feature de UI ou alterar fluxo de usuário |
 | Gates › item 9 | `eng.docs-writer` (agente) | Sempre — apontar documentação do projeto desatualizada (sem editar) |
 | Gates › item 10 | Nenhuma — checklist inline | Se a branch tocar em auth, sessions, inputs de usuário, CORS, CSP, permissões ou adicionar endpoints públicos |
-| Publicação do relatório | `/eng-global-task-comment` | Só se o usuário escolher um dos **Sim** no fim: o resumo ou o `gate-checklist.md` completo, com as decisões, vira um comentário na issue/card (freelance pula, sem perguntar) |
+| Publicação do relatório | `/eng-global-task-comment` | Só se o usuário escolher um dos **Sim** no fim: o resumo ou o `gate-checklist.md` completo, com as decisões, vira um comentário na issue/card (freelance pula: nesse modo o relatório fica só na sessão) |
 
 ## Regras de Execução
 
