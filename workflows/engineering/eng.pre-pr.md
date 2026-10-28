@@ -60,7 +60,7 @@ Antes de abrir o PR/MR, este comando **revê a branch atrás de possíveis lacun
 
 - **Escopo**: avalie apenas as mudanças desta branch em relação à **branch base** (`Branch base:` do `architecture.md`; sem ele, pergunte).
 - **Só apontar**: cada agente/gate devolve lacunas, não correções. Nenhum arquivo do projeto é alterado por este comando.
-- **Evidências**: cite o comando rodado e o resultado, ou `arquivo:linha`, para cada lacuna.
+- **Evidências**: cite o comando rodado e o resultado, ou `arquivo:linha` com o trecho, para cada lacuna, e o que a derrubaria (coluna Refutação; seção "Passe crítico").
 
 ## Gates (revisão)
 
@@ -77,6 +77,16 @@ Na rodada 1, todos os gates abaixo rodam conforme a condição de cada um. Da ro
 9. Invoque o agente [eng.docs-writer]($IDE/agents/engineering/eng.docs-writer.md) para apontar documentação do projeto que ficou desatualizada (sem editar).
 
 ## Relatório: `gate-checklist.md` (obrigatório)
+
+### Passe crítico
+
+Depois dos gates e antes de gravar o relatório, faça **um** passe contra a lista de lacunas. Parecido com o `Reflection` (um passe contra a própria conclusão), como o "Crítico antes de concluir" da skill `eng-global-investigation` (ver #171), mas sem nota de 0 a 100 nem novas tentativas.
+
+- **Para cada lacuna**, confira a **Refutação** (o que a derrubaria) no lugar que ela aponta, e se o **Onde** traz o trecho ou o resultado do comando, e não só `arquivo:linha`.
+- **Se a refutação se sustenta** (o lugar apontado mostra que a lacuna não existe), a lacuna **sai** da tabela. Registre-a numa linha abaixo da tabela da área: "Removidas no passe crítico: {lacuna} — {motivo}".
+- **Se a lacuna existe, mas pesa menos do que a severidade dada** (por exemplo, 🟡 que é só redação), ela é **rebaixada**, com "(rebaixada: {motivo})" na coluna Lacuna, antes do "(item N)".
+- **Sem evidência verificável** (nem trecho, nem comando, nem resultado): rebaixe para ⚪ ou peça ao gate o lugar exato antes de gravar.
+- O passe não acrescenta lacunas novas nem muda a decisão herdada de uma lacuna.
 
 ### Rodadas
 
@@ -144,11 +154,11 @@ Critério de parada: {atingido na rodada {N} (teto de {T} rodadas da urgência `
 
 ### {Área: Produto e documentação | Código | Testes | Não funcionais | Interface e UX | Segurança | Documentação do projeto}
 
-| # | Lacuna | Onde | Por que importa | Sugestão | Severidade | Decisão |
-|---|---|---|---|---|---|---|
-| 1 | {o que falta ou está errado} (item {N}) | [`{arquivo}:{linha}`](../../../../{repo}/{caminho}#L{linha}) | {impacto, em linguagem simples} | {como resolver} | 🔴 Bloqueador / 🟡 Importante / ⚪ Menor | {🔧 Corrigir \| 👍 Aceitar: motivo} |
+| # | Lacuna | Onde | Por que importa | Refutação | Sugestão | Severidade | Decisão |
+|---|---|---|---|---|---|---|---|
+| 1 | {o que falta ou está errado} (item {N}) | [`{arquivo}:{linha}`](../../../../{repo}/{caminho}#L{linha}): {trecho, ou o comando e o resultado} | {impacto, em linguagem simples} | {o que derrubaria esta lacuna, com o lugar a conferir} | {como resolver} | 🔴 Bloqueador / 🟡 Importante / ⚪ Menor | {🔧 Corrigir \| 👍 Aceitar: motivo} |
 
-(uma tabela por área; a coluna Lacuna termina com o item do gate que a achou, entre parênteses, por exemplo "(item 3)", que a rodada incremental usa para saber se ela foi reavaliada; área sem lacuna: "Nenhuma lacuna encontrada."; área cujos gates não rodaram nesta rodada: "Não reavaliada nesta rodada (sem diff no escopo desde `{Commit da rodada anterior}`)", seção "Rodada incremental")
+(uma tabela por área; a Refutação é o que, se verdadeiro, mostraria que a lacuna não existe, e o passe crítico a confere antes de gravar; a coluna Lacuna termina com o item do gate que a achou, entre parênteses, por exemplo "(item 3)", que a rodada incremental usa para saber se ela foi reavaliada; área sem lacuna: "Nenhuma lacuna encontrada."; área cujos gates não rodaram nesta rodada: "Não reavaliada nesta rodada (sem diff no escopo desde `{Commit da rodada anterior}`)", seção "Rodada incremental")
 
 ## Evidências
 {Comandos rodados (testes, lint, build, audit) e resultados.}
@@ -166,7 +176,7 @@ A coluna **Decisão** nasce vazia: quem preenche é o usuário (exceto a decisã
 
 A **Resolução da rodada anterior** lista as lacunas da rodada anterior com decisão `🔧 Corrigir` (ou `Corrigir` sem ícone, de um relatório anterior à rodada 3, que vale igual) e as sem decisão (coluna vazia; no fechamento, as ⚪ só recebem decisão pela opção "Corrigir todas"). As `👍 Aceitar` não entram e, se reaparecerem, voltam como lacunas novas, com a Decisão vazia. A lacuna `🔧 Corrigir` que continua `Ainda presente` e reaparece nas tabelas novas herda a decisão: nasce com `🔧 Corrigir`, para o usuário confirmar ou mudar: as 🔴 e 🟡 herdadas em "Decidir uma a uma", as ⚪ herdadas à mão, editando a coluna Decisão. As regras da tabela:
 
-- **Situação:** `Corrigida` (não aparece mais nesta rodada), `Ainda presente` (aparece de novo nas tabelas desta rodada) ou `Não reavaliada` (o gate ou a área dela não rodou nesta rodada, inclusive quando a rodada incremental o pulou, então sumir não prova correção). A decisão fica só na coluna "Decisão anterior".
+- **Situação:** `Corrigida` (não aparece mais nesta rodada), `Ainda presente` (aparece de novo nas tabelas desta rodada) ou `Não reavaliada` (o gate ou a área dela não rodou nesta rodada, inclusive quando a rodada incremental o pulou, então sumir não prova correção). A lacuna da rodada anterior que o passe crítico desta rodada removeu fica `Removida no passe crítico`, com o motivo, e não conta como corrigida. A decisão fica só na coluna "Decisão anterior".
 - **Rodada anterior:** é a do arquivo renomeado (`M`) ou, sem `gate-checklist.md`, o `.md` de maior número; o `Commit:` e as lacunas vêm dela.
 - **Coluna "Onde":** o arquivo é o caminho do link depois de `../../../../`, sem a âncora (`#…`, de linha ou de título) (no modo workspace, o primeiro trecho é o `{repo}` só se for uma subpasta com `.git/` ou listada em `WORKSPACE_REPOS`, e o resto é o arquivo; senão, o arquivo está fora de repositório); com vários arquivos, rode o log em cada um e junte os hashes (no workspace, escreva `{repo}@{hash}`; se um arquivo tem hash e outro não, liste só os hashes); arquivo fora de repositório (da sessão ou em `docs/jarvis/`; no modo workspace, também na raiz do workspace, como `AGENTS.md`), `—`.
 - **Corrigido em:** nas situações `Ainda presente` e `Não reavaliada`, `—`. Para as `Corrigida`, rode `git merge-base --is-ancestor {Commit da rodada anterior} HEAD`; se falhar (rebase, amend, squash ou outro clone), escreva `— (commit anterior fora do histórico)`. Se passar, ache o hash com `git log --format=%h {Commit da rodada anterior}..HEAD -- {arquivo}` (com mais de um, liste todos, separados por vírgula). Se a correção está no diretório de trabalho sem commit, `sem commit: {arquivo}`; se o log volta vazio (por exemplo, a correção criou um teste novo e não tocou o arquivo apontado), `— (não identificado)`. O hash é indicativo: mostra o commit que mexeu no arquivo apontado, não prova que foi a correção.

@@ -79,7 +79,7 @@ Da rodada 2 em diante, cada gate roda só se o diff desde o `Commit:` da rodada 
 
 ### Evidências Obrigatórias
 
-Cada lacuna cita onde está (`arquivo:linha`) ou o comando que a revelou e o resultado.
+Cada lacuna cita onde está (`arquivo:linha` com o trecho) ou o comando que a revelou e o resultado, **e o que a derrubaria** (coluna Refutação). Antes de gravar, o passe crítico (seção "Passe crítico" do `eng.pre-pr.md`) remove a lacuna cuja refutação se sustenta e rebaixa a que pesa menos do que a severidade dada.
 
 ---
 
@@ -88,7 +88,7 @@ Cada lacuna cita onde está (`arquivo:linha`) ou o comando que a revelou e o res
 O workflow **deve sempre** terminar com:
 
 1. **`gate-checklist.md`** em `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/`:
-   - semáforo (🟢 / 🟡 / 🔴), resumo (com a linha `Critério de parada:`), lacunas por área (o quê, com o "(item N)" do gate que a achou no fim, onde, por que importa, sugestão, severidade, **Decisão**), evidências e PR Brief (com as rodadas por severidade, a rodada em que o critério de parada agiu e os ajustes do `architecture.md` e do `plan.md` antes da aprovação).
+   - semáforo (🟢 / 🟡 / 🔴), resumo (com a linha `Critério de parada:`), lacunas por área (o quê, com o "(item N)" do gate que a achou no fim, onde, por que importa, refutação, sugestão, severidade, **Decisão**), evidências e PR Brief (com as rodadas por severidade, a rodada em que o critério de parada agiu e os ajustes do `architecture.md` e do `plan.md` antes da aprovação).
    - `Rodada` e `Commit` no cabeçalho, as rodadas anteriores e, da rodada 2 em diante, a resolução das lacunas da rodada anterior.
    - Da rodada 2 em diante, as áreas cujos gates não rodaram na rodada incremental, marcadas como "Não reavaliada nesta rodada".
    - É sempre a rodada mais recente: ao rodar de novo na mesma sessão, o relatório existente é preservado como `gate-checklist-rodada-{N}.md` (seção "Rodadas" do `eng.pre-pr.md`). **Nunca** sobrescrever nem apagar uma rodada; renomear imediatamente antes de gravar.
