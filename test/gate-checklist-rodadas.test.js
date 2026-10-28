@@ -56,6 +56,11 @@ test("o modelo do relatório tem Rodada, Commit e as seções de rodadas", () =>
   const texto = read(PRE_PR);
   assert.match(texto, /Rodada: \{N\}/, `${PRE_PR} sem "Rodada: {N}". ${DE_PROPOSITO}`);
   assert.match(texto, /Commit: \{sha/, `${PRE_PR} sem "Commit: {sha". ${DE_PROPOSITO}`);
+  assert.match(
+    texto,
+    /^- \*\*Nunca\*\* apague nem sobrescreva uma rodada/m,
+    `${PRE_PR} sem o bullet "Nunca apague nem sobrescreva uma rodada" como item próprio. ${DE_PROPOSITO}`
+  );
   assert.match(texto, /^## Rodadas anteriores$/m, `${PRE_PR} sem a seção "Rodadas anteriores". ${DE_PROPOSITO}`);
   assert.match(
     texto,
@@ -74,7 +79,8 @@ test("todo gate-checklist-rodada vem com número ou curinga e extensão: -{N}.md
   // (?!\w) depois de .md pega .mdx e .md5, e deixa passar o ponto final de uma frase;
   // (?!s(...)) ignora o plural como palavra na frase ("as gate-checklist-rodadas anteriores", entre crases
   // ou aspas), mas pega o plural em nome de arquivo (gate-checklist-rodadas-1.md, gate-checklist-rodadas_2.md)
-  const invalido = /gate-checklist-rodada(?!s(?:[\s,;:)`"'*\]]|\.(?!md)|$))(?!-(\{[MN]\}|\d+|\*)(\.public)?\.md(?!\w))/g;
+  // (o * só vale solto, como em **gate-checklist-rodadas**; seguido de . seria um glob, e o .public.md também é nome de arquivo)
+  const invalido = /gate-checklist-rodada(?!s(?:[\s,;:)`"'\]]|\*(?!\.)|\.(?!(?:public\.)?md)|$))(?!-(\{[MN]\}|\d+|\*)(\.public)?\.md(?!\w))/g;
   for (const file of todosMd()) {
     const achados = read(file).match(invalido) || [];
     assert.equal(achados.length, 0, `${rel(file)} tem gate-checklist-rodada fora do formato. ${DE_PROPOSITO}`);
