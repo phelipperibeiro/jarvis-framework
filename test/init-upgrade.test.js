@@ -17,7 +17,7 @@ import { tmpdir } from "node:os";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawnSync } from "node:child_process";
-import { parseMenuChoice } from "../bin/commands/init.js";
+import { parseMenuChoice, upgradePendencies } from "../bin/commands/init.js";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const cli = join(root, "bin", "jarvis.js");
@@ -643,4 +643,96 @@ test("init (pasta instalada): com a opção 1, o aviso de versão sai uma vez s�
       assert.match(r.stdout, /Upgrade interrompido/);
     }
   );
+});
+
+// --- Reinstalação e resumo do upgrade (#189) ---
+
+const ENV_SEM_BOARD = ENV_V520.replace("TASK_MANAGER=github", "TASK_MANAGER=");
+
+test("upgradePendencies: só as quatro pendências da IDE contam", () => {
+  assert.deepEqual(upgradePendencies({ pendingAxes: [], envPlan: {} }), []);
+  assert.deepEqual(
+    upgradePendencies({
+      pendingAxes: [],
+      envPlan: { pending: [], warnings: ["WORKSPACE_MODE", "UNSUPPORTED:TASK_MANAGER:linear"] },
+    }),
+    []
+  );
+  assert.deepEqual(
+    upgradePendencies({
+      pendingAxes: ["TASK_MANAGER", "VERSION_CONTROL"],
+      envPlan: { pending: ["PROD_MODE"], warnings: ["CENTRAL_DOCS_REPO", "TOKEN_TASK_MANAGER"] },
+    }),
+    [
+      "confirmar o acesso de TASK_MANAGER e VERSION_CONTROL",
+      "preencher PROD_MODE",
+      "migrar o Central docs",
+      "remover o TOKEN_TASK_MANAGER",
+    ]
+  );
+});
+
+test("init --force: com rtk no PATH, RTK_ENABLED=false continua false no ENV.md", () => {
+  withWorkspace({ ".claude/ENV.md": ENV_V520, "fake-bin/rtk": "#!/bin/sh\nexit 0\n" }, (ws) => {
+    chmodSync(join(ws, "fake-bin/rtk"), 0o755);
+    const r = spawnSync(process.execPath, [cli, "init", "--ide", "claude", "--force"], {
+      cwd: ws,
+      encoding: "utf-8",
+      stdio: "pipe",
+      env: {
+        ...process.env,
+        JARVIS_SKIP_CLI_CHECK: "1",
+        PATH: `${join(ws, "fake-bin")}:${process.env.PATH}`,
+      },
+    });
+    assert.equal(r.status, 0, r.stderr);
+    assert.match(readFileSync(join(ws, ".claude/ENV.md"), "utf-8"), /^RTK_ENABLED=false$/m);
+  });
+});
+
+test("init (instalação): os itens pulados dizem o motivo certo, sem o (já existe) repetido", () => {
+  withWorkspace({}, (ws) => {
+    const r = run(ws, "--ide", "claude");
+    assert.equal(r.status, 0, r.stderr);
+    assert.doesNotMatch(r.stdout, /not found in framework/);
+    assert.doesNotMatch(r.stdout, /\) \(já existe\)/);
+  });
+});
+
+test("init (Atualizar): com a versão igual, sem seta X → X e com o ENV.md completo intacto", () => {
+  withWorkspace({ ".claude/ENV.md": ENV_SEM_BOARD }, (ws) => {
+    // 1ª atualização: completa o ENV.md (chaves novas) e grava o lock da versão atual.
+    const primeira = runWithInput(ws, "\n", "--ide", "claude");
+    assert.equal(primeira.status, 0, primeira.stderr);
+    const envPath = join(ws, ".claude/ENV.md");
+    // As linhas que já existiam continuam iguais e no lugar; as novas entram no fim.
+    assert.ok(readFileSync(envPath, "utf-8").startsWith(ENV_SEM_BOARD.trimEnd()));
+    const completo = readFileSync(envPath, "utf-8");
+
+    const segunda = runWithInput(ws, "\n", "--ide", "claude");
+    assert.equal(segunda.status, 0, segunda.stderr);
+    assert.equal(readFileSync(envPath, "utf-8"), completo, "o ENV.md completo não muda");
+    assert.match(segunda.stdout, /Upgrade concluído: já na v\d/);
+    assert.doesNotMatch(segunda.stdout, /(\d+\.\d+\.\d+) → \1/);
+  });
+});
+
+test("init --upgrade: sem pendência, não manda rodar o /jarvis-init upgrade", () => {
+  withWorkspace({ ".claude/ENV.md": ENV_SEM_BOARD }, (ws) => {
+    const r = run(ws, "--upgrade", "--ide", "claude", "--yes");
+    assert.equal(r.status, 0, r.stderr);
+    assert.doesNotMatch(r.stdout, /Agora rode/);
+    assert.match(r.stdout, /Nada pendente na IDE\./);
+  });
+});
+
+test("init --upgrade: com pendência, o aviso diz o motivo", () => {
+  withWorkspace({ ".claude/ENV.md": ENV_V520 }, (ws) => {
+    const r = run(ws, "--upgrade", "--ide", "claude", "--yes");
+    assert.equal(r.status, 0, r.stderr);
+    assert.match(
+      r.stdout,
+      /Agora rode .*\/jarvis-init upgrade.* confirmar o acesso de TASK_MANAGER/
+    );
+  });
 });

@@ -58,6 +58,25 @@ export function parseMenuChoice(answer, { hasEnv }) {
 }
 
 /**
+ * O que ainda pede o `/jarvis-init upgrade` na IDE depois do `jarvis init --upgrade` (#189, Q4).
+ * Só as pendências que o terminal não resolve: eixo sem forma de acesso, chave vazia, Central docs
+ * no formato antigo e TOKEN_TASK_MANAGER com valor. Não contam o aviso de WORKSPACE_MODE (conferir
+ * no ENV.md), vendor não suportado (vira freelance) nem as chaves novas acrescentadas (Q15: o
+ * `/jarvis-init` as põe no assunto delas na próxima vez que rodar). Nunca inclui valores do ENV.
+ * @param {{ pendingAxes: string[], envPlan: { pending?: string[], warnings?: string[] } }} input
+ * @returns {string[]} um motivo por pendência; vazio = nada pendente
+ */
+export function upgradePendencies({ pendingAxes, envPlan }) {
+  const reasons = [];
+  if (pendingAxes.length) reasons.push(`confirmar o acesso de ${pendingAxes.join(" e ")}`);
+  if (envPlan.pending?.length) reasons.push(`preencher ${envPlan.pending.join(", ")}`);
+  const warnings = envPlan.warnings || [];
+  if (warnings.includes("CENTRAL_DOCS_REPO")) reasons.push("migrar o Central docs");
+  if (warnings.includes("TOKEN_TASK_MANAGER")) reasons.push("remover o TOKEN_TASK_MANAGER");
+  return reasons;
+}
+
+/**
  * Leitor de linhas que não perde resposta: guarda as linhas que chegam antes da pergunta
  * (pipe com várias linhas, como `printf 's\n3\n'`) e devolve `null` quando a entrada fecha
  * sem linha (CI com `</dev/null`), em vez de esperar para sempre como o `rl.question` (Q2).
@@ -263,13 +282,15 @@ export async function init(flags) {
   const result = syncAssets(cwd, ide, {
     force: forceSync,
     workflowsFolder: getWorkflowsFolder(ide),
+    // Reinstalação não troca valor do ENV.md (RTK_ENABLED=false fica), como o upgrade (Q1).
+    keepEnvValues: forceSync,
   });
 
   for (const item of result.copied) {
     logger.info(`${BLUE}  ↳ ${item}${NC}`);
   }
   for (const item of result.skipped) {
-    logger.info(`${DIM}  ↳ ${item} (já existe)${NC}`);
+    logger.info(`${DIM}  ↳ ${item}${NC}`); // o motivo já vem no item (sync-engine)
   }
   for (const item of result.errors) {
     logger.error(`${RED}  ✗ ${item}${NC}`);
@@ -576,7 +597,11 @@ async function runUpgrade(cwd, flags) {
   // 4. Resumo (só nomes de chave e caminhos)
   const pkg = getPackageInfo();
   logger.info("");
-  logger.info(`${GREEN}✅ Upgrade concluído: ${previousVersion} → ${pkg.version}${NC}`);
+  logger.info(
+    previousVersion === pkg.version
+      ? `${GREEN}✅ Upgrade concluído: já na v${pkg.version} (arquivos ressincronizados)${NC}`
+      : `${GREEN}✅ Upgrade concluído: ${previousVersion} → ${pkg.version}${NC}`
+  );
   logger.info(`  • Arquivos do framework: ${sync.copied.length} item(ns) sincronizado(s)`);
   logger.info(
     `  • ENV.md: ${addedKeys.length ? `+ ${addedKeys.join(", ")}` : "nenhuma variável nova"}`
@@ -628,11 +653,12 @@ async function runUpgrade(cwd, flags) {
     const access = (futureEntries.get(`${key}_ACCESS`) || "").trim();
     return getVendor(futureEntries.get(key)) && (!access || /^\[.*\]$/.test(access));
   });
+  const pending = upgradePendencies({ pendingAxes, envPlan });
   logger.info("");
   logger.info(
-    pendingAxes.length
-      ? `${CYAN}➡️  Agora rode ${BOLD}/jarvis-init upgrade${NC}${CYAN} na IDE para confirmar o acesso de ${pendingAxes.join(" e ")} (e as variáveis).${NC}\n`
-      : `${CYAN}➡️  Agora rode ${BOLD}/jarvis-init upgrade${NC}${CYAN} na IDE.${NC}\n`
+    pending.length
+      ? `${CYAN}➡️  Agora rode ${BOLD}/jarvis-init upgrade${NC}${CYAN} na IDE: ${pending.join("; ")}.${NC}\n`
+      : `${GREEN}✓ Nada pendente na IDE.${NC}\n`
   );
   return sync.errors.length || moveErrors.length || staleErrors.length ? 1 : 0;
 }
