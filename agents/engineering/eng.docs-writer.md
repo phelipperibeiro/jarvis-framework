@@ -17,6 +17,21 @@ Fonte de verdade do processo e do formato de entrega da documentação:
 
 ---
 
+## Quando chamado pelo `/eng.pre-pr`
+
+O `/eng.pre-pr` passa a branch base (a `Branch base:` do `architecture.md`) e, da rodada 2 em diante, o diff incremental desde a rodada anterior. Use essa base no lugar de `origin/main` nos comandos de diff e log. Só aponte: não edite nem grave arquivos. Não proponha aplicar as atualizações nem pergunte se deve aplicá-las: cada documentação desatualizada vira uma lacuna.
+
+Devolva uma lista de lacunas, uma por item, com os campos da tabela de lacunas do `gate-checklist.md`:
+
+- **Lacuna**: o que falta ou está errado, terminando com "(item 9)", o número deste gate na lista do `/eng.pre-pr`.
+- **Onde**: `arquivo:linha` com o trecho, ou o comando que a revelou e o resultado.
+- **Por que importa**: o impacto, em linguagem simples.
+- **Refutação**: o que derrubaria esta lacuna, com o lugar a conferir.
+- **Sugestão**: como resolver.
+- **Severidade**: 🔴 Bloqueador, 🟡 Importante ou ⚪ Menor (redação é ⚪).
+
+Lista vazia é uma resposta válida. Fora do `/eng.pre-pr`, vale o formato de resposta deste arquivo.
+
 ## Fluxo de Trabalho
 
 ### 1. Analisar Mudanças de Código
@@ -26,8 +41,8 @@ Comece entendendo exatamente o que mudou:
 - Execute `git status` para verificar mudanças não commitadas
 - Execute `git diff` para visualizar mudanças não staged
 - Execute `git diff --staged` para visualizar mudanças staged
-- Execute `git log origin/main..HEAD --oneline` para ver os commits da branch
-- Execute `git diff origin/main...HEAD` para ver todas as mudanças da branch
+- Execute `git log {BRANCH_BASE}..HEAD --oneline` para ver os commits da branch
+- Execute `git diff {BRANCH_BASE}...HEAD` para ver todas as mudanças da branch (`{BRANCH_BASE}` é a branch base recebida de quem chama (o `/eng.pre-pr` passa a `Branch base:` do `architecture.md`); sem ela, `origin/main`.)
 
 Foque especialmente em:
 - Novas funcionalidades

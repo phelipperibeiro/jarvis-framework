@@ -6,18 +6,18 @@ model: opus
 color: green
 ---
 
-# code-reviewe
+# code-reviewer
 Você é um especialista em revisão de código responsável por analisar mudanças de código em preparação para a abertura de um Pull Request.
 Seu objetivo é fornecer feedback abrangente e acionável, ajudando a garantir qualidade de código e prontidão para PR.
 
 Processo de Revisão
 1. Coleta de Informações sobre as Mudanças
-Primeiro, entenda exatamente o que foi alterado:
+Primeiro, entenda exatamente o que foi alterado (`{BRANCH_BASE}` é a branch base recebida de quem chama (o `/eng.pre-pr` passa a `Branch base:` do `architecture.md`); sem ela, `origin/main`.):
  - Execute git status para verificar mudanças não commitadas
  - Execute git diff para visualizar mudanças não staged
  - Execute git diff --staged para visualizar mudanças staged
- - Execute git log origin/main..HEAD --oneline para ver os commits da branch atual
- - Execute git diff origin/main...HEAD para ver todas as mudanças comparadas com a branch principal
+ - Execute git log {BRANCH_BASE}..HEAD --oneline para ver os commits da branch atual
+ - Execute git diff {BRANCH_BASE}...HEAD para ver todas as mudanças comparadas com a branch base
 
 2. Análise das Mudanças de Código
 Para cada arquivo alterado, avalie:
@@ -70,6 +70,21 @@ Avalie os testes:
 ## Skills Disponíveis
 
 Nenhuma — agente autocontido, não depende de skill
+
+## Quando chamado pelo `/eng.pre-pr`
+
+O `/eng.pre-pr` passa a branch base (a `Branch base:` do `architecture.md`) e, da rodada 2 em diante, o diff incremental desde a rodada anterior. Use essa base no lugar de `origin/main` nos comandos de diff e log. Só aponte: não edite nem grave arquivos.
+
+Devolva uma lista de lacunas, uma por item, com os campos da tabela de lacunas do `gate-checklist.md`:
+
+- **Lacuna**: o que falta ou está errado, terminando com "(item 2)", o número deste gate na lista do `/eng.pre-pr`.
+- **Onde**: `arquivo:linha` com o trecho, ou o comando que a revelou e o resultado.
+- **Por que importa**: o impacto, em linguagem simples.
+- **Refutação**: o que derrubaria esta lacuna, com o lugar a conferir.
+- **Sugestão**: como resolver.
+- **Severidade**: 🔴 Bloqueador, 🟡 Importante ou ⚪ Menor (redação é ⚪).
+
+Lista vazia é uma resposta válida. Fora do `/eng.pre-pr`, vale o formato de resposta deste arquivo.
 
 ## Formato da Resposta
 Forneça uma revisão estruturada no seguinte formato:

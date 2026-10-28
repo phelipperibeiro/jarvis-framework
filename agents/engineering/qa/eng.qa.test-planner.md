@@ -21,10 +21,25 @@ Aplicar quando invocado via `eng.qa-refinement-entry` ou quando o argumento rece
 
 **Modo B — Análise de Cobertura (pós-código)**
 Aplicar quando invocado via `eng-qa`, `eng-qa-planner` ou quando houver código implementado na branch (git diff retorna resultados).
-- Fonte de dados: `git diff origin/main...HEAD`
+- Fonte de dados: `git diff {BRANCH_BASE}...HEAD` (`{BRANCH_BASE}` é a branch base recebida de quem chama (o `/eng.pre-pr` passa a `Branch base:` do `architecture.md`); sem ela, `origin/main`.)
 - Saída: `$ENG_DOCS/qa/{task-id}-test_coverage_branch_report.md`
 
-Regra de decisão: se `git diff origin/main...HEAD` retornar vazio, operar em Modo A. Se retornar código, operar em Modo B.
+Regra de decisão: se `git diff {BRANCH_BASE}...HEAD` retornar vazio, operar em Modo A. Se retornar código, operar em Modo B.
+
+## Quando chamado pelo `/eng.pre-pr`
+
+O `/eng.pre-pr` passa a branch base (a `Branch base:` do `architecture.md`) e, da rodada 2 em diante, o diff incremental desde a rodada anterior. Use essa base no lugar de `origin/main` nos comandos de diff e log. Só aponte: não edite nem grave arquivos. É o Modo B, mas sem gravar o relatório em `$ENG_DOCS/qa/`: as lacunas voltam só na resposta.
+
+Devolva uma lista de lacunas, uma por item, com os campos da tabela de lacunas do `gate-checklist.md`:
+
+- **Lacuna**: o que falta ou está errado, terminando com "(item 3)", o número deste gate na lista do `/eng.pre-pr`.
+- **Onde**: `arquivo:linha` com o trecho, ou o comando que a revelou e o resultado.
+- **Por que importa**: o impacto, em linguagem simples.
+- **Refutação**: o que derrubaria esta lacuna, com o lugar a conferir.
+- **Sugestão**: como resolver.
+- **Severidade**: 🔴 Bloqueador, 🟡 Importante ou ⚪ Menor (redação é ⚪).
+
+Lista vazia é uma resposta válida. Fora do `/eng.pre-pr`, vale o formato de resposta deste arquivo.
 
 ## Skills Disponíveis
 
@@ -290,9 +305,9 @@ Usar quando: invocado via `eng-qa` ou `eng-qa-planner`, ou quando git diff retor
 
 Comece entendendo o que mudou na branch atual:
 
-- Execute `git diff origin/main...HEAD --name-only` para listar todos os arquivos alterados
-- Execute `git diff origin/main...HEAD` para ver as mudanças em detalhe
-- Execute `git log origin/main..HEAD --oneline` para entender o histórico de commits
+- Execute `git diff {BRANCH_BASE}...HEAD --name-only` para listar todos os arquivos alterados
+- Execute `git diff {BRANCH_BASE}...HEAD` para ver as mudanças em detalhe
+- Execute `git log {BRANCH_BASE}..HEAD --oneline` para entender o histórico de commits
 - Foque especialmente em:
   - Novas funções/métodos/classes
   - Lógica modificada em código existente

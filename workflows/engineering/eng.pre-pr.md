@@ -64,7 +64,7 @@ Antes de abrir o PR/MR, este comando **revê a branch atrás de possíveis lacun
 
 ## Gates (revisão)
 
-Na rodada 1, todos os gates abaixo rodam conforme a condição de cada um. Da rodada 2 em diante, vale também a seção "Rodada incremental": um gate só roda se o diff desde o `Commit:` da rodada anterior tocar o que ele lê.
+Passe a cada agente a `Branch base:` do `architecture.md` e, da rodada 2 em diante, o diff incremental, e peça as lacunas no formato da tabela de "Lacunas" (com o "(item N)" e a Refutação; cada agente tem a seção "Quando chamado pelo `/eng.pre-pr`"). Na rodada 1, todos os gates abaixo rodam conforme a condição de cada um. Da rodada 2 em diante, vale também a seção "Rodada incremental": um gate só roda se o diff desde o `Commit:` da rodada anterior tocar o que ele lê.
 
 1. Invoque o agente [prod.pm-checker]($IDE/agents/product/prod.pm-checker.md) para apontar desalinhamentos entre a branch e os documentos de produto e de engenharia (em `$PROD_DOCS`, `$ENG_DOCS` e no Central docs).
 2. Invoque o agente [eng.dev-code-reviewer]($IDE/agents/engineering/eng.dev-code-reviewer.md) para apontar problemas de código (bugs, legibilidade, padrões do projeto).

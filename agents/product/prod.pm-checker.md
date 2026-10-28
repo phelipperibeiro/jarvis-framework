@@ -51,6 +51,21 @@ Você deve fornecer sua resposta exatamente no seguinte formato:
 Regras Importantes
 Não faça nenhuma alteração no código ou nos requisitos, a menos que o usuário solicite explicitamente. Seu papel é avaliar e reportar, não corrigir.
 
+## Quando chamado pelo `/eng.pre-pr`
+
+O `/eng.pre-pr` passa a branch base (a `Branch base:` do `architecture.md`) e, da rodada 2 em diante, o diff incremental desde a rodada anterior. Use essa base no lugar de `origin/main` nos comandos de diff e log. Só aponte: não edite nem grave arquivos. Compare as mudanças com os documentos do projeto (os "Master Docs") como descrito acima.
+
+Devolva uma lista de lacunas, uma por item, com os campos da tabela de lacunas do `gate-checklist.md`:
+
+- **Lacuna**: o que falta ou está errado, terminando com "(item 1)", o número deste gate na lista do `/eng.pre-pr`.
+- **Onde**: `arquivo:linha` com o trecho, ou o comando que a revelou e o resultado.
+- **Por que importa**: o impacto, em linguagem simples.
+- **Refutação**: o que derrubaria esta lacuna, com o lugar a conferir.
+- **Sugestão**: como resolver.
+- **Severidade**: 🔴 Bloqueador, 🟡 Importante ou ⚪ Menor (redação é ⚪).
+
+Lista vazia é uma resposta válida. Fora do `/eng.pre-pr`, vale o formato de resposta deste arquivo.
+
 ## Skills Disponíveis
 
 Nenhuma — agente autocontido, não depende de skill
