@@ -88,10 +88,11 @@ Cada lacuna cita onde está (`arquivo:linha`) ou o comando que a revelou e o res
 O workflow **deve sempre** terminar com:
 
 1. **`gate-checklist.md`** em `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/`:
-   - semáforo (🟢 / 🟡 / 🔴), resumo, lacunas por área (o quê, onde, por que importa, sugestão, severidade, **Decisão**), evidências e PR Brief.
+   - semáforo (🟢 / 🟡 / 🔴), resumo (com a linha `Critério de parada:`), lacunas por área (o quê, onde, por que importa, sugestão, severidade, **Decisão**), evidências e PR Brief (com as rodadas por severidade, a rodada em que o critério de parada agiu e os ajustes do `architecture.md` e do `plan.md` antes da aprovação).
    - `Rodada` e `Commit` no cabeçalho, as rodadas anteriores e, da rodada 2 em diante, a resolução das lacunas da rodada anterior.
    - Da rodada 2 em diante, as áreas cujos gates não rodaram na rodada incremental, marcadas como "Não reavaliada nesta rodada".
    - É sempre a rodada mais recente: ao rodar de novo na mesma sessão, o relatório existente é preservado como `gate-checklist-rodada-{N}.md` (seção "Rodadas" do `eng.pre-pr.md`). **Nunca** sobrescrever nem apagar uma rodada; renomear imediatamente antes de gravar.
-2. **Decisões do usuário** gravadas na coluna Decisão (🔧 Corrigir / 👍 Aceitar + motivo; vazia se o usuário escolheu "Só gerar o relatório", exceto as decisões herdadas da rodada anterior).
+2. **Decisões do usuário** gravadas na coluna Decisão (🔧 Corrigir / 👍 Aceitar + motivo; vazia se o usuário escolheu "Só gerar o relatório", exceto as decisões herdadas da rodada anterior). As ⚪ aceitas na variante B do fechamento levam `👍 Aceitar: aceito no fechamento da rodada {N}`.
+   - **Critério de parada** (seção "Fechamento" do `eng.pre-pr.md`): teto de rodadas pela urgência do `context.md` (`alta` 3, `normal` 5, `baixa` 8) ou rodada sem lacuna 🔴 ou 🟡 nova. Ele muda a pergunta do fechamento (variante B, com "Aceitar as ⚪ e seguir para o PR" como padrão); nunca pula a revisão nem a gravação. Com 🔴 pendente, o ciclo segue na variante A, com aviso quando o teto foi atingido.
 3. **Pergunta** (`AskUserQuestion`) sobre registrar o resultado como comentário no card (`/eng-global-task-comment`): Não, manter só na sessão (como hoje) / Sim, só o resumo / Sim, o relatório completo. Nunca publicar sem a resposta. Freelance: não pergunta, só na sessão.
 4. **Aguardar permissão explícita** do usuário para prosseguir para `/eng.pr`.

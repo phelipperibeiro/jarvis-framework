@@ -44,10 +44,11 @@ Lida pelos workflows `eng.start`, `eng.plan`, `eng.work`, `eng.pre-pr` e `eng.pr
 | `eng.work` | Início | Depois do work | Rodar o `/eng.pre-pr` · Rodar o `/eng.pr` · Fluxo normal (como hoje: o usuário segue os próximos comandos manualmente) |
 | `eng.pre-pr` | Fim | Com lacunas: "Como seguir?" (depois da mensagem com o link do relatório) | Corrigir as lacunas agora · Parar aqui para corrigir à mão (como hoje) · Abrir o PR assim mesmo |
 | `eng.pre-pr` | Fim | Sem lacunas: "Como seguir?" | Abrir o PR agora · Parar aqui (como hoje) |
+| `eng.pre-pr` | Fim | Variante B do fechamento (sem 🔴 pendente; só ⚪, ou critério de parada atingido): "Só restam {c} lacunas ⚪… Como seguir?" (substitui as duas perguntas acima) | Aceitar as ⚪ e seguir para o PR · Corrigir antes do PR · Só gerar o relatório (como hoje) |
 | `eng.pr` | Início | "O que fazer com o PR?" | Revisar o texto e publicar (como hoje) · Publicar sem revisar o texto · Só gerar os arquivos (o usuário abre o PR à mão; quem escolheu revisar também tem o `[Só gerar os arquivos]` na revisão da 4.2) |
 | `eng.pr` | Fim | "O PR já foi aprovado e mergeado?" | Ainda não (como hoje) · Sim, rodar o `/eng.spec-consolidate` |
 
-Nas perguntas "Depois do work" e "O que fazer com o plano?", a opção "como hoje" não é a primeira (em "Depois do work" fica por último), por escolha de produto: as primeiras opções são as ações que o usuário mais quer. Mesmo assim, é o fluxo que vale quando o usuário não escolhe.
+Nas perguntas "Depois do work", "O que fazer com o plano?" e na variante B do fechamento do `eng.pre-pr`, a opção "como hoje" não é a primeira (em "Depois do work" e na variante B fica por último), por escolha de produto: as primeiras opções são as ações que o usuário mais quer. Na variante B, a #191 pede "Aceitar as ⚪ e seguir para o PR" como padrão, para lacunas menores não gerarem mais uma rodada. Mesmo assim, é o fluxo que vale quando o usuário não escolhe.
 
 **Com Advisor**, o `eng.start` não ganha pergunta nova: o Advisor decide as questões em aberto e o gate do fim segue a autonomia do `context.md`, como já estava.
 

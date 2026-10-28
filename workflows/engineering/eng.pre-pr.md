@@ -130,6 +130,8 @@ Grave em `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/gate-checklist.md`:
 ## Resumo
 {3 a 5 frases: o que a branch faz, quantas lacunas por severidade e o principal risco.}
 
+Critério de parada: {atingido na rodada {N} (teto de {T} rodadas da urgência `{u}` | sem lacuna 🔴 ou 🟡 nova) | não atingido}
+
 ## Lacunas
 
 ### {Área: Produto e documentação | Código | Testes | Não funcionais | Interface e UX | Segurança | Documentação do projeto}
@@ -147,6 +149,8 @@ Grave em `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/gate-checklist.md`:
 - Resumo do que mudou:
 - Como testar:
 - Riscos / trade-offs:
+- Rodadas do pre-pr: {N} (🔴/🟡/⚪ por rodada: {a/b/c, …}); critério de parada: {rodada {K}, por {teto | sem lacuna nova} | não agiu}
+- Ajustes antes da aprovação: architecture.md {n} · plan.md {m}   ← da linha "Ajustes antes da aprovação" do cabeçalho de cada um ("—" se a linha não existir)
 - Labels sugeridos: {só o nome, ex.: `security`}   ← critério em `eng-security-rules.md` (auth, sessions, RBAC, CORS, CSP, permissões); a pessoa adiciona no host (o `jarvis vcs create-merge` não põe label); nem o label nem esta nota entram no `pull-request.md`; o `eng.pr` lembra o label na mensagem final
 ```
 
@@ -163,12 +167,32 @@ A **Resolução da rodada anterior** lista as lacunas da rodada anterior com dec
 
 ## Fechamento
 
+**Critério de parada.** Leia-o antes do passo 1. Ele não impede a rodada de rodar nem de gravar o relatório: muda só a pergunta do passo 2. Parecido com o orçamento de etapas do `ReAct` e com o do `/eng.debug` (ver #171).
+
+- **Teto de rodadas**, pela `urgencia` do `context.md` (o mesmo campo do orçamento do `/eng.debug`): `alta` 3 · `normal` 5 · `baixa` 8; sem `context.md`, vale `normal`. Atingido quando o `Rodada:` desta rodada é igual ou maior que o teto.
+- **Rodada sem lacuna nova** (da rodada 2 em diante): nenhuma lacuna 🔴 ou 🟡 desta rodada é nova. Nova é a que não aparece na "Resolução da rodada anterior" como `Ainda presente`.
+- Registre a linha `Critério de parada:` no Resumo do relatório.
+
+Lacuna **pendente** é a sem decisão ou a herdada com `🔧 Corrigir`. O passo 2 tem duas variantes:
+
+| Situação | Variante |
+|---|---|
+| Há 🔴 pendente; há 🟡 pendente e o critério não foi atingido; ou não há lacuna pendente | **A** (as perguntas de sempre) |
+| Nenhuma 🔴 pendente, há lacuna pendente e: só ⚪ estão pendentes, ou o critério foi atingido | **B** (severidade como gatilho) |
+
 1. Mostre o semáforo, o resumo e a lista de lacunas por severidade, com o consolidado de links da sessão (regra 5 de `eng.transitions-rules.md`: tudo o que já existe, com o `gate-checklist.md` novo e, antes dele e em ordem, as rodadas anteriores `gate-checklist-rodada-{N}.md`; o atual leva a nota "rodada {N}, atual").
-2. Peça as decisões com `AskUserQuestion`, depois da mensagem em markdown do passo 1 (com o link clicável): **"O que fazer com as {n} lacunas encontradas ({a} 🔴 bloqueadoras, {b} 🟡 importantes)? Relatório: gate-checklist.md."**
+2. Peça as decisões com `AskUserQuestion`, depois da mensagem em markdown do passo 1 (com o link clicável).
+
+   **Variante A.** Se o teto foi atingido e ainda há 🔴 pendente, comece a mensagem com: "⚠️ Teto de {T} rodadas da urgência `{u}` atingido; ainda há {a} 🔴. Cada rodada a mais fica registrada no PR." Pergunta: **"O que fazer com as {n} lacunas encontradas ({a} 🔴 bloqueadoras, {b} 🟡 importantes)? Relatório: gate-checklist.md."**
    - **Corrigir todas antes do PR:** marca as {n} como "🔧 Corrigir"; você corrige à mão ou com o `/eng.work`.
    - **Corrigir só as bloqueadoras 🔴:** marca as 🔴 sem decisão como "🔧 Corrigir"; as 🟡 sem decisão ficam "👍 Aceitar", com um motivo só, pedido uma vez. As lacunas herdadas continuam "🔧 Corrigir".
    - **Decidir uma a uma:** mostra cada lacuna 🔴 e 🟡 (as herdadas já com "🔧 Corrigir") e você escolhe "🔧 Corrigir" ou "👍 Aceitar" (com o motivo), com `AskUserQuestion` por lacuna.
    - **Só gerar o relatório (vou analisar com calma):** não registra decisão agora; a coluna **Decisão** fica vazia (exceto as decisões herdadas), o `gate-checklist.md` fica na sessão para você analisar e o comando termina sem as perguntas 3 e 4. Rode o `/eng.pre-pr` de novo (este relatório é preservado como `gate-checklist-rodada-{N}.md`), ou preencha o arquivo à mão, quando decidir.
+
+   **Variante B.** A resposta já decide como seguir, e o passo 4 não é feito. Pergunta: **"Só restam {c} lacunas ⚪{ e {b} 🟡, pelo critério de parada} (critério de parada: {atingido na rodada {N} | não atingido}). Relatório: gate-checklist.md. Como seguir?"**
+   - **Aceitar as ⚪ e seguir para o PR** (com 🟡 pendentes, o rótulo cita as duas: "Aceitar as {b} 🟡 e as {c} ⚪ e seguir para o PR"): grava `👍 Aceitar: aceito no fechamento da rodada {N}` nas ⚪ pendentes e `👍 Aceitar: critério de parada da rodada {N}` nas 🟡 pendentes; depois do passo 3, chame o `/eng.pr {TASK_MANAGER_KEY}` (ou mostre o comando).
+   - **Corrigir antes do PR:** marca as pendentes como `🔧 Corrigir`; depois do passo 3, chame o `/eng.work {TASK_MANAGER_KEY}` para elas (ou mostre o comando).
+   - **Só gerar o relatório (vou analisar com calma):** como na variante A; o comando termina sem os passos 3 e 4.
 
    Grave as decisões na coluna **Decisão** como `🔧 Corrigir` ou `👍 Aceitar: motivo`. As opções acima valem só para as lacunas sem decisão, exceto "Decidir uma a uma", que também deixa mudar as herdadas 🔴 e 🟡 (as ⚪ herdadas mudam à mão); as herdadas entram em `{n}` e, conforme a severidade, em `{a}` ou `{b}`.
 3. **Modo freelance (`TASK_MANAGER` vazio):** não pergunte; o relatório fica só na sessão. **Com board**, pergunte com `AskUserQuestion` (nunca publique sem a resposta): **"Registrar o resultado do `/eng.pre-pr` como comentário no card {TASK_MANAGER_KEY}?"**
@@ -177,7 +201,7 @@ A **Resolução da rodada anterior** lista as lacunas da rodada anterior com dec
    - **Sim, o relatório completo:** `/eng-global-task-comment {TASK_MANAGER_KEY}` com o conteúdo do `gate-checklist.md`.
 
    O texto vai para fora do workspace: converta os links pela regra 6 de `doc-links-rules.md` (URL absoluta; sessão e `docs/jarvis/` em texto).
-4. Próximo passo: corrigir o que foi marcado "🔧 Corrigir" (à mão ou com o `/eng.work`) e rodar o `/eng.pr`, que usa o PR Brief deste relatório. Antes, escreva uma mensagem em markdown com o consolidado de links da sessão (regra 5) e o resumo; depois pergunte com `AskUserQuestion` (`eng.transitions-rules.md`):
+4. Próximo passo (só na variante A do passo 2): corrigir o que foi marcado "🔧 Corrigir" (à mão ou com o `/eng.work`) e rodar o `/eng.pr`, que usa o PR Brief deste relatório. Antes, escreva uma mensagem em markdown com o consolidado de links da sessão (regra 5) e o resumo; depois pergunte com `AskUserQuestion` (`eng.transitions-rules.md`):
    - **Com {n} lacunas marcadas "🔧 Corrigir"** — **"O `/eng.pre-pr` encontrou {n} lacunas a corrigir ({a} 🔴, {b} 🟡). Leia o gate-checklist.md com calma e responda quando decidir. Como seguir?"**
      - **Corrigir as lacunas agora:** chame o `/eng.work {TASK_MANAGER_KEY}` para as {n} lacunas (ou mostre o comando).
      - **Parar aqui para corrigir à mão (como hoje):** o comando termina.
