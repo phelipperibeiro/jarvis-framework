@@ -11,11 +11,13 @@ import {
   readFileSync,
   existsSync,
   rmSync,
+  readdirSync,
 } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawnSync } from "node:child_process";
+import { parseMenuChoice } from "../bin/commands/init.js";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const cli = join(root, "bin", "jarvis.js");
@@ -56,13 +58,28 @@ function withWorkspace(files, fn) {
 }
 
 // A descoberta da CLI (gh/glab/acli) fica desligada nos testes; o teste dela usa uma CLI falsa no PATH.
-const run = (cwd, ...args) =>
+const run = (cwd, ...args) => runWithInput(cwd, "", ...args);
+
+// O mesmo, com o texto digitado no menu (pipe, sem terminal: como `printf '\n' | jarvis init`).
+const runWithInput = (cwd, input, ...args) =>
   spawnSync(process.execPath, [cli, "init", ...args], {
     cwd,
+    input,
     encoding: "utf-8",
     stdio: "pipe",
     env: { ...process.env, JARVIS_SKIP_CLI_CHECK: "1" },
   });
+
+// Conteúdo de cada arquivo da pasta (caminho relativo → texto), para provar que nada mudou.
+function snapshot(dir, base = dir) {
+  const out = {};
+  for (const e of readdirSync(dir, { withFileTypes: true })) {
+    const full = join(dir, e.name);
+    if (e.isDirectory()) Object.assign(out, snapshot(full, base));
+    else out[full.slice(base.length + 1)] = readFileSync(full, "utf-8");
+  }
+  return out;
+}
 
 test("init --upgrade --yes: chaves novas, PROD_MODE pela AREA, discovery movido, ENV antigo intacto, idempotente", () => {
   withWorkspace(
@@ -515,9 +532,115 @@ test("init (instalação): o aviso de versão vem antes da pergunta de reinstala
     (ws) => {
       const r = run(ws, "--ide", "claude");
       const aviso = r.stdout.indexOf("assets deste projeto são da 999.0.0");
-      const pergunta = r.stdout.indexOf("Deseja reinstalar?");
+      const pergunta = r.stdout.indexOf("O que deseja fazer?");
       assert.ok(aviso >= 0 && pergunta >= 0, r.stdout);
       assert.ok(aviso < pergunta, "o aviso deveria vir antes da pergunta");
+    }
+  );
+});
+
+// --- Menu de atualizar ou reinstalar em pasta já instalada (#189) ---
+
+test("parseMenuChoice: com ENV.md, Enter e 1 atualizam, 2 reinstala, 3 cancela, o resto é inválido", () => {
+  const comEnv = { hasEnv: true };
+  assert.equal(parseMenuChoice("", comEnv), "upgrade");
+  assert.equal(parseMenuChoice("  1 ", comEnv), "upgrade");
+  assert.equal(parseMenuChoice("2", comEnv), "reinstall");
+  assert.equal(parseMenuChoice("3", comEnv), "cancel");
+  for (const x of ["s", "5", "atualizar", "12"]) assert.equal(parseMenuChoice(x, comEnv), null, x);
+});
+
+test("parseMenuChoice: sem ENV.md, Enter cancela e 1 é inválido (o upgrade precisa do ENV.md)", () => {
+  const semEnv = { hasEnv: false };
+  assert.equal(parseMenuChoice("", semEnv), "cancel");
+  assert.equal(parseMenuChoice("1", semEnv), null);
+  assert.equal(parseMenuChoice("2", semEnv), "reinstall");
+  assert.equal(parseMenuChoice("3", semEnv), "cancel");
+});
+
+test("init (pasta instalada): mostra o menu com as versões e a opção 3 não altera nada", () => {
+  withWorkspace(
+    { ".claude/ENV.md": ENV_V520, "jarvis-lock.json": '{"version":"7.0.0","ide":"claude"}' },
+    (ws) => {
+      const antes = snapshot(ws);
+      const r = runWithInput(ws, "3\n", "--ide", "claude");
+      assert.equal(r.status, 0, r.stderr);
+      for (const linha of [
+        "Jarvis já instalado em .claude (v7.0.0 · pacote v",
+        "1) Atualizar (recomendado) — sincroniza com a versão do pacote, preserva o ENV.md",
+        "2) Reinstalar — sobrescreve os arquivos do framework",
+        "3) Cancelar",
+        "Instalação cancelada.",
+      ]) {
+        assert.ok(r.stdout.includes(linha), `sem "${linha}":\n${r.stdout}`);
+      }
+      assert.deepEqual(snapshot(ws), antes);
+    }
+  );
+});
+
+test("init (pasta instalada): Enter executa a atualização (o mesmo fluxo do --upgrade)", () => {
+  withWorkspace({ ".claude/ENV.md": ENV_V520 }, (ws) => {
+    const r = runWithInput(ws, "\n", "--ide", "claude");
+    assert.equal(r.status, 0, r.stderr);
+    assert.match(r.stdout, /Upgrade do Jarvis em \.claude\//);
+    assert.match(r.stdout, /Upgrade concluído/);
+  });
+});
+
+test("init (pasta instalada): resposta inválida avisa e pergunta de novo", () => {
+  withWorkspace({ ".claude/ENV.md": ENV_V520 }, (ws) => {
+    const r = runWithInput(ws, "s\n3\n", "--ide", "claude");
+    assert.equal(r.status, 0, r.stderr);
+    assert.match(r.stdout, /Opção inválida\. Escolha 1, 2 ou 3\./);
+    assert.match(r.stdout, /Instalação cancelada\./);
+  });
+});
+
+test("init (pasta instalada): sem resposta (entrada fechada) não altera nada e mostra os atalhos", () => {
+  withWorkspace({ ".claude/ENV.md": ENV_V520 }, (ws) => {
+    const antes = snapshot(ws);
+    const r = run(ws, "--ide", "claude");
+    assert.equal(r.status, 0, r.stderr);
+    assert.match(r.stdout, /Sem resposta: nada alterado\. Use --upgrade \(atualizar\) ou --force/);
+    assert.deepEqual(snapshot(ws), antes);
+  });
+});
+
+test("init (pasta instalada sem ENV.md): menu só com 2 e 3, e Enter cancela", () => {
+  withWorkspace({ ".claude/AGENTS.md": "# x" }, (ws) => {
+    const antes = snapshot(ws);
+    const r = runWithInput(ws, "\n", "--ide", "claude");
+    assert.equal(r.status, 0, r.stderr);
+    assert.doesNotMatch(r.stdout, /1\) Atualizar/);
+    assert.match(r.stdout, /Atualizar precisa do ENV\.md/);
+    assert.match(r.stdout, /2\) Reinstalar/);
+    assert.match(r.stdout, /Instalação cancelada\./);
+    assert.deepEqual(snapshot(ws), antes);
+  });
+});
+
+test("init --force e init --upgrade não mostram o menu", () => {
+  withWorkspace({ ".claude/ENV.md": ENV_V520 }, (ws) => {
+    const force = run(ws, "--ide", "claude", "--force");
+    assert.equal(force.status, 0, force.stderr);
+    assert.doesNotMatch(force.stdout, /O que deseja fazer\?/);
+    const upgrade = run(ws, "--upgrade", "--ide", "claude");
+    assert.equal(upgrade.status, 0, upgrade.stderr);
+    assert.doesNotMatch(upgrade.stdout, /O que deseja fazer\?/);
+  });
+});
+
+test("init (pasta instalada): com a opção 1, o aviso de versão sai uma vez só", () => {
+  withWorkspace(
+    { ".claude/ENV.md": ENV_V520, "jarvis-lock.json": '{"version":"999.0.0","ide":"claude"}' },
+    (ws) => {
+      const r = runWithInput(ws, "1\n", "--ide", "claude");
+      const avisos = r.stdout.split("assets deste projeto são da 999.0.0").length - 1;
+      assert.equal(avisos, 1, r.stdout);
+      // Sem terminal e sem --yes, o upgrade não rebaixa os assets (comportamento de antes).
+      assert.equal(r.status, 1);
+      assert.match(r.stdout, /Upgrade interrompido/);
     }
   );
 });
