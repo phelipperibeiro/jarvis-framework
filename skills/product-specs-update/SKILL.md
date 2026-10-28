@@ -31,15 +31,14 @@ não escreve nada lá.
 ## Entrada
 
 - `$ARGUMENTS` — (Opcional) Path do arquivo criado ou modificado.
-- Pergunte para o usuário qual o path do Centarl Docs, que é onde devemos adicionar e atualizar as especificações de produto.
 
 ---
 
 ## Pré-requisito — Carregar ENV.md
 
-Antes de qualquer ação, ler o `ENV.md` e extrair as variáveis necessárias:
+Antes de qualquer ação, ler o `$IDE/ENV.md` e extrair `$PROD_DOCS`:
 ```bash
-cat ENV.md
+cat $IDE/ENV.md
 ```
 
 Se não existir um `ENV.md`, crie executando a skill `jarvis-init`  com  Skill tool.
@@ -91,9 +90,9 @@ Extrair do frontmatter:
 grep -E "^(id|name|status):" {arquivo_prd}
 ```
 
-Buscar FRDs filhas nos dois diretórios:
+Buscar FRDs filhas em todo o `$PROD_DOCS` (na pasta do PRD ou em pasta própria):
 ```bash
-grep -rl "related_prd:" $PROD_DOCS --include="*.md"
+grep -rl "related_prd:" $PROD_DOCS --include="*.md" --exclude-dir=issues
 ```
 
 Filtrar apenas as que apontam para este PRD. Para cada FRD encontrada,
@@ -110,16 +109,24 @@ Executado sempre após os fluxos acima, ou diretamente quando `$ARGUMENTS`
 está vazio.
 
 #### 3.1 Escanear specs locais
+Layout de `$PROD_DOCS` (`prod-rules.md`): cada PRD fica em
+`prd-{id}-{nome}/prd-{id}-{nome}.md`, com as FRDs na mesma pasta
+(`frd-{id}-{nome}.md`); uma FRD sem PRD pai pode ter pasta própria
+(`frd-{id}-{nome}/`). A varredura é recursiva e lê o `id` do frontmatter:
 ```bash
-# PRDs
-find $PROD_DOCS -maxdepth 1 -name "*.md" | xargs grep -l "^id: PRD"
-
-# FRDs
-find $PROD_DOCS_FRD -name "*.md" | xargs grep -l "^id: FRD"
+# PRDs e FRDs em qualquer pasta de $PROD_DOCS (épicos e histórias de issues/ ficam de fora)
+grep -rlE --include="*.md" --exclude-dir=issues "^id: (PRD|FRD)-" $PROD_DOCS
 ```
 
+Arquivos sem `id: PRD-`/`id: FRD-` (revisões, breakdowns) ficam de fora.
+
 Para cada arquivo, extrair via grep: `id`, `name`, `status`
-(e `related_prd` nas FRDs).
+(e `related_prd` nas FRDs; pode vir vazio, como lista YAML `[]` ou com um id).
+
+Identificar cada spec pelo **caminho**, e não só pelo `id`: o mesmo id pode
+existir em pastas diferentes (dois `PRD-001`, por exemplo). Nesse caso, listar
+as duas no índice e avisar o usuário do id repetido, sem juntar nem descartar
+nenhuma.
 
 #### 3.2 Obter projeto e repositório para cada PRD
 
@@ -157,7 +164,7 @@ outro lugar.
 # Índice de Especificações — {WORKSPACE}
 
 Índice das especificações do projeto atual. Atualizado automaticamente
-pela skill `prod-update-specs`.
+pela skill `product-specs-update`.
 
 _Última atualização: {YYYY-MM-DD}_
 
@@ -167,17 +174,22 @@ _Última atualização: {YYYY-MM-DD}_
 
 | Spec | Status | Projeto | Repositório Git |
 |------|--------|---------|-----------------|
-| [PRD-001 — Nome](./prd-001.md) | in_progress | Projeto A | [repo-a](url) |
-| [FRD-001 — Nome](./frds/frd-001.md) | in_review | Projeto A | [repo-a](url) |
+| [PRD-001 — Nome](./prd-001-nome/prd-001-nome.md) | in_progress | Projeto A | [repo-a](url) |
+| [FRD-001 — Nome](./prd-001-nome/frd-001-nome.md) | in_review | Projeto A | [repo-a](url) |
+| [FRD-002 — Nome](./frd-002-nome/frd-002-nome.md) | backlog | Projeto A | [repo-a](url) |
 
 ---
 
 ## Relação PRD → FRDs
 
 ### PRD-001: Nome do PRD
-- [FRD-001 — Nome](./frds/frd-001.md) · `in_review`
-- [FRD-002 — Nome](./frds/frd-002.md) · `in_progress`
+- [FRD-001 — Nome](./prd-001-nome/frd-001-nome.md) · `in_review`
+
+### FRDs sem PRD pai
+- [FRD-002 — Nome](./frd-002-nome/frd-002-nome.md) · `backlog`
 ```
+
+Os links são relativos ao `specs-index.md`, que fica na raiz de `$PROD_DOCS`.
 
 ---
 
