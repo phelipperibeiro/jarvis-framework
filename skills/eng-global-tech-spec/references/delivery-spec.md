@@ -322,8 +322,8 @@ Use as ferramentas de busca para identificar:
 
 Verifique se há documentação relevante:
 
-- **PRD relacionada**: `$DOCS_FOLDER/**/*prd*.md` ou anexos no Jira
-- **FRD relacionada**: `$DOCS_FOLDER/**/*frd*.md` ou anexos no Jira
+- **PRD relacionada**: `$DOCS_FOLDER/**/*prd*.md` ou anexos no card (lidos pela CLI ou colados pelo usuário)
+- **FRD relacionada**: `$DOCS_FOLDER/**/*frd*.md` ou anexos no card (lidos pela CLI ou colados pelo usuário)
 - **ADRs (Architecture Decision Records)**: `$DOCS_FOLDER/ARD/*.md` ou `./sessions/**/adr.md`
 - **README e documentação técnica**: `README.md`, `ARCHITECTURE.md`, `API.md`
 
@@ -671,7 +671,7 @@ Para cada caso extremo/erro:
 
 Exemplo: `$SESSIONS_DIR/eng/story-123/tech-spec.md`
 
-> **IMPORTANTE**: A tech spec é salva na sessão. Para anexá-la na issue do Jira, depois da aprovação da 6.3, mostre o que vai e pergunte com `AskUserQuestion` (regra de ouro, `eng.integrations-rules.md`); com o Sim, a `acli` logada e `TASK_MANAGER_ACCESS=cli` (ou vazio), anexe pela `acli` (confira no `--help` se ela anexa arquivo); senão, oriente a pessoa a anexar à mão. Sem o Sim, a tech spec fica só na sessão.
+> **IMPORTANTE**: A tech spec é salva na sessão. O anexo na issue é opcional e só sai na 6.4, depois da aprovação final e da pergunta.
 
 #### 6.2 Revisão de Qualidade
 
@@ -706,6 +706,10 @@ Apresente ao usuário:
 4. **Próximos passos** sugeridos
 
 **Aguarde aprovação final do usuário.**
+
+#### 6.4 Anexo da tech spec na issue (opcional, com pergunta)
+
+Para anexá-la na issue do Jira, depois da aprovação da 6.3, mostre o que vai e pergunte com `AskUserQuestion` (regra de ouro, `eng.integrations-rules.md`): **Sim, anexar** / **Não, manter só na sessão**. Com o Sim, a `acli` logada e `TASK_MANAGER_ACCESS=cli` (ou vazio), anexe pela `acli` (confira no `--help` se ela anexa arquivo); senão, oriente a pessoa a anexar à mão. Em GitHub ou GitLab, a CLI não anexa arquivo à issue: oriente a pessoa. Sem o Sim, a tech spec fica só na sessão e a mensagem da 8.2 diz isso.
 
 ---
 
@@ -801,7 +805,7 @@ Use o formato **Mensagem de entrega** de `$IDE/templates/engineering/tech-spec-d
 - `$SESSIONS_DIR/eng/**/*.md` - Tech specs e ADRs de sessões anteriores
 - `README.md` - Visão geral do projeto
 - `ARCHITECTURE.md` - Arquitetura do sistema (se existir)
-- Anexos no Jira - PRD, FRD, ARD, RFC
+- Anexos no card (lidos pela CLI ou colados) - PRD, FRD, ARD, RFC
 
 ### Templates
 

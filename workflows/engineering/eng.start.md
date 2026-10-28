@@ -299,7 +299,7 @@ Verifique:
 - `$DOCS_FOLDER/**/*.md` - Documentação do projeto
 - `$SESSIONS_DIR/eng/**/*.md` - Tech specs anteriores
 - `README.md`, `ARCHITECTURE.md` - Visão geral do projeto onde está sendo executado
-- Anexos no Jira - PRD, FRD, ARD, RFC
+- Anexos no card (lidos pela CLI ou colados) - PRD, FRD, ARD, RFC
 
 ### 3.3 Padrões e Convenções
 

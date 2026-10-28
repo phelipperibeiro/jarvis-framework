@@ -34,8 +34,8 @@ Rel(dev, jarvis, "Usa para criar specs e código", "CLI/IDE")
 Rel(tech_lead, jarvis, "Usa para documentar arquitetura", "CLI/IDE")
 Rel(pm, jarvis, "Usa para criar PRDs e histórias", "CLI/IDE")
 
-Rel(jarvis, jira, "Sincroniza tarefas", "REST API")
-Rel(jarvis, gitlab, "Cria branches e MRs", "REST API")
+Rel(jarvis, jira, "Sincroniza tarefas", "CLI oficial")
+Rel(jarvis, gitlab, "Cria branches e MRs", "CLI oficial")
 Rel(jarvis, slack, "Envia notificações", "Webhook")
 Rel_L(ide, jarvis, "Integra via extensões", "MCP")
 
@@ -50,8 +50,8 @@ Rel_L(ide, jarvis, "Integra via extensões", "MCP")
 | Desenvolvedor | Pessoa | Engenheiro que implementa features | - |
 | Tech Lead | Pessoa | Lidera decisões técnicas | - |
 | Product Manager | Pessoa | Define requisitos de produto | - |
-| Jira | Sistema Externo | Gerenciamento de tarefas | REST API |
-| GitLab | Sistema Externo | Controle de versão | REST API |
+| Jira | Sistema Externo | Gerenciamento de tarefas | CLI oficial |
+| GitLab | Sistema Externo | Controle de versão | CLI oficial |
 | Slack | Sistema Externo | Comunicação | Webhook |
 | IDE | Sistema Externo | Ambiente de desenvolvimento | MCP |
 
@@ -62,8 +62,8 @@ Rel_L(ide, jarvis, "Integra via extensões", "MCP")
 | Desenvolvedor | JARVIS | Usa para criar specs e código | CLI/IDE |
 | Tech Lead | JARVIS | Usa para documentar arquitetura | CLI/IDE |
 | Product Manager | JARVIS | Usa para criar PRDs e histórias | CLI/IDE |
-| JARVIS | Jira | Sincroniza tarefas | REST API |
-| JARVIS | GitLab | Cria branches e MRs | REST API |
+| JARVIS | Jira | Sincroniza tarefas | CLI oficial |
+| JARVIS | GitLab | Cria branches e MRs | CLI oficial |
 | JARVIS | Slack | Envia notificações | Webhook |
 | IDE | JARVIS | Integra via extensões | MCP |
 

@@ -85,7 +85,7 @@ Você **pode** complementar com informações do Jira (lidas pela `acli`, como a
 
 Use a URL de status report que o usuário informar (ou a wiki configurada no projeto). Não há tabela fixa de squads.
 
-Use `web_fetch` para acessar a URL do time selecionado (ou peça o texto colado); sem MCP de wiki.
+Use `web_fetch` para acessar a URL do time selecionado (ou peça o texto colado).
 
 Busque os **dois últimos status reports** listados na página.
 Apresente os dois últimos reports no seguinte formato:

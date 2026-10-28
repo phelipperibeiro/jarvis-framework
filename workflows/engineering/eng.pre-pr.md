@@ -127,6 +127,7 @@ Grave em `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/gate-checklist.md`:
 - Resumo do que mudou:
 - Como testar:
 - Riscos / trade-offs:
+- Labels sugeridos: {ex.: `security`, se o PR toca auth, sessions, inputs, CORS, CSP ou permissões (`eng-security-rules.md`); a pessoa adiciona no host, a criação do MR não põe label}
 ```
 
 A coluna **Decisão** nasce vazia: quem preenche é o usuário (exceto a decisão herdada, descrita abaixo).

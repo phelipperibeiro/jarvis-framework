@@ -385,12 +385,13 @@ Regras em `$IDE/rules-on-demand/engineering/eng.pr-rules.md` (seção "daily.md"
 
 ```
 ✅ MERGE REQUEST CRIADO COM SUCESSO!       ← com o PR publicado
-📝 PR NÃO PUBLICADO                         ← com "Só gerar os arquivos", ou saída 3/4 da 4.4 (o pull-request.md fica pronto)
+📝 PR NÃO PUBLICADO                         ← com "Só gerar os arquivos", ou quando a 4.4 termina sem PR no host (saída 3 sem a CLI direta, ou saída 4 sem o PR criado); o pull-request.md fica pronto
 
 📋 Resumo:
 - Branch: {NOME_DA_BRANCH}
 - MR: {LINK_DO_MR}   ← sem PR publicado: "— (abra à mão com o pull-request.md)"
 - Card: {URL do card, pela tabela da 4.1}   ← só com board; com o PR aberto, mova-o para a etapa equivalente a "em revisão" (o Jarvis não move card)
+- Labels: {labels sugeridos no PR Brief do gate-checklist.md, ex.: security}   ← só se houver; a pessoa adiciona no host (a criação do MR não põe label)
 
 📊 Validações:
 - Testes: ✅ Passando

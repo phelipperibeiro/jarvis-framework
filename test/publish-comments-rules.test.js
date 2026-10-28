@@ -63,8 +63,11 @@ const IMPERATIVOS = [
   /\bAtlassian:\w+/,
   // Label no PR e anexo no card também são envios: só com a pergunta (a frase com "regra de ouro", "Sim" ou
   // "pergunt" na mesma linha vale).
-  /^(?!.*(?:regra de ouro|\bSim\b|pergunt|orient)).*\b(?:adicion\w+|coloc\w+|p[oô]r|aplic\w+)\s+(?:o\s+|a\s+)?label\b.*\b(?:ao|no)\s+(?:PR|MR)\b/im,
-  /^(?!.*(?:regra de ouro|\bSim\b|pergunt|orient|PRD|FRD|ARD|RFC)).*\b(?:anex\w+)\b.*\b(?:no|na|ao|à)\s+(?:Jira|issue|card|história)\b/im,
+  // A isenção de "orient" exige a pessoa ou o usuário como objeto ("(orientado pelo TL)" não isenta); a de leitura
+  // de anexos exige "lidos/colados" ou dois tipos de documento ("Anexos no card - PRD, FRD, ARD, RFC"); só o verbo
+  // ("anexe", "anexar") conta, não o resultado ("Anexada na issue").
+  /^(?!.*(?:regra de ouro|\bSim\b|pergunt|orient\w*\s+(?:a\s+pessoa|o\s+usu))).*\b(?:(?:adicion\w+|colo(?:c|qu)\w+|p[oô]r|apli(?:c|qu)\w+)\s+(?:o\s+|a\s+)?label\b|apli(?:c|qu)\w+\s+`?\w+`?\s+como\s+label\b).*\b(?:ao|no)\s+(?:PR|MR)\b/im,
+  /^(?!.*(?:regra de ouro|\bSim\b|pergunt|orient\w*\s+(?:a\s+pessoa|o\s+usu)|\blid[oa]s?\b|colad|(?:\b(?:PRD|FRD|ARD|RFC)\b.*){2})).*\b(?:anex(?:e|ar|em|ando|á-l[ao])|fa[çz]\w*\s+(?:o\s+)?upload|suba)\b.*\b(?:no|na|ao|à)\s+(?:Jira|issue|card|história)\b/im,
 ];
 
 // Dirent.isDirectory() não segue link simbólico, então um link quebrado ou circular não derruba a varredura.
@@ -354,10 +357,14 @@ test("toda linha que chama o /eng-global-task-comment traz a pergunta na mesma l
 // Board e git só pela CLI oficial (eng.integrations-rules.md): uma linha que manda usar MCP ou a API (REST) do
 // board não vale; a proibição ("sem REST nem MCP", "não use o MCP do Jira") vale.
 const MCP_DO_BOARD =
-  /\bAPI(?:\s+REST)?\s+d[oa]\s+`?(?:Jira|Atlassian|GitHub|GitLab|board|\$TASK_MANAGER)\b|\bMCPs?\s+(?:(?:configurad|específic|especific|disponív|instalad|relacionad)\w*\s+)*(?:(?:d[oa]|a[oa]|para\s+o)\s+)?`?(?:Jira|Atlassian|\$TASK_MANAGER|board)\b/i;
+  /\b(?:API(?:\s+v?\d+)?(?:\s+REST)?|endpoints?(?:\s+REST)?|REST\s+API)\s+d[oa]\s+`?(?:Jira|Atlassian|GitHub|GitLab|board|\$?TASK_MANAGER)\b|\bMCPs?[\s/]+(?:(?:configurad|específic|especific|disponív|instalad|relacionad)\w*\s+)*(?:(?:d[oa]|a[oa]|para\s+o)\s+)?`?(?:Jira|Atlassian|\$?TASK_MANAGER|board)\b/i;
 // A proibição precisa estar na mesma oração (sem vírgula, ponto e vírgula ou dois-pontos entre a negação e o MCP):
 // "Sem a CLI logada, use o MCP do Jira" não é proibição.
-const PROIBE_MCP = /\b(?:sem|nem|não|nunca|proibid\w*)\b[^.,;:\n]{0,30}\b(?:MCPs?|API)\b/i;
+const PROIBE_MCP =
+  /\b(?:sem|nem|não|nunca|proibid\w*)\b[^.,;:\n]{0,30}\b(?:MCPs?|API|REST|endpoints?)\b/i;
+// A proibição vale só na oração do MCP/API ("Use a API do Jira; não use MCP" acusa a primeira oração).
+const mandaUsarMcpOuApi = (linha) =>
+  linha.split(/[.;:]/).some((o) => MCP_DO_BOARD.test(o) && !PROIBE_MCP.test(o));
 
 test("nenhum imperativo manda publicar sem a pergunta", () => {
   for (const file of todosMd()) {
@@ -365,7 +372,7 @@ test("nenhum imperativo manda publicar sem a pergunta", () => {
       .split("\n")
       .forEach((linha, i) => {
         assert.ok(
-          !MCP_DO_BOARD.test(linha) || PROIBE_MCP.test(linha),
+          !mandaUsarMcpOuApi(linha),
           `${rel(file)}:${i + 1}: manda usar MCP ou a API do board. ${DE_PROPOSITO}`
         );
       });
