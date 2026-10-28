@@ -13,7 +13,7 @@ bin/
 ├── jarvis.js              # entrypoint (bin no package.json)
 ├── postinstall.js          # após npm install: só imprime as dicas
 ├── commands/
-│   ├── init.js             # jarvis init [--ide] [--force] [--upgrade [--yes] [--remove-stale]]; grava o Context7 no MCP da IDE
+│   ├── init.js             # jarvis init [--ide] [--force] [--upgrade [--yes] [--remove-stale]]; em pasta já instalada, menu Atualizar / Reinstalar / Cancelar; grava o Context7 no MCP da IDE
 │   ├── list.js             # jarvis list
 │   ├── info.js             # jarvis info …
 │   ├── whoami.js           # jarvis whoami / logout legado

@@ -46,6 +46,8 @@ Os templates de produto (PRD, FRD, épico, issue, breakdown e discovery) ficam e
 
 O skill `jarvis-init` **deve** copiar este arquivo inteiro e só substituir valores. Não inventar chaves.
 
+Cada assunto fica numa moldura de três linhas (`# ====`, título, `# ====`). No fim de todo caminho que grava o `ENV.md`, o `/jarvis-init` o valida contra este template (passo 9.5 do skill): cada problema vira uma pergunta, e o arquivo é regravado na mesma estrutura e ordem, com as chaves fora do template no último bloco, marcadas `# (descontinuada)`. O `jarvis init --upgrade` (terminal) só acrescenta as chaves novas no fim.
+
 Inclui (entre outros):
 
 - Workspace / `USER` / `MAX_AI_EXECUTION_PERCENTAGE` / `ENABLE_CDD`

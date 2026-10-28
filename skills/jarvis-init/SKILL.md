@@ -82,6 +82,8 @@ Regras que **substituem** qualquer trecho legado deste skill ou dos assets:
 │        ↓                                                    │
 │  9. STACKS → Adicionar as stacks (opcional, pulável)        │
 │        ↓                                                    │
+│  9.5 VALIDAR ENV.md → Arquivo inteiro × template (sempre)   │
+│        ↓                                                    │
 │  10. CONFIRMAR → Com usuário                                │
 │                                                             │
 └─────────────────────────────────────────────────────────────┘
@@ -207,11 +209,12 @@ Identificar qual IDE o usuário está utilizando:
    C: Upgrade — adicionar variáveis novas do template (não toca nos valores existentes)
    D: Cancelar
    ```
+   A (que segue o fluxo completo), B e C terminam pelo **passo 9.5 (validar o ENV.md)**; D não toca no arquivo.
 
 **Se opção C (Upgrade):**
 
 > No terminal, rode antes `jarvis init --upgrade --ide {ide}`: ele atualiza os arquivos do framework, acrescenta as variáveis novas e move os documentos para as pastas novas (itens 1–8, 10 a 12). Aqui ficam o Central docs antigo (item 9), as pendências que ele listar e o passo das stacks.
-> **O upgrade só acrescenta chaves novas:** nenhuma chave já existente, preenchida ou não, é alterada, salvo as exceções declaradas no item 9 (`CENTRAL_DOCS_LOCATION` e `TOKEN_TASK_MANAGER`, com confirmação; `JARVIS_PROJECT` vazio, automático).
+> **O upgrade só acrescenta chaves novas:** nenhuma chave já existente, preenchida ou não, é alterada, salvo as exceções declaradas no item 9 (`CENTRAL_DOCS_LOCATION` e `TOKEN_TASK_MANAGER`, com confirmação; `JARVIS_PROJECT` vazio, automático). Depois, a validação final (passo 9.5) pode reorganizar o arquivo e mover chaves para o assunto delas, sempre perguntando e sem trocar valor.
 > Trocou o `ARTIFACT_STYLE` (ou HUB, POSITION, AREA, SQUAD) à mão? O Passo 8 copia ou remove as rules desse perfil.
 
 1. Ler todas as chaves do `templates/ENV-template.md`
@@ -223,14 +226,14 @@ Identificar qual IDE o usuário está utilizando:
    ```
    ✅ ENV.md já está atualizado. Nenhuma variável nova encontrada.
    ```
-   Oferecer o **passo 9 (adicionar as stacks)**, que a pessoa pode pular, e então encerrar.
+   Oferecer o **passo 9 (adicionar as stacks)**, que a pessoa pode pular, rodar o **passo 9.5 (validar o ENV.md)** e então encerrar.
 7. Se houver diff, exibir prévia:
    ```
    🔍 Variáveis novas encontradas no template:
      + NOVA_VAR_1=
      + NOVA_VAR_2=valor-padrão
 
-   Serão adicionadas ao final do ENV.md sem alterar os valores existentes.
+   Serão adicionadas no assunto de cada uma, na posição do template, sem alterar os valores existentes.
    ```
 8. **Exceção — documentos nos caminhos antigos:** procure documentos de trabalho em `$DOCS_FOLDER/product`, `$DOCS_FOLDER/engineering/{ARD,RFC,qa,swagger,openapi,robots,c4}`, `docs/engineering/{robots,swagger,openapi,c4}` e os discoveries em `$PROD_DOCS/discoveries/`.
    - Se houver, liste o que encontrou e pergunte com `AskUserQuestion` (uma pergunta para todos) se move para `docs/jarvis/…` (`$PROD_DOCS`, `$ENG_DOCS/…` e, para os discoveries, `$DISCOVERIES_DOCS`). Use `git mv` quando o arquivo for versionado e `mv` quando não for e, só se a raiz do workspace tiver `.git`, garanta `docs/jarvis/` no `.gitignore`.
@@ -246,18 +249,13 @@ Identificar qual IDE o usuário está utilizando:
 10. **Exceção — `PROD_MODE`:** se `PROD_MODE` estiver entre as chaves novas, grave pelo `AREA`: `ENGINEERING` → `developer-guided`, `PRODUCT` → `product-led`. Com outra `AREA` (ou vazia), faça a mesma pergunta do Passo 3 (Pergunta 8 — modo de condução) e grave a resposta. `PROD_MODE` que já existe, mesmo vazia, não muda. As demais chaves continuam sem pergunta.
     - **`WORKSPACE_MODE`:** o `jarvis init --upgrade` já grava o modo detectado (raiz sem `.git` e 1+ subpastas com `.git/` = `workspace`; raiz com `.git` = `project`). Se a chave existir vazia, detecte do mesmo jeito e grave; se existir preenchida, não muda.
     - **`.gitignore` numa raiz sem `.git` (ex.: `WORKSPACE_MODE=workspace`):** a raiz não é versionada, então esse arquivo não tem efeito. Não o apague; só avise: `ℹ️ O .gitignore da raiz do workspace não tem efeito (a raiz não é um repositório). Pode removê-lo se quiser.`
-11. Appender as novas variáveis ao final do `ENV.md` com comentário de data:
-   ```
-   # --- Upgrade YYYY-MM-DD ---
-   NOVA_VAR_1=
-   NOVA_VAR_2=valor-padrão
-   ```
+11. Acrescentar as novas variáveis no assunto de cada uma, na posição do template, junto das chaves do mesmo assunto (ex.: uma `DATA_*` nova vai para o bloco Data Engineering, ao lado das irmãs), com o comentário do template. Sem bloco datado no fim. O `jarvis init --upgrade` (terminal) acrescenta no fim, num bloco `# --- Upgrade ... ---`, por ser determinístico; o passo 9.5 põe essas chaves no lugar.
 12. Confirmar:
    ```
    ✅ ENV.md atualizado! N variável(is) nova(s) adicionada(s).
    ⚠️ Preencha os valores em branco antes de usar os novos recursos.
    ```
-13. Oferecer o **passo 9 (adicionar as stacks)**, que a pessoa pode pular, e então encerrar (não continuar para o fluxo de onboarding completo).
+13. Oferecer o **passo 9 (adicionar as stacks)**, que a pessoa pode pular, rodar o **passo 9.5 (validar o ENV.md)** e então encerrar (não continuar para o fluxo de onboarding completo).
 
 **⚠️ OBRIGATÓRIO - Criação do ENV.md**:
 
@@ -787,7 +785,7 @@ if (IDE === "claude") {
 }
 ```
 
-O arquivo `$IDE/ENV.md` deve seguir a **estrutura e ordem** de `templates/ENV-template.md` (não um dump reordenado). Blocos mínimos esperados após o init:
+O arquivo `$IDE/ENV.md` deve seguir a **estrutura e ordem** de `templates/ENV-template.md` (não um dump reordenado), com cada assunto na moldura de `# ====` do template; o passo 9.5 confere no fim. Blocos mínimos esperados após o init (abaixo, os títulos aparecem numa linha só para abreviar; no arquivo, cada um fica entre as duas barras):
 
 ```markdown
 # --- Workspace e identidade ---
@@ -1159,6 +1157,45 @@ O tempo de ~10 minutos é referência, não limite. Nunca leia `.env*`, chaves o
 
 ---
 
+### 9.5 Validar o ENV.md (sempre, no fim)
+
+Roda no fim de todo caminho que grava o `ENV.md`: criação (opção A ou ENV.md novo), atualização de variáveis (B) e Upgrade (C, inclusive "já atualizado"), depois do passo 9. Não roda ao cancelar (D). Objetivo: o arquivo fica **100% correto** e **separado por assunto**, na estrutura e na ordem de `templates/ENV-template.md`, com cada assunto na moldura de `# ====`:
+
+```
+# =============================================================================
+# Workspace e identidade
+# =============================================================================
+```
+
+**Nunca mostre valor de variável**: nas perguntas e na saída vão só o nome da chave e se a linha tem algo depois do `=`.
+
+**1. Conferir o arquivo inteiro contra o template.** Cada item que falhar é um problema:
+
+| Verificação | Exemplo | Correção sugerida (primeira opção, "(Recomendada)") |
+|---|---|---|
+| Chave do template ausente | falta `WORKSPACE_MODE` | Acrescentar no assunto dela, com o padrão do template |
+| Chave fora do template (saiu dele ou é do projeto) | `QA_SIGNOFF_BRANCHES`, `MINHA_VAR` | Mover para o bloco final "Variáveis fora do template", com `# (descontinuada)` numa linha própria logo acima da chave e o valor intacto |
+| Chave duplicada | `HUB=` duas vezes | Manter a preenchida (ou a última) |
+| Valor fora das opções | `HUB=BACKEN`, `MAX_AI_EXECUTION_PERCENTAGE=40`, `TASK_MANAGER_ACCESS=api` | Perguntar o valor, com as opções do template ou do `taxonomy.md` (as mesmas perguntas do passo 3) |
+| Obrigatória vazia | `SQUAD=` | A mesma pergunta do passo 3 |
+| Lista de exemplo não escolhida | `TASK_MANAGER=[jira, github, gitlab]` | Escolher uma ou esvaziar |
+| Fora da ordem ou do assunto | blocos `# --- Upgrade ... ---` no fim; uma `DATA_*` longe das irmãs | Regravar na ordem do template |
+| Comentários ou separadores diferentes dos do template | comentário antigo; `# --- Assunto ---` | Trocar pelos do template (a pergunta avisa que comentários próprios se perdem) |
+| Bloco DATA com `HUB` fora de DATA/FULLCYCLE | `DATA_*` sobrando | Remover o bloco (regra do passo 5), menos `DATA_SPECIALIZATIONS` |
+
+Não pergunte de novo o que as exceções 9 a 9.3 do Upgrade já resolveram nesta execução.
+
+**2. Perguntar cada problema** com `AskUserQuestion`: **uma pergunta por problema**, em chamadas de até 4 abas, agrupadas por tipo de verificação. Cada pergunta tem a correção sugerida como primeira opção, marcada "(Recomendada)", e uma opção que mantém o arquivo como está (ex.: "Manter como está"). Nada é corrigido sem resposta. Sem problema nenhum, não pergunte: avise `✅ ENV.md conferido: nada a corrigir.`
+
+**3. Regravar (só o que foi aceito).**
+- **Reorganização aceita:** parta do template inteiro (comentários e molduras do template), ponha o valor atual de cada chave no lugar dela, cada uma no seu assunto e junto das irmãs, e desfaça os blocos datados. As chaves fora do template vão para o último bloco, "Variáveis fora do template", cada uma com `# (descontinuada)` logo acima; **nenhuma chave é apagada**. O comentário fica numa linha própria: na mesma linha da chave, o CLI o leria como parte do valor.
+- **Reorganização recusada:** grave só as correções de conteúdo aceitas, no lugar em que cada chave está, sem mover o resto.
+- **Conferência antes de gravar:** o mapa chave → valor das chaves mantidas tem de ser igual antes e depois (só mudam as chaves corrigidas por resposta). Se não for, não grave e avise: `⚠️ A regravação mudaria valores que não foram corrigidos: nada gravado.`
+
+**4. Resumo.** Liste o que foi corrigido e o que ficou pendente (respostas "Manter como está"), só com nomes de chave.
+
+---
+
 ### 10. Confirmar Criação
 
 ```
@@ -1442,7 +1479,8 @@ Bem-vindo! 🎉
 - [ ] Detectou IDE corretamente
 - [ ] Verificou se ENV.md já existe
 - [ ] Se ENV.md existe: ofereceu opção de Upgrade (C) além de Sobrescrever/Atualizar/Cancelar
-- [ ] Se Upgrade: calculou diff template vs ENV.md e appendou apenas variáveis faltantes
+- [ ] Se Upgrade: calculou diff template vs ENV.md e acrescentou apenas as variáveis faltantes, no assunto de cada uma (sem bloco datado)
+- [ ] **Validou o ENV.md inteiro no passo 9.5**: uma pergunta por problema, regravação na ordem do template com as molduras de `# ====`, chaves fora do template no fim com `# (descontinuada)`, nenhum valor exibido nem trocado sem resposta
 - [ ] Coletou todas as variáveis obrigatórias
 - [ ] USER gravado no ENV.md a partir da identidade local
 - [ ] Validou MAX_AI_EXECUTION_PERCENTAGE (60-100) - para campos livres

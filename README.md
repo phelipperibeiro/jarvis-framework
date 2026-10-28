@@ -100,7 +100,9 @@ npm install -g jarvis-ai-framework@latest
 jarvis init --upgrade --ide {ide}   # assets + variáveis novas do ENV.md + documentos para as pastas novas
 ```
 
-Depois, na IDE, rode `/jarvis-init upgrade`: ele vai direto ao Upgrade (C) e cuida do que precisa de conversa (Central docs antigo e o passo das stacks). O `--upgrade` só **acrescenta** chaves ao `ENV.md`: nenhuma chave existente muda. Ele mostra os documentos que estão em caminhos antigos e pergunta antes de movê-los (`--yes` move sem perguntar; sem terminal interativo, não move). Também lista os skills instalados que saíram do framework e pergunta antes de removê-los (`--remove-stale` remove sem perguntar só os listados; skills registrados em `*_SPECIALIZATIONS` nunca são listados).
+`jarvis init --ide {ide}` numa pasta já instalada mostra o menu **Atualizar** (Enter, o mesmo que o `--upgrade`) / **Reinstalar** (o mesmo que o `--force`) / **Cancelar**, com a versão instalada e a do pacote. No fim, ele só manda rodar o `/jarvis-init upgrade` quando há pendência.
+
+Na IDE, o `/jarvis-init upgrade` vai direto ao Upgrade (C), cuida do que precisa de conversa (Central docs antigo e o passo das stacks) e, no fim, valida o `ENV.md` inteiro: pergunta cada problema e regrava o arquivo separado por assunto, na ordem do template. O `--upgrade` só **acrescenta** chaves ao `ENV.md`, no fim do arquivo: nenhuma chave existente muda. Ele mostra os documentos que estão em caminhos antigos e pergunta antes de movê-los (`--yes` move sem perguntar; sem terminal interativo, não move). Também lista os skills instalados que saíram do framework e pergunta antes de removê-los (`--remove-stale` remove sem perguntar só os listados; skills registrados em `*_SPECIALIZATIONS` nunca são listados).
 
 **Instalou via clone local** (fluxo de [Desenvolvendo o Jarvis localmente](#desenvolvendo-o-jarvis-localmente)) — quando o repo no GitHub ganhar commits novos, sincronize assim:
 
