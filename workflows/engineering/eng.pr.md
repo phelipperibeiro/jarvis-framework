@@ -47,7 +47,7 @@ Este comando cria a **branch, commita as alterações e abre um Merge Request**.
 | Skills recomendados | `/eng-global-docs-write` | Se houver necessidade de atualizar documentação junto do PR |
 | Agentes recomendados (opcional) | `eng.qa.test-planner` (agente) | Se houver dúvidas sobre cobertura de testes ou mudanças significativas |
 | Fase 4 › 4.4 Criar MR/PR pela CLI | `jarvis vcs create-merge` (CLI do Jarvis → `gh`/`glab`) | Só se a escolha da Fase 0 for publicar (4.3): abre o MR/PR pela cadeia de `eng.integrations-rules.md`, pelo host do `origin` |
-| Fase 5 › 5.2 Link do MR | `/eng-global-task-comment` | Depois de o MR ser criado (só ao publicar, 4.3): um único comentário no card com o link do MR, seguindo o Passo 6 do skill `eng-global-pr` (freelance: registra no `task-log.md`) |
+| Fase 5 › 5.2 Link do MR | `/eng-global-task-comment` | Depois de o MR ser criado (só ao publicar, 4.3): um único comentário no card com o link do MR, só com o Sim da pergunta (regra de ouro), seguindo o Passo 6 do skill `eng-global-pr` (freelance: registra no `task-log.md`) |
 
 ---
 
@@ -284,11 +284,11 @@ Pular a 5.1 se `TASK_MANAGER` estiver vazio (freelance); a 5.2 registra o link d
 
 ### 5.1 Mover Card
 
-Mova o card para a etapa equivalente a "em revisão" no seu board. Quem assumiu o card o move; não é preciso esperar o TECH LEAD ou o PM.
+Oriente a pessoa a mover o card para a etapa equivalente a "em revisão" no board (o Jarvis não move card). Quem assumiu o card o move; não é preciso esperar o TECH LEAD ou o PM.
 
 ### 5.2 Link do MR no card
 
-Siga o Passo 6 do skill `eng-global-pr`: um único comentário no card, com o link e a branch. É o único comentário do `eng.pr` no card.
+Siga o Passo 6 do skill `eng-global-pr`: monte um único comentário, com o link e a branch, e mostre-o. Ele só vai para o card depois da pergunta (regra de ouro, `eng.integrations-rules.md`); sem o Sim, fica no `task-comment-*.md` da sessão. É o único comentário do `eng.pr` no card.
 
 ---
 
@@ -308,12 +308,13 @@ Para cada comentário:
 
 ### 6.3 Aplicar Correções
 
-Se necessário:
+Se necessário, faça as correções e o commit. O push das correções sai só depois da pergunta (regra de ouro, `eng.integrations-rules.md`): mostre o commit e pergunte com `AskUserQuestion` (**Sim, publicar** / **Não, manter só local**); sem o Sim, o commit fica local.
 
 ```bash
 # Fazer mudanças
 git add {arquivos_alterados}
 git commit -m "fix: corrigir {problema} conforme code review"
+# só com o Sim da pergunta acima
 git push
 ```
 
