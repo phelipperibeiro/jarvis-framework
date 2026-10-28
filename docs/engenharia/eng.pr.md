@@ -26,7 +26,7 @@ Confere que tudo está passando, envia a branch e abre o merge request (ou pull 
 1. **Pergunta o que fazer com o PR** (é a Fase 0 do workflow, feita antes de tudo; regra de ouro): **Revisar o texto e publicar**, **Publicar sem revisar o texto** ou **Só gerar os arquivos**. Essa escolha vale como a pergunta do push e do PR
 2. **Valida:** testes, lint e build (e testes automatizados opcionais, se o projeto estiver rodando). Se algo falhar, corrige antes de seguir
 3. **Verifica a branch:** confirma a branch ativa, a branch de destino e os commits
-4. **Gera o `pull-request.md`** na sessão (`.jarvis/sessions/eng/{TASK_MANAGER_KEY}/`), a partir do template e do PR Brief do `gate-checklist.md`, e mostra o texto para a sua aprovação (com "Revisar o texto" e com "Só gerar os arquivos"; "Publicar sem revisar o texto" pula essa revisão). Com "Só gerar os arquivos", o arquivo fica na sessão e nada é enviado
+4. **Gera o `pull-request.md`** na sessão (`.jarvis/sessions/eng/{TASK_MANAGER_KEY}/`), a partir do template e do PR Brief do `gate-checklist.md`, e mostra o texto para a sua aprovação (com "Revisar o texto" e com "Só gerar os arquivos"; "Publicar sem revisar o texto" pula essa revisão). Na revisão você também pode escolher `[Só gerar os arquivos]`, que vale como a opção de mesmo nome da Fase 0. Com "Só gerar os arquivos", o arquivo fica na sessão e nada é enviado
 5. Se você escolheu publicar: **push** e **cria o MR/PR** com o texto aprovado. Com `VERSION_CONTROL_ACCESS=manual`, CLI sem login ou saída 3, nada é enviado: fica o `pull-request.md` e o link para abrir à mão. Com saída 4 (erro depois de enviar), não repita: confira no host se o MR/PR foi criado
 6. **Mostra o comentário com o link do MR e pergunta; com o Sim, posta no card** (um único comentário), e orienta a mover para "In Review" (quando há board; o Jarvis não move card)
 7. **Processa o code review:** analisa os comentários e aplica correções; o push das correções só sai depois da pergunta (regra de ouro)
@@ -44,7 +44,7 @@ A sessão **não é apagada**: o `/eng.spec-consolidate` precisa dela. Remova à
 
 ## Perguntas que ele faz
 
-- **No início:** "O que fazer com o PR?" → **Revisar o texto e publicar (como hoje)**, **Publicar sem revisar o texto**, **Só gerar os arquivos** (você abre o PR à mão; nada é enviado).
+- **No início:** "O que fazer com o PR?" → **Revisar o texto e publicar (como hoje)**, **Publicar sem revisar o texto**, **Só gerar os arquivos** (você abre o PR à mão; nada é enviado). Na revisão do texto, `[Só gerar os arquivos]` faz o mesmo.
 - **No fim:** "O PR já foi aprovado e mergeado?" → **Ainda não (como hoje)** ou **Sim, rodar o `/eng.spec-consolidate`**, que registra no Central docs o que a entrega implementou.
 
 ## Regras que importam

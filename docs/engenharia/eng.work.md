@@ -59,7 +59,7 @@ Em qualquer escolha, ele para no limite da IA, com um teste falhando ou diante d
 - **Não move cards** no board
 - **Stack do projeto:** em trabalho de backend ou de frontend, carrega a skill base mais as **especializações** registradas no `ENV.md` (`BACKEND_SPECIALIZATIONS` e `FRONTEND_SPECIALIZATIONS`); se algum skill instalado não tem `metadata.area`, **o comando é interrompido** ([especializações de stack](../especializacoes-de-stack.md))
 - Se surgir um bloqueio técnico, registra no plano como bloqueada (🚫), prepara o comentário do bloqueio (só sai depois da pergunta), explica e sugere alternativas
-- **Questão nova em aberto é exceção:** se surgir uma e o Advisor tiver sido habilitado no `eng.start`, ele é consultado; a questão entra no `architecture.md`, a auditoria vai para o card só com o seu Sim e o PR cita a lacuna
+- **Questão nova em aberto é exceção:** se surgir uma e o Advisor tiver sido habilitado no `eng.start`, ele é consultado; a questão entra no `architecture.md`, a auditoria vai para o card só com o seu Sim (sem o Sim, o texto fica no `task-comment-*.md`) e o PR cita a lacuna
 - No card, só desvios do plano e bloqueios, cada um depois da pergunta (regra de ouro): nada de comentário de início ou fim
 - Se você pedir commit antes da fase terminar, ele explica que o commit é feito ao final da fase validada
 - **Links clicáveis:** os comentários de fase do `plan.md` citam arquivos, linhas e commits como links (`rules-on-demand/doc-links-rules.md`)

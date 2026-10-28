@@ -68,13 +68,25 @@ function walk(dir) {
     return entrada.isFile() && caminho.endsWith(".md") ? [caminho] : [];
   });
 }
+// Documentos históricos (guias de migração, por exemplo) podem citar o texto antigo de propósito.
+// Valem nos testes 4 e 5; as pastas ainda não existem, e o nome é só o que vale quando aparecerem.
+const HISTORICO = /^docs\/(historico|migracao)\//;
+const ehHistorico = (arquivo) => HISTORICO.test(relative(root, arquivo).split("\\").join("/"));
+
+// Orações que ficam fora da recusa: terminam em vírgula, ponto, ponto e vírgula, dois-pontos, travessão,
+// parêntese ou na conjunção "e"/"mas". Cobre o modo freelance (o skill só registra) e as negadas ("nunca … sem perguntar").
+const FIM_DA_ORACAO = String.raw`(?=\s(?:e|mas)\s|[;),.:—]|$)`;
+const semIsencoes = (linha) =>
+  linha
+    .replace(/freelance\s*\([^)]*\)/gi, "")
+    .replace(new RegExp(String.raw`freelance[^;),.:—]*?${FIM_DA_ORACAO}`, "gi"), "")
+    .replace(new RegExp(String.raw`\b(?:nunca|nada|nem)\b[^;),.:—]*?${FIM_DA_ORACAO}`, "gi"), "");
+
 function todosMd() {
-  // Documentos históricos (guias de migração, por exemplo) podem citar o texto antigo de propósito.
-  const HISTORICO = /^docs\/(historico|migracao)\//;
   return PASTAS.map((p) => join(root, p))
     .filter((p) => existsSync(p))
     .flatMap(walk)
-    .filter((f) => !HISTORICO.test(relative(root, f).split("\\").join("/")));
+    .filter((f) => !ehHistorico(f));
 }
 
 // Trecho de `texto` que vai de `linhas` linhas antes da linha `i` até a própria linha `i`.
@@ -167,7 +179,7 @@ test("toda linha que chama o /eng-global-task-comment traz a pergunta na mesma l
     .filter((p) => existsSync(p))
     .flatMap(walk)
     .concat(join(root, "README.md"))
-    .filter((f) => !FORA.has(relative(root, f).split("\\").join("/")));
+    .filter((f) => !FORA.has(relative(root, f).split("\\").join("/")) && !ehHistorico(f));
   for (const arquivo of arquivos) {
     const nome = relative(root, arquivo).split("\\").join("/");
     readFileSync(arquivo, "utf8")
@@ -182,13 +194,8 @@ test("toda linha que chama o /eng-global-task-comment traz a pergunta na mesma l
           `${onde} chama o /eng-global-task-comment sem a pergunta na linha. ${DE_PROPOSITO}`
         );
         // Redações que dispensam a pergunta não valem, mesmo com a frase da regra na mesma linha.
-        // Ficam de fora só a oração do freelance (nesse modo não há pergunta, o skill só registra) e as orações
-        // negadas ("nunca … sem perguntar"), ambas até a próxima vírgula, ponto, ponto e vírgula ou parêntese.
-        const semFreelance = linha
-          .replace(/freelance[^;),.]*/gi, "")
-          .replace(/\b(nunca|nada|nem)\b[^;),.]*/gi, "");
         assert.doesNotMatch(
-          semFreelance,
+          semIsencoes(linha),
           /\bsem (a )?perguntar|\bsem a pergunta|não pergunte|(?<!não )dispens\w+|pule a pergunta|já vale como o Sim|regra de ouro não se aplica|não é preciso perguntar/i,
           `${onde} dispensa a pergunta. ${DE_PROPOSITO}`
         );
@@ -436,10 +443,13 @@ test("os outros pontos que enviam algo (agente, delivery-spec, data.contract, pr
   for (const file of ["workflows/engineering/eng.work.md", "workflows/engineering/eng.plan.md"]) {
     read(file)
       .split("\n")
-      .forEach((linha, i) => {
-        if (!/`\/eng-global-task-comment`/.test(linha) || linha.startsWith("|")) return;
+      .forEach((linha, i, todas) => {
+        // Linhas de tabela (mesmo indentadas) são resumos; a nota do acesso manual só diz que o skill grava o .md.
+        if (!/\/eng-global-task-comment/.test(linha) || linha.trim().startsWith("|")) return;
+        if (/só grava o `\.md`/.test(linha)) return;
+        // O ramo do Não pode estar na linha ou na seguinte.
         assert.match(
-          linha,
+          `${linha} ${todas[i + 1] ?? ""}`,
           /Sem o Sim, o texto fica no `task-comment-\*\.md`/,
           `${file}:${i + 1}: falta o ramo do Não (onde o texto recusado fica). ${DE_PROPOSITO}`
         );
@@ -452,8 +462,8 @@ test("os outros pontos que enviam algo (agente, delivery-spec, data.contract, pr
       .split(/^### 0\.5 /m)[1] ?? "";
   const pulos = passo05
     .split("\n")
-    .map((l) => l.replace(/\b(nunca|nada|nem|não)\b[^;),.]*/gi, ""))
-    .filter((l) => /pule a pergunta|dispens/i.test(l));
+    .map((l) => semIsencoes(l).replace(/\bnão (?:pule a pergunta|dispens\w*)/gi, ""))
+    .filter((l) => /pule a pergunta|não pergunte|dispens/i.test(l));
   assert.equal(
     pulos.length,
     1,

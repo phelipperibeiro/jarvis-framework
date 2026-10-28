@@ -72,7 +72,7 @@ Ler `TASK_MANAGER` do `$IDE/ENV.md`. Seguir `$IDE/rules/engineering/eng.integrat
 ## Fase 0: O que fazer com o PR (`eng.transitions-rules.md`)
 
 Pergunte com `AskUserQuestion`: **"O que fazer com o PR?"**
-- **Revisar o texto e publicar (como hoje):** gera o `pull-request.md`, você aprova ou ajusta (4.2) e, com a aprovação, faz o push e abre o PR (4.4). A aprovação do texto é a confirmação da publicação.
+- **Revisar o texto e publicar (como hoje):** gera o `pull-request.md`, você aprova, ajusta ou escolhe `[Só gerar os arquivos]` (4.2) e, com a aprovação, faz o push e abre o PR (4.4). A aprovação do texto é a confirmação da publicação.
 - **Publicar sem revisar o texto:** gera o `pull-request.md` (4.1), faz o push e abre o PR (4.4) sem a revisão (4.2); você ajusta o texto direto no PR.
 - **Só gerar os arquivos:** gera o `pull-request.md` (4.1), mostra para revisão (4.2) e não faz push nem abre o PR; você abre à mão. A Fase 7 gera o `daily.md` mesmo assim.
 
@@ -238,7 +238,7 @@ Mostre o consolidado de links da sessão (regra 5 de `eng.transitions-rules.md`,
 
 ### 4.3 Publicar ou não (sem pergunta nova)
 
-A decisão já veio da Fase 0, que vale como a pergunta do push e do PR (exceção da regra de ouro, `eng.integrations-rules.md`); não pergunte de novo. Aprovado o texto na 4.2 (ou, com "Publicar sem revisar o texto", sem a revisão), siga a escolha:
+A decisão vem da Fase 0, que vale como a pergunta do push e do PR (exceção da regra de ouro, `eng.integrations-rules.md`), ou do `[Só gerar os arquivos]` da 4.2, que a troca por "Só gerar os arquivos"; não pergunte de novo. Aprovado o texto na 4.2 (ou, com "Publicar sem revisar o texto", sem a revisão), siga a escolha:
 
 - **Só gerar os arquivos:** nada é enviado. O `pull-request.md` fica na sessão para você publicar quando quiser (à mão ou rodando o `/eng.pr` de novo). Pule para a Fase 7, que gera o `daily.md` mesmo assim (para não passar batido quando você abrir o PR à mão), com a mensagem "PR não publicado".
 - **Revisar o texto e publicar** ou **Publicar sem revisar o texto:** faça o push (Fase 3) e crie o MR/PR (4.4).
