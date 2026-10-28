@@ -68,9 +68,9 @@ const IMPERATIVOS = [
   // ("anexe", "anexar") conta, não o resultado ("Anexada na issue").
   // A isenção de "orient" exige "oriente a pessoa/o usuário a <verbo>" ("Oriente a pessoa e adicione…" acusa). Só o
   // verbo conta ("anexe", "anexar", "vincule", "faça upload"), não o substantivo ("Anexos no card") nem o
-  // resultado ("Anexada na issue").
-  /^(?!.*(?:regra de ouro|\bSim\b|pergunt|orient\w*\s+(?:a\s+pessoa|o\s+usu\w*)\s+a\s+\w)).*(?:\b(?:adicion\w+|colo(?:c|qu)\w+|p[oô]r|ponh\w+|apli(?:c|qu)\w+)\s+(?:o\s+|a\s+)?label\b.*\b(?:ao|no)\s+(?:PR|MR)\b|\b(?:adicion\w+|colo(?:c|qu)\w+|ponh\w+|apli(?:c|qu)\w+)\s+`?[\w-]+`?\s+(?:(?:ao|no)\s+(?:PR|MR)\s+)?como\s+label\b|\brotul\w+\s+(?:o\s+)?(?:PR|MR)\b)/im,
-  /^(?!.*(?:regra de ouro|\bSim\b|pergunt|orient\w*\s+(?:a\s+pessoa|o\s+usu\w*)\s+a\s+\w)).*\b(?:anex(?:a|e|ar|em|ando|á-l[ao])|vincul\w+|associ\w+|fa[çz]\w*\s+(?:o\s+)?(?:upload|attach)|suba)\b.*\b(?:no|na|ao|à|para\s+[oa])\s+(?:Jira|issue|card|história)\b/im,
+  // resultado ("Anexada na issue"). "sem perguntar" na linha anula a isenção por "pergunt".
+  /^(?!(?!.*\bsem\s+(?:a\s+)?pergunt).*(?:regra de ouro|\bSim\b|pergunt|orient\w*\s+(?:a\s+pessoa|o\s+usu\w*)\s+a\s+\w)).*(?:\b(?:adicion\w+|colo(?:c|qu)\w+|p[oô]r|ponh\w+|apli(?:c|qu)\w+)\s+(?:o\s+|a\s+)?label\b.*\b(?:ao|no)\s+(?:PR|MR)\b|\b(?:adicion\w+|colo(?:c|qu)\w+|ponh\w+|apli(?:c|qu)\w+)\s+`?[\w-]+`?\s+(?:(?:ao|no)\s+(?:PR|MR)\s+)?como\s+label\b|\brotul\w+\s+(?:o\s+)?(?:PR|MR)\b)/im,
+  /^(?!(?!.*\bsem\s+(?:a\s+)?pergunt).*(?:regra de ouro|\bSim\b|pergunt|orient\w*\s+(?:a\s+pessoa|o\s+usu\w*)\s+a\s+\w)).*\b(?:anex(?:a|e|ar|em|ando|á-l[ao])|vincul\w+|associ\w+|fa[çz]\w*\s+(?:o\s+)?(?:upload|attach)|suba)\b.*\b(?:no|na|ao|à|para\s+[oa])\s+(?:Jira|issue|card|história)\b/im,
 ];
 
 // Dirent.isDirectory() não segue link simbólico, então um link quebrado ou circular não derruba a varredura.
