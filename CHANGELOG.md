@@ -6,7 +6,7 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), e o
 
 > Versões anteriores a `2.1.1` não foram documentadas retroativamente neste changelog — o histórico detalhado dessas versões continua disponível via `git log`.
 
-## Não lançado
+## [8.2.0] - 2026-10-28
 
 ### Added
 - **Menu em pasta já instalada (#189)**: `jarvis init` mostra "Jarvis já instalado em .{ide} (v{lock} · pacote v{pacote})" e as opções Atualizar (Enter, o mesmo fluxo do `--upgrade`), Reinstalar e Cancelar, no lugar de "Deseja reinstalar? (s/N)". Sem ENV.md, só Reinstalar e Cancelar, e Enter cancela. Sem resposta (entrada fechada), nada muda e a saída mostra os atalhos `--upgrade` e `--force`, que continuam sem menu.
