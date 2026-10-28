@@ -180,7 +180,7 @@ Hierarquia de leitura completa: ver `AGENTS.md` na raiz.
 | Planejar | `/eng.plan` | Plano faseado | Implementar |
 | Implementar | `/eng.work` | Código + testes | Commit/PR |
 | Pré-PR | `/eng.pre-pr` | Checklist | — |
-| Entregar | `/eng.pr` | Branch, commit, MR/PR | — |
+| Entregar | `/eng.pr` | Push e MR/PR, depois da pergunta (regra de ouro) | — |
 
 Produto: família `/prod.spec*`. Data/QA/RPA/Security: workflows sob `workflows/engineering/…` (após flatten, nomes na raiz da IDE).
 

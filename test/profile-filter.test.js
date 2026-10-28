@@ -210,16 +210,17 @@ test("listRulesForProfile: AGENTS.md nunca é filtrado, rtk é opt-in, sem bloco
 // rules-on-demand/doc-links-rules.md. A rule nova fica em rules-on-demand/ e não entra nesta conta.
 // Issue #182 (pre-pr 2, 2026-10-26): +43 B em todos os perfis — rules/AGENTS.md descreve rules-on-demand/ como etapa ou transversal.
 // Issue #184 (regra de ouro, 2026-10-27): +1022 B em todos os perfis — eng.integrations-rules.md ganha a seção "Nada é publicado sem perguntar" (com as exceções da Fase 0 do eng.pr e dos documentos aprovados juntos) e os eventos (f) e (g) na lista.
+// Issue #184 (pre-pr 11, 2026-10-28): +26 B em todos os perfis — rules/AGENTS.md descreve o eng.pr como "Push e PR, depois da pergunta (regra de ouro)".
 const BASE = [
   [
     "FULLCYCLE/GENERALIST/ENGINEERING/CORE",
     profile("FULLCYCLE", "GENERALIST", "ENGINEERING"),
     15,
-    103844,
+    103870,
   ],
-  ["BACKEND/SENIOR/ENGINEERING/CORE", profile("BACKEND", "SENIOR", "ENGINEERING"), 11, 70525],
-  ["FRONTEND/PLENO/ENGINEERING/CORE", profile("FRONTEND", "PLENO", "ENGINEERING"), 11, 71068],
-  ["QA/QA-ENGINEER/ENGINEERING/CORE", profile("QA", "QA-ENGINEER", "ENGINEERING"), 11, 70304],
+  ["BACKEND/SENIOR/ENGINEERING/CORE", profile("BACKEND", "SENIOR", "ENGINEERING"), 11, 70551],
+  ["FRONTEND/PLENO/ENGINEERING/CORE", profile("FRONTEND", "PLENO", "ENGINEERING"), 11, 71094],
+  ["QA/QA-ENGINEER/ENGINEERING/CORE", profile("QA", "QA-ENGINEER", "ENGINEERING"), 11, 70330],
 ];
 
 for (const [nome, p, arquivos, bytes] of BASE) {

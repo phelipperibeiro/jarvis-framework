@@ -4,7 +4,7 @@
 
 ## Propósito
 
-O workflow `pr` tem como objetivo **criar a branch, commitar as alterações e abrir um Merge Request** seguindo os padrões do time.
+O workflow `pr` tem como objetivo **gerar o `pull-request.md` e, depois da pergunta (regra de ouro), fazer o push e abrir um Merge Request** seguindo os padrões do time.
 
 ---
 

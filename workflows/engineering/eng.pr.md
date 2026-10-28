@@ -11,7 +11,7 @@ model_justification: Operações Git e preenchimento de templates são tarefas e
 
 # Pull Request / Merge Request
 
-Este comando cria a **branch, commita as alterações e abre um Merge Request**.
+Este comando **gera o `pull-request.md` na sessão e, com a escolha de publicar da Fase 0 (regra de ouro), faz o push e abre o Merge Request**. A branch e os commits vêm do `eng.start` e do `eng.work`.
 
 > 📋 **Rules**: `$IDE/rules-on-demand/engineering/eng.pr-rules.md` — **antes de começar, leia esse arquivo e siga-o**: ele não é carregado automaticamente no início da sessão.
 > 📤 **Template**: `$IDE/templates/engineering/PR-template.md`
@@ -384,12 +384,12 @@ Regras em `$IDE/rules-on-demand/engineering/eng.pr-rules.md` (seção "daily.md"
 ### 7.3 Mensagem Final
 
 ```
-✅ MERGE REQUEST CRIADO COM SUCESSO!
+✅ {MERGE REQUEST CRIADO COM SUCESSO! | PR NÃO PUBLICADO (só os arquivos)}
 
 📋 Resumo:
 - Branch: {NOME_DA_BRANCH}
 - MR: {LINK_DO_MR}
-- Jira: {TASK_MANAGER_KEY} → "In Review"
+- Card: {TASK_MANAGER_KEY} (mova para "In Review"; o Jarvis não move card)
 
 📊 Validações:
 - Testes: ✅ Passando

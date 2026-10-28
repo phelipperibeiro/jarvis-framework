@@ -737,13 +737,13 @@ Use o formato **Descrição da subtarefa no Jira** de `$IDE/templates/engineerin
 
 Antes de criar as subtarefas, mostre o texto e pergunte com `AskUserQuestion` (**Sim, publicar** / **Não, manter só na sessão**), regra de ouro de `eng.integrations-rules.md`; sem o Sim, entregue só o template formatado e deixe o texto na sessão. O comentário da 7.4 tem a sua própria pergunta, feita pelo `/eng-global-task-comment`.
 
-**Se houver API/ferramenta disponível (e o Sim):**
+**Com a `acli` logada (e o Sim):**
 
-- Use para criar subtarefas automaticamente
+- Crie as subtarefas com `acli jira workitem create`
 - Vincule à história pai
 - Configure dependências entre subtarefas
 
-**Se não houver ferramenta:**
+**Sem a `acli` logada (ou com `TASK_MANAGER_ACCESS=manual`), ou sem o Sim:**
 
 - Forneça ao usuário **template formatado** para copiar/colar no Jira
 - Forneça **instruções passo-a-passo** para criação manual
