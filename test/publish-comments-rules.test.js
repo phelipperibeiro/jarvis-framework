@@ -61,13 +61,25 @@ const IMPERATIVOS = [
   // Board e git só pela CLI oficial (eng.integrations-rules.md): nada de REST nem MCP para criar ou ler o board.
   /\bAPI\s*(?:\/|ou)\s*ferramenta\s+dispon/i,
   /\bAtlassian:\w+/,
-  // Label no PR e anexo no card também são envios: só com a pergunta. Isenta a linha: "regra de ouro", "Sim",
-  // "pergunt", "oriente a pessoa/o usuário a <verbo>" ("Oriente a pessoa e adicione…" e "…a revisar e adicione" acusam)
-  // e a negação do próprio verbo ("o Jarvis não anexa nada na issue"). "sem perguntar" e "não precisa perguntar"
-  // na linha anulam as isenções. Só o verbo conta ("anexe", "vincule", "faça upload", "pôr"), não o substantivo
-  // ("Anexos no card"), o particípio ("associado ao card") nem a preposição "por".
-  /^(?!.*\bnão\s+(?:adicion|colo(?:c|qu)|ponh|apli(?:c|qu)|marqu|inclu|rotul|anex|vincul|associ|fa[çz]|sub)\w*\b)(?!(?!.*\b(?:sem\s+(?:a\s+)?|não\s+precisa\s+(?:de\s+)?)pergunt).*(?:regra de ouro|\bSim\b|pergunt|orient\w*\s+(?:a\s+pessoa|o\s+usu\w*)\s+a\s+(?!revis)\w)).*(?:\b(?:adicion\w+|colo(?:c|qu)\w+|pôr|ponh\w+|apli(?:c|qu)\w+|inclu\w+)\s+(?:[oa]s?\s+)?labels?\b|\bmarqu\w+\s+(?:[oa]s?\s+)?(?:PRs?|MRs?)\s+com\s+(?:[oa]s?\s+)?labels?\b|\b(?:adicion\w+|colo(?:c|qu)\w+|ponh\w+|apli(?:c|qu)\w+)\s+`?[\w-]+`?\s+(?:(?:ao|no)\s+(?:PR|MR)\s+)?como\s+label\b|\brotul\w+\s+(?:[oa]s?\s+)?(?:PRs?|MRs?)\b)/im,
-  /^(?!.*\bnão\s+(?:anex|vincul|associ|fa[çz]|sub)\w*\b)(?!(?!.*\b(?:sem\s+(?:a\s+)?|não\s+precisa\s+(?:de\s+)?)pergunt).*(?:regra de ouro|\bSim\b|pergunt|orient\w*\s+(?:a\s+pessoa|o\s+usu\w*)\s+a\s+(?!revis)\w)).*\b(?:anex(?:a|e|ar|em|ando|á-l[ao])|vincul(?:e|ar|em|ando)|associ(?:e|ar|em|ando)|fa[çz]\w*\s+(?:o\s+)?(?:upload|attach)|suba)\b.*(?:^|\s)(?:no|na|nos|nas|ao|aos|à|às|para\s+[oa]s?)\s+(?:Jira|issues?|cards?|histórias?)\b/imu,
+];
+
+// Label no PR e anexo no card também são envios: só com a pergunta. Conferidos oração por oração (separadas por
+// ".", ";" e ":"), para a negação de um verbo não isentar o imperativo de outro ("Adicione o label; não anexe nada").
+// Isenta a oração: "regra de ouro", "Sim", "pergunt", "oriente a pessoa/o usuário a <verbo>" ("Oriente a pessoa e
+// adicione…" e "…a revisar e adicione" acusam) e a negação do verbo ("o Jarvis não anexa nada na issue"). "sem
+// perguntar", "não precisa perguntar" e "não pergunte" anulam as isenções. Só o verbo conta ("anexe", "vincule",
+// "faça upload", "pôr"), não o substantivo ("Anexos no card"), o particípio ("associado ao card") nem a preposição
+// "por".
+const ISENTA_ENVIO = String.raw`(?!(?!.*\b(?:sem\s+(?:a\s+)?|não\s+precisa\s+(?:de\s+)?|não\s+)pergunt(?!a\s+duas)).*(?:regra de ouro|\bSim\b|pergunt|orient\w*\s+(?:a\s+pessoa|o\s+usu\w*)\s+a\s+(?!revis)\w))`;
+const IMPERATIVOS_POR_ORACAO = [
+  new RegExp(
+    String.raw`^(?!.*\bnão\s+(?:adicion|colo(?:c|qu)|ponh|apli(?:c|qu)|marqu|inclu|rotul|etiquet)\w*\b)${ISENTA_ENVIO}.*(?:\b(?:adicion\w+|colo(?:c|qu)\w+|pôr|ponh\w+|apli(?:c|qu)\w+|inclu\w+)\s+(?:[oa]s?\s+)?(?:labels?\b|tags?\b.*\b(?:ao|no)\s+(?:PR|MR)\b)|\b(?:marqu|etiquet)\w+\s+(?:[oa]s?\s+)?(?:PRs?|MRs?)\b|\b(?:adicion\w+|colo(?:c|qu)\w+|ponh\w+|apli(?:c|qu)\w+)\s+\x60?[\w-]+\x60?\s+(?:(?:ao|no)\s+(?:PR|MR)\s+)?como\s+(?:label|tag)\b|\brotul\w+\s+(?:[oa]s?\s+)?(?:PRs?|MRs?)\b)`,
+    "iu"
+  ),
+  new RegExp(
+    String.raw`^(?!.*\bnão\s+(?:anex|vincul|associ|fa[çz]|sub|envi)\w*\b)${ISENTA_ENVIO}.*(?:\b(?:anex(?:a|e|ar|em|ando|á-l[ao])|vincul(?:e|ar|em|ando)|associ(?:e|ar|em|ando)|fa[çz]\w*\s+(?:o\s+)?(?:upload|attach)|suba)\b.*(?:^|\s)(?:no|na|nos|nas|ao|aos|à|às|para\s+[oa]s?)\s+(?:Jira|issues?|cards?|tickets?|histórias?)\b|\bcomo\s+anexo\s+(?:d[oa]|n[oa])\s+(?:issue|card|ticket|história)\b)`,
+    "iu"
+  ),
 ];
 
 // Dirent.isDirectory() não segue link simbólico, então um link quebrado ou circular não derruba a varredura.
@@ -357,20 +369,27 @@ test("toda linha que chama o /eng-global-task-comment traz a pergunta na mesma l
 // Board e git só pela CLI oficial (eng.integrations-rules.md): uma linha que manda usar MCP ou a API (REST) do
 // board não vale; a proibição ("sem REST nem MCP", "não use o MCP do Jira") vale.
 const MCP_DO_BOARD =
-  /\b(?:API(?:\s+v?\d+)?(?:\s+REST)?|endpoints?(?:\s+REST)?|REST\s+API)\s+d[oa]\s+`?(?:Jira|Atlassian|GitHub|GitLab|board|\$?TASK_MANAGER)\b|\b(?:Jira|Atlassian|GitHub|GitLab)\s+(?:Cloud\s+)?(?:REST\s+)?API\b|\/rest\/api\/|\bMCPs?[\s/]+(?:(?:configurad|específic|especific|disponív|instalad|relacionad)\w*\s+)*(?:(?:d[oa]|a[oa]|para\s+o)\s+)?`?(?:Jira|Atlassian|\$?TASK_MANAGER|board)\b/i;
+  /\b(?:API(?:\s+v?\d+)?(?:\s+REST)?|endpoints?(?:\s+REST)?|REST\s+API)\s+d[oa]\s+`?(?:Jira|Atlassian|GitHub|GitLab|board|\$?TASK_MANAGER)\b|\b(?:Jira|Atlassian|GitHub|GitLab)\s+(?:Cloud\s+)?(?:REST\s+)?API\b|\/rest\/(?:api|agile)\/|\bMCPs?[\s/]+(?:(?:configurad|específic|especific|disponív|instalad|relacionad)\w*\s+)*(?:(?:d[oa]|a[oa]|para\s+o)\s+)?`?(?:Jira|Atlassian|GitHub|GitLab|\$?TASK_MANAGER|board)\b/i;
 // A proibição precisa estar na mesma oração (sem vírgula, ponto e vírgula ou dois-pontos entre a negação e o MCP):
 // "Sem a CLI logada, use o MCP do Jira" não é proibição.
 const PROIBE_MCP =
   /\b(?:sem|nem|não|nunca|proibid\w*)\b[^.,;:\n]{0,30}\b(?:MCPs?|API|REST|endpoints?)\b/i;
 // A proibição vale só na oração do MCP/API ("Use a API do Jira; não use MCP" acusa a primeira oração).
 const mandaUsarMcpOuApi = (linha) =>
-  linha.split(/[.;:]/).some((o) => MCP_DO_BOARD.test(o) && !PROIBE_MCP.test(o));
+  linha.split(/[.;:](?=\s|$)/).some((o) => MCP_DO_BOARD.test(o) && !PROIBE_MCP.test(o));
 
 test("nenhum imperativo manda publicar sem a pergunta", () => {
   for (const file of todosMd()) {
     readFileSync(file, "utf8")
       .split("\n")
       .forEach((linha, i) => {
+        for (const oracao of linha.split(/[.;:](?=\s|$)/))
+          for (const padrao of IMPERATIVOS_POR_ORACAO)
+            assert.doesNotMatch(
+              oracao,
+              padrao,
+              `${rel(file)}:${i + 1}: manda rotular o PR ou anexar no card sem a pergunta. ${DE_PROPOSITO}`
+            );
         assert.ok(
           !mandaUsarMcpOuApi(linha),
           `${rel(file)}:${i + 1}: manda usar MCP ou a API do board. ${DE_PROPOSITO}`
@@ -532,6 +551,8 @@ test("cada ponto que envia algo tem a pergunta logo antes", () => {
       .forEach((linha, i) => {
         // As linhas de árvore de pastas (├── …) só listam os arquivos.
         if (/^\s*[├└│]/.test(linha)) return;
+        // "o `jarvis vcs create-merge` não põe label" só descreve o comando.
+        if (/n[aã]o p[oõ]e label/.test(linha)) return;
         if (!COMANDO.test(linha) || DESCRITIVAS.some(([f, d]) => f === nome && d.test(linha)))
           return;
         assert.ok(

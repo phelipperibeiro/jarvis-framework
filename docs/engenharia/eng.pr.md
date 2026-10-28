@@ -53,7 +53,7 @@ A sessão **não é apagada**: o `/eng.spec-consolidate` precisa dela. Remova à
 - Commit de uma linha, começando pela chave da tarefa: `TASK-123 feat(auth): implementar autenticação JWT`
 - Destino do MR: a `Branch base:` escolhida no `/eng.start` (gravada no `architecture.md`); só pergunta se o campo faltar
 - **Nunca** `git add .`, push direto para `main`/`dev`, commit sem a chave da tarefa nem menção a IA no MR
-- PR que toca auth, sessions, RBAC, CORS, CSP ou permissões (`eng-security-rules.md`) leva o label `security`: o PR Brief do `eng.pre-pr` registra, a mensagem final do `eng.pr` lembra e **a pessoa** o adiciona no host (a criação do MR pela CLI não põe label; o Jarvis não altera o PR sem perguntar)
+- PR que toca auth, sessions, RBAC, CORS, CSP ou permissões (`eng-security-rules.md`) leva o label `security`: o PR Brief do `eng.pre-pr` registra, a mensagem final do `eng.pr` lembra e **a pessoa** o adiciona no host (o `jarvis vcs create-merge` não põe label; o Jarvis não altera o PR sem perguntar)
 - Nunca aprova um PR com secret no diff
 - **Links no PR:** o `pull-request.md` sai do workspace, então issue, PR, card e código viram URL absoluta (código no `blob/{sha}` do commit enviado), e a sessão e o `docs/jarvis/` ficam em texto (`rules-on-demand/doc-links-rules.md`)
 

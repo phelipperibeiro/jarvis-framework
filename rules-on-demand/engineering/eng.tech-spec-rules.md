@@ -85,7 +85,7 @@ $SESSION_FOLDER/{TASK_MANAGER_KEY}/tech-spec.md
 1. **Anexo na issue**: a tech spec pode ser anexada na issue do board (Jira pela `acli`; em GitHub/GitLab a pessoa anexa, orientada), só depois de mostrar o que vai e perguntar (regra de ouro, `eng.integrations-rules.md`); sem o Sim, fica só na sessão
 2. **Sessão temporária**: A sessão é usada durante o desenvolvimento e pode ser limpa depois
 3. **Evita poluição**: Não cria arquivos permanentes no repositório de código
-4. **Rastreabilidade**: O Jira é o sistema oficial de documentação de tasks
+4. **Rastreabilidade**: o board (`TASK_MANAGER`) é o sistema oficial das tarefas; a criação automática de subtarefas é só no Jira (`acli`), nos outros a pessoa cria pelo template
 
 ### Nomenclatura
 

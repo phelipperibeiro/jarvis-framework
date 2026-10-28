@@ -241,14 +241,16 @@ Os documentos de trabalho da tarefa (PRD, FRD, ARD, RFC, SPEC) ficam em `$PROD_D
 **Comportamento:**
 - Se docs encontrados → carregar e exibir resumo
 - Se não encontrados → seguir com os documentos de trabalho em `docs/jarvis/` e o card
-- Se `CENTRAL_DOCS_STORAGE` vazio → pular silenciosamente
+- Se `CENTRAL_DOCS_STORAGE` vazio → pular só a busca no Central docs; os documentos de trabalho em `docs/jarvis/` e o card seguem
 
 ### 2.3 Análise do Requisito
 
 Examine os cards, seus pais e filhos, e desenvolva compreensão do que deve ser implementado.
 
-**Se docs do central foram carregados:**
-- Validar alinhamento com PRD
+**Se funcionalidades do Central docs foram carregadas:** validar o alinhamento com o que já existe (comportamento atual, decisões, onde está no código).
+
+**Com os documentos de trabalho de `docs/jarvis/`:**
+- Validar alinhamento com o PRD
 - Verificar restrições arquiteturais do ARD
 - Considerar decisões de RFCs relacionados
 

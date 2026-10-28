@@ -209,7 +209,7 @@ Use **MR** se GitLab, **PR** se GitHub.
 
 ### 4.1 Gerar `pull-request.md` na sessão
 
-Escreva o título e a descrição do PR em **`$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/pull-request.md`** (primeira linha `# {título}`, depois o corpo). Se a sessão tiver o `gate-checklist.md` do `eng.pre-pr`, use o PR Brief e as decisões da rodada mais recente (o `gate-checklist.md`; as rodadas anteriores, `gate-checklist-rodada-{N}.md`, são histórico). Os labels sugeridos do PR Brief **não** entram no corpo do PR nem na criação do MR (a CLI não põe label): eles aparecem na mensagem final (7.3), para a pessoa adicionar no host.
+Escreva o título e a descrição do PR em **`$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/pull-request.md`** (primeira linha `# {título}`, depois o corpo). Se a sessão tiver o `gate-checklist.md` do `eng.pre-pr`, use o PR Brief e as decisões da rodada mais recente (o `gate-checklist.md`; as rodadas anteriores, `gate-checklist-rodada-{N}.md`, são histórico). Os labels sugeridos do PR Brief **não** entram no corpo do PR nem na criação do MR (o `jarvis vcs create-merge` não põe label): eles aparecem na mensagem final (7.3), para a pessoa adicionar no host.
 
 Template, nesta ordem (o primeiro que existir):
 
@@ -391,7 +391,7 @@ Regras em `$IDE/rules-on-demand/engineering/eng.pr-rules.md` (seção "daily.md"
 - Branch: {NOME_DA_BRANCH}
 - MR: {LINK_DO_MR}   ← sem PR publicado: "— (abra à mão com o pull-request.md)"
 - Card: {URL do card, pela tabela da 4.1}   ← só com board; com o PR aberto, mova-o para a etapa equivalente a "em revisão" (o Jarvis não move card)
-- Labels: {labels sugeridos no PR Brief do gate-checklist.md, ex.: security}   ← só se houver; sem o relatório, ou sem o campo nele, avalie `eng-security-rules.md` direto; a pessoa adiciona no host (a criação do MR não põe label)
+- Labels: {labels sugeridos no PR Brief do gate-checklist.md, ex.: security}   ← só se houver; sem o relatório, ou sem o campo nele, avalie `eng-security-rules.md` direto; a pessoa adiciona no host (o `jarvis vcs create-merge` não põe label)
 
 📊 Validações:
 - Testes: ✅ Passando

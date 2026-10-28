@@ -68,16 +68,14 @@ priorizando a **arquitetura observada no código do repositório**, usando o tem
 
 ## Passo 1 – Verificar PRD (obrigatório quando existir)
 
-### 1.1 – Buscar PRD no Central Docs (condicional)
+### 1.1 – Buscar o PRD em `$PROD_DOCS` e o implementado no Central docs
 
-Se `CENTRAL_DOCS_STORAGE` definido no ENV.md:
-
-1. Consultar no Central docs as funcionalidades já implementadas relacionadas (o que existe hoje):
+1. Se `CENTRAL_DOCS_STORAGE` estiver definido no ENV.md, consultar no Central docs as funcionalidades já implementadas relacionadas (o que existe hoje); vazio: pule só este item:
    ```bash
    jarvis docs sync --silent
    ```
 
-2. Buscar o PRD relacionado em `$PROD_DOCS` (documento de trabalho; o Central docs não guarda PRD) usando:
+2. Buscar o PRD relacionado em `$PROD_DOCS` (sempre, com ou sem Central docs) (documento de trabalho; o Central docs não guarda PRD) usando:
    - Título/objetivo do ARD
    - Jira ID (se disponível)
    - Tags semânticas

@@ -187,7 +187,7 @@ Criar card no board `DE` (ou equivalente) com:
 
 Qualquer mudança de schema (adição, remoção ou tipo de campo) deve:
 
-1. Ser comunicada no canal de dados com **antecedência** (prazo definido nas rules)
+1. Ser comunicada no canal de dados com **antecedência** (prazo definido nas rules); mostre a mensagem e pergunte com `AskUserQuestion` antes de enviar (regra de ouro, `eng.integrations-rules.md`); sem o Sim, deixe o texto pronto
 2. Gerar nova versão do contrato (versionamento semântico: `MAJOR.MINOR`)
 3. Manter versão antiga disponível pelo período de coexistência definido nas rules
 
@@ -195,8 +195,8 @@ Qualquer mudança de schema (adição, remoção ou tipo de campo) deve:
 
 Quando o contrato não for mais necessário:
 1. Atualizar `Status` para `Deprecado` no documento
-2. Comunicar à squad requisitante com prazo de encerramento
-3. Atualizar (ou remover) o card no board do time de Data
+2. Comunicar à squad requisitante com prazo de encerramento; mostre a mensagem e pergunte com `AskUserQuestion` antes de enviar (regra de ouro); sem o Sim, deixe o texto pronto
+3. Orientar a pessoa a atualizar (ou remover) o card no board do time de Data (o Jarvis não move card); um comentário no card sai pelo `/eng-global-task-comment`, que mostra o texto e pergunta (regra de ouro)
 
 ---
 

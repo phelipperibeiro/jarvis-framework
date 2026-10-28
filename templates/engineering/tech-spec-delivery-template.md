@@ -1,10 +1,10 @@
 # Tech Spec — Formatos de Entrega
 
-> Template com os formatos usados no fim do `eng.build-tech-spec`: descrição da subtarefa no Jira, comentário na história original, mensagem de entrega e um exemplo preenchido, além do diagrama do fluxo. Substitua os placeholders `{...}`.
+> Template com os formatos usados no fim do `eng.build-tech-spec`: descrição da subtarefa no board, comentário na história original, mensagem de entrega e um exemplo preenchido, além do diagrama do fluxo. Substitua os placeholders `{...}`.
 
-## Descrição da subtarefa no Jira
+## Descrição da subtarefa no board
 
-Fase 7.2 do workflow. Use este formato na descrição de cada subtarefa criada no Jira (ou entregue ao usuário para copiar e colar).
+Fase 7.2 do workflow. Use este formato na descrição de cada subtarefa criada no Jira pela `acli` (ou entregue ao usuário para copiar e colar no board).
 
 ```markdown
 ## Descrição
@@ -68,7 +68,7 @@ Fase 8.2 do workflow. O que entregar ao usuário ao final.
 - Subtarefas: {Y subtarefas}
 - Estimativa total: {Z horas}
 
-🔗 Subtarefas criadas no Jira:
+🔗 Subtarefas {criadas no Jira | entregues em template para criação manual}:
 - SUBTASK-001: {Nome} (P0, 6h)
 - SUBTASK-002: {Nome} (P1, 4h)
 - SUBTASK-003: {Nome} (P1, 8h)
@@ -93,7 +93,7 @@ Exemplo preenchido da mensagem de entrega (fictício).
 ✅ Tech Spec para STORY-456 criada com sucesso!
 
 📄 **Documento Local**: $SESSIONS_DIR/eng/story-456/tech-spec.md
-📎 **Anexada na issue**: STORY-456   ← ou "A anexar pela pessoa", "Não anexada" ou "Sem issue", conforme o caso
+📎 **Anexada na issue**: STORY-456
 
 📊 **Resumo**:
 
@@ -102,7 +102,7 @@ Exemplo preenchido da mensagem de entrega (fictício).
 - **Subtarefas**: 5 subtarefas
 - **Estimativa total**: 26 horas
 
-🔗 **Subtarefas criadas no Jira**:
+🔗 **Subtarefas criadas no Jira**:   ← ou "entregues em template"
 
 - SUBTASK-101: [BACKEND] Criar endpoint POST /api/auth/register (P0, 6h)
 - SUBTASK-102: [BACKEND] Criar endpoint POST /api/auth/login (P0, 6h)

@@ -127,7 +127,7 @@ Grave em `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/gate-checklist.md`:
 - Resumo do que mudou:
 - Como testar:
 - Riscos / trade-offs:
-- Labels sugeridos: {só o nome, ex.: `security`}   ← critério em `eng-security-rules.md` (auth, sessions, RBAC, CORS, CSP, permissões); a pessoa adiciona no host (a criação do MR não põe label); nem o label nem esta nota entram no `pull-request.md`; o `eng.pr` lembra o label na mensagem final
+- Labels sugeridos: {só o nome, ex.: `security`}   ← critério em `eng-security-rules.md` (auth, sessions, RBAC, CORS, CSP, permissões); a pessoa adiciona no host (o `jarvis vcs create-merge` não põe label); nem o label nem esta nota entram no `pull-request.md`; o `eng.pr` lembra o label na mensagem final
 ```
 
 A coluna **Decisão** nasce vazia: quem preenche é o usuário (exceto a decisão herdada, descrita abaixo).
