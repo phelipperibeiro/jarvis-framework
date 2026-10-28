@@ -238,7 +238,7 @@ Mostre o consolidado de links da sessão (regra 5 de `eng.transitions-rules.md`,
 
 ### 4.3 Publicar ou não (sem pergunta nova)
 
-A decisão já veio da Fase 0, que vale como a pergunta do push e do PR (exceção da regra de ouro, `eng.integrations-rules.md`); não pergunte de novo. Aprovado o texto na 4.2, siga a escolha:
+A decisão já veio da Fase 0, que vale como a pergunta do push e do PR (exceção da regra de ouro, `eng.integrations-rules.md`); não pergunte de novo. Aprovado o texto na 4.2 (ou, com "Publicar sem revisar o texto", sem a revisão), siga a escolha:
 
 - **Só gerar os arquivos:** nada é enviado. O `pull-request.md` fica na sessão para você publicar quando quiser (à mão ou rodando o `/eng.pr` de novo). Pule para a Fase 7, que gera o `daily.md` mesmo assim (para não passar batido quando você abrir o PR à mão), com a mensagem "PR não publicado".
 - **Revisar o texto e publicar** ou **Publicar sem revisar o texto:** faça o push (Fase 3) e crie o MR/PR (4.4).

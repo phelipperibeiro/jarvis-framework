@@ -143,36 +143,56 @@ test("os arquivos que enviam algo citam a regra de ouro", () => {
 });
 
 test("toda linha que chama o /eng-global-task-comment traz a pergunta na mesma linha", () => {
-  // Varre todos os arquivos que podem mandar enviar algo (e não uma lista fixa); o skill em si, a regra geral
-  // (que descreve o comando), os índices de skills e a regra de links (que só cita o skill) ficam de fora.
+  // Varre todos os arquivos que podem mandar enviar algo (e não uma lista fixa); o skill em si, os índices de
+  // skills e a regra de links (que só cita o skill) ficam de fora, e na regra geral só saem a linha do comando
+  // de exemplo, a da cadeia de execução (que só descreve) e a do modo freelance (que só grava no task-log.md).
   const FORA = new Set([
     TASK_COMMENT,
-    INTEGRATIONS,
     "skills/AGENTS.md",
     "skills/SKILLS-ROADMAP.md",
     "rules-on-demand/doc-links-rules.md",
   ]);
-  const arquivos = ["workflows", "skills", "agents", "templates", "rules", "rules-on-demand"]
+  // As linhas de árvore de pastas (├── …) só listam o skill.
+  const ISENTA = (arquivo, linha) =>
+    /^\s*[├└│]/.test(linha) ||
+    (arquivo === INTEGRATIONS &&
+      (/^\/eng-global-task-comment \{/.test(linha) ||
+        /task-log\.md/.test(linha) ||
+        /^Para agir no vendor:/.test(linha)));
+  const arquivos = [
+    "workflows",
+    "skills",
+    "agents",
+    "templates",
+    "rules",
+    "rules-on-demand",
+    "docs",
+  ]
     .map((p) => join(root, p))
     .filter((p) => existsSync(p))
     .flatMap(walk)
+    .concat(join(root, "README.md"))
     .filter((f) => !FORA.has(relative(root, f).split("\\").join("/")));
   for (const arquivo of arquivos) {
+    const nome = relative(root, arquivo).split("\\").join("/");
     readFileSync(arquivo, "utf8")
       .split("\n")
       .forEach((linha, i) => {
-        if (!/eng-global-task-comment/.test(linha)) return;
-        const onde = `${rel(arquivo)}:${i + 1}`;
-        // O "Sim" vale só como palavra inteira ("assim" não conta) e uma negação não é a pergunta.
+        if (!/eng-global-task-comment/.test(linha) || ISENTA(nome, linha)) return;
+        const onde = `${nome}:${i + 1}`;
+        // O "Sim" vale só como palavra inteira ("assim" não conta).
         assert.match(
           linha,
-          /regra de ouro|\bSim\b|escolher|mostra o texto e pergunta|pergunta antes|AskUserQuestion/,
+          /regra de ouro|\bSim\b|escolher|[Mm]ostra o texto e pergunta|pergunta antes|AskUserQuestion/,
           `${onde} chama o /eng-global-task-comment sem a pergunta na linha. ${DE_PROPOSITO}`
         );
+        // Redações que dispensam a pergunta não valem, mesmo com a frase da regra na mesma linha.
+        // Só o trecho entre parênteses sobre o freelance fica de fora (nesse modo não há pergunta, o skill só registra).
+        const semFreelance = linha.replace(/\([^)]*freelance[^)]*\)/gi, "");
         assert.doesNotMatch(
-          linha,
-          /\bsem perguntar|não pergunte/i,
-          `${onde} manda enviar sem perguntar. ${DE_PROPOSITO}`
+          semFreelance,
+          /\bsem (a )?perguntar|\bsem a pergunta|não pergunte|dispens\w+|pule a pergunta|já vale como o Sim|não se aplica/i,
+          `${onde} dispensa a pergunta. ${DE_PROPOSITO}`
         );
       });
   }
@@ -217,6 +237,13 @@ test("cada ponto que envia algo tem a pergunta logo antes", () => {
     [SPEC_CONSOLIDATE, /^\s+jarvis docs publish --file .*feature/, 8, /Publicar no Central docs\?/],
     [TASK_COMMENT, /^jarvis tasks comment/, 15, /Sim, publicar/],
     [TASK_COMMENT, /gh issue comment/, 40, /Sim, publicar/],
+    [TASK_COMMENT, /glab issue note/, 40, /Sim, publicar/],
+    [
+      "skills/jarvis-docs-central/SKILL.md",
+      /^jarvis docs publish --file .*delivery/,
+      6,
+      /depois do \*\*Sim\*\*/,
+    ],
     [TASK_COMMENT, /acli jira workitem comment/, 40, /Sim, publicar/],
     [ENG_PR, /gh pr create --repo/, 45, /exceção da regra de ouro/],
   ];
@@ -264,7 +291,7 @@ test("o push das correções do code review só sai depois da pergunta, com AskU
     );
     assert.match(
       passo,
-      /AskUserQuestion|Sim/,
+      /AskUserQuestion|\bSim\b/,
       `${file}: o passo do push do code review sem AskUserQuestion ou Sim. ${DE_PROPOSITO}`
     );
   }
@@ -375,14 +402,29 @@ test("os outros pontos que enviam algo (agente, delivery-spec, data.contract, pr
       /só roda depois da pergunta do `\/eng\.spec-consolidate`/,
     ],
     [INTEGRATIONS, /Exceção:.*e, conforme a opção, como a revisão do texto/],
+    [INTEGRATIONS, /documentos aprovados juntos .* são um envio/],
+    [
+      "workflows/engineering/eng.start.md",
+      /sem o Sim, o texto fica no `task-comment-\*\.md` e no `architecture\.md`/,
+    ],
   ];
   for (const [file, frase] of FRASES) {
     assert.match(read(file), frase, `${file} sem ${frase}. ${DE_PROPOSITO}`);
   }
-  // O passo 0.5 não pode ganhar uma saída que pula a pergunta e envia.
-  assert.doesNotMatch(
-    read(TASK_COMMENT),
-    /\*\*Sempre:?\*\*:? pule a pergunta/i,
-    `${TASK_COMMENT}: o passo 0.5 não pode mandar pular a pergunta "sempre". ${DE_PROPOSITO}`
+  // O passo 0.5 só pode pular a pergunta no caso do acesso manual (que não tem envio possível).
+  const passo05 =
+    read(TASK_COMMENT)
+      .split(/^### 1\. /m)[0]
+      .split(/^### 0\.5 /m)[1] ?? "";
+  const pulos = passo05.split("\n").filter((l) => /pule a pergunta|dispens/i.test(l));
+  assert.equal(
+    pulos.length,
+    1,
+    `${TASK_COMMENT}: o passo 0.5 só pode pular a pergunta uma vez (acesso manual). ${DE_PROPOSITO}`
+  );
+  assert.match(
+    pulos[0],
+    /manual/,
+    `${TASK_COMMENT}: a única saída sem pergunta do passo 0.5 é o acesso manual. ${DE_PROPOSITO}`
   );
 });

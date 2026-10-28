@@ -37,7 +37,7 @@ Este comando inicia o **planejamento** de uma nova feature.
 | Fase 3.4: Estratégia de Testes | `/eng-data` (via `eng.specializations-rules.md`) | Se a feature envolver engenharia de dados (pipelines ETL/ELT, Glue, Airflow, contratos de dados, camadas bronze/silver/gold); a regra também carrega as especializações de `DATA_SPECIALIZATIONS` |
 | Fase 3.4: Estratégia de Testes | `/eng-automation` (via `eng.specializations-rules.md`) | Se a feature envolver RPA ou extração de dados/scraping; a regra também carrega as especializações de `AUTOMATION_SPECIALIZATIONS` |
 | Fase 3.4: Estratégia de Testes | `/eng-platform` (via `eng.specializations-rules.md`) | Se a feature envolver infraestrutura (IaC, contêineres, CI/CD, observabilidade, SRE, custo); a regra também carrega as especializações de `PLATFORM_SPECIALIZATIONS` |
-| Fase 4.3: Questões em Aberto | `/eng-global-task-comment` | Se o Advisor foi usado e houve questões em aberto: **um** comentário de auditoria, só com o Sim da pergunta (regra de ouro; freelance pula; o registro fica só no `architecture.md`) |
+| Fase 4.3: Questões em Aberto | `/eng-global-task-comment` | Se o Advisor foi usado e houve questões em aberto: **um** comentário de auditoria, só com o Sim da pergunta (regra de ouro; freelance: o skill registra no `task-log.md`; o registro fica só no `architecture.md`) |
 
 ---
 
@@ -403,7 +403,7 @@ Levante na seção 8 **tudo** que for diferente do código ou ambíguo no card, 
 1. Na primeira questão, abra `eng.advisor.agent` em segundo plano com o modelo escolhido e envie o **Prompt 1** (carga inicial). Se ele responder que precisa de ajuda para localizar o contexto, pergunte ao usuário com `AskUserQuestion` (opção "Não há documento: siga só com o card e o código") e reenvie.
 2. Envie cada questão com o **Prompt 2**, uma por mensagem, para a mesma instância.
 3. Preencha "Sugestão do Sub-Agent (Advisor)", **"Decisão adotada" (a sugestão do Advisor, que prevalece; não a substitua nem a conteste)**, "Divergência" e "Impacto da decisão". Confira no código os fatos em que a sugestão se apoia antes de registrar e escreva as citações do Advisor (arquivos, linhas, requisitos) no formato de link da `doc-links-rules.md`.
-4. Monte **um** comentário de auditoria, no modelo do template, e publique-o na issue com `/eng-global-task-comment`, que mostra o texto e pergunta (regra de ouro, `eng.integrations-rules.md`) (freelance pula; sem o Sim, o texto fica no `task-comment-*.md` e no `architecture.md`).
+4. Monte **um** comentário de auditoria, no modelo do template, e publique-o na issue com `/eng-global-task-comment`, que mostra o texto e pergunta (regra de ouro, `eng.integrations-rules.md`) (freelance: o skill registra no `task-log.md`; sem o Sim, o texto fica no `task-comment-*.md` e no `architecture.md`).
 
 **Sem Advisor:** com "Tratar no architecture.md (como hoje)", apresente as questões ao usuário, como sempre; com "Uma a uma", elas já foram respondidas ao surgir (registre as respostas e escreva só as que surgirem na escrita do documento).
 

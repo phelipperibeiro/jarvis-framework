@@ -240,7 +240,7 @@ Após MR criado com sucesso, **solicitar confirmação do usuário**:
 🧹 Deseja limpar a sessão?
 
 A pasta $SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/ será removida.
-A documentação permanece no card (`TASK_MANAGER`) e no MR.
+O texto do PR permanece no MR e o que foi enviado ao card fica no card; o que você recusou (por exemplo, o `task-comment-*.md` do link do MR) só existe nesta pasta e será apagado junto.
 
 Confirmar? (s/n)
 ```

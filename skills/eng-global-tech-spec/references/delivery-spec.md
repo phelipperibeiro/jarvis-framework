@@ -750,7 +750,7 @@ Antes de criar as subtarefas, mostre o texto e pergunte com `AskUserQuestion` (*
 
 #### 7.4 Atualização da História Original
 
-Publique o comentário na história original (STORY-XXX) com o `/eng-global-task-comment`, que mostra o texto e pergunta (regra de ouro), com:
+Publique o comentário na história original (STORY-XXX) com o `/eng-global-task-comment`, que mostra o texto e pergunta (regra de ouro). O comentário segue este formato:
 
 Use o formato **Comentário na história original** de `$IDE/templates/engineering/tech-spec-delivery-template.md`.
 

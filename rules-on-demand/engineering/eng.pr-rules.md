@@ -137,9 +137,9 @@ sempre utiliza a branch main)
 │        ↓                                                    │
 │  4. COMMIT → Mensagem padronizada                           │
 │        ↓                                                    │
-│  5. PUSH → Enviar para remote                               │
+│  5. PUSH → Enviar para remote (depois da Fase 0)            │
 │        ↓                                                    │
-│  6. CRIAR MR (desenvolvedor) → Com template preenchido      │
+│  6. CRIAR MR (desenvolvedor) → Template, depois da Fase 0   │
 │        ↓                                                    │
 │  7. ATUALIZAR JIRA (desenvolvedor) → Mover para "In Review" │
 │                                                             │
