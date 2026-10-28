@@ -66,6 +66,42 @@ test("os rótulos da variante B na tabela de transições são os mesmos do fech
   }
 });
 
+test("a variante B tem os rótulos de cada caso e a condição dela é a mesma nos três arquivos", () => {
+  const fechamento = secao(read(PRE_PR), "## Fechamento");
+  for (const rotulo of [
+    "Aceitar as 🟡 e as ⚪ e seguir para o PR",
+    "Aceitar as ⚪ e decidir as 🟡 uma a uma",
+    "Decidir as 🟡 uma a uma",
+  ]) {
+    assert.ok(
+      fechamento.includes(rotulo),
+      `${PRE_PR}: a variante B sem o rótulo "${rotulo}". ${DE_PROPOSITO}`
+    );
+  }
+  for (const arquivo of [PRE_PR, PRE_PR_RULES, TRANSITIONS]) {
+    assert.ok(
+      read(arquivo).includes("com o critério de parada atingido"),
+      `${arquivo}: a condição da variante B sem "com o critério de parada atingido". ${DE_PROPOSITO}`
+    );
+  }
+});
+
+test('o modelo do relatório e a rule usam o "(item N)" que a rodada incremental lê', () => {
+  assert.match(
+    read(PRE_PR),
+    /^\| 1 \| \{o que falta ou está errado\} \(item \{N\}\) \|/m,
+    `${PRE_PR}: a linha do modelo da tabela de lacunas sem "(item {N})". ${DE_PROPOSITO}`
+  );
+  assert.ok(
+    read(PRE_PR).includes("(não reavaliada nesta rodada) (item N)"),
+    `${PRE_PR}: a cópia das pendentes sem o formato "(não reavaliada nesta rodada) (item N)". ${DE_PROPOSITO}`
+  );
+  assert.ok(
+    read(PRE_PR_RULES).includes("(item N)"),
+    `${PRE_PR_RULES} sem "(item N)". ${DE_PROPOSITO}`
+  );
+});
+
 test("os textos de decisão da variante B são os mesmos no workflow e na rule", () => {
   for (const texto of [
     "👍 Aceitar: aceito no fechamento da rodada {N}",
