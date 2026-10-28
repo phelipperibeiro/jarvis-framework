@@ -73,7 +73,7 @@ Recomendação: ler o playbook de tomada de decisões em tecnologia do time (wik
  Incidentes em Produção
 
 ```
-. Alertar no canal squad-{nome}-alerts
+. A pessoa avisa no canal squad-{nome}-alerts (o Jarvis, só depois da pergunta)
       
 . Acionar pessoa de plantão (PagerDuty)
       

@@ -67,7 +67,7 @@ expect_table_row_count_to_be_between(min_value=last_run_count * 0.5)
 ### Falha de qualidade
 
 - **Bronze → Silver**: falha bloqueia a promoção. Dados permanecem em bronze.
-- **Silver → Gold**: falha bloqueia publicação. Alerta no Slack canal do time de Data.
+- **Silver → Gold**: falha bloqueia publicação. Alerta automático do pipeline no Slack canal do time de Data (runtime; um aviso enviado pelo Jarvis só sai depois da pergunta, regra de ouro).
 - Nunca silenciar falhas — registrar no log com contexto da execução.
 
 ---
@@ -116,7 +116,7 @@ logger.info({
 
 - **AWS Glue**: logs automáticos no CloudWatch (`/aws-glue/jobs/output`)
 - **Airflow**: logs nas tasks do DAG + CloudWatch quando em produção
-- **Erros críticos**: alertar no canal Slack do time de Data (`#data-alerts` ou equivalente)
+- **Erros críticos**: alerta automático do pipeline no canal Slack do time de Data (`#data-alerts` ou equivalente; runtime. Um aviso enviado pelo Jarvis só sai depois da pergunta, regra de ouro)
 
 ### Retenção
 

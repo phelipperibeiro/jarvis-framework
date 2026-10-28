@@ -26,9 +26,9 @@ Não confunda com o [`prod.spec.breakdown`](../produto/prod.spec.breakdown.md), 
 ## Como funciona
 
 1. **Análise profunda da Tech Spec:** extrai componentes, decisões, escopo, riscos, testes, contratos de API, modelos de dados e fluxos
-2. **Investigação do codebase (obrigatória)** antes de criar qualquer subtarefa: acha arquivos parecidos, entende os padrões e registra o que encontrou
+2. **Investigação do codebase (obrigatória)** antes de escrever qualquer subtarefa: acha arquivos parecidos, entende os padrões e registra o que encontrou
 3. **Estratégia de breakdown:** aplica o princípio da independência, define a ordem lógica e os prefixos de stack (`[BACKEND]`, `[FRONTEND]`, `[DATA]`, `[QA]`, `[INFRA]`, `[DOCS]`), e mapeia dependências (depende de, desbloqueia, paralela com)
-4. **Cria as subtarefas** pelo template, com: o que fazer, contexto, stack, arquivos a criar ou modificar, passo a passo com código completo, testes com cenários, checklist, riscos, dependências e referências
+4. **Escreve as subtarefas** pelo template, com: o que fazer, contexto, stack, arquivos a criar ou modificar, passo a passo com código completo, testes com cenários, checklist, riscos, dependências e referências
 5. **Gera a saída** em Markdown, uma seção por subtarefa, e roda o checklist de qualidade final
 
 ### O teste de independência

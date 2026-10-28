@@ -131,7 +131,7 @@ Antes de criar o épico (a busca em `$PROD_DOCS` é sempre feita; a consulta ao 
   ```bash
   jarvis docs sync --silent
   ```
-- Buscar PRD e épicos existentes em `$PROD_DOCS` e, no Central docs, as funcionalidades já implementadas relacionadas
+- Buscar PRD e épicos existentes em `$PROD_DOCS`
 - Se encontrar: carregar como contexto e informar o usuário
 - Se não encontrado: continuar com fluxo normal
 

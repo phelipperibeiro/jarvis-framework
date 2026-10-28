@@ -71,7 +71,7 @@ const IMPERATIVOS = [
 // perguntar", "não precisa perguntar" e "não pergunte" anulam as isenções. Só o verbo conta ("anexe", "vincule",
 // "faça upload", "pôr"), não o substantivo ("Anexos no card"), o particípio ("associado ao card") nem a preposição
 // "por".
-const ISENTA_ENVIO = String.raw`(?!(?!.*\b(?:sem\s+(?:a\s+)?|não\s+precisa\s+(?:de\s+)?|não\s+)pergunt(?!a\s+duas)).*(?:regra de ouro|\bSim\b|pergunt|orient\w*\s+(?:a\s+pessoa|o\s+usu\w*)\s+a\s+(?!revis)\w|\ba\s+pessoa\s+(?:pode\s+|deve\s+)?\w+))`;
+const ISENTA_ENVIO = String.raw`(?!(?!.*\b(?:sem\s+(?:a\s+)?|não\s+precisa\s+(?:de\s+)?|não\s+)pergunt(?!a\s+duas)).*(?:regra de ouro|\bSim\b|pergunt|orient\w*\s+(?:a\s+pessoa|o\s+usu\w*)\s+a\s+(?!revis)\w|\ba\s+pessoa\s+(?:pode|deve|cria|adiciona|anexa|envia|publica|avisa|notifica|comenta)\b))`;
 const IMPERATIVOS_POR_ORACAO = [
   new RegExp(
     String.raw`^(?!.*\b(?:não|nem|nunca|jamais|sem)\s+(?:adicion|colo(?:c|qu)|ponh|apli(?:c|qu)|marqu|inclu|rotul|etiquet)\w*\b)${ISENTA_ENVIO}.*(?:\b(?:adicion\w+|colo(?:c|qu)\w+|pôr|ponh\w+|apli(?:c|qu)\w+|inclu\w+)\s+(?:[oa]s?\s+)?(?:labels?\b|tags?\b.*\b(?:ao|no)\s+(?:PR|MR)\b)|\b(?:marqu|etiquet)\w+\s+(?:[oa]s?\s+)?(?:PRs?|MRs?)\b|\b(?:adicion\w+|colo(?:c|qu)\w+|ponh\w+|apli(?:c|qu)\w+)\s+\x60?[\w-]+\x60?\s+(?:(?:ao|no)\s+(?:PR|MR)\s+)?como\s+(?:label|tag)\b|\brotul\w+\s+(?:[oa]s?\s+)?(?:PRs?|MRs?)\b)`,
@@ -84,7 +84,7 @@ const IMPERATIVOS_POR_ORACAO = [
   // Notificar ou comunicar a squad, o time, o canal ou os stakeholders também é envio (só o imperativo; "deve ser
   // comunicada no canal" descreve o processo para pessoas).
   new RegExp(
-    String.raw`^(?!.*\b(?:não|nem|nunca|jamais|sem)\s+(?:notific|comunic|avis|post|envi|public|mand|inform|dispar|cri|abr)\w*\b)${ISENTA_ENVIO}.*(?:\b(?:notifi(?:car|ca|que|cando)|comuni(?:car|ca|que|cando)|avis(?:ar|e|ando)|post(?:ar|e|em|ando)|envi(?:ar|e|em|ando)|publi(?:car|que|cando)|mand(?:ar|e|em|ando)|inform(?:ar|e|em|ando)|dispar(?:ar|e|em|ando))\b(?:\s+(?!que\b)\S+){0,4}?\s+(?:(?:[oa]s?|à|às|ao|aos|n[oa]s?|para\s+[oa]s?|em)\s+)?(?:squads?|times?|canal|canais|equipes?|stakeholders?|requisitante|PM|owner|consumidores|Slack)\b|(?:\b(?:cri(?:e|em|ando)|abr(?:a|am|indo))|^\s*(?:[-*+]\s+|\d+[.)]\s+)?(?:criar|abrir))\s+(?:(?:[oa]s?|um|uma)\s+)?(?:(?:cards?|issues?|tickets?)\b|(?:subtarefas?|workitems?)\b.*\b(?:no|na)\s+(?:Jira|board)\b))`,
+    String.raw`^(?!.*\b(?:não|nem|nunca|jamais|sem)\s+(?:notific|comunic|avis|alert|post|envi|public|mand|inform|dispar|cri|abr)\w*\b)${ISENTA_ENVIO}.*(?:\b(?:notifi(?:car|ca|que|cando)|comuni(?:car|ca|que|cando)|avis(?:ar|e|ando)|post(?:ar|e|em|ando)|envi(?:ar|e|em|ando)|publi(?:car|que|cando)|mand(?:ar|e|em|ando)|inform(?:ar|e|em|ando)|alert(?:ar|e|em|ando)|dispar(?:ar|e|em|ando))\b(?:\s+(?!que\b)\S+){0,4}?\s+(?:(?:[oa]s?|à|às|ao|aos|n[oa]s?|para\s+[oa]s?|em)\s+)?(?:squads?|times?|canal|canais|equipes?|stakeholders?|requisitante|PM|owner|consumidores|Slack)\b|(?:\b(?:cri(?:e|em|ando)|abr(?:a|am|indo))|^\s*(?:[-*+]\s+|\d+[.)]\s+)?(?:criar|abrir))\s+(?:(?:[oa]s?|um|uma)\s+)?(?:(?:cards?|issues?|tickets?)\b|(?:subtarefas?|workitems?)\b.*\b(?:no|na|para\s+o)\s+(?:Jira|board|Linear|GitHub|GitLab)\b))`,
     "iu"
   ),
 ];
@@ -514,6 +514,12 @@ test("cada ponto que envia algo tem a pergunta logo antes", () => {
       0,
       /só depois de mostrar o texto e o usuário dizer Sim \(regra de ouro\)/,
     ],
+    [
+      "workflows/engineering/data/data.contract.md",
+      /^Com o Sim, criar card no board `DE`/,
+      2,
+      /pergunte com `AskUserQuestion` antes de criar/,
+    ],
     ["docs/engenharia/eng.spec-consolidate.md", /^6\. Pergunta/, 0, /Pergunta \*\*Sim \/ Não\*\*/],
     [
       "workflows/engineering/eng.build-tech-spec.md",
@@ -566,8 +572,8 @@ test("cada ponto que envia algo tem a pergunta logo antes", () => {
         // "o `jarvis vcs create-merge` não põe label" só descreve o comando.
         if (
           /`jarvis vcs create-merge` n[aã]o p[oõ]e label/.test(linha) &&
-          !/git push|\bgh |\bglab |\bacli |jarvis (?:docs publish|tasks comment|vcs create-issue)/.test(
-            linha
+          !/git(?:\s+-C\s+\S+)?\s+push|\bgh |\bglab |\bacli |jarvis (?:docs publish|tasks comment|vcs create-)/.test(
+            linha.replace(/`jarvis vcs create-merge` n[aã]o p[oõ]e label/g, "") || linha
           )
         )
           return;
@@ -798,8 +804,12 @@ test("os outros pontos que enviam algo (agente, delivery-spec, data.contract, pr
     ],
     [ENG_PRE_PR, /nada é enviado ao card \(o texto fica no `gate-checklist\.md`\)/],
     [
+      "workflows/engineering/data/data.contract.md",
+      /pergunte com `AskUserQuestion` antes de criar \(regra de ouro\)/,
+    ],
+    [
       "skills/eng-global-tech-spec/references/delivery-spec.md",
-      /Para anexá-la na issue do board, depois da aprovação da 6\.3, mostre o que vai e pergunte com `AskUserQuestion` \(regra de ouro/,
+      /[Pp]ara anexá-la na issue do board, depois da aprovação da 6\.3, mostre o que vai e pergunte com `AskUserQuestion` \(regra de ouro/,
     ],
     [
       "skills/product-roadmap-report/commands/status.roadmap.preview.md",

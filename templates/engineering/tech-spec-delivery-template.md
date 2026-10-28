@@ -37,7 +37,7 @@ Tech Spec: [Link para tech-spec.md]
 
 ## Comentário na história original
 
-Fase 7.4 do workflow. Comentário a registrar na história (STORY-XXX) depois de criar as subtarefas.
+Fase 7.4 do workflow. Comentário a registrar na história (STORY-XXX) depois de criar as subtarefas, pelo `/eng-global-task-comment`, que mostra o texto e pergunta (regra de ouro).
 
 ```
 Tech Spec criada: [Link para tech-spec.md]
@@ -68,7 +68,7 @@ Fase 8.2 do workflow. O que entregar ao usuário ao final.
 - Subtarefas: {Y subtarefas}
 - Estimativa total: {Z horas}
 
-🔗 Subtarefas {criadas no Jira pela acli | entregues em template para criação manual (outros boards, sem a CLI, sem o Sim ou sem board)}:
+🔗 Subtarefas {criadas no Jira pela acli | entregues em template para criação manual (outros boards, sem a CLI, com acesso manual, sem o Sim ou sem board)}:
 - SUBTASK-001: {Nome} (P0, 6h)
 - SUBTASK-002: {Nome} (P1, 4h)
 - SUBTASK-003: {Nome} (P1, 8h)

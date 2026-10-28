@@ -709,7 +709,7 @@ Apresente ao usuário:
 
 #### 6.4 Anexo da tech spec na issue (opcional, com pergunta)
 
-Só com board configurado (no freelance não há issue: pule este passo). Para anexá-la na issue do board, depois da aprovação da 6.3, mostre o que vai e pergunte com `AskUserQuestion` (regra de ouro, `eng.integrations-rules.md`): **Sim, anexar** / **Não, manter só na sessão**. Com o Sim: no Jira, com a `acli` logada e `TASK_MANAGER_ACCESS=cli` (ou vazio), anexe pela `acli` (confira no `--help` se ela anexa arquivo); no Jira sem a `acli` logada ou com acesso manual, e em GitHub ou GitLab (a CLI não anexa arquivo à issue), oriente a pessoa a anexar à mão. Sem o Sim, a tech spec fica só na sessão e a mensagem da 8.2 diz isso.
+Só com board configurado (no freelance não há issue: pule este passo). Só há pergunta quando o anexo vai sair: no Jira, com a `acli` logada que anexa arquivo (confira no `--help`) e `TASK_MANAGER_ACCESS=cli` (ou vazio). Nesse caso: para anexá-la na issue do board, depois da aprovação da 6.3, mostre o que vai e pergunte com `AskUserQuestion` (regra de ouro, `eng.integrations-rules.md`): **Sim, anexar** / **Não, manter só na sessão**; com o Sim, anexe pela `acli`; sem o Sim, a tech spec fica só na sessão. Nos demais casos (Jira sem a `acli` logada, `acli` que não anexa, acesso manual, GitHub ou GitLab, cuja CLI não anexa arquivo à issue) não há envio e, portanto, nenhuma pergunta: oriente a pessoa a anexar à mão. A mensagem da 8.2 diz o que aconteceu.
 
 ---
 
@@ -719,7 +719,7 @@ Só com board configurado (no freelance não há issue: pule este passo). Para a
 
 ### ═══════════════════════════════════════════════
 
-> **Escopo:** a criação automática de subtarefas é só no Jira, pela `acli`. Em GitHub ou GitLab (ou sem a `acli`), esta fase entrega o template formatado e as instruções para a pessoa criar as subtarefas à mão; como não há envio, a 7.3 não faz a pergunta nesse caso. A generalização para `gh`/`glab` fica para uma issue à parte.
+> **Escopo:** a criação automática de subtarefas é só no Jira, pela `acli`. Em GitHub ou GitLab, ou no Jira sem a `acli` logada ou com `TASK_MANAGER_ACCESS=manual`, esta fase entrega o template formatado e as instruções para a pessoa criar as subtarefas à mão; como não há envio, a 7.3 não faz a pergunta nesse caso. A generalização para `gh`/`glab` fica para uma issue à parte.
 
 #### 7.1 Preparação para Criação
 
@@ -775,7 +775,7 @@ Valide que:
 - [ ] Arquivo salvo na sessão: `$SESSIONS_DIR/eng/{feature-name}/tech-spec.md`
 - [ ] Tech Spec anexada na issue (com o Sim), a anexar pela pessoa (orientado) ou deixada na sessão
 - [ ] Subtarefas documentadas com critérios claros
-- [ ] Subtarefas criadas no Jira pela `acli`, ou template fornecido (outros boards, sem a CLI, sem o Sim ou sem board)
+- [ ] Subtarefas criadas no Jira pela `acli`, ou template fornecido (outros boards, sem a CLI, com acesso manual, sem o Sim ou sem board)
 - [ ] História original atualizada com link para tech spec (com o Sim do comentário da 7.4) ou texto deixado na sessão
 - [ ] Decisões arquiteturais documentadas
 - [ ] Riscos identificados e mitigados

@@ -91,11 +91,11 @@ Regras:
 
 ---
 
-## Passo 0.6 – Buscar Documentação Relacionada no Central Docs (condicional)
+## Passo 0.6 – Buscar Documentação Relacionada (`docs/jarvis/` sempre; Central docs se configurado)
 
-Se `CENTRAL_DOCS_STORAGE` definido no ENV.md:
+A busca em `docs/jarvis/` (PRD, ARD, RFCs) é sempre feita; a consulta ao Central docs só se `CENTRAL_DOCS_STORAGE` estiver definido no ENV.md (vazio: pule só o item 1).
 
-1. Consultar no Central docs as funcionalidades já implementadas relacionadas (o que existe hoje):
+1. Se `CENTRAL_DOCS_STORAGE` estiver definido, consultar no Central docs as funcionalidades já implementadas relacionadas (o que existe hoje):
    ```bash
    jarvis docs sync --silent
    ```

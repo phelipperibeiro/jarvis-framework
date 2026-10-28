@@ -37,7 +37,7 @@ Utilize o `$ARGUMENTS` que o usuário passar como ponto de partida e para entend
 
 | Passo | Skill | Condição |
 |-------|-------|----------|
-| Busca no Central Docs (condicional) | `/jarvis-docs-central` (via `jarvis docs sync --silent`) | Se `CENTRAL_DOCS_STORAGE` estiver definido no ENV.md (iteração de PRD existente) |
+| Busca no Central Docs (condicional) | `/jarvis-docs-central` (via `jarvis docs sync --silent`) | Se `CENTRAL_DOCS_STORAGE` estiver definido no ENV.md (PRD novo ou iteração; o PRD existente vem de `$PROD_DOCS`) |
 
 ## Princípios Fundamentais
 1. **Sempre use o template** `$PROD_TEMPLATES/prod-prd-template.md` para o output final

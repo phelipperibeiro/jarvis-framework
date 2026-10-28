@@ -45,7 +45,7 @@ Analise a Tech Spec e extraia **TUDO**:
 
 ### 1.2 Investigação do Codebase (OBRIGATÓRIA)
 
-**ANTES de criar subtarefas**, use as ferramentas para:
+**ANTES de escrever as subtarefas**, use as ferramentas para:
 
 1. **Encontrar arquivos similares** - Use glob para localizar exemplos no projeto
 2. **Entender padrões existentes** - Use grep para ver como funcionalidades similares foram implementadas
