@@ -69,9 +69,12 @@ function walk(dir) {
   });
 }
 function todosMd() {
+  // Documentos históricos (guias de migração, por exemplo) podem citar o texto antigo de propósito.
+  const HISTORICO = /^docs\/(historico|migracao)\//;
   return PASTAS.map((p) => join(root, p))
     .filter((p) => existsSync(p))
-    .flatMap(walk);
+    .flatMap(walk)
+    .filter((f) => !HISTORICO.test(relative(root, f).split("\\").join("/")));
 }
 
 // Trecho de `texto` que vai de `linhas` linhas antes da linha `i` até a própria linha `i`.
@@ -149,7 +152,7 @@ test("toda linha que chama o /eng-global-task-comment traz a pergunta na mesma l
     /^\s*[├└│]/.test(linha) ||
     (arquivo === INTEGRATIONS &&
       (/^\/eng-global-task-comment \{/.test(linha) ||
-        /^4\. Eventos relevantes/.test(linha) ||
+        (/^4\. Eventos relevantes/.test(linha) && /não para board/.test(linha)) ||
         /^Para agir no vendor:/.test(linha)));
   const arquivos = [
     "workflows",
@@ -179,8 +182,11 @@ test("toda linha que chama o /eng-global-task-comment traz a pergunta na mesma l
           `${onde} chama o /eng-global-task-comment sem a pergunta na linha. ${DE_PROPOSITO}`
         );
         // Redações que dispensam a pergunta não valem, mesmo com a frase da regra na mesma linha.
-        // Só a oração do freelance fica de fora, até o próximo ';' ou ')' (nesse modo não há pergunta, o skill só registra).
-        const semFreelance = linha.replace(/freelance[^;)]*/gi, "");
+        // Ficam de fora só a oração do freelance (nesse modo não há pergunta, o skill só registra) e as orações
+        // negadas ("nunca … sem perguntar"), ambas até a próxima vírgula, ponto, ponto e vírgula ou parêntese.
+        const semFreelance = linha
+          .replace(/freelance[^;),.]*/gi, "")
+          .replace(/\b(nunca|nada|nem)\b[^;),.]*/gi, "");
         assert.doesNotMatch(
           semFreelance,
           /\bsem (a )?perguntar|\bsem a pergunta|não pergunte|(?<!não )dispens\w+|pule a pergunta|já vale como o Sim|regra de ouro não se aplica|não é preciso perguntar/i,
@@ -402,6 +408,18 @@ test("os outros pontos que enviam algo (agente, delivery-spec, data.contract, pr
     [INTEGRATIONS, /Exceção:.*e, conforme a opção, como a revisão do texto/],
     [INTEGRATIONS, /documentos aprovados juntos .* são um envio/],
     [
+      "skills/jarvis-docs-central/SKILL.md",
+      /Com `\.git`: branch, cópia, índice, commit, push e PR \(só depois da pergunta, regra de ouro\)/,
+    ],
+    [
+      "skills/jarvis-docs-central/SKILL.md",
+      /só depois de mostrar o que será enviado e perguntar, regra de ouro/,
+    ],
+    [
+      "skills/jarvis-docs-central/README.md",
+      /só depois da pergunta do `\/eng\.spec-consolidate`, regra de ouro/,
+    ],
+    [
       "workflows/engineering/eng.start.md",
       /[Ss]em o Sim, o texto fica no `task-comment-\*\.md` e no `architecture\.md`/,
     ],
@@ -414,15 +432,19 @@ test("os outros pontos que enviam algo (agente, delivery-spec, data.contract, pr
   for (const [file, frase] of FRASES) {
     assert.match(read(file), frase, `${file} sem ${frase}. ${DE_PROPOSITO}`);
   }
-  // O eng.work tem dois pontos de comentário (desvio e bloqueio) e os dois dizem onde o texto recusado fica.
-  const ramosNao =
-    read("workflows/engineering/eng.work.md").match(
-      /Sem o Sim, o texto fica no `task-comment-\*\.md`/g
-    ) ?? [];
-  assert.ok(
-    ramosNao.length >= 2,
-    `workflows/engineering/eng.work.md: o ramo do Não precisa estar nos dois comentários (desvio e bloqueio). ${DE_PROPOSITO}`
-  );
+  // Toda linha de prosa do eng.work (e do eng.plan) que manda publicar pelo skill diz onde o texto recusado fica.
+  for (const file of ["workflows/engineering/eng.work.md", "workflows/engineering/eng.plan.md"]) {
+    read(file)
+      .split("\n")
+      .forEach((linha, i) => {
+        if (!/`\/eng-global-task-comment`/.test(linha) || linha.startsWith("|")) return;
+        assert.match(
+          linha,
+          /Sem o Sim, o texto fica no `task-comment-\*\.md`/,
+          `${file}:${i + 1}: falta o ramo do Não (onde o texto recusado fica). ${DE_PROPOSITO}`
+        );
+      });
+  }
   // O passo 0.5 só pode pular a pergunta no caso do acesso manual (que não tem envio possível).
   const passo05 =
     read(TASK_COMMENT)
@@ -430,7 +452,8 @@ test("os outros pontos que enviam algo (agente, delivery-spec, data.contract, pr
       .split(/^### 0\.5 /m)[1] ?? "";
   const pulos = passo05
     .split("\n")
-    .filter((l) => /pule a pergunta|não pergunte|(?<!não )dispens/i.test(l));
+    .map((l) => l.replace(/\b(nunca|nada|nem|não)\b[^;),.]*/gi, ""))
+    .filter((l) => /pule a pergunta|dispens/i.test(l));
   assert.equal(
     pulos.length,
     1,

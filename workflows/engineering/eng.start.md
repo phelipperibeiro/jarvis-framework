@@ -37,7 +37,7 @@ Este comando inicia o **planejamento** de uma nova feature.
 | Fase 3.4: Estratégia de Testes | `/eng-data` (via `eng.specializations-rules.md`) | Se a feature envolver engenharia de dados (pipelines ETL/ELT, Glue, Airflow, contratos de dados, camadas bronze/silver/gold); a regra também carrega as especializações de `DATA_SPECIALIZATIONS` |
 | Fase 3.4: Estratégia de Testes | `/eng-automation` (via `eng.specializations-rules.md`) | Se a feature envolver RPA ou extração de dados/scraping; a regra também carrega as especializações de `AUTOMATION_SPECIALIZATIONS` |
 | Fase 3.4: Estratégia de Testes | `/eng-platform` (via `eng.specializations-rules.md`) | Se a feature envolver infraestrutura (IaC, contêineres, CI/CD, observabilidade, SRE, custo); a regra também carrega as especializações de `PLATFORM_SPECIALIZATIONS` |
-| Fase 4.3: Questões em Aberto | `/eng-global-task-comment` | Se o Advisor foi usado e houve questões em aberto: **um** comentário de auditoria, só com o Sim da pergunta (regra de ouro; freelance: o skill registra no `task-log.md`); sem o Sim, o registro fica só no `architecture.md` |
+| Fase 4.3: Questões em Aberto | `/eng-global-task-comment` | Se o Advisor foi usado e houve questões em aberto: **um** comentário de auditoria, só com o Sim da pergunta (regra de ouro; freelance: o skill registra no `task-log.md`); sem o Sim, o texto fica no `task-comment-*.md` e no `architecture.md` |
 
 ---
 

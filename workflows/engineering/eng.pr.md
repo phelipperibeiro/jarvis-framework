@@ -234,7 +234,7 @@ Preencher com a tarefa. Link do card:
 
 ### 4.2 Revisão do texto
 
-Mostre o consolidado de links da sessão (regra 5 de `eng.transitions-rules.md`, com o `pull-request.md` novo), o título e o resumo das seções e pergunte com `AskUserQuestion` (depois da mensagem com o consolidado de links): `[Aprovar]` / `[Ajustar]`. Ajuste até a aprovação. (Pulada com "Publicar sem revisar o texto" na Fase 0.)
+Mostre o consolidado de links da sessão (regra 5 de `eng.transitions-rules.md`, com o `pull-request.md` novo), o título e o resumo das seções e pergunte com `AskUserQuestion` (depois da mensagem com o consolidado de links): `[Aprovar]` / `[Ajustar]` / `[Só gerar os arquivos]` (que vale como a opção de mesmo nome da Fase 0: nada é enviado). Ajuste até a aprovação. (Pulada com "Publicar sem revisar o texto" na Fase 0.)
 
 ### 4.3 Publicar ou não (sem pergunta nova)
 
