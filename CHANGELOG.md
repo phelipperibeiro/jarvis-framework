@@ -24,9 +24,12 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), e o
 - **Resumo do `jarvis init --upgrade` (#189)**: com a versão igual, "já na v{X} (arquivos ressincronizados)" no lugar de "X → X"; o `/jarvis-init upgrade` só é pedido com pendência (eixo sem forma de acesso, chave vazia, Central docs antigo ou `TOKEN_TASK_MANAGER`), com o motivo, e sem pendência sai "Nada pendente na IDE.".
 - **Agentes dos revisores** (`prod.pm-checker`, `eng.dev-code-reviewer`, `eng.qa.test-planner`, `eng.docs-writer`): seção "Quando chamado pelo `/eng.pre-pr`", com a branch base recebida no lugar de `origin/main` fixo e a lacuna no formato do relatório.
 - **`eng.agent.md`** com uma seção por skill (`eng-backend`, `eng-frontend` e uma só `eng-platform`); o `jarvis map` deixa de repetir e de trocar descrições.
+- **`product-specs-update` (#193)**: mantém só o índice local `$PROD_DOCS/specs-index.md`, sem publicar nada; o que foi implementado continua no `{SQUAD}/index.md` do Central docs (`jarvis docs fetch`). A varredura de PRD/FRD é recursiva pelo `id` do frontmatter, no layout atual (`prd-{id}-{nome}/`), lê o `related_prd` em todos os formatos (inclusive lista em várias linhas), deixa breakdowns e revisões de fora e trata ids repetidos pela pasta. O skill ganhou as seções do padrão de `skills/AGENTS.md`.
+- **Teste**: `test/framework-refs.test.js` confere que o framework não cita `CENTRAL_DOCS_REPO` fora da migração do `/jarvis-init`.
 
 ### Removed
 - **MCP `repoprompt`** do `/eng.plan` (fora do catálogo de MCPs): a pesquisa no codebase usa busca de arquivos, busca de texto e leitura, como o `/eng.start`.
+- **Índice global de specs no Google Drive** do `product-specs-update` (#193): acessado por MCP pela variável `$CENTRAL_DOCS_REPO`, que não existe desde a troca por `CENTRAL_DOCS_STORAGE` + `CENTRAL_DOCS_LOCATION`. PRD e FRD são documentos de trabalho e não vão para o Central docs.
 
 ### Fixed
 - **Reinstalação preserva o ENV.md (#189)**: `jarvis init --force` (e a opção Reinstalar) não troca mais `RTK_ENABLED=false` por `true` quando o `rtk` está no PATH.
