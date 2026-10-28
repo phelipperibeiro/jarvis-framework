@@ -72,8 +72,9 @@ test("os arquivos que tratam do relatório citam as rodadas anteriores", () => {
 
 test("todo gate-checklist-rodada vem com número ou curinga e extensão: -{N}.md, -{M}.public.md, -1.md ou -*.md", () => {
   // (?!\w) depois de .md pega .mdx e .md5, e deixa passar o ponto final de uma frase;
-  // (?!s\b) ignora o plural "gate-checklist-rodadas", que não é nome de arquivo
-  const invalido = /gate-checklist-rodada(?!s\b)(?!-(\{[MN]\}|\d+|\*)(\.public)?\.md(?!\w))/g;
+  // (?!s(...)) ignora o plural só como palavra solta na frase ("as gate-checklist-rodadas anteriores"),
+  // mas pega o plural em nome de arquivo (gate-checklist-rodadas-1.md, gate-checklist-rodadas_2.md)
+  const invalido = /gate-checklist-rodada(?!s(?:[\s,;:)]|\.(?!md)|$))(?!-(\{[MN]\}|\d+|\*)(\.public)?\.md(?!\w))/g;
   for (const file of todosMd()) {
     const achados = read(file).match(invalido) || [];
     assert.equal(achados.length, 0, `${rel(file)} tem gate-checklist-rodada fora do formato. ${DE_PROPOSITO}`);
@@ -81,9 +82,9 @@ test("todo gate-checklist-rodada vem com número ou curinga e extensão: -{N}.md
 });
 
 test("a grafia gate-checklist-rodada é sempre a mesma: minúscula, com hífens (sem underscore, espaço nem maiúscula)", () => {
-  // Só olha a forma seguida de -{, -<dígito>, -* ou o mesmo com _ (rodada_1), que é onde o nome do
-  // arquivo aparece; o espaço fica de fora: "gate-checklist Rodada 2" é frase, não nome de arquivo.
-  const solta = /gate[_ -]?checklist[_ -]?rodada(?=[-_](?:\{|\d|\*))/gi;
+  // Só olha a forma seguida de -{, -<dígito>, -* (ou o mesmo com _) ou de .md/.public.md, que é onde o nome
+  // do arquivo aparece; o espaço fica de fora: "gate-checklist Rodada 2" é frase, não nome de arquivo.
+  const solta = /gate[_ -]?checklist[_ -]?rodada(?=[-_](?:\{|\d|\*)|[-_]?\.(?:public\.)?md)/gi;
   for (const file of todosMd()) {
     for (const achado of read(file).match(solta) || []) {
       assert.equal(achado, "gate-checklist-rodada", `${rel(file)}: "${achado}". Nome de arquivo é minúsculo. ${DE_PROPOSITO}`);
