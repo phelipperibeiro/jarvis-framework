@@ -175,20 +175,26 @@ Para detecção automática de contexto de tarefas:
 - Uso: `/jarvis-context-detect [jira-key]` ou `/jarvis-context-detect --override tipo=hotfix`
 - Chamado automaticamente pelo workflow `eng.start`
 
-### eng-platform (performance)
-Quando a tarefa envolver análise ou otimização de performance, observabilidade, gargalos, latência, load testing, chaos engineering ou cache multi-camada — temas 7, 14, 15 e 16 da base de platform:
+### eng-platform
+Quando a tarefa envolver infraestrutura, performance ou segurança de infraestrutura — base de platform, complementada pela especialização registrada em `PLATFORM_SPECIALIZATIONS`:
 - Arquivo: `$IDE/skills/eng-platform/SKILL.md`
+- Performance: análise ou otimização de performance, observabilidade, gargalos, latência, load testing, chaos engineering ou cache multi-camada (temas 7, 14, 15 e 16)
+- Segurança: segurança de infraestrutura, fundamentos de segurança da informação (risco, ameaças, identidade, resposta a incidente, GRC, privacidade) ou auditoria de dependências/supply chain (temas 9 e 13)
+- Segurança de código de aplicação (OWASP, inputs, auth) já é padrão embutido em `eng-backend`/`eng-frontend`
 
 ### eng-ai
 Quando a tarefa envolver features com LLM, sistemas RAG, agentes de IA, chatbots, embeddings, busca vetorial ou integrações com modelos de IA:
 - Arquivo: `$IDE/skills/eng-ai/SKILL.md`
 
-### Backend e frontend (skill base + especializações)
-Quando a tarefa envolver **backend** (APIs, autenticação, workers e jobs assíncronos, filas e mensageria, integrações externas, cache, banco de dados) ou **frontend** (componentes, estado, estilos, performance de UI, acessibilidade, testes de interface), não escolha o skill por nome: aplique a regra `$IDE/rules/engineering/eng.specializations-rules.md` para a área envolvida. Ela carrega o skill base e as especializações que o projeto registrou no `ENV.md`:
-- Backend: `$IDE/skills/eng-backend/SKILL.md` + itens de `BACKEND_SPECIALIZATIONS`
-- Frontend: `$IDE/skills/eng-frontend/SKILL.md` + itens de `FRONTEND_SPECIALIZATIONS`
+### eng-backend
+Quando a tarefa envolver backend (APIs, autenticação, workers e jobs assíncronos, filas e mensageria, integrações externas, cache, banco de dados). Não escolha o skill por nome: aplique a regra `$IDE/rules/engineering/eng.specializations-rules.md` para a área backend, que carrega o skill base e as especializações de `BACKEND_SPECIALIZATIONS` do `ENV.md`:
+- Arquivo: `$IDE/skills/eng-backend/SKILL.md`
 - Workflows relacionados: `eng.start` (arquitetura), `eng.work` (implementação), `eng.debug` (troubleshooting)
-- Para ver o que está instalado e registrado: `/jarvis-list-specializations`
+
+### eng-frontend
+Quando a tarefa envolver frontend (componentes, estado, estilos, performance de UI, acessibilidade, testes de interface). Não escolha o skill por nome: aplique a regra `$IDE/rules/engineering/eng.specializations-rules.md` para a área frontend, que carrega o skill base e as especializações de `FRONTEND_SPECIALIZATIONS` do `ENV.md`:
+- Arquivo: `$IDE/skills/eng-frontend/SKILL.md`
+- Para ver o que está instalado e registrado (backend e frontend): `/jarvis-list-specializations`
 
 ### eng-automation
 Quando a tarefa envolver web scraping, extração de dados de páginas web, automação de browser com Puppeteer, parsing de HTML/XML/PDF, pipelines ETL leves ou monitoramento de mudanças em sites:
@@ -200,10 +206,6 @@ Quando precisar planejar estratégia de testes, validar fluxos completos de usu�
 - Arquivo: `$IDE/skills/eng-qa/SKILL.md`
 - Workflows relacionados: `eng.pr` (validação pré-PR), `eng.pre-pr` (cobertura de testes E2E)
 
-### eng-platform
-Quando a tarefa envolver segurança de infraestrutura, fundamentos de segurança da informação (risco, ameaças, identidade, resposta a incidente, GRC, privacidade) ou auditoria de dependências/supply chain — base de platform, complementada pela especialização registrada em `PLATFORM_SPECIALIZATIONS`:
-- Arquivo: `$IDE/skills/eng-platform/SKILL.md` (temas 9 e 13)
-- Segurança de código de aplicação (OWASP, inputs, auth) já é padrão embutido em `eng-backend`/`eng-frontend`
 
 ---
 

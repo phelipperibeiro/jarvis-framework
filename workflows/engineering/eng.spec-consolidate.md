@@ -52,7 +52,7 @@ Os documentos de trabalho (PRD, FRD, ARD, RFC, SPEC…) continuam em `docs/jarvi
 
 ## Passo 1: Coleta (modo normal)
 
-O agente `eng.docs-consolidator` lê **todas** as fontes, na ordem do agente:
+O agente `eng.docs-consolidator.agent` lê **todas** as fontes, na ordem do agente:
 1. `architecture.md` e `plan.md` da sessão.
 2. Documentos de trabalho ligados à tarefa em `$PROD_DOCS` e `$ENG_DOCS` (PRD, FRD, épicos, histórias, ARD, RFC, SPEC, swagger, QA).
 3. Commits e arquivos:

@@ -10,7 +10,8 @@
 > **Commit base:** `{sha}` (no modo workspace, `{repo}@{sha}` por repositório: as linhas citadas nos links são deste commit)  
 > **Status:** 🔄 Em Revisão | ✅ Aprovado | ❌ Rejeitado  
 > **Advisor:** {modelo escolhido no início do eng.start} | não utilizado  
-> **Questões em aberto:** tratar no architecture.md (como hoje) | uma a uma, assim que surgirem (só sem Advisor)
+> **Questões em aberto:** tratar no architecture.md (como hoje) | uma a uma, assim que surgirem (só sem Advisor)  
+> **Ajustes antes da aprovação:** {0} (o `eng.start` soma 1 a cada "Ajustar o documento"; o `eng.pre-pr` copia o número para o PR Brief)
 
 ---
 
@@ -85,6 +86,18 @@ Novo fluxo:
 | {nome do padrão}   | {breve descrição}              | {caminho/arquivo-exemplo}  |
 | {convenção de API} | {ex: REST, naming conventions} | {caminho/arquivo-exemplo}  |
 | {padrão de testes} | {ex: AAA, mocks}               | {caminho/arquivo-exemplo}  |
+
+### 2.5 Premissas e Passe Crítico
+
+> Preenchida no passe crítico (Fase 4.4 do `eng.start`), antes da aprovação. Parecido com o `Reflection`: um passe contra o próprio documento (ver #171). Só entram premissas que mudam o plano se estiverem erradas; até cerca de 10 linhas.
+
+| Premissa | Fonte | O que a derrubaria | Como conferir |
+| -------- | ----- | ------------------ | ------------- |
+| {afirmação em que o documento se apoia} | {lida: [`{arquivo}:{n}`](../../../../{repo}/{caminho}#L{n}) \| presumida} | {fato que, se verdadeiro, invalida a premissa} | {leitura, comando ou pergunta} |
+
+**O que derrubaria este documento:** {a premissa mais frágil, em uma frase}
+
+> Toda premissa **presumida** que mudaria o plano vira, antes da aprovação, uma leitura feita (e passa a "lida") ou uma questão em aberto na seção 8.
 
 ---
 

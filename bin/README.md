@@ -124,7 +124,7 @@ if (fileURLToPath(import.meta.url) === process.argv[1]) {
 ## Testes
 
 - `npm run test:comandos` — valida que toda referência a comando/skill nos workflows e skills existe de fato (não testa o CLI em runtime).
-- `npm run test:filtro` — testes unitários de `profile-filter.js`, `token-report.js`, `flow-map`, `env-loader.js`, `sync-engine.js`, `vcs/api.js`, `tasks/comment.js`, `integrations/` (catálogo e runner) e do upgrade.
+- `npm run test:filtro` — testes unitários de `profile-filter.js`, `token-report.js`, `flow-map`, `env-loader.js`, `sync-engine.js`, `vcs/api.js`, `tasks/comment.js`, `integrations/` (catálogo e runner) e do upgrade, além dos testes que guardam o texto de workflows e rules (por exemplo, `gate-checklist-rodadas`, `publish-comments-rules` e `pre-pr-criterio`). A lista completa é o script `test:filtro` do `package.json`.
 - Não há teste automatizado de ponta a ponta do CLI (`jarvis <comando>` real) — a camada de dispatch (`program.js`, `bin/commands/*.js`) não é cobrida pelos testes unitários. Qualquer mudança ali precisa de validação manual dos comandos afetados.
 
 ### Como testar código que lê `fs`/rede sem mockar módulo

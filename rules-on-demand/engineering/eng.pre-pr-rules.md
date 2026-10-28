@@ -75,9 +75,11 @@ Avaliar **apenas** as mudanças da branch atual em relação à branch base (`Br
 git diff {BRANCH_BASE}...HEAD
 ```
 
+Da rodada 2 em diante, cada gate roda só se o diff desde o `Commit:` da rodada anterior tocar o que ele lê (seção "Rodada incremental" do `eng.pre-pr.md`). O gate que roda continua revisando a branch inteira.
+
 ### Evidências Obrigatórias
 
-Cada lacuna cita onde está (`arquivo:linha`) ou o comando que a revelou e o resultado.
+Cada lacuna cita onde está (`arquivo:linha` com o trecho) ou o comando que a revelou e o resultado, **e o que a derrubaria** (coluna Refutação). Antes de gravar, o passe crítico (seção "Passe crítico" do `eng.pre-pr.md`) remove a lacuna cuja refutação se sustenta e rebaixa a que pesa menos do que a severidade dada.
 
 ---
 
@@ -86,9 +88,12 @@ Cada lacuna cita onde está (`arquivo:linha`) ou o comando que a revelou e o res
 O workflow **deve sempre** terminar com:
 
 1. **`gate-checklist.md`** em `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/`:
-   - semáforo (🟢 / 🟡 / 🔴), resumo, lacunas por área (o quê, onde, por que importa, sugestão, severidade, **Decisão**), evidências e PR Brief.
+   - semáforo (🟢 / 🟡 / 🔴), resumo (com a linha `Critério de parada:`), lacunas por área (o quê, com o "(item N)" do gate que a achou no fim, onde, por que importa, refutação, sugestão, severidade, **Decisão**), evidências e PR Brief (com as rodadas por severidade, a rodada em que o critério de parada agiu, os ajustes do `architecture.md` e do `plan.md` antes da aprovação e as lições desta tarefa; guardar lições entre tarefas não é deste comando, é da #169).
    - `Rodada` e `Commit` no cabeçalho, as rodadas anteriores e, da rodada 2 em diante, a resolução das lacunas da rodada anterior.
+   - Da rodada 2 em diante, as áreas cujos gates não rodaram na rodada incremental, marcadas como "Não reavaliada nesta rodada".
    - É sempre a rodada mais recente: ao rodar de novo na mesma sessão, o relatório existente é preservado como `gate-checklist-rodada-{N}.md` (seção "Rodadas" do `eng.pre-pr.md`). **Nunca** sobrescrever nem apagar uma rodada; renomear imediatamente antes de gravar.
-2. **Decisões do usuário** gravadas na coluna Decisão (🔧 Corrigir / 👍 Aceitar + motivo; vazia se o usuário escolheu "Só gerar o relatório", exceto as decisões herdadas da rodada anterior).
+2. **Decisões do usuário** gravadas na coluna Decisão (🔧 Corrigir / 👍 Aceitar + motivo; vazia se o usuário escolheu "Só gerar o relatório", exceto as decisões herdadas da rodada anterior). Na variante B do fechamento, as ⚪ aceitas levam `👍 Aceitar: aceito no fechamento da rodada {N}` e as 🟡 aceitas em bloco (só com o teto atingido) levam `👍 Aceitar: teto de rodadas atingido na rodada {N}`, e as decididas uma a uma levam o motivo dado pela pessoa; decisão herdada nunca é trocada.
+   - **Critério de parada** (seção "Fechamento" do `eng.pre-pr.md`): teto de rodadas pela urgência do `context.md` (`alta` 3 · `normal` 5 · `baixa` 8) ou rodada sem lacuna 🔴 ou 🟡 nova (com os itens 2 e 3 tendo rodado). Sem 🔴 pendente nem 🟡 herdada com `🔧 Corrigir`, e com só ⚪ sem decisão (ou também 🟡, com o critério de parada atingido), o fechamento usa a variante B. Na variante B, "Aceitar as ⚪ e seguir para o PR" é a primeira opção (a recomendada) e "Só gerar o relatório" mantém o fluxo de hoje. Só o teto aceita 🟡 em bloco; com o gatilho "sem lacuna nova", as 🟡 são decididas uma a uma. O critério nunca pula a revisão nem a gravação. Fora desses casos (por exemplo, com 🔴 pendente), o ciclo segue na variante A. Sempre que o teto for atingido e houver pendência, o fechamento avisa.
+   - **Pendentes não reavaliadas** (rodada incremental): a lacuna pendente da rodada anterior cujo gate de origem (o "(item N)" da coluna Lacuna) não rodou é copiada para a rodada nova, com a decisão herdada.
 3. **Pergunta** (`AskUserQuestion`) sobre registrar o resultado como comentário no card (`/eng-global-task-comment`): Não, manter só na sessão (como hoje) / Sim, só o resumo / Sim, o relatório completo. Nunca publicar sem a resposta. Freelance: não pergunta, só na sessão.
 4. **Aguardar permissão explícita** do usuário para prosseguir para `/eng.pr`.

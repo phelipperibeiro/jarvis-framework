@@ -45,7 +45,6 @@ Antes de executar este workflow:
 |-------|-------|----------|
 | Cabeçalho (agente) | `eng.agent` (agente) | Sempre — identidade do workflow |
 | Fase 0 › 0.1 Herdar Contexto da Sessão | `/jarvis-context-detect` | Se `ENABLE_CDD=true` e o `context.md` não existir |
-| Fase 2: Pesquisa no Codebase | `repoprompt` (MCP: `search`, `read_selected_files`) | Para buscar e ler arquivos relevantes do codebase |
 | Fase 2: Pesquisa no Codebase (se necessário) | `context7` (MCP) | Se for preciso consultar a documentação de bibliotecas |
 | Fase 3: Criação do Plano (exceção) | `eng.advisor.agent` (agente) | Só por exceção: questão nova em aberto, com o Advisor habilitado no `eng.start` (cabeçalho do `architecture.md`) |
 | Fase 3: Criação do Plano (exceção) | `/eng-global-task-comment` | Só por exceção: comentário de auditoria da questão nova consultada ao Advisor, só com o Sim da pergunta (regra de ouro; freelance: o skill registra no `task-log.md`); sem o Sim, o texto fica no `task-comment-*.md` e no `architecture.md` |
@@ -129,9 +128,12 @@ CONTEXT_PROFILE:
 
 ### Fase 2: Pesquisa no Codebase
 
-1. **Buscar** arquivos relevantes usando:
-   - `repoprompt:search` para encontrar arquivos específicos
-   - `repoprompt:read_selected_files` para ler código em batch
+1. **Buscar** arquivos relevantes com as ferramentas de busca, como na Fase 3.1 do `eng.start`:
+   - **Glob** para encontrar arquivos relacionados
+   - **Grep** para buscar padrões e implementações parecidas
+   - **Read** para ler os arquivos que serão modificados
+
+   Com `WORKSPACE_MODE=workspace`, busque só nos repositórios do workspace e siga a regra "Buscas de código em modo workspace" de `eng-rules.md`.
 2. **Analisar**:
    - Padrões existentes no projeto
    - Arquivos que serão modificados
@@ -167,10 +169,11 @@ CONTEXT_PROFILE:
 
 ### Fase 4: Validação
 
+0. **Passe crítico**, antes de apresentar: percorra o "Checklist de Conclusão" de `eng.plan-rules.md` item a item contra o `plan.md` (toda fase cabe em cerca de 1 hora; toda fase tem a tarefa `X.T`; toda tarefa tem o que, onde, como e como verificar; dependências explícitas; status iniciais ⏳) e corrija o plano antes de mostrar. Registre o resultado nos comentários da última fase: `Passe crítico: {n} itens conferidos, {m} corrigidos`. Parecido com o `Reflection` (ver #171), como o passe crítico do `eng.start` (Fase 4.4).
 1. **Apresentar** o plano ao humano, com o consolidado de links da sessão (regra 5 de `eng.transitions-rules.md`: `context.md`, `architecture.md` e o `plan.md` novo)
 2. **Discutir** ajustes necessários
 3. **Atualizar** `architecture.md` se houver mudanças arquiteturais
-4. **Confirmar** antes de prosseguir, com a pergunta de transição (`eng.transitions-rules.md`): **"O que fazer com o plano?"** (depois da mensagem em markdown com o consolidado de links) → **Aprovar e implementar agora** (chame o `/eng.work {TASK_MANAGER_KEY}`, ou mostre o comando) / **Aprovar e seguir manualmente (como hoje)** (o comando termina e o usuário chama o `/eng.work` quando quiser) / **Ajustar o plano** (o usuário diz o que mudar; atualize o `plan.md` e mostre de novo). As duas aprovações valem como a aprovação explícita do plano
+4. **Confirmar** antes de prosseguir, com a pergunta de transição (`eng.transitions-rules.md`): **"O que fazer com o plano?"** (depois da mensagem em markdown com o consolidado de links) → **Aprovar e implementar agora** (chame o `/eng.work {TASK_MANAGER_KEY}`, ou mostre o comando) / **Aprovar e seguir manualmente (como hoje)** (o comando termina e o usuário chama o `/eng.work` quando quiser) / **Ajustar o plano** (o usuário diz o que mudar; atualize o `plan.md`, some 1 em "Ajustes antes da aprovação" no cabeçalho, refaça o passe crítico no que mudou e mostre de novo). As duas aprovações valem como a aprovação explícita do plano
 
 ---
 

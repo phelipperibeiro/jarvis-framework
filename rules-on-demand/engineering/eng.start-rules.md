@@ -40,11 +40,11 @@ Além dele, o `start` pode criar apenas os arquivos de apoio da própria sessão
 
 O workflow **só é considerado completo** após:
 
-1. O `architecture.md` estar preenchido
+1. O `architecture.md` estar preenchido, com o passe crítico feito (Fase 4.4 do workflow: seção 2.5 "Premissas e Passe Crítico", com o lido separado do presumido e a premissa que derrubaria o documento)
 2. O usuário revisar o documento
-3. O usuário **aprovar explicitamente** para prosseguir — sem Advisor, pela pergunta de transição "Aprovar o architecture.md?" (`eng.transitions-rules.md`)
+3. O usuário **aprovar explicitamente** para prosseguir, pela pergunta de transição "Aprovar o architecture.md?" (`eng.transitions-rules.md`): sempre sem Advisor e, com Advisor, sempre que a aprovação for obrigatória (autonomia `média` ou `baixa`, ou questão nova do passe crítico)
 
-**Exceção (Advisor):** se o usuário escolheu usar o Advisor no início do `eng.start`, as questões em aberto são decididas pela sugestão dele e o gate segue a autonomia do `context.md`: com `autonomia: alta` o `start` apresenta o resumo e segue para o `eng.plan` sem aguardar; com `média` ou `baixa`, a aprovação explícita continua obrigatória.
+**Exceção (Advisor):** se o usuário escolheu usar o Advisor no início do `eng.start`, as questões em aberto são decididas pela sugestão dele e o gate segue a autonomia do `context.md`: com `autonomia: alta` o `start` apresenta o resumo e segue para o `eng.plan` sem aguardar, salvo se o passe crítico (Fase 4.4) abriu questão nova: nesse caso, a aprovação explícita da pessoa é obrigatória; com `média` ou `baixa`, a aprovação explícita continua obrigatória.
 
 ---
 
@@ -91,8 +91,8 @@ O workflow **só é considerado completo** após:
 
 7. **Aguardar aprovação**
    - Se aprovado → Informar próximos passos
-   - Se rejeitado → Iterar no documento
-   - NUNCA prosseguir sem a resposta: "Aprovar e seguir para o `/eng.plan`" (pergunta de transição, `eng.transitions-rules.md`) é a aprovação para seguir; a exceção do Advisor continua valendo
+   - Se rejeitado → Iterar no documento, somar 1 em "Ajustes antes da aprovação" no cabeçalho e refazer o passe crítico no que mudou
+   - NUNCA prosseguir sem a resposta: "Aprovar e seguir para o `/eng.plan`" (pergunta de transição, `eng.transitions-rules.md`) é a aprovação para seguir; a exceção do Advisor continua valendo, sem questão nova aberta pelo passe crítico
 
 ---
 
@@ -238,6 +238,8 @@ Antes de considerar o `start` completo:
 - [ ] Decisões têm justificativas
 - [ ] Riscos têm mitigações
 - [ ] Componentes impactados listados com caminhos reais
+- [ ] Passe crítico feito: seção 2.5 preenchida, presumidas que mudam o plano lidas ou viradas questão
+- [ ] "Ajustes antes da aprovação" atualizado no cabeçalho
 - [ ] Usuário revisou o documento
 - [ ] Usuário aprovou explicitamente
 - [ ] Nenhum código foi executado/criado

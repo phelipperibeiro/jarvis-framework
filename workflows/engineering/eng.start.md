@@ -409,6 +409,16 @@ Levante na seção 8 **tudo** que for diferente do código ou ambíguo no card, 
 
 **Sem Advisor:** com "Tratar no architecture.md (como hoje)", apresente as questões ao usuário, como sempre; com "Uma a uma", elas já foram respondidas ao surgir (registre as respostas e escreva só as que surgirem na escrita do documento).
 
+### 4.4 Passe Crítico
+
+Antes de apresentar o documento, faça um passe contra ele e registre-o na seção 2.5 ("Premissas e Passe Crítico") do `architecture.md`. Parecido com o `Reflection` (um passe contra a própria conclusão), como o "Crítico antes de concluir" da skill `eng-global-investigation` (ver #171).
+
+1. Liste as premissas em que o documento se apoia e que mudariam o plano se estivessem erradas (até cerca de 10).
+2. Para cada uma, separe o que foi **lido** (com o link `arquivo:linha` do que foi lido nas Fases 2 e 3) do que foi **presumido**, e escreva o que a derrubaria e como conferir.
+3. Responda em uma frase: **que premissa derrubaria este documento?**
+4. Toda premissa presumida que mudaria o plano vira, agora, uma leitura (e passa a "lida") ou uma questão em aberto na seção 8. A questão que nasce aqui segue a Fase 4.3: com Advisor, vai em Prompt 2 para a mesma instância (e entra no comentário de auditoria, se ele ainda não saiu); sem Advisor, segue o modo escolhido no início. Com questão nova aberta aqui, o gate da Fase 5.2 aguarda a aprovação explícita da pessoa, mesmo com Advisor e autonomia `alta` (a sugestão do Advisor fica registrada, mas não substitui essa aprovação).
+5. Só então siga para a Fase 5. O passe vale com e sem Advisor.
+
 ---
 
 ## Fase 5: Revisão e Aprovação
@@ -427,11 +437,13 @@ Apresente:
 Se o usuário tiver feedback:
 
 - Atualize o documento
+- Some 1 em "Ajustes antes da aprovação" no cabeçalho do `architecture.md`, a cada "Ajustar o documento" (o número vai para o PR Brief do `eng.pre-pr`)
+- Refaça o passe crítico (4.4) no que mudou
 - Apresente novamente
 - Continue até aprovação explícita
 
 **Sem Advisor**, a aprovação é a pergunta de transição (`eng.transitions-rules.md`): **"Aprovar o architecture.md?"** (depois da mensagem em markdown com o link clicável do arquivo) → **Aprovar e parar aqui (como hoje)** / **Aprovar e seguir para o `/eng.plan`** / **Ajustar o documento**. Com "seguir", chame o `/eng.plan {TASK_MANAGER_KEY}` (ou mostre o comando).
-**Com Advisor**, o gate segue a autonomia do `context.md` (CDD): `alta` → apresente o resumo e siga para o `eng.plan` sem aguardar; `média` ou `baixa` → aguarde a aprovação explícita. Sem `context.md`, use a tabela "Autonomia por POSITION" de `eng-rules.md`. Sem Advisor, nada muda.
+**Com Advisor**, o gate segue a autonomia do `context.md` (CDD): `alta` → apresente o resumo e siga para o `eng.plan` sem aguardar, salvo se o passe crítico (Fase 4.4) abriu questão nova; `média` ou `baixa` → aguarde a aprovação explícita. Sem `context.md`, use a tabela "Autonomia por POSITION" de `eng-rules.md`. **Sempre que a aprovação explícita for obrigatória com Advisor** (`média` ou `baixa`, ou questão nova do passe crítico), peça-a com a mesma pergunta de transição de quem não usa Advisor: a pergunta "Aprovar o architecture.md?", com as mesmas opções. Sem Advisor, nada muda.
 
 ### 5.3 Atualizar Board
 
