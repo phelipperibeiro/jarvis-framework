@@ -216,16 +216,17 @@ test("listRulesForProfile: AGENTS.md nunca é filtrado, rtk é opt-in, sem bloco
 // Issue #184 (pre-pr 19, 2026-10-28): +104 B em todos os perfis — eng-rules.md separa os documentos de trabalho da cópia local do Central docs.
 // Issue #184 (pre-pr 20, 2026-10-28): +18 B em todos os perfis — eng-rules.md: a cópia local do Central docs fica em docs/jarvis/ no local padrão.
 // Issue #184 (pre-pr 20, 2026-10-28): +210 B só no FULLCYCLE — data-rules.md (HUB: DATA) distingue o alerta automático do pipeline do aviso do Jarvis.
+// Issue #184 (pre-pr 22, 2026-10-28): +55 B em todos os perfis — eng.integrations-rules.md separa o repositório do create-merge (git remote) do --repo do create-issue.
 const BASE = [
   [
     "FULLCYCLE/GENERALIST/ENGINEERING/CORE",
     profile("FULLCYCLE", "GENERALIST", "ENGINEERING"),
     15,
-    104396,
+    104451,
   ],
-  ["BACKEND/SENIOR/ENGINEERING/CORE", profile("BACKEND", "SENIOR", "ENGINEERING"), 11, 70867],
-  ["FRONTEND/PLENO/ENGINEERING/CORE", profile("FRONTEND", "PLENO", "ENGINEERING"), 11, 71410],
-  ["QA/QA-ENGINEER/ENGINEERING/CORE", profile("QA", "QA-ENGINEER", "ENGINEERING"), 11, 70646],
+  ["BACKEND/SENIOR/ENGINEERING/CORE", profile("BACKEND", "SENIOR", "ENGINEERING"), 11, 70922],
+  ["FRONTEND/PLENO/ENGINEERING/CORE", profile("FRONTEND", "PLENO", "ENGINEERING"), 11, 71465],
+  ["QA/QA-ENGINEER/ENGINEERING/CORE", profile("QA", "QA-ENGINEER", "ENGINEERING"), 11, 70701],
 ];
 
 for (const [nome, p, arquivos, bytes] of BASE) {

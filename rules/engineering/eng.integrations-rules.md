@@ -9,7 +9,7 @@ O Jarvis não assume Jira, GitLab ou Slack. Leia `$IDE/ENV.md` e siga a cadeia d
 | Variável | Vendors | Como |
 |----------|---------|------|
 | `TASK_MANAGER` (+ `TASK_MANAGER_ACCESS`, `TASK_MANAGER_URL_BASE`) | jira (`acli`, só Cloud), github (`gh`), gitlab (`glab`) | `jarvis tasks comment` |
-| `VERSION_CONTROL` (+ `VERSION_CONTROL_ACCESS`) | github (`gh`), gitlab (`glab`); repo vem do `git remote` | `jarvis vcs create-merge` / `create-issue` |
+| `VERSION_CONTROL` (+ `VERSION_CONTROL_ACCESS`) | github (`gh`), gitlab (`glab`); no `create-merge` o repo vem do `git remote`, no `create-issue` vai em `--repo` | `jarvis vcs create-merge` / `create-issue` |
 | `CENTRAL_DOCS_STORAGE` | filesystem (s3 e gdrive no futuro) | `jarvis docs fetch` / `sync` / `publish` |
 | `MESSAGE_COMUNICATOR` | slack, discord, teams | runtime `communicator/` |
 
