@@ -238,7 +238,7 @@ Mostre o consolidado de links da sessão (regra 5 de `eng.transitions-rules.md`,
 
 ### 4.3 Publicar ou não (sem pergunta nova)
 
-A decisão já veio da Fase 0; não pergunte de novo. Aprovado o texto na 4.2, siga a escolha:
+A decisão já veio da Fase 0, que vale como a pergunta do push e do PR (exceção da regra de ouro, `eng.integrations-rules.md`); não pergunte de novo. Aprovado o texto na 4.2, siga a escolha:
 
 - **Só gerar os arquivos:** nada é enviado. O `pull-request.md` fica na sessão para você publicar quando quiser (à mão ou rodando o `/eng.pr` de novo). Pule para a Fase 7, que gera o `daily.md` mesmo assim (para não passar batido quando você abrir o PR à mão), com a mensagem "PR não publicado".
 - **Revisar o texto e publicar** ou **Publicar sem revisar o texto:** faça o push (Fase 3) e crie o MR/PR (4.4).
@@ -288,7 +288,7 @@ Oriente a pessoa a mover o card para a etapa equivalente a "em revisão" no boar
 
 ### 5.2 Link do MR no card
 
-Siga o Passo 6 do skill `eng-global-pr`: monte um único comentário, com o link e a branch, e mostre-o. Ele só vai para o card depois da pergunta (regra de ouro, `eng.integrations-rules.md`); sem o Sim, fica no `task-comment-*.md` da sessão. É o único comentário do `eng.pr` no card.
+Siga o Passo 6 do skill `eng-global-pr`: monte um único comentário, com o link e a branch, e publique-o no card com `/eng-global-task-comment`, que mostra o texto e pergunta (regra de ouro, `eng.integrations-rules.md`); sem o Sim, ele fica no `task-comment-*.md` da sessão. É o único comentário do `eng.pr` no card.
 
 ---
 
@@ -448,7 +448,7 @@ Pergunte com `AskUserQuestion`: **"O PR já foi aprovado e mergeado?"**
 - ✅ Usar mensagem de commit padronizada
 - ✅ Criar branch no padrão `{TASK_MANAGER_KEY}-{titulo}`
 - ✅ Preencher template do MR completamente
-- ✅ Mover card para "In Review"
+- ✅ Orientar a pessoa a mover o card para "In Review" (o Jarvis não move card)
 - ✅ Gerar o `pull-request.md` na sessão e só publicar com a escolha de publicar da Fase 0 (4.3)
 - ✅ Com PR aberto, registrar o esforço no `daily.md` (7.2), com revisão conjunta da descrição e do timesheet
 - ✅ **Nunca apagar a sessão:** o `/eng.spec-consolidate` precisa dela

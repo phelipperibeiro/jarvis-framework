@@ -151,7 +151,7 @@ A **Resolução da rodada anterior** lista as lacunas da rodada anterior com dec
 
    Grave as decisões na coluna **Decisão** como `🔧 Corrigir` ou `👍 Aceitar: motivo`. As opções acima valem só para as lacunas sem decisão, exceto "Decidir uma a uma", que também deixa mudar as herdadas 🔴 e 🟡 (as ⚪ herdadas mudam à mão); as herdadas entram em `{n}` e, conforme a severidade, em `{a}` ou `{b}`.
 3. **Modo freelance (`TASK_MANAGER` vazio):** não pergunte; o relatório fica só na sessão. **Com board**, pergunte com `AskUserQuestion` (nunca publique sem a resposta): **"Registrar o resultado do `/eng.pre-pr` como comentário no card {TASK_MANAGER_KEY}?"**
-   - **Não, manter só na sessão (como hoje):** nada é enviado ao card.
+   - **Não, manter só na sessão (como hoje):** nada é enviado ao card (o texto fica no `gate-checklist.md`).
    - **Sim, só o resumo:** `/eng-global-task-comment {TASK_MANAGER_KEY}` com o semáforo, o resumo e as lacunas 🔴 com a decisão de cada uma.
    - **Sim, o relatório completo:** `/eng-global-task-comment {TASK_MANAGER_KEY}` com o conteúdo do `gate-checklist.md`.
 

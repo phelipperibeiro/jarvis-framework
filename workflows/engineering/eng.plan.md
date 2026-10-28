@@ -163,7 +163,7 @@ CONTEXT_PROFILE:
 
 4. **Usar** o template em `$IDE/templates/engineering/plan-template.md`
 
-**Questão nova em aberto (exceção).** O ideal é que todas as questões tenham sido levantadas no `eng.start`. Se surgir uma nova e o cabeçalho do `architecture.md` indicar um Advisor, consulte `eng.advisor.agent` com o Prompt 2 de `$IDE/templates/engineering/advisor-template.md` (refaça o Prompt 1 se o subagente não existir mais), acrescente a questão à seção 8 marcada "levantada no `eng.plan`", adote a sugestão do Advisor e monte o comentário de auditoria; só depois da pergunta (regra de ouro, `eng.integrations-rules.md`), publique-o com `/eng-global-task-comment` (é desvio do plano; cite-o no PR como lacuna do `eng.start`). Sem Advisor, pergunte ao usuário.
+**Questão nova em aberto (exceção).** O ideal é que todas as questões tenham sido levantadas no `eng.start`. Se surgir uma nova e o cabeçalho do `architecture.md` indicar um Advisor, consulte `eng.advisor.agent` com o Prompt 2 de `$IDE/templates/engineering/advisor-template.md` (refaça o Prompt 1 se o subagente não existir mais), acrescente a questão à seção 8 marcada "levantada no `eng.plan`", adote a sugestão do Advisor e monte o comentário de auditoria e publique-o com `/eng-global-task-comment`, que mostra o texto e pergunta (regra de ouro, `eng.integrations-rules.md`) (é desvio do plano; cite-o no PR como lacuna do `eng.start`). Sem Advisor, pergunte ao usuário.
 
 ### Fase 4: Validação
 
