@@ -32,20 +32,20 @@ Além do documento, ele prepara o ambiente: pergunta **de qual branch partir** (
 5. **Investiga o código** (somente leitura): padrões, documentação existente e estratégia de testes
 6. **Escreve o `architecture.md`** pelo template, com componentes impactados reais, decisões justificadas, riscos com mitigação e estratégia de testes. Tudo que for diferente do código ou ambíguo no card vira uma **questão em aberto** (seção 8), com no mínimo 3 opções; com Advisor, a sugestão dele é a decisão adotada e fica registrada num comentário de auditoria na issue (depois da pergunta; sem o Sim, o texto fica no `task-comment-*.md` e no `architecture.md`)
 7. **Passe crítico:** antes de mostrar o documento, lista as premissas que mudariam o plano se estivessem erradas, separa o que foi **lido** (com o link do arquivo e da linha) do que foi **presumido**, diz qual premissa derrubaria o documento e transforma cada premissa presumida em leitura ou em questão em aberto (seção 2.5 "Premissas e Passe Crítico")
-8. **Apresenta e itera** até você aprovar de forma explícita (com Advisor e autonomia alta no CDD, apresenta o resumo e segue para o `eng.plan`)
+8. **Apresenta e itera** até você aprovar de forma explícita (com Advisor e autonomia alta no CDD, apresenta o resumo e segue para o `eng.plan`, salvo se o passe crítico abrir uma questão nova, que espera a sua aprovação)
 9. Lembra você de mover o card para "Em progresso" (quando há board)
 
 ## Perguntas que ele faz
 
 - **Sem Advisor, no início:** "Como tratar as questões em aberto que surgirem?" → **Tratar no architecture.md (como hoje)**, para você responder ao revisar o documento, ou **Uma a uma, assim que surgirem**, para responder na hora.
 - **Sem Advisor, no fim:** "Aprovar o architecture.md?" → **Aprovar e parar aqui (como hoje)**, **Aprovar e seguir para o `/eng.plan`** ou **Ajustar o documento**. A resposta já é a sua aprovação.
-- **Com Advisor:** nada muda; o Advisor decide as questões e o fim segue a autonomia, como antes.
+- **Com Advisor:** o Advisor decide as questões e o fim segue a autonomia, como antes; a exceção é uma questão nova aberta pelo passe crítico, que espera a sua aprovação.
 
 ## Regras que importam
 
 - **Só planejamento:** não escreve código, não executa, não commita
 - **Sempre pergunta a branch base** (não presume `dev` nem `main`) e a grava no `architecture.md`; o `/eng.pr` abre o PR para ela
-- **Nunca avança sozinho:** só termina com aprovação explícita do documento, exceto com o Advisor habilitado e autonomia alta no CDD
+- **Nunca avança sozinho:** só termina com aprovação explícita do documento, exceto com o Advisor habilitado e autonomia alta no CDD (e, mesmo assim, espera quando o passe crítico abre uma questão nova)
 - **Advisor (opcional):** um subagente (`eng.advisor.agent`) com o modelo que você escolher, consultado só nas questões em aberto; os prompts e o modelo de auditoria ficam em `templates/engineering/advisor-template.md`. A lista de modelos oferecidos vem de `ADVISOR_MODELS` no `ENV.md`; no Claude Code só a família do modelo é respeitada
 - **No card, só eventos relevantes:** auditoria do Advisor (quando usado), e mesmo ela só depois de mostrar o texto e perguntar (regra de ouro); sem o Sim, o texto fica no `task-comment-*.md` e no `architecture.md`; nada de comentário de início ou fim
 - **Não assume requisitos:** distingue fato de suposição e pergunta; o passe crítico (seção 2.5) registra essa separação antes da aprovação

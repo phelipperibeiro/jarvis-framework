@@ -416,7 +416,7 @@ Antes de apresentar o documento, faça um passe contra ele e registre-o na seç�
 1. Liste as premissas em que o documento se apoia e que mudariam o plano se estivessem erradas (até cerca de 10).
 2. Para cada uma, separe o que foi **lido** (com o link `arquivo:linha` do que foi lido nas Fases 2 e 3) do que foi **presumido**, e escreva o que a derrubaria e como conferir.
 3. Responda em uma frase: **que premissa derrubaria este documento?**
-4. Toda premissa presumida que mudaria o plano vira, agora, uma leitura (e passa a "lida") ou uma questão em aberto na seção 8. A questão que nasce aqui segue a Fase 4.3: com Advisor, vai em Prompt 2 para a mesma instância (e entra no comentário de auditoria, se ele ainda não saiu); sem Advisor, segue o modo escolhido no início. Com questão nova aberta aqui, o gate da Fase 5.2 espera a resposta, mesmo com Advisor e autonomia `alta`.
+4. Toda premissa presumida que mudaria o plano vira, agora, uma leitura (e passa a "lida") ou uma questão em aberto na seção 8. A questão que nasce aqui segue a Fase 4.3: com Advisor, vai em Prompt 2 para a mesma instância (e entra no comentário de auditoria, se ele ainda não saiu); sem Advisor, segue o modo escolhido no início. Com questão nova aberta aqui, o gate da Fase 5.2 aguarda a aprovação explícita da pessoa, mesmo com Advisor e autonomia `alta` (a sugestão do Advisor fica registrada, mas não substitui essa aprovação).
 5. Só então siga para a Fase 5. O passe vale com e sem Advisor.
 
 ---
@@ -443,7 +443,7 @@ Se o usuário tiver feedback:
 - Continue até aprovação explícita
 
 **Sem Advisor**, a aprovação é a pergunta de transição (`eng.transitions-rules.md`): **"Aprovar o architecture.md?"** (depois da mensagem em markdown com o link clicável do arquivo) → **Aprovar e parar aqui (como hoje)** / **Aprovar e seguir para o `/eng.plan`** / **Ajustar o documento**. Com "seguir", chame o `/eng.plan {TASK_MANAGER_KEY}` (ou mostre o comando).
-**Com Advisor**, o gate segue a autonomia do `context.md` (CDD): `alta` → apresente o resumo e siga para o `eng.plan` sem aguardar; `média` ou `baixa` → aguarde a aprovação explícita. Sem `context.md`, use a tabela "Autonomia por POSITION" de `eng-rules.md`. Sem Advisor, nada muda.
+**Com Advisor**, o gate segue a autonomia do `context.md` (CDD): `alta` → apresente o resumo e siga para o `eng.plan` sem aguardar, salvo se o passe crítico (Fase 4.4) abriu questão nova: nesse caso, aguarde a aprovação explícita; `média` ou `baixa` → aguarde a aprovação explícita. Sem `context.md`, use a tabela "Autonomia por POSITION" de `eng-rules.md`. Sem Advisor, nada muda.
 
 ### 5.3 Atualizar Board
 
