@@ -66,8 +66,11 @@ const IMPERATIVOS = [
   // A isenção de "orient" exige a pessoa ou o usuário como objeto ("(orientado pelo TL)" não isenta); a de leitura
   // de anexos exige "lidos/colados" ou dois tipos de documento ("Anexos no card - PRD, FRD, ARD, RFC"); só o verbo
   // ("anexe", "anexar") conta, não o resultado ("Anexada na issue").
-  /^(?!.*(?:regra de ouro|\bSim\b|pergunt|orient\w*\s+(?:a\s+pessoa|o\s+usu))).*\b(?:(?:adicion\w+|colo(?:c|qu)\w+|p[oô]r|apli(?:c|qu)\w+)\s+(?:o\s+|a\s+)?label\b|apli(?:c|qu)\w+\s+`?\w+`?\s+como\s+label\b).*\b(?:ao|no)\s+(?:PR|MR)\b/im,
-  /^(?!.*(?:regra de ouro|\bSim\b|pergunt|orient\w*\s+(?:a\s+pessoa|o\s+usu)|\blid[oa]s?\b|colad|(?:\b(?:PRD|FRD|ARD|RFC)\b.*){2})).*\b(?:anex(?:e|ar|em|ando|á-l[ao])|fa[çz]\w*\s+(?:o\s+)?upload|suba)\b.*\b(?:no|na|ao|à)\s+(?:Jira|issue|card|história)\b/im,
+  // A isenção de "orient" exige "oriente a pessoa/o usuário a <verbo>" ("Oriente a pessoa e adicione…" acusa). Só o
+  // verbo conta ("anexe", "anexar", "vincule", "faça upload"), não o substantivo ("Anexos no card") nem o
+  // resultado ("Anexada na issue").
+  /^(?!.*(?:regra de ouro|\bSim\b|pergunt|orient\w*\s+(?:a\s+pessoa|o\s+usu\w*)\s+a\s+\w)).*(?:\b(?:adicion\w+|colo(?:c|qu)\w+|p[oô]r|ponh\w+|apli(?:c|qu)\w+)\s+(?:o\s+|a\s+)?label\b.*\b(?:ao|no)\s+(?:PR|MR)\b|\b(?:adicion\w+|colo(?:c|qu)\w+|ponh\w+|apli(?:c|qu)\w+)\s+`?[\w-]+`?\s+(?:(?:ao|no)\s+(?:PR|MR)\s+)?como\s+label\b|\brotul\w+\s+(?:o\s+)?(?:PR|MR)\b)/im,
+  /^(?!.*(?:regra de ouro|\bSim\b|pergunt|orient\w*\s+(?:a\s+pessoa|o\s+usu\w*)\s+a\s+\w)).*\b(?:anex(?:a|e|ar|em|ando|á-l[ao])|vincul\w+|associ\w+|fa[çz]\w*\s+(?:o\s+)?(?:upload|attach)|suba)\b.*\b(?:no|na|ao|à|para\s+[oa])\s+(?:Jira|issue|card|história)\b/im,
 ];
 
 // Dirent.isDirectory() não segue link simbólico, então um link quebrado ou circular não derruba a varredura.
@@ -357,7 +360,7 @@ test("toda linha que chama o /eng-global-task-comment traz a pergunta na mesma l
 // Board e git só pela CLI oficial (eng.integrations-rules.md): uma linha que manda usar MCP ou a API (REST) do
 // board não vale; a proibição ("sem REST nem MCP", "não use o MCP do Jira") vale.
 const MCP_DO_BOARD =
-  /\b(?:API(?:\s+v?\d+)?(?:\s+REST)?|endpoints?(?:\s+REST)?|REST\s+API)\s+d[oa]\s+`?(?:Jira|Atlassian|GitHub|GitLab|board|\$?TASK_MANAGER)\b|\bMCPs?[\s/]+(?:(?:configurad|específic|especific|disponív|instalad|relacionad)\w*\s+)*(?:(?:d[oa]|a[oa]|para\s+o)\s+)?`?(?:Jira|Atlassian|\$?TASK_MANAGER|board)\b/i;
+  /\b(?:API(?:\s+v?\d+)?(?:\s+REST)?|endpoints?(?:\s+REST)?|REST\s+API)\s+d[oa]\s+`?(?:Jira|Atlassian|GitHub|GitLab|board|\$?TASK_MANAGER)\b|\b(?:Jira|Atlassian|GitHub|GitLab)\s+(?:REST\s+)?API\b|\bMCPs?[\s/]+(?:(?:configurad|específic|especific|disponív|instalad|relacionad)\w*\s+)*(?:(?:d[oa]|a[oa]|para\s+o)\s+)?`?(?:Jira|Atlassian|\$?TASK_MANAGER|board)\b/i;
 // A proibição precisa estar na mesma oração (sem vírgula, ponto e vírgula ou dois-pontos entre a negação e o MCP):
 // "Sem a CLI logada, use o MCP do Jira" não é proibição.
 const PROIBE_MCP =

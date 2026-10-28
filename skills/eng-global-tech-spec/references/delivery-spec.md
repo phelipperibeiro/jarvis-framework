@@ -709,7 +709,7 @@ Apresente ao usuário:
 
 #### 6.4 Anexo da tech spec na issue (opcional, com pergunta)
 
-Para anexá-la na issue do Jira, depois da aprovação da 6.3, mostre o que vai e pergunte com `AskUserQuestion` (regra de ouro, `eng.integrations-rules.md`): **Sim, anexar** / **Não, manter só na sessão**. Com o Sim, a `acli` logada e `TASK_MANAGER_ACCESS=cli` (ou vazio), anexe pela `acli` (confira no `--help` se ela anexa arquivo); senão, oriente a pessoa a anexar à mão. Em GitHub ou GitLab, a CLI não anexa arquivo à issue: oriente a pessoa. Sem o Sim, a tech spec fica só na sessão e a mensagem da 8.2 diz isso.
+Só com board configurado (no freelance não há issue: pule este passo). Para anexá-la na issue do Jira, depois da aprovação da 6.3, mostre o que vai e pergunte com `AskUserQuestion` (regra de ouro, `eng.integrations-rules.md`): **Sim, anexar** / **Não, manter só na sessão**. Com o Sim, a `acli` logada e `TASK_MANAGER_ACCESS=cli` (ou vazio), anexe pela `acli` (confira no `--help` se ela anexa arquivo); senão, oriente a pessoa a anexar à mão. Em GitHub ou GitLab, a CLI não anexa arquivo à issue: oriente a pessoa. Sem o Sim, a tech spec fica só na sessão e a mensagem da 8.2 diz isso.
 
 ---
 
@@ -771,7 +771,7 @@ Valide que:
 
 - [ ] Tech Spec completa e aprovada pelo usuário
 - [ ] Arquivo salvo na sessão: `$SESSIONS_DIR/eng/{feature-name}/tech-spec.md`
-- [ ] Tech Spec anexada na issue do Jira (com o Sim) ou deixada na sessão
+- [ ] Tech Spec anexada na issue (com o Sim), a anexar pela pessoa (orientado) ou deixada na sessão
 - [ ] Subtarefas documentadas com critérios claros
 - [ ] Subtarefas criadas no Jira (ou template fornecido)
 - [ ] História original atualizada com link para tech spec (com o Sim do comentário da 7.4) ou texto deixado na sessão

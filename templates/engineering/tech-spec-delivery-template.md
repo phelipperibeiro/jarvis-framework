@@ -60,7 +60,7 @@ Fase 8.2 do workflow. O que entregar ao usuário ao final.
 ✅ Tech Spec criada com sucesso!
 
 📄 Documento Local: $SESSIONS_DIR/eng/{feature-name}/tech-spec.md
-📎 {Anexada na issue: {STORY-XXX} | Não anexada (só na sessão; sem o Sim ou sem a CLI)}
+📎 {Anexada na issue: {STORY-XXX} | A anexar pela pessoa (orientado: GitHub/GitLab, ou sem a CLI) | Não anexada (só na sessão; sem o Sim)}
 
 📋 Resumo:
 - História: {STORY-XXX} - {Título}

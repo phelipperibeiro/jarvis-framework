@@ -86,7 +86,7 @@ Apresente o **resumo dos requisitos arquiteturais** (por tópico do Gate 2, marc
 ### Gate 4: Conduzir o ARD
 1. Avise, antes de seguir, que a próxima etapa é o fluxo de engenharia e que as decisões de arquitetura passam a ser da engenharia.
 2. Execute o workflow `eng.create-ard` no modo `new`, com o nome do ARD e `--prd <caminho>` quando houver PRD de origem, entregando o resumo do Gate 3 como insumo do documento (seções de premissas, restrições, integrações, segurança, escalabilidade e riscos do template).
-3. O `eng.create-ard` cuida de numeração, versão, preenchimento do template, análise de impacto, estratégia de testes, guard rails e publicação no central docs. Siga as instruções dele a partir daí.
+3. O `eng.create-ard` cuida de numeração, versão, preenchimento do template, análise de impacto, estratégia de testes, guard rails e a consulta ao Central docs (o ARD fica em `$ENG_DOCS`; não é publicado lá). Siga as instruções dele a partir daí.
 
 ### Gate 5: Fechar
 1. Informe o caminho do ARD criado e o que ficou "a validar pela engenharia".

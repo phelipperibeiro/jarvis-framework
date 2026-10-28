@@ -38,7 +38,7 @@ Confere que tudo está passando, envia a branch e abre o merge request (ou pull 
    - numa nova execução, pergunta se a mudança foi ajuste seu (o texto foca no que foi entregue) ou pedido da liderança (a mudança fica documentada);
    - mostra a descrição detalhada e a linha de timesheet juntas para você aprovar ou ajustar;
    - o [`/eng.daily-report`](./eng.daily-report.md) junta esses registros por dia, de todas as sessões.
-10. **Mensagem final**, com a linha de timesheet pronta para copiar e o lembrete do [`/eng.spec-consolidate`](./eng.spec-consolidate.md)
+10. **Mensagem final** ("Merge request criado" ou "PR não publicado", conforme a etapa 5 terminou com PR no host), com a linha de timesheet pronta para copiar, os labels sugeridos no PR Brief (a pessoa adiciona no host) e o lembrete do [`/eng.spec-consolidate`](./eng.spec-consolidate.md)
 
 A sessão **não é apagada**: o `/eng.spec-consolidate` precisa dela. Remova à mão quando quiser.
 
@@ -53,7 +53,7 @@ A sessão **não é apagada**: o `/eng.spec-consolidate` precisa dela. Remova à
 - Commit de uma linha, começando pela chave da tarefa: `TASK-123 feat(auth): implementar autenticação JWT`
 - Destino do MR: a `Branch base:` escolhida no `/eng.start` (gravada no `architecture.md`); só pergunta se o campo faltar
 - **Nunca** `git add .`, push direto para `main`/`dev`, commit sem a chave da tarefa nem menção a IA no MR
-- PR que toca auth, inputs, APIs públicas ou permissões leva o label `security`: o PR Brief do `eng.pre-pr` registra, a mensagem final do `eng.pr` lembra e **a pessoa** o adiciona no host (a criação do MR pela CLI não põe label; o Jarvis não altera o PR sem perguntar)
+- PR que toca auth, sessions, RBAC, CORS, CSP ou permissões (`eng-security-rules.md`) leva o label `security`: o PR Brief do `eng.pre-pr` registra, a mensagem final do `eng.pr` lembra e **a pessoa** o adiciona no host (a criação do MR pela CLI não põe label; o Jarvis não altera o PR sem perguntar)
 - Nunca aprova um PR com secret no diff
 - **Links no PR:** o `pull-request.md` sai do workspace, então issue, PR, card e código viram URL absoluta (código no `blob/{sha}` do commit enviado), e a sessão e o `docs/jarvis/` ficam em texto (`rules-on-demand/doc-links-rules.md`)
 
