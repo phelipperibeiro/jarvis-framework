@@ -5,20 +5,23 @@ description: >
   índice local de specs (`$PROD_DOCS/specs-index.md`) atualizado. Trigger:
   quando um PRD ou FRD é criado ou modificado, ou quando o usuário pede para
   sincronizar ou indexar specs.
-allowed-tools: Read Write Edit Grep Glob Bash
-metadata:
-  author: jarvis-team
-  version: "1.0"
-  area: product
 argument-hint: "[path-do-arquivo-criado-ou-modificado]"
 disable-model-invocation: false
+allowed-tools: Read Write Edit Grep Glob Bash
+license: AGPL-3.0
+metadata:
+  author: jarvis-team
+  version: "2.0"
+  area: product
 ---
 
 # Update Specs — Sincronização de Especificações de Produto
 
-Você é responsável por manter PRDs, FRDs e o índice de specs sempre
-consistentes. Quando uma spec muda, você propaga em cascata e atualiza
-o índice local do projeto (`$PROD_DOCS/specs-index.md`).
+## Objetivo
+
+Manter PRDs, FRDs e o índice de specs sempre consistentes. Quando uma spec
+muda, você propaga em cascata (a seção `## Solução` do PRD e o `related_prd`
+da FRD) e atualiza o índice local do projeto (`$PROD_DOCS/specs-index.md`).
 
 O índice é só local: PRD e FRD são documentos de trabalho e não vão para o
 Central docs, que guarda só o que foi implementado (`feature-*` e
@@ -27,21 +30,69 @@ foi implementado, leia o índice do Central docs com
 `jarvis docs fetch {SQUAD}/index.md` (skill `jarvis-docs-central`); este skill
 não escreve nada lá.
 
-
 ## Entrada
 
 - `$ARGUMENTS` — (Opcional) Path do arquivo criado ou modificado.
+
+## Recursos
+
+- `rules/product/prod-rules.md`: layout de `$PROD_DOCS` e status das specs
+- `templates/product/prod-prd-template.md` e `prod-frd-template.md`: frontmatter (`id`, `name`, `status`, `related_prd`)
+- Template do índice local: seção "Templates", abaixo
 
 ---
 
 ## Pré-requisito — Carregar ENV.md
 
-Antes de qualquer ação, ler o `$IDE/ENV.md` e extrair `$PROD_DOCS`:
+Antes de qualquer ação, ler o `$IDE/ENV.md`. `$IDE` é a pasta da IDE ativa
+(`.claude/`, `.cursor/`, `.windsurf/`…), e não o valor de `IDE=` do `ENV.md`:
+troque-a pela pasta real antes de rodar.
 ```bash
-cat $IDE/ENV.md
+cat "$IDE/ENV.md"
 ```
 
-Se não existir um `ENV.md`, crie executando a skill `jarvis-init`  com  Skill tool.
+Resolver `$PROD_DOCS` até o caminho real, expandindo as variáveis do próprio
+`ENV.md` (ex.: `PROD_DOCS=$JARVIS_DOCS/$PROD_FOLDER_NAME` → `docs/jarvis/product`,
+relativo à pasta do workspace). Os comandos abaixo usam esse caminho, entre
+aspas. Se `$PROD_DOCS` ficar vazio, pare e avise: um `grep -r` sem caminho lê
+a entrada padrão e fica parado.
+
+Se não existir um `ENV.md`, crie executando a skill `jarvis-init` com Skill tool.
+
+---
+
+## Quando Usar
+
+- Um PRD ou FRD foi criado ou modificado (pelos `/prod.spec.*` ou à mão)
+- O usuário pede para sincronizar specs ou reconstruir o índice local
+
+**Não usar** para publicar specs ou índice no Central docs: ele recebe só a
+consolidação do `/eng.spec-consolidate`.
+
+## Padrões Críticos
+
+- **Frontmatter, não a linha solta.** Leia `id`, `name`, `status` e
+  `related_prd` só do bloco entre os dois primeiros `---`. O `related_prd`
+  aparece de vários jeitos e todos valem: vazio, `[]`, `PRD-001` na mesma
+  linha ou lista em várias linhas (`related_prd:` seguido de `  - PRD-001`).
+  Só trate como vazio depois de olhar as linhas de baixo.
+- **FRD é quem tem `id: FRD-`.** Breakdowns, revisões e arquivos de `issues/`
+  também podem ter `related_prd`, mas não são FRDs.
+- **Spec é identificada pelo caminho.** O mesmo `id` pode existir em pastas
+  diferentes (dois `PRD-001`). Liste as duas e avise o id repetido; nunca
+  junte nem descarte nenhuma.
+- **Só local.** Nada é publicado fora da máquina; toda gravação mostra o
+  diff e aguarda confirmação.
+
+Leitura do frontmatter (usada em todos os passos):
+```bash
+# Bloco do frontmatter
+awk '/^---[[:space:]]*$/{n++; next} n==1' "{arquivo}"
+
+# Só os PRDs do related_prd, em qualquer um dos formatos (um por linha; "[]" = vazio)
+awk '/^---[[:space:]]*$/{n++; next} n==1' "{arquivo}" \
+  | awk '/^related_prd:/{p=1; sub(/^related_prd:[[:space:]]*/,""); if($0!="")print; next} p&&/^[[:space:]]+-/{sub(/^[[:space:]]+-[[:space:]]*/,""); print; next} {p=0}'
+```
 
 ---
 
@@ -61,19 +112,20 @@ $ARGUMENTS fornecido?
 
 ### 1. Fluxo FRD — quando uma FRD foi criada ou modificada
 
-Extrair do frontmatter:
-```bash
-grep -E "^(id|name|status|related_prd):" {arquivo_frd}
-```
+Extrair do frontmatter `id`, `name`, `status` e `related_prd` (ver "Padrões
+Críticos").
 
-**Se `related_prd` estiver ausente ou vazio**, perguntar:
+**Se `related_prd` estiver ausente ou vazio** (sem nenhum `PRD-xxx` em
+nenhum dos formatos), perguntar:
 ```
 A FRD "{id}: {name}" não tem PRD pai definido.
-→ Qual é o path do PRD relacionado?
+→ Qual é o id do PRD relacionado? (ex.: PRD-001)
 ```
-Atualizar o frontmatter da FRD com o valor informado antes de continuar.
+Atualizar o frontmatter da FRD com o id informado antes de continuar.
 
-**Abrir o PRD referenciado** e verificar a seção `## Solução`:
+**Abrir o PRD referenciado** e verificar a seção `## Solução`. Se houver mais
+de um PRD com esse id, use o da mesma pasta da FRD; sem PRD na mesma pasta,
+pergunte qual é:
 
 - FRD **não aparece na lista** → Adicionar entry:
   `- **[{id}]({path_relativo}) ({status}):** {name}`
@@ -85,19 +137,18 @@ Mostrar diff proposto ao usuário. Aguardar confirmação antes de escrever.
 
 ### 2. Fluxo PRD — quando um PRD foi criado ou modificado
 
-Extrair do frontmatter:
+Extrair do frontmatter `id`, `name` e `status`.
+
+Buscar as FRDs de todo o `$PROD_DOCS` (na pasta do PRD ou em pasta própria):
 ```bash
-grep -E "^(id|name|status):" {arquivo_prd}
+grep -rlE --include="*.md" --exclude-dir=issues "^id: FRD-" "$PROD_DOCS"
 ```
 
-Buscar FRDs filhas em todo o `$PROD_DOCS` (na pasta do PRD ou em pasta própria):
-```bash
-grep -rl "related_prd:" $PROD_DOCS --include="*.md" --exclude-dir=issues
-```
-
-Filtrar apenas as que apontam para este PRD. Para cada FRD encontrada,
-verificar na seção `## Solução` do PRD se o entry está presente e com
-status correto. Atualizar divergências.
+Ficar só com as que têm o id deste PRD no `related_prd`. Se o id do PRD se
+repete em outra pasta, ficar só com as FRDs da mesma pasta deste PRD e
+perguntar sobre as de pasta própria. Para cada FRD encontrada, verificar na
+seção `## Solução` do PRD se o entry está presente e com status correto.
+Atualizar divergências.
 
 Mostrar diff proposto ao usuário. Aguardar confirmação antes de escrever.
 
@@ -115,18 +166,19 @@ Layout de `$PROD_DOCS` (`prod-rules.md`): cada PRD fica em
 (`frd-{id}-{nome}/`). A varredura é recursiva e lê o `id` do frontmatter:
 ```bash
 # PRDs e FRDs em qualquer pasta de $PROD_DOCS (épicos e histórias de issues/ ficam de fora)
-grep -rlE --include="*.md" --exclude-dir=issues "^id: (PRD|FRD)-" $PROD_DOCS
+grep -rlE --include="*.md" --exclude-dir=issues "^id: (PRD|FRD)-" "$PROD_DOCS"
 ```
 
 Arquivos sem `id: PRD-`/`id: FRD-` (revisões, breakdowns) ficam de fora.
 
-Para cada arquivo, extrair via grep: `id`, `name`, `status`
-(e `related_prd` nas FRDs; pode vir vazio, como lista YAML `[]` ou com um id).
+Para cada arquivo, extrair do frontmatter `id`, `name`, `status` e, nas FRDs,
+`related_prd` (ver "Padrões Críticos").
 
-Identificar cada spec pelo **caminho**, e não só pelo `id`: o mesmo id pode
-existir em pastas diferentes (dois `PRD-001`, por exemplo). Nesse caso, listar
-as duas no índice e avisar o usuário do id repetido, sem juntar nem descartar
-nenhuma.
+Identificar cada spec pelo **caminho**, e não só pelo `id`. Com id repetido,
+listar as duas no índice e avisar o usuário. Para pôr uma FRD sob o PRD certo
+em "Relação PRD → FRDs": o PRD com o id do `related_prd` na mesma pasta da
+FRD; se não houver um na mesma pasta e o id se repetir, perguntar ao usuário
+em vez de escolher. FRD sem `related_prd` vai para "FRDs sem PRD pai".
 
 #### 3.2 Obter projeto e repositório para cada PRD
 
@@ -201,19 +253,22 @@ Os links são relativos ao `specs-index.md`, que fica na raiz de `$PROD_DOCS`.
 - Escrever mudanças em cascata sem mostrar o diff antes
 - Alterar o bloco de versionamento dos docs
 - Publicar o índice ou as specs no Central docs ou em qualquer lugar fora da máquina
+- Escolher sozinho entre dois PRDs com o mesmo id
 
 ### Sempre
 - Mostrar resumo das mudanças propostas e aguardar confirmação
 - Preservar paths relativos corretos entre os arquivos
 - Reutilizar mapeamentos de projeto/repo já existentes no índice
+- Ler o `related_prd` em todos os formatos antes de tratá-lo como vazio
 
 ---
 
 ## Checklist de Conclusão
 
-- [ ] ENV.md lido — `$PROD_DOCS` extraído
+- [ ] ENV.md lido — `$PROD_DOCS` resolvido até o caminho real
 - [ ] Tipo do arquivo identificado (PRD / FRD / scan completo)
 - [ ] Cascata de atualizações mapeada e confirmada pelo usuário
+- [ ] Ids repetidos avisados e resolvidos (mesma pasta ou pergunta)
 - [ ] Projeto e repositório obtidos para specs sem mapeamento
 - [ ] Índice local gerado em `$PROD_DOCS/specs-index.md`
 - [ ] Links internos validados
@@ -227,3 +282,15 @@ Os links são relativos ao `specs-index.md`, que fica na raiz de `$PROD_DOCS`.
 | `$PROD_DOCS/specs-index.md` | Projeto atual | Sempre |
 | PRDs afetados | Seção "Solução" sincronizada | Quando FRD muda |
 | FRDs afetadas | `related_prd` preenchido | Quando ausente |
+
+## Mensagem de Conclusão
+
+```
+✅ Specs sincronizadas
+
+📄 Índice: $PROD_DOCS/specs-index.md ({n} PRDs, {m} FRDs)
+🔁 Cascata: {k} arquivos atualizados (PRD "Solução" / FRD related_prd)
+⚠️ Ids repetidos: {lista ou "nenhum"}
+
+O índice é local: nada foi publicado.
+```
