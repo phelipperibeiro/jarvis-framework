@@ -234,11 +234,11 @@ Preencher com a tarefa. Link do card:
 
 ### 4.2 Revisão do texto
 
-Mostre o consolidado de links da sessão (regra 5 de `eng.transitions-rules.md`, com o `pull-request.md` novo), o título e o resumo das seções e pergunte com `AskUserQuestion` (depois da mensagem com o consolidado de links): `[Aprovar]` / `[Ajustar]` / `[Só gerar os arquivos]` (que vale como a opção de mesmo nome da Fase 0: nada é enviado). Ajuste até a aprovação. (Pulada com "Publicar sem revisar o texto" na Fase 0.)
+Mostre o consolidado de links da sessão (regra 5 de `eng.transitions-rules.md`, com o `pull-request.md` novo), o título e o resumo das seções e pergunte com `AskUserQuestion` (depois da mensagem com o consolidado de links): `[Aprovar]` / `[Ajustar]`, mais `[Só gerar os arquivos]` quando a Fase 0 foi "Revisar o texto e publicar" (essa opção troca a escolha da Fase 0 por "Só gerar os arquivos": nada é enviado). Ajuste até a aprovação ou até o `[Só gerar os arquivos]`. (Pulada com "Publicar sem revisar o texto" na Fase 0.)
 
 ### 4.3 Publicar ou não (sem pergunta nova)
 
-A decisão vem da Fase 0, que vale como a pergunta do push e do PR (exceção da regra de ouro, `eng.integrations-rules.md`), ou do `[Só gerar os arquivos]` da 4.2, que a troca por "Só gerar os arquivos"; não pergunte de novo. Aprovado o texto na 4.2 (ou, com "Publicar sem revisar o texto", sem a revisão), siga a escolha:
+A decisão vem da Fase 0, que vale como a pergunta do push e do PR (exceção da regra de ouro, `eng.integrations-rules.md`), ou do `[Só gerar os arquivos]` da 4.2, que a troca por "Só gerar os arquivos"; não pergunte de novo. Aprovado o texto na 4.2 (ou escolhido o `[Só gerar os arquivos]` dela; com "Publicar sem revisar o texto", sem a revisão), siga a escolha:
 
 - **Só gerar os arquivos:** nada é enviado. O `pull-request.md` fica na sessão para você publicar quando quiser (à mão ou rodando o `/eng.pr` de novo). Pule para a Fase 7, que gera o `daily.md` mesmo assim (para não passar batido quando você abrir o PR à mão), com a mensagem "PR não publicado".
 - **Revisar o texto e publicar** ou **Publicar sem revisar o texto:** faça o push (Fase 3) e crie o MR/PR (4.4).
@@ -358,7 +358,7 @@ fi
 
 Regras em `$IDE/rules-on-demand/engineering/eng.pr-rules.md` (seção "daily.md"); template em `$IDE/templates/engineering/daily-template.md`. Arquivo: `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/daily.md`, **só na sessão, nunca publicado**.
 
-1. **Gere sempre**, com ou sem PR publicado: quem abre o PR à mão ("Só gerar os arquivos" na Fase 0) também precisa do registro, e é aí que ele costuma passar batido. Se houver PR (o criado na 4.4 ou o PR já aberto da branch, via CLI/adapter do vendor, ex.: `gh pr view --json state,number,url`), preencha o campo `pr`; sem PR, deixe-o vazio e atualize quando o PR for aberto.
+1. **Gere sempre**, com ou sem PR publicado: quem abre o PR à mão ("Só gerar os arquivos" na Fase 0 ou o `[Só gerar os arquivos]` da 4.2) também precisa do registro, e é aí que ele costuma passar batido. Se houver PR (o criado na 4.4 ou o PR já aberto da branch, via CLI/adapter do vendor, ex.: `gh pr view --json state,number,url`), preencha o campo `pr`; sem PR, deixe-o vazio e atualize quando o PR for aberto.
 2. **Data:** pergunte com `AskUserQuestion`: **"Registrar o esforço com qual data?"** → `Hoje ({AAAA-MM-DD})` | `Outra data` (o usuário digita `AAAA-MM-DD`).
 3. **Dias trabalhados** (só se o período entre a data do `.timestamp_start` e a data do registro tiver mais de um dia), uma pergunta por vez:
    - se o período tiver sábado ou domingo: **"Você trabalhou em {datas de sábado/domingo}?"** (Sim / Não; com várias datas, pode responder por data);

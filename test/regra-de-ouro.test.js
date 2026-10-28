@@ -74,13 +74,24 @@ const HISTORICO = /^docs\/(historico|migracao)\//;
 const ehHistorico = (arquivo) => HISTORICO.test(relative(root, arquivo).split("\\").join("/"));
 
 // Orações que ficam fora da recusa: terminam em vírgula, ponto, ponto e vírgula, dois-pontos, travessão,
-// parêntese ou na conjunção "e"/"mas". Cobre o modo freelance (o skill só registra) e as negadas ("nunca … sem perguntar").
-const FIM_DA_ORACAO = String.raw`(?=\s(?:e|mas)\s|[;),.:—]|$)`;
+// meia-risca, parêntese ou na conjunção "e"/"mas" (exceto "e sem …", que continua a mesma negação).
+// Cobrem o modo freelance (só "freelance:", "freelance pula", "freelance não pergunte" e "freelance (…)", em que o
+// skill só registra) e as orações negadas ("nunca … sem perguntar"), mas não a condicional ("se nada mudou, …").
+const FIM_DA_ORACAO = String.raw`(?=\s(?:e|mas)\s(?!sem\b)|[;),.:—–]|$)`;
 const semIsencoes = (linha) =>
   linha
     .replace(/freelance\s*\([^)]*\)/gi, "")
-    .replace(new RegExp(String.raw`freelance[^;),.:—]*?${FIM_DA_ORACAO}`, "gi"), "")
-    .replace(new RegExp(String.raw`\b(?:nunca|nada|nem)\b[^;),.:—]*?${FIM_DA_ORACAO}`, "gi"), "");
+    .replace(
+      new RegExp(
+        String.raw`freelance(?=:|\s+pula\b|\s+não pergunt)[^;),.:—–]*?${FIM_DA_ORACAO}`,
+        "gi"
+      ),
+      ""
+    )
+    .replace(
+      new RegExp(String.raw`(?<!\bse )\b(?:nunca|nada|nem)\b[^;),.:—–]*?${FIM_DA_ORACAO}`, "gi"),
+      ""
+    );
 
 function todosMd() {
   return PASTAS.map((p) => join(root, p))
@@ -164,7 +175,7 @@ test("toda linha que chama o /eng-global-task-comment traz a pergunta na mesma l
     /^\s*[├└│]/.test(linha) ||
     (arquivo === INTEGRATIONS &&
       (/^\/eng-global-task-comment \{/.test(linha) ||
-        (/^4\. Eventos relevantes/.test(linha) && /não para board/.test(linha)) ||
+        (/^4\. Eventos relevantes/.test(linha) && /task-log\.md/.test(linha)) ||
         /^Para agir no vendor:/.test(linha)));
   const arquivos = [
     "workflows",
@@ -196,7 +207,7 @@ test("toda linha que chama o /eng-global-task-comment traz a pergunta na mesma l
         // Redações que dispensam a pergunta não valem, mesmo com a frase da regra na mesma linha.
         assert.doesNotMatch(
           semIsencoes(linha),
-          /\bsem (a )?perguntar|\bsem a pergunta|não pergunte|(?<!não )dispens\w+|pule a pergunta|já vale como o Sim|regra de ouro não se aplica|não é preciso perguntar/i,
+          /\bsem (a )?perguntar|\bsem a pergunta|não pergunte|(?<!não )\bdispens\w+|pule a pergunta|já vale como o Sim|regra de ouro não se aplica|não é preciso perguntar/i,
           `${onde} dispensa a pergunta. ${DE_PROPOSITO}`
         );
       });
@@ -271,6 +282,34 @@ test("cada ponto que envia algo tem a pergunta logo antes", () => {
         janelaAntes(linhas, i, n),
         precisa,
         `${file}:${i + 1}: o envio ${envio} sem ${precisa} antes. ${DE_PROPOSITO}`
+      );
+    }
+  }
+  // Além da janela, a ordem: no skill de comentário, todo envio vem depois do passo 0.5; no eng.pr, o push e o PR
+  // vêm depois da Fase 0 e da 4.3 (que registra a exceção).
+  const ordem = [
+    [
+      TASK_COMMENT,
+      /^### 0\.5 /m,
+      [
+        /gh issue comment/,
+        /glab issue note/,
+        /acli jira workitem comment/,
+        /^jarvis tasks comment/m,
+      ],
+    ],
+    [ENG_PR, /exceção da regra de ouro/, [/^jarvis vcs create-merge/m, /gh pr create --repo/]],
+    [ENG_PR, /^## Fase 0: /m, [/^git push -u origin \{NOME_DA_BRANCH\}$/m]],
+  ];
+  for (const [file, antes, envios] of ordem) {
+    const texto = read(file);
+    const marco = texto.search(antes);
+    assert.notEqual(marco, -1, `${file}: marco ${antes} não encontrado. ${DE_PROPOSITO}`);
+    for (const envio of envios) {
+      const pos = texto.search(envio);
+      assert.ok(
+        pos > marco,
+        `${file}: o envio ${envio} precisa vir depois de ${antes}. ${DE_PROPOSITO}`
       );
     }
   }
@@ -444,12 +483,19 @@ test("os outros pontos que enviam algo (agente, delivery-spec, data.contract, pr
     read(file)
       .split("\n")
       .forEach((linha, i, todas) => {
-        // Linhas de tabela (mesmo indentadas) são resumos; a nota do acesso manual só diz que o skill grava o .md.
-        if (!/\/eng-global-task-comment/.test(linha) || linha.trim().startsWith("|")) return;
-        if (/só grava o `\.md`/.test(linha)) return;
-        // O ramo do Não pode estar na linha ou na seguinte.
+        // Linhas de tabela (mesmo indentadas) são resumos; a nota do acesso manual (sem desvio, bloqueio ou auditoria)
+        // só diz que o skill grava o .md.
+        if (!/eng-global-task-comment/.test(linha) || linha.trim().startsWith("|")) return;
+        if (
+          /acesso manual/.test(linha) &&
+          /só grava o `\.md`/.test(linha) &&
+          !/desvio|bloqueio|auditoria/.test(linha)
+        )
+          return;
+        // O ramo do Não pode estar na linha ou na próxima linha com texto, desde que ela não chame o skill também.
+        const proxima = todas.slice(i + 1).find((l) => l.trim() !== "") ?? "";
         assert.match(
-          `${linha} ${todas[i + 1] ?? ""}`,
+          /eng-global-task-comment/.test(proxima) ? linha : `${linha} ${proxima}`,
           /Sem o Sim, o texto fica no `task-comment-\*\.md`/,
           `${file}:${i + 1}: falta o ramo do Não (onde o texto recusado fica). ${DE_PROPOSITO}`
         );
@@ -462,8 +508,13 @@ test("os outros pontos que enviam algo (agente, delivery-spec, data.contract, pr
       .split(/^### 0\.5 /m)[1] ?? "";
   const pulos = passo05
     .split("\n")
-    .map((l) => semIsencoes(l).replace(/\bnão (?:pule a pergunta|dispens\w*)/gi, ""))
-    .filter((l) => /pule a pergunta|não pergunte|dispens/i.test(l));
+    .filter(
+      (l) =>
+        /\b(?:nem|nunca) pergunte\b/i.test(l) ||
+        /pule a pergunta|não pergunte|\bdispens/i.test(
+          semIsencoes(l).replace(/\bnão (?:pule a pergunta|dispens\w*)/gi, "")
+        )
+    );
   assert.equal(
     pulos.length,
     1,

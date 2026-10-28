@@ -30,7 +30,7 @@ Além do documento, ele prepara o ambiente: pergunta **de qual branch partir** (
 3. **Prepara o ambiente:** branch de feature e pasta da sessão
 4. **Entende a tarefa:** coleta informações, busca documentação central se estiver configurada e faz de 3 a 5 perguntas de clarificação
 5. **Investiga o código** (somente leitura): padrões, documentação existente e estratégia de testes
-6. **Escreve o `architecture.md`** pelo template, com componentes impactados reais, decisões justificadas, riscos com mitigação e estratégia de testes. Tudo que for diferente do código ou ambíguo no card vira uma **questão em aberto** (seção 8), com no mínimo 3 opções; com Advisor, a sugestão dele é a decisão adotada e fica registrada num comentário de auditoria na issue (depois da pergunta)
+6. **Escreve o `architecture.md`** pelo template, com componentes impactados reais, decisões justificadas, riscos com mitigação e estratégia de testes. Tudo que for diferente do código ou ambíguo no card vira uma **questão em aberto** (seção 8), com no mínimo 3 opções; com Advisor, a sugestão dele é a decisão adotada e fica registrada num comentário de auditoria na issue (depois da pergunta; sem o Sim, o texto fica no `task-comment-*.md` e no `architecture.md`)
 7. **Apresenta e itera** até você aprovar de forma explícita (com Advisor e autonomia alta no CDD, apresenta o resumo e segue para o `eng.plan`)
 8. Lembra você de mover o card para "Em progresso" (quando há board)
 
