@@ -47,7 +47,7 @@ Este comando cria a **branch, commita as alterações e abre um Merge Request**.
 | Skills recomendados | `/eng-global-docs-write` | Se houver necessidade de atualizar documentação junto do PR |
 | Agentes recomendados (opcional) | `eng.qa.test-planner` (agente) | Se houver dúvidas sobre cobertura de testes ou mudanças significativas |
 | Fase 4 › 4.4 Criar MR/PR pela CLI | `jarvis vcs create-merge` (CLI do Jarvis → `gh`/`glab`) | Só se a escolha da Fase 0 for publicar (4.3): abre o MR/PR pela cadeia de `eng.integrations-rules.md`, pelo host do `origin` |
-| Fase 5 › 5.2 Link do MR | `/eng-global-task-comment` | Depois de o MR ser criado (só ao publicar, 4.3): um único comentário no card com o link do MR, seguindo o Passo 6 do skill `eng-global-pr` (freelance: registra no `task-log.md`) |
+| Fase 5 › 5.2 Link do MR | `/eng-global-task-comment` | Depois de o MR ser criado (só ao publicar, 4.3): um único comentário no card com o link do MR, só com o Sim da pergunta (regra de ouro), seguindo o Passo 6 do skill `eng-global-pr` (freelance: registra no `task-log.md`) |
 
 ---
 
@@ -238,7 +238,7 @@ Mostre o consolidado de links da sessão (regra 5 de `eng.transitions-rules.md`,
 
 ### 4.3 Publicar ou não (sem pergunta nova)
 
-A decisão já veio da Fase 0; não pergunte de novo. Aprovado o texto na 4.2, siga a escolha:
+A decisão já veio da Fase 0, que vale como a pergunta do push e do PR (exceção da regra de ouro, `eng.integrations-rules.md`); não pergunte de novo. Aprovado o texto na 4.2 (ou, com "Publicar sem revisar o texto", sem a revisão), siga a escolha:
 
 - **Só gerar os arquivos:** nada é enviado. O `pull-request.md` fica na sessão para você publicar quando quiser (à mão ou rodando o `/eng.pr` de novo). Pule para a Fase 7, que gera o `daily.md` mesmo assim (para não passar batido quando você abrir o PR à mão), com a mensagem "PR não publicado".
 - **Revisar o texto e publicar** ou **Publicar sem revisar o texto:** faça o push (Fase 3) e crie o MR/PR (4.4).
@@ -284,11 +284,11 @@ Pular a 5.1 se `TASK_MANAGER` estiver vazio (freelance); a 5.2 registra o link d
 
 ### 5.1 Mover Card
 
-Mova o card para a etapa equivalente a "em revisão" no seu board. Quem assumiu o card o move; não é preciso esperar o TECH LEAD ou o PM.
+Oriente a pessoa a mover o card para a etapa equivalente a "em revisão" no board (o Jarvis não move card). Quem assumiu o card o move; não é preciso esperar o TECH LEAD ou o PM.
 
 ### 5.2 Link do MR no card
 
-Siga o Passo 6 do skill `eng-global-pr`: um único comentário no card, com o link e a branch. É o único comentário do `eng.pr` no card.
+Siga o Passo 6 do skill `eng-global-pr`: monte um único comentário, com o link e a branch, e publique-o no card com `/eng-global-task-comment`, que mostra o texto e pergunta (regra de ouro, `eng.integrations-rules.md`); sem o Sim, ele fica no `task-comment-*.md` da sessão. É o único comentário do `eng.pr` no card.
 
 ---
 
@@ -308,12 +308,13 @@ Para cada comentário:
 
 ### 6.3 Aplicar Correções
 
-Se necessário:
+Se necessário, faça as correções e o commit. O push das correções sai só depois da pergunta (regra de ouro, `eng.integrations-rules.md`): mostre o commit e pergunte com `AskUserQuestion` (**Sim, publicar** / **Não, manter só local**); sem o Sim, o commit fica local.
 
 ```bash
 # Fazer mudanças
 git add {arquivos_alterados}
 git commit -m "fix: corrigir {problema} conforme code review"
+# só com o Sim da pergunta acima
 git push
 ```
 
@@ -447,7 +448,7 @@ Pergunte com `AskUserQuestion`: **"O PR já foi aprovado e mergeado?"**
 - ✅ Usar mensagem de commit padronizada
 - ✅ Criar branch no padrão `{TASK_MANAGER_KEY}-{titulo}`
 - ✅ Preencher template do MR completamente
-- ✅ Mover card para "In Review"
+- ✅ Orientar a pessoa a mover o card para "In Review" (o Jarvis não move card)
 - ✅ Gerar o `pull-request.md` na sessão e só publicar com a escolha de publicar da Fase 0 (4.3)
 - ✅ Com PR aberto, registrar o esforço no `daily.md` (7.2), com revisão conjunta da descrição e do timesheet
 - ✅ **Nunca apagar a sessão:** o `/eng.spec-consolidate` precisa dela

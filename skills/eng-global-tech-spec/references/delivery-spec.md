@@ -735,7 +735,9 @@ Use o formato **Descrição da subtarefa no Jira** de `$IDE/templates/engineerin
 
 #### 7.3 Criação no Jira
 
-**Se houver API/ferramenta disponível:**
+Antes de criar as subtarefas, mostre o texto e pergunte com `AskUserQuestion` (**Sim, publicar** / **Não, manter só na sessão**), regra de ouro de `eng.integrations-rules.md`; sem o Sim, entregue só o template formatado e deixe o texto na sessão. O comentário da 7.4 tem a sua própria pergunta, feita pelo `/eng-global-task-comment`.
+
+**Se houver API/ferramenta disponível (e o Sim):**
 
 - Use para criar subtarefas automaticamente
 - Vincule à história pai
@@ -748,7 +750,7 @@ Use o formato **Descrição da subtarefa no Jira** de `$IDE/templates/engineerin
 
 #### 7.4 Atualização da História Original
 
-Adicione comentário na história original (STORY-XXX) com:
+Publique o comentário na história original (STORY-XXX) com o `/eng-global-task-comment`, que mostra o texto e pergunta (regra de ouro). O comentário segue este formato:
 
 Use o formato **Comentário na história original** de `$IDE/templates/engineering/tech-spec-delivery-template.md`.
 

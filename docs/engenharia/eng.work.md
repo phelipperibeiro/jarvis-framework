@@ -30,7 +30,7 @@ Para cada fase do plano:
 3. **Valida localmente:** lint, testes e build
 4. **Analisa e implementa testes:** identifica lacunas e escreve os testes que faltam, depois revalida
 5. **Apresenta o resultado** para você validar e itera se precisar
-6. **Atualiza o `plan.md`:** marca as tarefas como completadas e registra comentários; se houver mudança de direção (desvio do plano), comenta também no card
+6. **Atualiza o `plan.md`:** marca as tarefas como completadas e registra comentários; se houver mudança de direção (desvio do plano), prepara também um comentário para o card, que só sai depois da pergunta (regra de ouro)
 7. **Faz o commit da fase**, com arquivos adicionados um a um e a chave da tarefa na mensagem
 8. **Pergunta** se você quer iniciar a próxima fase e espera a resposta
 
@@ -58,9 +58,9 @@ Em qualquer escolha, ele para no limite da IA, com um teste falhando ou diante d
 - **Nunca usa `git add .`** e nunca commita sem sua aprovação da fase nem com testes falhando
 - **Não move cards** no board
 - **Stack do projeto:** em trabalho de backend ou de frontend, carrega a skill base mais as **especializações** registradas no `ENV.md` (`BACKEND_SPECIALIZATIONS` e `FRONTEND_SPECIALIZATIONS`); se algum skill instalado não tem `metadata.area`, **o comando é interrompido** ([especializações de stack](../especializacoes-de-stack.md))
-- Se surgir um bloqueio técnico, registra no plano como bloqueada (🚫), comenta no card, explica e sugere alternativas
-- **Questão nova em aberto é exceção:** se surgir uma e o Advisor tiver sido habilitado no `eng.start`, ele é consultado; a questão entra no `architecture.md`, a auditoria vai para o card e o PR cita a lacuna
-- No card, só desvios do plano e bloqueios: nada de comentário de início ou fim
+- Se surgir um bloqueio técnico, registra no plano como bloqueada (🚫), prepara o comentário do bloqueio (só sai depois da pergunta), explica e sugere alternativas
+- **Questão nova em aberto é exceção:** se surgir uma e o Advisor tiver sido habilitado no `eng.start`, ele é consultado; a questão entra no `architecture.md`, a auditoria vai para o card só com o seu Sim e o PR cita a lacuna
+- No card, só desvios do plano e bloqueios, cada um depois da pergunta (regra de ouro): nada de comentário de início ou fim
 - Se você pedir commit antes da fase terminar, ele explica que o commit é feito ao final da fase validada
 - **Links clicáveis:** os comentários de fase do `plan.md` citam arquivos, linhas e commits como links (`rules-on-demand/doc-links-rules.md`)
 

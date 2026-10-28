@@ -161,6 +161,8 @@ Salvar o contrato preenchido em:
 
 ### 4.2 — Comunicar à squad requisitante
 
+Mostre o texto e pergunte com `AskUserQuestion` antes de notificar (regra de ouro, `eng.integrations-rules.md`); sem o Sim, deixe o texto pronto para a pessoa enviar.
+
 Notificar no canal de solicitação de dados (thread original) com:
 - Link para o contrato
 - Como acessar os dados (método, IAM role ou equivalente)
@@ -168,6 +170,8 @@ Notificar no canal de solicitação de dados (thread original) com:
 - Contato do owner para dúvidas
 
 ### 4.3 — Abrir card no board do time de Data
+
+Mostre o texto do card e pergunte com `AskUserQuestion` antes de criar (regra de ouro); sem o Sim, deixe o card descrito para a pessoa criar.
 
 Criar card no board `DE` (ou equivalente) com:
 - Squad requisitante

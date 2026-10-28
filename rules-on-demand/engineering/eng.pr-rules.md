@@ -137,11 +137,11 @@ sempre utiliza a branch main)
 │        ↓                                                    │
 │  4. COMMIT → Mensagem padronizada                           │
 │        ↓                                                    │
-│  5. PUSH → Enviar para remote                               │
+│  5. PUSH → Enviar para remote (depois da Fase 0)            │
 │        ↓                                                    │
-│  6. CRIAR MR (desenvolvedor) → Com template preenchido      │
+│  6. CRIAR MR (desenvolvedor) → Template, depois da Fase 0   │
 │        ↓                                                    │
-│  7. ATUALIZAR JIRA (desenvolvedor) → Mover para "In Review" │
+│  7. ORIENTAR (desenvolvedor) → Mover o card para "In Review"│
 │                                                             │
 └─────────────────────────────────────────────────────────────┘
 ```
@@ -198,6 +198,8 @@ sempre utiliza a branch main)
    ```
 
 ### Fase 4: Push
+
+O push só sai depois da escolha de publicar da Fase 0 do `eng.pr` (regra de ouro, `eng.integrations-rules.md`).
 
 1. **Enviar para remote**
    ```bash

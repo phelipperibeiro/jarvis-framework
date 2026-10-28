@@ -48,7 +48,7 @@ Sempre termina com o arquivo **`$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/gate-checkl
 
 **Rodadas:** se você rodar o `eng.pre-pr` de novo na mesma sessão (por exemplo, depois de corrigir lacunas com o `eng.work`), o relatório anterior não se perde: ele vira `gate-checklist-rodada-{N}.md`, e o `gate-checklist.md` passa a ser a rodada nova. Ela mostra o número da **Rodada**, o **Commit** em que foi gerada (no modo workspace, um por repositório com mudanças), os links das **Rodadas anteriores** e a **Resolução da rodada anterior**: para cada lacuna que você marcou como "Corrigir", se foi corrigida e em qual commit. O `eng.pr` usa sempre o `gate-checklist.md`, a rodada mais recente. O que você mandou corrigir (🔧) e continua presente volta já marcado 🔧 Corrigir, para você confirmar ou mudar; o que você aceitou (👍) não volta como pendência, e entra como lacuna nova se o problema reaparecer. As lacunas sem decisão, inclusive as ⚪, também entram na resolução.
 
-Depois, com board, pergunta se registra o resultado como comentário no card: **Não, manter só na sessão (como hoje)**, **Sim, só o resumo** ou **Sim, o relatório completo**. Sem board (freelance), não pergunta e o relatório fica só na sessão. E **espera sua permissão** antes do `eng.pr`.
+Depois, com board, pergunta se registra o resultado como comentário no card: **Não, manter só na sessão (como hoje)**, **Sim, só o resumo** ou **Sim, o relatório completo**. O `/eng-global-task-comment` ainda mostra o texto e pergunta uma última vez antes de enviar (regra de ouro). Sem board (freelance), não pergunta e o relatório fica só na sessão. E **espera sua permissão** antes do `eng.pr`.
 
 ## Perguntas que ele faz
 
