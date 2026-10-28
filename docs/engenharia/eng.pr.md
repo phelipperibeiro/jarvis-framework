@@ -25,9 +25,9 @@ Confere que tudo está passando, envia a branch e abre o merge request (ou pull 
 
 1. **Valida:** testes, lint e build (e testes automatizados opcionais, se o projeto estiver rodando). Se algo falhar, corrige antes de seguir
 2. **Verifica a branch:** confirma a branch ativa, a branch de destino e os commits
-3. **Pergunta no início o que fazer com o PR** (regra de ouro): **Revisar o texto e publicar**, **Publicar sem revisar o texto** ou **Só gerar os arquivos**. Essa escolha vale como a pergunta do push e do PR
+3. **Pergunta o que fazer com o PR** (é a Fase 0 do workflow, feita antes da validação; regra de ouro): **Revisar o texto e publicar**, **Publicar sem revisar o texto** ou **Só gerar os arquivos**. Essa escolha vale como a pergunta do push e do PR
 4. **Gera o `pull-request.md`** na sessão (`.jarvis/sessions/eng/{TASK_MANAGER_KEY}/`), a partir do template e do PR Brief do `gate-checklist.md`, e, com "Revisar o texto", pede sua aprovação. Com "Só gerar os arquivos", o arquivo fica na sessão e nada é enviado
-5. Com Sim: **push** e **cria o MR/PR** com o texto aprovado. Com `VERSION_CONTROL_ACCESS=manual`, CLI sem login ou saída 3, nada é enviado: fica o `pull-request.md` e o link para abrir à mão. Com saída 4 (erro depois de enviar), não repita: confira no host se o MR/PR foi criado
+5. Se você escolheu publicar: **push** e **cria o MR/PR** com o texto aprovado. Com `VERSION_CONTROL_ACCESS=manual`, CLI sem login ou saída 3, nada é enviado: fica o `pull-request.md` e o link para abrir à mão. Com saída 4 (erro depois de enviar), não repita: confira no host se o MR/PR foi criado
 6. **Mostra o comentário com o link do MR e pergunta; com o Sim, posta no card** (um único comentário), e orienta a mover para "In Review" (quando há board; o Jarvis não move card)
 7. **Processa o code review:** analisa os comentários e aplica correções; o push das correções só sai depois da pergunta (regra de ouro)
 8. **Registra métricas de lead time**

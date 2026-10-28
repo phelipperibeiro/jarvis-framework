@@ -215,7 +215,7 @@ Usar template oficial em `$IDE/templates/engineering/PR-template.md`.
 
 ### 6. Atualizar o card (`TASK_MANAGER`)
 
-Se `TASK_MANAGER` estiver vazio (freelance): pular este passo.
+Se `TASK_MANAGER` estiver vazio (freelance): pule só o item 1; o item 2 registra o link no `task-log.md` pelo skill.
 
 1. Orientar a pessoa a mover o card para **"In Review"** (ou equivalente do vendor); o Jarvis não move card
 2. Publicar o comentário com o link do MR via `eng-global-task-comment`, que mostra o texto e pergunta (regra de ouro, `eng.integrations-rules.md`)

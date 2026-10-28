@@ -54,9 +54,9 @@ A cada entrada nova: uma linha nova no fim da tabela do índice e a seção nova
 
 **Regra de ouro** (`rules/engineering/eng.integrations-rules.md`): nada é comentado sem perguntar. Antes de qualquer envio, mostre o texto da mensagem e pergunte com `AskUserQuestion`: **"Publicar este comentário no card {TASK_MANAGER_KEY}?"** → **Sim, publicar** / **Não, manter só na sessão (como hoje)**. A pergunta vale para cada comentário, mesmo quando o workflow que chamou o skill já perguntou algo parecido.
 
+- **`TASK_MANAGER_ACCESS` `manual` ou inválido:** não há envio possível; pule a pergunta e faça o mesmo que no Não, avisando que o texto está no `.md`.
 - **Sim:** siga para o passo 1.
 - **Não:** não envie. Grave o `.md` do passo 3 (`task-comment-{YYYYMMDD-HHMM}.md`) e diga `Comentário não enviado; o texto está em {caminho do .md}`, sem o aviso de falha do passo 3. É lá que o texto recusado fica (na auditoria do Advisor, ele também já está no `architecture.md`). O fluxo principal segue.
-- **`TASK_MANAGER_ACCESS` `manual`:** não há envio possível; pule a pergunta e faça o mesmo que no Não, avisando que o texto está no `.md`.
 
 ### 1. `jarvis tasks comment`
 
