@@ -7,7 +7,9 @@
 # =============================================================================
 
 
-# --- Workspace e identidade --------------------------------------------------
+# =============================================================================
+# Workspace e identidade
+# =============================================================================
 # Workspace = a pasta que contém $IDE/. Não é o nome de um repo.
 # Vazio: o CLI usa o nome dessa pasta. Preencha só se quiser outro slug.
 #
@@ -38,14 +40,18 @@ MAX_AI_EXECUTION_PERCENTAGE=80
 ENABLE_CDD=true
 
 
-# --- Organização (obrigatório — opções vêm do taxonomy.md) -------------------
+# =============================================================================
+# Organização (obrigatório — opções vêm do taxonomy.md)
+# =============================================================================
 SQUAD=[CORE]
 HUB=[AI, FRONTEND, BACKEND, QA, DATA, FULLCYCLE]
 AREA=[ENGINEERING, PRODUCT]
 POSITION=[JUNIOR, PLENO, SENIOR, TECH LEAD, SPECIALIST, PM, TPM, GPM, CTO, GENERALIST]
 
 
-# --- IDE e pastas ------------------------------------------------------------
+# =============================================================================
+# IDE e pastas
+# =============================================================================
 # Qual IDE este ENV.md alimenta. FLOWS_FOLDER: workflows (maioria) ou commands (Claude).
 IDE=[windsurf, claude, cursor, codex, opencode, gemini, antigravity]
 DOCS_FOLDER=docs
@@ -94,7 +100,9 @@ PROD_MODE=
 ARTIFACT_STYLE=ai-generated
 
 
-# --- Especializações por área -------------------------------------------------
+# =============================================================================
+# Especializações por área
+# =============================================================================
 # Skills especializados que o Jarvis carrega junto com o skill base de cada área.
 # Lista de nomes de skill separados por vírgula. Ex: eng-backend-golang,eng-backend-nestjs
 # Vazio = só o skill base de cada área (eng-backend, eng-frontend, eng-qa,
@@ -110,7 +118,9 @@ AUTOMATION_SPECIALIZATIONS=
 PLATFORM_SPECIALIZATIONS=
 
 
-# --- Task manager (opcional) -------------------------------------------------
+# =============================================================================
+# Task manager (opcional)
+# =============================================================================
 # Board de cards: jira (só Jira Cloud), github ou gitlab. Vazio = freelance: o workflow
 # pergunta um número de controle próprio (TASK_MANAGER_KEY) e as ações viram .md.
 # O Jarvis fala com o board pela CLI oficial, com o login dela (gh auth login,
@@ -127,7 +137,9 @@ TASK_MANAGER_ACCESS=[cli, manual]
 TASK_MANAGER_URL_BASE=
 
 
-# --- Controle de versão (opcional) -------------------------------------------
+# =============================================================================
+# Controle de versão (opcional)
+# =============================================================================
 # Host de git do projeto: github ou gitlab. O repositório e o host vêm do
 # git remote get-url origin. PR/MR pela CLI oficial (gh pr create, glab mr create),
 # com o login dela. Nenhum token vai neste arquivo.
@@ -137,13 +149,17 @@ VERSION_CONTROL=[github, gitlab]
 VERSION_CONTROL_ACCESS=[cli, manual]
 
 
-# --- Mensageria (opcional) ---------------------------------------------------
+# =============================================================================
+# Mensageria (opcional)
+# =============================================================================
 MESSAGE_BROKER=[rabbitmq, kafka, sqs]
 MESSAGE_BROKER_URL_API=
 MESSAGE_BROKER_API_AUTH=
 
 
-# --- Banco de dados (opcional) -----------------------------------------------
+# =============================================================================
+# Banco de dados (opcional)
+# =============================================================================
 DATABASE=[mysql, postgres, mongodb]
 USER_DATABASE=
 PASSWORD_DATABASE=
@@ -151,7 +167,9 @@ HOST_DATABASE=
 PORT_DATABASE=
 
 
-# --- Chat / comunicador (opcional) -------------------------------------------
+# =============================================================================
+# Chat / comunicador (opcional)
+# =============================================================================
 # slack: BOT_TOKEN + SIGNING_SECRET + APP_TOKEN (Socket Mode)
 # discord: BOT_TOKEN (Bot) + ALERTS_CHANNEL = ID do canal
 # teams: BOT_TOKEN = URL do Incoming Webhook (SIGNING/APP vazios)
@@ -162,29 +180,39 @@ MESSAGE_COMUNICATOR_APP_TOKEN=
 ALERTS_CHANNEL=
 
 
-# --- Object storage (opcional) -----------------------------------------------
+# =============================================================================
+# Object storage (opcional)
+# =============================================================================
 OBJECT_STORAGE=[aws_s3, gcs, azure_blob]
 TOKEN_OBJECT_STORAGE=
 
 
-# --- Observabilidade (opcional) ----------------------------------------------
+# =============================================================================
+# Observabilidade (opcional)
+# =============================================================================
 OBSERVABILITY=[sentry, datadog, grafana]
 TOKEN_OBSERVABILITY=
 OBSERVABILITY_ORG=
 
 
-# --- SMTP (opcional) ---------------------------------------------------------
+# =============================================================================
+# SMTP (opcional)
+# =============================================================================
 SMTP=[google, ses, sendgrid]
 
 
-# --- RTK — Token Killer (opcional) -------------------------------------------
+# =============================================================================
+# RTK — Token Killer (opcional)
+# =============================================================================
 # Proxy CLI em Rust que comprime output de shell (economia 60–90% de tokens).
 # Instale com: cargo install rtk (requer Rust).
 # false = a rule RTK não é copiada para $IDE/rules/.
 RTK_ENABLED=false
 
 
-# --- Advisor (opcional) ------------------------------------------------------
+# =============================================================================
+# Advisor (opcional)
+# =============================================================================
 # Modelos oferecidos quando o usuário escolhe usar o Advisor no início do eng.start,
 # separados por vírgula. Até 4 viram opções da pergunta; o resto fica em "Outro".
 # Vazio ou ausente = o Advisor usa "Sonnet 5.5" (fallback).
@@ -194,7 +222,9 @@ RTK_ENABLED=false
 ADVISOR_MODELS="Sonnet 5.5,Opus 5.5,Opus 5,Fable 5.1"
 
 
-# --- Data Engineering (só se HUB=DATA) ---------------------------------------
+# =============================================================================
+# Data Engineering (só se HUB=DATA)
+# =============================================================================
 # Obrigatório quando HUB=DATA. Omitir o bloco inteiro se o HUB for outro.
 DATA_ORCHESTRATOR=[airflow, prefect, dagster, glue-scheduler]
 DATA_ETL_TOOL=[aws_glue, dbt, spark, pandas]
@@ -207,7 +237,9 @@ DATA_WAREHOUSE=[redshift, snowflake, bigquery]
 DATA_REPO=[data-pipelines, etl-jobs, analytics-pipelines]
 
 
-# --- Code quality (opcional) -------------------------------------------------
+# =============================================================================
+# Code quality (opcional)
+# =============================================================================
 # Análise estática / quality gate. Em branco = sem MCP de code quality.
 CODE_QUALITY_TOOL=[sonarqube, codeclimate, deepsource]
 # URL da instância (self-hosted).
@@ -215,14 +247,18 @@ CODE_QUALITY_URL=
 CODE_QUALITY_TOKEN=
 
 
-# --- QA / suíte de testes (opcional) -----------------------------------------
+# =============================================================================
+# QA / suíte de testes (opcional)
+# =============================================================================
 # Caminho relativo à raiz do projeto.
 # Cypress E2E: cypress | e2e | tests/e2e
 # Unit/integração: tests | test | src/__tests__
 TEST_FOLDER=
 
 
-# --- Reportar bug no próprio Jarvis (opcional) ------------------------------
+# =============================================================================
+# Reportar bug no próprio Jarvis (opcional)
+# =============================================================================
 # URL completa do repositório do Jarvis (oficial por padrão; troque só para um fork interno).
 # Usado pelo skill /jarvis-report-issue, pela CLI do host (gh issue create; login: gh auth login).
 # O repositório do projeto vem do .git, não daqui. Vazio: o upgrade preenche com o oficial.
@@ -230,7 +266,9 @@ TEST_FOLDER=
 JARVIS_PROJECT=https://github.com/phelipperibeiro/jarvis-framework
 
 
-# --- Central docs -------------------------------------------------------------
+# =============================================================================
+# Central docs
+# =============================================================================
 # O registro do que FOI IMPLEMENTADO: um documento completo por funcionalidade e um registro
 # por entrega, gerados pelo /eng.spec-consolidate depois de cada PR. Ligado por padrão.
 # Nunca dentro do versionamento de um repositório de código.
