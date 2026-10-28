@@ -93,19 +93,27 @@ O `gate-checklist.md` é sempre a rodada mais recente: o `/eng.pr` e o `/eng.spe
 
 Da rodada 2 em diante, um gate roda só se o diff desde a rodada anterior tocar o que ele lê. O diff incremental decide apenas **se** o gate roda: o gate que roda continua revisando a branch inteira em relação à branch base.
 
-- **Diff incremental:** `git diff --name-only {Commit da rodada anterior}..HEAD`, mais os arquivos de `git status --porcelain` (mudanças ainda sem commit). No modo workspace, um diff por repositório do `Commit:` da rodada anterior (`git -C {repo} …`); repositório com mudanças na branch que não estava nesse `Commit:` entra inteiro.
+- **Diff incremental:** `git diff --name-only {Commit da rodada anterior}..HEAD`, mais os arquivos de `git status --porcelain` (mudanças ainda sem commit; um arquivo que já estava sujo na rodada anterior e não mudou entra de novo, e o gate roda a mais: borda aceita, a favor de revisar). No modo workspace, um diff por repositório do `Commit:` da rodada anterior (`git -C {repo} …`); repositório com mudanças na branch que não estava nesse `Commit:` entra inteiro.
 - **Escopo de cada gate**, pelo que ele lê (não pelo que ele aponta):
 
-  | Gate | Roda da rodada 2 em diante se o diff incremental tiver |
-  |---|---|
-  | Alinhamento, testes automatizados e documentação do projeto (itens 1, 5 e 9) | qualquer arquivo |
-  | Código e cobertura de testes (itens 2 e 3) | algum arquivo fora de `docs/` |
-  | Não funcionais, interface, UX e segurança (itens 4, 6, 7 e 8) | o que já dispara o gate pela condição dele, olhando só o diff incremental |
+  | Gate (item) | Área do relatório | Roda da rodada 2 em diante se o diff incremental tiver |
+  |---|---|---|
+  | Alinhamento (1) | Produto e documentação | qualquer arquivo |
+  | Código (2) | Código | algum arquivo fora da pasta `docs/` da raiz do repositório |
+  | Cobertura de testes (3) | Testes | algum arquivo fora da pasta `docs/` da raiz do repositório |
+  | Não funcionais (4) | Não funcionais | algum arquivo fora da pasta `docs/` da raiz do repositório, e a feature tem requisito não funcional |
+  | Testes automatizados (5) | Testes | qualquer arquivo |
+  | Interface (6) | Interface e UX | mudança de interface (componentes, estilos, estado) |
+  | UX (7) | Interface e UX | nova feature de UI ou mudança de fluxo de usuário |
+  | Segurança (8) | Segurança | algo que toque auth, sessions, inputs de usuário, CORS, CSP, permissões ou endpoints públicos |
+  | Documentação do projeto (9) | Documentação do projeto | qualquer arquivo |
 
 - **Lacuna que depende de arquivo fora do escopo do gate** (por exemplo, documentação que ficou desatualizada por uma mudança de código): fica coberta porque o alinhamento e a documentação rodam com qualquer arquivo no diff.
-- **Sem nenhum arquivo no diff incremental:** nenhum gate roda; a rodada serve só para decidir de novo as pendências, no fechamento.
-- **Como o relatório marca:** a área cujos gates não rodaram leva, no lugar da tabela, "Não reavaliada nesta rodada (sem diff no escopo desde `{Commit da rodada anterior}`)"; as lacunas de um gate que não rodou ficam `Não reavaliada` na "Resolução da rodada anterior".
-- **Todos os gates rodam:** na rodada 1, quando a rodada anterior não tem `Commit:` (relatório de versão antiga; avise em uma linha) e quando a pessoa pedir.
+- **Lacuna reavaliada:** uma lacuna da rodada anterior é reavaliada se algum gate da área dela rodou nesta rodada (na área "Testes", basta o item 3 ou o 5).
+- **Pendentes não reavaliadas continuam pendentes:** a lacuna da rodada anterior que não foi reavaliada e estava com `🔧 Corrigir` ou sem decisão é copiada para a tabela da área nesta rodada, com a decisão herdada e "(não reavaliada nesta rodada)" na coluna Lacuna; na "Resolução da rodada anterior" ela fica `Não reavaliada`. Assim ela entra na conta do fechamento e no PR Brief.
+- **Sem nenhum arquivo no diff incremental:** nenhum gate roda; as pendentes da rodada anterior são copiadas (regra acima) e a rodada serve para decidir de novo sobre elas, no fechamento.
+- **Como o relatório marca:** a área em que nenhum gate rodou leva, acima da tabela (que só traz as pendentes copiadas, se houver), "Não reavaliada nesta rodada (sem diff no escopo desde `{Commit da rodada anterior}`)".
+- **Todos os gates rodam:** na rodada 1; quando a rodada anterior não tem `Commit:` (relatório de versão antiga); quando esse commit não existe mais no repositório (`git cat-file -e {Commit da rodada anterior}` falha: rebase, outro clone); e quando a pessoa pedir. Nos dois casos do meio, avise em uma linha.
 
 ### Modelo
 
@@ -167,32 +175,31 @@ A **Resolução da rodada anterior** lista as lacunas da rodada anterior com dec
 
 ## Fechamento
 
-**Critério de parada.** Leia-o antes do passo 1. Ele não impede a rodada de rodar nem de gravar o relatório: muda só a pergunta do passo 2. Parecido com o orçamento de etapas do `ReAct` e com o do `/eng.debug` (ver #171).
+**Critério de parada.** Calcule-o depois dos gates e antes de gravar o relatório, e grave a linha `Critério de parada:` no Resumo. Ele não impede a rodada de rodar nem de gravar o relatório: muda só o que o fechamento mostra e pergunta. Parecido com o orçamento de etapas do `ReAct` e com o do `/eng.debug` (ver #171).
 
 - **Teto de rodadas**, pela `urgencia` do `context.md` (o mesmo campo do orçamento do `/eng.debug`): `alta` 3 · `normal` 5 · `baixa` 8; sem `context.md`, vale `normal`. Atingido quando o `Rodada:` desta rodada é igual ou maior que o teto.
-- **Rodada sem lacuna nova** (da rodada 2 em diante): nenhuma lacuna 🔴 ou 🟡 desta rodada é nova. Nova é a que não aparece na "Resolução da rodada anterior" como `Ainda presente`.
-- Registre a linha `Critério de parada:` no Resumo do relatório.
+- **Rodada sem lacuna nova** (da rodada 2 em diante, e só se os gates de código e de cobertura de testes, itens 2 e 3, rodaram nesta rodada): nenhuma lacuna 🔴 ou 🟡 desta rodada é nova. Nova é a que não aparece na "Resolução da rodada anterior" como `Ainda presente` ou `Não reavaliada`. Este gatilho não muda a pergunta: avisa, na variante A, que as pendentes são as mesmas da rodada anterior.
 
-Lacuna **pendente** é a sem decisão ou a herdada com `🔧 Corrigir`. O passo 2 tem duas variantes:
+Lacuna **pendente** é a sem decisão ou a herdada com `🔧 Corrigir`, inclusive as copiadas como "(não reavaliada nesta rodada)". Uma decisão herdada nunca é trocada por outra opção da variante B. O passo 2 tem duas variantes:
 
 | Situação | Variante |
 |---|---|
-| Há 🔴 pendente; há 🟡 pendente e o critério não foi atingido; ou não há lacuna pendente | **A** (as perguntas de sempre) |
-| Nenhuma 🔴 pendente, há lacuna pendente e: só ⚪ estão pendentes, ou o critério foi atingido | **B** (severidade como gatilho) |
+| Nenhuma 🔴 pendente, nenhuma 🟡 herdada com `🔧 Corrigir`, há lacuna sem decisão, e as sem decisão são só ⚪ (ou também 🟡, com o teto atingido) | **B** (severidade como gatilho) |
+| Qualquer outro caso (inclusive sem lacuna pendente) | **A** (as perguntas de sempre) |
 
 1. Mostre o semáforo, o resumo e a lista de lacunas por severidade, com o consolidado de links da sessão (regra 5 de `eng.transitions-rules.md`: tudo o que já existe, com o `gate-checklist.md` novo e, antes dele e em ordem, as rodadas anteriores `gate-checklist-rodada-{N}.md`; o atual leva a nota "rodada {N}, atual").
 2. Peça as decisões com `AskUserQuestion`, depois da mensagem em markdown do passo 1 (com o link clicável).
 
-   **Variante A.** Se o teto foi atingido e ainda há 🔴 pendente, comece a mensagem com: "⚠️ Teto de {T} rodadas da urgência `{u}` atingido; ainda há {a} 🔴. Cada rodada a mais fica registrada no PR." Pergunta: **"O que fazer com as {n} lacunas encontradas ({a} 🔴 bloqueadoras, {b} 🟡 importantes)? Relatório: gate-checklist.md."**
+   **Variante A.** Se o teto foi atingido e ainda há 🔴 pendente, comece a mensagem com: "⚠️ Teto de {T} rodadas da urgência `{u}` atingido; ainda há {a} 🔴. Cada rodada a mais fica registrada no PR." Se o gatilho "sem lacuna nova" foi atingido, comece com: "ℹ️ Nenhuma 🔴 ou 🟡 nova nesta rodada: as pendentes são as da rodada anterior." Pergunta: **"O que fazer com as {n} lacunas encontradas ({a} 🔴 bloqueadoras, {b} 🟡 importantes)? Relatório: gate-checklist.md."**
    - **Corrigir todas antes do PR:** marca as {n} como "🔧 Corrigir"; você corrige à mão ou com o `/eng.work`.
    - **Corrigir só as bloqueadoras 🔴:** marca as 🔴 sem decisão como "🔧 Corrigir"; as 🟡 sem decisão ficam "👍 Aceitar", com um motivo só, pedido uma vez. As lacunas herdadas continuam "🔧 Corrigir".
    - **Decidir uma a uma:** mostra cada lacuna 🔴 e 🟡 (as herdadas já com "🔧 Corrigir") e você escolhe "🔧 Corrigir" ou "👍 Aceitar" (com o motivo), com `AskUserQuestion` por lacuna.
    - **Só gerar o relatório (vou analisar com calma):** não registra decisão agora; a coluna **Decisão** fica vazia (exceto as decisões herdadas), o `gate-checklist.md` fica na sessão para você analisar e o comando termina sem as perguntas 3 e 4. Rode o `/eng.pre-pr` de novo (este relatório é preservado como `gate-checklist-rodada-{N}.md`), ou preencha o arquivo à mão, quando decidir.
 
-   **Variante B.** A resposta já decide como seguir, e o passo 4 não é feito. Pergunta: **"Só restam {c} lacunas ⚪{ e {b} 🟡, pelo critério de parada} (critério de parada: {atingido na rodada {N} | não atingido}). Relatório: gate-checklist.md. Como seguir?"**
-   - **Aceitar as ⚪ e seguir para o PR** (com 🟡 pendentes, o rótulo cita as duas: "Aceitar as {b} 🟡 e as {c} ⚪ e seguir para o PR"): grava `👍 Aceitar: aceito no fechamento da rodada {N}` nas ⚪ pendentes e `👍 Aceitar: critério de parada da rodada {N}` nas 🟡 pendentes; depois do passo 3, chame o `/eng.pr {TASK_MANAGER_KEY}` (ou mostre o comando).
-   - **Corrigir antes do PR:** marca as pendentes como `🔧 Corrigir`; depois do passo 3, chame o `/eng.work {TASK_MANAGER_KEY}` para elas (ou mostre o comando).
-   - **Só gerar o relatório (vou analisar com calma):** como na variante A; o comando termina sem os passos 3 e 4.
+   **Variante B.** A resposta já decide como seguir, e o passo 4 não é feito. Pergunta (omita o termo que estiver em zero): **"Restam {c} lacunas ⚪{ e {b} 🟡, com o teto de {T} rodadas atingido} sem decisão. Relatório: gate-checklist.md. Como seguir?"**
+   - **Aceitar as ⚪ e seguir para o PR** (é a primeira opção, a recomendada; com 🟡 sem decisão, o rótulo cita as duas: "Aceitar as 🟡 e as ⚪ e seguir para o PR"): grava `👍 Aceitar: aceito no fechamento da rodada {N}` nas ⚪ sem decisão e `👍 Aceitar: teto de rodadas atingido na rodada {N}` nas 🟡 sem decisão; as ⚪ herdadas com `🔧 Corrigir` mantêm a decisão e seguem como pendências no PR Brief; depois do passo 3, chame o `/eng.pr {TASK_MANAGER_KEY}` (ou mostre o comando).
+   - **Corrigir antes do PR:** marca as sem decisão como `🔧 Corrigir`; depois do passo 3, chame o `/eng.work {TASK_MANAGER_KEY}` para as pendentes (ou mostre o comando).
+   - **Só gerar o relatório (vou analisar com calma):** como na variante A; o comando termina sem os passos 3 e 4. É a opção que mantém o fluxo de hoje e a que vale quando a pessoa não escolhe.
 
    Grave as decisões na coluna **Decisão** como `🔧 Corrigir` ou `👍 Aceitar: motivo`. As opções acima valem só para as lacunas sem decisão, exceto "Decidir uma a uma", que também deixa mudar as herdadas 🔴 e 🟡 (as ⚪ herdadas mudam à mão); as herdadas entram em `{n}` e, conforme a severidade, em `{a}` ou `{b}`.
 3. **Modo freelance (`TASK_MANAGER` vazio):** não pergunte; o relatório fica só na sessão. **Com board**, pergunte com `AskUserQuestion` (nunca publique sem a resposta): **"Registrar o resultado do `/eng.pre-pr` como comentário no card {TASK_MANAGER_KEY}?"**
