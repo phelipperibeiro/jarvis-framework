@@ -171,12 +171,12 @@ Notificar no canal de solicitação de dados (thread original), depois do Sim ac
 
 ### 4.3 — Abrir card no board do time de Data
 
-Mostre o texto do card e, se a criação vai sair (board configurado e CLI logada), pergunte com `AskUserQuestion` antes de criar (regra de ouro); sem o Sim, sem board ou sem a CLI, deixe o card descrito para a pessoa criar.
+Mostre o texto do card e, se a criação vai sair (board configurado, CLI logada e `TASK_MANAGER_ACCESS=cli` ou vazio), pergunte com `AskUserQuestion` antes de criar (regra de ouro); sem o Sim, sem board, sem a CLI ou com acesso manual, deixe o card descrito para a pessoa criar.
 
-Com o Sim, criar card no board `DE` (ou equivalente) pela CLI oficial do vendor (`acli jira workitem create`, `gh issue create` ou `glab issue create`, flags no `--help`; não há comando `jarvis` para criar card). Sem a CLI logada, com acesso manual ou sem board, a pessoa cria com o texto pronto. O card leva:
+Com o Sim, criar card no board `DE` (ou equivalente) pela CLI oficial do vendor (`acli jira workitem create`, `gh issue create` ou `glab issue create`, flags no `--help`; o `jarvis vcs create-issue` abre issue no repositório do `git remote`, não no board `DE`). Sem a CLI logada, com acesso manual ou sem board, a pessoa cria com o texto pronto. O card leva:
 - Squad requisitante
 - Tabela/recurso
-- Status: `Ativo`
+- Status: `Ativo` (no corpo do card; `gh`/`glab` não têm esse campo)
 - Link para o contrato
 
 ---

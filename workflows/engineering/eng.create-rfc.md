@@ -106,13 +106,13 @@ A busca em `docs/jarvis/` (PRD, ARD, RFCs) é sempre feita; a consulta ao Centra
    - Tags semânticas
 
 3. Documentos a buscar:
-   - **Funcionalidades já implementadas** relacionadas (Central docs: `feature-*`)
+   - **Funcionalidades já implementadas** relacionadas (Central docs, se configurado: `feature-*`)
    - **PRD relacionado** (em `$PROD_DOCS`, para rastreabilidade e contexto de negócio)
    - **ARD existente** e **RFCs anteriores** relacionados ao tema (em `$ENG_DOCS/ARD` e `$ENG_DOCS/RFC`)
 
 4. Se documentos encontrados:
    - Carregar automaticamente como contexto
-   - Informar ao usuário: "✅ Documentos encontrados (Central docs e `docs/jarvis/`): [lista]"
+   - Informar ao usuário: "✅ Documentos encontrados (`docs/jarvis/` e, se configurado, Central docs): [lista]"
    - Incorporar ao contexto antes do Passo 1
 
 5. Se não encontrado:

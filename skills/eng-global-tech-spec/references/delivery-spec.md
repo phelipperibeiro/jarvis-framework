@@ -723,7 +723,7 @@ Só com board configurado (no freelance não há issue: pule este passo). Só h�
 
 #### 7.1 Preparação para Criação
 
-**Se o projeto usa Jira e a `acli` está logada (`acli jira workitem create`, conferindo os flags no `--help`; a criação só sai na 7.3, depois da pergunta, regra de ouro):**
+**Se o projeto usa Jira, a `acli` está logada e `TASK_MANAGER_ACCESS=cli` (ou vazio) (`acli jira workitem create`, conferindo os flags no `--help`; a criação só sai na 7.3, depois da pergunta, regra de ouro):**
 
 Para cada subtarefa no plano:
 

@@ -122,7 +122,7 @@ WHERE data_referencia BETWEEN '{{DATA_INICIO}}' AND '{{DATA_FIM}}'
 
 Qualquer alteração de schema (adição, remoção ou mudança de tipo de campo) deve:
 
-1. Ser comunicada no canal `$DATA_REQUESTS_CHANNEL` com **7 dias de antecedência**
+1. Ser comunicada no canal `$DATA_REQUESTS_CHANNEL` com **7 dias de antecedência** (pela pessoa; um aviso enviado pelo Jarvis só sai depois da pergunta)
 2. Ter nova versão do contrato criada (versionamento semântico: `MAJOR.MINOR`)
 3. Período de coexistência: versão antiga disponível por **30 dias** após nova versão publicada
 

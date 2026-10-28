@@ -38,7 +38,7 @@
 - Nunca commite credenciais, tokens ou senhas
 - Use variáveis de ambiente para dados sensíveis
 - Siga as práticas de segurança definidas em `{IDE_FOLDER}/rules/engineering/`
-- Reporte vulnerabilidades ao time de segurança
+- Reporte vulnerabilidades ao time de segurança (você, pela via do projeto; o Jarvis não envia nada sem perguntar)
 
  Available Workflows
 

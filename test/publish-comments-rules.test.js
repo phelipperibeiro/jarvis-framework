@@ -84,7 +84,7 @@ const IMPERATIVOS_POR_ORACAO = [
   // Notificar ou comunicar a squad, o time, o canal ou os stakeholders também é envio (só o imperativo; "deve ser
   // comunicada no canal" descreve o processo para pessoas).
   new RegExp(
-    String.raw`^(?!.*\b(?:não|nem|nunca|jamais|sem)\s+(?:notific|comunic|avis|alert|post|envi|public|mand|inform|dispar|cri|abr)\w*\b)${ISENTA_ENVIO}.*(?:\b(?:notifi(?:car|ca|que|cando)|comuni(?:car|ca|que|cando)|avis(?:ar|e|ando)|post(?:ar|e|em|ando)|envi(?:ar|e|em|ando)|publi(?:car|que|cando)|mand(?:ar|e|em|ando)|inform(?:ar|e|em|ando)|alert(?:ar|e|em|ando)|dispar(?:ar|e|em|ando))\b(?:\s+(?!que\b)\S+){0,4}?\s+(?:(?:[oa]s?|à|às|ao|aos|n[oa]s?|para\s+[oa]s?|em)\s+)?(?:squads?|times?|canal|canais|equipes?|stakeholders?|requisitante|PM|owner|consumidores|Slack)\b|(?:\b(?:cri(?:e|em|ando)|abr(?:a|am|indo))|^\s*(?:[-*+]\s+|\d+[.)]\s+)?(?:criar|abrir))\s+(?:(?:[oa]s?|um|uma)\s+)?(?:(?:cards?|issues?|tickets?)\b|(?:subtarefas?|workitems?)\b.*\b(?:no|na|para\s+o)\s+(?:Jira|board|Linear|GitHub|GitLab)\b))`,
+    String.raw`^(?!.*\b(?:não|nem|nunca|jamais|sem)\s+(?:notific|comunic|avis|alert|post|envi|public|mand|inform|dispar|cri|abr)\w*\b)${ISENTA_ENVIO}.*(?:\b(?:notifi(?:car|ca|que|cando)|comuni(?:car|ca|que|cando)|avis(?:ar|e|ando)|post(?:ar|e|em|ando)|envi(?:ar|e|em|ando)|publi(?:car|que|cando)|mand(?:ar|e|em|ando)|inform(?:ar|e|em|ando)|alert(?:ar|e|em|ando)|dispar(?:ar|e|em|ando))\b(?:\s+(?!que\b)\S+){0,4}?\s+(?:(?:[oa]s?|à|às|ao|aos|n[oa]s?|para\s+[oa]s?|em)\s+)?(?:squads?|times?|canal|canais|equipes?|stakeholders?|requisitante|PM|owner|consumidores|Slack)\b|(?:\b(?:cri(?:e|em|ando)|abr(?:a|am|indo))|^\s*(?:[-*+]\s+|\d+[.)]\s+)?(?:criar|abrir))\s+(?:(?:[oa]s?|um|uma)\s+)?(?:(?:cards?|issues?|tickets?)\b|(?:subtarefas?|workitems?)\b.*\b(?:no|na|para\s+o|em)\s+(?:Jira|board|Linear|GitHub|GitLab)\b))`,
     "iu"
   ),
 ];
@@ -573,7 +573,7 @@ test("cada ponto que envia algo tem a pergunta logo antes", () => {
         if (
           /`jarvis vcs create-merge` n[aã]o p[oõ]e label/.test(linha) &&
           !/git(?:\s+-C\s+\S+)?\s+push|\bgh |\bglab |\bacli |jarvis (?:docs publish|tasks comment|vcs create-)/.test(
-            linha.replace(/`jarvis vcs create-merge` n[aã]o p[oõ]e label/g, "") || linha
+            linha.replace(/`jarvis vcs create-merge` n[aã]o p[oõ]e label/g, "")
           )
         )
           return;

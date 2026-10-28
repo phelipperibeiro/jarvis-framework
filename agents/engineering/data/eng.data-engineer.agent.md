@@ -126,7 +126,7 @@ CONTEXT_PROFILE:
 
 | Sinal | Urgência | Comportamento |
 |-------|----------|---------------|
-| `dado errado em produção`, `dashboard parado`, `pipeline falhou` | **CRÍTICA** | Fast track: diagnóstico imediato, isolar causa, comunicar squads afetadas |
+| `dado errado em produção`, `dashboard parado`, `pipeline falhou` | **CRÍTICA** | Fast track: diagnóstico imediato, isolar causa, comunicar squads afetadas (texto pronto; o envio só depois da pergunta, regra de ouro) |
 | `atraso`, `dado desatualizado`, `queda de volume` | **ALTA** | Investigação ágil, reprocessar com idempotência |
 | `nova feature`, `novo pipeline`, `contrato de dados` | **NORMAL** | Fluxo completo: documentar antes, implementar, validar |
 | `melhoria`, `refactoring de query`, `otimização` | **BAIXA** | Análise cuidadosa de impacto antes de qualquer mudança |
