@@ -46,11 +46,51 @@ test("os rótulos da variante B na tabela de transições são os mesmos do fech
     3,
     `${TRANSITIONS}: a variante B deveria ter 3 opções. ${DE_PROPOSITO}`
   );
+  // Só o trecho da variante B: "Só gerar o relatório" também é opção da variante A.
   const fechamento = secao(read(PRE_PR), "## Fechamento");
+  const inicio = fechamento.indexOf("**Variante B.**");
+  assert.notEqual(inicio, -1, `${PRE_PR}: o Fechamento sem "**Variante B.**". ${DE_PROPOSITO}`);
+  const fim = fechamento.indexOf("   Grave as decisões", inicio);
+  const varianteB = fechamento.slice(inicio, fim === -1 ? undefined : fim);
+  const opcoes = varianteB.split("\n").filter((l) => /^ {3}- \*\*/.test(l));
+  assert.equal(
+    opcoes.length,
+    rotulos.length,
+    `${PRE_PR}: a variante B tem ${opcoes.length} opções, a tabela de transições tem ${rotulos.length}. ${DE_PROPOSITO}`
+  );
   for (const rotulo of rotulos) {
     assert.ok(
-      fechamento.includes(`**${rotulo}`),
-      `${PRE_PR}: o Fechamento não tem a opção "${rotulo}" da tabela de transições. ${DE_PROPOSITO}`
+      opcoes.some((l) => l.includes(`**${rotulo}`)),
+      `${PRE_PR}: a variante B não tem a opção "${rotulo}" da tabela de transições. ${DE_PROPOSITO}`
+    );
+  }
+});
+
+test("os textos de decisão da variante B são os mesmos no workflow e na rule", () => {
+  for (const texto of [
+    "👍 Aceitar: aceito no fechamento da rodada {N}",
+    "👍 Aceitar: teto de rodadas atingido na rodada {N}",
+  ]) {
+    for (const arquivo of [PRE_PR, PRE_PR_RULES]) {
+      assert.ok(read(arquivo).includes(texto), `${arquivo} sem "${texto}". ${DE_PROPOSITO}`);
+    }
+  }
+});
+
+test("cada área da tabela da rodada incremental é uma área do modelo do relatório", () => {
+  const texto = read(PRE_PR);
+  const modelo = texto.match(/^### \{Área: (.+)\}$/m);
+  assert.ok(modelo, `${PRE_PR}: o modelo sem "### {Área: …}". ${DE_PROPOSITO}`);
+  const areas = new Set(modelo[1].split(" | ").map((a) => a.trim()));
+  const linhas = secao(texto, "### Rodada incremental")
+    .split("\n")
+    .filter((l) => /^\s*\| [^|]*\(\d+\) \|/.test(l));
+  assert.ok(linhas.length > 0, `${PRE_PR}: a tabela da rodada incremental sumiu. ${DE_PROPOSITO}`);
+  for (const linha of linhas) {
+    const area = linha.split("|")[2].trim();
+    assert.ok(
+      areas.has(area),
+      `${PRE_PR}: a área "${area}" da rodada incremental não está no modelo do relatório. ${DE_PROPOSITO}`
     );
   }
 });
