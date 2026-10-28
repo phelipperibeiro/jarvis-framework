@@ -52,7 +52,7 @@ Lida pelo comando antes de escrever o documento. A tabela mostra quem lê:
    - Issue, PR e card como URL.
    - Código como `{remote}/blob/{sha}/{caminho}#L{n}` (GitLab: `{remote}/-/blob/{sha}/…`). O trecho é `#L{a}-L{b}` no GitHub e `#L{a}-{b}` no GitLab.
    - Sessão e `docs/jarvis/` em texto, sem link: quem lê fora do workspace não abre esses arquivos.
-   - O `{sha}` é o `HEAD` no momento em que o `eng.pr` escreve o `pull-request.md` (Fase 4.1). Se a conferência de marcas (Fase 3.0) reescrever commits, atualize o sha dos links. Com "Só gerar os arquivos", os links valem quando o push for feito sem rebase.
+   - O `{sha}` é o `HEAD` no momento em que o `eng.pr` escreve o `pull-request.md` (Fase 4.1). Se a conferência de marcas (Fase 3.0) reescrever commits, atualize o sha dos links. Com "Só gerar os arquivos" (na Fase 0 ou na revisão da 4.2), os links valem quando o push for feito sem rebase.
    - No Central docs, o `{sha}` é o do merge na branch base (a consolidação roda depois do merge).
    - No `.public.md` (gerado no fim do próprio comando, muitas vezes sem push), o `{sha}` é o último commit já enviado ao remoto (`git rev-parse @{u}`), ou o sha do cabeçalho se ele já estiver no remoto. Sem nenhum dos dois, o código fica em texto.
 7. **Documento versionado no repositório** (`README.md`, `docs/` do projeto, gravados por exemplo pelo `eng.docs`): o caminho é relativo dentro do próprio repositório (nada de subir até o workspace com `../../{repo}/…`), porque ele é lido no GitHub/GitLab. A sessão e o `docs/jarvis/` ficam em texto, sem link.

@@ -74,24 +74,38 @@ const HISTORICO = /^docs\/(historico|migracao)\//;
 const ehHistorico = (arquivo) => HISTORICO.test(relative(root, arquivo).split("\\").join("/"));
 
 // Orações que ficam fora da recusa: terminam em vírgula, ponto, ponto e vírgula, dois-pontos, travessão,
-// meia-risca, parêntese ou na conjunção "e"/"mas" (exceto "e sem …", que continua a mesma negação).
-// Cobrem o modo freelance (só "freelance:", "freelance pula", "freelance não pergunte" e "freelance (…)", em que o
-// skill só registra) e as orações negadas ("nunca … sem perguntar"), mas não a condicional ("se nada mudou, …").
-const FIM_DA_ORACAO = String.raw`(?=\s(?:e|mas)\s(?!sem\b)|[;),.:—–]|$)`;
+// meia-risca, parêntese ou na conjunção "e"/"mas". Só o "nunca"/"jamais" segue no "e sem …", que continua a
+// mesma negação ("nunca comente e sem perguntar"); "nem" e "nada" param no "e" ("nem sempre há board e …").
+// Cobrem o modo freelance ("freelance pula", "freelance não pergunte" e "freelance (…)", em que o skill só
+// registra; "freelance: …" vale até o fim da frase, o ponto e vírgula ou o "e"/"mas", com o ponto de um nome
+// de arquivo como `task-log.md` dentro da frase) e as orações negadas ("nunca … sem perguntar"), mas não a
+// condicional ("se nada mudou, …").
+const FIM_SIMPLES = String.raw`(?=\s(?:e|mas)\s|[;),.:—–]|$)`;
+const FIM_DO_NUNCA = String.raw`(?=\s(?:e|mas)\s(?!sem\b)|[;),.:—–]|$)`;
+const FIM_DA_FRASE = String.raw`(?=\s(?:e|mas)\s|[;—–]|\.(?=\s|$)|$)`;
 const semIsencoes = (linha) =>
   linha
     .replace(/freelance\s*\([^)]*\)/gi, "")
+    .replace(new RegExp(String.raw`freelance:(?:[^;.—–]|\.(?!\s|$))*?${FIM_DA_FRASE}`, "gi"), "")
     .replace(
-      new RegExp(
-        String.raw`freelance(?=:|\s+pula\b|\s+não pergunt)[^;),.:—–]*?${FIM_DA_ORACAO}`,
-        "gi"
-      ),
+      new RegExp(String.raw`freelance(?=\s+pula\b|\s+não pergunt)[^;),.:—–]*?${FIM_SIMPLES}`, "gi"),
       ""
     )
     .replace(
-      new RegExp(String.raw`(?<!\bse )\b(?:nunca|nada|nem)\b[^;),.:—–]*?${FIM_DA_ORACAO}`, "gi"),
+      new RegExp(String.raw`(?<!\bse\s+)\b(?:nunca|jamais)\b[^;),.:—–]*?${FIM_DO_NUNCA}`, "gi"),
+      ""
+    )
+    .replace(
+      new RegExp(String.raw`(?<!\bse\s+)\b(?:nada|nem)\b[^;),.:—–]*?${FIM_SIMPLES}`, "gi"),
       ""
     );
+
+// A próxima linha com texto continua a mesma frase quando não abre item, título, tabela ou bloco.
+const NOVO_BLOCO = /^\s*(?:[-*+]\s|\d+\.\s|#|\||>|```)/;
+const continuacao = (todas, i) => {
+  const proxima = todas.slice(i + 1).find((l) => l.trim() !== "") ?? "";
+  return NOVO_BLOCO.test(proxima) || /eng-global-task-comment/.test(proxima) ? "" : proxima;
+};
 
 function todosMd() {
   return PASTAS.map((p) => join(root, p))
@@ -175,7 +189,9 @@ test("toda linha que chama o /eng-global-task-comment traz a pergunta na mesma l
     /^\s*[├└│]/.test(linha) ||
     (arquivo === INTEGRATIONS &&
       (/^\/eng-global-task-comment \{/.test(linha) ||
-        (/^4\. Eventos relevantes/.test(linha) && /task-log\.md/.test(linha)) ||
+        (/^4\. Eventos relevantes/.test(linha) &&
+          /task-log\.md/.test(linha) &&
+          /não para board/.test(linha)) ||
         /^Para agir no vendor:/.test(linha)));
   const arquivos = [
     "workflows",
@@ -195,19 +211,19 @@ test("toda linha que chama o /eng-global-task-comment traz a pergunta na mesma l
     const nome = relative(root, arquivo).split("\\").join("/");
     readFileSync(arquivo, "utf8")
       .split("\n")
-      .forEach((linha, i) => {
+      .forEach((linha, i, todas) => {
         if (!/eng-global-task-comment/.test(linha) || ISENTA(nome, linha)) return;
         const onde = `${nome}:${i + 1}`;
-        // O "Sim" vale só como palavra inteira ("assim" não conta).
+        // O "Sim" vale só como palavra inteira ("assim" não conta). A pergunta pode estar na continuação da frase.
         assert.match(
-          linha,
+          `${linha} ${continuacao(todas, i)}`,
           /regra de ouro|\bSim\b|escolher um dos \*\*Sim\*\*|[Mm]ostra o texto e pergunta|pergunta antes|AskUserQuestion/,
           `${onde} chama o /eng-global-task-comment sem a pergunta na linha. ${DE_PROPOSITO}`
         );
         // Redações que dispensam a pergunta não valem, mesmo com a frase da regra na mesma linha.
         assert.doesNotMatch(
-          semIsencoes(linha),
-          /\bsem (a )?perguntar|\bsem a pergunta|não pergunte|(?<!não )\bdispens\w+|pule a pergunta|já vale como o Sim|regra de ouro não se aplica|não é preciso perguntar/i,
+          semIsencoes(`${linha} ${continuacao(todas, i)}`),
+          /\bsem (a )?perguntar|\bsem a pergunta|não pergunte|(?<!\bnão\s+(?:\p{L}+\s+){0,2})\bdispens\w+|pule a pergunta|já vale como o Sim|regra de ouro não se aplica|não é preciso perguntar/iu,
           `${onde} dispensa a pergunta. ${DE_PROPOSITO}`
         );
       });
@@ -252,8 +268,8 @@ test("cada ponto que envia algo tem a pergunta logo antes", () => {
     ],
     [SPEC_CONSOLIDATE, /^\s+jarvis docs publish --file .*feature/, 8, /Publicar no Central docs\?/],
     [TASK_COMMENT, /^jarvis tasks comment/, 15, /Sim, publicar/],
-    [TASK_COMMENT, /gh issue comment/, 40, /Sim, publicar/],
-    [TASK_COMMENT, /glab issue note/, 40, /Sim, publicar/],
+    [TASK_COMMENT, /gh issue comment/, 32, /Sim, publicar/],
+    [TASK_COMMENT, /glab issue note/, 33, /Sim, publicar/],
     [
       "skills/jarvis-docs-central/SKILL.md",
       /^jarvis docs publish --file .*feature/,
@@ -266,7 +282,7 @@ test("cada ponto que envia algo tem a pergunta logo antes", () => {
       6,
       /depois do \*\*Sim\*\*/,
     ],
-    [TASK_COMMENT, /acli jira workitem comment/, 40, /Sim, publicar/],
+    [TASK_COMMENT, /acli jira workitem comment/, 34, /Sim, publicar/],
     [ENG_PR, /gh pr create --repo/, 45, /exceção da regra de ouro/],
   ];
   for (const [file, envio, n, precisa] of PONTOS) {
@@ -474,6 +490,11 @@ test("os outros pontos que enviam algo (agente, delivery-spec, data.contract, pr
       TASK_COMMENT,
       /A pergunta vale para cada comentário, mesmo quando o workflow que chamou o skill já perguntou/,
     ],
+    [
+      "workflows/engineering/eng.build-tech-spec.md",
+      /`acli jira workitem create`.*só depois de mostrar o texto e perguntar \(regra de ouro\)/,
+    ],
+    [ENG_PRE_PR, /nada é enviado ao card \(o texto fica no `gate-checklist\.md`\)/],
   ];
   for (const [file, frase] of FRASES) {
     assert.match(read(file), frase, `${file} sem ${frase}. ${DE_PROPOSITO}`);
@@ -492,10 +513,9 @@ test("os outros pontos que enviam algo (agente, delivery-spec, data.contract, pr
           !/desvio|bloqueio|auditoria/.test(linha)
         )
           return;
-        // O ramo do Não pode estar na linha ou na próxima linha com texto, desde que ela não chame o skill também.
-        const proxima = todas.slice(i + 1).find((l) => l.trim() !== "") ?? "";
+        // O ramo do Não pode estar na linha ou na continuação da frase (não um item novo nem outra chamada do skill).
         assert.match(
-          /eng-global-task-comment/.test(proxima) ? linha : `${linha} ${proxima}`,
+          `${linha} ${continuacao(todas, i)}`,
           /Sem o Sim, o texto fica no `task-comment-\*\.md`/,
           `${file}:${i + 1}: falta o ramo do Não (onde o texto recusado fica). ${DE_PROPOSITO}`
         );
