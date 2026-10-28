@@ -7,6 +7,8 @@
 > Links (inclusive nos comentários de fase): `rules-on-demand/doc-links-rules.md`; os arquivos de "Onde fazer" que já existem viram link (`../../../../{repo}/{arquivo}#L{n}`), e os novos ficam em texto.
 >
 > **Execução:** {fase a fase | todas de uma vez} · **Commits:** {um por fase | um só ao final} · **Depois do work:** {sugerir /eng.pre-pr | rodar /eng.pre-pr | direto para /eng.pr | parar} _(preenchido pelo `eng.work`, Fase 1.3)_
+>
+> **Ajustes antes da aprovação:** {0} _(o `eng.plan` soma 1 a cada "Ajustar o plano"; o `eng.pre-pr` copia o número para o PR Brief)_
 
 ---
 

@@ -211,6 +211,7 @@ Para cada tarefa, incluir:
 
 ### Fase 5: Validação
 
+0. **Executar** o Checklist de Conclusão (abaixo) item a item contra o `plan.md` e corrigir o plano antes de apresentar (passe crítico, Fase 4 do workflow)
 1. **Apresentar** o plano ao humano
 2. **Discutir** ajustes necessários
 3. **Atualizar** `architecture.md` se houver mudanças arquiteturais
@@ -300,6 +301,7 @@ Antes de considerar o plano completo:
 - [ ] Dependências estão claras (sequencial/paralelo)
 - [ ] Status iniciais definidos (todos ⏳)
 - [ ] Conteúdo em português (pt-BR)
+- [ ] Passe crítico executado (este checklist conferido item a item) e "Ajustes antes da aprovação" atualizado no cabeçalho a cada "Ajustar o plano"
 - [ ] Validado com o humano
 - [ ] `plan.md` criado em `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/`
 
