@@ -434,7 +434,7 @@ Atualize o `plan.md`:
 - **Atenção**: {ponto importante para próximas fases}
 ```
 
-Se o comentário registrar uma **mudança de direção** (desvio do plano), monte também um comentário para o card, dizendo o que mudou e por quê, e publique-o com `/eng-global-task-comment`, que mostra o texto e pergunta (regra de ouro, `eng.integrations-rules.md`) (freelance: o skill registra no `task-log.md`).
+Se o comentário registrar uma **mudança de direção** (desvio do plano), monte também um comentário para o card, dizendo o que mudou e por quê, e publique-o com `/eng-global-task-comment`, que mostra o texto e pergunta (regra de ouro, `eng.integrations-rules.md`; freelance: o skill registra no `task-log.md`). Sem o Sim, o texto fica no `task-comment-*.md`.
 
 ### 5.3 Commit da Fase (GitFlow)
 
@@ -562,6 +562,6 @@ Depois da mensagem, siga a escolha **Depois do work**: chamar o `/eng.pre-pr {TA
 ### Se houver bloqueio técnico:
 
 → Documente no plan.md como `[Bloqueada 🚫]`
-→ Monte o comentário do bloqueio e publique-o no card com `/eng-global-task-comment`, que mostra o texto e pergunta (regra de ouro, `eng.integrations-rules.md`) (desvio do plano; freelance: o skill registra no `task-log.md`)
+→ Monte o comentário do bloqueio e publique-o no card com `/eng-global-task-comment`, que mostra o texto e pergunta (regra de ouro, `eng.integrations-rules.md`; desvio do plano; freelance: o skill registra no `task-log.md`). Sem o Sim, o texto fica no `task-comment-*.md`
 → Explique o bloqueio ao usuário
 → Sugira alternativas se possível

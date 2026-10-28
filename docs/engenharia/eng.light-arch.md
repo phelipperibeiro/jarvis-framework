@@ -8,7 +8,7 @@ Entende o que precisa ser construído, tira as dúvidas com você e propõe uma 
 
 ## O que é
 
-É a forma rápida de desenhar a arquitetura de uma feature. Em vez de produzir um documento longo, o comando conduz uma conversa em duas etapas (entender, depois desenhar) e salva o resultado como **comentário no card** da tarefa.
+É a forma rápida de desenhar a arquitetura de uma feature. Em vez de produzir um documento longo, o comando conduz uma conversa em duas etapas (entender, depois desenhar) e salva o resultado como **comentário no card** da tarefa, só depois da pergunta (regra de ouro).
 
 ## Quando usar
 

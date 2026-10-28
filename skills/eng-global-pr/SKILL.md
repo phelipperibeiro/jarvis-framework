@@ -240,7 +240,7 @@ Após MR criado com sucesso, **solicitar confirmação do usuário**:
 🧹 Deseja limpar a sessão?
 
 A pasta $SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/ será removida.
-O texto do PR permanece no MR e o que foi enviado ao card fica no card; o que você recusou (por exemplo, o `task-comment-*.md` do link do MR) só existe nesta pasta e será apagado junto.
+O texto do PR permanece no MR e o que foi enviado ao card fica no card; o que você recusou (por exemplo, o `task-comment-*.md` do link do MR) só existe nesta pasta e será apagado junto; no freelance, o `task-log.md` e, com "Só gerar os arquivos", o `pull-request.md` também ficam só aqui.
 
 Confirmar? (s/n)
 ```

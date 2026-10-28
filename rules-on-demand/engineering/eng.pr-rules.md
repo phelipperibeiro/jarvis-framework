@@ -141,7 +141,7 @@ sempre utiliza a branch main)
 │        ↓                                                    │
 │  6. CRIAR MR (desenvolvedor) → Template, depois da Fase 0   │
 │        ↓                                                    │
-│  7. ATUALIZAR JIRA (desenvolvedor) → Mover para "In Review" │
+│  7. ORIENTAR (desenvolvedor) → Mover o card para "In Review"│
 │                                                             │
 └─────────────────────────────────────────────────────────────┘
 ```

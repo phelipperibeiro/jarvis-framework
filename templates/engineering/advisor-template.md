@@ -14,7 +14,7 @@ Etapas da tarefa:
 | Alerta no início do eng.start | O usuário escolhe usar o Advisor e o modelo | Ainda não existe |
 | eng.start | Escrevo o architecture.md; o que diverge do código ou é ambíguo vira "Questões em Aberto" | Aqui: você orienta cada questão |
 | Orientação acatada | Atualizo o architecture.md e registro | Não |
-| Registro da auditoria | Mostro o comentário com as questões e as suas sugestões e, só com o seu Sim (regra de ouro), posto na issue pelo `/eng-global-task-comment`, que pergunta (sem TASK_MANAGER ou sem o Sim, o texto fica no task-comment-*.md e no architecture.md) | Não |
+| Registro da auditoria | Mostro o comentário com as questões e as suas sugestões e, só com o Sim do usuário (regra de ouro), posto na issue pelo `/eng-global-task-comment`, que pergunta (sem o Sim, o texto fica no task-comment-*.md e no architecture.md; sem TASK_MANAGER, o skill registra no task-log.md) | Não |
 | eng.plan / eng.work | Plano e implementação | Só por exceção: questão nova em aberto |
 | Commit e PR | Um commit; o usuário valida em "Files changed" | Não |
 | Merge e fechamento | O usuário faz o merge | Não |

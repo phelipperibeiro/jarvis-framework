@@ -46,15 +46,7 @@ const CITAM_A_REGRA = [
 ];
 
 // Varridos no teste 5: o imperativo que manda publicar sem a pergunta não pode voltar
-const PASTAS = [
-  "workflows",
-  "skills",
-  "templates",
-  "rules",
-  "rules-on-demand",
-  "agents",
-  "docs/engenharia",
-];
+const PASTAS = ["workflows", "skills", "templates", "rules", "rules-on-demand", "agents", "docs"];
 const IMPERATIVOS = [
   /Poste \*\*um\*\* comentário/i,
   /poste o comentário de auditoria/i,
@@ -157,7 +149,7 @@ test("toda linha que chama o /eng-global-task-comment traz a pergunta na mesma l
     /^\s*[├└│]/.test(linha) ||
     (arquivo === INTEGRATIONS &&
       (/^\/eng-global-task-comment \{/.test(linha) ||
-        /task-log\.md/.test(linha) ||
+        /^4\. Eventos relevantes/.test(linha) ||
         /^Para agir no vendor:/.test(linha)));
   const arquivos = [
     "workflows",
@@ -183,15 +175,15 @@ test("toda linha que chama o /eng-global-task-comment traz a pergunta na mesma l
         // O "Sim" vale só como palavra inteira ("assim" não conta).
         assert.match(
           linha,
-          /regra de ouro|\bSim\b|escolher|[Mm]ostra o texto e pergunta|pergunta antes|AskUserQuestion/,
+          /regra de ouro|\bSim\b|escolher um dos \*\*Sim\*\*|[Mm]ostra o texto e pergunta|pergunta antes|AskUserQuestion/,
           `${onde} chama o /eng-global-task-comment sem a pergunta na linha. ${DE_PROPOSITO}`
         );
         // Redações que dispensam a pergunta não valem, mesmo com a frase da regra na mesma linha.
-        // Só o trecho entre parênteses sobre o freelance fica de fora (nesse modo não há pergunta, o skill só registra).
-        const semFreelance = linha.replace(/\([^)]*freelance[^)]*\)/gi, "");
+        // Só a oração do freelance fica de fora, até o próximo ';' ou ')' (nesse modo não há pergunta, o skill só registra).
+        const semFreelance = linha.replace(/freelance[^;)]*/gi, "");
         assert.doesNotMatch(
           semFreelance,
-          /\bsem (a )?perguntar|\bsem a pergunta|não pergunte|dispens\w+|pule a pergunta|já vale como o Sim|não se aplica/i,
+          /\bsem (a )?perguntar|\bsem a pergunta|não pergunte|(?<!não )dispens\w+|pule a pergunta|já vale como o Sim|regra de ouro não se aplica|não é preciso perguntar/i,
           `${onde} dispensa a pergunta. ${DE_PROPOSITO}`
         );
       });
@@ -238,6 +230,12 @@ test("cada ponto que envia algo tem a pergunta logo antes", () => {
     [TASK_COMMENT, /^jarvis tasks comment/, 15, /Sim, publicar/],
     [TASK_COMMENT, /gh issue comment/, 40, /Sim, publicar/],
     [TASK_COMMENT, /glab issue note/, 40, /Sim, publicar/],
+    [
+      "skills/jarvis-docs-central/SKILL.md",
+      /^jarvis docs publish --file .*feature/,
+      6,
+      /depois do \*\*Sim\*\*/,
+    ],
     [
       "skills/jarvis-docs-central/SKILL.md",
       /^jarvis docs publish --file .*delivery/,
@@ -405,18 +403,34 @@ test("os outros pontos que enviam algo (agente, delivery-spec, data.contract, pr
     [INTEGRATIONS, /documentos aprovados juntos .* são um envio/],
     [
       "workflows/engineering/eng.start.md",
-      /sem o Sim, o texto fica no `task-comment-\*\.md` e no `architecture\.md`/,
+      /[Ss]em o Sim, o texto fica no `task-comment-\*\.md` e no `architecture\.md`/,
+    ],
+    ["workflows/engineering/eng.work.md", /Sem o Sim, o texto fica no `task-comment-\*\.md`/],
+    [
+      TASK_COMMENT,
+      /A pergunta vale para cada comentário, mesmo quando o workflow que chamou o skill já perguntou/,
     ],
   ];
   for (const [file, frase] of FRASES) {
     assert.match(read(file), frase, `${file} sem ${frase}. ${DE_PROPOSITO}`);
   }
+  // O eng.work tem dois pontos de comentário (desvio e bloqueio) e os dois dizem onde o texto recusado fica.
+  const ramosNao =
+    read("workflows/engineering/eng.work.md").match(
+      /Sem o Sim, o texto fica no `task-comment-\*\.md`/g
+    ) ?? [];
+  assert.ok(
+    ramosNao.length >= 2,
+    `workflows/engineering/eng.work.md: o ramo do Não precisa estar nos dois comentários (desvio e bloqueio). ${DE_PROPOSITO}`
+  );
   // O passo 0.5 só pode pular a pergunta no caso do acesso manual (que não tem envio possível).
   const passo05 =
     read(TASK_COMMENT)
       .split(/^### 1\. /m)[0]
       .split(/^### 0\.5 /m)[1] ?? "";
-  const pulos = passo05.split("\n").filter((l) => /pule a pergunta|dispens/i.test(l));
+  const pulos = passo05
+    .split("\n")
+    .filter((l) => /pule a pergunta|não pergunte|(?<!não )dispens/i.test(l));
   assert.equal(
     pulos.length,
     1,

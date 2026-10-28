@@ -159,12 +159,12 @@ jarvis docs publish --file .../consolidation/feature-checkout.md --tipo feature
 1. Validar o frontmatter.
 2. Calcular o destino.
 3. Sem `.git`: copiar e regenerar o índice.
-4. Com `.git`: branch, cópia, índice, commit, push e PR.
+4. Com `.git`: branch, cópia, índice, commit, push e PR (só depois da pergunta, regra de ouro).
 
 ### Modo 3: Reparar o índice
 
 - **Sem `.git`:** a próxima publicação regenera o índice.
-- **Com `.git`:** no clone, rodar `bash scripts/build-index.sh` (se existir) e abrir um PR `repair/index-{SQUAD}-{data}`.
+- **Com `.git`:** no clone, rodar `bash scripts/build-index.sh` (se existir) e abrir um PR `repair/index-{SQUAD}-{data}` (só depois de mostrar o que será enviado e perguntar, regra de ouro).
 
 ### Skills invocados durante a execução do skill
 
