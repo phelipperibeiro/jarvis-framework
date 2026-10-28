@@ -43,7 +43,7 @@ Com board definido, se o key não veio nos argumentos, perguntar o id do card na
 
 ## Nada é publicado sem perguntar
 
-É a **regra de ouro**: comentário, PR/MR, issue, push e publicação no Central docs só saem depois de mostrar o texto e perguntar, na hora do envio, com `AskUserQuestion`: **Sim, publicar** / **Não, manter só na sessão (como hoje)**. A pergunta vale para cada envio; uma aprovação não vale para o próximo. Sem o Sim, o conteúdo fica na sessão (`task-comment-{data}.md`, `pull-request.md` ou `.jarvis/issues/`).
+É a **regra de ouro**: comentário, PR/MR, issue, push e publicação no Central docs só saem depois de mostrar o texto e perguntar, na hora do envio, com `AskUserQuestion` (sem a ferramenta, a tabela de `prod-rules.md`): **Sim, publicar** / **Não, manter só na sessão** (rótulos equivalentes por contexto). A pergunta vale para cada envio; uma aprovação não vale para o próximo. **Exceção:** a escolha da Fase 0 do `eng.pr` vale como a pergunta do push e do PR. Sem o Sim, o texto fica na sessão (`task-comment-{YYYYMMDD-HHMM}.md`, `pull-request.md`) ou em `.jarvis/issues/`, e o push fica só local.
 
 ## Comentário no card
 
