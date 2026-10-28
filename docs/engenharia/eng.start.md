@@ -39,7 +39,7 @@ Além do documento, ele prepara o ambiente: pergunta **de qual branch partir** (
 
 - **Sem Advisor, no início:** "Como tratar as questões em aberto que surgirem?" → **Tratar no architecture.md (como hoje)**, para você responder ao revisar o documento, ou **Uma a uma, assim que surgirem**, para responder na hora.
 - **Sem Advisor, no fim:** "Aprovar o architecture.md?" → **Aprovar e parar aqui (como hoje)**, **Aprovar e seguir para o `/eng.plan`** ou **Ajustar o documento**. A resposta já é a sua aprovação.
-- **Com Advisor:** o Advisor decide as questões e o fim segue a autonomia, como antes; a exceção é uma questão nova aberta pelo passe crítico, que espera a sua aprovação.
+- **Com Advisor:** o Advisor decide as questões e o fim segue a autonomia, como antes; a exceção é uma questão nova aberta pelo passe crítico, que espera a sua aprovação. Sempre que a sua aprovação for obrigatória com Advisor (autonomia média ou baixa, ou essa questão nova), ela vem pela mesma pergunta "Aprovar o architecture.md?".
 
 ## Regras que importam
 

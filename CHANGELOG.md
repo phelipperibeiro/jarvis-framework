@@ -26,6 +26,7 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), e o
 
 ### Fixed
 - Numeração "Gates › item N" da tabela de chamadas do `/eng.pre-pr` (não batia com a lista de revisores); referências a `/jarvis-find-skill` (não existe) e `eng.docs-consolidator` (o agente é `eng.docs-consolidator.agent`); título do revisor de código; a lista do `test:filtro` no `bin/README.md` cita os testes de texto.
+- **`/eng.start` com Advisor**: quando a aprovação explícita é obrigatória (autonomia `média` ou `baixa`, já assim antes desta entrega, ou questão nova aberta pelo passe crítico), ela é pedida pela mesma pergunta "Aprovar o architecture.md?"; antes, a pergunta valia só sem Advisor e não havia forma definida de colher essa aprovação.
 
 ## [8.1.0] - 2026-10-28
 

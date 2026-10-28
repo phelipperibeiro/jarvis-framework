@@ -37,7 +37,7 @@ Lida pelos workflows `eng.start`, `eng.plan`, `eng.work`, `eng.pre-pr` e `eng.pr
 | Comando | Quando | Pergunta | Opções (padrão primeiro) |
 |---|---|---|---|
 | `eng.start` | Início, só **sem Advisor** | "Como tratar as questões em aberto que surgirem?" | Tratar no architecture.md (como hoje) · Uma a uma, assim que surgirem |
-| `eng.start` | Fim, só **sem Advisor** | "Aprovar o architecture.md?" | Aprovar e parar aqui (como hoje) · Aprovar e seguir para o `/eng.plan` · Ajustar o documento |
+| `eng.start` | Fim, **sem Advisor**, ou com Advisor quando a aprovação é obrigatória (autonomia `média`/`baixa`, ou questão nova do passe crítico) | "Aprovar o architecture.md?" | Aprovar e parar aqui (como hoje) · Aprovar e seguir para o `/eng.plan` · Ajustar o documento |
 | `eng.plan` | Fim | "O que fazer com o plano?" | Aprovar e implementar agora · Aprovar e seguir manualmente (como hoje) · Ajustar o plano |
 | `eng.work` | Início | Execução | Fase a fase, com aprovação (como hoje) · Todas de uma vez ("N de M tarefas", pelo limite) |
 | `eng.work` | Início | Commits | Um por fase (como hoje) · Um commit só ao final |
@@ -50,7 +50,7 @@ Lida pelos workflows `eng.start`, `eng.plan`, `eng.work`, `eng.pre-pr` e `eng.pr
 
 Nas perguntas "Depois do work", "O que fazer com o plano?" e na variante B do fechamento do `eng.pre-pr`, a opção "como hoje" não é a primeira (em "Depois do work" e na variante B fica por último), por escolha de produto: as primeiras opções são as ações que o usuário mais quer. Na variante B, a #191 pede "Aceitar as ⚪ e seguir para o PR" como primeira opção (a recomendada), para lacunas menores não gerarem mais uma rodada. Mesmo assim, é o fluxo que vale quando o usuário não escolhe.
 
-**Com Advisor**, o `eng.start` não ganha pergunta nova: o Advisor decide as questões em aberto e o gate do fim segue a autonomia do `context.md`, como já estava, salvo se o passe crítico (Fase 4.4 do `eng.start`) abriu questão nova: nesse caso, a aprovação explícita é obrigatória.
+**Com Advisor**, o `eng.start` não ganha pergunta nova: o Advisor decide as questões em aberto e o gate do fim segue a autonomia do `context.md`, como já estava, salvo se o passe crítico (Fase 4.4 do `eng.start`) abriu questão nova: nesse caso, como com autonomia `média` ou `baixa`, a aprovação explícita é obrigatória e é pedida pela pergunta "Aprovar o architecture.md?" da tabela.
 
 ### Recomendado
 

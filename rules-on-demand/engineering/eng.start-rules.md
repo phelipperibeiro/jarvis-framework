@@ -42,7 +42,7 @@ O workflow **só é considerado completo** após:
 
 1. O `architecture.md` estar preenchido, com o passe crítico feito (Fase 4.4 do workflow: seção 2.5 "Premissas e Passe Crítico", com o lido separado do presumido e a premissa que derrubaria o documento)
 2. O usuário revisar o documento
-3. O usuário **aprovar explicitamente** para prosseguir — sem Advisor, pela pergunta de transição "Aprovar o architecture.md?" (`eng.transitions-rules.md`)
+3. O usuário **aprovar explicitamente** para prosseguir, pela pergunta de transição "Aprovar o architecture.md?" (`eng.transitions-rules.md`): sempre sem Advisor e, com Advisor, sempre que a aprovação for obrigatória (autonomia `média` ou `baixa`, ou questão nova do passe crítico)
 
 **Exceção (Advisor):** se o usuário escolheu usar o Advisor no início do `eng.start`, as questões em aberto são decididas pela sugestão dele e o gate segue a autonomia do `context.md`: com `autonomia: alta` o `start` apresenta o resumo e segue para o `eng.plan` sem aguardar, salvo se o passe crítico (Fase 4.4) abriu questão nova: nesse caso, a aprovação explícita da pessoa é obrigatória; com `média` ou `baixa`, a aprovação explícita continua obrigatória.
 

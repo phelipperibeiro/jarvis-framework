@@ -443,7 +443,7 @@ Se o usuário tiver feedback:
 - Continue até aprovação explícita
 
 **Sem Advisor**, a aprovação é a pergunta de transição (`eng.transitions-rules.md`): **"Aprovar o architecture.md?"** (depois da mensagem em markdown com o link clicável do arquivo) → **Aprovar e parar aqui (como hoje)** / **Aprovar e seguir para o `/eng.plan`** / **Ajustar o documento**. Com "seguir", chame o `/eng.plan {TASK_MANAGER_KEY}` (ou mostre o comando).
-**Com Advisor**, o gate segue a autonomia do `context.md` (CDD): `alta` → apresente o resumo e siga para o `eng.plan` sem aguardar, salvo se o passe crítico (Fase 4.4) abriu questão nova: nesse caso, aguarde a aprovação explícita; `média` ou `baixa` → aguarde a aprovação explícita. Sem `context.md`, use a tabela "Autonomia por POSITION" de `eng-rules.md`. Sem Advisor, nada muda.
+**Com Advisor**, o gate segue a autonomia do `context.md` (CDD): `alta` → apresente o resumo e siga para o `eng.plan` sem aguardar, salvo se o passe crítico (Fase 4.4) abriu questão nova; `média` ou `baixa` → aguarde a aprovação explícita. Sem `context.md`, use a tabela "Autonomia por POSITION" de `eng-rules.md`. **Sempre que a aprovação explícita for obrigatória com Advisor** (`média` ou `baixa`, ou questão nova do passe crítico), peça-a com a mesma pergunta de transição de quem não usa Advisor: a pergunta "Aprovar o architecture.md?", com as mesmas opções. Sem Advisor, nada muda.
 
 ### 5.3 Atualizar Board
 
