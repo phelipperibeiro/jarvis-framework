@@ -41,11 +41,15 @@ Qual o seu número de controle para esta tarefa?
 
 Com board definido, se o key não veio nos argumentos, perguntar o id do card naquele vendor (ex: Jira `TASK-123`, GitHub `#42`).
 
+## Nada é publicado sem perguntar
+
+É a **regra de ouro**: comentário, PR/MR, issue, push e publicação no Central docs só saem depois de mostrar o texto e perguntar, na hora do envio, com `AskUserQuestion`: **Sim, publicar** / **Não, manter só na sessão (como hoje)**. A pergunta vale para cada envio; uma aprovação não vale para o próximo. Sem o Sim, o conteúdo fica na sessão (`task-comment-{data}.md`, `pull-request.md` ou `.jarvis/issues/`).
+
 ## Comentário no card
 
 Falha no comentário não bloqueia o workflow.
 
-Comentar **somente** em eventos relevantes: (a) **desvio do plano** (mudança de direção, fase bloqueada), (b) **auditoria do Advisor** (as questões do `architecture.md` com as opções junto da escolha), (c) **bloqueio** com valor de rastreabilidade, (d) **link do MR**, uma única vez, (e) o **`gate-checklist.md` do `eng.pre-pr`**, só se o usuário escolher registrar (resumo ou relatório completo). **Nunca** comentar início ou fim de etapa ("Iniciando…", "concluído…"): o acompanhamento fica no fluxo e no PR.
+Comentar **somente** em eventos relevantes, **cada um depois da pergunta acima**: (a) **desvio do plano** (mudança de direção, fase bloqueada), (b) **auditoria do Advisor** (as questões do `architecture.md` com as opções junto da escolha), (c) **bloqueio** com valor de rastreabilidade, (d) **link do MR**, uma única vez, (e) o **`gate-checklist.md` do `eng.pre-pr`**, só se o usuário escolher registrar (resumo ou relatório completo). **Nunca** comentar início ou fim de etapa ("Iniciando…", "concluído…"): o acompanhamento fica no fluxo e no PR.
 
 ```
 /eng-global-task-comment {TASK_MANAGER_KEY} {mensagem}

@@ -209,16 +209,17 @@ test("listRulesForProfile: AGENTS.md nunca é filtrado, rtk é opt-in, sem bloco
 // Issue #182 (links clicáveis, 2026-10-26): +132 B em todos os perfis — rules/AGENTS.md (sempre copiado) passou a mostrar
 // rules-on-demand/doc-links-rules.md. A rule nova fica em rules-on-demand/ e não entra nesta conta.
 // Issue #182 (pre-pr 2, 2026-10-26): +43 B em todos os perfis — rules/AGENTS.md descreve rules-on-demand/ como etapa ou transversal.
+// Issue #184 (regra de ouro, 2026-10-27): +499 B em todos os perfis — eng.integrations-rules.md ganha a seção "Nada é publicado sem perguntar".
 const BASE = [
   [
     "FULLCYCLE/GENERALIST/ENGINEERING/CORE",
     profile("FULLCYCLE", "GENERALIST", "ENGINEERING"),
     15,
-    102822,
+    103321,
   ],
-  ["BACKEND/SENIOR/ENGINEERING/CORE", profile("BACKEND", "SENIOR", "ENGINEERING"), 11, 69503],
-  ["FRONTEND/PLENO/ENGINEERING/CORE", profile("FRONTEND", "PLENO", "ENGINEERING"), 11, 70046],
-  ["QA/QA-ENGINEER/ENGINEERING/CORE", profile("QA", "QA-ENGINEER", "ENGINEERING"), 11, 69282],
+  ["BACKEND/SENIOR/ENGINEERING/CORE", profile("BACKEND", "SENIOR", "ENGINEERING"), 11, 70002],
+  ["FRONTEND/PLENO/ENGINEERING/CORE", profile("FRONTEND", "PLENO", "ENGINEERING"), 11, 70545],
+  ["QA/QA-ENGINEER/ENGINEERING/CORE", profile("QA", "QA-ENGINEER", "ENGINEERING"), 11, 69781],
 ];
 
 for (const [nome, p, arquivos, bytes] of BASE) {

@@ -14,7 +14,7 @@ Etapas da tarefa:
 | Alerta no início do eng.start | O usuário escolhe usar o Advisor e o modelo | Ainda não existe |
 | eng.start | Escrevo o architecture.md; o que diverge do código ou é ambíguo vira "Questões em Aberto" | Aqui: você orienta cada questão |
 | Orientação acatada | Atualizo o architecture.md e registro | Não |
-| Registro da auditoria | Posto um comentário na issue com as questões e as suas sugestões (sem TASK_MANAGER, só no architecture.md) | Não |
+| Registro da auditoria | Mostro o comentário com as questões e as suas sugestões e, só com o seu Sim (regra de ouro), posto na issue (sem TASK_MANAGER ou sem o Sim, só no architecture.md) | Não |
 | eng.plan / eng.work | Plano e implementação | Só por exceção: questão nova em aberto |
 | Commit e PR | Um commit; o usuário valida em "Files changed" | Não |
 | Merge e fechamento | O usuário faz o merge | Não |
@@ -41,7 +41,7 @@ Analise o repositório só se precisar para ter certeza (sem chutar). Responda (
 1. SUGESTÃO DO ADVISOR (opção 1-3 ou a 4 detalhada) · 2. DIVERGÊNCIA · 3. BASE · 4. ANÁLISE NO REPOSITÓRIO · 5. RELAÇÃO COM OUTRAS TAREFAS · 6. CERTEZA (escrito / confirmado no código / inferência). Não altere arquivos; aponte o risco se uma opção for destrutiva ou fugir do card.
 ```
 
-## Modelo do comentário de auditoria (postado pelo agente principal)
+## Modelo do comentário de auditoria (postado pelo agente principal, só depois da pergunta: regra de ouro)
 
 ```
 ## Auditoria — questões do architecture.md

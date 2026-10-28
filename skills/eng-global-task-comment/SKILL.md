@@ -1,7 +1,7 @@
 ---
 name: eng-global-task-comment
 description: >
-  Adiciona um comentário no card do TASK_MANAGER (Jira, GitHub Issues ou GitLab Issues) pela CLI oficial do vendor; sem board (freelance), registra no task-log.md da sessão.
+  Adiciona um comentário no card do TASK_MANAGER (Jira, GitHub Issues ou GitLab Issues) pela CLI oficial do vendor, só depois de mostrar o texto e o usuário dizer Sim (regra de ouro); sem board (freelance), registra no task-log.md da sessão.
   Trigger: registrar no card um evento relevante: desvio do plano, auditoria do Advisor, bloqueio ou o link do MR (nunca início ou fim de etapa).
 argument-hint: "{TASK_MANAGER_KEY} {mensagem}"
 disable-model-invocation: false
@@ -49,6 +49,13 @@ Formato (criar o arquivo se não existir; só acrescentar, nunca sobrescrever):
 ````
 
 A cada entrada nova: uma linha nova no fim da tabela do índice e a seção nova no fim do arquivo. `{evento}`: desvio do plano, auditoria do Advisor, bloqueio, link do MR ou gate do pre-pr.
+
+### 0.5 Mostrar e perguntar (com board)
+
+**Regra de ouro** (`rules/engineering/eng.integrations-rules.md`): nada é comentado sem perguntar. Antes de qualquer envio, mostre o texto da mensagem e pergunte com `AskUserQuestion`: **"Publicar este comentário no card {TASK_MANAGER_KEY}?"** → **Sim, publicar** / **Não, manter só na sessão (como hoje)**. A pergunta vale para cada comentário, mesmo quando o workflow que chamou o skill já perguntou algo parecido.
+
+- **Sim:** siga para o passo 1.
+- **Não:** não envie. Grave o `.md` do passo 3 (`task-comment-{YYYYMMDD-HHMM}.md`) e diga `Comentário não enviado; o texto está em {caminho do .md}`, sem o aviso de falha do passo 3. O fluxo principal segue.
 
 ### 1. `jarvis tasks comment`
 
