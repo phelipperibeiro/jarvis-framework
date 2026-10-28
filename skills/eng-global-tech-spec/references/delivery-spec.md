@@ -735,7 +735,9 @@ Use o formato **Descrição da subtarefa no Jira** de `$IDE/templates/engineerin
 
 #### 7.3 Criação no Jira
 
-**Se houver API/ferramenta disponível:**
+Antes de criar subtarefas ou comentar, mostre o texto e pergunte com `AskUserQuestion` (**Sim, publicar** / **Não, manter só na sessão**), regra de ouro de `eng.integrations-rules.md`; sem o Sim, entregue só o template formatado.
+
+**Se houver API/ferramenta disponível (e o Sim):**
 
 - Use para criar subtarefas automaticamente
 - Vincule à história pai

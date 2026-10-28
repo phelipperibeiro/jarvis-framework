@@ -180,7 +180,7 @@ Refs: TASK-123"
 
 ### 4. Push
 
-Os Passos 4 e 5 só acontecem depois da pergunta (regra de ouro, `eng.integrations-rules.md`): mostre o texto do MR e pergunte com `AskUserQuestion` (**Sim, publicar** / **Não, manter só na sessão**). Sem o Sim, grave o `pull-request.md` na sessão e pare, sem push nem MR.
+Os Passos 4 e 5 só acontecem depois da pergunta (regra de ouro, `eng.integrations-rules.md`). Monte antes o texto do MR (preencher o template, Passo 5), mostre-o e pergunte com `AskUserQuestion` (**Sim, publicar** / **Não, manter só na sessão**). Sem o Sim, grave o `pull-request.md` na sessão e pare, sem push nem MR. Quando o skill é chamado pelo `/eng.pr`, a escolha da Fase 0 dele vale como essa pergunta (exceção da regra) e não se pergunta de novo.
 
 ```bash
 git push -u origin {NOME_DA_BRANCH}
@@ -218,16 +218,17 @@ Usar template oficial em `$IDE/templates/engineering/PR-template.md`.
 Se `TASK_MANAGER` estiver vazio (freelance): pular este passo.
 
 1. Orientar a pessoa a mover o card para **"In Review"** (ou equivalente do vendor); o Jarvis não move card
-2. Mostrar o comentário com o link do MR e, só depois da pergunta (regra de ouro, `eng.integrations-rules.md`), publicá-lo via `eng-global-task-comment`
+2. Publicar o comentário com o link do MR via `eng-global-task-comment`, que mostra o texto e pergunta (regra de ouro, `eng.integrations-rules.md`)
 
 ### 7. Processar Code Review
 
 1. Aguardar comentários da ferramenta de code review
 2. Analisar cada comentário
-3. Aplicar correções se necessário. O push das correções só sai depois da pergunta (regra de ouro, `eng.integrations-rules.md`); sem o Sim, o commit fica local:
+3. Aplicar correções se necessário. O push das correções só sai depois da pergunta com `AskUserQuestion` (regra de ouro, `eng.integrations-rules.md`); sem o Sim, o commit fica local:
    ```bash
    git add {arquivos}
    git commit -m "fix: corrigir {problema} conforme code review"
+   # só com o Sim da pergunta acima
    git push
    ```
 
@@ -277,7 +278,7 @@ rm -rf $SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/
 - ✅ Usar mensagem de commit padronizada
 - ✅ Criar branch no padrão `{TASK_MANAGER_KEY}-{titulo}`
 - ✅ Preencher template do MR completamente
-- ✅ Mover card para "In Review"
+- ✅ Orientar a pessoa a mover o card para "In Review" (o Jarvis não move card)
 - ✅ Limpar sessão após criar MR
 
 ---
@@ -296,7 +297,7 @@ rm -rf $SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/
 - [ ] Push realizado
 - [ ] MR criado com template preenchido
 - [ ] Branch destino correta
-- [ ] Card movido para "In Review"
+- [ ] Pessoa orientada a mover o card para "In Review"
 - [ ] Sessão limpa
 
 ---
@@ -309,7 +310,7 @@ rm -rf $SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/
 📋 Resumo:
 - Branch: {NOME_DA_BRANCH}
 - MR: {LINK_DO_MR}
-- Card ({TASK_MANAGER}): {TASK_MANAGER_KEY} → "In Review"
+- Card ({TASK_MANAGER}): {TASK_MANAGER_KEY} (mover para "In Review" é com a pessoa)
 
 📊 Validações:
 - Testes: ✅ Passando

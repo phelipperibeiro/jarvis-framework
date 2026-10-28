@@ -1,6 +1,6 @@
 ---
 name: jarvis-report-issue
-description: Reporta um bug ou propõe uma melhoria no próprio framework Jarvis. Classifica o report (bug ou melhoria), monta o issue no formato do tipo e o abre no repo do Jarvis (o JARVIS_PROJECT, hoje no GitHub) pela CLI do host (gh issue create), com a label certa; sem a CLI, deixa o issue pronto em .jarvis/issues/.
+description: Reporta um bug ou propõe uma melhoria no próprio framework Jarvis. Classifica o report (bug ou melhoria), monta o issue no formato do tipo e o abre no repo do Jarvis (o JARVIS_PROJECT, hoje no GitHub) pela CLI do host (gh issue create), com a label certa, só depois de mostrar o texto e o usuário dizer Sim (regra de ouro); sem a CLI ou sem o Sim, deixa o issue pronto em .jarvis/issues/.
 argument-hint: "[descrição opcional do problema ou da melhoria]"
 disable-model-invocation: false
 allowed-tools: Read Bash Grep Glob
@@ -134,7 +134,7 @@ Com `ARTIFACT_STYLE=human-generated`, troque a linha por `- **Reportado por:** {
 - **Reportado por:** IA, a partir do pedido do usuário
 ```
 
-Antes de abrir, se o pedido tiver pontos em conflito com as regras atuais ou ambíguos, pergunte ao usuário (uma pergunta por ponto) e registre as respostas em "Decisões".
+Antes de abrir, se o pedido tiver pontos em conflito com as regras atuais ou ambíguos, pergunte ao usuário (uma pergunta por ponto) e registre as respostas em "Decisões". Além disso, a Fase 4 sempre mostra o texto e pergunta antes de abrir.
 
 ---
 
@@ -164,7 +164,7 @@ grep '"version"' package.json | head -1 | sed 's/.*"version": *"\([^"]*\)".*/\1/
 
 ## Fase 4 — Abrir o issue
 
-**Antes de abrir, mostre e pergunte (regra de ouro, `eng.integrations-rules.md`).** Mostre o título, a label e o corpo do issue e pergunte com `AskUserQuestion`: **"Abrir este issue no repositório do Jarvis?"** → **Sim, abrir a issue** / **Não, manter só em `.jarvis/issues/`**. A pergunta vale mesmo quando o usuário pediu o report direto, porque ele ainda não viu o texto final. Com **Não**, grave o fallback abaixo e não rode o `jarvis vcs create-issue`.
+**Antes de abrir, mostre e pergunte (regra de ouro, `eng.integrations-rules.md`).** Mostre o título, a label e o corpo da issue e pergunte com `AskUserQuestion`: **"Abrir esta issue no repositório do Jarvis?"** → **Sim, abrir a issue** / **Não, manter só em `.jarvis/issues/`**. A pergunta vale mesmo quando o usuário pediu o report direto, porque ele ainda não viu o texto final. Com **Não**, grave o fallback abaixo (`$STATUS` fica indefinido e conta como "não abriu") e não rode o `jarvis vcs create-issue`.
 
 ```bash
 BODY_FILE=$(mktemp)
@@ -198,7 +198,7 @@ STATUS=$?
 - `.jarvis/` já fica fora do versionamento, então o arquivo não vai para nenhum commit.
 
 ```bash
-if [ "$STATUS" -ne 0 ]; then
+if [ "${STATUS:-1}" -ne 0 ]; then   # STATUS indefinido = o usuário disse Não, ou o envio falhou
   mkdir -p .jarvis/issues
   # gravar cabeçalho + "# $ISSUE_TITLE" + corpo em .jarvis/issues/issue-{desc}.md
 fi
@@ -219,6 +219,17 @@ Sucesso (exit 0):
   URL     : {url retornada}
 
 O time do Jarvis vai revisar e corrigir o artefato.
+```
+
+Sem o Sim (o usuário recusou; o fallback da Fase 4 gravou o arquivo):
+
+```
+ℹ️ Issue não aberto, como você pediu. O texto ficou em:
+  Arquivo : .jarvis/issues/issue-{desc}.md
+  Título  : {título do issue}
+  Label   : {LABEL}
+
+Quando quiser abrir, peça para abrir a issue a partir desse arquivo.
 ```
 
 Erro (o fallback da Fase 4 gravou o arquivo):

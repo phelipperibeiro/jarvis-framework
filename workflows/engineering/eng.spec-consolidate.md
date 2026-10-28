@@ -104,7 +104,7 @@ Confira antes de aprovar:
 
 ## Passo 6: Publicar
 
-Pergunte com `AskUserQuestion` (**Sim / Não**): **"Publicar no Central docs?"**
+Pergunte com `AskUserQuestion` (**Sim / Não**): **"Publicar no Central docs?"** (regra de ouro, `eng.integrations-rules.md`; os documentos aprovados juntos no Passo 5 contam como um envio)
 
 - **Sim:**
   ```bash

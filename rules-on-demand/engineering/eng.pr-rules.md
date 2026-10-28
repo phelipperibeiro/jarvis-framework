@@ -199,6 +199,8 @@ sempre utiliza a branch main)
 
 ### Fase 4: Push
 
+O push só sai depois da escolha de publicar da Fase 0 do `eng.pr` (regra de ouro, `eng.integrations-rules.md`).
+
 1. **Enviar para remote**
    ```bash
    git push -u origin {nome-da-branch}

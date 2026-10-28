@@ -56,6 +56,8 @@ Ler do `$IDE/ENV.md`:
 - `CENTRAL_DOCS_REF`, `CENTRAL_DOCS_TARGET_BRANCH`, `CENTRAL_DOCS_REVIEWERS` (só com `.git`)
 - `SQUAD` (ALL-CAPS-COM-HIFEN) e `WORKSPACE` (vira a pasta do produto)
 
+O `jarvis docs publish` só roda depois da pergunta do `/eng.spec-consolidate` (regra de ouro, `rules/engineering/eng.integrations-rules.md`).
+
 Com `.git`, o PR é aberto pela CLI do host (`gh pr create` / `glab mr create`), com o login dela, respeitando o `VERSION_CONTROL_ACCESS` do `ENV.md` do projeto (não do repositório do Central docs). Sem a CLI, sem login, ou com `manual`/valor inválido/ENV.md ilegível, a branch fica no remote e a publicação mostra o link para abrir o MR à mão. ❌ **Nunca** colar token no chat nem gravar no `ENV.md`.
 
 ---
