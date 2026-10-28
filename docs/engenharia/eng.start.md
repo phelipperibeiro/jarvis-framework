@@ -46,7 +46,7 @@ Além do documento, ele prepara o ambiente: pergunta **de qual branch partir** (
 - **Sempre pergunta a branch base** (não presume `dev` nem `main`) e a grava no `architecture.md`; o `/eng.pr` abre o PR para ela
 - **Nunca avança sozinho:** só termina com aprovação explícita do documento, exceto com o Advisor habilitado e autonomia alta no CDD
 - **Advisor (opcional):** um subagente (`eng.advisor.agent`) com o modelo que você escolher, consultado só nas questões em aberto; os prompts e o modelo de auditoria ficam em `templates/engineering/advisor-template.md`. A lista de modelos oferecidos vem de `ADVISOR_MODELS` no `ENV.md`; no Claude Code só a família do modelo é respeitada
-- **No card, só eventos relevantes:** auditoria do Advisor (quando usado); nada de comentário de início ou fim
+- **No card, só eventos relevantes:** auditoria do Advisor (quando usado), e mesmo ela só depois de mostrar o texto e perguntar (regra de ouro); nada de comentário de início ou fim
 - **Não assume requisitos:** distingue fato de suposição e pergunta
 - **Stack do projeto:** em trabalho de backend ou de frontend, carrega a skill base mais as **especializações** registradas no `ENV.md` (`BACKEND_SPECIALIZATIONS` e `FRONTEND_SPECIALIZATIONS`); se algum skill instalado não tem `metadata.area`, **o comando é interrompido** ([especializações de stack](../especializacoes-de-stack.md))
 - Toda feature precisa registrar em `architecture.md` os pontos de segurança (dados sensíveis, superfície de ataque, modelo de auth), ou declarar "sem superfície de segurança identificada"

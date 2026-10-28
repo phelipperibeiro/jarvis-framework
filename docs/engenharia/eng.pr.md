@@ -28,7 +28,7 @@ Confere que tudo está passando, envia a branch e abre o merge request (ou pull 
 3. **Gera o `pull-request.md`** na sessão (`.jarvis/sessions/eng/{TASK_MANAGER_KEY}/`), a partir do template e do PR Brief do `gate-checklist.md`, e pede sua aprovação
 4. **Pergunta Sim / Não: publicar o PR agora?** Com Não, o arquivo fica na sessão e nada é enviado
 5. Com Sim: **push** e **cria o MR/PR** com o texto aprovado. Com `VERSION_CONTROL_ACCESS=manual`, CLI sem login ou saída 3, nada é enviado: fica o `pull-request.md` e o link para abrir à mão. Com saída 4 (erro depois de enviar), não repita: confira no host se o MR/PR foi criado
-6. **Posta o link do MR no card** (um único comentário) e orienta a mover para "In Review" (quando há board)
+6. **Mostra o comentário com o link do MR e pergunta; com o Sim, posta no card** (um único comentário), e orienta a mover para "In Review" (quando há board; o Jarvis não move card). O push das correções do code review também só sai depois da pergunta (regra de ouro)
 7. **Processa o code review:** analisa os comentários e aplica correções
 8. **Registra métricas de lead time**
 9. **Registra o esforço em `daily.md`** (com ou sem PR publicado), na sessão e nunca publicado:
