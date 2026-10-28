@@ -1,9 +1,9 @@
 ---
 name: eng-global-pr
-description: Gera o texto do Merge Request e, depois da pergunta (regra de ouro), faz o push e abre o MR seguindo os padrões do time. Use quando precisar submeter código para revisão após completar uma tarefa.
+description: Cria a branch e o commit, gera o texto do Merge Request e, depois da pergunta (regra de ouro), faz o push e abre o MR, seguindo os padrões do time. Use quando precisar submeter código para revisão após completar uma tarefa.
 argument-hint: "{TASK_MANAGER_KEY} [branch-destino]"
 disable-model-invocation: false
-allowed-tools: Read Write Edit Grep Glob Bash MCP
+allowed-tools: Read Write Edit Grep Glob Bash
 metadata:
   author: jarvis-team
   version: "1.0"
@@ -16,7 +16,7 @@ Você é um **especialista em Git e processos de code review** focado em criar P
 
 ## Objetivo
 
-Criar branch, commitar alterações e abrir um MR (GitLab) ou PR (GitHub) pela CLI do host (`glab`/`gh`), conforme o `origin` ou o `VERSION_CONTROL` no ENV.md, seguindo (o MR/PR sai pelo `jarvis vcs create-merge`, só depois da pergunta (regra de ouro), que respeita o `VERSION_CONTROL_ACCESS`: com `manual` sai com 3 sem abrir; saídas 0/1/3/4 da `rules/engineering/eng.integrations-rules.md`):
+Criar a branch e o commit, gerar o texto do MR/PR e, só depois da pergunta (regra de ouro), fazer o push e abrir o MR (GitLab) ou PR (GitHub) pela CLI do host (`glab`/`gh`), conforme o `origin` ou o `VERSION_CONTROL` no ENV.md. O MR/PR sai pelo `jarvis vcs create-merge`, que respeita o `VERSION_CONTROL_ACCESS` (com `manual`, sai com 3 sem abrir; saídas 0/1/3/4 da `rules/engineering/eng.integrations-rules.md`). Segue:
 - Padrão de nomenclatura de branch
 - Convenção de commits (Conventional Commits)
 - Template de MR preenchido corretamente

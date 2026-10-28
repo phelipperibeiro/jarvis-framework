@@ -84,7 +84,7 @@ I see some terms I want to make sure I understand:
 
 Continue through each information, asking only about terms you haven't already decoded.
 
-Gather data from available installed MCP sources:
+Gather data from available installed MCP sources (chat, email, documents and calendar only; the board and git are read only through the vendor's official CLI, see `eng.integrations-rules.md`):
 - **Chat:** Recent messages, channels, DMs
 - **Email:** Sent messages, recipients
 - **Documents:** Recent docs, collaborators

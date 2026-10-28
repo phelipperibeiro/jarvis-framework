@@ -25,7 +25,7 @@ Por favor, siga o `rules/status-report-rules.md` para obter orientações corret
 Sempre interaja com o usuário no mesmo idioma que ele estiver usando.
 
 ### Roadmap Preview:
-- Quando o usuário perguntar sobre roadmap, status, sprint, atualizações, etc., execute as instruções de `commands/status-roadmap-preview`
+- Quando o usuário perguntar sobre roadmap, status, sprint, atualizações, etc., execute as instruções de `commands/status.roadmap.preview.md`
 - Use o `$ARGUMENTS` do usuário para obter a resposta correta.
 
 

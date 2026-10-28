@@ -671,7 +671,7 @@ Para cada caso extremo/erro:
 
 Exemplo: `$SESSIONS_DIR/eng/story-123/tech-spec.md`
 
-> **IMPORTANTE**: A tech spec é salva na sessão e anexada no Jira. O Jira é a fonte da verdade, não o repositório.
+> **IMPORTANTE**: A tech spec é salva na sessão. Para anexá-la na issue do Jira, mostre o que vai e pergunte com `AskUserQuestion` (regra de ouro, `eng.integrations-rules.md`); com o Sim, anexe pela `acli` (confira no `--help` se ela anexa arquivo; se não, oriente a pessoa a anexar à mão). Sem o Sim, a tech spec fica só na sessão.
 
 #### 6.2 Revisão de Qualidade
 
@@ -737,11 +737,10 @@ Use o formato **Descrição da subtarefa no Jira** de `$IDE/templates/engineerin
 
 Antes de criar as subtarefas, mostre o texto e pergunte com `AskUserQuestion` (**Sim, publicar** / **Não, manter só na sessão**), regra de ouro de `eng.integrations-rules.md`; sem o Sim, entregue só o template formatado e deixe o texto na sessão. O comentário da 7.4 tem a sua própria pergunta, feita pelo `/eng-global-task-comment`.
 
-**Com a `acli` logada (e o Sim):**
+**Com a `acli` logada, `TASK_MANAGER_ACCESS=cli` (ou vazio) e o Sim:**
 
-- Crie as subtarefas com `acli jira workitem create`
-- Vincule à história pai
-- Configure dependências entre subtarefas
+- Crie as subtarefas com `acli jira workitem create` (flags no `--help`)
+- Vincule à história pai e configure as dependências entre subtarefas no que a `acli` permitir; o resto vai no template manual abaixo
 
 **Sem a `acli` logada (ou com `TASK_MANAGER_ACCESS=manual`), ou sem o Sim:**
 
@@ -768,7 +767,7 @@ Valide que:
 
 - [ ] Tech Spec completa e aprovada pelo usuário
 - [ ] Arquivo salvo na sessão: `$SESSIONS_DIR/eng/{feature-name}/tech-spec.md`
-- [ ] Tech Spec anexada na issue do Jira
+- [ ] Tech Spec anexada na issue do Jira (com o Sim) ou deixada na sessão
 - [ ] Subtarefas documentadas com critérios claros
 - [ ] Subtarefas criadas no Jira (ou template fornecido)
 - [ ] História original atualizada com link para tech spec

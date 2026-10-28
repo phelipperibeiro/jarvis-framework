@@ -60,7 +60,6 @@ const IMPERATIVOS = [
   /mova o card para a etapa/i,
   // Board e git só pela CLI oficial (eng.integrations-rules.md): nada de REST nem MCP para criar ou ler o board.
   /API\/ferramenta disponível/,
-  /\bMCP d[oa] (?:Jira|Atlassian|\$TASK_MANAGER)/,
   /\bAtlassian:\w+/,
 ];
 
@@ -84,12 +83,16 @@ const ehHistorico = (arquivo) => HISTORICO.test(relative(root, arquivo).split("\
 // registra; "freelance: …" vale até a vírgula, o ponto final, "!", "?", o ponto e vírgula ou o "e"/"mas", com o
 // ponto de um nome de arquivo como `task-log.md` dentro da oração; texto do freelance que siga depois da vírgula
 // vai entre parênteses) e as orações negadas ("nunca … sem perguntar"), mas não a condicional ("se nada mudou, …").
-// O freelance só é isento como sujeito da oração: "não-freelance", "fora do freelance", "ao contrário do modo
-// freelance", "exceto no freelance" e "salvo no freelance" falam do modo com board e não são isentos.
+// O freelance só é isento como sujeito da oração: "não-freelance", "fora do/de freelance", "ao contrário do modo
+// freelance", "exceto no/em freelance", "salvo no freelance", "com exceção do freelance", "a não ser no
+// freelance" e "quando não é freelance" falam do modo com board e não são isentos.
+// O "e sem …" só continua a negação de um "nunca/jamais" seguido de verbo de envio ("nunca comente e sem
+// perguntar"); em "nunca há board e sem perguntar …" a oração seguinte é outra.
 const FIM_SIMPLES = String.raw`(?=\s(?:e|mas)\s|[;),.:—–]|$)`;
 const FIM_DO_NUNCA = String.raw`(?=\s(?:e|mas)\s(?!sem\b)|[;),.:—–]|$)`;
+const VERBO_DE_ENVIO = String.raw`(?:publi\w+|coment\w+|envi\w+|post\w+|abr\w+|cri\w+|fa[çz]\w*|d[êe]\s+push)`;
 const FIM_DO_FREELANCE = String.raw`(?=\s(?:e|mas)\s|[;,!?—–]|\.(?=\s|$)|$)`;
-const SUJEITO_FREELANCE = String.raw`(?<![-A-Za-zÀ-ÿ])(?<!\b(?:fora|contrário|exceto|salvo)\s+(?:d[oa]\s+|n[oa]\s+)?(?:modo\s+)?)freelance`;
+const SUJEITO_FREELANCE = String.raw`(?<![-A-Za-zÀ-ÿ])(?<!(?<![A-Za-zÀ-ÿ])(?:fora|contrário|exceto|salvo|exceção|ser|é|for)\s+(?:d[eoa]\s+|n[oa]\s+|em\s+)?(?:modo\s+)?)freelance`;
 const semFreelance = (linha) =>
   linha
     .replace(new RegExp(String.raw`${SUJEITO_FREELANCE}\s*\([^)]*\)`, "gi"), "")
@@ -110,11 +113,28 @@ const semFreelance = (linha) =>
 const semIsencoes = (linha) =>
   semFreelance(linha)
     .replace(
-      new RegExp(String.raw`(?<!\bse\s+)\b(?:nunca|jamais)\b[^;),.:—–]*?${FIM_DO_NUNCA}`, "gi"),
+      new RegExp(
+        String.raw`(?<!\bse\s+)\b(?:nunca|jamais)\s+${VERBO_DE_ENVIO}[^;),.:—–]*?${FIM_DO_NUNCA}`,
+        "gi"
+      ),
+      ""
+    )
+    .replace(
+      new RegExp(String.raw`(?<!\bse\s+)\b(?:nunca|jamais)\b[^;),.:—–]*?${FIM_SIMPLES}`, "gi"),
       ""
     )
     .replace(
       new RegExp(String.raw`(?<!\bse\s+)\b(?:nada|nem)\b[^;),.:—–]*?${FIM_SIMPLES}`, "gi"),
+      ""
+    )
+    // "não … sem perguntar" e "não … automaticamente" negam o envio sem pergunta ("o push não sai sem perguntar",
+    // "o Jarvis não move o card automaticamente"); "Sem a aprovação, …" no começo da oração é condição.
+    .replace(
+      /\bnão\s+(?:(?!e\s|mas\s)[\p{L}-]+\s+){0,4}?(?:sem\s+(?:a\s+)?(?:pergunt\w*|confirmação|aprovação)|automaticamente)/giu,
+      ""
+    )
+    .replace(
+      /(?:^|[.;:(—–]\s*|\*\*\s*)sem\s+(?:a\s+|o\s+)?(?:pergunta|confirmação|aprovação|Sim)\b[^,;.]*,/giu,
       ""
     );
 
@@ -122,14 +142,21 @@ const semIsencoes = (linha) =>
 // abre item, título, tabela, citação, bloco, HTML, régua ou árvore, nem chama o skill de novo. Negrito no começo
 // da linha e "#184" continuam a frase (no markdown, ficam no mesmo parágrafo).
 const NOVO_BLOCO = /^\s*$|^\s*(?:[-*+]\s|\d+[.)]\s|#{1,6}\s|\||>|```|<|---|[├└│])/;
+// Numa citação (linhas com ">"), a linha seguinte com ">" continua a mesma citação.
+const CITACAO = /^\s*>/;
 const continuacao = (todas, i) => {
   const proxima = todas[i + 1] ?? "";
-  return NOVO_BLOCO.test(proxima) || /eng-global-task-comment/.test(proxima) ? "" : proxima;
+  if (/eng-global-task-comment/.test(proxima)) return "";
+  if (CITACAO.test(todas[i] ?? "") && CITACAO.test(proxima)) return proxima;
+  return NOVO_BLOCO.test(proxima) ? "" : proxima;
 };
-// A linha anterior faz parte da frase quando a linha `i` a continua (não abre bloco) e ela não está em branco.
+// A linha anterior faz parte da frase quando a linha `i` a continua (não abre bloco) e ela não está em branco nem
+// é título, tabela ou bloco; numa citação, a linha anterior com ">" faz parte.
 const anterior = (todas, i) => {
   const antes = todas[i - 1] ?? "";
-  return NOVO_BLOCO.test(todas[i]) || !antes.trim() || /^\s*(?:\||```)/.test(antes) ? "" : antes;
+  if (CITACAO.test(todas[i] ?? "") && CITACAO.test(antes)) return antes;
+  if (NOVO_BLOCO.test(todas[i] ?? "") || !antes.trim()) return "";
+  return /^\s*(?:#{1,6}\s|\||```|>)/.test(antes) ? "" : antes;
 };
 
 // Redações que dispensam a pergunta. Os espaços aceitam repetição, NBSP e quebra com recuo. O teste guarda
@@ -147,6 +174,8 @@ const RECUSA = new RegExp(
     String.raw`\bpul(?:e|a|ar|ando)\s+a\s+pergunta`,
     String.raw`\bomit\w*\s+a\s+pergunta`,
     String.raw`\bautomaticamente\b`,
+    String.raw`não\s+se\s+pergunta\b`,
+    String.raw`não\s+é\s+necessário\s+perguntar`,
     String.raw`já\s+vale\s+como\s+o\s+Sim`,
     String.raw`regra\s+de\s+ouro\s+não\s+se\s+aplica`,
     String.raw`não\s+é\s+preciso\s+perguntar`,
@@ -155,8 +184,10 @@ const RECUSA = new RegExp(
 );
 // Dispensas escritas com nunca/nem/jamais/nada, que a isenção das orações negadas apagaria: olhadas no texto só
 // sem as isenções do freelance.
+// "nunca pergunta duas vezes" é contra a pergunta dupla, não dispensa; "nada impede" só conta seguido de
+// "sem perguntar".
 const NUNCA_PERGUNTE =
-  /\b(?:nunca|nem|jamais)\s+(?:(?:é|precisa|vai|se)\s+(?:preciso\s+)?)?pergunt(?:e|a|ar|ando)\b|\b(?:nunca|jamais)\s+espere\s+o\s+Sim\b|\bnada\s+impede\b/i;
+  /\b(?:nunca|nem|jamais)\s+(?:(?:é|precisa|vai|se)\s+(?:preciso\s+)?)?pergunt(?:e|a|ar|ando)\b(?!\s+duas\s+vezes)|\b(?:nunca|jamais)\s+espere\s+(?:o|pelo)\s+Sim\b|\bnada\s+impede\b[^.;]*\bsem\s+(?:a\s+)?pergunt/i;
 // "dispens…" vale como recusa, salvo logo depois de "não" ou "sem" (com até três palavras de ligação: "não
 // pode dispensar", "não a dispense", "não deve ser dispensada", "sem dispensar"); o "não" de outra oração
 // ("não espere e dispense") não conta. A negação é conferida só nos 40 caracteres antes de cada "dispens".
@@ -185,11 +216,18 @@ function todosMd() {
 // que ela é a única.
 const ACESSO_MANUAL =
   /^- \*\*`TASK_MANAGER_ACCESS` `manual` ou inválido:\*\* não há envio possível; pule a pergunta/;
+// Nas janelas, as exceções apagam só a frase isenta, não a linha inteira.
+const semExcecoes = (file, l) => {
+  let s = file === TASK_COMMENT && ACESSO_MANUAL.test(l) ? l.replace("pule a pergunta", "") : l;
+  if ((file === ENG_PR || file === GLOBAL_PR) && EXCECAO_DA_FASE_0(s))
+    s = s.replace(/não (?:se )?pergunt\w* de novo/, "");
+  return s;
+};
 
-// A 4.3 do eng.pr registra a exceção da Fase 0 (que já vale como a pergunta do push e do PR) e manda não
-// perguntar de novo: é a exceção da regra geral, não uma dispensa.
+// A 4.3 do eng.pr e o Passo 4 do eng-global-pr registram a exceção da Fase 0 (que já vale como a pergunta do
+// push e do PR) e mandam não perguntar de novo: é a exceção da regra geral, não uma dispensa.
 const EXCECAO_DA_FASE_0 = (l) =>
-  /exceção da regra de ouro/.test(l) && /não pergunte de novo/.test(l);
+  /exceção da regra/.test(l) && /não (?:se )?pergunt\w* de novo/.test(l);
 
 // Trecho de `texto` que vai de `linhas` linhas antes da linha `i` até a própria linha `i`.
 const janelaAntes = (linhas, i, n) => linhas.slice(Math.max(0, i - n), i + 1).join("\n");
@@ -307,8 +345,22 @@ test("toda linha que chama o /eng-global-task-comment traz a pergunta na mesma l
   }
 });
 
+// Board e git só pela CLI oficial (eng.integrations-rules.md): uma linha que manda usar MCP para o board não vale;
+// a proibição ("sem REST nem MCP", "não use o MCP do Jira") vale.
+const MCP_DO_BOARD =
+  /\bMCPs?\s+(?:(?:configurad|específic|especific|disponív|instalad|relacionad)\w*\s+)*(?:d[oa]|a[oa]|para\s+o)\s+`?(?:Jira|Atlassian|\$TASK_MANAGER|board)\b/i;
+const PROIBE_MCP = /\b(?:sem|nem|não|nunca|proibid\w*)\b[^.\n]{0,30}\bMCPs?\b/i;
+
 test("nenhum imperativo manda publicar sem a pergunta", () => {
   for (const file of todosMd()) {
+    readFileSync(file, "utf8")
+      .split("\n")
+      .forEach((linha, i) => {
+        assert.ok(
+          !MCP_DO_BOARD.test(linha) || PROIBE_MCP.test(linha),
+          `${rel(file)}:${i + 1}: manda usar MCP para o board. ${DE_PROPOSITO}`
+        );
+      });
     const texto = readFileSync(file, "utf8");
     for (const padrao of IMPERATIVOS) {
       assert.doesNotMatch(
@@ -389,12 +441,17 @@ test("cada ponto que envia algo tem a pergunta logo antes", () => {
       "skills/eng-global-tech-spec/references/delivery-spec.md",
       /`acli jira workitem create`/,
       4,
-      /depois da pergunta, regra de ouro|\(e o Sim\)/,
+      /depois da pergunta, regra de ouro|e o Sim:/,
     ],
     [ENG_PR, /^\| Fase 4 › 4\.4 Criar MR\/PR pela CLI/, 0, /escolha da Fase 0 for publicar/],
     [ENG_PR, /^Segue a cadeia de/, 30, /exceção da regra de ouro/],
     [SPEC_CONSOLIDATE, /^\| Passo 3 \(funcionalidade\) e Passo 6/, 0, /depois do Sim/],
-    [GLOBAL_PR, /^Criar branch, commitar/, 0, /só depois da pergunta \(regra de ouro\)/],
+    [
+      GLOBAL_PR,
+      /^Criar a branch e o commit, gerar o texto/,
+      0,
+      /só depois da pergunta \(regra de ouro\)/,
+    ],
     [TASK_COMMENT, /^### 1\. `jarvis tasks comment`/, 8, /Sim, publicar/],
     ["skills/jarvis-docs-central/README.md", /^- \*\*Publicar\*\*/, 0, /depois da pergunta/],
     [
@@ -405,6 +462,12 @@ test("cada ponto que envia algo tem a pergunta logo antes", () => {
     ],
     [REPORT_ISSUE, /^\*\*Antes de abrir, mostre e pergunte/, 0, /AskUserQuestion/],
     [REPORT_ISSUE, /^\*\*Cadeia/, 25, /Sim, abrir a issue/],
+    [
+      REPORT_ISSUE,
+      /^description: /,
+      0,
+      /só depois de mostrar o texto e o usuário dizer Sim \(regra de ouro\)/,
+    ],
     ["docs/engenharia/eng.spec-consolidate.md", /^6\. Pergunta/, 0, /Pergunta \*\*Sim \/ Não\*\*/],
     [
       "workflows/engineering/eng.build-tech-spec.md",
@@ -430,18 +493,30 @@ test("cada ponto que envia algo tem a pergunta logo antes", () => {
     [INTEGRATIONS, /^\| `(?:TASK_MANAGER|VERSION_CONTROL)` \(\+/],
     [INTEGRATIONS, /^Para agir no vendor:/],
     ["docs/estrutura/bin.md", /^\| `jarvis (?:tasks comment|vcs create-merge)/],
+    ["bin/README.md", /^1\. \*\*Como subcomando do CLI\*\*: `jarvis vcs create-merge/],
+    [
+      "bin/README.md",
+      /^`bin\/lib\/tasks\/comment\.js` e `bin\/lib\/vcs\/\*\.js` leem `process\.env`/,
+    ],
+    ["templates/ENV-template.md", /^# git remote get-url origin\. PR\/MR pela CLI oficial/],
+    ["templates/ENV-template.md", /^# Usado pelo skill \/jarvis-report-issue, pela CLI do host/],
   ];
-  // Completude: toda linha de comando que envia algo, em qualquer arquivo, precisa estar nesta lista. Vale com
-  // prefixo ("$ ", "rtk ", item de lista, "&& ", "; ") e para o comando entre crases em prosa ou tabela.
+  // Completude: toda linha que cita um comando que envia algo, em qualquer posição (com ou sem prefixo como
+  // "$ ", "rtk ", "npx ", "$(" ou crases), precisa estar nesta lista ou na das descritivas.
   const COMANDO =
-    /(?:^\s*(?:(?:[-*+]|\d+[.)])\s+)?(?:\$\s+)?|(?:&&|;)\s*|`)(?:rtk\s+)?(?:git push\b|gh (?:pr|issue) (?:create|comment)|glab (?:mr|issue) (?:create|note)|acli jira workitem (?:create|comment)|jarvis (?:vcs create-|tasks comment|docs publish))/;
-  // O README da raiz entra; o CONTRIBUTING.md fica fora: é o guia de quem contribui com o framework, e o push
-  // ali é a própria pessoa que roda, não um passo que o Jarvis executa.
-  for (const file of todosMd().concat(join(root, "README.md"))) {
+    /(?:^|[\s`(|&;$])(?:rtk\s+|npx\s+)?(?:git(?:\s+-C\s+\S+)?\s+push\b|gh\s+(?:pr|issue)\s+(?:create|comment|merge|close|edit|review)\b|glab\s+(?:mr|issue)\s+(?:create|note|merge|close|update)\b|acli\s+jira\s+workitem\s+(?:create|comment|transition|assign|edit|attachment)\b|jarvis\s+(?:vcs\s+create-|tasks\s+comment|docs\s+publish))/;
+  // Os .md da raiz e o bin/README.md entram; o CONTRIBUTING.md fica fora: é o guia de quem contribui com o
+  // framework, e o push ali é a própria pessoa que roda, não um passo que o Jarvis executa.
+  const RAIZ = ["README.md", "AGENTS.md", "members.md", "taxonomy.md", "bin/README.md"]
+    .map((p) => join(root, p))
+    .filter((p) => existsSync(p));
+  for (const file of todosMd().concat(RAIZ)) {
     const nome = rel(file).split("\\").join("/");
     readFileSync(file, "utf8")
       .split("\n")
       .forEach((linha, i) => {
+        // As linhas de árvore de pastas (├── …) só listam os arquivos.
+        if (/^\s*[├└│]/.test(linha)) return;
         if (!COMANDO.test(linha) || DESCRITIVAS.some(([f, d]) => f === nome && d.test(linha)))
           return;
         assert.ok(
@@ -465,11 +540,11 @@ test("cada ponto que envia algo tem a pergunta logo antes", () => {
         `${file}:${i + 1}: o envio ${envio} sem ${precisa} antes. ${DE_PROPOSITO}`
       );
       // Na janela, nenhuma linha pode dispensar a pergunta (a do acesso manual do passo 0.5 é a exceção).
-      const janela = linhas
-        .slice(Math.max(0, i - n), i + 1)
-        .filter((l) => !ACESSO_MANUAL.test(l) && !EXCECAO_DA_FASE_0(l));
+      // Cada linha vai junto com a continuação dela (uma dispensa quebrada em duas linhas também conta).
+      const limpas = linhas.map((l) => semExcecoes(file, l));
+      const inicio = Math.max(0, i - n);
       assert.ok(
-        !janela.some((l) => recusa([l])),
+        !limpas.slice(inicio, i + 1).some((l, k) => recusa([l, continuacao(limpas, inicio + k)])),
         `${file}:${i + 1}: a janela do envio ${envio} dispensa a pergunta. ${DE_PROPOSITO}`
       );
     }
@@ -668,6 +743,14 @@ test("os outros pontos que enviam algo (agente, delivery-spec, data.contract, pr
       /`acli jira workitem create`.*só depois de mostrar o texto e perguntar \(regra de ouro\)/,
     ],
     [ENG_PRE_PR, /nada é enviado ao card \(o texto fica no `gate-checklist\.md`\)/],
+    [
+      "skills/eng-global-tech-spec/references/delivery-spec.md",
+      /Para anexá-la na issue do Jira, mostre o que vai e pergunte com `AskUserQuestion` \(regra de ouro/,
+    ],
+    [
+      "skills/product-roadmap-report/commands/status.roadmap.preview.md",
+      /Leia o board pela CLI oficial do `\$TASK_MANAGER`.*sem REST nem MCP/,
+    ],
   ];
   for (const [file, frase] of FRASES) {
     assert.match(read(file), frase, `${file} sem ${frase}. ${DE_PROPOSITO}`);

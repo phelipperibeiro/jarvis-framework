@@ -384,12 +384,13 @@ Regras em `$IDE/rules-on-demand/engineering/eng.pr-rules.md` (seção "daily.md"
 ### 7.3 Mensagem Final
 
 ```
-✅ {MERGE REQUEST CRIADO COM SUCESSO! | PR NÃO PUBLICADO (só os arquivos)}
+✅ MERGE REQUEST CRIADO COM SUCESSO!       ← com o PR publicado
+📝 PR NÃO PUBLICADO (só os arquivos)       ← com "Só gerar os arquivos"
 
 📋 Resumo:
 - Branch: {NOME_DA_BRANCH}
-- MR: {LINK_DO_MR}
-- Card: {TASK_MANAGER_KEY} (mova para "In Review"; o Jarvis não move card)
+- MR: {LINK_DO_MR}   ← sem PR publicado: "— (abra à mão com o pull-request.md)"
+- Card: {URL do card, pela tabela da 4.1}   ← só com board; com o PR aberto, mova-o para a etapa equivalente a "em revisão" (o Jarvis não move card)
 
 📊 Validações:
 - Testes: ✅ Passando
@@ -408,17 +409,20 @@ Regras em `$IDE/rules-on-demand/engineering/eng.pr-rules.md` (seção "daily.md"
 - [daily.md]({caminho relativo}) (novo; {aprovado, com timesheet})
 🕒 Timesheet: {LINHA_DE_TIMESHEET_APROVADA}
 
-📌 Próximos passos:
+📌 Próximos passos (com o PR publicado):
 1. Aguardar revisão do time e processar os comentários do code review
 2. Merge após aprovação
 3. /eng.spec-consolidate {TASK_MANAGER_KEY} depois do merge → registrar no Central docs o que esta entrega implementou
+📌 Próximos passos (sem o PR publicado):
+1. Abrir o PR com o pull-request.md (à mão ou rodando o /eng.pr de novo)
+2. /eng.spec-consolidate {TASK_MANAGER_KEY} depois do merge
 
 🗂️ A sessão $SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/ não é apagada (o /eng.spec-consolidate precisa dela).
    Remova à mão quando quiser.
 
 🔗 Links:
-- MR: {LINK_DO_MR}
-- Jira: {TASK_MANAGER_URL_BASE}/browse/{TASK_MANAGER_KEY}
+- MR: {LINK_DO_MR}   ← só com o PR publicado
+- Card: {URL do card, pela tabela da 4.1}   ← só com board
 ```
 
 ### 7.4 Versões humanizadas (só com `ARTIFACT_STYLE=human-generated`)
@@ -448,7 +452,7 @@ Pergunte com `AskUserQuestion`: **"O PR já foi aprovado e mergeado?"**
 - ✅ Usar mensagem de commit padronizada
 - ✅ Criar branch no padrão `{TASK_MANAGER_KEY}-{titulo}`
 - ✅ Preencher template do MR completamente
-- ✅ Orientar a pessoa a mover o card para "In Review" (o Jarvis não move card)
+- ✅ Orientar a pessoa a mover o card para a etapa equivalente a "em revisão" (o Jarvis não move card)
 - ✅ Gerar o `pull-request.md` na sessão e só publicar com a escolha de publicar da Fase 0 (4.3)
 - ✅ Com PR aberto, registrar o esforço no `daily.md` (7.2), com revisão conjunta da descrição e do timesheet
 - ✅ **Nunca apagar a sessão:** o `/eng.spec-consolidate` precisa dela

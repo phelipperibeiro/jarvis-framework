@@ -65,7 +65,7 @@ Leia os dados do roadmap pela `acli`, com o login dela. Sem a `acli` logada (ou 
 Não precisa trazer informações embedadas do jira, apenas o output definido aqui nessa skill.
 
 ```
-acli jira workitem search --jql "{JQL}"   # confira os flags (campos, limite, formato) no --help
+acli jira workitem search --jql "{JQL}"   # ou --filter {ID} para o filtro salvo; confira os flags (campos, limite, formato) no --help
 JQL: (filtro informado pelo usuário ou montado a partir de board_code + labels)
 Campos a buscar: key, summary, status, priority, duedate, resolutiondate, assignee, labels, customfield (team, quadrimestre)
 ```

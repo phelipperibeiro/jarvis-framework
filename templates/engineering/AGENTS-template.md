@@ -50,7 +50,7 @@ O projeto utiliza o framework JARVIS com os seguintes comandos principais:
 | `/eng.start` | Iniciar nova tarefa (cria architecture.md) |
 | `/eng.plan` | Criar plano de execução faseado |
 | `/eng.work` | Implementar código seguindo o plano |
-| `/eng.pr` | Criar branch, commit e Merge Request |
+| `/eng.pr` | Push e Merge Request, depois da pergunta (regra de ouro) |
 | `/eng.debug` | Investigar e resolver bugs |
 
  For AI Agents
