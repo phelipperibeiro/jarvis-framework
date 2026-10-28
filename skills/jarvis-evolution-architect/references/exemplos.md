@@ -152,7 +152,7 @@ Consolidar skills **não é a resposta**. Problema é **organização e document
 **O Que Eu Mudaria:**
 1. Criar um **INDEX.md** principal que agrupa skills por contexto
 2. Adicionar tags em metadatas das skills
-3. Criar uma skill `/jarvis-find-skill` que busca
+3. Criar uma skill de busca de skills (hipotética; não existe no framework)
 4. Melhorar `metadata.area` e `metadata.tags`
 
 **O Que Eu Não Faria:**
@@ -263,7 +263,7 @@ Quando você invoca a skill:
 ```
 "Qual skill devo usar para X?"
 ```
-❌ Isso não é pergunta arquitetural. Use `/jarvis-find-skill` em vez disso.
+❌ Isso não é pergunta arquitetural. Consulte o mapeamento comando → skill em `skills/AGENTS.md` em vez disso.
 
 ### ✅ Fazer isso:
 ```
@@ -286,7 +286,7 @@ Quando você invoca a skill:
 | "Devo criar um novo agent?" | ✅ SIM |
 | "Essa feature deveria ser skill ou workflow?" | ✅ SIM |
 | "Acho que essa feature está complexa demais" | ✅ SIM |
-| "Qual skill usa para X?" | ❌ NÃO (use `/jarvis-find-skill`) |
+| "Qual skill usa para X?" | ❌ NÃO (consulte `skills/AGENTS.md`) |
 | "Como implement feature X?" | ❌ NÃO (use skill específica) |
 | "Devemos adotar X tendência?" | ✅ SIM |
 | "Qual a diferença entre SDD e CDD?" | ✅ SIM |

@@ -169,6 +169,7 @@ Critério de parada: {atingido na rodada {N} (teto de {T} rodadas da urgência `
 - Riscos / trade-offs:
 - Rodadas do pre-pr: {N} (🔴/🟡/⚪ por rodada: {a/b/c, …}); critério de parada: {rodada {K}, por {teto | sem lacuna nova} | não agiu}
 - Ajustes antes da aprovação: architecture.md {n} · plan.md {m}   ← da linha "Ajustes antes da aprovação" do cabeçalho de cada um ("—" se a linha não existir)
+- Lições desta tarefa: {até 3 linhas: o que deu mais voltas, por quê, e em qual rodada apareceu; só o que faria a próxima tarefa gastar menos rodadas}   ← registro só desta tarefa; guardar e recuperar lições entre tarefas é a #169
 - Labels sugeridos: {só o nome, ex.: `security`}   ← critério em `eng-security-rules.md` (auth, sessions, RBAC, CORS, CSP, permissões); a pessoa adiciona no host (o `jarvis vcs create-merge` não põe label); nem o label nem esta nota entram no `pull-request.md`; o `eng.pr` lembra o label na mensagem final
 ```
 

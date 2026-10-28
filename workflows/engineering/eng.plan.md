@@ -45,7 +45,6 @@ Antes de executar este workflow:
 |-------|-------|----------|
 | Cabeçalho (agente) | `eng.agent` (agente) | Sempre — identidade do workflow |
 | Fase 0 › 0.1 Herdar Contexto da Sessão | `/jarvis-context-detect` | Se `ENABLE_CDD=true` e o `context.md` não existir |
-| Fase 2: Pesquisa no Codebase | `repoprompt` (MCP: `search`, `read_selected_files`) | Para buscar e ler arquivos relevantes do codebase |
 | Fase 2: Pesquisa no Codebase (se necessário) | `context7` (MCP) | Se for preciso consultar a documentação de bibliotecas |
 | Fase 3: Criação do Plano (exceção) | `eng.advisor.agent` (agente) | Só por exceção: questão nova em aberto, com o Advisor habilitado no `eng.start` (cabeçalho do `architecture.md`) |
 | Fase 3: Criação do Plano (exceção) | `/eng-global-task-comment` | Só por exceção: comentário de auditoria da questão nova consultada ao Advisor, só com o Sim da pergunta (regra de ouro; freelance: o skill registra no `task-log.md`); sem o Sim, o texto fica no `task-comment-*.md` e no `architecture.md` |
@@ -129,9 +128,12 @@ CONTEXT_PROFILE:
 
 ### Fase 2: Pesquisa no Codebase
 
-1. **Buscar** arquivos relevantes usando:
-   - `repoprompt:search` para encontrar arquivos específicos
-   - `repoprompt:read_selected_files` para ler código em batch
+1. **Buscar** arquivos relevantes com as ferramentas de busca, como na Fase 3.1 do `eng.start`:
+   - **Glob** para encontrar arquivos relacionados
+   - **Grep** para buscar padrões e implementações parecidas
+   - **Read** para ler os arquivos que serão modificados
+
+   Com `WORKSPACE_MODE=workspace`, busque só nos repositórios do workspace e siga a regra "Buscas de código em modo workspace" de `eng-rules.md`.
 2. **Analisar**:
    - Padrões existentes no projeto
    - Arquivos que serão modificados

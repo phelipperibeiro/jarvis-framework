@@ -24,7 +24,7 @@ Integrar os comandos do framework com o **Central docs**: o registro do que **de
 | Documentos de trabalho | PRD, FRD, épicos, histórias, ARD, RFC, SPEC, QA, swagger, robôs, C4: o que se pretende e se discute | `docs/jarvis/` (`$PROD_DOCS`, `$ENG_DOCS`), fora do versionamento |
 | **Central docs** | O que foi implementado: um documento **completo e autossuficiente** por funcionalidade (estado atual) e um **registro por entrega** (PR, commits, autores) | Pasta do Central docs (adaptador) |
 
-Quem escreve no Central docs é o **`/eng.spec-consolidate`** (agente `eng.docs-consolidator`), depois do merge do PR. Os documentos de trabalho nunca são publicados lá.
+Quem escreve no Central docs é o **`/eng.spec-consolidate`** (agente `eng.docs-consolidator.agent`), depois do merge do PR. Os documentos de trabalho nunca são publicados lá.
 
 **Modos deste skill:**
 - buscar o que já foi implementado (Modo 1);
