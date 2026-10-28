@@ -30,11 +30,12 @@ Cada fase:
 ## Como funciona
 
 1. Confirma que o `architecture.md` existe e o lê
-2. Pesquisa o codebase: arquivos que serão modificados e padrões parecidos já implementados
+2. Pesquisa o codebase (busca de arquivos, busca de texto e leitura): arquivos que serão modificados e padrões parecidos já implementados
 3. Calibra o plano pelo contexto (veja abaixo)
 4. Divide o trabalho em fases incrementais, ordenadas por dependência
 5. Detalha as tarefas e marca dependências (sequencial ou paralelo)
-6. Apresenta o plano, discute ajustes e confirma com você antes de seguir
+6. **Passe crítico:** confere o plano item a item contra o checklist das regras (toda fase cabe em cerca de 1 hora, toda fase tem testes, toda tarefa tem o que, onde, como e como verificar) e corrige antes de mostrar
+7. Apresenta o plano, discute ajustes e confirma com você antes de seguir
 
 Todos os status começam como não iniciados (⏳). Ao longo do `eng.work` eles passam a em progresso (⏰), completada (✅) ou bloqueada (🚫), sempre com **uma só fase em progresso por vez**.
 
@@ -57,7 +58,8 @@ Por `MAX_AI_EXECUTION_PERCENTAGE`: de 80% para cima, plano completo validado no 
 ## Regras que importam
 
 - **Só planejamento:** não escreve código, não altera arquivos do projeto, não roda build nem testes
-- Fases maiores que 1 hora e tarefas vagas ("implementar a feature") não valem
+- Fases maiores que 1 hora e tarefas vagas ("implementar a feature") não valem, e o passe crítico as pega antes de você ver o plano
+- **Ajustes contados:** cada "Ajustar o plano" soma 1 em "Ajustes antes da aprovação" no cabeçalho do `plan.md`, e o número vai para o PR
 - O plano só está pronto quando você o **valida**
 - Tudo em português (pt-BR)
 - **Questão nova em aberto é exceção:** o ideal é que tudo tenha sido levantado no `eng.start`; se surgir uma e o Advisor tiver sido habilitado lá, ele é consultado, a questão entra no `architecture.md` e o comentário de auditoria vai para o card só depois de você dizer Sim na pergunta (regra de ouro); sem o Sim, o texto fica no `task-comment-*.md` e no `architecture.md`

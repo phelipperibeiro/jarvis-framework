@@ -6,6 +6,27 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), e o
 
 > Versões anteriores a `2.1.1` não foram documentadas retroativamente neste changelog — o histórico detalhado dessas versões continua disponível via `git log`.
 
+## Não lançado
+
+### Added
+- **Critério de parada no `/eng.pre-pr` (#191)**: teto de rodadas pela urgência do `context.md` (`alta` 3 · `normal` 5 · `baixa` 8) ou rodada sem lacuna 🔴 ou 🟡 nova (com os revisores de código e de testes tendo rodado). O critério nunca pula a revisão nem a gravação: muda a pergunta do fechamento. A linha `Critério de parada:` entra no Resumo do relatório.
+- **Severidade como gatilho**: sem 🔴 pendente, com só ⚪ (ou com o critério atingido), o fechamento usa a variante B, com "Aceitar as ⚪ e seguir para o PR" como primeira opção; só o teto aceita 🟡 em bloco, e pela rodada sem lacuna nova as 🟡 são decididas uma a uma; decisão herdada nunca é trocada. Tabela "Transições" com a linha da variante B.
+- **Rodada incremental**: da rodada 2 em diante, cada revisor roda só se o diff desde o `Commit:` anterior tocar o que ele lê (tabela por revisor, com a área do relatório). A lacuna ganha o "(item N)" do revisor que a achou; a pendente não reavaliada é copiada para a rodada nova com a decisão herdada.
+- **Refutação e passe crítico por lacuna**: a tabela de lacunas ganha a coluna "Refutação" (o que derrubaria a lacuna) e o "Onde" traz o trecho; antes de gravar, um passe remove a lacuna cuja refutação se sustenta e rebaixa a que pesa menos que a severidade dada. A "Resolução da rodada anterior" ganha "Removida no passe crítico".
+- **PR Brief** com as rodadas por severidade, a rodada em que o critério agiu, os ajustes do `architecture.md` e do `plan.md` antes da aprovação e "Lições desta tarefa" (guardar lições entre tarefas fica para a #169).
+- **Passe crítico no `/eng.start`** (Fase 4.4 e seção 2.5 "Premissas e Passe Crítico" do template): premissas lidas × presumidas e o que derrubaria o documento, antes da aprovação. **No `/eng.plan`**: o Checklist de Conclusão é conferido item a item antes de mostrar o plano. Os dois contam "Ajustes antes da aprovação" no cabeçalho.
+- **Testes**: `test/pre-pr-criterio.test.js` (rótulos e textos da variante B, teto por urgência, numeração dos revisores, áreas da rodada incremental e o "(item N)" iguais em todos os lugares) e `test/nomes-soltos.test.js` (nomes soltos de skill, workflow e agente que não existem, contra o índice do `buildGraph`), os dois no `test:filtro`.
+
+### Changed
+- **Agentes dos revisores** (`prod.pm-checker`, `eng.dev-code-reviewer`, `eng.qa.test-planner`, `eng.docs-writer`): seção "Quando chamado pelo `/eng.pre-pr`", com a branch base recebida no lugar de `origin/main` fixo e a lacuna no formato do relatório.
+- **`eng.agent.md`** com uma seção por skill (`eng-backend`, `eng-frontend` e uma só `eng-platform`); o `jarvis map` deixa de repetir e de trocar descrições.
+
+### Removed
+- **MCP `repoprompt`** do `/eng.plan` (fora do catálogo de MCPs): a pesquisa no codebase usa busca de arquivos, busca de texto e leitura, como o `/eng.start`.
+
+### Fixed
+- Numeração "Gates › item N" da tabela de chamadas do `/eng.pre-pr` (não batia com a lista de revisores); referências a `/jarvis-find-skill` (não existe) e `eng.docs-consolidator` (o agente é `eng.docs-consolidator.agent`); título do revisor de código; a lista do `test:filtro` no `bin/README.md` cita os testes de texto.
+
 ## [8.1.0] - 2026-10-28
 
 ### Changed
