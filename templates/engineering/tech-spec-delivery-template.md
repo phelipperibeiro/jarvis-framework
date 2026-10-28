@@ -60,7 +60,7 @@ Fase 8.2 do workflow. O que entregar ao usuário ao final.
 ✅ Tech Spec criada com sucesso!
 
 📄 Documento Local: $SESSIONS_DIR/eng/{feature-name}/tech-spec.md
-📎 {Anexada na issue: {STORY-XXX} | A anexar pela pessoa (orientado: GitHub/GitLab, ou sem a CLI) | Não anexada (só na sessão; sem o Sim)}
+📎 {Anexada na issue: {STORY-XXX} | A anexar pela pessoa (orientado: GitHub/GitLab, sem a CLI ou com acesso manual) | Não anexada (só na sessão; sem o Sim) | Sem issue (freelance)}
 
 📋 Resumo:
 - História: {STORY-XXX} - {Título}
@@ -93,7 +93,7 @@ Exemplo preenchido da mensagem de entrega (fictício).
 ✅ Tech Spec para STORY-456 criada com sucesso!
 
 📄 **Documento Local**: $SESSIONS_DIR/eng/story-456/tech-spec.md
-📎 **Anexada na issue**: STORY-456
+📎 **Anexada na issue**: STORY-456   ← ou "A anexar pela pessoa", "Não anexada" ou "Sem issue", conforme o caso
 
 📊 **Resumo**:
 

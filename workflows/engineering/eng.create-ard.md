@@ -121,7 +121,7 @@ Regras:
 
 ## Passo 1.1 – Verificar PRD (obrigatório)
 
-### 1.1.1 – Buscar PRD no Central Docs (condicional)
+### 1.1.1 – Buscar o PRD em `$PROD_DOCS` e o implementado no Central docs (condicional)
 
 Se `CENTRAL_DOCS_STORAGE` definido no ENV.md:
 

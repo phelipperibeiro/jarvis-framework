@@ -39,7 +39,7 @@ Entendimento do card, validação de necessidade de RFC (8 critérios), investig
 
 **Delivery Spec: história → Tech Spec de implementação**
 
-Entendimento do card, validação de RFC, investigação do codebase, **avaliação de complexidade**, proposta arquitetural, quebra em subtarefas, riscos e considerações, criação do `tech-spec.md`, anexo opcional da tech spec na issue (só depois da aprovação e da pergunta), criação das subtarefas no board só depois da pergunta (sem o Sim, ou sem a CLI, um template para você criar) e validação final.
+Entendimento do card, validação de RFC, investigação do codebase, **avaliação de complexidade**, proposta arquitetural, quebra em subtarefas, riscos e considerações, criação do `tech-spec.md`, anexo opcional da tech spec na issue (só com board, depois da aprovação e da pergunta), criação das subtarefas no board só depois da pergunta (sem o Sim, ou sem a CLI, um template para você criar) e validação final.
 
 **Reference Spec**
 

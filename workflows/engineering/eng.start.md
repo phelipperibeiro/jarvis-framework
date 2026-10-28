@@ -28,7 +28,7 @@ Este comando inicia o **planejamento** de uma nova feature.
 | Cabeçalho (agente) | `eng.agent` (agente) | Sempre — identidade do workflow |
 | Fase 0.1: Análise de Contexto (CDD) | `/jarvis-context-detect` | Se `ENABLE_CDD=true` no ENV.md (execução obrigatória antes da Fase 1); `ENABLE_CDD=false` pula |
 | Fase 0.5: Advisor (opcional) | `eng.advisor.agent` (agente) | Se o usuário escolher usar o Advisor no alerta e o `architecture.md` tiver questões em aberto (aberto só na primeira questão) |
-| Fase 2.2: Buscar Documentação Central | `/jarvis-docs-central` | Se `CENTRAL_DOCS_STORAGE` estiver configurado no ENV.md (buscar PRD, ARD e RFCs relacionados) |
+| Fase 2.2: Buscar Documentação Central | `/jarvis-docs-central` | Se `CENTRAL_DOCS_STORAGE` estiver configurado no ENV.md (buscar as funcionalidades já implementadas, `feature-*`, e entregas recentes; PRD, ARD e RFC ficam em `docs/jarvis/`) |
 | Fase 3.4: Estratégia de Testes | `eng.qa.test-architect` (agente) | Se a feature tiver requisitos de performance ou segurança (APIs públicas, dados sensíveis, alta carga ou requisitos não-funcionais explícitos) |
 | Fase 3.4: Estratégia de Testes | `/eng-platform` | Se a feature tiver requisitos de performance (latência, throughput, escalabilidade) |
 | Fase 3.4: Estratégia de Testes | `/eng-ai` | Se a feature envolver IA (LLM, RAG, agentes, chatbots, embeddings) |

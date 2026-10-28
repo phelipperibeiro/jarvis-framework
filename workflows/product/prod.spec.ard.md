@@ -100,6 +100,6 @@ Apresente o **resumo dos requisitos arquiteturais** (por tópico do Gate 2, marc
 
 ## Don't
 - Escolher tecnologia, desenhar componentes ou definir contratos aqui (isso é do ARD, pela engenharia)
-- Duplicar o `eng.create-ard`: numeração, template e publicação são dele
+- Duplicar o `eng.create-ard`: numeração, template e gravação em `$ENG_DOCS` são dele
 - Criar o ARD sem o resumo confirmado no Gate 3
 - Alterar o PRD ou o FRD de origem sem o usuário pedir

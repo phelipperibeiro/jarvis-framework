@@ -61,16 +61,13 @@ const IMPERATIVOS = [
   // Board e git só pela CLI oficial (eng.integrations-rules.md): nada de REST nem MCP para criar ou ler o board.
   /\bAPI\s*(?:\/|ou)\s*ferramenta\s+dispon/i,
   /\bAtlassian:\w+/,
-  // Label no PR e anexo no card também são envios: só com a pergunta (a frase com "regra de ouro", "Sim" ou
-  // "pergunt" na mesma linha vale).
-  // A isenção de "orient" exige a pessoa ou o usuário como objeto ("(orientado pelo TL)" não isenta); a de leitura
-  // de anexos exige "lidos/colados" ou dois tipos de documento ("Anexos no card - PRD, FRD, ARD, RFC"); só o verbo
-  // ("anexe", "anexar") conta, não o resultado ("Anexada na issue").
-  // A isenção de "orient" exige "oriente a pessoa/o usuário a <verbo>" ("Oriente a pessoa e adicione…" acusa). Só o
-  // verbo conta ("anexe", "anexar", "vincule", "faça upload"), não o substantivo ("Anexos no card") nem o
-  // resultado ("Anexada na issue"). "sem perguntar" na linha anula a isenção por "pergunt".
-  /^(?!(?!.*\bsem\s+(?:a\s+)?pergunt).*(?:regra de ouro|\bSim\b|pergunt|orient\w*\s+(?:a\s+pessoa|o\s+usu\w*)\s+a\s+\w)).*(?:\b(?:adicion\w+|colo(?:c|qu)\w+|p[oô]r|ponh\w+|apli(?:c|qu)\w+)\s+(?:o\s+|a\s+)?label\b.*\b(?:ao|no)\s+(?:PR|MR)\b|\b(?:adicion\w+|colo(?:c|qu)\w+|ponh\w+|apli(?:c|qu)\w+)\s+`?[\w-]+`?\s+(?:(?:ao|no)\s+(?:PR|MR)\s+)?como\s+label\b|\brotul\w+\s+(?:o\s+)?(?:PR|MR)\b)/im,
-  /^(?!(?!.*\bsem\s+(?:a\s+)?pergunt).*(?:regra de ouro|\bSim\b|pergunt|orient\w*\s+(?:a\s+pessoa|o\s+usu\w*)\s+a\s+\w)).*\b(?:anex(?:a|e|ar|em|ando|á-l[ao])|vincul\w+|associ\w+|fa[çz]\w*\s+(?:o\s+)?(?:upload|attach)|suba)\b.*\b(?:no|na|ao|à|para\s+[oa])\s+(?:Jira|issue|card|história)\b/im,
+  // Label no PR e anexo no card também são envios: só com a pergunta. Isenta a linha: "regra de ouro", "Sim",
+  // "pergunt", "oriente a pessoa/o usuário a <verbo>" ("Oriente a pessoa e adicione…" e "…a revisar e adicione" acusam)
+  // e a negação do próprio verbo ("o Jarvis não anexa nada na issue"). "sem perguntar" e "não precisa perguntar"
+  // na linha anulam as isenções. Só o verbo conta ("anexe", "vincule", "faça upload", "pôr"), não o substantivo
+  // ("Anexos no card"), o particípio ("associado ao card") nem a preposição "por".
+  /^(?!.*\bnão\s+(?:adicion|colo(?:c|qu)|ponh|apli(?:c|qu)|marqu|inclu|rotul|anex|vincul|associ|fa[çz]|sub)\w*\b)(?!(?!.*\b(?:sem\s+(?:a\s+)?|não\s+precisa\s+(?:de\s+)?)pergunt).*(?:regra de ouro|\bSim\b|pergunt|orient\w*\s+(?:a\s+pessoa|o\s+usu\w*)\s+a\s+(?!revis)\w)).*(?:\b(?:adicion\w+|colo(?:c|qu)\w+|pôr|ponh\w+|apli(?:c|qu)\w+|inclu\w+)\s+(?:[oa]s?\s+)?labels?\b|\bmarqu\w+\s+(?:[oa]s?\s+)?(?:PRs?|MRs?)\s+com\s+(?:[oa]s?\s+)?labels?\b|\b(?:adicion\w+|colo(?:c|qu)\w+|ponh\w+|apli(?:c|qu)\w+)\s+`?[\w-]+`?\s+(?:(?:ao|no)\s+(?:PR|MR)\s+)?como\s+label\b|\brotul\w+\s+(?:[oa]s?\s+)?(?:PRs?|MRs?)\b)/im,
+  /^(?!.*\bnão\s+(?:anex|vincul|associ|fa[çz]|sub)\w*\b)(?!(?!.*\b(?:sem\s+(?:a\s+)?|não\s+precisa\s+(?:de\s+)?)pergunt).*(?:regra de ouro|\bSim\b|pergunt|orient\w*\s+(?:a\s+pessoa|o\s+usu\w*)\s+a\s+(?!revis)\w)).*\b(?:anex(?:a|e|ar|em|ando|á-l[ao])|vincul(?:e|ar|em|ando)|associ(?:e|ar|em|ando)|fa[çz]\w*\s+(?:o\s+)?(?:upload|attach)|suba)\b.*(?:^|\s)(?:no|na|nos|nas|ao|aos|à|às|para\s+[oa]s?)\s+(?:Jira|issues?|cards?|histórias?)\b/imu,
 ];
 
 // Dirent.isDirectory() não segue link simbólico, então um link quebrado ou circular não derruba a varredura.
@@ -332,7 +329,7 @@ test("toda linha que chama o /eng-global-task-comment traz a pergunta na mesma l
     .map((p) => join(root, p))
     .filter((p) => existsSync(p))
     .flatMap(walk)
-    .concat(join(root, "README.md"))
+    .concat(["README.md", "AGENTS.md"].map((p) => join(root, p)).filter(existsSync))
     .filter((f) => !FORA.has(relative(root, f).split("\\").join("/")) && !ehHistorico(f));
   for (const arquivo of arquivos) {
     const nome = relative(root, arquivo).split("\\").join("/");
@@ -360,7 +357,7 @@ test("toda linha que chama o /eng-global-task-comment traz a pergunta na mesma l
 // Board e git só pela CLI oficial (eng.integrations-rules.md): uma linha que manda usar MCP ou a API (REST) do
 // board não vale; a proibição ("sem REST nem MCP", "não use o MCP do Jira") vale.
 const MCP_DO_BOARD =
-  /\b(?:API(?:\s+v?\d+)?(?:\s+REST)?|endpoints?(?:\s+REST)?|REST\s+API)\s+d[oa]\s+`?(?:Jira|Atlassian|GitHub|GitLab|board|\$?TASK_MANAGER)\b|\b(?:Jira|Atlassian|GitHub|GitLab)\s+(?:REST\s+)?API\b|\bMCPs?[\s/]+(?:(?:configurad|específic|especific|disponív|instalad|relacionad)\w*\s+)*(?:(?:d[oa]|a[oa]|para\s+o)\s+)?`?(?:Jira|Atlassian|\$?TASK_MANAGER|board)\b/i;
+  /\b(?:API(?:\s+v?\d+)?(?:\s+REST)?|endpoints?(?:\s+REST)?|REST\s+API)\s+d[oa]\s+`?(?:Jira|Atlassian|GitHub|GitLab|board|\$?TASK_MANAGER)\b|\b(?:Jira|Atlassian|GitHub|GitLab)\s+(?:Cloud\s+)?(?:REST\s+)?API\b|\/rest\/api\/|\bMCPs?[\s/]+(?:(?:configurad|específic|especific|disponív|instalad|relacionad)\w*\s+)*(?:(?:d[oa]|a[oa]|para\s+o)\s+)?`?(?:Jira|Atlassian|\$?TASK_MANAGER|board)\b/i;
 // A proibição precisa estar na mesma oração (sem vírgula, ponto e vírgula ou dois-pontos entre a negação e o MCP):
 // "Sem a CLI logada, use o MCP do Jira" não é proibição.
 const PROIBE_MCP =
@@ -763,7 +760,7 @@ test("os outros pontos que enviam algo (agente, delivery-spec, data.contract, pr
     [ENG_PRE_PR, /nada é enviado ao card \(o texto fica no `gate-checklist\.md`\)/],
     [
       "skills/eng-global-tech-spec/references/delivery-spec.md",
-      /Para anexá-la na issue do Jira, depois da aprovação da 6\.3, mostre o que vai e pergunte com `AskUserQuestion` \(regra de ouro/,
+      /Para anexá-la na issue do board, depois da aprovação da 6\.3, mostre o que vai e pergunte com `AskUserQuestion` \(regra de ouro/,
     ],
     [
       "skills/product-roadmap-report/commands/status.roadmap.preview.md",
