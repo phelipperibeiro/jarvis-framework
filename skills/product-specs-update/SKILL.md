@@ -1,11 +1,11 @@
 ---
 name: product-specs-update
 description: >
-  Sincroniza especificações de produto (PRD/FRD) em cascata e mantém dois
-  índices atualizados: um local (projeto atual) e um global no Google Drive
-  (todos os projetos). Trigger: quando um PRD ou FRD é criado ou modificado,
-  ou quando o usuário pede para sincronizar ou indexar specs.
-allowed-tools: Read Write Edit Grep Glob Bash MCP
+  Sincroniza especificações de produto (PRD/FRD) em cascata e mantém o
+  índice local de specs (`$PROD_DOCS/specs-index.md`) atualizado. Trigger:
+  quando um PRD ou FRD é criado ou modificado, ou quando o usuário pede para
+  sincronizar ou indexar specs.
+allowed-tools: Read Write Edit Grep Glob Bash
 metadata:
   author: jarvis-team
   version: "1.0"
@@ -16,11 +16,16 @@ disable-model-invocation: false
 
 # Update Specs — Sincronização de Especificações de Produto
 
-Você é responsável por manter PRDs, FRDs e os índices de specs sempre
+Você é responsável por manter PRDs, FRDs e o índice de specs sempre
 consistentes. Quando uma spec muda, você propaga em cascata e atualiza
-dois índices: o local do projeto na pasta `docs` e o global no repositório `$CENTRAL_DOCS_REPO`.
+o índice local do projeto (`$PROD_DOCS/specs-index.md`).
 
-O Central Docs é a pasta que centralizamos todas as especificações de produto. Ele serve como referência para todos os projetos e deve ser atualizada sempre que houver mudanças em qualquer spec.
+O índice é só local: PRD e FRD são documentos de trabalho e não vão para o
+Central docs, que guarda só o que foi implementado (`feature-*` e
+`delivery-*`, publicados pelo `/eng.spec-consolidate`). Para saber o que já
+foi implementado, leia o índice do Central docs com
+`jarvis docs fetch {SQUAD}/index.md` (skill `jarvis-docs-central`); este skill
+não escreve nada lá.
 
 
 ## Entrada
@@ -48,7 +53,7 @@ $ARGUMENTS fornecido?
       id começa com "PRD"? → Fluxo PRD  
       id começa com "FRD"? → Fluxo FRD  
       Nem um nem outro?    → Avisar e encerrar
-  → NÃO: Ir direto para Reconstrução Completa dos Índices
+  → NÃO: Ir direto para Reconstrução do Índice
 ```
 
 ---
@@ -99,7 +104,7 @@ Mostrar diff proposto ao usuário. Aguardar confirmação antes de escrever.
 
 ---
 
-### 3. Reconstrução dos Índices
+### 3. Reconstrução do Índice
 
 Executado sempre após os fluxos acima, ou diretamente quando `$ARGUMENTS`
 está vazio.
@@ -131,24 +136,11 @@ O PRD "{id}: {name}" ainda não tem projeto ou repositório mapeado.
 #### 3.3 Gerar o índice local
 
 Escrever ou atualizar `$PROD_DOCS/specs-index.md` seguindo o template
-de Índice Local abaixo.
+de Índice Local abaixo. Mostrar o diff proposto e aguardar confirmação
+antes de gravar.
 
-#### 3.4 Escanear specs no Drive (se MCP disponível)
-
-Acessar `$CENTRAL_DOCS_REPO` via MCP e listar todos os arquivos `.md`.
-
-Para cada arquivo encontrado, extrair os metadados YAML (`id`, `name`,
-`status`, `related_prd`). Consolidar com os dados locais, deduplizando
-por `id`.
-
-#### 3.5 Gerar o índice global no Drive (se MCP disponível)
-
-Verificar se `specs-index.md` já existe na raiz da pasta do Drive.
-Reutilizar mapeamentos de projeto/repositório já registrados. Perguntar
-apenas o que estiver faltando.
-
-Escrever ou atualizar o `specs-index.md` no Drive seguindo o template
-de Índice Global abaixo.
+O índice fica só na máquina: não é publicado no Central docs nem em
+outro lugar.
 
 ### Skills invocados durante a execução do skill
 
@@ -189,57 +181,6 @@ _Última atualização: {YYYY-MM-DD}_
 
 ---
 
-### Índice Global (`specs-index.md` no Drive)
-```markdown
-# Índice Global de Especificações
-
-Índice consolidado de todas as especificações de produto, abrangendo todos
-os projetos. Atualizado automaticamente pela skill `prod-update-specs`.
-
-_Última atualização: {YYYY-MM-DD}_
-
----
-
-## Relação de Arquivos e Projetos
-
-| Spec | Status | Projeto | Repositório Git |
-|------|--------|---------|-----------------|
-| [PRD-001 — Nome](link-drive) | in_progress | Projeto A | [repo-a](url) |
-| [PRD-002 — Nome](link-drive) | in_review   | Projeto B | [repo-b](url) |
-| [FRD-001 — Nome](link-drive) | in_progress | Projeto A | [repo-a](url) |
-
----
-
-## Projetos
-
-| Projeto | Specs relacionadas |
-|---------|--------------------|
-| Projeto A | PRD-001, FRD-001, FRD-002 |
-| Projeto B | PRD-002, FRD-003 |
-
----
-
-## Repositórios
-
-| Repositório | Specs relacionadas |
-|-------------|-------------------|
-| [repo-a](url) | PRD-001, FRD-001, FRD-002 |
-| [repo-b](url) | PRD-002, FRD-003 |
-
----
-
-## Relação PRD → FRDs
-
-### PRD-001: Nome — Projeto A
-- [FRD-001 — Nome](link-drive) · `in_progress`
-- [FRD-002 — Nome](link-drive) · `in_review`
-
-### PRD-002: Nome — Projeto B
-- [FRD-003 — Nome](link-drive) · `icebox`
-```
-
----
-
 ## Regras
 
 ### Nunca
@@ -247,24 +188,22 @@ _Última atualização: {YYYY-MM-DD}_
 - Sobrescrever mapeamentos de projeto/repositório já registrados sem perguntar
 - Escrever mudanças em cascata sem mostrar o diff antes
 - Alterar o bloco de versionamento dos docs
+- Publicar o índice ou as specs no Central docs ou em qualquer lugar fora da máquina
 
 ### Sempre
 - Mostrar resumo das mudanças propostas e aguardar confirmação
 - Preservar paths relativos corretos entre os arquivos
-- Tratar Drive como indisponível graciosamente — nunca bloquear o fluxo local
-- Reutilizar mapeamentos de projeto/repo já existentes nos índices
+- Reutilizar mapeamentos de projeto/repo já existentes no índice
 
 ---
 
 ## Checklist de Conclusão
 
-- [ ] ENV.md lido — `$PROD_DOCS`, `$PROD_DOCS_FRD` e `$CENTRAL_DOCS_REPO` extraídos
-- [ ] Disponibilidade do Drive MCP verificada
+- [ ] ENV.md lido — `$PROD_DOCS` extraído
 - [ ] Tipo do arquivo identificado (PRD / FRD / scan completo)
 - [ ] Cascata de atualizações mapeada e confirmada pelo usuário
 - [ ] Projeto e repositório obtidos para specs sem mapeamento
 - [ ] Índice local gerado em `$PROD_DOCS/specs-index.md`
-- [ ] Índice global gerado no Drive (se MCP disponível)
 - [ ] Links internos validados
 
 ---
@@ -274,6 +213,5 @@ _Última atualização: {YYYY-MM-DD}_
 | Artefato | Escopo | Condição |
 |----------|--------|----------|
 | `$PROD_DOCS/specs-index.md` | Projeto atual | Sempre |
-| `specs-index.md` no Drive | Todos os projetos | MCP conectado ou Integração ativa |
 | PRDs afetados | Seção "Solução" sincronizada | Quando FRD muda |
 | FRDs afetadas | `related_prd` preenchido | Quando ausente |
