@@ -40,7 +40,7 @@ Além dele, o `start` pode criar apenas os arquivos de apoio da própria sessão
 
 O workflow **só é considerado completo** após:
 
-1. O `architecture.md` estar preenchido
+1. O `architecture.md` estar preenchido, com o passe crítico feito (Fase 4.4 do workflow: seção 2.5 "Premissas e Passe Crítico", com o lido separado do presumido e a premissa que derrubaria o documento)
 2. O usuário revisar o documento
 3. O usuário **aprovar explicitamente** para prosseguir — sem Advisor, pela pergunta de transição "Aprovar o architecture.md?" (`eng.transitions-rules.md`)
 
@@ -91,7 +91,7 @@ O workflow **só é considerado completo** após:
 
 7. **Aguardar aprovação**
    - Se aprovado → Informar próximos passos
-   - Se rejeitado → Iterar no documento
+   - Se rejeitado → Iterar no documento, somar 1 em "Ajustes antes da aprovação" no cabeçalho e refazer o passe crítico no que mudou
    - NUNCA prosseguir sem a resposta: "Aprovar e seguir para o `/eng.plan`" (pergunta de transição, `eng.transitions-rules.md`) é a aprovação para seguir; a exceção do Advisor continua valendo
 
 ---
@@ -238,6 +238,8 @@ Antes de considerar o `start` completo:
 - [ ] Decisões têm justificativas
 - [ ] Riscos têm mitigações
 - [ ] Componentes impactados listados com caminhos reais
+- [ ] Passe crítico feito: seção 2.5 preenchida, presumidas que mudam o plano lidas ou viradas questão
+- [ ] "Ajustes antes da aprovação" atualizado no cabeçalho
 - [ ] Usuário revisou o documento
 - [ ] Usuário aprovou explicitamente
 - [ ] Nenhum código foi executado/criado
