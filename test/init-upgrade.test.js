@@ -603,6 +603,8 @@ test("init (pasta instalada): sem resposta (entrada fechada) não altera nada e 
     const r = run(ws, "--ide", "claude");
     assert.equal(r.status, 0, r.stderr);
     assert.match(r.stdout, /Sem resposta: nada alterado\. Use --upgrade \(atualizar\) ou --force/);
+    // Sem jarvis-lock.json, a primeira linha do menu diz "versão desconhecida" (issue).
+    assert.match(r.stdout, /Jarvis já instalado em \.claude \(versão desconhecida · pacote v\d/);
     assert.deepEqual(snapshot(ws), antes);
   });
 });
@@ -734,5 +736,71 @@ test("init --upgrade: com pendência, o aviso diz o motivo", () => {
       r.stdout,
       /Agora rode .*\/jarvis-init upgrade.* confirmar o acesso de TASK_MANAGER/
     );
+  });
+});
+
+// --- Correções da rodada 1 do /eng.pre-pr (#189) ---
+
+// Roda com um rtk falso no PATH (o reconcileRtk só age com o rtk instalado).
+function runWithFakeRtk(ws, input, ...args) {
+  mkdirSync(join(ws, "fake-bin"), { recursive: true });
+  writeFileSync(join(ws, "fake-bin/rtk"), "#!/bin/sh\nexit 0\n");
+  chmodSync(join(ws, "fake-bin/rtk"), 0o755);
+  return spawnSync(process.execPath, [cli, "init", ...args], {
+    cwd: ws,
+    input,
+    encoding: "utf-8",
+    stdio: "pipe",
+    env: {
+      ...process.env,
+      JARVIS_SKIP_CLI_CHECK: "1",
+      PATH: `${join(ws, "fake-bin")}:${process.env.PATH}`,
+    },
+  });
+}
+
+test("init (pasta instalada): a opção 2 reinstala os arquivos e preserva RTK_ENABLED=false", () => {
+  withWorkspace({ ".claude/ENV.md": ENV_V520, ".claude/taxonomy.md": "editado à mão\n" }, (ws) => {
+    const r = runWithFakeRtk(ws, "2\n", "--ide", "claude");
+    assert.equal(r.status, 0, r.stderr);
+    assert.doesNotMatch(r.stdout, /Instalação cancelada/);
+    assert.notEqual(
+      readFileSync(join(ws, ".claude/taxonomy.md"), "utf-8"),
+      "editado à mão\n",
+      "a reinstalação deveria sobrescrever o arquivo do framework"
+    );
+    assert.match(readFileSync(join(ws, ".claude/ENV.md"), "utf-8"), /^RTK_ENABLED=false$/m);
+  });
+});
+
+test("init: sem RTK_ENABLED no ENV.md, o bloco acrescentado usa a moldura do template", () => {
+  const semRtk = ENV_V520.replace("RTK_ENABLED=false\n", "");
+  withWorkspace({ ".claude/ENV.md": semRtk }, (ws) => {
+    const r = runWithFakeRtk(ws, "", "--ide", "claude", "--force");
+    assert.equal(r.status, 0, r.stderr);
+    const env = readFileSync(join(ws, ".claude/ENV.md"), "utf-8");
+    assert.match(env, /^# ={77}\n# RTK — Token Killer \(opcional\)\n# ={77}\nRTK_ENABLED=true$/m);
+    assert.doesNotMatch(env, /^# --- RTK/m);
+  });
+});
+
+test("init sem --ide e com pipe: as respostas dos dois menus não se perdem", () => {
+  withWorkspace({ ".claude/ENV.md": ENV_V520 }, (ws) => {
+    // 2 = Claude Code no menu de IDE; 3 = Cancelar no menu de pasta já instalada.
+    const r = runWithInput(ws, "2\n3\n");
+    assert.equal(r.status, 0, r.stderr);
+    assert.match(r.stdout, /O que deseja fazer\?/);
+    assert.match(r.stdout, /Instalação cancelada\./);
+    assert.doesNotMatch(r.stdout, /Sem resposta/);
+  });
+});
+
+test("init sem --ide e sem resposta: o menu de IDE termina com a dica, sem alterar nada", () => {
+  withWorkspace({ ".claude/ENV.md": ENV_V520 }, (ws) => {
+    const antes = snapshot(ws);
+    const r = run(ws);
+    assert.equal(r.status, 0, r.stderr);
+    assert.match(r.stdout, /Sem resposta: nada alterado\. Use --ide \{ide\}\./);
+    assert.deepEqual(snapshot(ws), antes);
   });
 });

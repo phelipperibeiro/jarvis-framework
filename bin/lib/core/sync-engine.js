@@ -228,7 +228,11 @@ function reconcileRtk(ideDir, targetDir, ide, { keepEnvValues = false } = {}) {
         return "(rtk) detectado — RTK_ENABLED=true no ENV.md";
       }
       if (!env.includes("RTK_ENABLED")) {
-        env = env.trimEnd() + "\n\n# --- RTK — Token Killer ---\nRTK_ENABLED=true\n";
+        // Moldura do ENV-template (#189): o /jarvis-init não aponta o bloco como separador antigo.
+        const bar =
+          "# =============================================================================";
+        env =
+          env.trimEnd() + `\n\n${bar}\n# RTK — Token Killer (opcional)\n${bar}\nRTK_ENABLED=true\n`;
         writeFileSync(envPath, env, "utf-8");
         return "(rtk) detectado — RTK_ENABLED=true adicionado ao ENV.md";
       }

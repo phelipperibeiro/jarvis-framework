@@ -94,11 +94,11 @@ export function buildProgram() {
     )
     .option(
       "--yes",
-      "Com --upgrade, move os documentos para as pastas novas e aceita rebaixar os assets sem perguntar"
+      "Com --upgrade (ou a opção Atualizar do menu), move os documentos para as pastas novas e aceita rebaixar os assets sem perguntar"
     )
     .option(
       "--remove-stale",
-      "Com --upgrade, remove sem perguntar os skills instalados que saíram do framework (só os listados)"
+      "Com --upgrade (ou a opção Atualizar do menu), remove sem perguntar os skills instalados que saíram do framework (só os listados)"
     );
   withLogOptions(initCmd).action((options) => init(toLegacyFlags(options)));
 

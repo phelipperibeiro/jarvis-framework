@@ -108,9 +108,11 @@ function lineReader(rl) {
 /**
  * Menu de `jarvis init` numa pasta que já tem a pasta da IDE (#189).
  * Decide pela resposta lida, não por `process.stdin.isTTY`: `printf '\n' |` também atualiza.
+ * `askLine` é o leitor compartilhado com o menu de IDE: um leitor só para a entrada inteira,
+ * para a resposta de um menu não consumir a do outro (`printf '1\n3\n' | jarvis init`).
  * @returns {Promise<"upgrade" | "reinstall" | "cancel" | "no-answer">} `no-answer` = entrada fechada (a mensagem já saiu)
  */
-async function askInstalledMenu({ folder, lockVersion, packageVersion, hasEnv }) {
+async function askInstalledMenu({ folder, lockVersion, packageVersion, hasEnv, askLine }) {
   const installed = lockVersion === "desconhecida" ? "versão desconhecida" : `v${lockVersion}`;
   logger.info(
     `${YELLOW}⚠️  Jarvis já instalado em .${folder} (${installed} · pacote v${packageVersion})${NC}`
@@ -131,24 +133,18 @@ async function askInstalledMenu({ folder, lockVersion, packageVersion, hasEnv })
   logger.info("");
 
   const valid = hasEnv ? "1, 2 ou 3" : "2 ou 3";
-  const rl = createInterface({ input: process.stdin, terminal: false });
-  const next = lineReader(rl);
-  try {
-    for (;;) {
-      const answer = await next(`Escolha [${hasEnv ? "1" : "3"}]: `);
-      if (answer === null) {
-        logger.info("");
-        logger.info(
-          `${BLUE}ℹ️  Sem resposta: nada alterado. Use --upgrade (atualizar) ou --force (reinstalar).${NC}\n`
-        );
-        return "no-answer";
-      }
-      const choice = parseMenuChoice(answer, { hasEnv });
-      if (choice) return choice;
-      logger.info(`${RED}Opção inválida. Escolha ${valid}.${NC}`);
+  for (;;) {
+    const answer = await askLine(`Escolha [${hasEnv ? "1" : "3"}]: `);
+    if (answer === null) {
+      logger.info("");
+      logger.info(
+        `${BLUE}ℹ️  Sem resposta: nada alterado. Use --upgrade (atualizar) ou --force (reinstalar).${NC}\n`
+      );
+      return "no-answer";
     }
-  } finally {
-    rl.close();
+    const choice = parseMenuChoice(answer, { hasEnv });
+    if (choice) return choice;
+    logger.info(`${RED}Opção inválida. Escolha ${valid}.${NC}`);
   }
 }
 
@@ -186,6 +182,21 @@ export async function init(flags) {
     return;
   }
 
+  // Um leitor de linhas só para os dois menus (IDE e pasta já instalada), criado na primeira
+  // pergunta e fechado antes do sync ou do upgrade (que abre o seu, só com terminal).
+  let reader = null;
+  const askLine = (question) => {
+    if (!reader) {
+      const rl = createInterface({ input: process.stdin, terminal: false });
+      reader = { rl, next: lineReader(rl) };
+    }
+    return reader.next(question);
+  };
+  const closeReader = () => {
+    reader?.rl.close();
+    reader = null;
+  };
+
   let ide;
   if (flags.ide) {
     if (!isIDESupported(flags.ide)) {
@@ -213,14 +224,15 @@ export async function init(flags) {
     });
     logger.info("");
 
-    const rl = createInterface({
-      input: process.stdin,
-      output: process.stdout,
-    });
-
     let choice;
     while (true) {
-      choice = await ask(rl, `${BLUE}Digite o número da sua escolha (1-${IDES.length}): ${NC}`);
+      choice = await askLine(`${BLUE}Digite o número da sua escolha (1-${IDES.length}): ${NC}`);
+      if (choice === null) {
+        closeReader();
+        logger.info("");
+        logger.info(`${BLUE}ℹ️  Sem resposta: nada alterado. Use --ide {ide}.${NC}\n`);
+        return;
+      }
       const choiceNum = parseInt(choice, 10);
 
       if (choiceNum >= 1 && choiceNum <= IDES.length) {
@@ -241,8 +253,6 @@ export async function init(flags) {
         );
       }
     }
-
-    rl.close();
   }
 
   const ideDir = join(cwd, `.${getIDEFolder(ide)}`);
@@ -261,7 +271,9 @@ export async function init(flags) {
       lockVersion,
       packageVersion: versionCheck.running,
       hasEnv: existsSync(join(ideDir, "ENV.md")),
+      askLine,
     });
+    closeReader();
     if (choice === "upgrade") {
       logger.info("");
       process.exitCode = await runUpgrade(cwd, { ...flags, ide, versionCheck });
@@ -275,6 +287,7 @@ export async function init(flags) {
     forceSync = true;
     logger.info("");
   }
+  closeReader();
 
   const ideConfig = getIDEConfig(ide);
   logger.info(`${BLUE}Configurando ambiente para ${ideConfig?.name}...${NC}`);

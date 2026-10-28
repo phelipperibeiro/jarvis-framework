@@ -206,7 +206,7 @@ Identificar qual IDE o usuário está utilizando:
    ⚠️ O arquivo ENV.md já existe. O que deseja fazer?
    A: Sobrescrever completamente
    B: Atualizar apenas variáveis específicas
-   C: Upgrade — adicionar variáveis novas do template (não toca nos valores existentes)
+   C: Upgrade — adicionar variáveis novas do template (não troca valor existente sem a sua resposta)
    D: Cancelar
    ```
    A (que segue o fluxo completo), B e C terminam pelo **passo 9.5 (validar o ENV.md)**; D não toca no arquivo.
@@ -214,7 +214,7 @@ Identificar qual IDE o usuário está utilizando:
 **Se opção C (Upgrade):**
 
 > No terminal, rode antes `jarvis init --upgrade --ide {ide}`: ele atualiza os arquivos do framework, acrescenta as variáveis novas e move os documentos para as pastas novas (itens 1–8, 10 a 12). Aqui ficam o Central docs antigo (item 9), as pendências que ele listar e o passo das stacks.
-> **O upgrade só acrescenta chaves novas:** nenhuma chave já existente, preenchida ou não, é alterada, salvo as exceções declaradas no item 9 (`CENTRAL_DOCS_LOCATION` e `TOKEN_TASK_MANAGER`, com confirmação; `JARVIS_PROJECT` vazio, automático). Depois, a validação final (passo 9.5) pode reorganizar o arquivo e mover chaves para o assunto delas, sempre perguntando e sem trocar valor.
+> **O upgrade só acrescenta chaves novas:** nenhuma chave já existente, preenchida ou não, é alterada, salvo as exceções declaradas no item 9 (`CENTRAL_DOCS_LOCATION` e `TOKEN_TASK_MANAGER`, com confirmação; `JARVIS_PROJECT` vazio, automático). Depois, a validação final (passo 9.5) pode reorganizar o arquivo, mover chaves para o assunto delas e corrigir valores fora das opções, sempre perguntando: nenhum valor muda sem a resposta da pessoa.
 > Trocou o `ARTIFACT_STYLE` (ou HUB, POSITION, AREA, SQUAD) à mão? O Passo 8 copia ou remove as rules desse perfil.
 
 1. Ler todas as chaves do `templates/ENV-template.md`
@@ -785,10 +785,12 @@ if (IDE === "claude") {
 }
 ```
 
-O arquivo `$IDE/ENV.md` deve seguir a **estrutura e ordem** de `templates/ENV-template.md` (não um dump reordenado), com cada assunto na moldura de `# ====` do template; o passo 9.5 confere no fim. Blocos mínimos esperados após o init (abaixo, os títulos aparecem numa linha só para abreviar; no arquivo, cada um fica entre as duas barras):
+O arquivo `$IDE/ENV.md` deve seguir a **estrutura e ordem** de `templates/ENV-template.md` (não um dump reordenado), com cada assunto na moldura de `# ====` do template; o passo 9.5 confere no fim. Blocos mínimos esperados após o init (os títulos são os do template; os comentários de cada bloco foram omitidos):
 
 ```markdown
-# --- Workspace e identidade ---
+# =============================================================================
+# Workspace e identidade
+# =============================================================================
 WORKSPACE=
 WORKSPACE_REPOS=
 WORKSPACE_MODE={workspace|project}
@@ -796,17 +798,17 @@ USER={resolvido}
 MAX_AI_EXECUTION_PERCENTAGE={60-100}
 ENABLE_CDD=true
 
-# --- Organização ---
+# =============================================================================
+# Organização (obrigatório — opções vêm do taxonomy.md)
+# =============================================================================
 SQUAD={valor}
 HUB={valor}
 AREA={valor}
 POSITION={valor}
 
-# --- Condução e estilo ---
-PROD_MODE={product-led|developer-guided}
-ARTIFACT_STYLE={ai-generated|human-generated}
-
-# --- IDE e pastas ---
+# =============================================================================
+# IDE e pastas
+# =============================================================================
 IDE={valor}
 DOCS_FOLDER=docs
 FLOWS_FOLDER={commands|workflows}
@@ -822,16 +824,22 @@ PROD_TEMPLATES=...
 PROD_DOCS=...
 DISCOVERIES_FOLDER_NAME=discoveries
 DISCOVERIES_DOCS=...
+PROD_MODE={product-led|developer-guided}
+ARTIFACT_STYLE={ai-generated|human-generated}
 
-# --- Task manager (opcional; vazio = freelance) ---
+# =============================================================================
+# Task manager (opcional)
+# =============================================================================
 TASK_MANAGER=
 TASK_MANAGER_ACCESS=
 TASK_MANAGER_URL_BASE=
 
-# --- Controle de versão / chat / demais opcionais do template ---
+# =============================================================================
+# Controle de versão (opcional)
+# =============================================================================
 VERSION_CONTROL=
 VERSION_CONTROL_ACCESS=
-# ... restante do template (MESSAGE_*, DATABASE, JARVIS_PROJECT, CENTRAL_DOCS_*, etc.)
+# ... restante do template, cada assunto na sua moldura (MESSAGE_*, DATABASE, JARVIS_PROJECT, CENTRAL_DOCS_*, etc.)
 JARVIS_PROJECT=https://github.com/phelipperibeiro/jarvis-framework
 ```
 
@@ -1173,7 +1181,7 @@ Roda no fim de todo caminho que grava o `ENV.md`: criação (opção A ou ENV.md
 
 | Verificação | Exemplo | Correção sugerida (primeira opção, "(Recomendada)") |
 |---|---|---|
-| Chave do template ausente | falta `WORKSPACE_MODE` | Acrescentar no assunto dela, com o padrão do template |
+| Chave do template ausente | falta `WORKSPACE_MODE` | Acrescentar no assunto dela, com o padrão do template. Não conta como ausente uma `DATA_*` (exceto `DATA_SPECIALIZATIONS`) quando o HUB não exige o bloco DATA (regra do bloco DATA, abaixo) |
 | Chave fora do template (saiu dele ou é do projeto) | `QA_SIGNOFF_BRANCHES`, `MINHA_VAR` | Mover para o bloco final "Variáveis fora do template", com `# (descontinuada)` numa linha própria logo acima da chave e o valor intacto |
 | Chave duplicada | `HUB=` duas vezes | Manter a preenchida (ou a última) |
 | Valor fora das opções | `HUB=BACKEN`, `MAX_AI_EXECUTION_PERCENTAGE=40`, `TASK_MANAGER_ACCESS=api` | Perguntar o valor, com as opções do template ou do `taxonomy.md` (as mesmas perguntas do passo 3) |
@@ -1181,18 +1189,20 @@ Roda no fim de todo caminho que grava o `ENV.md`: criação (opção A ou ENV.md
 | Lista de exemplo não escolhida | `TASK_MANAGER=[jira, github, gitlab]` | Escolher uma ou esvaziar |
 | Fora da ordem ou do assunto | blocos `# --- Upgrade ... ---` no fim; uma `DATA_*` longe das irmãs | Regravar na ordem do template |
 | Comentários ou separadores diferentes dos do template | comentário antigo; `# --- Assunto ---` | Trocar pelos do template (a pergunta avisa que comentários próprios se perdem) |
-| Bloco DATA com `HUB` fora de DATA/FULLCYCLE | `DATA_*` sobrando | Remover o bloco (regra do passo 5), menos `DATA_SPECIALIZATIONS` |
+| Bloco DATA fora da regra do HUB | `DATA_*` com `HUB=BACKEND` | Regra do bloco DATA (sempre exceto `DATA_SPECIALIZATIONS`, obrigatória em qualquer HUB): `HUB=DATA` exige o bloco (as que faltarem contam como ausentes); `HUB=FULLCYCLE` o deixa opcional (nem ausente, nem a remover), como a criação (passo 5) e o Upgrade (item 4) já fazem; outro HUB: sugerir remover o bloco |
 
 Não pergunte de novo o que as exceções 9 a 9.3 do Upgrade já resolveram nesta execução.
 
 **2. Perguntar cada problema** com `AskUserQuestion`: **uma pergunta por problema**, em chamadas de até 4 abas, agrupadas por tipo de verificação. Cada pergunta tem a correção sugerida como primeira opção, marcada "(Recomendada)", e uma opção que mantém o arquivo como está (ex.: "Manter como está"). Nada é corrigido sem resposta. Sem problema nenhum, não pergunte: avise `✅ ENV.md conferido: nada a corrigir.`
 
 **3. Regravar (só o que foi aceito).**
-- **Reorganização aceita:** parta do template inteiro (comentários e molduras do template), ponha o valor atual de cada chave no lugar dela, cada uma no seu assunto e junto das irmãs, e desfaça os blocos datados. As chaves fora do template vão para o último bloco, "Variáveis fora do template", cada uma com `# (descontinuada)` logo acima; **nenhuma chave é apagada**. O comentário fica numa linha própria: na mesma linha da chave, o CLI o leria como parte do valor.
+- **Reorganização aceita:** use a estrutura do template (ordem, comentários e molduras), mas só com as chaves que o arquivo já tem mais as acrescentadas por resposta: chave que a pessoa recusou acrescentar não entra, e um bloco inteiro que o arquivo não tem (como o DATA, fora da regra do HUB) não volta. Ponha o valor atual de cada chave no lugar dela, cada uma no seu assunto e junto das irmãs, e desfaça os blocos datados. As chaves fora do template vão para o último bloco, "Variáveis fora do template", cada uma com `# (descontinuada)` logo acima. **Nenhuma chave é apagada**, salvo as que a pessoa mandou remover numa resposta (como o bloco DATA). O comentário fica numa linha própria: na mesma linha da chave, o CLI o leria como parte do valor.
 - **Reorganização recusada:** grave só as correções de conteúdo aceitas, no lugar em que cada chave está, sem mover o resto.
-- **Conferência antes de gravar:** o mapa chave → valor das chaves mantidas tem de ser igual antes e depois (só mudam as chaves corrigidas por resposta). Se não for, não grave e avise: `⚠️ A regravação mudaria valores que não foram corrigidos: nada gravado.`
+- **Conferência antes de gravar:** o **conjunto de chaves** depois é o de antes, mais as acrescentadas e menos as removidas por resposta; e o mapa chave → valor das chaves mantidas é igual (só mudam as corrigidas por resposta). Se não for, não grave e avise: `⚠️ A regravação mudaria chaves ou valores que não foram respondidos: nada gravado.`
 
-**4. Resumo.** Liste o que foi corrigido e o que ficou pendente (respostas "Manter como está"), só com nomes de chave.
+**4. Rules do perfil.** Se uma correção mudou `HUB`, `POSITION`, `AREA`, `SQUAD`, `ARTIFACT_STYLE` ou `RTK_ENABLED`, rode o **passo 8** de novo: ele já rodou com os valores antigos, e as rules em `$IDE/rules/` seriam de outro perfil.
+
+**5. Resumo.** Liste o que foi corrigido e o que ficou pendente (respostas "Manter como está"), só com nomes de chave, e se o passo 8 rodou de novo.
 
 ---
 
