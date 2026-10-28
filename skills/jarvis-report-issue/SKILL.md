@@ -164,6 +164,8 @@ grep '"version"' package.json | head -1 | sed 's/.*"version": *"\([^"]*\)".*/\1/
 
 ## Fase 4 — Abrir o issue
 
+**Antes de abrir, mostre e pergunte (regra de ouro, `eng.integrations-rules.md`).** Mostre o título, a label e o corpo do issue e pergunte com `AskUserQuestion`: **"Abrir este issue no repositório do Jarvis?"** → **Sim, abrir a issue** / **Não, manter só em `.jarvis/issues/`**. A pergunta vale mesmo quando o usuário pediu o report direto, porque ele ainda não viu o texto final. Com **Não**, grave o fallback abaixo e não rode o `jarvis vcs create-issue`.
+
 ```bash
 BODY_FILE=$(mktemp)
 # gravar o corpo markdown do issue em $BODY_FILE

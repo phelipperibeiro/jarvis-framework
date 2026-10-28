@@ -180,6 +180,8 @@ Refs: TASK-123"
 
 ### 4. Push
 
+Os Passos 4 e 5 só acontecem depois da pergunta (regra de ouro, `eng.integrations-rules.md`): mostre o texto do MR e pergunte com `AskUserQuestion` (**Sim, publicar** / **Não, manter só na sessão**). Sem o Sim, grave o `pull-request.md` na sessão e pare, sem push nem MR.
+
 ```bash
 git push -u origin {NOME_DA_BRANCH}
 ```
@@ -215,14 +217,14 @@ Usar template oficial em `$IDE/templates/engineering/PR-template.md`.
 
 Se `TASK_MANAGER` estiver vazio (freelance): pular este passo.
 
-1. Mover card para **"In Review"** (ou equivalente do vendor)
-2. Adicionar comentário com link do MR via `eng-global-task-comment`
+1. Orientar a pessoa a mover o card para **"In Review"** (ou equivalente do vendor); o Jarvis não move card
+2. Mostrar o comentário com o link do MR e, só depois da pergunta (regra de ouro, `eng.integrations-rules.md`), publicá-lo via `eng-global-task-comment`
 
 ### 7. Processar Code Review
 
 1. Aguardar comentários da ferramenta de code review
 2. Analisar cada comentário
-3. Aplicar correções se necessário:
+3. Aplicar correções se necessário. O push das correções só sai depois da pergunta (regra de ouro, `eng.integrations-rules.md`); sem o Sim, o commit fica local:
    ```bash
    git add {arquivos}
    git commit -m "fix: corrigir {problema} conforme code review"
@@ -253,7 +255,7 @@ rm -rf $SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/
 
 | Passo | Skill | Condição |
 |-------|-------|----------|
-| Passo 6 — Atualizar o card | `/eng-global-task-comment` | Sempre: comentário no card com o link do MR (freelance: registro no `task-log.md` da sessão) |
+| Passo 6 — Atualizar o card | `/eng-global-task-comment` | Com o Sim da pergunta (regra de ouro): comentário no card com o link do MR (freelance: registro no `task-log.md` da sessão) |
 
 ---
 
