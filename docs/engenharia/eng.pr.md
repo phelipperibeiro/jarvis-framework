@@ -44,7 +44,7 @@ A sessão **não é apagada**: o `/eng.spec-consolidate` precisa dela. Remova à
 
 ## Perguntas que ele faz
 
-- **No início:** "O que fazer com o PR?" → **Revisar o texto e publicar (como hoje)**, **Publicar sem revisar o texto**, **Só gerar os arquivos** (você abre o PR à mão; nada é enviado). Na revisão do texto de quem escolheu "Revisar o texto e publicar", o botão `[Só gerar os arquivos]` faz o mesmo.
+- **No início:** "O que fazer com o PR?" → **Revisar o texto e publicar (como hoje)**, **Publicar sem revisar o texto**, **Só gerar os arquivos** (o texto ainda é mostrado para revisão; você abre o PR à mão e nada é enviado). Na revisão do texto de quem escolheu "Revisar o texto e publicar", o botão `[Só gerar os arquivos]` faz o mesmo.
 - **No fim:** "O PR já foi aprovado e mergeado?" → **Ainda não (como hoje)** ou **Sim, rodar o `/eng.spec-consolidate`**, que registra no Central docs o que a entrega implementou.
 
 ## Regras que importam

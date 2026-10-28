@@ -717,7 +717,7 @@ Apresente ao usuário:
 
 #### 7.1 Preparação para Criação
 
-**Se o projeto usa Jira e a `acli` está logada (`acli jira workitem create`, conferindo os flags no `--help`), ou há uma ferramenta MCP do Jira configurada à mão:**
+**Se o projeto usa Jira e a `acli` está logada (`acli jira workitem create`, conferindo os flags no `--help`; a criação só sai na 7.3, depois da pergunta, regra de ouro):**
 
 Para cada subtarefa no plano:
 

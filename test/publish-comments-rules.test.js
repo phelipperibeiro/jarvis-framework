@@ -15,7 +15,7 @@ const rel = (file) => relative(root, file);
 
 // A mensagem de falha diz que o texto é guardado de propósito: reescrever o literal pede a atualização do teste junto.
 const DE_PROPOSITO =
-  "A regra de ouro é guardada de propósito (#184): ao mudar o texto, atualize test/regra-de-ouro.test.js junto.";
+  "A regra de ouro é guardada de propósito (#184): ao mudar o texto, atualize test/publish-comments-rules.test.js junto.";
 
 const INTEGRATIONS = "rules/engineering/eng.integrations-rules.md";
 const TASK_COMMENT = "skills/eng-global-task-comment/SKILL.md";
@@ -77,16 +77,19 @@ const ehHistorico = (arquivo) => HISTORICO.test(relative(root, arquivo).split("\
 // meia-risca, parêntese ou na conjunção "e"/"mas". Só o "nunca"/"jamais" segue no "e sem …", que continua a
 // mesma negação ("nunca comente e sem perguntar"); "nem" e "nada" param no "e" ("nem sempre há board e …").
 // Cobrem o modo freelance ("freelance pula", "freelance não pergunte" e "freelance (…)", em que o skill só
-// registra; "freelance: …" vale até o fim da frase, o ponto e vírgula ou o "e"/"mas", com o ponto de um nome
-// de arquivo como `task-log.md` dentro da frase) e as orações negadas ("nunca … sem perguntar"), mas não a
-// condicional ("se nada mudou, …").
+// registra; "freelance: …" vale até a vírgula, o ponto final, "!", "?", o ponto e vírgula ou o "e"/"mas", com o
+// ponto de um nome de arquivo como `task-log.md` dentro da oração; texto do freelance que siga depois da vírgula
+// vai entre parênteses) e as orações negadas ("nunca … sem perguntar"), mas não a condicional ("se nada mudou, …").
 const FIM_SIMPLES = String.raw`(?=\s(?:e|mas)\s|[;),.:—–]|$)`;
 const FIM_DO_NUNCA = String.raw`(?=\s(?:e|mas)\s(?!sem\b)|[;),.:—–]|$)`;
-const FIM_DA_FRASE = String.raw`(?=\s(?:e|mas)\s|[;—–]|\.(?=\s|$)|$)`;
+const FIM_DO_FREELANCE = String.raw`(?=\s(?:e|mas)\s|[;,!?—–]|\.(?=\s|$)|$)`;
 const semIsencoes = (linha) =>
   linha
     .replace(/freelance\s*\([^)]*\)/gi, "")
-    .replace(new RegExp(String.raw`freelance:(?:[^;.—–]|\.(?!\s|$))*?${FIM_DA_FRASE}`, "gi"), "")
+    .replace(
+      new RegExp(String.raw`freelance:(?:[^;,.!?—–]|\.(?!\s|$))*?${FIM_DO_FREELANCE}`, "gi"),
+      ""
+    )
     .replace(
       new RegExp(String.raw`freelance(?=\s+pula\b|\s+não pergunt)[^;),.:—–]*?${FIM_SIMPLES}`, "gi"),
       ""
@@ -100,11 +103,31 @@ const semIsencoes = (linha) =>
       ""
     );
 
-// A próxima linha com texto continua a mesma frase quando não abre item, título, tabela ou bloco.
-const NOVO_BLOCO = /^\s*(?:[-*+]\s|\d+\.\s|#|\||>|```)/;
+// A linha seguinte continua a mesma frase quando não está em branco (linha em branco fecha o parágrafo) e não
+// abre item, título, tabela, citação, bloco, negrito, HTML, régua ou árvore, nem chama o skill de novo.
+const NOVO_BLOCO = /^\s*$|^\s*(?:[-*+]\s|\d+[.)]\s|#|\||>|```|\*\*|<|---|[├└│])/;
 const continuacao = (todas, i) => {
-  const proxima = todas.slice(i + 1).find((l) => l.trim() !== "") ?? "";
+  const proxima = todas[i + 1] ?? "";
   return NOVO_BLOCO.test(proxima) || /eng-global-task-comment/.test(proxima) ? "" : proxima;
+};
+
+// Redações que dispensam a pergunta. Os espaços aceitam repetição, NBSP e quebra com recuo. O "nunca/nem/jamais
+// pergunte" é olhado antes das isenções (a isenção do "nunca" o apagaria).
+const RECUSA =
+  /\bsem\s+(?:a\s+)?perguntar|\bsem\s+a\s+pergunta|\bsem\s+pedir\s+confirma|não\s+pergunte|pule\s+a\s+pergunta|já\s+vale\s+como\s+o\s+Sim|regra\s+de\s+ouro\s+não\s+se\s+aplica|não\s+é\s+preciso\s+perguntar/i;
+const NUNCA_PERGUNTE = /\b(?:nunca|nem|jamais)\s+pergunte\b/i;
+// "dispens…" vale como recusa, salvo logo depois de "não" (com até dois auxiliares no meio: "não pode
+// dispensar", "não se dispensa"); o "não" de outra oração ("não espere e dispense") não conta. A negação é
+// conferida só nos 40 caracteres antes de cada "dispens", sem lookbehind aberto no padrão.
+const NEGA_O_DISPENS = /\bnão\s+(?:(?:pode|podem|deve|devem|precisa|vai|se|é)\s+){0,2}$/i;
+const dispensa = (texto) =>
+  [...texto.matchAll(/\bdispens\w*/gi)].some(
+    (m) => !NEGA_O_DISPENS.test(texto.slice(Math.max(0, m.index - 40), m.index))
+  );
+// As isenções valem linha a linha: o fim da linha fecha a oração negada, mesmo com a continuação juntada.
+const recusa = (linhas) => {
+  const limpo = linhas.map(semIsencoes).join(" ");
+  return RECUSA.test(limpo) || dispensa(limpo) || NUNCA_PERGUNTE.test(linhas.join(" "));
 };
 
 function todosMd() {
@@ -212,20 +235,19 @@ test("toda linha que chama o /eng-global-task-comment traz a pergunta na mesma l
     readFileSync(arquivo, "utf8")
       .split("\n")
       .forEach((linha, i, todas) => {
-        if (!/eng-global-task-comment/.test(linha) || ISENTA(nome, linha)) return;
+        if (!/eng-global-task-comment/.test(linha)) return;
         const onde = `${nome}:${i + 1}`;
+        const frase = [linha, continuacao(todas, i)];
         // O "Sim" vale só como palavra inteira ("assim" não conta). A pergunta pode estar na continuação da frase.
-        assert.match(
-          `${linha} ${continuacao(todas, i)}`,
-          /regra de ouro|\bSim\b|escolher um dos \*\*Sim\*\*|[Mm]ostra o texto e pergunta|pergunta antes|AskUserQuestion/,
-          `${onde} chama o /eng-global-task-comment sem a pergunta na linha. ${DE_PROPOSITO}`
-        );
+        // As linhas isentas só descrevem o skill: dispensam a pergunta na linha, não a recusa abaixo.
+        if (!ISENTA(nome, linha))
+          assert.match(
+            frase.join(" "),
+            /regra de ouro|\bSim\b|escolher um dos \*\*Sim\*\*|[Mm]ostra o texto e pergunta|pergunta antes|AskUserQuestion/,
+            `${onde} chama o /eng-global-task-comment sem a pergunta na linha. ${DE_PROPOSITO}`
+          );
         // Redações que dispensam a pergunta não valem, mesmo com a frase da regra na mesma linha.
-        assert.doesNotMatch(
-          semIsencoes(`${linha} ${continuacao(todas, i)}`),
-          /\bsem (a )?perguntar|\bsem a pergunta|não pergunte|(?<!\bnão\s+(?:\p{L}+\s+){0,2})\bdispens\w+|pule a pergunta|já vale como o Sim|regra de ouro não se aplica|não é preciso perguntar/iu,
-          `${onde} dispensa a pergunta. ${DE_PROPOSITO}`
-        );
+        assert.ok(!recusa(frase), `${onde} dispensa a pergunta. ${DE_PROPOSITO}`);
       });
   }
 });
@@ -284,7 +306,65 @@ test("cada ponto que envia algo tem a pergunta logo antes", () => {
     ],
     [TASK_COMMENT, /acli jira workitem comment/, 34, /Sim, publicar/],
     [ENG_PR, /gh pr create --repo/, 45, /exceção da regra de ouro/],
+    [
+      "skills/jarvis-docs-central/README.md",
+      /^jarvis docs publish --file .*feature/,
+      0,
+      /depois do Sim \(regra de ouro\)/,
+    ],
+    [
+      "skills/jarvis-docs-central/README.md",
+      /^jarvis docs publish --file .*delivery/,
+      1,
+      /depois do Sim/,
+    ],
+    [
+      "skills/jarvis-docs-central/README.md",
+      /`gh pr create` \/ `glab mr create`/,
+      0,
+      /só depois da pergunta do `\/eng\.spec-consolidate`, regra de ouro/,
+    ],
+    [
+      "skills/jarvis-docs-central/SKILL.md",
+      /`gh pr create` \/ `glab mr create`/,
+      2,
+      /regra de ouro/,
+    ],
+    [
+      "skills/eng-global-tech-spec/references/delivery-spec.md",
+      /`acli jira workitem create`/,
+      0,
+      /depois da pergunta, regra de ouro/,
+    ],
+    [
+      "workflows/engineering/eng.build-tech-spec.md",
+      /`acli jira workitem create`/,
+      0,
+      /perguntar \(regra de ouro\)/,
+    ],
+    [
+      "workflows/product/prod.spec.issue.md",
+      /`acli jira workitem create`/,
+      0,
+      /só com o Sim da pergunta \(regra de ouro\)|regra de ouro.*só com o Sim, abra o card/,
+    ],
+    [REPORT_ISSUE, /^jarvis vcs create-issue/, 25, /Sim, abrir a issue/],
   ];
+  // Completude: toda linha de comando que envia algo, em qualquer arquivo, precisa estar nesta lista.
+  const COMANDO =
+    /^\s*(?:git push\b|gh (?:pr|issue) (?:create|comment)|glab (?:mr|issue) (?:create|note)|acli jira workitem (?:create|comment)|jarvis (?:vcs create-|tasks comment|docs publish))/;
+  for (const file of todosMd()) {
+    const nome = rel(file).split("\\").join("/");
+    readFileSync(file, "utf8")
+      .split("\n")
+      .forEach((linha, i) => {
+        if (!COMANDO.test(linha)) return;
+        assert.ok(
+          PONTOS.some(([f, envio]) => f === nome && envio.test(linha)),
+          `${nome}:${i + 1}: comando de envio sem ponto guardado no teste. ${DE_PROPOSITO}`
+        );
+      });
+  }
   for (const [file, envio, n, precisa] of PONTOS) {
     const linhas = read(file).split("\n");
     const achadas = linhas.map((l, i) => (envio.test(l) ? i : -1)).filter((i) => i !== -1);
