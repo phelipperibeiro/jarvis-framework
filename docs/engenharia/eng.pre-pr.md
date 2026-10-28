@@ -60,7 +60,7 @@ Depois, com board, pergunta se registra o resultado como comentário no card: **
 - Segurança: nenhum secret no diff, `npm audit` sem vulnerabilidade alta ou crítica e lockfile atualizado
 - Se o PR tocar áreas sensíveis, recomenda o label `security` e a revisão de segurança antes do merge
 - Nenhuma rodada é sobrescrita ou apagada: rodar de novo guarda a anterior ao lado, como `gate-checklist-rodada-{N}.md`
-- Com a versão humanizada (`ARTIFACT_STYLE=human-generated`), o `.public.md` vai junto com a rodada e reserva o número dela; um `.public.md` solto (sem o relatório que o originou) vira a "rodada 0" (`gate-checklist-rodada-0.public.md`), com aviso
+- Com a versão humanizada (`ARTIFACT_STYLE=human-generated`), o `.public.md` vai junto com a rodada e reserva o número dela; um `.public.md` solto (sem o relatório que o originou, um estado anormal) fica como está, com aviso
 - **Links clicáveis:** a coluna "Onde" e as demais citações do `gate-checklist.md` viram links que abrem o arquivo na linha (`rules-on-demand/doc-links-rules.md`)
 
 ## Próximo passo típico
