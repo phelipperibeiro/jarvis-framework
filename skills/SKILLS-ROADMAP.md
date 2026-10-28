@@ -114,8 +114,8 @@ Skills existentes e planejadas do framework Jarvis.
 - **Status**: `criado`
 
 ### `product-specs-update` ✅
-- **Trigger**: atualização de specs existentes
-- **Escopo**: revisão e evolução de requisitos
+- **Trigger**: PRD ou FRD criado ou modificado; pedido para sincronizar ou indexar specs
+- **Escopo**: sincroniza PRD/FRD em cascata e mantém o índice local de specs (`$PROD_DOCS/specs-index.md`)
 - **Status**: `criado`
 
 ### `product-roadmap-report` ✅
