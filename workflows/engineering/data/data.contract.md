@@ -163,7 +163,7 @@ Salvar o contrato preenchido em:
 
 Mostre o texto e pergunte com `AskUserQuestion` antes de notificar (regra de ouro, `eng.integrations-rules.md`); sem o Sim, deixe o texto pronto para a pessoa enviar.
 
-Notificar no canal de solicitação de dados (thread original) com:
+Notificar no canal de solicitação de dados (thread original), depois do Sim acima, com:
 - Link para o contrato
 - Como acessar os dados (método, IAM role ou equivalente)
 - SLA combinado
@@ -171,12 +171,12 @@ Notificar no canal de solicitação de dados (thread original) com:
 
 ### 4.3 — Abrir card no board do time de Data
 
-Mostre o texto do card e pergunte com `AskUserQuestion` antes de criar (regra de ouro); sem o Sim, deixe o card descrito para a pessoa criar.
+Mostre o texto do card e, se a criação vai sair (board configurado, CLI logada e `TASK_MANAGER_ACCESS=cli` ou vazio), pergunte com `AskUserQuestion` antes de criar (regra de ouro); sem o Sim, sem board, sem a CLI ou com acesso manual, deixe o card descrito para a pessoa criar.
 
-Criar card no board `DE` (ou equivalente) com:
+Com o Sim, criar card no board `DE` (ou equivalente) pela CLI oficial do vendor (`acli jira workitem create` no projeto `DE` do Jira, ou `gh issue create`/`glab issue create` com `--repo` a partir de `TASK_MANAGER_URL_BASE`, o repositório que faz as vezes do board `DE`; flags no `--help`; sem `--repo`, `gh`/`glab` criariam a issue no repositório do diretório atual. O `jarvis vcs create-issue` é o do `/jarvis-report-issue`, com `--repo` explícito, não um atalho para o board). Sem a CLI logada, com acesso manual ou sem board, a pessoa cria com o texto pronto. O card leva:
 - Squad requisitante
 - Tabela/recurso
-- Status: `Ativo`
+- Status: `Ativo` (no corpo do card; nenhuma CLI põe status na criação)
 - Link para o contrato
 
 ---
@@ -187,7 +187,7 @@ Criar card no board `DE` (ou equivalente) com:
 
 Qualquer mudança de schema (adição, remoção ou tipo de campo) deve:
 
-1. Ser comunicada no canal de dados com **antecedência** (prazo definido nas rules)
+1. Ser comunicada no canal de dados com **antecedência** (prazo definido nas rules), depois de mostrar a mensagem e perguntar com `AskUserQuestion` (regra de ouro, `eng.integrations-rules.md`); sem o Sim, deixe o texto pronto
 2. Gerar nova versão do contrato (versionamento semântico: `MAJOR.MINOR`)
 3. Manter versão antiga disponível pelo período de coexistência definido nas rules
 
@@ -195,8 +195,8 @@ Qualquer mudança de schema (adição, remoção ou tipo de campo) deve:
 
 Quando o contrato não for mais necessário:
 1. Atualizar `Status` para `Deprecado` no documento
-2. Comunicar à squad requisitante com prazo de encerramento
-3. Atualizar (ou remover) o card no board do time de Data
+2. Comunicar à squad requisitante com prazo de encerramento, depois de mostrar a mensagem e perguntar com `AskUserQuestion` (regra de ouro); sem o Sim, deixe o texto pronto
+3. Orientar a pessoa a atualizar (ou remover) o card no board do time de Data (o Jarvis não move card); um comentário no card sai pelo `/eng-global-task-comment`, que mostra o texto e pergunta (regra de ouro)
 
 ---
 
@@ -209,6 +209,6 @@ Quando o contrato não for mais necessário:
 [ ] Contrato preenchido (schema, SLA, acesso, campos sensíveis)
 [ ] Campos sensíveis com tratamento aplicado (ou ausência confirmada)
 [ ] Contrato salvo no repositório de pipelines
-[ ] Squad requisitante notificada com acesso e SLA
-[ ] Card aberto no board do time de Data
+[ ] Squad requisitante notificada com acesso e SLA (ou texto entregue à pessoa, sem o Sim)
+[ ] Card aberto no board do time de Data (ou descrito para a pessoa criar; sem board, só o texto)
 ```

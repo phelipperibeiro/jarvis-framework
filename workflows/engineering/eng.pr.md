@@ -11,7 +11,7 @@ model_justification: Operações Git e preenchimento de templates são tarefas e
 
 # Pull Request / Merge Request
 
-Este comando cria a **branch, commita as alterações e abre um Merge Request**.
+Este comando **gera o `pull-request.md` na sessão e, com a escolha de publicar da Fase 0 (regra de ouro), faz o push e abre o Merge Request**. A branch e os commits vêm do `eng.start` e do `eng.work`.
 
 > 📋 **Rules**: `$IDE/rules-on-demand/engineering/eng.pr-rules.md` — **antes de começar, leia esse arquivo e siga-o**: ele não é carregado automaticamente no início da sessão.
 > 📤 **Template**: `$IDE/templates/engineering/PR-template.md`
@@ -72,7 +72,7 @@ Ler `TASK_MANAGER` do `$IDE/ENV.md`. Seguir `$IDE/rules/engineering/eng.integrat
 ## Fase 0: O que fazer com o PR (`eng.transitions-rules.md`)
 
 Pergunte com `AskUserQuestion`: **"O que fazer com o PR?"**
-- **Revisar o texto e publicar (como hoje):** gera o `pull-request.md`, você aprova ou ajusta (4.2) e, com a aprovação, faz o push e abre o PR (4.4). A aprovação do texto é a confirmação da publicação.
+- **Revisar o texto e publicar (como hoje):** gera o `pull-request.md`, você aprova, ajusta ou escolhe `[Só gerar os arquivos]` (4.2) e, com a aprovação, faz o push e abre o PR (4.4). A aprovação do texto é a confirmação da publicação.
 - **Publicar sem revisar o texto:** gera o `pull-request.md` (4.1), faz o push e abre o PR (4.4) sem a revisão (4.2); você ajusta o texto direto no PR.
 - **Só gerar os arquivos:** gera o `pull-request.md` (4.1), mostra para revisão (4.2) e não faz push nem abre o PR; você abre à mão. A Fase 7 gera o `daily.md` mesmo assim.
 
@@ -209,7 +209,7 @@ Use **MR** se GitLab, **PR** se GitHub.
 
 ### 4.1 Gerar `pull-request.md` na sessão
 
-Escreva o título e a descrição do PR em **`$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/pull-request.md`** (primeira linha `# {título}`, depois o corpo). Se a sessão tiver o `gate-checklist.md` do `eng.pre-pr`, use o PR Brief e as decisões da rodada mais recente (o `gate-checklist.md`; as rodadas anteriores, `gate-checklist-rodada-{N}.md`, são histórico).
+Escreva o título e a descrição do PR em **`$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/pull-request.md`** (primeira linha `# {título}`, depois o corpo). Se a sessão tiver o `gate-checklist.md` do `eng.pre-pr`, use o PR Brief e as decisões da rodada mais recente (o `gate-checklist.md`; as rodadas anteriores, `gate-checklist-rodada-{N}.md`, são histórico). Os labels sugeridos do PR Brief **não** entram no corpo do PR nem na criação do MR (o `jarvis vcs create-merge` não põe label): eles aparecem na mensagem final (7.3), para a pessoa adicionar no host.
 
 Template, nesta ordem (o primeiro que existir):
 
@@ -234,11 +234,11 @@ Preencher com a tarefa. Link do card:
 
 ### 4.2 Revisão do texto
 
-Mostre o consolidado de links da sessão (regra 5 de `eng.transitions-rules.md`, com o `pull-request.md` novo), o título e o resumo das seções e pergunte com `AskUserQuestion` (depois da mensagem com o consolidado de links): `[Aprovar]` / `[Ajustar]`. Ajuste até a aprovação. (Pulada com "Publicar sem revisar o texto" na Fase 0.)
+Mostre o consolidado de links da sessão (regra 5 de `eng.transitions-rules.md`, com o `pull-request.md` novo), o título e o resumo das seções e pergunte com `AskUserQuestion` (depois da mensagem com o consolidado de links): `[Aprovar]` / `[Ajustar]`, mais `[Só gerar os arquivos]` quando a Fase 0 foi "Revisar o texto e publicar" (essa opção troca a escolha da Fase 0 por "Só gerar os arquivos": nada é enviado). Ajuste até a aprovação ou até o `[Só gerar os arquivos]`. (Pulada com "Publicar sem revisar o texto" na Fase 0.)
 
 ### 4.3 Publicar ou não (sem pergunta nova)
 
-A decisão já veio da Fase 0, que vale como a pergunta do push e do PR (exceção da regra de ouro, `eng.integrations-rules.md`); não pergunte de novo. Aprovado o texto na 4.2 (ou, com "Publicar sem revisar o texto", sem a revisão), siga a escolha:
+A decisão vem da Fase 0, que vale como a pergunta do push e do PR (exceção da regra de ouro, `eng.integrations-rules.md`), ou do `[Só gerar os arquivos]` da 4.2, que a troca por "Só gerar os arquivos"; não pergunte de novo. Aprovado o texto na 4.2 (ou escolhido o `[Só gerar os arquivos]` dela; com "Publicar sem revisar o texto", sem a revisão), siga a escolha:
 
 - **Só gerar os arquivos:** nada é enviado. O `pull-request.md` fica na sessão para você publicar quando quiser (à mão ou rodando o `/eng.pr` de novo). Pule para a Fase 7, que gera o `daily.md` mesmo assim (para não passar batido quando você abrir o PR à mão), com a mensagem "PR não publicado".
 - **Revisar o texto e publicar** ou **Publicar sem revisar o texto:** faça o push (Fase 3) e crie o MR/PR (4.4).
@@ -358,7 +358,7 @@ fi
 
 Regras em `$IDE/rules-on-demand/engineering/eng.pr-rules.md` (seção "daily.md"); template em `$IDE/templates/engineering/daily-template.md`. Arquivo: `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/daily.md`, **só na sessão, nunca publicado**.
 
-1. **Gere sempre**, com ou sem PR publicado: quem abre o PR à mão ("Só gerar os arquivos" na Fase 0) também precisa do registro, e é aí que ele costuma passar batido. Se houver PR (o criado na 4.4 ou o PR já aberto da branch, via CLI/adapter do vendor, ex.: `gh pr view --json state,number,url`), preencha o campo `pr`; sem PR, deixe-o vazio e atualize quando o PR for aberto.
+1. **Gere sempre**, com ou sem PR publicado: quem abre o PR à mão ("Só gerar os arquivos" na Fase 0 ou o `[Só gerar os arquivos]` da 4.2) também precisa do registro, e é aí que ele costuma passar batido. Se houver PR (o criado na 4.4 ou o PR já aberto da branch, via CLI/adapter do vendor, ex.: `gh pr view --json state,number,url`), preencha o campo `pr`; sem PR, deixe-o vazio e atualize quando o PR for aberto.
 2. **Data:** pergunte com `AskUserQuestion`: **"Registrar o esforço com qual data?"** → `Hoje ({AAAA-MM-DD})` | `Outra data` (o usuário digita `AAAA-MM-DD`).
 3. **Dias trabalhados** (só se o período entre a data do `.timestamp_start` e a data do registro tiver mais de um dia), uma pergunta por vez:
    - se o período tiver sábado ou domingo: **"Você trabalhou em {datas de sábado/domingo}?"** (Sim / Não; com várias datas, pode responder por data);
@@ -384,12 +384,14 @@ Regras em `$IDE/rules-on-demand/engineering/eng.pr-rules.md` (seção "daily.md"
 ### 7.3 Mensagem Final
 
 ```
-✅ MERGE REQUEST CRIADO COM SUCESSO!
+✅ MERGE REQUEST CRIADO COM SUCESSO!       ← com o PR publicado
+📝 PR NÃO PUBLICADO                         ← com "Só gerar os arquivos", ou quando a 4.4 termina sem PR no host (saída 3 sem a CLI direta, ou saída 4 sem o PR criado); o pull-request.md fica pronto
 
 📋 Resumo:
 - Branch: {NOME_DA_BRANCH}
-- MR: {LINK_DO_MR}
-- Jira: {TASK_MANAGER_KEY} → "In Review"
+- MR: {LINK_DO_MR}   ← sem PR publicado: "— (abra à mão com o pull-request.md)"
+- Card: {URL do card, pela tabela da 4.1}   ← só com board; com o PR aberto, mova-o para a etapa equivalente a "em revisão" (o Jarvis não move card)
+- Labels: {labels sugeridos no PR Brief do gate-checklist.md, ex.: security}   ← só se houver; sem o relatório, ou sem o campo nele, avalie `eng-security-rules.md` direto; a pessoa adiciona no host (o `jarvis vcs create-merge` não põe label)
 
 📊 Validações:
 - Testes: ✅ Passando
@@ -408,17 +410,20 @@ Regras em `$IDE/rules-on-demand/engineering/eng.pr-rules.md` (seção "daily.md"
 - [daily.md]({caminho relativo}) (novo; {aprovado, com timesheet})
 🕒 Timesheet: {LINHA_DE_TIMESHEET_APROVADA}
 
-📌 Próximos passos:
+📌 Próximos passos (com o PR publicado):
 1. Aguardar revisão do time e processar os comentários do code review
 2. Merge após aprovação
 3. /eng.spec-consolidate {TASK_MANAGER_KEY} depois do merge → registrar no Central docs o que esta entrega implementou
+📌 Próximos passos (sem o PR publicado):
+1. Abrir o PR com o pull-request.md (à mão ou rodando o /eng.pr de novo)
+2. /eng.spec-consolidate {TASK_MANAGER_KEY} depois do merge
 
 🗂️ A sessão $SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/ não é apagada (o /eng.spec-consolidate precisa dela).
    Remova à mão quando quiser.
 
 🔗 Links:
-- MR: {LINK_DO_MR}
-- Jira: {TASK_MANAGER_URL_BASE}/browse/{TASK_MANAGER_KEY}
+- MR: {LINK_DO_MR}   ← só com o PR publicado
+- Card: {URL do card, pela tabela da 4.1}   ← só com board
 ```
 
 ### 7.4 Versões humanizadas (só com `ARTIFACT_STYLE=human-generated`)
@@ -448,7 +453,7 @@ Pergunte com `AskUserQuestion`: **"O PR já foi aprovado e mergeado?"**
 - ✅ Usar mensagem de commit padronizada
 - ✅ Criar branch no padrão `{TASK_MANAGER_KEY}-{titulo}`
 - ✅ Preencher template do MR completamente
-- ✅ Orientar a pessoa a mover o card para "In Review" (o Jarvis não move card)
+- ✅ Orientar a pessoa a mover o card para a etapa equivalente a "em revisão" (o Jarvis não move card)
 - ✅ Gerar o `pull-request.md` na sessão e só publicar com a escolha de publicar da Fase 0 (4.3)
 - ✅ Com PR aberto, registrar o esforço no `daily.md` (7.2), com revisão conjunta da descrição e do timesheet
 - ✅ **Nunca apagar a sessão:** o `/eng.spec-consolidate` precisa dela

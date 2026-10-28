@@ -49,7 +49,7 @@ Onde o Documento de Requisitos de Produto fala do produto inteiro (ou de uma ini
 
 - Mantém o funcional **dentro** da pasta do documento macro (rastreabilidade)
 - O comando aplica o template `prod-frd-template.md`
-- Central docs (se configurado) evita duplicar feature já especificada em outro squad
+- Central docs (se configurado) evita duplicar feature já implementada em outro squad
 - **Links clicáveis:** cada requisito, documento, código, card ou PR citado no documento vira um link que abre o ponto exato no VS Code (regra em `rules-on-demand/doc-links-rules.md`)
 
 ## Relação com QA

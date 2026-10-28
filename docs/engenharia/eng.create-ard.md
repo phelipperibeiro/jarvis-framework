@@ -34,7 +34,7 @@ Atalhos:
 | 0 | Define se é novo ARD ou iteração (pergunta se os argumentos não deixarem claro) |
 | 0.5 | **Versiona** com SemVer: novo ARD começa em `1.0.0`; em iteração, você diz se a mudança foi major, minor ou patch (regras em `eng.bump-rules.md`) |
 | 1 | Confirma o contexto e a origem da demanda |
-| 1.1 | **Verifica o PRD** (obrigatório), no central docs ou manualmente |
+| 1.1 | **Verifica o PRD** (obrigatório) em `$PROD_DOCS`, consulta o implementado no central docs (se configurado) ou pergunta |
 | 2 | Lê os insumos relevantes |
 | 2.5 | **Avalia a complexidade** (simples, moderada ou complexa) e declara o resultado antes de decidir qualquer coisa |
 | 3 | Preenche o `ARD-template.md` |

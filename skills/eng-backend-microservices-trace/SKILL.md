@@ -154,7 +154,7 @@ Este skill é **exclusivamente de investigação**:
 
 **0.1 Buscar o card**
 
-Usar o MCP/`TASK_MANAGER` (se disponível) ou pedir ao usuário que cole o conteúdo:
+Ler o card pela CLI oficial do `$TASK_MANAGER` (ação `view` do catálogo, `eng.integrations-rules.md`; sem REST nem MCP) ou pedir ao usuário que cole o conteúdo:
 - Título e descrição do bug
 - Passos para reproduzir
 - Comportamento esperado vs. observado

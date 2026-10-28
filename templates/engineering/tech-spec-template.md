@@ -1,7 +1,7 @@
 ---
 name: {nome da tech-spec}
 id: {TECH-001}
-related_story: {STORY-XXX do Jira}
+related_story: {STORY-XXX do board}
 epic_related: {EPIC-XXX se existir}
 related_rfc: {RFC-XXX ou "Não aplicável"}
 link_task: {URL da história no $TASK_MANAGER}
@@ -16,7 +16,7 @@ reviewers: {lista de revisores}
 
 ## 1. Contexto da História
 
-### História Original do Jira
+### História Original (card do board)
 **ID**: {STORY-XXX}
 **Link**: {URL}
 
@@ -443,7 +443,7 @@ TIMEOUT_MS=5000
 - [ ] Rollback testado
 
 **Produto:**
-- [ ] Critérios de aceitação do Jira atendidos
+- [ ] Critérios de aceitação do card atendidos
 - [ ] Product Owner aceitou
 - [ ] QA sign-off
 - [ ] Stakeholders notificados

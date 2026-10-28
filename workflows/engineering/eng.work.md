@@ -36,7 +36,7 @@ Este comando executa a **implementação de código** seguindo o plano de execu�
 | Fase 3 › 3.3.2 Implementar Testes Faltantes (Opção A) | `eng.qa.testing-engineer` (agente) | Se o test-planner identificar gaps e a estratégia do `architecture.md` seção 6.5 indicar testes manuais (unitário/integração) |
 | Fase 3 › 3.3.2 Implementar Testes Faltantes (Opção B) | `/eng-qa` | Se a estratégia do `architecture.md` seção 6.5 indicar uma especialização registrada em `QA_SPECIALIZATIONS` |
 | Fase 3 › 3.1 Implementar Código (exceção) | `eng.advisor.agent` (agente) | Só por exceção: questão nova em aberto, com o Advisor habilitado no `eng.start` (cabeçalho do `architecture.md`) |
-| Fase 5 › 5.4 e "Se houver bloqueio técnico" | `/eng-global-task-comment` | Se houver desvio do plano: mudança de direção, fase bloqueada ou questão nova consultada ao Advisor, só com o Sim da pergunta (regra de ouro; freelance: o skill registra no `task-log.md`) |
+| Fase 5 › 5.4 e "Se houver bloqueio técnico" | `/eng-global-task-comment` | Se houver desvio do plano: mudança de direção, fase bloqueada ou questão nova consultada ao Advisor, só com o Sim da pergunta (regra de ouro; freelance: o skill registra no `task-log.md`); sem o Sim, o texto fica no `task-comment-*.md` |
 
 ---
 
@@ -253,7 +253,7 @@ Para cada tarefa da fase:
    - Testes unitários para cada função/método
    - Cobrir casos de sucesso e erro
 
-**Questão nova em aberto (exceção).** O ideal é que todas as questões tenham sido levantadas no `eng.start`. Se surgir uma nova e o cabeçalho do `architecture.md` indicar um Advisor, consulte `eng.advisor.agent` com o Prompt 2 de `$IDE/templates/engineering/advisor-template.md` (refaça o Prompt 1 se o subagente não existir mais), acrescente a questão à seção 8 marcada "levantada no `eng.work`", adote a sugestão do Advisor e monte o comentário de auditoria e publique-o com `/eng-global-task-comment`, que mostra o texto e pergunta (regra de ouro, `eng.integrations-rules.md`) (é desvio do plano; cite-o no PR como lacuna do `eng.start`). Sem Advisor, pergunte ao usuário.
+**Questão nova em aberto (exceção).** O ideal é que todas as questões tenham sido levantadas no `eng.start`. Se surgir uma nova e o cabeçalho do `architecture.md` indicar um Advisor, consulte `eng.advisor.agent` com o Prompt 2 de `$IDE/templates/engineering/advisor-template.md` (refaça o Prompt 1 se o subagente não existir mais), acrescente a questão à seção 8 marcada "levantada no `eng.work`", adote a sugestão do Advisor e monte o comentário de auditoria e publique-o com `/eng-global-task-comment`, que mostra o texto e pergunta (regra de ouro, `eng.integrations-rules.md`; é desvio do plano; freelance: o skill registra no `task-log.md`). Sem o Sim, o texto fica no `task-comment-*.md` e no `architecture.md`. Cite o desvio no PR como lacuna do `eng.start`. Sem Advisor, pergunte ao usuário.
 
 ### 3.2 Executar Validações Locais
 

@@ -28,7 +28,7 @@ Este comando inicia o **planejamento** de uma nova feature.
 | Cabeçalho (agente) | `eng.agent` (agente) | Sempre — identidade do workflow |
 | Fase 0.1: Análise de Contexto (CDD) | `/jarvis-context-detect` | Se `ENABLE_CDD=true` no ENV.md (execução obrigatória antes da Fase 1); `ENABLE_CDD=false` pula |
 | Fase 0.5: Advisor (opcional) | `eng.advisor.agent` (agente) | Se o usuário escolher usar o Advisor no alerta e o `architecture.md` tiver questões em aberto (aberto só na primeira questão) |
-| Fase 2.2: Buscar Documentação Central | `/jarvis-docs-central` | Se `CENTRAL_DOCS_STORAGE` estiver configurado no ENV.md (buscar PRD, ARD e RFCs relacionados) |
+| Fase 2.2: Buscar Documentação Central | `/jarvis-docs-central` | Se `CENTRAL_DOCS_STORAGE` estiver configurado no ENV.md (buscar as funcionalidades já implementadas, `feature-*`, e entregas recentes; PRD, ARD e RFC ficam em `docs/jarvis/`) |
 | Fase 3.4: Estratégia de Testes | `eng.qa.test-architect` (agente) | Se a feature tiver requisitos de performance ou segurança (APIs públicas, dados sensíveis, alta carga ou requisitos não-funcionais explícitos) |
 | Fase 3.4: Estratégia de Testes | `/eng-platform` | Se a feature tiver requisitos de performance (latência, throughput, escalabilidade) |
 | Fase 3.4: Estratégia de Testes | `/eng-ai` | Se a feature envolver IA (LLM, RAG, agentes, chatbots, embeddings) |
@@ -37,7 +37,7 @@ Este comando inicia o **planejamento** de uma nova feature.
 | Fase 3.4: Estratégia de Testes | `/eng-data` (via `eng.specializations-rules.md`) | Se a feature envolver engenharia de dados (pipelines ETL/ELT, Glue, Airflow, contratos de dados, camadas bronze/silver/gold); a regra também carrega as especializações de `DATA_SPECIALIZATIONS` |
 | Fase 3.4: Estratégia de Testes | `/eng-automation` (via `eng.specializations-rules.md`) | Se a feature envolver RPA ou extração de dados/scraping; a regra também carrega as especializações de `AUTOMATION_SPECIALIZATIONS` |
 | Fase 3.4: Estratégia de Testes | `/eng-platform` (via `eng.specializations-rules.md`) | Se a feature envolver infraestrutura (IaC, contêineres, CI/CD, observabilidade, SRE, custo); a regra também carrega as especializações de `PLATFORM_SPECIALIZATIONS` |
-| Fase 4.3: Questões em Aberto | `/eng-global-task-comment` | Se o Advisor foi usado e houve questões em aberto: **um** comentário de auditoria, só com o Sim da pergunta (regra de ouro; freelance: o skill registra no `task-log.md`); sem o Sim, o registro fica só no `architecture.md` |
+| Fase 4.3: Questões em Aberto | `/eng-global-task-comment` | Se o Advisor foi usado e houve questões em aberto: **um** comentário de auditoria, só com o Sim da pergunta (regra de ouro; freelance: o skill registra no `task-log.md`); sem o Sim, o texto fica no `task-comment-*.md` e no `architecture.md` |
 
 ---
 
@@ -241,14 +241,16 @@ Os documentos de trabalho da tarefa (PRD, FRD, ARD, RFC, SPEC) ficam em `$PROD_D
 **Comportamento:**
 - Se docs encontrados → carregar e exibir resumo
 - Se não encontrados → seguir com os documentos de trabalho em `docs/jarvis/` e o card
-- Se `CENTRAL_DOCS_STORAGE` vazio → pular silenciosamente
+- Se `CENTRAL_DOCS_STORAGE` vazio → pular só a busca no Central docs; os documentos de trabalho em `docs/jarvis/` e o card seguem
 
 ### 2.3 Análise do Requisito
 
 Examine os cards, seus pais e filhos, e desenvolva compreensão do que deve ser implementado.
 
-**Se docs do central foram carregados:**
-- Validar alinhamento com PRD
+**Se funcionalidades do Central docs foram carregadas:** validar o alinhamento com o que já existe (comportamento atual, decisões, onde está no código).
+
+**Com os documentos de trabalho de `docs/jarvis/`:**
+- Validar alinhamento com o PRD
 - Verificar restrições arquiteturais do ARD
 - Considerar decisões de RFCs relacionados
 
@@ -299,7 +301,7 @@ Verifique:
 - `$DOCS_FOLDER/**/*.md` - Documentação do projeto
 - `$SESSIONS_DIR/eng/**/*.md` - Tech specs anteriores
 - `README.md`, `ARCHITECTURE.md` - Visão geral do projeto onde está sendo executado
-- Anexos no Jira - PRD, FRD, ARD, RFC
+- Anexos no card (lidos pela CLI ou colados) - PRD, FRD, ARD, RFC
 
 ### 3.3 Padrões e Convenções
 

@@ -210,16 +210,23 @@ test("listRulesForProfile: AGENTS.md nunca é filtrado, rtk é opt-in, sem bloco
 // rules-on-demand/doc-links-rules.md. A rule nova fica em rules-on-demand/ e não entra nesta conta.
 // Issue #182 (pre-pr 2, 2026-10-26): +43 B em todos os perfis — rules/AGENTS.md descreve rules-on-demand/ como etapa ou transversal.
 // Issue #184 (regra de ouro, 2026-10-27): +1022 B em todos os perfis — eng.integrations-rules.md ganha a seção "Nada é publicado sem perguntar" (com as exceções da Fase 0 do eng.pr e dos documentos aprovados juntos) e os eventos (f) e (g) na lista.
+// Issue #184 (pre-pr 11, 2026-10-28): +26 B em todos os perfis — rules/AGENTS.md descreve o eng.pr como "Push e PR, depois da pergunta (regra de ouro)".
+// Issue #184 (pre-pr 13, 2026-10-28): +191 B em todos os perfis — eng-security-rules.md: o label `security` é registrado no PR Brief e a pessoa é orientada a pô-lo no PR (o Jarvis não altera o PR sem perguntar).
+// Issue #184 (pre-pr 17, 2026-10-28): +3 B em todos os perfis — eng-security-rules.md diz que o `jarvis vcs create-merge` não põe label.
+// Issue #184 (pre-pr 19, 2026-10-28): +104 B em todos os perfis — eng-rules.md separa os documentos de trabalho da cópia local do Central docs.
+// Issue #184 (pre-pr 20, 2026-10-28): +18 B em todos os perfis — eng-rules.md: a cópia local do Central docs fica em docs/jarvis/ no local padrão.
+// Issue #184 (pre-pr 20, 2026-10-28): +210 B só no FULLCYCLE — data-rules.md (HUB: DATA) distingue o alerta automático do pipeline do aviso do Jarvis.
+// Issue #184 (pre-pr 22, 2026-10-28): +55 B em todos os perfis — eng.integrations-rules.md separa o repositório do create-merge (git remote) do --repo do create-issue.
 const BASE = [
   [
     "FULLCYCLE/GENERALIST/ENGINEERING/CORE",
     profile("FULLCYCLE", "GENERALIST", "ENGINEERING"),
     15,
-    103844,
+    104451,
   ],
-  ["BACKEND/SENIOR/ENGINEERING/CORE", profile("BACKEND", "SENIOR", "ENGINEERING"), 11, 70525],
-  ["FRONTEND/PLENO/ENGINEERING/CORE", profile("FRONTEND", "PLENO", "ENGINEERING"), 11, 71068],
-  ["QA/QA-ENGINEER/ENGINEERING/CORE", profile("QA", "QA-ENGINEER", "ENGINEERING"), 11, 70304],
+  ["BACKEND/SENIOR/ENGINEERING/CORE", profile("BACKEND", "SENIOR", "ENGINEERING"), 11, 70922],
+  ["FRONTEND/PLENO/ENGINEERING/CORE", profile("FRONTEND", "PLENO", "ENGINEERING"), 11, 71465],
+  ["QA/QA-ENGINEER/ENGINEERING/CORE", profile("QA", "QA-ENGINEER", "ENGINEERING"), 11, 70701],
 ];
 
 for (const [nome, p, arquivos, bytes] of BASE) {

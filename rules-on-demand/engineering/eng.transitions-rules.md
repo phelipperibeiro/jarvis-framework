@@ -44,7 +44,7 @@ Lida pelos workflows `eng.start`, `eng.plan`, `eng.work`, `eng.pre-pr` e `eng.pr
 | `eng.work` | Início | Depois do work | Rodar o `/eng.pre-pr` · Rodar o `/eng.pr` · Fluxo normal (como hoje: o usuário segue os próximos comandos manualmente) |
 | `eng.pre-pr` | Fim | Com lacunas: "Como seguir?" (depois da mensagem com o link do relatório) | Corrigir as lacunas agora · Parar aqui para corrigir à mão (como hoje) · Abrir o PR assim mesmo |
 | `eng.pre-pr` | Fim | Sem lacunas: "Como seguir?" | Abrir o PR agora · Parar aqui (como hoje) |
-| `eng.pr` | Início | "O que fazer com o PR?" | Revisar o texto e publicar (como hoje) · Publicar sem revisar o texto · Só gerar os arquivos (o usuário abre o PR à mão) |
+| `eng.pr` | Início | "O que fazer com o PR?" | Revisar o texto e publicar (como hoje) · Publicar sem revisar o texto · Só gerar os arquivos (o usuário abre o PR à mão; quem escolheu revisar também tem o `[Só gerar os arquivos]` na revisão da 4.2) |
 | `eng.pr` | Fim | "O PR já foi aprovado e mergeado?" | Ainda não (como hoje) · Sim, rodar o `/eng.spec-consolidate` |
 
 Nas perguntas "Depois do work" e "O que fazer com o plano?", a opção "como hoje" não é a primeira (em "Depois do work" fica por último), por escolha de produto: as primeiras opções são as ações que o usuário mais quer. Mesmo assim, é o fluxo que vale quando o usuário não escolhe.

@@ -85,7 +85,7 @@ workflows/
 | `eng.plan.md` | Criar plano de execução por fases |
 | `eng.work.md` | Executar implementação de código |
 | `eng.pre-pr.md` | Validação final antes do PR |
-| `eng.pr.md` | Criar branch, commit e Pull Request |
+| `eng.pr.md` | Push e Pull Request, depois da pergunta (regra de ouro) |
 | `eng.review.md` | Revisão de solução/PR |
 | `eng.debug.md` | Investiga um bug ou varre um escopo atrás de problemas |
 | `eng.docs.md` | Atualizar documentação de engenharia |

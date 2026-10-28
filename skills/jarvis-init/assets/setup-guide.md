@@ -339,7 +339,7 @@ Execute o checklist:
 - [ ] Framework JARVIS inicializado (`/jarvis-init`)
 - [ ] IDE detectada corretamente (Windsurf/Cursor/Claude/VS Code)
 - [ ] MCP Context7 instalado e respondendo (**obrigatório**)
-- [ ] MCP de task manager só se `TASK_MANAGER` estiver no ENV (não bloqueia)
+- [ ] Board e git pela CLI oficial (`gh`/`glab`/`acli`), sem MCP; a CLI logada só importa se `TASK_MANAGER` estiver no ENV (não bloqueia)
 - [ ] IDE reiniciada após configurar MCPs (se configurou)
 
  Problemas Comuns

@@ -8,7 +8,7 @@ Tem dois modos: transforma um épico ou uma história do board em uma **Tech Spe
 
 ## O que é
 
-- **Delivery Spec:** a Tech Spec é o documento técnico auto-contido de um card: um desenvolvedor deve conseguir executá-la sem precisar perguntar. Ela **é salva na sessão** (`.jarvis/sessions/eng/{card}/tech-spec.md`) e anexada ao card, que é a fonte da verdade.
+- **Delivery Spec:** a Tech Spec é o documento técnico auto-contido de um card: um desenvolvedor deve conseguir executá-la sem precisar perguntar. Ela **é salva na sessão** (`.jarvis/sessions/eng/{card}/tech-spec.md`); anexá-la ao card é opcional e só acontece depois de mostrar o que vai e perguntar (regra de ouro); sem o Sim, ela fica só na sessão.
 - **Reference Spec:** um documento normativo (contrato entre serviços, convenção de nomes, topologia, perfil de adaptação de uma spec, fases de adoção) que **não** deriva de card, **não** decide trade-off (isso é do RFC) e **não** desenha a arquitetura (isso é do ARD). Não tem subtarefas. Fica em `docs/jarvis/engineering/SPEC/SPEC-###-{nome}.md`, numerado como RFC e ARD, e é versionado com SemVer.
 
 > **Quem pode rodar:** `POSITION` igual a `TECH LEAD`, `HEAD`, `CTO`, `SPECIALIST` ou `SENIOR`. O `GENERALIST` sempre passa: em time pequeno ele acumula todos os papéis (ver `taxonomy.md`). Com outro cargo no `ENV.md`, o comando responde "Acesso Negado", lista os cargos aceitos e para.
@@ -39,7 +39,7 @@ Entendimento do card, validação de necessidade de RFC (8 critérios), investig
 
 **Delivery Spec: história → Tech Spec de implementação**
 
-Entendimento do card, validação de RFC, investigação do codebase, **avaliação de complexidade**, proposta arquitetural, quebra em subtarefas, riscos e considerações, criação do `tech-spec.md`, criação das subtarefas no board (ou um template para você criar) e validação final.
+Entendimento do card, validação de RFC, investigação do codebase, **avaliação de complexidade**, proposta arquitetural, quebra em subtarefas, riscos e considerações, criação do `tech-spec.md`, anexo opcional da tech spec na issue (só com board, depois da aprovação e da pergunta), criação das subtarefas só no Jira, pela `acli`, depois da pergunta (em GitHub/GitLab, sem a CLI ou sem o Sim, um template para você criar) e validação final.
 
 **Reference Spec**
 

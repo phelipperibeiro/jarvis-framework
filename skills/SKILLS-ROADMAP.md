@@ -138,7 +138,7 @@ Removidas: `checkin`, `checkout`, `daily`, `task-log`, `send-priority`, `sent-pr
 - **Status**: `criado`
 
 ### `jarvis-report-issue` ✅
-- **Trigger**: auto-report de bugs no framework Jarvis via GitLab API
+- **Trigger**: auto-report de bugs no framework Jarvis pela CLI do host (`gh`), depois da pergunta
 - **Status**: `criado`
 
 ### `jarvis-docs-index` / `jarvis-docs-central` / `jarvis-context-detect` ✅

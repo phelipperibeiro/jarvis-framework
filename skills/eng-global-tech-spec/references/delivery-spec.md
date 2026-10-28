@@ -44,7 +44,7 @@ B: História / Task — implementação específica, pronta para desenvolvimento
 
 **Se recebeu URL/ID do $TASK_MANAGER:**
 
-- Busque o card usando a API ou ferramenta disponível
+- Leia o card pela CLI oficial do `$TASK_MANAGER` (ação `view` do catálogo, `eng.integrations-rules.md`), sem REST nem MCP; sem acesso, peça para colar o conteúdo
 - **Épico**: extraia título, descrição, objetivo de negócio, escopo e iniciativa relacionada
 - **História**: extraia título, descrição, critérios de aceitação, épico relacionado, comentários relevantes
 
@@ -322,8 +322,8 @@ Use as ferramentas de busca para identificar:
 
 Verifique se há documentação relevante:
 
-- **PRD relacionada**: `$DOCS_FOLDER/**/*prd*.md` ou anexos no Jira
-- **FRD relacionada**: `$DOCS_FOLDER/**/*frd*.md` ou anexos no Jira
+- **PRD relacionada**: `$DOCS_FOLDER/**/*prd*.md` ou anexos no card (lidos pela CLI ou colados pelo usuário)
+- **FRD relacionada**: `$DOCS_FOLDER/**/*frd*.md` ou anexos no card (lidos pela CLI ou colados pelo usuário)
 - **ADRs (Architecture Decision Records)**: `$DOCS_FOLDER/ARD/*.md` ou `./sessions/**/adr.md`
 - **README e documentação técnica**: `README.md`, `ARCHITECTURE.md`, `API.md`
 
@@ -671,7 +671,7 @@ Para cada caso extremo/erro:
 
 Exemplo: `$SESSIONS_DIR/eng/story-123/tech-spec.md`
 
-> **IMPORTANTE**: A tech spec é salva na sessão e anexada no Jira. O Jira é a fonte da verdade, não o repositório.
+> **IMPORTANTE**: A tech spec é salva na sessão. O anexo na issue é opcional e só sai na 6.4, depois da aprovação final e da pergunta.
 
 #### 6.2 Revisão de Qualidade
 
@@ -707,17 +707,23 @@ Apresente ao usuário:
 
 **Aguarde aprovação final do usuário.**
 
+#### 6.4 Anexo da tech spec na issue (opcional, com pergunta)
+
+Só com board configurado (no freelance não há issue: pule este passo). Só há pergunta quando o anexo vai sair: no Jira, com a `acli` logada que anexa arquivo (confira no `--help`) e `TASK_MANAGER_ACCESS=cli` (ou vazio). Nesse caso: para anexá-la na issue do board, depois da aprovação da 6.3, mostre o que vai e pergunte com `AskUserQuestion` (regra de ouro, `eng.integrations-rules.md`): **Sim, anexar** / **Não, manter só na sessão**; com o Sim, anexe pela `acli`; sem o Sim, a tech spec fica só na sessão. Nos demais casos (Jira sem a `acli` logada, `acli` que não anexa, acesso manual, GitHub ou GitLab, cuja CLI não anexa arquivo à issue) não há envio e, portanto, nenhuma pergunta: oriente a pessoa a anexar à mão. A mensagem da 8.2 diz o que aconteceu.
+
 ---
 
 ### ═══════════════════════════════════════════════
 
-### FASE 7: Criação de Subtarefas no Jira
+### FASE 7: Criação de Subtarefas (automática só no Jira)
 
 ### ═══════════════════════════════════════════════
 
+> **Escopo:** a criação automática de subtarefas é só no Jira, pela `acli`. Em GitHub ou GitLab, ou no Jira sem a `acli` logada ou com `TASK_MANAGER_ACCESS=manual`, esta fase entrega o template formatado e as instruções para a pessoa criar as subtarefas à mão; como não há envio, a 7.3 não faz a pergunta nesse caso. A generalização para `gh`/`glab` fica para uma issue à parte.
+
 #### 7.1 Preparação para Criação
 
-**Se o projeto usa Jira e a `acli` está logada (`acli jira workitem create`, conferindo os flags no `--help`), ou há uma ferramenta MCP do Jira configurada à mão:**
+**Se o projeto usa Jira, a `acli` está logada e `TASK_MANAGER_ACCESS=cli` ou vazio (vazio vale como `cli`, com o aviso do `/jarvis-init`), com `acli jira workitem create` (conferindo os flags no `--help`; a criação só sai na 7.3, depois da pergunta, regra de ouro):**
 
 Para cada subtarefa no plano:
 
@@ -729,23 +735,22 @@ Para cada subtarefa no plano:
 - Estimativa: {X horas}
 - Labels: `tech-spec`, `{área}` (ex: backend, frontend)
 
-#### 7.2 Estrutura da Descrição no Jira
+#### 7.2 Estrutura da Descrição no board
 
-Use o formato **Descrição da subtarefa no Jira** de `$IDE/templates/engineering/tech-spec-delivery-template.md` (seções: Descrição, Arquivos a Modificar/Criar, Critérios de Aceitação, Testes Requeridos, Dependências, Referência).
+Use o formato **Descrição da subtarefa no board** de `$IDE/templates/engineering/tech-spec-delivery-template.md` (seções: Descrição, Arquivos a Modificar/Criar, Critérios de Aceitação, Testes Requeridos, Dependências, Referência).
 
-#### 7.3 Criação no Jira
+#### 7.3 Criação (Jira pela `acli`; outros boards, template)
 
-Antes de criar as subtarefas, mostre o texto e pergunte com `AskUserQuestion` (**Sim, publicar** / **Não, manter só na sessão**), regra de ouro de `eng.integrations-rules.md`; sem o Sim, entregue só o template formatado e deixe o texto na sessão. O comentário da 7.4 tem a sua própria pergunta, feita pelo `/eng-global-task-comment`.
+Só há pergunta quando a criação vai sair: no Jira, com a `acli` logada e `TASK_MANAGER_ACCESS=cli` (ou vazio). Nos demais casos (fora do Jira, sem a `acli` ou com acesso manual) não há envio e, portanto, nenhuma pergunta: entregue o template formatado direto. Quando a criação vai sair, antes de criar as subtarefas, mostre o texto e pergunte com `AskUserQuestion` (**Sim, publicar** / **Não, manter só na sessão**), regra de ouro de `eng.integrations-rules.md`; sem o Sim, entregue só o template formatado e deixe o texto na sessão. O comentário da 7.4 tem a sua própria pergunta, feita pelo `/eng-global-task-comment`.
 
-**Se houver API/ferramenta disponível (e o Sim):**
+**No Jira, com a `acli` logada, `TASK_MANAGER_ACCESS=cli` (ou vazio) e o Sim:**
 
-- Use para criar subtarefas automaticamente
-- Vincule à história pai
-- Configure dependências entre subtarefas
+- Crie as subtarefas com `acli jira workitem create` (flags no `--help`)
+- Vincule à história pai e configure as dependências entre subtarefas no que a `acli` permitir (com o Sim acima); o resto vai no template manual abaixo
 
-**Se não houver ferramenta:**
+**Em GitHub/GitLab, sem a `acli` logada (ou com `TASK_MANAGER_ACCESS=manual`), ou sem o Sim:**
 
-- Forneça ao usuário **template formatado** para copiar/colar no Jira
+- Forneça ao usuário **template formatado** para copiar/colar no board (Jira, GitHub ou GitLab)
 - Forneça **instruções passo-a-passo** para criação manual
 
 #### 7.4 Atualização da História Original
@@ -768,10 +773,10 @@ Valide que:
 
 - [ ] Tech Spec completa e aprovada pelo usuário
 - [ ] Arquivo salvo na sessão: `$SESSIONS_DIR/eng/{feature-name}/tech-spec.md`
-- [ ] Tech Spec anexada na issue do Jira
+- [ ] Tech Spec anexada na issue (com o Sim), a anexar pela pessoa (orientado) ou deixada na sessão
 - [ ] Subtarefas documentadas com critérios claros
-- [ ] Subtarefas criadas no Jira (ou template fornecido)
-- [ ] História original atualizada com link para tech spec
+- [ ] Subtarefas criadas no Jira pela `acli`, ou template fornecido (outros boards, sem a CLI, com acesso manual, sem o Sim ou sem board)
+- [ ] História original atualizada com link para tech spec (com o Sim do comentário da 7.4) ou texto deixado na sessão
 - [ ] Decisões arquiteturais documentadas
 - [ ] Riscos identificados e mitigados
 - [ ] Dependências mapeadas
@@ -802,7 +807,7 @@ Use o formato **Mensagem de entrega** de `$IDE/templates/engineering/tech-spec-d
 - `$SESSIONS_DIR/eng/**/*.md` - Tech specs e ADRs de sessões anteriores
 - `README.md` - Visão geral do projeto
 - `ARCHITECTURE.md` - Arquitetura do sistema (se existir)
-- Anexos no Jira - PRD, FRD, ARD, RFC
+- Anexos no card (lidos pela CLI ou colados) - PRD, FRD, ARD, RFC
 
 ### Templates
 
@@ -823,7 +828,7 @@ O diagrama do fluxo (épico x história, fases 0 a 8) está na seção **Fluxo r
 
 → Liste o que falta e peça ao usuário para completar
 
-### Se não conseguir acessar o Jira:
+### Se não conseguir acessar o card no board:
 
 → Peça ao usuário para copiar/colar o conteúdo da história
 

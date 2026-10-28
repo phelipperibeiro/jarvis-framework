@@ -3,7 +3,7 @@ name: prod-roadmap-preview
 description: >
   Use esta habilidade sempre que alguém perguntar sobre roadmap de produto, status de entrega, status de sprint, atualizações de equipe ou relatórios de status.
   Aciona quando os usuários perguntam coisas como: "qual o roadmap?", "quais são as entregas do trimestre?", "status do time X", "o que está sendo feito?", "quando vai sair feature Y?", "me mostra o roadmap", "status report do time", "próximas entregas", "roadmap do produto", "o que está planejado?", "report do time", "andamento dos projetos".
-  Essa habilidade se conecta ao Jira (Atlassian) e às páginas wiki internas para buscar dados ao vivo sobre o roteiro do produto e relatórios de status da equipe.
+  Essa habilidade lê o board pela CLI oficial do vendor (só leitura) e as páginas wiki internas pela URL que o usuário informar (`web_fetch`, ou texto colado; sem MCP) para buscar dados ao vivo sobre o roteiro do produto e relatórios de status da equipe.
 ---
 
 # Status Roadmap Preview
@@ -25,7 +25,7 @@ Use este fluxo sempre que alguém perguntar sobre:
 ## Regras
 
 - Se não tiver informações suficientes sobre o `$TASK_MANAGER` utilizado pelo usuário, pergunte qual é o `$TASK_MANAGER` e adapte a resposta de acordo.
-- Sempre utilize MCPs configurados especificos do `$TASK_MANAGER` utilizado para buscar informações atualizadas (pré-requisito manual: o `/jarvis-init` não configura MCP de board)
+- Leia o board pela CLI oficial do `$TASK_MANAGER` (`acli` no Jira, `gh` no GitHub, `glab` no GitLab), com o login dela, sem REST nem MCP (`eng.integrations-rules.md`). Só leitura: nada é comentado nem criado no board. Sem a CLI logada (ou com `TASK_MANAGER_ACCESS=manual`), peça ao usuário para exportar ou colar os dados.
 - Procure na pasta de trabalho para entender mais sobre o projeto.
 - Caso não tiver informações sobre o projeto, fontes de dados ou `$TASK_MANAGER`, informe ao usuário que não tem informações suficientes e peça para ele fornecer mais detalhes.
 

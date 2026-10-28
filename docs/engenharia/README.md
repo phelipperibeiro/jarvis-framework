@@ -23,7 +23,7 @@ Cada etapa só avança com a sua aprovação. O `eng.start` e o `eng.plan` só p
 | [`eng.plan`](./eng.plan.md) | Transforma a arquitetura em fases de cerca de 1 hora |
 | [`eng.work`](./eng.work.md) | Implementa o plano, fase por fase |
 | [`eng.pre-pr`](./eng.pre-pr.md) | Valida a branch e dá um semáforo antes do PR |
-| [`eng.pr`](./eng.pr.md) | Faz o push e abre o merge request |
+| [`eng.pr`](./eng.pr.md) | Faz o push e abre o merge request, depois da pergunta (regra de ouro); na revisão do texto, `[Só gerar os arquivos]` não envia nada |
 | [`eng.spec-consolidate`](./eng.spec-consolidate.md) | Registra no Central docs o que a entrega implementou |
 | [`eng.daily-report`](./eng.daily-report.md) | Junta os `daily.md` em um relatório por dia, com alertas das sessões sem registro |
 | [`eng.review`](./eng.review.md) | Revisa uma solução ou PR |

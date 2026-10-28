@@ -105,7 +105,7 @@ O agente DEVE incluir no checklist de pre-PR as seguintes verificacoes de segura
 - [ ] **Outputs**: erros nao vazam detalhes internos
 
 Se o PR toca em areas sensiveis (auth, sessions, RBAC, CORS, CSP, permissoes), o agente DEVE:
-1. Adicionar label `security` ao PR
+1. Registrar no PR Brief do `gate-checklist.md` que o PR leva o label `security` e orientar a pessoa a adiciona-lo ao PR (o Jarvis nao altera o PR no vendor sem perguntar, regra de ouro; o `jarvis vcs create-merge` nao poe label)
 2. Seguir o gate de seguranca inline do `eng.pre-pr` (sanitizacao, auth guards, headers, secrets scan, `npm audit`) antes do merge
 
 ---
