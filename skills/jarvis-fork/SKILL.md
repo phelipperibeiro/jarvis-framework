@@ -73,7 +73,7 @@ Deixar a empresa com o fluxo dela sem copiar e editar o framework: o core contin
 |---|---|
 | `--list` | Passo 6 |
 | `{artefato} --delete` | Passo 7 |
-| `{artefato} --update` | Passos 1 a 5 sobre o fork existente (o CLI compara com o core só se a pessoa pedir) |
+| `{artefato} --update` | Passos 1 a 5 sobre o fork existente (o CLI só compara com o core com `--diff`, que você passa quando a pessoa pedir) |
 | `{artefato}` | Passos 1 a 5 e, no fim, o Passo 8 |
 
 Confira o artefato: `jarvis map {nome}` (workflows, skills, agentes) ou `ls` do caminho em `$IDE/`. Nome que não existe: pare com a mensagem do CLI (`⚠️ "{nome}" não é um artefato do core…`).
@@ -113,7 +113,7 @@ Em texto, antes de gravar: **o que passa a acontecer** e **o que não muda**. Ex
 1. Mostre o conteúdo final do arquivo como vai ficar **no overlay** (o core + o ajuste), com o caminho `$IDE/overlays/{COMPANY_PROFILE}/{caminho}`.
 2. `AskUserQuestion`: **Gravar no overlay?** → **Sim** / **Não**. Com Não, nada é gravado; encerre.
 3. Com Sim: `jarvis fork {artefato}` (copia o core com carimbo), depois aplique o ajuste **no arquivo do overlay** (nunca no do core). Rule e rule-on-demand: o CLI já recopia a versão da empresa em `$IDE/rules/` com a marcação; para os outros tipos, a rule de precedência faz valer na próxima chamada.
-4. Em `--update`: o fork já existe; aplique o ajuste combinado no arquivo do overlay e rode `jarvis fork {artefato} --update` para recarimbar. Se a pessoa quiser ver o que o core mudou, o mesmo comando mostra o diff fork × core atual (linhas 🔴 são possível mudança de contrato: sessão, `ENV.md`, template, CLI); o que trazer é decisão dela.
+4. Em `--update`: o fork já existe; aplique o ajuste combinado no arquivo do overlay e rode `jarvis fork {artefato} --update` para recarimbar (sem comparação). Se a pessoa quiser ver o que o core mudou, rode `jarvis fork {artefato} --update --diff`: ele mostra o diff fork × core atual (linhas 🔴 são possível mudança de contrato: sessão, `ENV.md`, template, CLI) e recarimba; o que trazer é decisão dela. Fork **sem carimbo** (arquivo posto à mão no overlay): antes de qualquer coisa, pergunte `Carimbar {artefato} com a versão atual do core, sem alterar o conteúdo?` → **Sim** roda o `--update`; **Não** segue sem carimbar.
 
 ### 6. `--list`
 
@@ -146,7 +146,7 @@ Mostre o caminho do fork e o `forked_from`. `AskUserQuestion`: **Remover o fork 
 - Editar o core: nem o pacote instalado, nem `$IDE/{tipo}/` à mão
 - Forkar o artefato inteiro quando uma variável do `ENV.md` ou um arquivo menor resolve
 - Pôr nome de cliente, de pessoa, URL interna ou trecho de `reference/` no texto que vai para a issue
-- Comparar fork × core por conta própria no `--list` ou no `--update`; só a pedido da pessoa
+- Comparar fork × core por conta própria: o `--list` nunca compara, e o `--update` só compara com `--diff`, que você passa a pedido da pessoa
 - Decidir sozinho o que trazer do core para o fork
 
 ### Sempre

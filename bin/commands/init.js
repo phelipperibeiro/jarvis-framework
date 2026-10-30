@@ -582,7 +582,9 @@ async function runUpgrade(cwd, flags) {
       rl.close();
       if (answer && isValidCompanyProfile(answer)) companyProfile = answer;
       else if (answer) {
-        logger.info(`${YELLOW}  Nome inválido de novo: gravando o default ${DEFAULT_COMPANY_PROFILE}.${NC}`);
+        logger.info(
+          `${YELLOW}  Nome inválido de novo: gravando o default ${DEFAULT_COMPANY_PROFILE}.${NC}`
+        );
       }
     } else if (!flags.yes) {
       logger.info(

@@ -214,7 +214,8 @@ function collectOverlayFiles(dir, acc) {
   for (const entry of readdirSync(dir, { withFileTypes: true })) {
     const full = join(dir, entry.name);
     if (entry.isDirectory()) collectOverlayFiles(full, acc);
-    else if ((entry.isFile() || entry.isSymbolicLink()) && entry.name.endsWith(".md")) acc.push(full);
+    else if ((entry.isFile() || entry.isSymbolicLink()) && entry.name.endsWith(".md"))
+      acc.push(full);
   }
 }
 
@@ -225,7 +226,9 @@ function collectOverlayFiles(dir, acc) {
  * @param {string} profile
  * @returns {string}
  */
-export function withOverlayMarker(content, profile) {
+export function withOverlayMarker(rawContent, profile) {
+  // CRLF (fork editado no Windows) vira LF: a IDE lê igual e o frontmatter é reconhecido.
+  const content = rawContent.replace(/\r\n?/g, "\n");
   const block = extractFrontmatterBlock(content);
   const forked = block === null ? null : /^forked_from:\s*(.+)$/m.exec(block);
   const marker = `> Overlay: ${profile} (forked_from ${forked ? forked[1].trim() : "sem carimbo"})`;
@@ -253,7 +256,8 @@ function removeOrphanOverlayRules(ideDir, overlayDir, result, { dryRun, framewor
       const head = readFileSync(file, "utf-8").slice(0, 2048);
       if (!/^> Overlay: /m.test(head)) continue;
       const rel = relative(ideRules, file);
-      if (existsSync(join(frameworkRoot, dir, rel)) || existsSync(join(overlayDir, dir, rel))) continue;
+      if (existsSync(join(frameworkRoot, dir, rel)) || existsSync(join(overlayDir, dir, rel)))
+        continue;
       if (!dryRun) rmSync(file, { force: true });
       result.copied.push(`(overlay) ${dir}/${rel.split(sep).join("/")}: órfã removida da IDE`);
     }

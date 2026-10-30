@@ -78,7 +78,11 @@ export function resolveArtifact(root, name) {
   const item = items.get(name);
   if (item) {
     if (item.type === "skill") return { type: "skills", relPath: dirname(item.path), isDir: true };
-    return { type: item.type === "workflow" ? "workflows" : "agents", relPath: item.path, isDir: false };
+    return {
+      type: item.type === "workflow" ? "workflows" : "agents",
+      relPath: item.path,
+      isDir: false,
+    };
   }
   const norm = name.replace(/\\/g, "/").replace(/^\.\//, "");
   const first = norm.split("/")[0];
@@ -95,7 +99,8 @@ export function resolveArtifact(root, name) {
  * @param {{ from: string, at: string, candidate?: boolean }} stamp
  * @returns {string}
  */
-export function stampFrontmatter(content, { from, at, candidate = false }) {
+export function stampFrontmatter(rawContent, { from, at, candidate = false }) {
+  const content = lf(rawContent);
   const lines = [`forked_from: ${from}`, `forked_at: ${at}`];
   if (candidate) lines.push("core_candidate: true");
   const block = extractFrontmatterBlock(content);
@@ -128,7 +133,7 @@ export function listOverlay(overlayDir) {
       const type = rel.split("/")[0];
       // Skill: uma linha por pasta (o SKILL.md), não por arquivo de references/
       if (type === "skills" && !rel.endsWith("/SKILL.md")) continue;
-      const fm = parseFrontmatter(readFileSync(full, "utf-8"));
+      const fm = parseFrontmatter(lf(readFileSync(full, "utf-8")));
       out.push({
         path: type === "skills" ? dirname(rel) : rel,
         type,
@@ -158,12 +163,38 @@ const CONTRACT_PATTERN =
  * @returns {{ changes: Array<{ op: "-" | "+", line: string }>, contract: boolean }}
  *   `-` = só no fork · `+` = só no core atual
  */
+/** Quebras de linha do Windows viram `\n`: fork editado em CRLF não pode marcar tudo como diferente. */
+const lf = (text) => text.replace(/\r\n?/g, "\n");
+
+/** Acima disto (linhas do fork × linhas do core, depois do corte do prefixo e sufixo iguais) o LCS não roda. */
+export const DIFF_CELL_LIMIT = 25_000_000;
+
 export function diffAgainstCore(forkText, coreText) {
-  const a = forkText.split("\n");
-  const b = coreText.split("\n");
+  const a = lf(forkText).split("\n");
+  const b = lf(coreText).split("\n");
+  // Corta o prefixo e o sufixo iguais: o LCS só vê o miolo que mudou.
+  let start = 0;
+  while (start < a.length && start < b.length && a[start] === b[start]) start++;
+  let endA = a.length;
+  let endB = b.length;
+  while (endA > start && endB > start && a[endA - 1] === b[endB - 1]) {
+    endA--;
+    endB--;
+  }
+  const midA = a.slice(start, endA);
+  const midB = b.slice(start, endB);
+  const n = midA.length;
+  const m = midB.length;
+  if ((n + 1) * (m + 1) > DIFF_CELL_LIMIT) {
+    return { changes: [], contract: false, tooLarge: true, removed: n, added: m };
+  }
+  return diffLcs(midA, midB);
+}
+
+function diffLcs(a, b) {
   const n = a.length;
   const m = b.length;
-  const lcs = Array.from({ length: n + 1 }, () => new Uint16Array(m + 1));
+  const lcs = Array.from({ length: n + 1 }, () => new Uint32Array(m + 1));
   for (let i = n - 1; i >= 0; i--) {
     for (let j = m - 1; j >= 0; j--) {
       lcs[i][j] = a[i] === b[j] ? lcs[i + 1][j + 1] + 1 : Math.max(lcs[i + 1][j], lcs[i][j + 1]);
@@ -185,7 +216,38 @@ export function diffAgainstCore(forkText, coreText) {
   while (i < n) changes.push({ op: "-", line: a[i++] });
   while (j < m) changes.push({ op: "+", line: b[j++] });
   const relevant = changes.filter((c) => !STAMP_KEYS.test(c.line));
-  return { changes: relevant, contract: relevant.some((c) => CONTRACT_PATTERN.test(c.line)) };
+  return {
+    changes: relevant,
+    contract: relevant.some((c) => CONTRACT_PATTERN.test(c.line)),
+    tooLarge: false,
+  };
+}
+
+/**
+ * Tabela do `--list`: Caminho | Tipo | forked_from | forked_at | Candidato. Só lista; não compara.
+ * @param {ReturnType<typeof listOverlay>} entries
+ * @returns {string[]} linhas (cabeçalho, separador e uma por fork)
+ */
+export function formatOverlayTable(entries) {
+  const rows = entries.map((e) => [
+    e.path,
+    e.unknownType ? `⚠️ tipo não resolvido (${e.type})` : e.type,
+    e.forkedFrom ?? "(sem carimbo)",
+    e.forkedAt ?? "—",
+    e.candidate ? "candidato a core" : "—",
+  ]);
+  const header = ["Caminho", "Tipo", "forked_from", "forked_at", "Candidato"];
+  const widths = header.map((h, i) => Math.max(h.length, ...rows.map((r) => r[i].length)));
+  const line = (cells) =>
+    cells
+      .map((c, i) => c.padEnd(widths[i]))
+      .join("  ")
+      .trimEnd();
+  return [
+    `  ${line(header)}`,
+    `  ${widths.map((w) => "-".repeat(w)).join("  ")}`,
+    ...rows.map((r) => `  ${line(r)}`),
+  ];
 }
 
 /**
@@ -234,13 +296,7 @@ export async function fork(flags = {}) {
       return exit(0);
     }
     logger.info(`${CYAN}Overlay ${ctx.profile}: ${entries.length} fork(s)${NC}`);
-    for (const e of entries) {
-      const origin = e.forkedFrom ? `${e.forkedFrom}${e.forkedAt ? ` em ${e.forkedAt}` : ""}` : "(sem carimbo)";
-      const flagsText = [e.candidate ? "candidato a core" : null, e.unknownType ? "⚠️ tipo não resolvido" : null]
-        .filter(Boolean)
-        .join(" · ");
-      logger.info(`  ${e.path}${DIM}  ${origin}${flagsText ? `  ${flagsText}` : ""}${NC}`);
-    }
+    for (const line of formatOverlayTable(entries)) logger.info(line);
     return exit(0);
   }
 
@@ -267,7 +323,15 @@ export async function fork(flags = {}) {
   if (flags.delete) return exit(deleteFork({ ctx, artifact, name, src, dest }));
   if (flags.update) {
     return exit(
-      updateFork({ ctx, artifact, name, src, dest, candidate: flags.candidate === true })
+      updateFork({
+        ctx,
+        artifact,
+        name,
+        src,
+        dest,
+        candidate: flags.candidate === true,
+        showDiff: flags.diff === true,
+      })
     );
   }
 
@@ -303,7 +367,9 @@ export async function fork(flags = {}) {
 
   const shownDest = relative(dirname(ctx.ideDir), dest).split(sep).join("/");
   logger.info(`${GREEN}✓ Fork gravado:${NC} ${shownDest}`);
-  logger.info(`${DIM}  forked_from: ${stamp.from} · forked_at: ${stamp.at}${stamp.candidate ? " · core_candidate: true" : ""}${NC}`);
+  logger.info(
+    `${DIM}  forked_from: ${stamp.from} · forked_at: ${stamp.at}${stamp.candidate ? " · core_candidate: true" : ""}${NC}`
+  );
 
   if (RULE_TYPES.includes(artifact.type)) {
     // A IDE carrega rules/ sozinha: recopia agora, sem esperar o próximo jarvis init --upgrade
@@ -316,11 +382,17 @@ export async function fork(flags = {}) {
       );
       return exit(1);
     }
-    logger.info(`${DIM}  ${artifact.type}/ recopiada na IDE com a marcação "> Overlay: ${ctx.profile}"${NC}`);
+    logger.info(
+      `${DIM}  ${artifact.type}/ recopiada na IDE com a marcação "> Overlay: ${ctx.profile}"${NC}`
+    );
   } else {
-    logger.info(`${DIM}  Vale na próxima chamada (rule de precedência). Edite o arquivo do overlay, não o da IDE.${NC}`);
+    logger.info(
+      `${DIM}  Vale na próxima chamada (rule de precedência). Edite o arquivo do overlay, não o da IDE.${NC}`
+    );
   }
-  logger.info(`${DIM}  A conversa e a confirmação ficam na skill de fork; este comando grava direto.${NC}`);
+  logger.info(
+    `${DIM}  A conversa e a confirmação ficam na skill de fork; este comando grava direto.${NC}`
+  );
   return exit(0);
 }
 
@@ -339,10 +411,10 @@ function mainFile(artifact, base) {
 }
 
 /**
- * `--update`: a conversa é da skill; aqui, o diff fork × core atual (a pedido) e o recarimbo.
- * Não altera o conteúdo do fork.
+ * `--update`: a conversa é da skill; aqui, o recarimbo e, só com `--diff`, o diff fork × core
+ * atual. Não altera o conteúdo do fork.
  */
-function updateFork({ ctx, artifact, name, src, dest, candidate = false }) {
+function updateFork({ ctx, artifact, name, src, dest, candidate = false, showDiff = false }) {
   if (!existsSync(dest)) {
     logger.error(
       `${YELLOW}⚠️ ${name} não está no overlay "${ctx.profile}". Use /jarvis-fork ${name} para forkar.${NC}`
@@ -362,22 +434,32 @@ function updateFork({ ctx, artifact, name, src, dest, candidate = false }) {
     return 0;
   }
   const forkPath = mainFile(artifact, dest);
-  const forkText = readFileSync(forkPath, "utf-8");
-  const { changes, contract } = diffAgainstCore(forkText, readFileSync(mainFile(artifact, src), "utf-8"));
+  const forkText = lf(readFileSync(forkPath, "utf-8"));
   const version = getPackageInfo().version;
 
-  if (changes.length === 0) {
-    logger.info(`${GREEN}✅ ${name}: o fork é igual ao core atual (v${version}).${NC}`);
+  if (showDiff) {
+    const diff = diffAgainstCore(forkText, readFileSync(mainFile(artifact, src), "utf-8"));
+    if (diff.tooLarge) {
+      logger.info(
+        `${YELLOW}Diff ${name}: arquivos grandes demais para comparar linha a linha (${diff.removed} linhas só do fork, ${diff.added} só do core atual, fora o trecho igual). Compare com uma ferramenta de diff.${NC}`
+      );
+    } else if (diff.changes.length === 0) {
+      logger.info(`${GREEN}✅ ${name}: o fork é igual ao core atual (v${version}).${NC}`);
+    } else {
+      logger.info(
+        `${CYAN}Diff ${name}: fork (-) × core atual v${version} (+)${diff.contract ? `  ${RED}🔴 possível mudança de contrato${NC}` : ""}${NC}`
+      );
+      for (const c of diff.changes) {
+        const color = c.op === "-" ? YELLOW : GREEN;
+        logger.info(`${color}${c.op} ${c.line}${NC}`);
+      }
+      logger.info(
+        `${DIM}  Linhas "-" são só do fork (seus ajustes ou texto antigo do core); "+" são só do core atual. O que trazer é decisão sua, na skill de fork.${NC}`
+      );
+    }
   } else {
     logger.info(
-      `${CYAN}Diff ${name}: fork (-) × core atual v${version} (+)${contract ? `  ${RED}🔴 possível mudança de contrato${NC}` : ""}${NC}`
-    );
-    for (const c of changes) {
-      const color = c.op === "-" ? YELLOW : GREEN;
-      logger.info(`${color}${c.op} ${c.line}${NC}`);
-    }
-    logger.info(
-      `${DIM}  Linhas "-" são só do fork (seus ajustes ou texto antigo do core); "+" são só do core atual. O que trazer é decisão sua, na skill de fork.${NC}`
+      `${DIM}  Sem comparação com o core (use --diff para ver o que o core atual tem de diferente).${NC}`
     );
   }
 

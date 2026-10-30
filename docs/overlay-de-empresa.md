@@ -59,7 +59,7 @@ O CLI por baixo:
 |---|---|
 | `jarvis fork {nome} [--candidate]` | Copia do core instalado para o overlay, no mesmo caminho e nome, com carimbo. `{nome}` é workflow, skill ou agente (como no `jarvis map`) ou `rules/…`, `rules-on-demand/…`, `templates/…`. Rule e rule-on-demand são recopiadas na IDE na hora |
 | `jarvis fork --list` | O que está forkado: caminho, tipo, carimbo, `(sem carimbo)`, candidato a core, tipo não resolvido. **Não compara** com o core |
-| `jarvis fork {nome} --update` | Diff fork × core **atual** (linhas 🔴 são possível mudança de contrato: sessão, `ENV.md`, template, CLI) e recarimbo. Não existe cópia da versão em que o fork foi feito; o que trazer é decisão da pessoa |
+| `jarvis fork {nome} --update [--diff]` | Recarimba o fork com a versão atual do core (o conteúdo não muda). Com `--diff`, mostra antes o diff fork × core **atual** (linhas 🔴 são possível mudança de contrato: sessão, `ENV.md`, template, CLI). Não existe cópia da versão em que o fork foi feito; o que trazer é decisão da pessoa |
 | `jarvis fork {nome} --delete` | Remove o fork; rule volta à versão do core na IDE |
 
 ## O que fica fora (por enquanto)

@@ -258,7 +258,8 @@ test("overlay: rule e rule-on-demand do overlay vencem as do core e recebem a ma
     buildMinimalFramework(root);
     write(root, "rules/engineering/eng-rules.md", "# core");
     withOverlay(target, "acme", {
-      "rules/engineering/eng-rules.md": "---\nforked_from: eng-rules@8.2.0\nforked_at: 2026-10-30\n---\n\n# empresa\n",
+      "rules/engineering/eng-rules.md":
+        "---\nforked_from: eng-rules@8.2.0\nforked_at: 2026-10-30\n---\n\n# empresa\n",
       "rules-on-demand/engineering/eng.plan-rules.md": "# plano da empresa, sem frontmatter\n",
       "workflows/engineering/eng.start.md": "# não é copiado pelo sync\n",
     });
@@ -268,9 +269,18 @@ test("overlay: rule e rule-on-demand do overlay vencem as do core e recebem a ma
 
     assert.equal(result.errors.length, 0, JSON.stringify(result.errors));
     const rule = readFileSync(join(target, ".claude/rules/engineering/eng-rules.md"), "utf-8");
-    assert.match(rule, /^---\nforked_from: eng-rules@8\.2\.0\nforked_at: 2026-10-30\n---\n\n> Overlay: acme \(forked_from eng-rules@8\.2\.0\)\n\n# empresa\n$/);
-    const onDemand = readFileSync(join(target, ".claude/rules-on-demand/engineering/eng.plan-rules.md"), "utf-8");
-    assert.equal(onDemand, "> Overlay: acme (forked_from sem carimbo)\n\n# plano da empresa, sem frontmatter\n");
+    assert.match(
+      rule,
+      /^---\nforked_from: eng-rules@8\.2\.0\nforked_at: 2026-10-30\n---\n\n> Overlay: acme \(forked_from eng-rules@8\.2\.0\)\n\n# empresa\n$/
+    );
+    const onDemand = readFileSync(
+      join(target, ".claude/rules-on-demand/engineering/eng.plan-rules.md"),
+      "utf-8"
+    );
+    assert.equal(
+      onDemand,
+      "> Overlay: acme (forked_from sem carimbo)\n\n# plano da empresa, sem frontmatter\n"
+    );
     assert.ok(!existsSync(join(target, ".claude/workflows/engineering/eng.start.md")));
     assert.ok(result.copied.includes("(overlay) rules/engineering/eng-rules.md"));
     assert.ok(result.copied.includes("(overlay) rules-on-demand/engineering/eng.plan-rules.md"));
@@ -295,7 +305,10 @@ test("overlay: sem a pasta do perfil, o sync cria só a pasta vazia; sem ENV.md 
     const result = syncAssets(target, "claude", {});
     assert.ok(statSync(join(target, ".claude/overlays/stark-industries")).isDirectory());
     assert.ok(result.copied.includes("Overlay stark-industries: pasta criada"));
-    assert.ok(!result.skipped.some((m) => m.includes("COMPANY_PROFILE vazio")), "sem ENV.md não há aviso");
+    assert.ok(
+      !result.skipped.some((m) => m.includes("COMPANY_PROFILE vazio")),
+      "sem ENV.md não há aviso"
+    );
   });
 });
 
@@ -313,7 +326,11 @@ test("overlay: COMPANY_PROFILE vazio ou inválido cai no default com aviso", () 
     const result = syncAssets(target, "claude", {});
     assert.ok(existsSync(join(target, ".claude/overlays/stark-industries")));
     assert.ok(!existsSync(join(target, ".claude/overlays/rules")));
-    assert.ok(result.skipped.some((m) => /⚠️ COMPANY_PROFILE não pode ser o nome de uma pasta do core/.test(m)));
+    assert.ok(
+      result.skipped.some((m) =>
+        /⚠️ COMPANY_PROFILE não pode ser o nome de uma pasta do core/.test(m)
+      )
+    );
   });
 });
 
@@ -346,7 +363,10 @@ test("overlay: rule só do overlay vira órfã na troca de perfil e sai da IDE; 
     });
     syncAssets(target, "claude", {});
     assert.ok(existsSync(join(target, ".claude/rules/so-da-acme.md")));
-    assert.match(readFileSync(join(target, ".claude/rules/engineering/eng-rules.md"), "utf-8"), /> Overlay: acme/);
+    assert.match(
+      readFileSync(join(target, ".claude/rules/engineering/eng-rules.md"), "utf-8"),
+      /> Overlay: acme/
+    );
 
     // troca de perfil: o overlay acme fica no disco, mas não está mais ativo
     write(target, ".claude/ENV.md", "COMPANY_PROFILE=beta\n");
@@ -354,7 +374,10 @@ test("overlay: rule só do overlay vira órfã na troca de perfil e sai da IDE; 
     assert.ok(!existsSync(join(target, ".claude/rules/so-da-acme.md")), "órfã continuou na IDE");
     assert.ok(result.copied.includes("(overlay) rules/so-da-acme.md: órfã removida da IDE"));
     // a do core volta à versão do core (o cpSync a sobrescreveu); o overlay acme segue intacto
-    assert.equal(readFileSync(join(target, ".claude/rules/engineering/eng-rules.md"), "utf-8"), "x");
+    assert.equal(
+      readFileSync(join(target, ".claude/rules/engineering/eng-rules.md"), "utf-8"),
+      "x"
+    );
     assert.ok(existsSync(join(target, ".claude/overlays/acme/rules/so-da-acme.md")));
     assert.ok(statSync(join(target, ".claude/overlays/beta")).isDirectory());
   });
@@ -367,5 +390,37 @@ test("overlay: dryRun diz que a pasta seria criada e não cria", () => {
     const result = syncAssets(target, "claude", { dryRun: true });
     assert.ok(result.copied.includes("Overlay acme: pasta seria criada"));
     assert.ok(!existsSync(join(target, ".claude/overlays")));
+  });
+});
+
+test("overlay: link quebrado e link para pasta são ignorados sem erro; erro de escrita vai para errors", () => {
+  withJarvisRoot((root, target) => {
+    buildMinimalFramework(root);
+    withOverlay(target, "acme", {});
+    const rulesDir = join(target, ".claude/overlays/acme/rules");
+    mkdirSync(rulesDir, { recursive: true });
+    symlinkSync(join(target, "nao-existe.md"), join(rulesDir, "quebrado.md"));
+    mkdirSync(join(target, "pasta-fora"), { recursive: true });
+    writeFileSync(join(target, "pasta-fora/dentro.md"), "# fora");
+    symlinkSync(join(target, "pasta-fora"), join(rulesDir, "link-pasta"));
+
+    const result = syncAssets(target, "claude", {});
+    assert.equal(result.errors.length, 0, JSON.stringify(result.errors));
+    assert.ok(result.skipped.some((m) => /quebrado\.md: link quebrado/.test(m)));
+    assert.ok(!existsSync(join(target, ".claude/rules/quebrado.md")));
+    assert.ok(!existsSync(join(target, ".claude/rules/link-pasta")));
+  });
+  withJarvisRoot((root, target) => {
+    buildMinimalFramework(root);
+    withOverlay(target, "acme", { "rules-on-demand/sub/x.md": "# x" });
+    // o destino `.claude/rules-on-demand/sub` é um arquivo: o mkdir falha e vira errors
+    syncAssets(target, "claude", {});
+    rmSync(join(target, ".claude/rules-on-demand/sub"), { recursive: true, force: true });
+    writeFileSync(join(target, ".claude/rules-on-demand/sub"), "não sou pasta");
+    const result = syncAssets(target, "claude", {});
+    assert.ok(
+      result.errors.some((m) => /\(overlay\) rules-on-demand\/sub\/x\.md/.test(m)),
+      JSON.stringify(result.errors)
+    );
   });
 });

@@ -23,6 +23,8 @@ import {
   stampFrontmatter,
   listOverlay,
   diffAgainstCore,
+  formatOverlayTable,
+  DIFF_CELL_LIMIT,
 } from "../bin/commands/fork.js";
 import { setTestMode } from "../bin/lib/utils/logger.js";
 
@@ -67,7 +69,11 @@ async function withFixture(profileLine, fn) {
     buildCore(root);
     write(ws, ".claude/ENV.md", `WORKSPACE=ws\n${profileLine}\n`);
     // cópias do core na IDE, como depois de um jarvis init
-    write(ws, ".claude/rules/engineering/eng-rules.md", "> **Applies to:** HUB: all\n\n# core rules\n");
+    write(
+      ws,
+      ".claude/rules/engineering/eng-rules.md",
+      "> **Applies to:** HUB: all\n\n# core rules\n"
+    );
     write(ws, ".claude/rules-on-demand/engineering/eng.pr-rules.md", "# pr rules do core\n");
     const envFile = join(ws, ".claude/ENV.md");
     const run = (args, extra = {}) => fork({ _: args, "env-file": envFile, ...extra });
@@ -97,7 +103,14 @@ test("resolveArtifact: nome pelo índice (workflow, skill, agente) e caminho par
     assert.equal(resolveArtifact(root, "eng.agent").type, "agents");
     assert.equal(resolveArtifact(root, "rules/engineering/eng-rules.md").type, "rules");
     assert.equal(resolveArtifact(root, "templates/pull-request.md").type, "templates");
-    for (const bad of ["nao-existe", "rules/../package.json", "/etc/passwd", "bin/jarvis.js", "", "workflows/engineering/eng.start.md"]) {
+    for (const bad of [
+      "nao-existe",
+      "rules/../package.json",
+      "/etc/passwd",
+      "bin/jarvis.js",
+      "",
+      "workflows/engineering/eng.start.md",
+    ]) {
       assert.equal(resolveArtifact(root, bad), null, `aceitou "${bad}"`);
     }
   } finally {
@@ -120,17 +133,29 @@ test("stampFrontmatter: acrescenta ao frontmatter existente (substituindo carimb
 test("fork: skill vai inteira para o overlay com o SKILL.md carimbado; workflow e template também; --candidate marca", async () => {
   await withFixture("COMPANY_PROFILE=acme", async ({ ws, run }) => {
     assert.equal(await run(["eng-global-pr"]), 0);
-    const skill = readFileSync(join(ws, ".claude/overlays/acme/skills/eng-global-pr/SKILL.md"), "utf-8");
-    assert.match(skill, /^---\nname: eng-global-pr\ndescription: PR\nlicense: AGPL-3.0\nforked_from: eng-global-pr@9\.9\.9\nforked_at: \d{4}-\d{2}-\d{2}\n---\n# pr\n$/);
+    const skill = readFileSync(
+      join(ws, ".claude/overlays/acme/skills/eng-global-pr/SKILL.md"),
+      "utf-8"
+    );
+    assert.match(
+      skill,
+      /^---\nname: eng-global-pr\ndescription: PR\nlicense: AGPL-3.0\nforked_from: eng-global-pr@9\.9\.9\nforked_at: \d{4}-\d{2}-\d{2}\n---\n# pr\n$/
+    );
     assert.ok(existsSync(join(ws, ".claude/overlays/acme/skills/eng-global-pr/references/1.md")));
 
     assert.equal(await run(["eng.start"], { candidate: true }), 0);
-    const wf = readFileSync(join(ws, ".claude/overlays/acme/workflows/engineering/eng.start.md"), "utf-8");
+    const wf = readFileSync(
+      join(ws, ".claude/overlays/acme/workflows/engineering/eng.start.md"),
+      "utf-8"
+    );
     assert.match(wf, /forked_from: eng\.start@9\.9\.9\nforked_at: .*\ncore_candidate: true\n---/);
 
     assert.equal(await run(["templates/pull-request.md"]), 0);
     const tpl = readFileSync(join(ws, ".claude/overlays/acme/templates/pull-request.md"), "utf-8");
-    assert.match(tpl, /^---\nforked_from: templates\/pull-request\.md@9\.9\.9\nforked_at: .*\n---\n\n# PR template, sem frontmatter\n$/);
+    assert.match(
+      tpl,
+      /^---\nforked_from: templates\/pull-request\.md@9\.9\.9\nforked_at: .*\n---\n\n# PR template, sem frontmatter\n$/
+    );
 
     // nada foi copiado para a IDE fora de rules/: o resolver na chamada cuida desses tipos
     assert.ok(!existsSync(join(ws, ".claude/workflows")));
@@ -142,12 +167,24 @@ test("fork: rule e rule-on-demand são recopiadas na IDE na hora, com a marcaç�
   await withFixture("COMPANY_PROFILE=acme", async ({ root, ws, run }) => {
     assert.equal(await run(["rules/engineering/eng-rules.md"]), 0);
     const ide = readFileSync(join(ws, ".claude/rules/engineering/eng-rules.md"), "utf-8");
-    assert.match(ide, /^---\nforked_from: rules\/engineering\/eng-rules\.md@9\.9\.9\nforked_at: .*\n---\n\n> Overlay: acme \(forked_from rules\/engineering\/eng-rules\.md@9\.9\.9\)\n\n> \*\*Applies to:\*\* HUB: all\n\n# core rules\n$/);
+    assert.match(
+      ide,
+      /^---\nforked_from: rules\/engineering\/eng-rules\.md@9\.9\.9\nforked_at: .*\n---\n\n> Overlay: acme \(forked_from rules\/engineering\/eng-rules\.md@9\.9\.9\)\n\n> \*\*Applies to:\*\* HUB: all\n\n# core rules\n$/
+    );
     assert.equal(await run(["rules-on-demand/engineering/eng.pr-rules.md"]), 0);
-    assert.match(readFileSync(join(ws, ".claude/rules-on-demand/engineering/eng.pr-rules.md"), "utf-8"), /> Overlay: acme/);
+    assert.match(
+      readFileSync(join(ws, ".claude/rules-on-demand/engineering/eng.pr-rules.md"), "utf-8"),
+      /> Overlay: acme/
+    );
     // o arquivo do overlay não leva a marcação; o core instalado continua igual
-    assert.doesNotMatch(readFileSync(join(ws, ".claude/overlays/acme/rules/engineering/eng-rules.md"), "utf-8"), /> Overlay:/);
-    assert.equal(readFileSync(join(root, "rules/engineering/eng-rules.md"), "utf-8"), "> **Applies to:** HUB: all\n\n# core rules\n");
+    assert.doesNotMatch(
+      readFileSync(join(ws, ".claude/overlays/acme/rules/engineering/eng-rules.md"), "utf-8"),
+      /> Overlay:/
+    );
+    assert.equal(
+      readFileSync(join(root, "rules/engineering/eng-rules.md"), "utf-8"),
+      "> **Applies to:** HUB: all\n\n# core rules\n"
+    );
   });
 });
 
@@ -218,8 +255,11 @@ test("diffAgainstCore: só as linhas diferentes, ignorando o carimbo; marca cont
 test("fork --update: fork inexistente sai com 1; existente recarimba forked_from para a versão atual sem mudar o corpo", async () => {
   await withFixture("COMPANY_PROFILE=acme", async ({ ws, run }) => {
     assert.equal(await run(["eng.start"], { update: true }), 1);
-    write(ws, ".claude/overlays/acme/workflows/engineering/eng.start.md",
-      "---\ndescription: start\nforked_from: eng.start@1.0.0\nforked_at: 2026-01-01\ncore_candidate: true\n---\n# start da empresa\n");
+    write(
+      ws,
+      ".claude/overlays/acme/workflows/engineering/eng.start.md",
+      "---\ndescription: start\nforked_from: eng.start@1.0.0\nforked_at: 2026-01-01\ncore_candidate: true\n---\n# start da empresa\n"
+    );
     assert.equal(await run(["eng.start"], { update: true }), 0);
     assert.equal(
       readFileSync(join(ws, ".claude/overlays/acme/workflows/engineering/eng.start.md"), "utf-8"),
@@ -230,9 +270,16 @@ test("fork --update: fork inexistente sai com 1; existente recarimba forked_from
 
 test("fork --update: artefato que o core não tem mais avisa e sugere --delete (sai com 0, fork intacto)", async () => {
   await withFixture("COMPANY_PROFILE=acme", async ({ ws, run }) => {
-    write(ws, ".claude/overlays/acme/workflows/engineering/eng.velho.md", "---\nforked_from: eng.velho@1.0.0\n---\n# velho\n");
+    write(
+      ws,
+      ".claude/overlays/acme/workflows/engineering/eng.velho.md",
+      "---\nforked_from: eng.velho@1.0.0\n---\n# velho\n"
+    );
     assert.equal(await run(["eng.velho"], { update: true }), 0);
-    assert.match(readFileSync(join(ws, ".claude/overlays/acme/workflows/engineering/eng.velho.md"), "utf-8"), /forked_from: eng\.velho@1\.0\.0/);
+    assert.match(
+      readFileSync(join(ws, ".claude/overlays/acme/workflows/engineering/eng.velho.md"), "utf-8"),
+      /forked_from: eng\.velho@1\.0\.0/
+    );
   });
 });
 
@@ -241,7 +288,10 @@ test("fork --delete: remove skill e workflow do overlay; rule volta à versão d
     assert.equal(await run(["eng.start"], { delete: true }), 1);
     await run(["eng-global-pr"]);
     await run(["rules/engineering/eng-rules.md"]);
-    assert.match(readFileSync(join(ws, ".claude/rules/engineering/eng-rules.md"), "utf-8"), /> Overlay: acme/);
+    assert.match(
+      readFileSync(join(ws, ".claude/rules/engineering/eng-rules.md"), "utf-8"),
+      /> Overlay: acme/
+    );
 
     assert.equal(await run(["eng-global-pr"], { delete: true }), 0);
     assert.ok(!existsSync(join(ws, ".claude/overlays/acme/skills/eng-global-pr")));
@@ -269,10 +319,17 @@ test("fork: subpasta do overlay que é link para fora do overlay bloqueia fork, 
     assert.deepEqual(readdirSync(outside), [], "o fork gravou fora do overlay");
 
     // um fork já existente atrás do link também não é alterado nem apagado
-    write(outside, "eng-global-pr/SKILL.md", "---\nforked_from: eng-global-pr@1.0.0\n---\n# fora\n");
+    write(
+      outside,
+      "eng-global-pr/SKILL.md",
+      "---\nforked_from: eng-global-pr@1.0.0\n---\n# fora\n"
+    );
     assert.equal(await run(["eng-global-pr"], { update: true }), 1);
     assert.equal(await run(["eng-global-pr"], { delete: true }), 1);
-    assert.match(readFileSync(join(outside, "eng-global-pr/SKILL.md"), "utf-8"), /forked_from: eng-global-pr@1\.0\.0/);
+    assert.match(
+      readFileSync(join(outside, "eng-global-pr/SKILL.md"), "utf-8"),
+      /forked_from: eng-global-pr@1\.0\.0/
+    );
   });
 });
 
@@ -282,7 +339,9 @@ test("fork: recópia da rule na IDE com erro sai com 1 (o fork fica no overlay)"
     rmSync(join(ws, ".claude/rules-on-demand/engineering"), { recursive: true, force: true });
     writeFileSync(join(ws, ".claude/rules-on-demand/engineering"), "não sou uma pasta");
     assert.equal(await run(["rules-on-demand/engineering/eng.pr-rules.md"]), 1);
-    assert.ok(existsSync(join(ws, ".claude/overlays/acme/rules-on-demand/engineering/eng.pr-rules.md")));
+    assert.ok(
+      existsSync(join(ws, ".claude/overlays/acme/rules-on-demand/engineering/eng.pr-rules.md"))
+    );
   });
 });
 
@@ -290,10 +349,21 @@ test("fork --update --candidate marca core_candidate; --delete de rule só do ov
   await withFixture("COMPANY_PROFILE=acme", async ({ ws, run }) => {
     await run(["eng.start"]);
     assert.equal(await run(["eng.start"], { update: true, candidate: true }), 0);
-    assert.match(readFileSync(join(ws, ".claude/overlays/acme/workflows/engineering/eng.start.md"), "utf-8"), /core_candidate: true/);
+    assert.match(
+      readFileSync(join(ws, ".claude/overlays/acme/workflows/engineering/eng.start.md"), "utf-8"),
+      /core_candidate: true/
+    );
 
-    write(ws, ".claude/overlays/acme/rules/so-acme.md", "---\nforked_from: rules/so-acme.md@1.0.0\n---\n# só overlay\n");
-    write(ws, ".claude/rules/so-acme.md", "> Overlay: acme (forked_from rules/so-acme.md@1.0.0)\n\n# só overlay\n");
+    write(
+      ws,
+      ".claude/overlays/acme/rules/so-acme.md",
+      "---\nforked_from: rules/so-acme.md@1.0.0\n---\n# só overlay\n"
+    );
+    write(
+      ws,
+      ".claude/rules/so-acme.md",
+      "> Overlay: acme (forked_from rules/so-acme.md@1.0.0)\n\n# só overlay\n"
+    );
     assert.equal(await run(["rules/so-acme.md"], { delete: true }), 0);
     assert.ok(!existsSync(join(ws, ".claude/overlays/acme/rules/so-acme.md")));
     assert.ok(!existsSync(join(ws, ".claude/rules/so-acme.md")), "a cópia da IDE ficou órfã");
@@ -301,5 +371,161 @@ test("fork --update --candidate marca core_candidate; --delete de rule só do ov
 });
 
 test("fork: ENV.md inexistente (--env-file errado) sai com 1 sem gravar", async () => {
-  assert.equal(await fork({ _: ["eng.start"], "env-file": join(tmpdir(), "nao-existe", "ENV.md") }), 1);
+  assert.equal(
+    await fork({ _: ["eng.start"], "env-file": join(tmpdir(), "nao-existe", "ENV.md") }),
+    1
+  );
+});
+
+// --- Fase 9: contrato do --update, --list em colunas, CRLF, LCS ----------------------------------
+
+/** Captura o que o comando imprime: desliga o modo de teste do logger só durante `fn` e troca o console. */
+async function captureOutput(fn) {
+  const lines = [];
+  const { log, error } = console;
+  console.log = (...a) => lines.push(a.join(" "));
+  console.error = (...a) => lines.push(a.join(" "));
+  setTestMode(false);
+  try {
+    return { result: await fn(), out: lines.join("\n") };
+  } finally {
+    setTestMode(true);
+    console.log = log;
+    console.error = error;
+  }
+}
+
+test("fork --update: sem --diff não compara (só recarimba); com --diff mostra -/+ e 🔴 quando toca contrato; igual ao core avisa", async () => {
+  await withFixture("COMPANY_PROFILE=acme", async ({ ws, run }) => {
+    await run(["eng.start"]);
+    const forkPath = join(ws, ".claude/overlays/acme/workflows/engineering/eng.start.md");
+    writeFileSync(
+      forkPath,
+      readFileSync(forkPath, "utf-8").replace("# start", "# start da acme\nleia templates/x.md")
+    );
+
+    const semDiff = await captureOutput(() => run(["eng.start"], { update: true }));
+    assert.equal(semDiff.result, 0);
+    assert.match(semDiff.out, /Sem comparação com o core/);
+    assert.doesNotMatch(semDiff.out, /^[-+] /m);
+
+    const comDiff = await captureOutput(() => run(["eng.start"], { update: true, diff: true }));
+    assert.equal(comDiff.result, 0);
+    assert.match(comDiff.out, /- # start da acme/);
+    assert.match(comDiff.out, /\+ # start/);
+    assert.match(comDiff.out, /🔴 possível mudança de contrato/);
+
+    writeFileSync(
+      forkPath,
+      readFileSync(forkPath, "utf-8").replace("# start da acme\nleia templates/x.md", "# start")
+    );
+    const igual = await captureOutput(() => run(["eng.start"], { update: true, diff: true }));
+    assert.match(igual.out, /o fork é igual ao core atual/);
+  });
+});
+
+test("fork --update e --delete com skill: SKILL.md recarimbado, references/ intacto, pasta removida; skill só do overlay avisa", async () => {
+  await withFixture("COMPANY_PROFILE=acme", async ({ ws, run }) => {
+    await run(["eng-global-pr"]);
+    const skillMd = join(ws, ".claude/overlays/acme/skills/eng-global-pr/SKILL.md");
+    writeFileSync(skillMd, readFileSync(skillMd, "utf-8").replace("@9.9.9", "@1.0.0"));
+    assert.equal(await run(["eng-global-pr"], { update: true }), 0);
+    assert.match(readFileSync(skillMd, "utf-8"), /forked_from: eng-global-pr@9\.9\.9/);
+    assert.equal(
+      readFileSync(join(ws, ".claude/overlays/acme/skills/eng-global-pr/references/1.md"), "utf-8"),
+      "# ref"
+    );
+
+    write(
+      ws,
+      ".claude/overlays/acme/skills/so-acme/SKILL.md",
+      "---\nname: so-acme\ndescription: x\nlicense: y\nforked_from: so-acme@1.0.0\n---\n# só overlay\n"
+    );
+    const r = await captureOutput(() => run(["so-acme"], { update: true }));
+    assert.equal(r.result, 0);
+    assert.match(r.out, /O core atual não tem mais skills\/so-acme/);
+
+    assert.equal(await run(["eng-global-pr"], { delete: true }), 0);
+    assert.ok(!existsSync(join(ws, ".claude/overlays/acme/skills/eng-global-pr")));
+  });
+});
+
+test("formatOverlayTable: cabeçalho com as 5 colunas, tipo não resolvido na coluna Tipo, candidato na última", () => {
+  const lines = formatOverlayTable([
+    {
+      path: "skills/eng-global-pr",
+      type: "skills",
+      forkedFrom: "eng-global-pr@9.9.9",
+      forkedAt: "2026-10-30",
+      candidate: true,
+      unknownType: false,
+    },
+    {
+      path: "scripts/x.md",
+      type: "scripts",
+      forkedFrom: null,
+      forkedAt: null,
+      candidate: false,
+      unknownType: true,
+    },
+  ]);
+  assert.match(lines[0], /^ {2}Caminho\s+Tipo\s+forked_from\s+forked_at\s+Candidato$/);
+  assert.match(
+    lines[2],
+    /^ {2}skills\/eng-global-pr\s+skills\s+eng-global-pr@9\.9\.9\s+2026-10-30\s+candidato a core$/
+  );
+  assert.match(
+    lines[3],
+    /scripts\/x\.md\s+⚠️ tipo não resolvido \(scripts\)\s+\(sem carimbo\)\s+—\s+—$/
+  );
+});
+
+test("CRLF: fork editado no Windows mantém o carimbo no --list e no --update; diff só de quebra de linha é vazio", async () => {
+  await withFixture("COMPANY_PROFILE=acme", async ({ ws, run }) => {
+    write(
+      ws,
+      ".claude/overlays/acme/workflows/engineering/eng.start.md",
+      "---\r\ndescription: start\r\nforked_from: eng.start@1.0.0\r\nforked_at: 2026-01-01\r\ncore_candidate: true\r\n---\r\n# start\r\n"
+    );
+    const [entry] = listOverlay(join(ws, ".claude/overlays/acme"));
+    assert.equal(entry.forkedFrom, "eng.start@1.0.0");
+    assert.equal(entry.candidate, true);
+
+    assert.equal(await run(["eng.start"], { update: true }), 0);
+    const after = readFileSync(
+      join(ws, ".claude/overlays/acme/workflows/engineering/eng.start.md"),
+      "utf-8"
+    );
+    assert.equal(
+      after,
+      "---\ndescription: start\nforked_from: eng.start@9.9.9\nforked_at: 2026-01-01\ncore_candidate: true\n---\n# start\n"
+    );
+  });
+  assert.equal(diffAgainstCore("a\r\nb\r\n", "a\nb\n").changes.length, 0);
+  assert.equal(
+    stampFrontmatter("---\r\nx: 1\r\n---\r\ncorpo\r\n", { from: "f@1", at: "d" }),
+    "---\nx: 1\nforked_from: f@1\nforked_at: d\n---\ncorpo\n"
+  );
+});
+
+test("diffAgainstCore: 70.000 linhas iguais com 2 mudanças dão 2 changes (corte do prefixo/sufixo); miolo gigante vira tooLarge", () => {
+  const base = Array.from({ length: 70_000 }, (_, i) => `linha ${i}`);
+  const fork = [...base];
+  fork[35_000] = "minha linha";
+  const core = [...base];
+  core[35_000] = "linha nova do core";
+  const d = diffAgainstCore(fork.join("\n"), core.join("\n"));
+  assert.deepEqual(d.changes, [
+    { op: "-", line: "minha linha" },
+    { op: "+", line: "linha nova do core" },
+  ]);
+  assert.equal(d.tooLarge, false);
+
+  const n = Math.ceil(Math.sqrt(DIFF_CELL_LIMIT)) + 10;
+  const a = Array.from({ length: n }, (_, i) => `a${i}`).join("\n");
+  const b = Array.from({ length: n }, (_, i) => `b${i}`).join("\n");
+  const big = diffAgainstCore(a, b);
+  assert.equal(big.tooLarge, true);
+  assert.equal(big.removed, n);
+  assert.deepEqual(big.changes, []);
 });

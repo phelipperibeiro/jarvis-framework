@@ -30,11 +30,21 @@ test("resolveCompanyProfile: ausente = default sem aviso; vazio e inválido = de
 
   const bad = resolveCompanyProfile("Acme Corp");
   assert.equal(bad.profile, DEFAULT_COMPANY_PROFILE);
-  assert.match(bad.warning, /inválido \(use letras minúsculas, números e hífen\)\. Usando o perfil default stark-industries\.$/);
+  assert.match(
+    bad.warning,
+    /inválido \(use letras minúsculas, números e hífen\)\. Usando o perfil default stark-industries\.$/
+  );
   assert.match(bad.warning, /Acme Corp/);
-  assert.match(resolveCompanyProfile("skills").warning, /não pode ser o nome de uma pasta do core \(.*skills.*\)/);
+  assert.match(
+    resolveCompanyProfile("skills").warning,
+    /não pode ser o nome de uma pasta do core \(.*skills.*\)/
+  );
 
-  assert.deepEqual(resolveCompanyProfile("acme"), { profile: "acme", isDefault: false, warning: null });
+  assert.deepEqual(resolveCompanyProfile("acme"), {
+    profile: "acme",
+    isDefault: false,
+    warning: null,
+  });
   assert.equal(resolveCompanyProfile(DEFAULT_COMPANY_PROFILE).isDefault, true);
 });
 
@@ -52,5 +62,8 @@ test("readCompanyProfile: lê a chave do ENV.md sem aspas nem comentário; ENV s
     warning: null,
   });
   assert.match(readCompanyProfile("COMPANY_PROFILE=\n").warning, /vazio/);
-  assert.match(readCompanyProfile("COMPANY_PROFILE=rules\n").warning, /não pode ser o nome de uma pasta do core \(agents, skills/);
+  assert.match(
+    readCompanyProfile("COMPANY_PROFILE=rules\n").warning,
+    /não pode ser o nome de uma pasta do core \(agents, skills/
+  );
 });
