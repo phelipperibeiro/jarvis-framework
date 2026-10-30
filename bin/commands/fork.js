@@ -9,6 +9,7 @@
  */
 import {
   existsSync,
+  lstatSync,
   mkdirSync,
   readFileSync,
   realpathSync,
@@ -45,24 +46,39 @@ const RULE_TYPES = Object.freeze(["rules", "rules-on-demand"]);
 
 const STAMP_KEYS = /^(forked_from|forked_at|core_candidate):/;
 
+/** `lstat` sem lançar: enxerga link simbólico (inclusive quebrado), que o `existsSync` não vê. */
+function lstatOrNull(path) {
+  try {
+    return lstatSync(path);
+  } catch {
+    return null;
+  }
+}
+
 /**
- * R5 do architecture.md: o alvo (ou o primeiro ancestral dele que existe) precisa resolver, por
- * `realpath`, para dentro do overlay. Uma subpasta do overlay que seja link simbólico para fora
- * (ex.: `overlays/acme/skills` → `.claude/skills`) não pode levar o fork a gravar ou apagar lá.
+ * R5 do architecture.md: nenhum nível do caminho do alvo, do próprio alvo até o overlay, pode ser
+ * link simbólico (quebrado ou não), e o primeiro nível que existe precisa resolver, por `realpath`,
+ * para dentro do overlay. Uma subpasta linkada para fora (`overlays/acme/skills` → `.claude/skills`)
+ * ou um link quebrado no lugar do destino (`eng.start.md` → `/fora.md`) não podem levar o fork a
+ * gravar ou apagar lá.
  * @param {string} overlayDir - precisa existir
  * @param {string} target
  * @returns {boolean}
  */
 export function isInsideOverlay(overlayDir, target) {
+  const root = realpathSync(overlayDir);
   let probe = target;
-  while (!existsSync(probe)) {
+  for (;;) {
+    const stat = lstatOrNull(probe);
+    if (stat) {
+      if (stat.isSymbolicLink()) return false;
+      const real = realpathSync(probe);
+      return real === root || real.startsWith(root + sep);
+    }
     const parent = dirname(probe);
     if (parent === probe) return false;
     probe = parent;
   }
-  const root = realpathSync(overlayDir);
-  const real = realpathSync(probe);
-  return real === root || real.startsWith(root + sep);
 }
 
 /**
@@ -155,20 +171,22 @@ export function listOverlay(overlayDir) {
 const CONTRACT_PATTERN =
   /(\.jarvis\/sessions|\$SESSIONS_DIR|architecture\.md|plan\.md|gate-checklist|pull-request\.md|ENV\.md|[A-Z][A-Z_]{3,}=|templates\/|\bjarvis [a-z][a-z-]+)/;
 
-/**
- * Diff linha a linha (LCS) entre o fork e o core atual. Sem dependência nova; os arquivos do
- * framework são pequenos. Linhas iguais não entram; `contract` marca mudança de contrato provável.
- * @param {string} forkText
- * @param {string} coreText
- * @returns {{ changes: Array<{ op: "-" | "+", line: string }>, contract: boolean }}
- *   `-` = só no fork · `+` = só no core atual
- */
 /** Quebras de linha do Windows viram `\n`: fork editado em CRLF não pode marcar tudo como diferente. */
 const lf = (text) => text.replace(/\r\n?/g, "\n");
 
 /** Acima disto (linhas do fork × linhas do core, depois do corte do prefixo e sufixo iguais) o LCS não roda. */
 export const DIFF_CELL_LIMIT = 25_000_000;
 
+/**
+ * Diff linha a linha (LCS) entre o fork e o core atual, sem dependência nova. O prefixo e o sufixo
+ * iguais são cortados antes do LCS; linhas iguais e as do carimbo não entram; `contract` marca
+ * mudança de contrato provável. Acima de `DIFF_CELL_LIMIT` células, não compara (`tooLarge`).
+ * @param {string} forkText
+ * @param {string} coreText
+ * @returns {{ changes: Array<{ op: "-" | "+", line: string, index: number }>, contract: boolean, tooLarge: boolean, removed?: number, added?: number }}
+ *   `-` = só no fork (`index` na linha do fork) · `+` = só no core atual (`index` na linha do core);
+ *   com `tooLarge`, `removed`/`added` são as contagens do miolo diferente e `changes` vem vazio
+ */
 export function diffAgainstCore(forkText, coreText) {
   const a = lf(forkText).split("\n");
   const b = lf(coreText).split("\n");
@@ -188,7 +206,17 @@ export function diffAgainstCore(forkText, coreText) {
   if ((n + 1) * (m + 1) > DIFF_CELL_LIMIT) {
     return { changes: [], contract: false, tooLarge: true, removed: n, added: m };
   }
-  return diffLcs(midA, midB);
+  const diff = diffLcs(midA, midB);
+  // Os índices do miolo voltam a ser índices do arquivo inteiro.
+  return { ...diff, changes: diff.changes.map((c) => ({ ...c, index: c.index + start })) };
+}
+
+/** Título `#…` mais próximo acima de `index` (para o `--diff` dizer em que seção a mudança está). */
+function sectionBefore(lines, index) {
+  for (let k = Math.min(index, lines.length - 1); k >= 0; k--) {
+    if (/^#{1,6} /.test(lines[k])) return lines[k];
+  }
+  return null;
 }
 
 function diffLcs(a, b) {
@@ -208,13 +236,21 @@ function diffLcs(a, b) {
       i++;
       j++;
     } else if (lcs[i + 1][j] >= lcs[i][j + 1]) {
-      changes.push({ op: "-", line: a[i++] });
+      changes.push({ op: "-", line: a[i], index: i });
+      i++;
     } else {
-      changes.push({ op: "+", line: b[j++] });
+      changes.push({ op: "+", line: b[j], index: j });
+      j++;
     }
   }
-  while (i < n) changes.push({ op: "-", line: a[i++] });
-  while (j < m) changes.push({ op: "+", line: b[j++] });
+  while (i < n) {
+    changes.push({ op: "-", line: a[i], index: i });
+    i++;
+  }
+  while (j < m) {
+    changes.push({ op: "+", line: b[j], index: j });
+    j++;
+  }
   const relevant = changes.filter((c) => !STAMP_KEYS.test(c.line));
   return {
     changes: relevant,
@@ -335,9 +371,10 @@ export async function fork(flags = {}) {
     );
   }
 
-  if (existsSync(dest)) {
+  // lstat, não existsSync: um link quebrado no lugar do destino também ocupa o caminho.
+  if (lstatOrNull(dest)) {
     logger.error(
-      `${YELLOW}⚠️ ${artifact.relPath} já está no overlay "${ctx.profile}". Use /jarvis-fork ${name} --update para ajustar.${NC}`
+      `${YELLOW}⚠️ ${artifact.relPath} já está no overlay "${ctx.profile}" (ou o caminho está ocupado por um link). Use /jarvis-fork ${name} --update para ajustar.${NC}`
     );
     return exit(1);
   }
@@ -411,8 +448,10 @@ function mainFile(artifact, base) {
 }
 
 /**
- * `--update`: a conversa é da skill; aqui, o recarimbo e, só com `--diff`, o diff fork × core
- * atual. Não altera o conteúdo do fork.
+ * `--update`: a conversa é da skill; aqui, o recarimbo (sem `--diff`) ou, com `--diff`, só o diff
+ * fork × core atual, agrupado pela seção `#…` mais próxima, **sem gravar nada**: ver o diff não
+ * muda o carimbo; a skill chama o `--update` sem `--diff` depois do Sim. O recarimbo não altera o
+ * conteúdo do fork, mas regrava o arquivo em LF.
  */
 function updateFork({ ctx, artifact, name, src, dest, candidate = false, showDiff = false }) {
   if (!existsSync(dest)) {
@@ -438,7 +477,8 @@ function updateFork({ ctx, artifact, name, src, dest, candidate = false, showDif
   const version = getPackageInfo().version;
 
   if (showDiff) {
-    const diff = diffAgainstCore(forkText, readFileSync(mainFile(artifact, src), "utf-8"));
+    const coreText = lf(readFileSync(mainFile(artifact, src), "utf-8"));
+    const diff = diffAgainstCore(forkText, coreText);
     if (diff.tooLarge) {
       logger.info(
         `${YELLOW}Diff ${name}: arquivos grandes demais para comparar linha a linha (${diff.removed} linhas só do fork, ${diff.added} só do core atual, fora o trecho igual). Compare com uma ferramenta de diff.${NC}`
@@ -449,7 +489,15 @@ function updateFork({ ctx, artifact, name, src, dest, candidate = false, showDif
       logger.info(
         `${CYAN}Diff ${name}: fork (-) × core atual v${version} (+)${diff.contract ? `  ${RED}🔴 possível mudança de contrato${NC}` : ""}${NC}`
       );
+      const forkLines = forkText.split("\n");
+      const coreLines = coreText.split("\n");
+      let lastSection;
       for (const c of diff.changes) {
+        const section = sectionBefore(c.op === "-" ? forkLines : coreLines, c.index);
+        if (section !== lastSection) {
+          logger.info(`${CYAN}── ${section ?? "(início do arquivo)"}${NC}`);
+          lastSection = section;
+        }
         const color = c.op === "-" ? YELLOW : GREEN;
         logger.info(`${color}${c.op} ${c.line}${NC}`);
       }
@@ -457,20 +505,24 @@ function updateFork({ ctx, artifact, name, src, dest, candidate = false, showDif
         `${DIM}  Linhas "-" são só do fork (seus ajustes ou texto antigo do core); "+" são só do core atual. O que trazer é decisão sua, na skill de fork.${NC}`
       );
     }
-  } else {
     logger.info(
-      `${DIM}  Sem comparação com o core (use --diff para ver o que o core atual tem de diferente).${NC}`
+      `${DIM}  Nada gravado: ver o diff não muda o carimbo. Para recarimbar, rode --update sem --diff.${NC}`
     );
+    return 0;
   }
 
+  logger.info(
+    `${DIM}  Sem comparação com o core (use --diff para ver o que o core atual tem de diferente).${NC}`
+  );
   const current = parseFrontmatter(forkText);
   const stamped = stampFrontmatter(forkText, {
     from: `${name}@${version}`,
     at: current.forked_at ?? new Date().toISOString().slice(0, 10),
     candidate: candidate || current.core_candidate === "true",
   });
-  if (stamped !== forkText) writeFileSync(forkPath, stamped, "utf-8");
-  logger.info(`${DIM}  forked_from: ${name}@${version}${NC}`);
+  // Regrava mesmo sem mudança de carimbo quando o arquivo estava em CRLF: o fork fica em LF.
+  if (stamped !== readFileSync(forkPath, "utf-8")) writeFileSync(forkPath, stamped, "utf-8");
+  logger.info(`${DIM}  forked_from: ${name}@${version} (arquivo regravado em LF)${NC}`);
   return 0;
 }
 

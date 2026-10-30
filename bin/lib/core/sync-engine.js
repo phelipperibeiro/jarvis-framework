@@ -241,10 +241,34 @@ export function withOverlayMarker(rawContent, profile) {
   return `${head}\n${marker}\n\n${tail}`;
 }
 
+/** A marcação exatamente como `withOverlayMarker` a escreve; captura o perfil. */
+const OVERLAY_MARKER = /^> Overlay: ([a-z0-9][a-z0-9-]*) \(forked_from .*\)$/;
+
 /**
- * Rule copiada de um overlay (marcada `> Overlay: …`) que não existe mais nem no core nem no
- * overlay ativo é órfã: ficou de outro perfil, ou o arquivo saiu do overlay à mão. Sem isto, a
- * IDE continuaria carregando a regra de uma empresa inativa. Só a cópia da IDE é removida.
+ * Lê a marcação de overlay de uma cópia na IDE: só vale na posição em que `withOverlayMarker` a
+ * grava (primeira linha útil depois do frontmatter, ou a primeira linha do arquivo) e no formato
+ * exato. Uma rule própria que cite a marcação no corpo não é confundida com uma cópia do overlay.
+ * @param {string} rawContent
+ * @returns {string | null} o perfil da marcação, ou `null`
+ */
+export function readOverlayMarker(rawContent) {
+  const content = rawContent.replace(/\r\n?/g, "\n");
+  let rest = content;
+  if (extractFrontmatterBlock(content) !== null) {
+    const fenceEnd = content.indexOf("\n---", 3);
+    const lineEnd = content.indexOf("\n", fenceEnd + 1);
+    rest = lineEnd === -1 ? "" : content.slice(lineEnd + 1);
+  }
+  const first = rest.split("\n").find((line) => line.trim() !== "");
+  const match = first ? OVERLAY_MARKER.exec(first) : null;
+  return match ? match[1] : null;
+}
+
+/**
+ * Cópia na IDE marcada `> Overlay: …` que o overlay **ativo** não tem é de outro perfil (ou saiu do
+ * overlay à mão). Sem isto, a IDE continuaria carregando a regra de uma empresa inativa, inclusive
+ * quando só este passo roda (`jarvis fork`, reaplicação do upgrade), sem o `cpSync` do core antes.
+ * Se o core tem o arquivo, a cópia volta a ser a do core; senão, é removida. Só a IDE é tocada.
  */
 function removeOrphanOverlayRules(ideDir, overlayDir, result, { dryRun, frameworkRoot }) {
   for (const dir of OVERLAY_RULE_DIRS) {
@@ -253,13 +277,19 @@ function removeOrphanOverlayRules(ideDir, overlayDir, result, { dryRun, framewor
     const files = [];
     collectMdFiles(ideRules, files);
     for (const file of files) {
-      const head = readFileSync(file, "utf-8").slice(0, 2048);
-      if (!/^> Overlay: /m.test(head)) continue;
+      const marker = readOverlayMarker(readFileSync(file, "utf-8"));
+      if (marker === null) continue;
       const rel = relative(ideRules, file);
-      if (existsSync(join(frameworkRoot, dir, rel)) || existsSync(join(overlayDir, dir, rel)))
-        continue;
-      if (!dryRun) rmSync(file, { force: true });
-      result.copied.push(`(overlay) ${dir}/${rel.split(sep).join("/")}: órfã removida da IDE`);
+      if (existsSync(join(overlayDir, dir, rel))) continue; // o overlay ativo a recopia em seguida
+      const shown = `${dir}/${rel.split(sep).join("/")}`;
+      const core = join(frameworkRoot, dir, rel);
+      if (existsSync(core)) {
+        if (!dryRun) cpSync(core, file);
+        result.copied.push(`(overlay) ${shown}: voltou ao core (era do perfil ${marker})`);
+      } else {
+        if (!dryRun) rmSync(file, { force: true });
+        result.copied.push(`(overlay) ${shown}: órfã removida da IDE (era do perfil ${marker})`);
+      }
     }
   }
 }

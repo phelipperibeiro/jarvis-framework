@@ -196,7 +196,7 @@ export function buildProgram() {
     )
     .option(
       "--diff",
-      "Com --update: mostra o diff fork × core atual (🔴 em possível mudança de contrato)"
+      "Com --update: só mostra o diff fork × core atual, por seção (🔴 em possível mudança de contrato), sem gravar"
     )
     .option("--delete", "Remove o fork do overlay; rules voltam à versão do core na IDE")
     .option("--candidate", "Marca o fork como candidato a core (core_candidate: true)")

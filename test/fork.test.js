@@ -241,10 +241,13 @@ test("diffAgainstCore: só as linhas diferentes, ignorando o carimbo; marca cont
   const fork = "---\nforked_from: x@1.0.0\n---\n# titulo\nlinha igual\nminha linha\n";
   const core = "---\n---\n# titulo\nlinha igual\nlinha nova do core\n";
   const d = diffAgainstCore(fork, core);
-  assert.deepEqual(d.changes, [
-    { op: "-", line: "minha linha" },
-    { op: "+", line: "linha nova do core" },
-  ]);
+  assert.deepEqual(
+    d.changes.map(({ op, line }) => ({ op, line })),
+    [
+      { op: "-", line: "minha linha" },
+      { op: "+", line: "linha nova do core" },
+    ]
+  );
   assert.equal(d.contract, false);
   assert.equal(diffAgainstCore("a\n", "a\n").changes.length, 0);
   assert.equal(diffAgainstCore("a\n", "a\ngrava em .jarvis/sessions/x\n").contract, true);
@@ -515,10 +518,13 @@ test("diffAgainstCore: 70.000 linhas iguais com 2 mudanças dão 2 changes (cort
   const core = [...base];
   core[35_000] = "linha nova do core";
   const d = diffAgainstCore(fork.join("\n"), core.join("\n"));
-  assert.deepEqual(d.changes, [
-    { op: "-", line: "minha linha" },
-    { op: "+", line: "linha nova do core" },
-  ]);
+  assert.deepEqual(
+    d.changes.map(({ op, line }) => ({ op, line })),
+    [
+      { op: "-", line: "minha linha" },
+      { op: "+", line: "linha nova do core" },
+    ]
+  );
   assert.equal(d.tooLarge, false);
 
   const n = Math.ceil(Math.sqrt(DIFF_CELL_LIMIT)) + 10;
@@ -528,4 +534,85 @@ test("diffAgainstCore: 70.000 linhas iguais com 2 mudanças dão 2 changes (cort
   assert.equal(big.tooLarge, true);
   assert.equal(big.removed, n);
   assert.deepEqual(big.changes, []);
+});
+
+// --- Fase 11 (#199): link quebrado no destino, --diff não grava e mostra a seção, tooLarge, tabela --
+
+test("fork: link quebrado no lugar do destino bloqueia o fork (nada gravado fora); link de arquivo bloqueia o --delete", async () => {
+  await withFixture("COMPANY_PROFILE=acme", async ({ ws, run }) => {
+    const fora = join(ws, "FORA.md");
+    mkdirSync(join(ws, ".claude/overlays/acme/workflows/engineering"), { recursive: true });
+    symlinkSync(fora, join(ws, ".claude/overlays/acme/workflows/engineering/eng.start.md"));
+    assert.equal(await run(["eng.start"]), 1);
+    assert.ok(!existsSync(fora), "o fork gravou fora do overlay seguindo o link quebrado");
+
+    const alvo = join(ws, "alvo.md");
+    writeFileSync(alvo, "# fora");
+    mkdirSync(join(ws, ".claude/overlays/acme/rules/engineering"), { recursive: true });
+    symlinkSync(alvo, join(ws, ".claude/overlays/acme/rules/engineering/eng-rules.md"));
+    assert.equal(await run(["rules/engineering/eng-rules.md"], { delete: true }), 1);
+    assert.ok(existsSync(alvo), "o --delete apagou o alvo do link");
+  });
+});
+
+test("fork --update --diff: só mostra (não grava), agrupa pela seção; --update sem --diff recarimba", async () => {
+  await withFixture("COMPANY_PROFILE=acme", async ({ ws, run }) => {
+    await run(["eng.start"]);
+    const forkPath = join(ws, ".claude/overlays/acme/workflows/engineering/eng.start.md");
+    writeFileSync(
+      forkPath,
+      readFileSync(forkPath, "utf-8")
+        .replace("@9.9.9", "@1.0.0")
+        .replace("# start", "# start\n\n## Fase 2\n\nbranch nasce da develop")
+    );
+    const before = readFileSync(forkPath, "utf-8");
+
+    const out = await captureOutput(() => run(["eng.start"], { update: true, diff: true }));
+    assert.equal(out.result, 0);
+    assert.match(out.out, /── ## Fase 2/);
+    assert.match(out.out, /- branch nasce da develop/);
+    assert.match(out.out, /Nada gravado/);
+    assert.equal(readFileSync(forkPath, "utf-8"), before, "o --diff alterou o fork");
+
+    assert.equal(await run(["eng.start"], { update: true }), 0);
+    assert.match(readFileSync(forkPath, "utf-8"), /forked_from: eng\.start@9\.9\.9/);
+  });
+});
+
+test("fork --update --diff: arquivos grandes demais avisam em vez de dizer que são iguais", async () => {
+  await withFixture("COMPANY_PROFILE=acme", async ({ root, ws, run }) => {
+    const n = Math.ceil(Math.sqrt(DIFF_CELL_LIMIT)) + 10;
+    write(
+      root,
+      "workflows/engineering/eng.start.md",
+      Array.from({ length: n }, (_, i) => `c${i}`).join("\n")
+    );
+    await run(["eng.start"]);
+    const forkPath = join(ws, ".claude/overlays/acme/workflows/engineering/eng.start.md");
+    writeFileSync(
+      forkPath,
+      "---\nforked_from: eng.start@9.9.9\nforked_at: 2026-10-30\n---\n\n" +
+        Array.from({ length: n }, (_, i) => `f${i}`).join("\n")
+    );
+    const out = await captureOutput(() => run(["eng.start"], { update: true, diff: true }));
+    assert.match(out.out, /grandes demais/);
+    assert.doesNotMatch(out.out, /igual ao core/);
+  });
+});
+
+test("formatOverlayTable: tipo não resolvido e candidato na mesma linha ficam em colunas separadas", () => {
+  const [, , row] = formatOverlayTable([
+    {
+      path: "scripts/x.md",
+      type: "scripts",
+      forkedFrom: "x@1",
+      forkedAt: "2026-10-30",
+      candidate: true,
+      unknownType: true,
+    },
+  ]);
+  assert.match(
+    row,
+    /scripts\/x\.md\s+⚠️ tipo não resolvido \(scripts\)\s+x@1\s+2026-10-30\s+candidato a core$/
+  );
 });

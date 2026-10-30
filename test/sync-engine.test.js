@@ -18,7 +18,7 @@ import {
 } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { syncAssets } from "../bin/lib/core/sync-engine.js";
+import { syncAssets, withOverlayMarker, readOverlayMarker } from "../bin/lib/core/sync-engine.js";
 
 function withJarvisRoot(fn) {
   const root = mkdtempSync(join(tmpdir(), "jarvis-root-"));
@@ -372,7 +372,12 @@ test("overlay: rule só do overlay vira órfã na troca de perfil e sai da IDE; 
     write(target, ".claude/ENV.md", "COMPANY_PROFILE=beta\n");
     const result = syncAssets(target, "claude", {});
     assert.ok(!existsSync(join(target, ".claude/rules/so-da-acme.md")), "órfã continuou na IDE");
-    assert.ok(result.copied.includes("(overlay) rules/so-da-acme.md: órfã removida da IDE"));
+    assert.ok(
+      result.copied.some((m) =>
+        /^\(overlay\) rules\/so-da-acme\.md: órfã removida da IDE \(era do perfil acme\)$/.test(m)
+      ),
+      JSON.stringify(result.copied)
+    );
     // a do core volta à versão do core (o cpSync a sobrescreveu); o overlay acme segue intacto
     assert.equal(
       readFileSync(join(target, ".claude/rules/engineering/eng-rules.md"), "utf-8"),
@@ -422,5 +427,102 @@ test("overlay: link quebrado e link para pasta são ignorados sem erro; erro de 
       result.errors.some((m) => /\(overlay\) rules-on-demand\/sub\/x\.md/.test(m)),
       JSON.stringify(result.errors)
     );
+  });
+});
+
+// --- Fase 11 (#199): órfãs completas, marcação exata, CRLF no marker -----------------------------
+
+test("readOverlayMarker: só na primeira linha útil depois do frontmatter e no formato exato; CRLF aceito", () => {
+  assert.equal(
+    readOverlayMarker("---\nforked_from: a@1\n---\n\n> Overlay: acme (forked_from a@1)\n\n# x\n"),
+    "acme"
+  );
+  assert.equal(readOverlayMarker("> Overlay: acme (forked_from sem carimbo)\n\n# x\n"), "acme");
+  assert.equal(
+    readOverlayMarker(
+      "---\r\nforked_from: a@1\r\n---\r\n\r\n> Overlay: acme (forked_from a@1)\r\n# x\r\n"
+    ),
+    "acme"
+  );
+  // marcação citada no corpo, ou fora do formato: não é cópia do overlay
+  assert.equal(
+    readOverlayMarker("# minha rule\n\nA marcação é > Overlay: acme (forked_from x)\n"),
+    null
+  );
+  assert.equal(readOverlayMarker("# minha rule\n> Overlay: acme (forked_from x)\n"), null);
+  assert.equal(readOverlayMarker("> Overlay: Acme Corp (forked_from x)\n"), null);
+  assert.equal(readOverlayMarker("# só core\n"), null);
+});
+
+test("withOverlayMarker: CRLF vira LF e o forked_from do frontmatter entra na marcação", () => {
+  const out = withOverlayMarker("---\r\nforked_from: a@1\r\n---\r\n# x\r\n", "acme");
+  assert.equal(out, "---\nforked_from: a@1\n---\n\n> Overlay: acme (forked_from a@1)\n\n# x\n");
+  assert.ok(!out.includes("\r"));
+});
+
+test("overlay: cópia marcada com outro perfil volta ao core quando o core a tem; rule própria que cita a marcação no corpo fica; dryRun só registra", () => {
+  withJarvisRoot((root, target) => {
+    buildMinimalFramework(root);
+    write(root, "rules/engineering/eng-rules.md", "# core");
+    // estado deixado por um fork feito no perfil acme, agora com o perfil beta ativo e sem o cpSync do core
+    write(target, ".claude/ENV.md", "COMPANY_PROFILE=beta\n");
+    write(
+      target,
+      ".claude/rules/engineering/eng-rules.md",
+      "---\nforked_from: rules/engineering/eng-rules.md@9.9.9\n---\n\n> Overlay: acme (forked_from rules/engineering/eng-rules.md@9.9.9)\n\n# eng-rules da acme\n"
+    );
+    write(
+      target,
+      ".claude/rules/minha.md",
+      "# minha rule\n\nEla explica a marcação > Overlay: acme (forked_from x) no corpo.\n"
+    );
+    write(
+      target,
+      ".claude/rules/so-acme.md",
+      "> Overlay: acme (forked_from rules/so-acme.md@9.9.9)\n\n# só da acme\n"
+    );
+    write(target, ".claude/overlays/acme/rules/so-acme.md", "# só da acme\n");
+
+    const dry = syncAssets(target, "claude", { dryRun: true });
+    assert.ok(
+      dry.copied.some((m) => /eng-rules\.md: voltou ao core \(era do perfil acme\)/.test(m))
+    );
+    assert.ok(
+      dry.copied.some((m) => /so-acme\.md: órfã removida da IDE \(era do perfil acme\)/.test(m))
+    );
+    assert.match(
+      readFileSync(join(target, ".claude/rules/engineering/eng-rules.md"), "utf-8"),
+      /> Overlay: acme/,
+      "dryRun gravou"
+    );
+    assert.ok(existsSync(join(target, ".claude/rules/so-acme.md")), "dryRun apagou");
+
+    const result = syncAssets(target, "claude", {});
+    assert.equal(
+      readFileSync(join(target, ".claude/rules/engineering/eng-rules.md"), "utf-8"),
+      "# core"
+    );
+    assert.ok(!existsSync(join(target, ".claude/rules/so-acme.md")));
+    assert.ok(existsSync(join(target, ".claude/rules/minha.md")), "apagou a rule própria");
+    assert.ok(!result.copied.some((m) => /minha\.md/.test(m)));
+    assert.ok(
+      existsSync(join(target, ".claude/overlays/acme/rules/so-acme.md")),
+      "tocou no overlay inativo"
+    );
+  });
+});
+
+test("overlay: segundo sync com o mesmo perfil mantém a rule só do overlay sem avisar órfã", () => {
+  withJarvisRoot((root, target) => {
+    buildMinimalFramework(root);
+    withOverlay(target, "acme", { "rules/so-da-acme.md": "# só no overlay acme\n" });
+    syncAssets(target, "claude", {});
+    const again = syncAssets(target, "claude", {});
+    assert.ok(existsSync(join(target, ".claude/rules/so-da-acme.md")));
+    assert.ok(
+      !again.copied.some((m) => /órfã|voltou ao core/.test(m)),
+      JSON.stringify(again.copied)
+    );
+    assert.ok(again.copied.includes("(overlay) rules/so-da-acme.md"));
   });
 });
