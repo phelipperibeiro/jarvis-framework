@@ -25,3 +25,19 @@ test("company-overlay-rules: cita os 6 tipos, a precedência e a proibição de 
   assert.match(rule, /Não escreva no overlay/);
   assert.match(rule, /rules\/.*instalação/s);
 });
+
+// Skill /jarvis-fork: a conversa que grava no overlay só com o Sim (#199).
+const skill = readFileSync(join(root, "skills", "jarvis-fork", "SKILL.md"), "utf-8");
+
+test("jarvis-fork: frontmatter com area global e as perguntas da regra de ouro e do alcance", () => {
+  assert.match(skill, /^---\nname: jarvis-fork\n/);
+  assert.match(skill, /^\s+area: global$/m);
+  assert.match(skill, /Gravar no overlay\?/);
+  assert.match(skill, /Remover o fork e voltar ao core\?/);
+  for (const opcao of ["Apenas deste contexto", "Estender para o core", "Ainda não sei"]) {
+    assert.ok(skill.includes(opcao), `falta a opção "${opcao}"`);
+  }
+  assert.match(skill, /jarvis fork \{artefato\}/);
+  assert.match(skill, /sem o \*\*Sim\*\*/);
+  assert.match(skill, /\| 8\. Alcance do ajuste \| `\/jarvis-report-issue` \|/);
+});

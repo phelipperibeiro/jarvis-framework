@@ -217,17 +217,17 @@ test("listRulesForProfile: AGENTS.md nunca é filtrado, rtk é opt-in, sem bloco
 // Issue #184 (pre-pr 20, 2026-10-28): +18 B em todos os perfis — eng-rules.md: a cópia local do Central docs fica em docs/jarvis/ no local padrão.
 // Issue #184 (pre-pr 20, 2026-10-28): +210 B só no FULLCYCLE — data-rules.md (HUB: DATA) distingue o alerta automático do pipeline do aviso do Jarvis.
 // Issue #184 (pre-pr 22, 2026-10-28): +55 B em todos os perfis — eng.integrations-rules.md separa o repositório do create-merge (git remote) do --repo do create-issue.
-// Issue #199 (2026-10-30): +1 arquivo e +1123 B em todos os perfis — company-overlay-rules.md (991 B, universal: todo workspace tem um overlay) e a linha dela no rules/AGENTS.md (+132 B).
+// Issue #199 (2026-10-30): +1 arquivo e +1126 B em todos os perfis — company-overlay-rules.md (994 B, universal: todo workspace tem um overlay) e a linha dela no rules/AGENTS.md (+132 B).
 const BASE = [
   [
     "FULLCYCLE/GENERALIST/ENGINEERING/CORE",
     profile("FULLCYCLE", "GENERALIST", "ENGINEERING"),
     16,
-    105574,
+    105577,
   ],
-  ["BACKEND/SENIOR/ENGINEERING/CORE", profile("BACKEND", "SENIOR", "ENGINEERING"), 12, 72045],
-  ["FRONTEND/PLENO/ENGINEERING/CORE", profile("FRONTEND", "PLENO", "ENGINEERING"), 12, 72588],
-  ["QA/QA-ENGINEER/ENGINEERING/CORE", profile("QA", "QA-ENGINEER", "ENGINEERING"), 12, 71824],
+  ["BACKEND/SENIOR/ENGINEERING/CORE", profile("BACKEND", "SENIOR", "ENGINEERING"), 12, 72048],
+  ["FRONTEND/PLENO/ENGINEERING/CORE", profile("FRONTEND", "PLENO", "ENGINEERING"), 12, 72591],
+  ["QA/QA-ENGINEER/ENGINEERING/CORE", profile("QA", "QA-ENGINEER", "ENGINEERING"), 12, 71827],
 ];
 
 for (const [nome, p, arquivos, bytes] of BASE) {

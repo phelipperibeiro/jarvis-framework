@@ -12,4 +12,4 @@ Perfil ativo: `COMPANY_PROFILE` do `ENV.md` (vazio = `stark-industries`, o overl
 
 Precedência: **overlay > especialização de stack > core.**
 
-Não escreva no overlay: só o comando de fork (`jarvis fork`) grava lá, com confirmação. `rules/` não passa por aqui: a cópia em `$IDE/rules/` já vem resolvida na instalação (sync e Passo 8 do `/jarvis-init`), marcada com `> Overlay: …` quando é da empresa.
+Não escreva no overlay: só o `/jarvis-fork` (CLI `jarvis fork`) grava lá, com confirmação. `rules/` não passa por aqui: a cópia em `$IDE/rules/` já vem resolvida na instalação (sync e Passo 8 do `/jarvis-init`), marcada com `> Overlay: …` quando é da empresa.
