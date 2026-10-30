@@ -28,7 +28,7 @@ Vocabulário: **core** é o motor do Jarvis (pacote instalado); **overlay** é a
 
 ## `COMPANY_PROFILE`
 
-A chave do `ENV.md` nunca fica vazia. Nasce como `stark-industries`; um nome próprio (letras minúsculas, números e hífen; não pode ser o nome de uma pasta do core) aponta para o overlay da empresa. O `/jarvis-init` pergunta (default primeiro) e o `jarvis init --upgrade` pergunta no terminal ao acrescentar a chave num ENV antigo (Enter, `--yes` ou sem terminal = default). Chave vazia ou inválida é tratada como default, com aviso.
+A chave do `ENV.md` nunca fica vazia. Nasce como `stark-industries`; um nome próprio (letras minúsculas, números e hífen; não pode ser o nome de uma pasta do core) aponta para o overlay da empresa. O `/jarvis-init` pergunta (default primeiro) e o `jarvis init --upgrade` pergunta no terminal ao acrescentar a chave num ENV antigo (Enter, `--yes` ou sem terminal = default). Chave ausente (`ENV.md` anterior ao overlay), vazia ou inválida é tratada como default, com aviso.
 
 ## Como o fork passa a valer: dois resolvers
 
@@ -47,7 +47,7 @@ Precedência: **overlay > especialização de stack > core.**
 - Criam a pasta vazia do perfil ativo se ela não existir. É a **única** escrita em `overlays/`.
 - **Nunca** gravam, alteram ou apagam arquivo dentro de `overlays/`. Quem escreve é só o `jarvis fork`.
 
-Trocar de empresa é mudar o `COMPANY_PROFILE` e rodar `jarvis init --upgrade` (para as rules). Vários overlays podem coexistir na pasta; um está ativo.
+Trocar de empresa é mudar o `COMPANY_PROFILE` e rodar `jarvis init --upgrade` (para as rules): as rules do perfil anterior que estavam na IDE voltam à versão do core (ou saem, se só existiam naquele overlay), e o overlay antigo fica intacto na pasta. Vários overlays podem coexistir; um está ativo.
 
 ## `/jarvis-fork` (a conversa) e `jarvis fork` (a mecânica)
 
@@ -58,7 +58,7 @@ O CLI por baixo:
 | Comando | O que faz |
 |---|---|
 | `jarvis fork {nome} [--candidate]` | Copia do core instalado para o overlay, no mesmo caminho e nome, com carimbo. `{nome}` é workflow, skill ou agente (como no `jarvis map`) ou `rules/…`, `rules-on-demand/…`, `templates/…`. Rule e rule-on-demand são recopiadas na IDE na hora |
-| `jarvis fork --list` | O que está forkado: caminho, tipo, carimbo, `(sem carimbo)`, candidato a core, tipo não resolvido. **Não compara** com o core |
+| `jarvis fork --list` | O que está forkado, em colunas: Caminho, Tipo, forked_from, forked_at, Candidato (`(sem carimbo)` e `⚠️ tipo não resolvido` quando for o caso). **Não compara** com o core |
 | `jarvis fork {nome} --update [--diff]` | Sem `--diff`: recarimba o fork com a versão atual do core (o conteúdo não muda; o arquivo é regravado em LF). Com `--diff`: **só mostra** o diff fork × core **atual**, agrupado pela seção `#…` (linhas 🔴 são possível mudança de contrato: sessão, `ENV.md`, template, CLI), sem gravar nada. Não existe cópia da versão em que o fork foi feito; o que trazer é decisão da pessoa |
 | `jarvis fork {nome} --delete` | Remove o fork; rule volta à versão do core na IDE |
 

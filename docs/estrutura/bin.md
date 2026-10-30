@@ -64,7 +64,9 @@ Efeitos colaterais no init:
 - `jarvis-lock.json` na raiz do workspace e em `.$IDE/`
 - Reconciliação RTK (`RTK_ENABLED` + `rtk-rules.md`); na reinstalação (`--force` ou a opção Reinstalar do menu) e no `--upgrade`, o `RTK_ENABLED` que já está no ENV.md não muda
 - RuleResolver do overlay de empresa (#199): lê `COMPANY_PROFILE` do ENV.md (vazio, inválido ou sem ENV.md → `stark-industries`), cria a pasta vazia `.$IDE/overlays/{perfil}/` se não existir (única escrita em `overlays/`) e copia por cima de `rules/` e `rules-on-demand/` da IDE cada `.md` do overlay com o mesmo caminho, marcado com `> Overlay: {perfil} (forked_from …)`. Workflows, skills, agentes e templates do overlay não são copiados: a rule `company-overlay-rules.md` os resolve na chamada
-- `--upgrade`: ao acrescentar `COMPANY_PROFILE` num ENV antigo, pergunta o perfil no terminal (Enter, `--yes` ou sem TTY = `stark-industries`)
+- Órfãs do overlay (#199): cópia em `rules/`/`rules-on-demand/` da IDE cuja primeira linha útil é a marcação `> Overlay: {perfil} (forked_from …)` e que o overlay **ativo** não tem (ficou de outro perfil, ou saiu do overlay à mão) volta à versão do core, se o core a tem, ou é removida da IDE. Rule própria que só cite a marcação no corpo não é tocada. `ENV.md` sem a chave `COMPANY_PROFILE` (anterior à #199) avisa ℹ️ e usa o default
+- `--upgrade`: ao acrescentar `COMPANY_PROFILE` num ENV antigo, pergunta o perfil no terminal (Enter, `--yes` ou sem TTY = `stark-industries`); com um perfil próprio respondido, reaplica o overlay desse perfil depois de gravar o ENV (o sync anterior rodou com o default)
+- `jarvis fork` normaliza CRLF ao ler o fork e ao copiar rules para a IDE (fork editado no Windows não perde o carimbo); o recarimbo (`--update`) regrava o fork em LF
 - Transformações por IDE (Codex `openai.yaml`, OpenCode frontmatter, Kiro steering)
 
 ## Banner e versão

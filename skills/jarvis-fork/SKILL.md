@@ -41,7 +41,7 @@ Deixar a empresa com o fluxo dela sem copiar e editar o framework: o core contin
 
 - **ENV**: `$IDE/ENV.md` (`COMPANY_PROFILE`: vazio = `stark-industries`, o overlay padrão)
 - **Rule de precedência**: `$IDE/rules/company-overlay-rules.md` (overlay > especialização de stack > core; é o que faz o fork valer na chamada)
-- **CLI**: `jarvis fork {nome} [--candidate]`, `jarvis fork --list`, `jarvis fork {nome} --update`, `jarvis fork {nome} --delete` (o único que grava em `overlays/`)
+- **CLI**: `jarvis fork {nome} [--candidate]`, `jarvis fork --list`, `jarvis fork {nome} --update [--diff]`, `jarvis fork {nome} --delete` (o único que grava em `overlays/`)
 - **Sessões recentes**: `$SESSIONS_DIR/eng/*/` (architecture.md, plan.md, gate-checklist.md) que citem o artefato
 - **Custo**: `jarvis tokens` (quanto contexto o fork acrescenta)
 

@@ -51,3 +51,17 @@ test("jarvis-fork e jarvis-init: fork sem carimbo oferece carimbar; Passo 8 cria
   assert.match(init, /Overlay \{COMPANY_PROFILE\}: pasta criada/);
   assert.match(init, /Órfãs do overlay/);
 });
+
+// Fase 12 (#199): documentação alinhada ao comportamento das correções.
+test("jarvis-init e jarvis-fork: Passo 8 também cria a pasta do perfil; a skill lista --update [--diff]; o guia conta as órfãs", () => {
+  const init = readFileSync(join(root, "skills", "jarvis-init", "SKILL.md"), "utf-8");
+  assert.doesNotMatch(init, /criar a pasta vazia do perfil, é do `jarvis init`/);
+  assert.match(init, /feita pelo `jarvis init` e por este Passo 8/);
+  assert.match(skill, /`jarvis fork \{nome\} --update \[--diff\]`/);
+  const guia = readFileSync(join(root, "docs", "overlay-de-empresa.md"), "utf-8");
+  assert.match(guia, /voltam à versão do core/);
+  assert.match(guia, /Chave ausente/);
+  const bin = readFileSync(join(root, "docs", "estrutura", "bin.md"), "utf-8");
+  assert.match(bin, /Órfãs do overlay/);
+  assert.match(bin, /CRLF/);
+});
