@@ -187,6 +187,8 @@ export function buildProgram() {
       "Workflow, skill ou agente pelo nome, ou rules/…, rules-on-demand/…, templates/… por caminho"
     )
     .option("--list", "Lista o que está forkado no overlay ativo (só lista; não compara com o core)")
+    .option("--update", "Mostra o diff fork × core atual (marca 🔴 mudança de contrato) e recarimba o fork")
+    .option("--delete", "Remove o fork do overlay; rules voltam à versão do core na IDE")
     .option("--candidate", "Marca o fork como candidato a core (core_candidate: true)")
     .option("--ide <ide>")
     .option("--env-file <path>")

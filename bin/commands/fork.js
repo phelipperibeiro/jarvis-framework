@@ -1,12 +1,21 @@
 /**
- * @fileoverview `jarvis fork {nome} [--list] [--candidate]` (#199): a mecânica do overlay de empresa.
- * Copia um artefato do core instalado para `$IDE/overlays/{COMPANY_PROFILE}/`, no mesmo caminho e
- * com o mesmo nome, carimbado no frontmatter (`forked_from`, `forked_at`, `core_candidate`); e lista
- * o que está forkado. A conversa (o que ajustar, simular, confirmar) é da skill de fork: este
- * comando grava direto no overlay, e é o único que grava lá.
+ * @fileoverview `jarvis fork {nome} [--list|--update|--delete] [--candidate]` (#199): a mecânica do
+ * overlay de empresa. Copia um artefato do core instalado para `$IDE/overlays/{COMPANY_PROFILE}/`,
+ * no mesmo caminho e com o mesmo nome, carimbado no frontmatter (`forked_from`, `forked_at`,
+ * `core_candidate`); lista o que está forkado; mostra o diff fork × core atual e recarimba
+ * (`--update`); remove o fork (`--delete`). A conversa (o que ajustar, simular, confirmar) é da
+ * skill de fork: este comando grava direto no overlay, e é o único que grava lá.
  * @module commands/fork
  */
-import { existsSync, mkdirSync, readFileSync, writeFileSync, cpSync, readdirSync } from "node:fs";
+import {
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  writeFileSync,
+  cpSync,
+  readdirSync,
+  rmSync,
+} from "node:fs";
 import { join, dirname, relative, sep, isAbsolute } from "node:path";
 import { resolveEnvPath } from "../lib/env-loader.js";
 import { getFrameworkRoot, getPackageInfo } from "../lib/utils/paths.js";
@@ -114,6 +123,51 @@ export function listOverlay(overlayDir) {
 }
 
 /**
+ * Linhas que, mudando no core, costumam quebrar o contrato de um fork: arquivos de sessão, chaves
+ * do ENV.md, templates lidos por outros comandos e chamadas do CLI. O `--update` só marca; quem decide é a pessoa.
+ */
+const CONTRACT_PATTERN =
+  /(\.jarvis\/sessions|\$SESSIONS_DIR|architecture\.md|plan\.md|gate-checklist|pull-request\.md|ENV\.md|[A-Z][A-Z_]{3,}=|templates\/|\bjarvis [a-z][a-z-]+)/;
+
+/**
+ * Diff linha a linha (LCS) entre o fork e o core atual. Sem dependência nova; os arquivos do
+ * framework são pequenos. Linhas iguais não entram; `contract` marca mudança de contrato provável.
+ * @param {string} forkText
+ * @param {string} coreText
+ * @returns {{ changes: Array<{ op: "-" | "+", line: string }>, contract: boolean }}
+ *   `-` = só no fork · `+` = só no core atual
+ */
+export function diffAgainstCore(forkText, coreText) {
+  const a = forkText.split("\n");
+  const b = coreText.split("\n");
+  const n = a.length;
+  const m = b.length;
+  const lcs = Array.from({ length: n + 1 }, () => new Uint16Array(m + 1));
+  for (let i = n - 1; i >= 0; i--) {
+    for (let j = m - 1; j >= 0; j--) {
+      lcs[i][j] = a[i] === b[j] ? lcs[i + 1][j + 1] + 1 : Math.max(lcs[i + 1][j], lcs[i][j + 1]);
+    }
+  }
+  const changes = [];
+  let i = 0;
+  let j = 0;
+  while (i < n && j < m) {
+    if (a[i] === b[j]) {
+      i++;
+      j++;
+    } else if (lcs[i + 1][j] >= lcs[i][j + 1]) {
+      changes.push({ op: "-", line: a[i++] });
+    } else {
+      changes.push({ op: "+", line: b[j++] });
+    }
+  }
+  while (i < n) changes.push({ op: "-", line: a[i++] });
+  while (j < m) changes.push({ op: "+", line: b[j++] });
+  const relevant = changes.filter((c) => !STAMP_KEYS.test(c.line));
+  return { changes: relevant, contract: relevant.some((c) => CONTRACT_PATTERN.test(c.line)) };
+}
+
+/**
  * Lê o perfil ativo a partir do ENV.md do workspace.
  * @returns {{ ideDir: string, profile: string, overlayDir: string, warning: string | null } | { error: string }}
  */
@@ -171,12 +225,14 @@ export async function fork(flags = {}) {
 
   const name = flags._?.[0];
   if (!name) {
-    logger.error(`${RED}Uso: jarvis fork {nome} [--candidate] | jarvis fork --list${NC}`);
+    logger.error(
+      `${RED}Uso: jarvis fork {nome} [--candidate] | jarvis fork {nome} --update | jarvis fork {nome} --delete | jarvis fork --list${NC}`
+    );
     return exit(1);
   }
 
   const root = getFrameworkRoot();
-  const artifact = resolveArtifact(root, name);
+  const artifact = resolveArtifact(root, name) ?? resolveInOverlay(ctx.overlayDir, name);
   if (!artifact) {
     logger.error(
       `${YELLOW}⚠️ "${name}" não é um artefato do core. Use /jarvis-fork --list para ver o que já está no overlay ou jarvis map para os nomes do core.${NC}`
@@ -186,6 +242,10 @@ export async function fork(flags = {}) {
 
   const src = join(root, artifact.relPath);
   const dest = join(ctx.overlayDir, artifact.relPath);
+
+  if (flags.delete) return exit(deleteFork({ ctx, artifact, name, src, dest }));
+  if (flags.update) return exit(updateFork({ ctx, artifact, name, src, dest }));
+
   if (existsSync(dest)) {
     logger.error(
       `${YELLOW}⚠️ ${artifact.relPath} já está no overlay "${ctx.profile}". Use /jarvis-fork ${name} --update para ajustar.${NC}`
@@ -222,4 +282,90 @@ export async function fork(flags = {}) {
   }
   logger.info(`${DIM}  A conversa e a confirmação ficam na skill de fork; este comando grava direto.${NC}`);
   return exit(0);
+}
+
+/**
+ * Para `--update`/`--delete` de um artefato que o core deixou de ter: acha o fork pelo mesmo
+ * critério de nome, só que dentro do overlay.
+ */
+function resolveInOverlay(overlayDir, name) {
+  if (!existsSync(overlayDir)) return null;
+  const found = resolveArtifact(overlayDir, name);
+  return found ? { ...found, onlyInOverlay: true } : null;
+}
+
+function mainFile(artifact, base) {
+  return artifact.isDir ? join(base, "SKILL.md") : base;
+}
+
+/**
+ * `--update`: a conversa é da skill; aqui, o diff fork × core atual (a pedido) e o recarimbo.
+ * Não altera o conteúdo do fork.
+ */
+function updateFork({ ctx, artifact, name, src, dest }) {
+  if (!existsSync(dest)) {
+    logger.info(
+      `ℹ️ ${name} não está no overlay "${ctx.profile}". Use /jarvis-fork ${name} para forkar.`
+    );
+    return 1;
+  }
+  if (artifact.onlyInOverlay || !existsSync(src)) {
+    logger.info(
+      `${YELLOW}⚠️ O core atual não tem mais ${artifact.relPath}. O fork continua valendo; se não for mais necessário, use /jarvis-fork ${name} --delete.${NC}`
+    );
+    return 0;
+  }
+  const forkPath = mainFile(artifact, dest);
+  const forkText = readFileSync(forkPath, "utf-8");
+  const { changes, contract } = diffAgainstCore(forkText, readFileSync(mainFile(artifact, src), "utf-8"));
+  const version = getPackageInfo().version;
+
+  if (changes.length === 0) {
+    logger.info(`${GREEN}✅ ${name}: o fork é igual ao core atual (v${version}).${NC}`);
+  } else {
+    logger.info(
+      `${CYAN}Diff ${name}: fork (-) × core atual v${version} (+)${contract ? `  ${RED}🔴 possível mudança de contrato${NC}` : ""}${NC}`
+    );
+    for (const c of changes) {
+      const color = c.op === "-" ? YELLOW : GREEN;
+      logger.info(`${color}${c.op} ${c.line}${NC}`);
+    }
+    logger.info(
+      `${DIM}  Linhas "-" são só do fork (seus ajustes ou texto antigo do core); "+" são só do core atual. O que trazer é decisão sua, na skill de fork.${NC}`
+    );
+  }
+
+  const stamped = stampFrontmatter(forkText, {
+    from: `${name}@${version}`,
+    at: parseFrontmatter(forkText).forked_at ?? new Date().toISOString().slice(0, 10),
+    candidate: parseFrontmatter(forkText).core_candidate === "true",
+  });
+  if (stamped !== forkText) writeFileSync(forkPath, stamped, "utf-8");
+  logger.info(`${DIM}  forked_from: ${name}@${version}${NC}`);
+  return 0;
+}
+
+/**
+ * `--delete`: remove o fork do overlay; rule e rule-on-demand voltam ao core na IDE
+ * (sem marcação). A pergunta "Remover o fork e voltar ao core?" é da skill.
+ */
+function deleteFork({ ctx, artifact, name, src, dest }) {
+  if (!existsSync(dest)) {
+    logger.info(`ℹ️ ${name} não está no overlay "${ctx.profile}". Nada a remover.`);
+    return 1;
+  }
+  rmSync(dest, { recursive: true, force: true });
+  logger.info(`${GREEN}✓ Fork removido:${NC} overlays/${ctx.profile}/${artifact.relPath}`);
+  if (RULE_TYPES.includes(artifact.type)) {
+    const ideCopy = join(ctx.ideDir, artifact.relPath);
+    if (existsSync(src)) {
+      mkdirSync(dirname(ideCopy), { recursive: true });
+      cpSync(src, ideCopy);
+      logger.info(`${DIM}  ${artifact.relPath} voltou à versão do core na IDE${NC}`);
+    } else if (existsSync(ideCopy)) {
+      rmSync(ideCopy, { force: true });
+      logger.info(`${DIM}  ${artifact.relPath} removida da IDE: o core atual não a tem${NC}`);
+    }
+  }
+  return 0;
 }

@@ -8,7 +8,13 @@ import assert from "node:assert/strict";
 import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, existsSync, rmSync, readdirSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { fork, resolveArtifact, stampFrontmatter, listOverlay } from "../bin/commands/fork.js";
+import {
+  fork,
+  resolveArtifact,
+  stampFrontmatter,
+  listOverlay,
+  diffAgainstCore,
+} from "../bin/commands/fork.js";
 import { setTestMode } from "../bin/lib/utils/logger.js";
 
 before(() => setTestMode(true));
@@ -175,5 +181,63 @@ test("fork --list: só lista o que está forkado (skill por pasta, sem carimbo, 
       ]
     );
     assert.equal(await run([], { list: true }), 0);
+  });
+});
+
+// --- Fase 5: --update e --delete ----------------------------------------------------------------
+
+test("diffAgainstCore: só as linhas diferentes, ignorando o carimbo; marca contrato quando a mudança toca sessão, ENV, template ou CLI", () => {
+  const fork = "---\nforked_from: x@1.0.0\n---\n# titulo\nlinha igual\nminha linha\n";
+  const core = "---\n---\n# titulo\nlinha igual\nlinha nova do core\n";
+  const d = diffAgainstCore(fork, core);
+  assert.deepEqual(d.changes, [
+    { op: "-", line: "minha linha" },
+    { op: "+", line: "linha nova do core" },
+  ]);
+  assert.equal(d.contract, false);
+  assert.equal(diffAgainstCore("a\n", "a\n").changes.length, 0);
+  assert.equal(diffAgainstCore("a\n", "a\ngrava em .jarvis/sessions/x\n").contract, true);
+  assert.equal(diffAgainstCore("a\n", "a\nleia templates/plan-template.md\n").contract, true);
+  assert.equal(diffAgainstCore("a\n", "a\nrode jarvis tokens\n").contract, true);
+});
+
+test("fork --update: fork inexistente sai com 1; existente recarimba forked_from para a versão atual sem mudar o corpo", async () => {
+  await withFixture("COMPANY_PROFILE=acme", async ({ ws, run }) => {
+    assert.equal(await run(["eng.start"], { update: true }), 1);
+    write(ws, ".claude/overlays/acme/workflows/engineering/eng.start.md",
+      "---\ndescription: start\nforked_from: eng.start@1.0.0\nforked_at: 2026-01-01\ncore_candidate: true\n---\n# start da empresa\n");
+    assert.equal(await run(["eng.start"], { update: true }), 0);
+    assert.equal(
+      readFileSync(join(ws, ".claude/overlays/acme/workflows/engineering/eng.start.md"), "utf-8"),
+      "---\ndescription: start\nforked_from: eng.start@9.9.9\nforked_at: 2026-01-01\ncore_candidate: true\n---\n# start da empresa\n"
+    );
+  });
+});
+
+test("fork --update: artefato que o core não tem mais avisa e sugere --delete (sai com 0, fork intacto)", async () => {
+  await withFixture("COMPANY_PROFILE=acme", async ({ ws, run }) => {
+    write(ws, ".claude/overlays/acme/workflows/engineering/eng.velho.md", "---\nforked_from: eng.velho@1.0.0\n---\n# velho\n");
+    assert.equal(await run(["eng.velho"], { update: true }), 0);
+    assert.match(readFileSync(join(ws, ".claude/overlays/acme/workflows/engineering/eng.velho.md"), "utf-8"), /forked_from: eng\.velho@1\.0\.0/);
+  });
+});
+
+test("fork --delete: remove skill e workflow do overlay; rule volta à versão do core na IDE, sem marcação; inexistente sai com 1", async () => {
+  await withFixture("COMPANY_PROFILE=acme", async ({ ws, run }) => {
+    assert.equal(await run(["eng.start"], { delete: true }), 1);
+    await run(["eng-global-pr"]);
+    await run(["rules/engineering/eng-rules.md"]);
+    assert.match(readFileSync(join(ws, ".claude/rules/engineering/eng-rules.md"), "utf-8"), /> Overlay: acme/);
+
+    assert.equal(await run(["eng-global-pr"], { delete: true }), 0);
+    assert.ok(!existsSync(join(ws, ".claude/overlays/acme/skills/eng-global-pr")));
+
+    assert.equal(await run(["rules/engineering/eng-rules.md"], { delete: true }), 0);
+    assert.ok(!existsSync(join(ws, ".claude/overlays/acme/rules/engineering/eng-rules.md")));
+    assert.equal(
+      readFileSync(join(ws, ".claude/rules/engineering/eng-rules.md"), "utf-8"),
+      "> **Applies to:** HUB: all\n\n# core rules\n"
+    );
+    assert.deepEqual(listOverlay(join(ws, ".claude/overlays/acme")), []);
   });
 });
