@@ -616,3 +616,47 @@ test("formatOverlayTable: tipo não resolvido e candidato na mesma linha ficam e
     /scripts\/x\.md\s+⚠️ tipo não resolvido \(scripts\)\s+x@1\s+2026-10-30\s+candidato a core$/
   );
 });
+
+// --- Fase 13 (#199): o próprio overlay pode ser link; SKILL.md linkado no --update ------------------
+
+test("fork: overlays/{perfil} que é link para uma pasta real funciona (fork, --update, --delete gravam na pasta real)", async () => {
+  await withFixture("COMPANY_PROFILE=acme", async ({ ws, run }) => {
+    const real = join(ws, "overlay-da-empresa");
+    mkdirSync(real, { recursive: true });
+    mkdirSync(join(ws, ".claude/overlays"), { recursive: true });
+    symlinkSync(real, join(ws, ".claude/overlays/acme"));
+
+    assert.equal(await run(["eng.start"]), 0);
+    const forkPath = join(real, "workflows/engineering/eng.start.md");
+    assert.match(readFileSync(forkPath, "utf-8"), /forked_from: eng\.start@9\.9\.9/);
+
+    writeFileSync(forkPath, readFileSync(forkPath, "utf-8").replace("@9.9.9", "@1.0.0"));
+    assert.equal(await run(["eng.start"], { update: true }), 0);
+    assert.match(readFileSync(forkPath, "utf-8"), /forked_from: eng\.start@9\.9\.9/);
+
+    assert.equal(await run(["eng.start"], { delete: true }), 0);
+    assert.ok(!existsSync(forkPath));
+    // um link abaixo do overlay continua recusado
+    symlinkSync(join(ws, "fora"), join(real, "workflows/engineering/eng.start.md"));
+    assert.equal(await run(["eng.start"]), 1);
+    assert.ok(!existsSync(join(ws, "fora")));
+  });
+});
+
+test("fork --update: SKILL.md do fork que é link para fora do overlay sai com 1 e não altera o alvo (R5)", async () => {
+  await withFixture("COMPANY_PROFILE=acme", async ({ ws, run }) => {
+    assert.equal(await run(["eng-global-pr"]), 0);
+    const skillDir = join(ws, ".claude/overlays/acme/skills/eng-global-pr");
+    const fora = join(ws, "FORA.md");
+    writeFileSync(fora, "---\nforked_from: eng-global-pr@1.0.0\n---\n# fora\n");
+    rmSync(join(skillDir, "SKILL.md"));
+    symlinkSync(fora, join(skillDir, "SKILL.md"));
+
+    assert.equal(await run(["eng-global-pr"], { update: true }), 1);
+    assert.equal(
+      readFileSync(fora, "utf-8"),
+      "---\nforked_from: eng-global-pr@1.0.0\n---\n# fora\n",
+      "o --update gravou fora do overlay seguindo o link"
+    );
+  });
+});

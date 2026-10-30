@@ -60,7 +60,8 @@ function lstatOrNull(path) {
  * link simbólico (quebrado ou não), e o primeiro nível que existe precisa resolver, por `realpath`,
  * para dentro do overlay. Uma subpasta linkada para fora (`overlays/acme/skills` → `.claude/skills`)
  * ou um link quebrado no lugar do destino (`eng.start.md` → `/fora.md`) não podem levar o fork a
- * gravar ou apagar lá.
+ * gravar ou apagar lá. O próprio `overlays/{perfil}` pode ser um link (overlay num repositório da
+ * empresa): a raiz é o `realpath` dele, e a subida para nele sem o `lstat`.
  * @param {string} overlayDir - precisa existir
  * @param {string} target
  * @returns {boolean}
@@ -69,6 +70,7 @@ export function isInsideOverlay(overlayDir, target) {
   const root = realpathSync(overlayDir);
   let probe = target;
   for (;;) {
+    if (probe === overlayDir) return true;
     const stat = lstatOrNull(probe);
     if (stat) {
       if (stat.isSymbolicLink()) return false;
@@ -460,7 +462,10 @@ function updateFork({ ctx, artifact, name, src, dest, candidate = false, showDif
     );
     return 1;
   }
-  if (!isInsideOverlay(ctx.overlayDir, dest)) {
+  // Confere o destino e, numa skill, também o SKILL.md: a pasta pode ser real e o arquivo um link
+  // para fora (o writeFileSync seguiria o link).
+  const forkPath = mainFile(artifact, dest);
+  if (!isInsideOverlay(ctx.overlayDir, dest) || !isInsideOverlay(ctx.overlayDir, forkPath)) {
     logger.error(
       `${RED}⚠️ ${artifact.relPath} resolve para fora do overlay "${ctx.profile}" (link simbólico?); nada alterado.${NC}`
     );
@@ -472,7 +477,6 @@ function updateFork({ ctx, artifact, name, src, dest, candidate = false, showDif
     );
     return 0;
   }
-  const forkPath = mainFile(artifact, dest);
   const forkText = lf(readFileSync(forkPath, "utf-8"));
   const version = getPackageInfo().version;
 
