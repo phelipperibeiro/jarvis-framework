@@ -827,3 +827,23 @@ test("init --upgrade sem terminal e sem --yes: COMPANY_PROFILE fica no default, 
     assert.match(r.stdout, /COMPANY_PROFILE fica no default stark-industries/);
   });
 });
+
+test("init --upgrade: rule forkada no overlay vence a do core em .claude/rules/, com a marcação; nada é escrito no overlay (#199)", () => {
+  const OVERLAY = ".claude/overlays/acme/rules/engineering/eng-rules.md";
+  withWorkspace(
+    {
+      ".claude/ENV.md": `${ENV_V520}COMPANY_PROFILE=acme\n`,
+      [OVERLAY]: "---\nforked_from: eng-rules@8.2.0\n---\n\n# regras da empresa\n",
+    },
+    (ws) => {
+      const before = snapshot(join(ws, ".claude/overlays/acme"));
+      const r = run(ws, "--upgrade", "--ide", "claude", "--yes");
+      assert.equal(r.status, 0, r.stderr);
+      const copied = readFileSync(join(ws, ".claude/rules/engineering/eng-rules.md"), "utf-8");
+      assert.match(copied, /^---\nforked_from: eng-rules@8\.2\.0\n---\n\n> Overlay: acme \(forked_from eng-rules@8\.2\.0\)\n\n# regras da empresa\n$/);
+      assert.deepEqual(snapshot(join(ws, ".claude/overlays/acme")), before);
+      // a rule de precedência do core continua lá, como qualquer rule universal
+      assert.ok(existsSync(join(ws, ".claude/rules/company-overlay-rules.md")));
+    }
+  );
+});

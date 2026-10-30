@@ -7,7 +7,15 @@
 // dependente do conteúdo real de agents/skills/workflows).
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, existsSync, rmSync } from "node:fs";
+import {
+  mkdtempSync,
+  mkdirSync,
+  writeFileSync,
+  readFileSync,
+  readdirSync,
+  existsSync,
+  rmSync,
+} from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { syncAssets } from "../bin/lib/core/sync-engine.js";
@@ -216,5 +224,115 @@ test("syncAssets: dryRun não remove workflow obsoleto achatado", () => {
     syncAssets(target, "claude", { workflowsFolder: "commands", dryRun: true });
 
     assert.ok(existsSync(join(target, ".claude/commands/eng.qa-exploratory-session.md")));
+  });
+});
+
+// --- RuleResolver do overlay de empresa (#199) ---------------------------------------------
+// O overlay fica em {target}/.claude/overlays/{perfil}/ e espelha o core. O sync copia por cima
+// só rules/ e rules-on-demand/; nunca grava arquivo no overlay (só cria a pasta do perfil).
+
+import { symlinkSync, statSync } from "node:fs";
+
+function snapshotDir(dir) {
+  const out = {};
+  const walk = (d) => {
+    for (const e of readdirSync(d, { withFileTypes: true })) {
+      const full = join(d, e.name);
+      if (e.isDirectory()) walk(full);
+      else out[full.slice(dir.length + 1)] = readFileSync(full, "utf-8");
+    }
+  };
+  if (existsSync(dir)) walk(dir);
+  return out;
+}
+
+function withOverlay(target, profile, files) {
+  write(target, ".claude/ENV.md", `WORKSPACE=ws\nCOMPANY_PROFILE=${profile}\n`);
+  for (const [rel, content] of Object.entries(files)) {
+    write(target, `.claude/overlays/${profile}/${rel}`, content);
+  }
+}
+
+test("overlay: rule e rule-on-demand do overlay vencem as do core e recebem a marcação; o overlay fica intacto", () => {
+  withJarvisRoot((root, target) => {
+    buildMinimalFramework(root);
+    write(root, "rules/engineering/eng-rules.md", "# core");
+    withOverlay(target, "acme", {
+      "rules/engineering/eng-rules.md": "---\nforked_from: eng-rules@8.2.0\nforked_at: 2026-10-30\n---\n\n# empresa\n",
+      "rules-on-demand/engineering/eng.plan-rules.md": "# plano da empresa, sem frontmatter\n",
+      "workflows/engineering/eng.start.md": "# não é copiado pelo sync\n",
+    });
+    const before = snapshotDir(join(target, ".claude/overlays/acme"));
+
+    const result = syncAssets(target, "claude", {});
+
+    assert.equal(result.errors.length, 0, JSON.stringify(result.errors));
+    const rule = readFileSync(join(target, ".claude/rules/engineering/eng-rules.md"), "utf-8");
+    assert.match(rule, /^---\nforked_from: eng-rules@8\.2\.0\nforked_at: 2026-10-30\n---\n\n> Overlay: acme \(forked_from eng-rules@8\.2\.0\)\n\n# empresa\n$/);
+    const onDemand = readFileSync(join(target, ".claude/rules-on-demand/engineering/eng.plan-rules.md"), "utf-8");
+    assert.equal(onDemand, "> Overlay: acme (forked_from sem carimbo)\n\n# plano da empresa, sem frontmatter\n");
+    assert.ok(!existsSync(join(target, ".claude/workflows/engineering/eng.start.md")));
+    assert.ok(result.copied.includes("(overlay) rules/engineering/eng-rules.md"));
+    assert.ok(result.copied.includes("(overlay) rules-on-demand/engineering/eng.plan-rules.md"));
+    assert.deepEqual(snapshotDir(join(target, ".claude/overlays/acme")), before);
+  });
+});
+
+test("overlay: sem a pasta do perfil, o sync cria só a pasta vazia; sem ENV.md vale o default stark-industries", () => {
+  withJarvisRoot((root, target) => {
+    buildMinimalFramework(root);
+    write(target, ".claude/ENV.md", "COMPANY_PROFILE=acme\n");
+    const result = syncAssets(target, "claude", {});
+    const dir = join(target, ".claude/overlays/acme");
+    assert.ok(statSync(dir).isDirectory());
+    assert.deepEqual(readdirSync(dir), []);
+    assert.ok(result.copied.includes("Overlay acme: pasta criada"));
+    // core intacto na IDE
+    assert.ok(existsSync(join(target, ".claude/rules/engineering/eng-rules.md")));
+  });
+  withJarvisRoot((root, target) => {
+    buildMinimalFramework(root);
+    const result = syncAssets(target, "claude", {});
+    assert.ok(statSync(join(target, ".claude/overlays/stark-industries")).isDirectory());
+    assert.ok(result.copied.includes("Overlay stark-industries: pasta criada"));
+    assert.ok(!result.copied.some((m) => m.includes("COMPANY_PROFILE vazio")), "sem ENV.md não há aviso");
+  });
+});
+
+test("overlay: COMPANY_PROFILE vazio ou inválido cai no default com aviso", () => {
+  withJarvisRoot((root, target) => {
+    buildMinimalFramework(root);
+    write(target, ".claude/ENV.md", "COMPANY_PROFILE=\n");
+    const result = syncAssets(target, "claude", {});
+    assert.ok(existsSync(join(target, ".claude/overlays/stark-industries")));
+    assert.ok(result.copied.some((m) => /ℹ️ COMPANY_PROFILE vazio/.test(m)));
+  });
+  withJarvisRoot((root, target) => {
+    buildMinimalFramework(root);
+    write(target, ".claude/ENV.md", "COMPANY_PROFILE=rules\n");
+    const result = syncAssets(target, "claude", {});
+    assert.ok(existsSync(join(target, ".claude/overlays/stark-industries")));
+    assert.ok(!existsSync(join(target, ".claude/overlays/rules")));
+    assert.ok(result.copied.some((m) => /⚠️ COMPANY_PROFILE "rules" inválido/.test(m)));
+  });
+});
+
+test("overlay: link para fora do overlay é ignorado com aviso; dryRun não cria nada", () => {
+  withJarvisRoot((root, target) => {
+    buildMinimalFramework(root);
+    withOverlay(target, "acme", {});
+    const outside = join(target, "fora.md");
+    writeFileSync(outside, "# fora do overlay");
+    mkdirSync(join(target, ".claude/overlays/acme/rules"), { recursive: true });
+    symlinkSync(outside, join(target, ".claude/overlays/acme/rules/evil.md"));
+    const result = syncAssets(target, "claude", {});
+    assert.ok(!existsSync(join(target, ".claude/rules/evil.md")));
+    assert.ok(result.skipped.some((m) => /evil\.md: aponta para fora do overlay/.test(m)));
+  });
+  withJarvisRoot((root, target) => {
+    buildMinimalFramework(root);
+    write(target, ".claude/ENV.md", "COMPANY_PROFILE=acme\n");
+    syncAssets(target, "claude", { dryRun: true });
+    assert.ok(!existsSync(join(target, ".claude/overlays")));
   });
 });

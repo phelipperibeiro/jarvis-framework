@@ -5,14 +5,16 @@ import {
   readdirSync,
   renameSync,
   readFileSync,
+  realpathSync,
   writeFileSync,
   rmSync,
 } from "node:fs";
 import { execSync } from "node:child_process";
-import { join, relative, basename } from "node:path";
+import { join, relative, basename, dirname, sep } from "node:path";
 import { getFrameworkRoot } from "../utils/paths.js";
 import { getIDEFolder } from "../config/ide-config.js";
 import { extractFrontmatterBlock } from "../utils/frontmatter.js";
+import { readCompanyProfile } from "./company-profile.js";
 import {
   SYNC_DIRS,
   SYNC_ROOT_FILES,
@@ -93,6 +95,9 @@ export function syncAssets(targetDir, ide, opts = {}) {
       result.errors.push(`${destDirName}/: ${err.message}`);
     }
   }
+
+  // RuleResolver (#199): rules/ e rules-on-demand/ do overlay do perfil ativo por cima das do core.
+  applyRuleOverlay(ideDir, result, { dryRun: opts.dryRun });
 
   // Copy root files to IDE folder
   for (const file of SYNC_ROOT_FILES) {
@@ -196,6 +201,103 @@ export function syncAssets(targetDir, ide, opts = {}) {
   }
 
   return result;
+}
+
+/** Pastas do overlay que a IDE carrega sozinha e por isso são resolvidas aqui, na instalação. */
+const OVERLAY_RULE_DIRS = Object.freeze(["rules", "rules-on-demand"]);
+
+/**
+ * Como `collectMdFiles`, mas inclui links simbólicos para arquivo (o `Dirent` de um link não é
+ * `isFile()`), para o `realpath` decidir se o alvo está dentro do overlay. Link para pasta não é seguido.
+ */
+function collectOverlayFiles(dir, acc) {
+  for (const entry of readdirSync(dir, { withFileTypes: true })) {
+    const full = join(dir, entry.name);
+    if (entry.isDirectory()) collectOverlayFiles(full, acc);
+    else if ((entry.isFile() || entry.isSymbolicLink()) && entry.name.endsWith(".md")) acc.push(full);
+  }
+}
+
+/**
+ * Linha `> Overlay: {perfil} (forked_from …)` logo depois do frontmatter (ou na primeira linha,
+ * sem frontmatter): quem abre `.{ide}/rules/` vê que a cópia veio do overlay e onde editar.
+ * @param {string} content - Conteúdo do arquivo do overlay (não é alterado lá)
+ * @param {string} profile
+ * @returns {string}
+ */
+export function withOverlayMarker(content, profile) {
+  const block = extractFrontmatterBlock(content);
+  const forked = block === null ? null : /^forked_from:\s*(.+)$/m.exec(block);
+  const marker = `> Overlay: ${profile} (forked_from ${forked ? forked[1].trim() : "sem carimbo"})`;
+  if (block === null) return `${marker}\n\n${content}`;
+  const fenceEnd = content.indexOf("\n---", 3);
+  const lineEnd = content.indexOf("\n", fenceEnd + 1);
+  if (lineEnd === -1) return `${content}\n\n${marker}\n`;
+  const head = content.slice(0, lineEnd + 1);
+  const tail = content.slice(lineEnd + 1).replace(/^\n+/, "");
+  return `${head}\n${marker}\n\n${tail}`;
+}
+
+/**
+ * RuleResolver (#199). Lê `COMPANY_PROFILE` do `.{ide}/ENV.md` (vazio, inválido ou sem ENV.md →
+ * `stark-industries`), garante a pasta `overlays/{perfil}/` e copia por cima de `.{ide}/rules/` e
+ * `.{ide}/rules-on-demand/` cada `.md` do overlay com o mesmo caminho relativo, marcado.
+ * Workflows, skills, agentes e templates não passam por aqui: a rule de precedência os resolve na chamada.
+ *
+ * Única escrita em `overlays/`: criar a pasta vazia do perfil. Nenhum arquivo é gravado, alterado
+ * ou apagado dentro dela. Caminho que resolve (realpath) para fora do overlay é ignorado com aviso.
+ * @param {string} ideDir - Pasta da IDE (ex.: `{workspace}/.claude`)
+ * @param {{ copied: string[], skipped: string[], errors: string[] }} result - Acumulador do sync
+ * @param {{ dryRun?: boolean }} [opts]
+ * @returns {string} O perfil ativo
+ */
+export function applyRuleOverlay(ideDir, result, { dryRun = false } = {}) {
+  const envPath = join(ideDir, "ENV.md");
+  const envText = existsSync(envPath) ? readFileSync(envPath, "utf-8") : undefined;
+  const { profile, warning } = readCompanyProfile(envText);
+  if (warning) result.copied.push(`(overlay) ${warning}`);
+
+  const overlayDir = join(ideDir, "overlays", profile);
+  if (!existsSync(overlayDir)) {
+    if (!dryRun) mkdirSync(overlayDir, { recursive: true });
+    result.copied.push(`Overlay ${profile}: pasta criada`);
+    return profile;
+  }
+
+  const overlayRoot = realpathSync(overlayDir);
+  for (const dir of OVERLAY_RULE_DIRS) {
+    const srcDir = join(overlayDir, dir);
+    if (!existsSync(srcDir)) continue;
+    const files = [];
+    collectOverlayFiles(srcDir, files);
+    for (const file of files) {
+      const rel = relative(srcDir, file);
+      const shown = `${dir}/${rel.split(sep).join("/")}`;
+      let real;
+      try {
+        real = realpathSync(file);
+      } catch {
+        result.skipped.push(`(overlay) ${shown}: link quebrado, ignorado`);
+        continue;
+      }
+      if (!real.startsWith(overlayRoot + sep)) {
+        result.skipped.push(`(overlay) ${shown}: aponta para fora do overlay, ignorado`);
+        continue;
+      }
+      try {
+        const content = readFileSync(file, "utf-8");
+        const dest = join(ideDir, dir, rel);
+        if (!dryRun) {
+          mkdirSync(dirname(dest), { recursive: true });
+          writeFileSync(dest, withOverlayMarker(content, profile), "utf-8");
+        }
+        result.copied.push(`(overlay) ${shown}`);
+      } catch (err) {
+        result.errors.push(`(overlay) ${shown}: ${err.message}`);
+      }
+    }
+  }
+  return profile;
 }
 
 /**

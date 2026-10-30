@@ -1059,7 +1059,7 @@ Objetivo: garantir que `$IDE/rules/` e `$IDE/rules-on-demand/` contenham apenas 
 
 ```
 1. Ler HUB, POSITION, AREA, SQUAD e ARTIFACT_STYLE (vazio = `ai-generated`) do ENV.md recém-gravado
-2. Para cada uma das duas pastas (rules/ e rules-on-demand/), listar todos os arquivos .md (recursivo, exceto AGENTS.md)
+2. Para cada uma das duas pastas (rules/ e rules-on-demand/), listar todos os arquivos .md (recursivo, exceto AGENTS.md) do core, mais os de `$IDE/overlays/{COMPANY_PROFILE}/{pasta}/` que o core não tem
 3. Para cada arquivo:
    a. Ler o bloco `> **Applies to:**` (primeira ocorrência no arquivo)
    b. Se o bloco não existir → tratar como universal → copiar sempre
@@ -1067,7 +1067,8 @@ Objetivo: garantir que `$IDE/rules/` e `$IDE/rules-on-demand/` contenham apenas 
    d. **Condição especial RTK**: se o arquivo for `rtk-rules.md`,
       copiar APENAS se `RTK_ENABLED=true` no ENV.md
       (mesmo que o perfil bata, RTK é opt-in)
-   e. Se bate com o perfil → copiar para a mesma pasta em $IDE/ (rules/ → $IDE/rules/, rules-on-demand/ → $IDE/rules-on-demand/), preservando subpastas
+   e. Se bate com o perfil → copiar para a mesma pasta em $IDE/ (rules/ → $IDE/rules/, rules-on-demand/ → $IDE/rules-on-demand/), preservando subpastas.
+      **RuleResolver (#199):** a origem é `$IDE/overlays/{COMPANY_PROFILE}/{pasta}/{relPath}` se esse arquivo existir (o fork da empresa, mesmo caminho e nome), senão a do core. O `Applies to` lido é o do arquivo que será copiado. A cópia vinda do overlay recebe, logo depois do frontmatter (ou na primeira linha, sem frontmatter), a linha `> Overlay: {COMPANY_PROFILE} (forked_from {valor do frontmatter, ou "sem carimbo"})`. **Nada é gravado em `$IDE/overlays/`**: a única exceção, criar a pasta vazia do perfil, é do `jarvis init`
    f. Se não bate → deletar de $IDE/ se existir lá
 4. Exibir resumo ao usuário
 ```
@@ -1142,6 +1143,7 @@ cp "$pasta/$relPath" "$IDE/$pasta/$relPath"   # $pasta = rules ou rules-on-deman
    Copiadas : N arquivos (rules/: N | rules-on-demand/: N)
    Removidas: N arquivos (não batem com o perfil)
    Universais: N arquivos (sem applies_to — sempre copiadas)
+   Do overlay: N arquivos ({COMPANY_PROFILE})
 ```
 
 > **Nota**: `rules/AGENTS.md` é sempre copiado — nunca filtrado.
