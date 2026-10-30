@@ -11,6 +11,7 @@ import {
   existsSync,
   mkdirSync,
   readFileSync,
+  realpathSync,
   writeFileSync,
   cpSync,
   readdirSync,
@@ -43,6 +44,26 @@ const PATH_TYPES = Object.freeze(["rules", "rules-on-demand", "templates"]);
 const RULE_TYPES = Object.freeze(["rules", "rules-on-demand"]);
 
 const STAMP_KEYS = /^(forked_from|forked_at|core_candidate):/;
+
+/**
+ * R5 do architecture.md: o alvo (ou o primeiro ancestral dele que existe) precisa resolver, por
+ * `realpath`, para dentro do overlay. Uma subpasta do overlay que seja link simbólico para fora
+ * (ex.: `overlays/acme/skills` → `.claude/skills`) não pode levar o fork a gravar ou apagar lá.
+ * @param {string} overlayDir - precisa existir
+ * @param {string} target
+ * @returns {boolean}
+ */
+export function isInsideOverlay(overlayDir, target) {
+  let probe = target;
+  while (!existsSync(probe)) {
+    const parent = dirname(probe);
+    if (parent === probe) return false;
+    probe = parent;
+  }
+  const root = realpathSync(overlayDir);
+  const real = realpathSync(probe);
+  return real === root || real.startsWith(root + sep);
+}
 
 /**
  * Resolve `{nome}` para um artefato do core: workflow, skill ou agente pelo nome (índice do
@@ -244,11 +265,24 @@ export async function fork(flags = {}) {
   const dest = join(ctx.overlayDir, artifact.relPath);
 
   if (flags.delete) return exit(deleteFork({ ctx, artifact, name, src, dest }));
-  if (flags.update) return exit(updateFork({ ctx, artifact, name, src, dest }));
+  if (flags.update) {
+    return exit(
+      updateFork({ ctx, artifact, name, src, dest, candidate: flags.candidate === true })
+    );
+  }
 
   if (existsSync(dest)) {
     logger.error(
       `${YELLOW}⚠️ ${artifact.relPath} já está no overlay "${ctx.profile}". Use /jarvis-fork ${name} --update para ajustar.${NC}`
+    );
+    return exit(1);
+  }
+
+  // O fork é quem cria a pasta do overlay quando ela ainda não existe (o sync também a cria).
+  mkdirSync(ctx.overlayDir, { recursive: true });
+  if (!isInsideOverlay(ctx.overlayDir, dest)) {
+    logger.error(
+      `${RED}⚠️ ${artifact.relPath} resolve para fora do overlay "${ctx.profile}" (link simbólico?); nada gravado.${NC}`
     );
     return exit(1);
   }
@@ -275,7 +309,13 @@ export async function fork(flags = {}) {
     // A IDE carrega rules/ sozinha: recopia agora, sem esperar o próximo jarvis init --upgrade
     const result = { copied: [], skipped: [], errors: [] };
     applyRuleOverlay(ctx.ideDir, result);
-    for (const e of result.errors) logger.error(`${RED}  ✗ ${e}${NC}`);
+    if (result.errors.length > 0) {
+      for (const e of result.errors) logger.error(`${RED}  ✗ ${e}${NC}`);
+      logger.error(
+        `${RED}  O fork está no overlay, mas a cópia na IDE falhou: corrija e rode jarvis init --upgrade.${NC}`
+      );
+      return exit(1);
+    }
     logger.info(`${DIM}  ${artifact.type}/ recopiada na IDE com a marcação "> Overlay: ${ctx.profile}"${NC}`);
   } else {
     logger.info(`${DIM}  Vale na próxima chamada (rule de precedência). Edite o arquivo do overlay, não o da IDE.${NC}`);
@@ -302,10 +342,16 @@ function mainFile(artifact, base) {
  * `--update`: a conversa é da skill; aqui, o diff fork × core atual (a pedido) e o recarimbo.
  * Não altera o conteúdo do fork.
  */
-function updateFork({ ctx, artifact, name, src, dest }) {
+function updateFork({ ctx, artifact, name, src, dest, candidate = false }) {
   if (!existsSync(dest)) {
-    logger.info(
-      `ℹ️ ${name} não está no overlay "${ctx.profile}". Use /jarvis-fork ${name} para forkar.`
+    logger.error(
+      `${YELLOW}⚠️ ${name} não está no overlay "${ctx.profile}". Use /jarvis-fork ${name} para forkar.${NC}`
+    );
+    return 1;
+  }
+  if (!isInsideOverlay(ctx.overlayDir, dest)) {
+    logger.error(
+      `${RED}⚠️ ${artifact.relPath} resolve para fora do overlay "${ctx.profile}" (link simbólico?); nada alterado.${NC}`
     );
     return 1;
   }
@@ -335,10 +381,11 @@ function updateFork({ ctx, artifact, name, src, dest }) {
     );
   }
 
+  const current = parseFrontmatter(forkText);
   const stamped = stampFrontmatter(forkText, {
     from: `${name}@${version}`,
-    at: parseFrontmatter(forkText).forked_at ?? new Date().toISOString().slice(0, 10),
-    candidate: parseFrontmatter(forkText).core_candidate === "true",
+    at: current.forked_at ?? new Date().toISOString().slice(0, 10),
+    candidate: candidate || current.core_candidate === "true",
   });
   if (stamped !== forkText) writeFileSync(forkPath, stamped, "utf-8");
   logger.info(`${DIM}  forked_from: ${name}@${version}${NC}`);
@@ -351,7 +398,13 @@ function updateFork({ ctx, artifact, name, src, dest }) {
  */
 function deleteFork({ ctx, artifact, name, src, dest }) {
   if (!existsSync(dest)) {
-    logger.info(`ℹ️ ${name} não está no overlay "${ctx.profile}". Nada a remover.`);
+    logger.error(`${YELLOW}⚠️ ${name} não está no overlay "${ctx.profile}". Nada a remover.${NC}`);
+    return 1;
+  }
+  if (!isInsideOverlay(ctx.overlayDir, dest)) {
+    logger.error(
+      `${RED}⚠️ ${artifact.relPath} resolve para fora do overlay "${ctx.profile}" (link simbólico?); nada removido.${NC}`
+    );
     return 1;
   }
   rmSync(dest, { recursive: true, force: true });

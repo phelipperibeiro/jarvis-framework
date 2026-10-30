@@ -239,6 +239,28 @@ export function withOverlayMarker(content, profile) {
 }
 
 /**
+ * Rule copiada de um overlay (marcada `> Overlay: …`) que não existe mais nem no core nem no
+ * overlay ativo é órfã: ficou de outro perfil, ou o arquivo saiu do overlay à mão. Sem isto, a
+ * IDE continuaria carregando a regra de uma empresa inativa. Só a cópia da IDE é removida.
+ */
+function removeOrphanOverlayRules(ideDir, overlayDir, result, { dryRun, frameworkRoot }) {
+  for (const dir of OVERLAY_RULE_DIRS) {
+    const ideRules = join(ideDir, dir);
+    if (!existsSync(ideRules)) continue;
+    const files = [];
+    collectMdFiles(ideRules, files);
+    for (const file of files) {
+      const head = readFileSync(file, "utf-8").slice(0, 2048);
+      if (!/^> Overlay: /m.test(head)) continue;
+      const rel = relative(ideRules, file);
+      if (existsSync(join(frameworkRoot, dir, rel)) || existsSync(join(overlayDir, dir, rel))) continue;
+      if (!dryRun) rmSync(file, { force: true });
+      result.copied.push(`(overlay) ${dir}/${rel.split(sep).join("/")}: órfã removida da IDE`);
+    }
+  }
+}
+
+/**
  * RuleResolver (#199). Lê `COMPANY_PROFILE` do `.{ide}/ENV.md` (vazio, inválido ou sem ENV.md →
  * `stark-industries`), garante a pasta `overlays/{perfil}/` e copia por cima de `.{ide}/rules/` e
  * `.{ide}/rules-on-demand/` cada `.md` do overlay com o mesmo caminho relativo, marcado.
@@ -251,16 +273,21 @@ export function withOverlayMarker(content, profile) {
  * @param {{ dryRun?: boolean }} [opts]
  * @returns {string} O perfil ativo
  */
-export function applyRuleOverlay(ideDir, result, { dryRun = false } = {}) {
+export function applyRuleOverlay(ideDir, result, { dryRun = false, frameworkRoot } = {}) {
   const envPath = join(ideDir, "ENV.md");
   const envText = existsSync(envPath) ? readFileSync(envPath, "utf-8") : undefined;
   const { profile, warning } = readCompanyProfile(envText);
-  if (warning) result.copied.push(`(overlay) ${warning}`);
+  if (warning) result.skipped.push(`(overlay) ${warning}`);
 
   const overlayDir = join(ideDir, "overlays", profile);
+  removeOrphanOverlayRules(ideDir, overlayDir, result, {
+    dryRun,
+    frameworkRoot: frameworkRoot ?? getFrameworkRoot(),
+  });
+
   if (!existsSync(overlayDir)) {
     if (!dryRun) mkdirSync(overlayDir, { recursive: true });
-    result.copied.push(`Overlay ${profile}: pasta criada`);
+    result.copied.push(`Overlay ${profile}: pasta ${dryRun ? "seria criada" : "criada"}`);
     return profile;
   }
 

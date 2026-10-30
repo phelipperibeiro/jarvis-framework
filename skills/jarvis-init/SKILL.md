@@ -1070,6 +1070,7 @@ Objetivo: garantir que `$IDE/rules/` e `$IDE/rules-on-demand/` contenham apenas 
    e. Se bate com o perfil → copiar para a mesma pasta em $IDE/ (rules/ → $IDE/rules/, rules-on-demand/ → $IDE/rules-on-demand/), preservando subpastas.
       **RuleResolver (#199):** a origem é `$IDE/overlays/{COMPANY_PROFILE}/{pasta}/{relPath}` se esse arquivo existir (o fork da empresa, mesmo caminho e nome), senão a do core. O `Applies to` lido é o do arquivo que será copiado. A cópia vinda do overlay recebe, logo depois do frontmatter (ou na primeira linha, sem frontmatter), a linha `> Overlay: {COMPANY_PROFILE} (forked_from {valor do frontmatter, ou "sem carimbo"})`. **Nada é gravado em `$IDE/overlays/`**: a única exceção, criar a pasta vazia do perfil, é do `jarvis init`
    f. Se não bate → deletar de $IDE/ se existir lá
+   g. **Órfãs do overlay (#199):** arquivo em `$IDE/rules/` ou `$IDE/rules-on-demand/` marcado com `> Overlay: …` que não existe no core nem em `$IDE/overlays/{COMPANY_PROFILE}/` (ficou de outro perfil, ou saiu do overlay à mão) → deletar de $IDE/. O arquivo do overlay nunca é tocado
 4. Exibir resumo ao usuário
 ```
 

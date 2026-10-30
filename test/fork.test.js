@@ -5,7 +5,16 @@
 // framework real nem o ENV.md de quem roda.
 import { test, before, after } from "node:test";
 import assert from "node:assert/strict";
-import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, existsSync, rmSync, readdirSync } from "node:fs";
+import {
+  mkdtempSync,
+  mkdirSync,
+  writeFileSync,
+  readFileSync,
+  existsSync,
+  rmSync,
+  readdirSync,
+  symlinkSync,
+} from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import {
@@ -18,7 +27,12 @@ import {
 import { setTestMode } from "../bin/lib/utils/logger.js";
 
 before(() => setTestMode(true));
-after(() => setTestMode(false));
+// `fork()` grava process.exitCode nos caminhos de erro (é o contrato do comando); se o último teste
+// terminar em 1, o node:test marca o arquivo inteiro como falho. Zera no fim.
+after(() => {
+  setTestMode(false);
+  process.exitCode = 0;
+});
 
 function write(base, rel, content = "x") {
   const full = join(base, rel);
@@ -240,4 +254,52 @@ test("fork --delete: remove skill e workflow do overlay; rule volta à versão d
     );
     assert.deepEqual(listOverlay(join(ws, ".claude/overlays/acme")), []);
   });
+});
+
+// --- Fase 8: correções do pre-pr rodada 1 --------------------------------------------------------
+
+test("fork: subpasta do overlay que é link para fora do overlay bloqueia fork, --update e --delete (R5)", async () => {
+  await withFixture("COMPANY_PROFILE=acme", async ({ ws, run }) => {
+    const outside = join(ws, "fora-do-overlay");
+    mkdirSync(outside, { recursive: true });
+    mkdirSync(join(ws, ".claude/overlays/acme"), { recursive: true });
+    symlinkSync(outside, join(ws, ".claude/overlays/acme/skills"));
+
+    assert.equal(await run(["eng-global-pr"]), 1);
+    assert.deepEqual(readdirSync(outside), [], "o fork gravou fora do overlay");
+
+    // um fork já existente atrás do link também não é alterado nem apagado
+    write(outside, "eng-global-pr/SKILL.md", "---\nforked_from: eng-global-pr@1.0.0\n---\n# fora\n");
+    assert.equal(await run(["eng-global-pr"], { update: true }), 1);
+    assert.equal(await run(["eng-global-pr"], { delete: true }), 1);
+    assert.match(readFileSync(join(outside, "eng-global-pr/SKILL.md"), "utf-8"), /forked_from: eng-global-pr@1\.0\.0/);
+  });
+});
+
+test("fork: recópia da rule na IDE com erro sai com 1 (o fork fica no overlay)", async () => {
+  await withFixture("COMPANY_PROFILE=acme", async ({ ws, run }) => {
+    // .claude/rules-on-demand/engineering vira arquivo: o mkdir do destino falha
+    rmSync(join(ws, ".claude/rules-on-demand/engineering"), { recursive: true, force: true });
+    writeFileSync(join(ws, ".claude/rules-on-demand/engineering"), "não sou uma pasta");
+    assert.equal(await run(["rules-on-demand/engineering/eng.pr-rules.md"]), 1);
+    assert.ok(existsSync(join(ws, ".claude/overlays/acme/rules-on-demand/engineering/eng.pr-rules.md")));
+  });
+});
+
+test("fork --update --candidate marca core_candidate; --delete de rule só do overlay apaga a cópia da IDE", async () => {
+  await withFixture("COMPANY_PROFILE=acme", async ({ ws, run }) => {
+    await run(["eng.start"]);
+    assert.equal(await run(["eng.start"], { update: true, candidate: true }), 0);
+    assert.match(readFileSync(join(ws, ".claude/overlays/acme/workflows/engineering/eng.start.md"), "utf-8"), /core_candidate: true/);
+
+    write(ws, ".claude/overlays/acme/rules/so-acme.md", "---\nforked_from: rules/so-acme.md@1.0.0\n---\n# só overlay\n");
+    write(ws, ".claude/rules/so-acme.md", "> Overlay: acme (forked_from rules/so-acme.md@1.0.0)\n\n# só overlay\n");
+    assert.equal(await run(["rules/so-acme.md"], { delete: true }), 0);
+    assert.ok(!existsSync(join(ws, ".claude/overlays/acme/rules/so-acme.md")));
+    assert.ok(!existsSync(join(ws, ".claude/rules/so-acme.md")), "a cópia da IDE ficou órfã");
+  });
+});
+
+test("fork: ENV.md inexistente (--env-file errado) sai com 1 sem gravar", async () => {
+  assert.equal(await fork({ _: ["eng.start"], "env-file": join(tmpdir(), "nao-existe", "ENV.md") }), 1);
 });

@@ -56,11 +56,18 @@ export function resolveCompanyProfile(raw) {
           : `ℹ️ COMPANY_PROFILE vazio: usando o perfil default ${DEFAULT_COMPANY_PROFILE}. Rode /jarvis-init para definir um perfil próprio.`,
     };
   }
-  if (!isValidCompanyProfile(value)) {
+  if (CORE_FOLDERS.includes(value)) {
     return {
       profile: DEFAULT_COMPANY_PROFILE,
       isDefault: true,
-      warning: `⚠️ COMPANY_PROFILE "${value}" inválido (use letras minúsculas, números e hífen; não pode ser o nome de uma pasta do core). Usando o perfil default ${DEFAULT_COMPANY_PROFILE}.`,
+      warning: `⚠️ COMPANY_PROFILE não pode ser o nome de uma pasta do core (${CORE_FOLDERS.join(", ")}). Usando o perfil default ${DEFAULT_COMPANY_PROFILE}.`,
+    };
+  }
+  if (!COMPANY_PROFILE_PATTERN.test(value)) {
+    return {
+      profile: DEFAULT_COMPANY_PROFILE,
+      isDefault: true,
+      warning: `⚠️ COMPANY_PROFILE "${value}" inválido (use letras minúsculas, números e hífen). Usando o perfil default ${DEFAULT_COMPANY_PROFILE}.`,
     };
   }
   return { profile: value, isDefault: value === DEFAULT_COMPANY_PROFILE, warning: null };
@@ -68,13 +75,15 @@ export function resolveCompanyProfile(raw) {
 
 /**
  * Lê `COMPANY_PROFILE=` de um texto de `ENV.md` (primeira ocorrência, sem aspas nem comentário
- * de fim de linha) e resolve o perfil. Texto sem a chave → `raw` ausente (default sem aviso).
- * @param {string} envText
+ * de fim de linha) e resolve o perfil. ENV.md sem a chave (anterior à #199) → default com o ℹ️,
+ * como a chave vazia; sem ENV.md (`envText` ausente, primeiro `jarvis init`) → default sem aviso.
+ * @param {string | undefined} envText
  * @returns {{ profile: string, warning: string | null, isDefault: boolean }}
  */
 export function readCompanyProfile(envText) {
-  const match = /^[ \t]*COMPANY_PROFILE=(.*)$/m.exec(envText ?? "");
-  if (!match) return resolveCompanyProfile(undefined);
+  if (envText === undefined || envText === null) return resolveCompanyProfile(undefined);
+  const match = /^[ \t]*COMPANY_PROFILE=(.*)$/m.exec(envText);
+  if (!match) return resolveCompanyProfile("");
   const raw = match[1]
     .replace(/\s+#.*$/, "")
     .trim()

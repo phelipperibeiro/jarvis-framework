@@ -1,7 +1,7 @@
 import { existsSync, mkdirSync, readFileSync, realpathSync } from "node:fs";
 import { join, dirname, basename, resolve, sep } from "node:path";
 import { createInterface } from "node:readline";
-import { syncAssets } from "../lib/core/sync-engine.js";
+import { syncAssets, applyRuleOverlay } from "../lib/core/sync-engine.js";
 import { discoverAll } from "../lib/core/scanner.js";
 import {
   IDES,
@@ -596,6 +596,17 @@ async function runUpgrade(cwd, flags) {
   if (companyProfile) overrides.COMPANY_PROFILE = companyProfile;
   const today = new Date().toISOString().slice(0, 10);
   applyEnvUpgrade(envPath, envPlan, today, overrides);
+
+  // 3.3 Perfil respondido agora: o sync acima rodou com o default. Reaplica o overlay do perfil
+  // gravado (pasta dele criada, rules dele por cima). A pasta do default criada antes fica: todo
+  // workspace a tem, e o upgrade não apaga nada em overlays/.
+  if (companyProfile) {
+    const again = { copied: [], skipped: [], errors: [] };
+    applyRuleOverlay(join(workspaceDir, `.${getIDEFolder(ide)}`), again);
+    for (const item of again.copied) logger.info(`${BLUE}  ↳ ${item}${NC}`);
+    for (const item of again.skipped) logger.info(`${DIM}  ↳ ${item}${NC}`);
+    for (const e of again.errors) logger.error(`${RED}  ✗ ${e}${NC}`);
+  }
 
   // 3.1 Skills instalados que saíram do framework: só lista; remove com confirmação ou --remove-stale
   const ideSkillsDir = join(workspaceDir, `.${getIDEFolder(ide)}`, "skills");

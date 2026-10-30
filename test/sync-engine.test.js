@@ -295,7 +295,7 @@ test("overlay: sem a pasta do perfil, o sync cria só a pasta vazia; sem ENV.md 
     const result = syncAssets(target, "claude", {});
     assert.ok(statSync(join(target, ".claude/overlays/stark-industries")).isDirectory());
     assert.ok(result.copied.includes("Overlay stark-industries: pasta criada"));
-    assert.ok(!result.copied.some((m) => m.includes("COMPANY_PROFILE vazio")), "sem ENV.md não há aviso");
+    assert.ok(!result.skipped.some((m) => m.includes("COMPANY_PROFILE vazio")), "sem ENV.md não há aviso");
   });
 });
 
@@ -305,7 +305,7 @@ test("overlay: COMPANY_PROFILE vazio ou inválido cai no default com aviso", () 
     write(target, ".claude/ENV.md", "COMPANY_PROFILE=\n");
     const result = syncAssets(target, "claude", {});
     assert.ok(existsSync(join(target, ".claude/overlays/stark-industries")));
-    assert.ok(result.copied.some((m) => /ℹ️ COMPANY_PROFILE vazio/.test(m)));
+    assert.ok(result.skipped.some((m) => /ℹ️ COMPANY_PROFILE vazio/.test(m)));
   });
   withJarvisRoot((root, target) => {
     buildMinimalFramework(root);
@@ -313,7 +313,7 @@ test("overlay: COMPANY_PROFILE vazio ou inválido cai no default com aviso", () 
     const result = syncAssets(target, "claude", {});
     assert.ok(existsSync(join(target, ".claude/overlays/stark-industries")));
     assert.ok(!existsSync(join(target, ".claude/overlays/rules")));
-    assert.ok(result.copied.some((m) => /⚠️ COMPANY_PROFILE "rules" inválido/.test(m)));
+    assert.ok(result.skipped.some((m) => /⚠️ COMPANY_PROFILE não pode ser o nome de uma pasta do core/.test(m)));
   });
 });
 
@@ -333,6 +333,39 @@ test("overlay: link para fora do overlay é ignorado com aviso; dryRun não cria
     buildMinimalFramework(root);
     write(target, ".claude/ENV.md", "COMPANY_PROFILE=acme\n");
     syncAssets(target, "claude", { dryRun: true });
+    assert.ok(!existsSync(join(target, ".claude/overlays")));
+  });
+});
+
+test("overlay: rule só do overlay vira órfã na troca de perfil e sai da IDE; marcada com origem no core ou no overlay ativo fica", () => {
+  withJarvisRoot((root, target) => {
+    buildMinimalFramework(root);
+    withOverlay(target, "acme", {
+      "rules/so-da-acme.md": "# só no overlay acme\n",
+      "rules/engineering/eng-rules.md": "# eng-rules da acme\n",
+    });
+    syncAssets(target, "claude", {});
+    assert.ok(existsSync(join(target, ".claude/rules/so-da-acme.md")));
+    assert.match(readFileSync(join(target, ".claude/rules/engineering/eng-rules.md"), "utf-8"), /> Overlay: acme/);
+
+    // troca de perfil: o overlay acme fica no disco, mas não está mais ativo
+    write(target, ".claude/ENV.md", "COMPANY_PROFILE=beta\n");
+    const result = syncAssets(target, "claude", {});
+    assert.ok(!existsSync(join(target, ".claude/rules/so-da-acme.md")), "órfã continuou na IDE");
+    assert.ok(result.copied.includes("(overlay) rules/so-da-acme.md: órfã removida da IDE"));
+    // a do core volta à versão do core (o cpSync a sobrescreveu); o overlay acme segue intacto
+    assert.equal(readFileSync(join(target, ".claude/rules/engineering/eng-rules.md"), "utf-8"), "x");
+    assert.ok(existsSync(join(target, ".claude/overlays/acme/rules/so-da-acme.md")));
+    assert.ok(statSync(join(target, ".claude/overlays/beta")).isDirectory());
+  });
+});
+
+test("overlay: dryRun diz que a pasta seria criada e não cria", () => {
+  withJarvisRoot((root, target) => {
+    buildMinimalFramework(root);
+    write(target, ".claude/ENV.md", "COMPANY_PROFILE=acme\n");
+    const result = syncAssets(target, "claude", { dryRun: true });
+    assert.ok(result.copied.includes("Overlay acme: pasta seria criada"));
     assert.ok(!existsSync(join(target, ".claude/overlays")));
   });
 });
