@@ -14,6 +14,7 @@ A pasta `rules/` contem **regras e diretrizes** que governam o comportamento do 
 
 ```
 rules/                        # Sempre carregadas no início da sessão
+├── company-overlay-rules.md  # Overlay de empresa (COMPANY_PROFILE): overlay > especialização > core, conferido na chamada
 ├── engineering/              # Regras de engenharia
 │   ├── eng-rules.md          # Regras gerais de engenharia
 │   ├── eng.bump-rules.md     # Regras para versionamento
