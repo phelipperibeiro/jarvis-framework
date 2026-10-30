@@ -17,7 +17,7 @@ import { tmpdir } from "node:os";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawnSync } from "node:child_process";
-import { parseMenuChoice, upgradePendencies } from "../bin/commands/init.js";
+import { parseMenuChoice, upgradePendencies, promptCompanyProfile } from "../bin/commands/init.js";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const cli = join(root, "bin", "jarvis.js");
@@ -849,4 +849,42 @@ test("init --upgrade: rule forkada no overlay vence a do core em .claude/rules/,
       assert.ok(existsSync(join(ws, ".claude/rules/company-overlay-rules.md")));
     }
   );
+});
+
+// Pergunta do COMPANY_PROFILE no upgrade (#199), como função pura: o `ask` é simulado, sem terminal.
+function fakeAsk(answers) {
+  const queue = [...answers];
+  const asked = [];
+  return { ask: async (q) => (asked.push(q), queue.shift() ?? ""), asked };
+}
+
+test("promptCompanyProfile: Enter grava o default (null); nome válido é devolvido; digitar o default conta como default", async () => {
+  const enter = fakeAsk([""]);
+  assert.equal(await promptCompanyProfile(enter.ask), null);
+  assert.equal(enter.asked.length, 1);
+  assert.match(enter.asked[0], /COMPANY_PROFILE.*Enter = stark-industries/);
+
+  assert.equal(await promptCompanyProfile(fakeAsk(["acme"]).ask), "acme");
+  assert.equal(await promptCompanyProfile(fakeAsk(["stark-industries"]).ask), null);
+});
+
+test("promptCompanyProfile: inválido é perguntado de novo (com aviso); inválido duas vezes grava o default com aviso", async () => {
+  const warned = [];
+  const warn = (m) => warned.push(m);
+
+  const recupera = fakeAsk(["Acme Corp", "acme"]);
+  assert.equal(await promptCompanyProfile(recupera.ask, { warn }), "acme");
+  assert.equal(recupera.asked.length, 2);
+  assert.equal(warned.length, 1);
+  assert.match(warned[0], /Nome inválido/);
+
+  warned.length = 0;
+  const insiste = fakeAsk(["rules", "../x"]);
+  assert.equal(await promptCompanyProfile(insiste.ask, { warn }), null);
+  assert.equal(insiste.asked.length, 2);
+  assert.deepEqual(
+    warned.map((m) => m.slice(0, 20)),
+    ["Nome inválido: use l", "Nome inválido de nov"]
+  );
+  assert.match(warned[1], /gravando o default stark-industries/);
 });

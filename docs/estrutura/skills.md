@@ -25,6 +25,7 @@ skills/
 ├── eng-rpa via eng-automation (base) + AUTOMATION_SPECIALIZATIONS
 ├── product-specs/ (porta de entrada), product-specs-update/, product-roadmap-report/
 ├── jarvis-report-issue/
+├── jarvis-fork/                # fork guiado para o overlay da empresa (COMPANY_PROFILE), só grava com o Sim
 └── … (skills restantes; todos com `metadata.area`)
 ```
 
@@ -70,3 +71,4 @@ Todo skill tem `metadata.area` (`qa`, `data`, `ai`, `frontend`, `backend`, `auto
 | `jarvis-list-specializations` | Lista as especializações instaladas (backend e frontend) e se estão registradas nas listas do `ENV.md`; só lê |
 | `jarvis-evolution-architect` | Mentor de arquitetura para a evolução do próprio Jarvis: questiona designs (agent, skill, workflow ou rule?), identifica gaps e recomenda com opinião técnica; só lê e pesquisa |
 | `jarvis-create-specialization` | Cria o skill de uma stack (backend ou frontend) a partir do código do projeto, mostra para revisão e o registra na lista da área |
+| `jarvis-fork` | Ajusta um comando do core a uma empresa sem editar o core: ouve a dor, aponta a seção, propõe o menor ajuste e grava o fork em `$IDE/overlays/{COMPANY_PROFILE}/` pelo CLI `jarvis fork`, só com o Sim; `--list`, `--update`, `--delete`; pergunta se o ajuste vale para o core (abre a melhoria pelo `jarvis-report-issue`) |

@@ -41,3 +41,13 @@ test("jarvis-fork: frontmatter com area global e as perguntas da regra de ouro e
   assert.match(skill, /sem o \*\*Sim\*\*/);
   assert.match(skill, /\| 8\. Alcance do ajuste \| `\/jarvis-report-issue` \|/);
 });
+
+// Fase 10 (#199): o que a skill e o /jarvis-init prometem na conversa.
+test("jarvis-fork e jarvis-init: fork sem carimbo oferece carimbar; Passo 8 cria a pasta do perfil", () => {
+  assert.match(skill, /Fork \*\*sem carimbo\*\*/);
+  assert.match(skill, /Carimbar \{artefato\} com a versão atual do core, sem alterar o conteúdo\?/);
+  assert.match(skill, /--update --diff/);
+  const init = readFileSync(join(root, "skills", "jarvis-init", "SKILL.md"), "utf-8");
+  assert.match(init, /Overlay \{COMPANY_PROFILE\}: pasta criada/);
+  assert.match(init, /Órfãs do overlay/);
+});

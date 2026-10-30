@@ -63,6 +63,7 @@ prompts/
 │   │   ├── eng-qa/                 # Base neutra de QA (+ especializações em QA_SPECIALIZATIONS)
 │   │   ├── eng-qa-planner/         # Planejamento de testes e análise de gaps de cobertura
 │   │   ├── jarvis-report-issue/          # Auto-report de bugs no repo do Jarvis (CLI do host: gh)
+│   │   ├── jarvis-fork/                  # Fork guiado de um artefato do core para o overlay da empresa (COMPANY_PROFILE; CLI jarvis fork)
 │   │   ├── eng-global-task-comment/      # Comentário no card (Jira/GitHub/GitLab, pela CLI do vendor)
 │   │   ├── jarvis-list-specializations/ # Lista especializações de stack instaladas e registradas
 │   │   ├── jarvis-create-specialization/ # Cria uma especialização de stack a partir do código do projeto e a registra
@@ -199,6 +200,7 @@ jarvis list                                         # Listar agents, skills e wo
 jarvis install-rtk                                  # Instalar RTK (token killer — economia 60-90% em tokens de shell)
 jarvis tokens    [--hub X --position Y --area Z --squad W] [--rtk] [--json]   # Estimar o que carrega no início da sessão (perfil do ENV.md se sem flags)
 jarvis map       <nome> [--depth N] [--reverse]      # Mapa de chamadas de um workflow, skill ou agente (lê só as tabelas padronizadas)
+jarvis fork      [nome] [--list] [--update [--diff]] [--delete] [--candidate]   # Overlay de empresa (#199): copia um artefato do core para $IDE/overlays/{COMPANY_PROFILE}/ com carimbo; lista; recarimba; remove
 jarvis daily-report [--days N] [--json]             # Junta os daily.md das sessões por dia (usado pelo /eng.daily-report)
 ```
 

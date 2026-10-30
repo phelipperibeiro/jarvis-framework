@@ -78,6 +78,32 @@ export function upgradePendencies({ pendingAxes, envPlan }) {
 }
 
 /**
+ * Pergunta do perfil de empresa no `--upgrade` (#199). Pura: recebe o `ask` (uma pergunta → a
+ * resposta) e o `warn` (um aviso na hora), e devolve o perfil próprio ou `null` para o default.
+ * Enter = default; nome inválido é perguntado mais uma vez; inválido de novo = default, com aviso.
+ * Testável sem terminal.
+ * @param {(question: string) => Promise<string>} ask
+ * @param {{ defaultProfile?: string, warn?: (message: string) => void }} [opts]
+ * @returns {Promise<string | null>}
+ */
+export async function promptCompanyProfile(
+  ask,
+  { defaultProfile = DEFAULT_COMPANY_PROFILE, warn = () => {} } = {}
+) {
+  const prompt = `Perfil de empresa (COMPANY_PROFILE) [Enter = ${defaultProfile}]: `;
+  let answer = (await ask(prompt)).trim();
+  if (answer && !isValidCompanyProfile(answer)) {
+    warn(
+      "Nome inválido: use letras minúsculas, números e hífen, e não o nome de uma pasta do core. Tente de novo ou Enter para o default."
+    );
+    answer = (await ask(prompt)).trim();
+  }
+  if (answer && isValidCompanyProfile(answer)) return answer === defaultProfile ? null : answer;
+  if (answer) warn(`Nome inválido de novo: gravando o default ${defaultProfile}.`);
+  return null;
+}
+
+/**
  * Leitor de linhas que não perde resposta: guarda as linhas que chegam antes da pergunta
  * (pipe com várias linhas, como `printf 's\n3\n'`) e devolve `null` quando a entrada fecha
  * sem linha (CI com `</dev/null`), em vez de esperar para sempre como o `rl.question` (Q2).
@@ -571,21 +597,10 @@ async function runUpgrade(cwd, flags) {
   if (addedKeys.includes("COMPANY_PROFILE")) {
     if (!flags.yes && process.stdin.isTTY) {
       const rl = createInterface({ input: process.stdin, output: process.stdout });
-      const prompt = `Perfil de empresa (COMPANY_PROFILE) [Enter = ${DEFAULT_COMPANY_PROFILE}]: `;
-      let answer = (await ask(rl, prompt)).trim();
-      if (answer && !isValidCompanyProfile(answer)) {
-        logger.info(
-          `${YELLOW}  Nome inválido: use letras minúsculas, números e hífen, e não o nome de uma pasta do core. Tente de novo ou Enter para o default.${NC}`
-        );
-        answer = (await ask(rl, prompt)).trim();
-      }
+      companyProfile = await promptCompanyProfile((q) => ask(rl, q), {
+        warn: (m) => logger.info(`${YELLOW}  ${m}${NC}`),
+      });
       rl.close();
-      if (answer && isValidCompanyProfile(answer)) companyProfile = answer;
-      else if (answer) {
-        logger.info(
-          `${YELLOW}  Nome inválido de novo: gravando o default ${DEFAULT_COMPANY_PROFILE}.${NC}`
-        );
-      }
     } else if (!flags.yes) {
       logger.info(
         `${DIM}  Sem terminal interativo e sem --yes: COMPANY_PROFILE fica no default ${DEFAULT_COMPANY_PROFILE}.${NC}`

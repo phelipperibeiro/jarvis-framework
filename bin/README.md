@@ -49,7 +49,7 @@ bin/commands/*.js          →  lógica de negócio pura: async (flags) => {...}
 
 **Por que separar assim?** `bin/commands/*.js` nunca importa `commander` nem sabe o que é um `Command`. Cada arquivo só recebe um objeto `flags` e faz o que precisa. Isso significa:
 - Testar a lógica de um comando não exige simular argv/commander — chama a função direto com um objeto.
-- Trocar de biblioteca de CLI um dia (se um dia fizer sentido) significa reescrever só `program.js`, não os 10 arquivos de comando.
+- Trocar de biblioteca de CLI um dia (se um dia fizer sentido) significa reescrever só `program.js`, não os arquivos de `bin/commands/`.
 - `program.js` é o **mapa completo** do CLI: para saber todo comando que existe, todas as flags que cada um aceita, é o único arquivo que precisa abrir.
 
 ## O adapter: commander → formato antigo de `flags`

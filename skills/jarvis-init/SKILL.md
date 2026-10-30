@@ -1145,7 +1145,10 @@ cp "$pasta/$relPath" "$IDE/$pasta/$relPath"   # $pasta = rules ou rules-on-deman
    Removidas: N arquivos (não batem com o perfil)
    Universais: N arquivos (sem applies_to — sempre copiadas)
    Do overlay: N arquivos ({COMPANY_PROFILE})
+   Overlay {COMPANY_PROFILE}: pasta criada        ← só quando `$IDE/overlays/{COMPANY_PROFILE}/` não existia
 ```
+
+> **Pasta do perfil (#199):** se `$IDE/overlays/{COMPANY_PROFILE}/` não existir, crie-a vazia (`mkdir -p`) e mostre a linha acima. É a única escrita permitida em `$IDE/overlays/`: nenhum arquivo é gravado, alterado ou apagado lá. O `jarvis init` faz o mesmo; aqui vale para quem roda só o `/jarvis-init`.
 
 > **Nota**: `rules/AGENTS.md` é sempre copiado — nunca filtrado.
 

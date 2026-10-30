@@ -22,9 +22,10 @@ bin/
 │   ├── install-rtk.js      # jarvis install-rtk
 │   ├── tokens.js           # jarvis tokens
 │   ├── map.js              # jarvis map
+│   ├── fork.js             # jarvis fork (overlay de empresa, #199)
 │   └── daily-report.js     # jarvis daily-report
 └── lib/
-    ├── core/               # sync-engine, scanner, profile-filter, token-report, env-upgrade, docs-migrate, workspace-mode, mcp-config, stale-skills, session-scan
+    ├── core/               # sync-engine (com o RuleResolver do overlay), scanner, profile-filter, token-report, env-upgrade, docs-migrate, workspace-mode, mcp-config, stale-skills, session-scan, company-profile (COMPANY_PROFILE e o default stark-industries)
     ├── flow-map/           # índice, leitor das tabelas de chamadas, árvore e saída do jarvis map
     ├── config/             # IDEs, constants (SYNC_DIRS, LOCK_FILE)
     ├── vcs/                # GitHub/GitLab pela CLI (gh, glab)
