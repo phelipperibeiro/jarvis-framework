@@ -636,6 +636,12 @@ test("fork: overlays/{perfil} que é link para uma pasta real funciona (fork, --
 
     assert.equal(await run(["eng.start"], { delete: true }), 0);
     assert.ok(!existsSync(forkPath));
+    // skill (pasta, rmSync recursivo) no overlay linkado: fork e --delete na pasta real
+    assert.equal(await run(["eng-global-pr"]), 0);
+    assert.ok(existsSync(join(real, "skills/eng-global-pr/SKILL.md")));
+    assert.equal(await run(["eng-global-pr"], { delete: true }), 0);
+    assert.ok(!existsSync(join(real, "skills/eng-global-pr")));
+    assert.ok(existsSync(real), "o --delete apagou a pasta real do overlay");
     // um link abaixo do overlay continua recusado
     symlinkSync(join(ws, "fora"), join(real, "workflows/engineering/eng.start.md"));
     assert.equal(await run(["eng.start"]), 1);
@@ -657,6 +663,13 @@ test("fork --update: SKILL.md do fork que é link para fora do overlay sai com 1
       readFileSync(fora, "utf-8"),
       "---\nforked_from: eng-global-pr@1.0.0\n---\n# fora\n",
       "o --update gravou fora do overlay seguindo o link"
+    );
+    // o --delete remove o link (a pasta da skill), não o alvo
+    assert.equal(await run(["eng-global-pr"], { delete: true }), 0);
+    assert.ok(!existsSync(skillDir));
+    assert.equal(
+      readFileSync(fora, "utf-8"),
+      "---\nforked_from: eng-global-pr@1.0.0\n---\n# fora\n"
     );
   });
 });
