@@ -6,7 +6,7 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), e o
 
 > Versões anteriores a `2.1.1` não foram documentadas retroativamente neste changelog — o histórico detalhado dessas versões continua disponível via `git log`.
 
-## [Não lançado]
+## [8.3.0] - 2026-10-30
 
 ### Added
 - **Overlay de empresa (#199)**: `COMPANY_PROFILE` no `ENV.md` (nasce como `stark-industries`, o overlay padrão; nunca vazio) aponta para `$IDE/overlays/{perfil}/`, uma pasta que espelha o core e guarda só o que a empresa substituiu. Dois resolvers: na **chamada**, a rule universal `rules/company-overlay-rules.md` manda conferir o overlay antes de seguir um workflow, skill ou agente, ou de ler um template ou rule-on-demand (overlay > especialização de stack > core); na **instalação**, o sync e o Passo 8 do `/jarvis-init` copiam por cima de `$IDE/rules/` e `rules-on-demand/` a versão do overlay de cada rule, marcada com `> Overlay: …`. O `init`/`upgrade` nunca grava arquivo em `overlays/`: só cria a pasta vazia do perfil ativo.
