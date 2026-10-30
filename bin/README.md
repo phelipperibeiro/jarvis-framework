@@ -11,7 +11,7 @@ bin/
 ├── commands/                  # Um arquivo por comando. Lógica pura, zero commander.
 │   ├── init.js, list.js, info.js, whoami.js, ...
 │   ├── docs-sync.js, docs-publish.js
-│   └── install-rtk.js, tokens.js, map.js
+│   └── install-rtk.js, tokens.js, map.js, fork.js
 └── lib/
     ├── cli/
     │   ├── program.js         # Único lugar que monta o commander — ver "Arquitetura"
@@ -25,7 +25,7 @@ bin/
     ├── tasks/
     │   └── comment.js         # Comentário no card (jira/github/gitlab) pelo cli-runner — mesmo padrão
     ├── config/                # ide-config.js (fonte de verdade de IDEs), constants.js
-    ├── core/                  # scanner.js, sync-engine.js, profile-filter.js, token-report.js
+    ├── core/                  # scanner.js, sync-engine.js (inclui o RuleResolver do overlay), profile-filter.js, token-report.js, company-profile.js (COMPANY_PROFILE e o default stark-industries)
     ├── docs/                  # Central docs: fetch/publish pelo adaptador + validação de frontmatter
     │   ├── validate-frontmatter.js  # Valida/extrai frontmatter (feature, delivery e documentos de trabalho: PRD, FRD, épico, história, tarefa, ARD, RFC, QA)
     │   ├── fetch-file.js       # openStorageFromEnv() + fetchFile() — `docs sync`/`docs fetch`/`docs publish`

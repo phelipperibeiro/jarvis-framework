@@ -45,6 +45,7 @@ bin/
 | `jarvis install-rtk` | rustup (se preciso) + `cargo install rtk` |
 | `jarvis tokens` | Estima o que carrega no início da sessão para um perfil (rules, `AGENTS.md`, frontmatter dos skills, `warm-up`) |
 | `jarvis map <nome>` | Árvore em texto do que um workflow, skill ou agente chama (`--reverse`: quem o chama; `--depth N`) |
+| `jarvis fork <nome> [--candidate]` / `--list` / `<nome> --update` / `<nome> --delete` | Overlay de empresa (#199): copia um artefato do core para `.$IDE/overlays/{COMPANY_PROFILE}/` com carimbo (`forked_from`, `forked_at`); lista o que está forkado (sem comparar); mostra o diff fork × core atual e recarimba; remove (rule volta ao core na IDE). A conversa é da skill `/jarvis-fork`; é o único comando que grava em `overlays/` |
 | `jarvis daily-report` | Junta os `daily.md` das sessões por dia, com alertas das sessões sem registro (`--days N`, `--json`; base do `/eng.daily-report`) |
 | `jarvis tasks comment <key> [msg] [--body-file]` | Comenta no card pela CLI do vendor (`gh`/`glab`/`acli`); lê o ENV.md (`--ide`/`--env-file`); saídas 0 ok, 1 uso, 3 indisponível (inclui `TASK_MANAGER_ACCESS` `manual` ou inválido e ENV.md ambíguo), 4 enviado com erro |
 | `jarvis vcs create-merge` / `create-issue` | Abre PR/MR (`gh pr create`/`glab mr create`, respeitando o `VERSION_CONTROL_ACCESS`; `--ide`/`--env-file` no `create-merge`) e issue (`JARVIS_PROJECT` com URL completa); mesmas saídas. `ACCESS` `manual` ou inválido e ENV.md ambíguo saem com 3 |
@@ -61,6 +62,8 @@ Efeitos colaterais no init:
 - Flatten de workflows (arquivos sobem para a raiz de `workflows/` ou `commands/`)
 - `jarvis-lock.json` na raiz do workspace e em `.$IDE/`
 - Reconciliação RTK (`RTK_ENABLED` + `rtk-rules.md`); na reinstalação (`--force` ou a opção Reinstalar do menu) e no `--upgrade`, o `RTK_ENABLED` que já está no ENV.md não muda
+- RuleResolver do overlay de empresa (#199): lê `COMPANY_PROFILE` do ENV.md (vazio, inválido ou sem ENV.md → `stark-industries`), cria a pasta vazia `.$IDE/overlays/{perfil}/` se não existir (única escrita em `overlays/`) e copia por cima de `rules/` e `rules-on-demand/` da IDE cada `.md` do overlay com o mesmo caminho, marcado com `> Overlay: {perfil} (forked_from …)`. Workflows, skills, agentes e templates do overlay não são copiados: a rule `company-overlay-rules.md` os resolve na chamada
+- `--upgrade`: ao acrescentar `COMPANY_PROFILE` num ENV antigo, pergunta o perfil no terminal (Enter, `--yes` ou sem TTY = `stark-industries`)
 - Transformações por IDE (Codex `openai.yaml`, OpenCode frontmatter, Kiro steering)
 
 ## Banner e versão

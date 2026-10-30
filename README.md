@@ -205,6 +205,17 @@ Guia completo: [`docs/especializacoes-de-stack.md`](docs/especializacoes-de-stac
 
 ---
 
+## Funciona com qualquer empresa
+
+A stack vem do código; o **processo** vem da empresa, e muda de cliente para cliente: de onde nasce a branch, como se entrega, quais gates valem, campos do MR. `COMPANY_PROFILE` no `ENV.md` (nasce como `stark-industries`, o overlay padrão) aponta para `.{ide}/overlays/{perfil}/`, uma pasta que espelha o core e guarda só o que a empresa substituiu. O `jarvis init --upgrade` atualiza o core e nunca grava arquivo no overlay.
+
+- **`/jarvis-fork {artefato}`**: uma conversa até achar a seção do core que não serve, o menor ajuste, a simulação e o fork no overlay, só com o Sim; `--list`, `--update`, `--delete`
+- **Dois resolvers**: uma rule universal confere o overlay na chamada (workflows, skills, agentes, templates); o `jarvis init` e o `/jarvis-init` copiam por cima as `rules/` do overlay na instalação
+
+Guia completo: [`docs/overlay-de-empresa.md`](docs/overlay-de-empresa.md).
+
+---
+
 ## Camadas
 
 O Jarvis e organizado em 5 camadas.

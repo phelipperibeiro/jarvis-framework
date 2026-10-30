@@ -76,3 +76,5 @@ Fonte: `workflows/engineering/`. Guias didáticos: [engenharia/README.md](./enge
 ## Outros comandos
 
 Os comandos de dados (`/data.new-pipeline`, `/data.contract`), `/jarvis-init`, `/warm-up` e `/taxonomy` não estão nesta lista. Para o quadro completo do que o CLI instala, rode `jarvis list`.
+
+**Overlay de empresa:** `/jarvis-fork {artefato}` ajusta um comando do core a uma empresa sem editar o core (fork para `$IDE/overlays/{COMPANY_PROFILE}/`), com `--list`, `--update` e `--delete`. Guia: [overlay-de-empresa.md](./overlay-de-empresa.md).
