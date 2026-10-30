@@ -1,7 +1,7 @@
 import { existsSync, mkdirSync, readFileSync, realpathSync } from "node:fs";
 import { join, dirname, basename, resolve, sep } from "node:path";
 import { createInterface } from "node:readline";
-import { syncAssets } from "../lib/core/sync-engine.js";
+import { syncAssets, applyRuleOverlay } from "../lib/core/sync-engine.js";
 import { discoverAll } from "../lib/core/scanner.js";
 import {
   IDES,
@@ -23,6 +23,7 @@ import {
   removeStaleSkills,
 } from "../lib/core/stale-skills.js";
 import { parseEnvEntries, planEnvUpgrade, applyEnvUpgrade } from "../lib/core/env-upgrade.js";
+import { DEFAULT_COMPANY_PROFILE, isValidCompanyProfile } from "../lib/core/company-profile.js";
 import { checkCli, getVendor } from "../lib/integrations/cli-runner.js";
 import {
   expandEnv,
@@ -74,6 +75,32 @@ export function upgradePendencies({ pendingAxes, envPlan }) {
   if (warnings.includes("CENTRAL_DOCS_REPO")) reasons.push("migrar o Central docs");
   if (warnings.includes("TOKEN_TASK_MANAGER")) reasons.push("remover o TOKEN_TASK_MANAGER");
   return reasons;
+}
+
+/**
+ * Pergunta do perfil de empresa no `--upgrade` (#199). Pura: recebe o `ask` (uma pergunta → a
+ * resposta) e o `warn` (um aviso na hora), e devolve o perfil próprio ou `null` para o default.
+ * Enter = default; nome inválido é perguntado mais uma vez; inválido de novo = default, com aviso.
+ * Testável sem terminal.
+ * @param {(question: string) => Promise<string>} ask
+ * @param {{ defaultProfile?: string, warn?: (message: string) => void }} [opts]
+ * @returns {Promise<string | null>}
+ */
+export async function promptCompanyProfile(
+  ask,
+  { defaultProfile = DEFAULT_COMPANY_PROFILE, warn = () => {} } = {}
+) {
+  const prompt = `Perfil de empresa (COMPANY_PROFILE) [Enter = ${defaultProfile}]: `;
+  let answer = (await ask(prompt)).trim();
+  if (answer && !isValidCompanyProfile(answer)) {
+    warn(
+      "Nome inválido: use letras minúsculas, números e hífen, e não o nome de uma pasta do core. Tente de novo ou Enter para o default."
+    );
+    answer = (await ask(prompt)).trim();
+  }
+  if (answer && isValidCompanyProfile(answer)) return answer === defaultProfile ? null : answer;
+  if (answer) warn(`Nome inválido de novo: gravando o default ${defaultProfile}.`);
+  return null;
 }
 
 /**
@@ -564,10 +591,39 @@ async function runUpgrade(cwd, flags) {
     }
   }
 
+  // 3.2 Perfil de empresa (#199): a chave nova nasce com o default; com terminal e sem --yes,
+  // pergunta. Só o nome da chave e "default/definido" saem no resumo, nunca o valor.
+  let companyProfile = null;
+  if (addedKeys.includes("COMPANY_PROFILE")) {
+    if (!flags.yes && process.stdin.isTTY) {
+      const rl = createInterface({ input: process.stdin, output: process.stdout });
+      companyProfile = await promptCompanyProfile((q) => ask(rl, q), {
+        warn: (m) => logger.info(`${YELLOW}  ${m}${NC}`),
+      });
+      rl.close();
+    } else if (!flags.yes) {
+      logger.info(
+        `${DIM}  Sem terminal interativo e sem --yes: COMPANY_PROFILE fica no default ${DEFAULT_COMPANY_PROFILE}.${NC}`
+      );
+    }
+  }
+
   const overrides =
     docsPlan.moves.length > 0 && !accepted ? declineEnvValues(docsPlan, addedKeys, env) : {};
+  if (companyProfile) overrides.COMPANY_PROFILE = companyProfile;
   const today = new Date().toISOString().slice(0, 10);
   applyEnvUpgrade(envPath, envPlan, today, overrides);
+
+  // 3.3 Perfil respondido agora: o sync acima rodou com o default. Reaplica o overlay do perfil
+  // gravado (pasta dele criada, rules dele por cima). A pasta do default criada antes fica: todo
+  // workspace a tem, e o upgrade não apaga nada em overlays/.
+  if (companyProfile) {
+    const again = { copied: [], skipped: [], errors: [] };
+    applyRuleOverlay(join(workspaceDir, `.${getIDEFolder(ide)}`), again);
+    for (const item of again.copied) logger.info(`${BLUE}  ↳ ${item}${NC}`);
+    for (const item of again.skipped) logger.info(`${DIM}  ↳ ${item}${NC}`);
+    for (const e of again.errors) logger.error(`${RED}  ✗ ${e}${NC}`);
+  }
 
   // 3.1 Skills instalados que saíram do framework: só lista; remove com confirmação ou --remove-stale
   const ideSkillsDir = join(workspaceDir, `.${getIDEFolder(ide)}`, "skills");
@@ -619,6 +675,11 @@ async function runUpgrade(cwd, flags) {
   logger.info(
     `  • ENV.md: ${addedKeys.length ? `+ ${addedKeys.join(", ")}` : "nenhuma variável nova"}`
   );
+  if (addedKeys.includes("COMPANY_PROFILE")) {
+    logger.info(
+      `  • COMPANY_PROFILE: ${companyProfile ? "definido" : `default (${DEFAULT_COMPANY_PROFILE})`}`
+    );
+  }
   if (Object.keys(overrides).length) {
     logger.info(`  • Mantidos no caminho antigo: ${Object.keys(overrides).join(", ")}`);
   }

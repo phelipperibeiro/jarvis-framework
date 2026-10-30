@@ -252,3 +252,11 @@ test("ENV-template: cada assunto numa moldura de # ==== e nenhum separador # ---
   assert.ok(titles.includes("Workspace e identidade"), titles.join(" | "));
   assert.ok(titles.length >= 15, `só ${titles.length} assuntos: ${titles.join(" | ")}`);
 });
+
+test("planEnvUpgrade: COMPANY_PROFILE nova entra com o default stark-industries e não vira pendência (#199)", () => {
+  const tpl = readFileSync(join(root, "templates", "ENV-template.md"), "utf-8");
+  const plan = planEnvUpgrade("HUB=BACKEND\nAREA=ENGINEERING\n", tpl);
+  const added = plan.added.find((a) => a.key === "COMPANY_PROFILE");
+  assert.deepEqual(added, { key: "COMPANY_PROFILE", value: "stark-industries" });
+  assert.ok(!plan.pending.includes("COMPANY_PROFILE"));
+});

@@ -12,6 +12,7 @@ Diferente de skills: rules são **restrições e padrões contínuos**; skills s
 rules/
 ├── AGENTS.md
 ├── rtk-rules.md                    # opt-in: só se RTK_ENABLED=true
+├── company-overlay-rules.md        # universal: overlay de empresa > especialização > core, conferido na chamada (#199)
 ├── engineering/
 │   ├── eng-rules.md                # regras gerais de engenharia
 │   ├── eng-security-rules.md

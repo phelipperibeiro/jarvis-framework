@@ -621,6 +621,7 @@ Se **A** ou **B**, perguntar sobre cada variável opcional conforme seleção �
    - Nenhuma variável guarda token.
 4. **Vendor do git (`VERSION_CONTROL`):** `github`, `gitlab` ou vazio (Bitbucket/outro → não suportado, vazio). Faça a mesma descoberta do item 2 e defina `VERSION_CONTROL_ACCESS`. Não há variável de repositório: o repo e o host vêm do `git remote get-url origin`.
 5. **Gravação única:** guarde as respostas dos dois eixos e grave tudo no Passo 5, depois do "sim" no bloco final. Se o init for interrompido antes, nada é gravado.
+6. **Perfil de empresa (`COMPANY_PROFILE`):** o overlay é a camada da empresa por cima do core (`$IDE/overlays/{perfil}/`), só com o que o `/jarvis-fork` substituiu; todo workspace tem um, e o default é `stark-industries` (o overlay padrão do Jarvis). Pergunte com `AskUserQuestion`: **Manter o default `stark-industries`** (primeira opção) | **Nome da empresa** (texto livre, em kebab-case: letras minúsculas, números e hífen). Nome fora do padrão ou igual a uma pasta do core (`skills`, `rules`, `workflows`, `commands`, `agents`, `rules-on-demand`, `templates`, `scripts`, `overlays`) → mostre o motivo e pergunte de novo. A chave **nunca** fica vazia. A pasta vazia do perfil é criada pelo `jarvis init` e pelo Passo 8 (única escrita permitida em `$IDE/overlays/`); nenhum arquivo é gravado nela aqui.
 
 **Central docs:** não é perguntado aqui. Ele é ligado por padrão e configurado no **Passo 5.2**, que roda sempre.
 
@@ -628,6 +629,7 @@ Se **A** ou **B**, perguntar sobre cada variável opcional conforme seleção �
 
 | Variável | Valor Padrão | Descrição |
 |----------|--------------|-----------|
+| `COMPANY_PROFILE` | `stark-industries` | Perfil de empresa: nome do overlay em `$IDE/overlays/{valor}/` (default = overlay padrão do Jarvis; nunca vazio) |
 | `TASK_MANAGER` | *(vazio = freelance)* | `jira`, `github`, `gitlab` |
 | `TASK_MANAGER_ACCESS` | *(vazio)* | `cli` ou `manual` (definido pela descoberta da CLI) |
 | `TASK_MANAGER_URL_BASE` | *(vazio)* | GitHub/GitLab: repositório dos cards (obrigatório); Jira: o site, só para o link |
@@ -1057,7 +1059,7 @@ Objetivo: garantir que `$IDE/rules/` e `$IDE/rules-on-demand/` contenham apenas 
 
 ```
 1. Ler HUB, POSITION, AREA, SQUAD e ARTIFACT_STYLE (vazio = `ai-generated`) do ENV.md recém-gravado
-2. Para cada uma das duas pastas (rules/ e rules-on-demand/), listar todos os arquivos .md (recursivo, exceto AGENTS.md)
+2. Para cada uma das duas pastas (rules/ e rules-on-demand/), listar todos os arquivos .md (recursivo, exceto AGENTS.md) do core, mais os de `$IDE/overlays/{COMPANY_PROFILE}/{pasta}/` que o core não tem
 3. Para cada arquivo:
    a. Ler o bloco `> **Applies to:**` (primeira ocorrência no arquivo)
    b. Se o bloco não existir → tratar como universal → copiar sempre
@@ -1065,8 +1067,10 @@ Objetivo: garantir que `$IDE/rules/` e `$IDE/rules-on-demand/` contenham apenas 
    d. **Condição especial RTK**: se o arquivo for `rtk-rules.md`,
       copiar APENAS se `RTK_ENABLED=true` no ENV.md
       (mesmo que o perfil bata, RTK é opt-in)
-   e. Se bate com o perfil → copiar para a mesma pasta em $IDE/ (rules/ → $IDE/rules/, rules-on-demand/ → $IDE/rules-on-demand/), preservando subpastas
+   e. Se bate com o perfil → copiar para a mesma pasta em $IDE/ (rules/ → $IDE/rules/, rules-on-demand/ → $IDE/rules-on-demand/), preservando subpastas.
+      **RuleResolver (#199):** a origem é `$IDE/overlays/{COMPANY_PROFILE}/{pasta}/{relPath}` se esse arquivo existir (o fork da empresa, mesmo caminho e nome), senão a do core. O `Applies to` lido é o do arquivo que será copiado. A cópia vinda do overlay recebe, logo depois do frontmatter (ou na primeira linha, sem frontmatter), a linha `> Overlay: {COMPANY_PROFILE} (forked_from {valor do frontmatter, ou "sem carimbo"})`. **Nada é gravado em `$IDE/overlays/`**: a única exceção é criar a pasta vazia do perfil (`mkdir`), feita pelo `jarvis init` e por este Passo 8 (nota abaixo do resumo)
    f. Se não bate → deletar de $IDE/ se existir lá
+   g. **Órfãs do overlay (#199):** arquivo em `$IDE/rules/` ou `$IDE/rules-on-demand/` cuja **primeira linha útil depois do frontmatter** é exatamente `> Overlay: {perfil} (forked_from …)` e que não existe em `$IDE/overlays/{COMPANY_PROFILE}/` (ficou de outro perfil, ou saiu do overlay à mão): se existe no core → copiar a versão do core por cima (sem marcação); senão → deletar de $IDE/. Uma rule que só cite a marcação no corpo não conta. O arquivo do overlay nunca é tocado
 4. Exibir resumo ao usuário
 ```
 
@@ -1140,7 +1144,11 @@ cp "$pasta/$relPath" "$IDE/$pasta/$relPath"   # $pasta = rules ou rules-on-deman
    Copiadas : N arquivos (rules/: N | rules-on-demand/: N)
    Removidas: N arquivos (não batem com o perfil)
    Universais: N arquivos (sem applies_to — sempre copiadas)
+   Do overlay: N arquivos ({COMPANY_PROFILE})
+   Overlay {COMPANY_PROFILE}: pasta criada        ← só quando `$IDE/overlays/{COMPANY_PROFILE}/` não existia
 ```
+
+> **Pasta do perfil (#199):** se `$IDE/overlays/{COMPANY_PROFILE}/` não existir, crie-a vazia (`mkdir -p`) e mostre a linha acima. É a única escrita permitida em `$IDE/overlays/`: nenhum arquivo é gravado, alterado ou apagado lá. O `jarvis init` faz o mesmo; aqui vale para quem roda só o `/jarvis-init`.
 
 > **Nota**: `rules/AGENTS.md` é sempre copiado — nunca filtrado.
 
@@ -1185,6 +1193,7 @@ Roda no fim de todo caminho que grava o `ENV.md`: criação (opção A ou ENV.md
 | Chave fora do template (saiu dele ou é do projeto) | `QA_SIGNOFF_BRANCHES`, `MINHA_VAR` | Mover para o bloco final "Variáveis fora do template", com `# (descontinuada)` numa linha própria logo acima da chave e o valor intacto |
 | Chave duplicada | `HUB=` duas vezes | Manter a preenchida (ou a última) |
 | Valor fora das opções | `HUB=BACKEN`, `MAX_AI_EXECUTION_PERCENTAGE=40`, `TASK_MANAGER_ACCESS=api` | Perguntar o valor, com as opções do template ou do `taxonomy.md` (as mesmas perguntas do passo 3) |
+| `COMPANY_PROFILE` vazio, fora do padrão ou igual a uma pasta do core | `COMPANY_PROFILE=`, `COMPANY_PROFILE=Acme Corp`, `COMPANY_PROFILE=rules` | A mesma pergunta do item 6 do passo 4 (default `stark-industries` primeiro). Vazio não é válido: a chave sempre tem um perfil |
 | Obrigatória vazia | `SQUAD=` | A mesma pergunta do passo 3 |
 | Lista de exemplo não escolhida | `TASK_MANAGER=[jira, github, gitlab]` | Escolher uma ou esvaziar |
 | Fora da ordem ou do assunto | blocos `# --- Upgrade ... ---` no fim; uma `DATA_*` longe das irmãs | Regravar na ordem do template |

@@ -78,6 +78,8 @@ skills/
 │   └── assets/
 ├── jarvis-report-issue/         # Reportar bug no próprio Jarvis (JARVIS_PROJECT)
 │   └── SKILL.md
+├── jarvis-fork/                 # Fork guiado de um artefato do core para o overlay da empresa (COMPANY_PROFILE; CLI jarvis fork)
+│   └── SKILL.md
 ├── jarvis-context-detect/       # Detecta contexto do projeto/tarefa
 │   └── SKILL.md
 └── jarvis-docs-central/         # Sync/publish docs no central-docs (GitHub/GitLab)
@@ -241,6 +243,7 @@ Skills são invocados de formas diferentes dependendo da IDE:
 | Arquitetura C4 | `eng-backend-arch-c4` |
 | Listar especializações de stack (instaladas e registradas) | `jarvis-list-specializations` |
 | Criar uma especialização de stack (backend ou frontend) a partir do código do projeto | `jarvis-create-specialization` |
+| Ajustar um comando do core a uma empresa sem editar o core (fork para `$IDE/overlays/{COMPANY_PROFILE}/`), listar, atualizar ou remover forks | `jarvis-fork` |
 | Decisão de arquitetura do Jarvis (agent, skill, workflow ou rule?), simplificação, tendências | `jarvis-evolution-architect` |
 | Mensageria, filas, RabbitMQ, events, consumers, producers | `eng-backend-rabbitmq` (especialização de backend: registrar em `BACKEND_SPECIALIZATIONS`) |
 | APIs, auth, workers, filas, caching, banco de dados | `eng-backend` (base) + `BACKEND_SPECIALIZATIONS` |

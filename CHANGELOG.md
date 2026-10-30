@@ -6,6 +6,18 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), e o
 
 > Versões anteriores a `2.1.1` não foram documentadas retroativamente neste changelog — o histórico detalhado dessas versões continua disponível via `git log`.
 
+## [Não lançado]
+
+### Added
+- **Overlay de empresa (#199)**: `COMPANY_PROFILE` no `ENV.md` (nasce como `stark-industries`, o overlay padrão; nunca vazio) aponta para `$IDE/overlays/{perfil}/`, uma pasta que espelha o core e guarda só o que a empresa substituiu. Dois resolvers: na **chamada**, a rule universal `rules/company-overlay-rules.md` manda conferir o overlay antes de seguir um workflow, skill ou agente, ou de ler um template ou rule-on-demand (overlay > especialização de stack > core); na **instalação**, o sync e o Passo 8 do `/jarvis-init` copiam por cima de `$IDE/rules/` e `rules-on-demand/` a versão do overlay de cada rule, marcada com `> Overlay: …`. O `init`/`upgrade` nunca grava arquivo em `overlays/`: só cria a pasta vazia do perfil ativo.
+- **`jarvis fork`**: `{nome}` copia um artefato do core (workflow, skill ou agente pelo nome; `rules/…`, `rules-on-demand/…`, `templates/…` por caminho) para o overlay, no mesmo caminho e nome, com `forked_from`, `forked_at` e `core_candidate` (`--candidate`); rule e rule-on-demand são recopiadas na IDE na hora. `--list` só lista o que está forkado, em colunas; `--update` recarimba com a versão atual do core (e regrava em LF); `--update --diff` só mostra o diff fork × core atual, por seção (🔴 em possível mudança de contrato), sem gravar; `--delete` remove e devolve a rule do core à IDE. O comando confere, nível a nível e por `lstat`/`realpath`, que grava e apaga só dentro do overlay (nenhum link abaixo de `overlays/{perfil}`; a própria pasta do perfil pode ser um link para uma pasta real, como um overlay num repositório da empresa); o `--update` confere também o arquivo principal (`SKILL.md`); e normaliza CRLF. O sync e o Passo 8 devolvem ao core (ou removem) as cópias na IDE marcadas com um perfil que não é o ativo; a marcação só conta na posição e no formato exatos.
+- **Skill `/jarvis-fork`**: a conversa do fork: ouve a dor, aponta a seção do core, propõe o menor ajuste com a conta de linhas e tokens, simula o efeito, grava só com o Sim e pergunta o alcance (apenas da empresa, melhoria para o core pelo `/jarvis-report-issue`, ou candidato a core).
+- **`/jarvis-init` e `jarvis init --upgrade`**: perguntam o `COMPANY_PROFILE` (Enter = default; `--yes` ou sem terminal = default); o passo 9.5 valida o nome (minúsculas, números e hífen; não pode ser pasta do core; nunca vazio).
+- **Testes**: `company-profile.test.js`, `company-overlay-rules.test.js` e `fork.test.js` no `test:filtro`; cenários de overlay em `sync-engine.test.js` e `init-upgrade.test.js`; `planEnvUpgrade` com a chave nova fora das pendências.
+
+### Changed
+- **`jarvis tokens`**: todo perfil passa a contar `rules/company-overlay-rules.md` (994 B); os snapshots "rules reais" de `profile-filter.test.js` subiram +1 arquivo e +1126 B (com a linha nova no `rules/AGENTS.md`).
+
 ## [8.2.0] - 2026-10-28
 
 ### Added

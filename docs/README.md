@@ -8,6 +8,7 @@
 | [estrutura/](./estrutura/README.md) | Cada arquivo/pasta da raiz explicado em subpáginas |
 | [engenharia/](./engenharia/README.md) | Universo de engenharia: um guia por comando `/eng.*` |
 | [especializacoes-de-stack.md](./especializacoes-de-stack.md) | **Adaptar o Jarvis à sua stack**: skill base, especializações, listas no `ENV.md`, criador e passo do `/jarvis-init` |
+| [overlay-de-empresa.md](./overlay-de-empresa.md) | **Adaptar o Jarvis à sua empresa**: `COMPANY_PROFILE`, overlay `$IDE/overlays/{perfil}/`, os dois resolvers, `/jarvis-fork` e `jarvis fork` |
 | [comandos.md](./comandos.md) | Consulta rápida: todos os comandos `eng.*` e `prod.*` numa página |
 | [produto/](./produto/README.md) | Universo de produto (PM/PO) + um guia por comando `/prod.spec*` |
 | [produto/prod.spec.guide.md](./produto/prod.spec.guide.md) | **Qual spec usar?** — árvore de decisão |

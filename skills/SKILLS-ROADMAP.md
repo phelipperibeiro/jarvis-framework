@@ -141,6 +141,11 @@ Removidas: `checkin`, `checkout`, `daily`, `task-log`, `send-priority`, `sent-pr
 - **Trigger**: auto-report de bugs no framework Jarvis pela CLI do host (`gh`), depois da pergunta
 - **Status**: `criado`
 
+### `jarvis-fork` ✅
+- **Trigger**: um comando do core não serve a esta empresa; "customizar o Jarvis para este cliente"
+- **Escopo**: conversa até achar a seção que incomoda, menor ajuste, simulação e fork no overlay (`$IDE/overlays/{COMPANY_PROFILE}/`) só com o Sim, pelo CLI `jarvis fork`; `--list`, `--update`, `--delete`; pergunta de alcance (só da empresa ou melhoria para o core via `jarvis-report-issue`)
+- **Status**: `criado` (#199)
+
 ### `jarvis-docs-index` / `jarvis-docs-central` / `jarvis-context-detect` ✅
 - **Trigger**: indexação de docs, sync com repo central, detecção de contexto
 - **Status**: `criado`

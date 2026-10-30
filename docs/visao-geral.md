@@ -137,6 +137,10 @@ Fonte de verdade do perfil no projeto. Criado só via `/jarvis-init` a partir de
 
 O Jarvis é **neutro de stack**: `eng-backend` e `eng-frontend` guardam o que vale em qualquer linguagem, e cada projeto registra as **especializações** da sua stack em `BACKEND_SPECIALIZATIONS` e `FRONTEND_SPECIALIZATIONS` (no `ENV.md`). Todo skill tem `metadata.area` (e, nas especializações, `metadata.stack`), e um skill sem área reconhecida bloqueia os `eng.*`. O `/jarvis-init` oferece o passo "adicionar as stacks" e o `/jarvis-create-specialization` cria uma especialização a partir do código. Detalhes: [especializacoes-de-stack.md](./especializacoes-de-stack.md).
 
+### Overlay de empresa
+
+A stack vem do código; o **processo** (de onde nasce a branch, como se entrega, quais gates valem) vem da empresa. `COMPANY_PROFILE` no `ENV.md` (nasce como `stark-industries`, o overlay padrão) aponta para `$IDE/overlays/{perfil}/`, uma pasta que espelha o core e guarda **só o que a empresa substituiu**, com carimbo de origem. Uma rule universal resolve workflows, skills, agentes e templates na chamada; o sync e o `/jarvis-init` resolvem `rules/` na instalação. O `init`/`upgrade` nunca gravam arquivo no overlay (só criam a pasta do perfil); quem grava é o `/jarvis-fork`, depois de uma conversa e do Sim. Detalhes: [overlay-de-empresa.md](./overlay-de-empresa.md).
+
 ### Taxonomia
 
 [taxonomy.md](./estrutura/raiz.md#taxonomymd) define opções de `SQUAD`, `HUB`, `AREA`, `POSITION`. O init valida contra ela. Customizar com `/taxonomy`.
@@ -190,7 +194,7 @@ Produto: família `/prod.spec*`. Data/QA/RPA/Security: workflows sob `workflows/
 
 Ver [bin.md](./estrutura/bin.md).
 
-Comandos principais: `init`, `list`, `info`, `whoami`, `docs sync|publish`, `install-rtk`, `--version`.
+Comandos principais: `init`, `list`, `info`, `whoami`, `docs sync|publish`, `install-rtk`, `tokens`, `map`, `fork`, `--version`.
 
 Validação pós-install:
 
