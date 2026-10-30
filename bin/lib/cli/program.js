@@ -25,6 +25,7 @@ import { docsPublish } from "../../commands/docs-publish.js";
 import { installRtk } from "../../commands/install-rtk.js";
 import { tokens } from "../../commands/tokens.js";
 import { map } from "../../commands/map.js";
+import { fork } from "../../commands/fork.js";
 import { dailyReport } from "../../commands/daily-report.js";
 import { runCreateMerge } from "../vcs/create-merge.js";
 import { runCreateIssue } from "../vcs/create-issue.js";
@@ -176,6 +177,20 @@ export function buildProgram() {
     .option("--ide <ide>")
     .option("--env-file <path>")
     .action((options) => tokens(toLegacyFlags(options)));
+
+  cmd(program, "fork")
+    .description(
+      "Overlay de empresa: copia um artefato do core para $IDE/overlays/{COMPANY_PROFILE}/, com carimbo"
+    )
+    .argument(
+      "[nome]",
+      "Workflow, skill ou agente pelo nome, ou rules/…, rules-on-demand/…, templates/… por caminho"
+    )
+    .option("--list", "Lista o que está forkado no overlay ativo (só lista; não compara com o core)")
+    .option("--candidate", "Marca o fork como candidato a core (core_candidate: true)")
+    .option("--ide <ide>")
+    .option("--env-file <path>")
+    .action((nome, options) => fork(toLegacyFlags(options, { _: [nome].filter(Boolean) })));
 
   cmd(program, "map")
     .description("Mapa de chamadas de um workflow, skill ou agente")
