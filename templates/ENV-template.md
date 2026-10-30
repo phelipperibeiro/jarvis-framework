@@ -101,6 +101,17 @@ ARTIFACT_STYLE=ai-generated
 
 
 # =============================================================================
+# Perfil de empresa (overlay)
+# =============================================================================
+# Nome do overlay ativo em $IDE/overlays/{valor}/: a camada da empresa por cima do core,
+# só com o que foi substituído pelo comando de fork (jarvis fork). stark-industries é o perfil default
+# (o overlay padrão do Jarvis, criado vazio pelo jarvis init). Um nome próprio (ex.: acme)
+# aponta para o overlay dessa empresa. Só letras minúsculas, números e hífen; não pode ser
+# o nome de uma pasta do core (skills, rules, workflows...). Nunca deixe vazio.
+COMPANY_PROFILE=stark-industries
+
+
+# =============================================================================
 # Especializações por área
 # =============================================================================
 # Skills especializados que o Jarvis carrega junto com o skill base de cada área.

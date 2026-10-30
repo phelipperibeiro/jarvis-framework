@@ -23,6 +23,7 @@ import {
   removeStaleSkills,
 } from "../lib/core/stale-skills.js";
 import { parseEnvEntries, planEnvUpgrade, applyEnvUpgrade } from "../lib/core/env-upgrade.js";
+import { DEFAULT_COMPANY_PROFILE, isValidCompanyProfile } from "../lib/core/company-profile.js";
 import { checkCli, getVendor } from "../lib/integrations/cli-runner.js";
 import {
   expandEnv,
@@ -564,8 +565,35 @@ async function runUpgrade(cwd, flags) {
     }
   }
 
+  // 3.2 Perfil de empresa (#199): a chave nova nasce com o default; com terminal e sem --yes,
+  // pergunta. Só o nome da chave e "default/definido" saem no resumo, nunca o valor.
+  let companyProfile = null;
+  if (addedKeys.includes("COMPANY_PROFILE")) {
+    if (!flags.yes && process.stdin.isTTY) {
+      const rl = createInterface({ input: process.stdin, output: process.stdout });
+      const prompt = `Perfil de empresa (COMPANY_PROFILE) [Enter = ${DEFAULT_COMPANY_PROFILE}]: `;
+      let answer = (await ask(rl, prompt)).trim();
+      if (answer && !isValidCompanyProfile(answer)) {
+        logger.info(
+          `${YELLOW}  Nome inválido: use letras minúsculas, números e hífen, e não o nome de uma pasta do core. Tente de novo ou Enter para o default.${NC}`
+        );
+        answer = (await ask(rl, prompt)).trim();
+      }
+      rl.close();
+      if (answer && isValidCompanyProfile(answer)) companyProfile = answer;
+      else if (answer) {
+        logger.info(`${YELLOW}  Nome inválido de novo: gravando o default ${DEFAULT_COMPANY_PROFILE}.${NC}`);
+      }
+    } else if (!flags.yes) {
+      logger.info(
+        `${DIM}  Sem terminal interativo e sem --yes: COMPANY_PROFILE fica no default ${DEFAULT_COMPANY_PROFILE}.${NC}`
+      );
+    }
+  }
+
   const overrides =
     docsPlan.moves.length > 0 && !accepted ? declineEnvValues(docsPlan, addedKeys, env) : {};
+  if (companyProfile) overrides.COMPANY_PROFILE = companyProfile;
   const today = new Date().toISOString().slice(0, 10);
   applyEnvUpgrade(envPath, envPlan, today, overrides);
 
@@ -619,6 +647,11 @@ async function runUpgrade(cwd, flags) {
   logger.info(
     `  • ENV.md: ${addedKeys.length ? `+ ${addedKeys.join(", ")}` : "nenhuma variável nova"}`
   );
+  if (addedKeys.includes("COMPANY_PROFILE")) {
+    logger.info(
+      `  • COMPANY_PROFILE: ${companyProfile ? "definido" : `default (${DEFAULT_COMPANY_PROFILE})`}`
+    );
+  }
   if (Object.keys(overrides).length) {
     logger.info(`  • Mantidos no caminho antigo: ${Object.keys(overrides).join(", ")}`);
   }

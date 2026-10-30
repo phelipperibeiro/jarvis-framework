@@ -804,3 +804,26 @@ test("init sem --ide e sem resposta: o menu de IDE termina com a dica, sem alter
     assert.deepEqual(snapshot(ws), antes);
   });
 });
+
+test("init --upgrade --yes: COMPANY_PROFILE nasce com o default e não entra nas pendências (#199)", () => {
+  withWorkspace({ ".claude/ENV.md": ENV_V520 }, (ws) => {
+    const r = run(ws, "--upgrade", "--ide", "claude", "--yes");
+    assert.equal(r.status, 0, r.stderr);
+    const env = readFileSync(join(ws, ".claude/ENV.md"), "utf-8");
+    assert.match(env, /^COMPANY_PROFILE=stark-industries$/m);
+    assert.match(r.stdout, /COMPANY_PROFILE: default/);
+    assert.doesNotMatch(r.stdout, /preencher COMPANY_PROFILE/);
+  });
+});
+
+test("init --upgrade sem terminal e sem --yes: COMPANY_PROFILE fica no default, com aviso (#199)", () => {
+  withWorkspace({ ".claude/ENV.md": ENV_V520 }, (ws) => {
+    const r = run(ws, "--upgrade", "--ide", "claude");
+    assert.equal(r.status, 0, r.stderr);
+    assert.match(
+      readFileSync(join(ws, ".claude/ENV.md"), "utf-8"),
+      /^COMPANY_PROFILE=stark-industries$/m
+    );
+    assert.match(r.stdout, /COMPANY_PROFILE fica no default stark-industries/);
+  });
+});

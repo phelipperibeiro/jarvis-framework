@@ -621,6 +621,7 @@ Se **A** ou **B**, perguntar sobre cada variável opcional conforme seleção �
    - Nenhuma variável guarda token.
 4. **Vendor do git (`VERSION_CONTROL`):** `github`, `gitlab` ou vazio (Bitbucket/outro → não suportado, vazio). Faça a mesma descoberta do item 2 e defina `VERSION_CONTROL_ACCESS`. Não há variável de repositório: o repo e o host vêm do `git remote get-url origin`.
 5. **Gravação única:** guarde as respostas dos dois eixos e grave tudo no Passo 5, depois do "sim" no bloco final. Se o init for interrompido antes, nada é gravado.
+6. **Perfil de empresa (`COMPANY_PROFILE`):** o overlay é a camada da empresa por cima do core (`$IDE/overlays/{perfil}/`), só com o que o comando de fork (`jarvis fork`) substituiu; todo workspace tem um, e o default é `stark-industries` (o overlay padrão do Jarvis). Pergunte com `AskUserQuestion`: **Manter o default `stark-industries`** (primeira opção) | **Nome da empresa** (texto livre, em kebab-case: letras minúsculas, números e hífen). Nome fora do padrão ou igual a uma pasta do core (`skills`, `rules`, `workflows`, `commands`, `agents`, `rules-on-demand`, `templates`, `scripts`, `overlays`) → mostre o motivo e pergunte de novo. A chave **nunca** fica vazia. A pasta vazia do perfil é criada pelo `jarvis init`; nenhum arquivo é gravado nela aqui.
 
 **Central docs:** não é perguntado aqui. Ele é ligado por padrão e configurado no **Passo 5.2**, que roda sempre.
 
@@ -628,6 +629,7 @@ Se **A** ou **B**, perguntar sobre cada variável opcional conforme seleção �
 
 | Variável | Valor Padrão | Descrição |
 |----------|--------------|-----------|
+| `COMPANY_PROFILE` | `stark-industries` | Perfil de empresa: nome do overlay em `$IDE/overlays/{valor}/` (default = overlay padrão do Jarvis; nunca vazio) |
 | `TASK_MANAGER` | *(vazio = freelance)* | `jira`, `github`, `gitlab` |
 | `TASK_MANAGER_ACCESS` | *(vazio)* | `cli` ou `manual` (definido pela descoberta da CLI) |
 | `TASK_MANAGER_URL_BASE` | *(vazio)* | GitHub/GitLab: repositório dos cards (obrigatório); Jira: o site, só para o link |
@@ -1185,6 +1187,7 @@ Roda no fim de todo caminho que grava o `ENV.md`: criação (opção A ou ENV.md
 | Chave fora do template (saiu dele ou é do projeto) | `QA_SIGNOFF_BRANCHES`, `MINHA_VAR` | Mover para o bloco final "Variáveis fora do template", com `# (descontinuada)` numa linha própria logo acima da chave e o valor intacto |
 | Chave duplicada | `HUB=` duas vezes | Manter a preenchida (ou a última) |
 | Valor fora das opções | `HUB=BACKEN`, `MAX_AI_EXECUTION_PERCENTAGE=40`, `TASK_MANAGER_ACCESS=api` | Perguntar o valor, com as opções do template ou do `taxonomy.md` (as mesmas perguntas do passo 3) |
+| `COMPANY_PROFILE` vazio, fora do padrão ou igual a uma pasta do core | `COMPANY_PROFILE=`, `COMPANY_PROFILE=Acme Corp`, `COMPANY_PROFILE=rules` | A mesma pergunta do item 6 do passo 4 (default `stark-industries` primeiro). Vazio não é válido: a chave sempre tem um perfil |
 | Obrigatória vazia | `SQUAD=` | A mesma pergunta do passo 3 |
 | Lista de exemplo não escolhida | `TASK_MANAGER=[jira, github, gitlab]` | Escolher uma ou esvaziar |
 | Fora da ordem ou do assunto | blocos `# --- Upgrade ... ---` no fim; uma `DATA_*` longe das irmãs | Regravar na ordem do template |
