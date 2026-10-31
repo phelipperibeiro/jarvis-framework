@@ -49,7 +49,7 @@ A sessão **não é apagada**: o `/eng.spec-consolidate` precisa dela. Remova à
 
 ## Regras que importam
 
-- Nome da branch: `{TASK_MANAGER_KEY}-{titulo-em-kebab-case}`
+- Nome da branch: o da skill `eng-global-branch` (`{prefixo}/{TASK_MANAGER_KEY}-{titulo}` quando o projeto tem convenção de nome, `{TASK_MANAGER_KEY}-{titulo}` sem), criado no `/eng.start`
 - Commit de uma linha, começando pela chave da tarefa: `TASK-123 feat(auth): implementar autenticação JWT`
 - Destino do MR: a `Branch base:` escolhida no `/eng.start` (gravada no `architecture.md`); só pergunta se o campo faltar
 - **Nunca** `git add .`, push direto para `main`/`dev`, commit sem a chave da tarefa nem menção a IA no MR

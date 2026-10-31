@@ -506,7 +506,7 @@ Refs: TASK-123"
 
 📁 Sessão: $SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/
 📄 Arquivos da sessão (consolidado acumulado, regra 5 de `eng.transitions-rules.md`): links de `context.md`, `architecture.md` e `plan.md` (atualizado, com comentários por fase; quantas fases concluídas), cada um com a nota de estado, mais os links do card/issue
-🌿 Branch: {TASK_MANAGER_KEY}-{titulo} — {N} commits realizados
+🌿 Branch: {NOME_DA_BRANCH} — {N} commits realizados
 
 📊 Resumo:
 - Fases completadas: {N}

@@ -39,7 +39,7 @@ Se for `main`, `master`, `develop`, `staging` ou `homolog`:
 Este workflow só pode ser executado em uma branch de feature.
 Execute /eng.start {TASK_MANAGER_KEY} primeiro para criar a branch correta.
 
-Branch esperada: {TASK_MANAGER_KEY}-{titulo-kebab-case}
+Branch esperada: no padrão da skill eng-global-branch (ex.: feature/{TASK_MANAGER_KEY}-{titulo} ou {TASK_MANAGER_KEY}-{titulo})
 ```
 
 **→ PARAR. Não executar nenhuma fase.**
@@ -52,12 +52,14 @@ Se a branch atual **não contém** o `{TASK_MANAGER_KEY}` no nome:
 ⚠️ ATENÇÃO: A branch atual ({BRANCH_ATUAL}) não corresponde à tarefa {TASK_MANAGER_KEY}.
 
   Branch atual:  {BRANCH_ATUAL}
-  Esperado:      branch contendo {TASK_MANAGER_KEY}
+  Esperado:      branch contendo {TASK_MANAGER_KEY} (padrão da skill eng-global-branch, ex.: feature/{TASK_MANAGER_KEY}-{titulo})
 
 Confirmar que está na branch certa? (s/n)
 ```
 
 **→ Aguardar confirmação explícita antes de prosseguir.**
+
+O nome é montado pela skill `eng-global-branch` (ou pelo fork dela no overlay da empresa). No freelance sem número de issue, a branch não tem chave e esta confirmação é esperada.
 
 ---
 

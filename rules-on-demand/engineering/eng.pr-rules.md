@@ -41,7 +41,7 @@ Se for `main`, `master`, `develop`, `staging` ou `homolog`:
 Este workflow só pode ser executado em uma branch de feature.
 Execute /eng.start {TASK_MANAGER_KEY} primeiro para criar a branch correta.
 
-Branch esperada: {TASK_MANAGER_KEY}-{titulo-kebab-case}
+Branch esperada: no padrão da skill eng-global-branch (ex.: feature/{TASK_MANAGER_KEY}-{titulo} ou {TASK_MANAGER_KEY}-{titulo})
 ```
 
 **→ PARAR. Não executar nenhuma fase.**
@@ -54,12 +54,14 @@ Se a branch atual **não contém** o `{TASK_MANAGER_KEY}` no nome:
 ⚠️ ATENÇÃO: A branch atual ({BRANCH_ATUAL}) não corresponde à tarefa {TASK_MANAGER_KEY}.
 
   Branch atual:  {BRANCH_ATUAL}
-  Esperado:      branch contendo {TASK_MANAGER_KEY}
+  Esperado:      branch contendo {TASK_MANAGER_KEY} (padrão da skill eng-global-branch, ex.: feature/{TASK_MANAGER_KEY}-{titulo})
 
 Confirmar que está na branch certa? (s/n)
 ```
 
 **→ Aguardar confirmação explícita antes de prosseguir.**
+
+O nome é montado pela skill `eng-global-branch` (ou pelo fork dela no overlay da empresa). No freelance sem número de issue, a branch não tem chave e esta confirmação é esperada.
 
 ---
 
@@ -67,25 +69,7 @@ Confirmar que está na branch certa? (s/n)
 
 ### 1. Padrão de Nomenclatura de Branch
 
-O nome da branch **DEVE** seguir o padrão:
-
-```
-{TASK_MANAGER_KEY}-{titulo-em-kebab-case}
-```
-
-**Regras:**
-- `TASK_MANAGER_KEY` em **UPPERCASE** (ex: `TASK-123`, `STORY-456`)
-- Título extraído do Jira convertido para **kebab-case**
-- Remover caracteres especiais
-- Substituir espaços por hífens
-
-**Exemplos:**
-
-| TASK_MANAGER_KEY | Título no Jira | Nome da Branch |
-|----------|----------------|----------------|
-| `TASK-123` | "Implementar autenticação JWT" | `TASK-123-implementar-autenticacao-jwt` |
-| `STORY-456` | "Adicionar botão de logout" | `STORY-456-adicionar-botao-de-logout` |
-| `BUG-789` | "Fix: null pointer em login" | `BUG-789-fix-null-pointer-em-login` |
+O nome da branch vem da skill `eng-global-branch` (ou do fork dela no overlay da empresa): com card, a chave é obrigatória no nome; a convenção do projeto define o prefixo e o estilo (`feature/{TASK_MANAGER_KEY}-{titulo}`); sem convenção, `{TASK_MANAGER_KEY}-{titulo}`. A regra completa e os exemplos estão só na skill.
 
 ### 2. Padrão de Commit
 
@@ -131,7 +115,7 @@ sempre utiliza a branch main)
 │                                                             │
 │  1. VALIDAR → Testes passando, lint OK                      │
 │        ↓                                                    │
-│  2. CRIAR BRANCH → {TASK_MANAGER_KEY}-{titulo}                      │
+│  2. CRIAR BRANCH → nome da skill eng-global-branch          │
 │        ↓                                                    │
 │  3. STAGE → git add (arquivos específicos)                  │
 │        ↓                                                    │
@@ -177,7 +161,7 @@ sempre utiliza a branch main)
 
 2. **Criar branch**
    ```bash
-   git checkout -b {TASK_MANAGER_KEY}-{titulo-kebab-case}
+   git checkout -b {NOME_DA_BRANCH}   # nome montado pela skill eng-global-branch
    ```
 
 3. **Confirmar criação**
@@ -292,7 +276,7 @@ O MR deve seguir o template em `$IDE/templates/engineering/PR-template.md`:
 
 1. **Branch sem padrão**
    - ❌ `feature/login`
-   - ✅ `TASK-123-implementar-login`
+   - ✅ `feature/TASK-123-implementar-login` (com convenção) ou `TASK-123-implementar-login` (sem), pela skill `eng-global-branch`
 
 2. **Commit genérico**
    - ❌ `fix bug`
@@ -315,7 +299,7 @@ Antes de considerar o PR completo:
 - [ ] Testes passando com cobertura maior 80%
 - [ ] Lint OK
 - [ ] Build OK
-- [ ] Branch criada no padrão `{TASK_MANAGER_KEY}-{titulo}`
+- [ ] Branch criada com o nome da skill `eng-global-branch`
 - [ ] Arquivos adicionados individualmente (não `git add .`)
 - [ ] Commit com mensagem padronizada
 - [ ] Commit referencia o TASK_MANAGER_KEY

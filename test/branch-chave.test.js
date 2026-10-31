@@ -100,3 +100,77 @@ test("o eng.start, as regras dele e o guia apontam para a skill e não repetem a
     `eng.start.md sem a linha da skill na tabela "Skills invocados". ${DE_PROPOSITO}`
   );
 });
+
+const GATES = ["plan", "work", "pre-pr", "pr"].map(
+  (cmd) => `rules-on-demand/engineering/eng.${cmd}-rules.md`
+);
+
+// Bloco do Gate 0.3: do título até o separador `---` seguinte.
+function gate03(texto) {
+  const inicio = texto.indexOf("### Regra 0.3");
+  const fim = texto.indexOf("\n---", inicio);
+  return texto.slice(inicio, fim);
+}
+
+test("os quatro Gates 0.3 são idênticos e citam a skill", () => {
+  const blocos = GATES.map((arquivo) => gate03(read(arquivo)));
+  for (const [i, bloco] of blocos.entries()) {
+    assert.ok(bloco.length > 0, `${GATES[i]} sem a Regra 0.3. ${DE_PROPOSITO}`);
+    assert.ok(
+      bloco.includes("eng-global-branch"),
+      `${GATES[i]}: o Gate 0.3 não cita a skill. ${DE_PROPOSITO}`
+    );
+    assert.equal(
+      bloco,
+      blocos[0],
+      `${GATES[i]}: o Gate 0.3 difere do de ${GATES[0]}. ${DE_PROPOSITO}`
+    );
+  }
+});
+
+test("eng.pr, eng-global-pr, eng.work, o guia do eng.pr e o freelance apontam para a skill", () => {
+  const arquivos = [
+    "workflows/engineering/eng.pr.md",
+    "rules-on-demand/engineering/eng.pr-rules.md",
+    "skills/eng-global-pr/SKILL.md",
+    "docs/engenharia/eng.pr.md",
+    "rules/engineering/eng.integrations-rules.md",
+  ];
+  for (const arquivo of arquivos) {
+    const texto = read(arquivo);
+    assert.ok(texto.includes("eng-global-branch"), `${arquivo} não cita a skill. ${DE_PROPOSITO}`);
+    assert.ok(
+      !texto.includes("TASK-123-implementar-autenticacao-jwt"),
+      `${arquivo} repete a tabela de exemplos da skill. ${DE_PROPOSITO}`
+    );
+  }
+  assert.ok(
+    !read("workflows/engineering/eng.work.md").includes("Branch: {TASK_MANAGER_KEY}-{titulo}"),
+    `eng.work.md: a mensagem final ainda dita o padrão antigo. ${DE_PROPOSITO}`
+  );
+  assert.match(
+    read("skills/eng-global-pr/SKILL.md"),
+    /^\| Passo 2 — Criar Branch \| `\/eng-global-branch` \|/m,
+    `eng-global-pr sem a linha da skill na tabela de chamadas. ${DE_PROPOSITO}`
+  );
+});
+
+test("fora da skill, ninguém mais dita o padrão {TASK_MANAGER_KEY}-{titulo} sem citar a skill", () => {
+  const arquivos = [
+    ...APONTAM,
+    ...GATES,
+    "workflows/engineering/eng.pr.md",
+    "skills/eng-global-pr/SKILL.md",
+  ];
+  for (const arquivo of arquivos) {
+    for (const [n, linha] of read(arquivo).split("\n").entries()) {
+      if (!linha.includes("{TASK_MANAGER_KEY}-{titulo")) continue;
+      // A linha do hotfix já é composta (`hotfix/{KEY}-{titulo}`) e não fala do nome da branch de trabalho.
+      if (linha.includes("hotfix/{TASK_MANAGER_KEY}")) continue;
+      assert.ok(
+        linha.includes("eng-global-branch"),
+        `${arquivo}:${n + 1} dita o padrão sem citar a skill: ${linha.trim()}. ${DE_PROPOSITO}`
+      );
+    }
+  }
+});
