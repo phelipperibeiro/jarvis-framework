@@ -6,7 +6,7 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), e o
 
 > Versões anteriores a `2.1.1` não foram documentadas retroativamente neste changelog — o histórico detalhado dessas versões continua disponível via `git log`.
 
-## [Não lançado]
+## [8.4.0] - 2026-10-31
 
 ### Added
 - **Skill `/eng-global-branch` (#200)**: fonte única da política de nome da branch de trabalho. Com card, a chave é obrigatória no nome e a convenção do projeto (ex.: `CONTRIBUTING.md`) dá o prefixo e o estilo: `{prefixo}/{chave}-{titulo}` (ex.: `feature/199-company-overlay-fork`); sem convenção, `{chave}-{titulo}`, como antes. Com convenção, mostra o nome e confirma. A chave fica como o board a escreve (GitHub/GitLab sem `#`). Convenção sem `/` não ganha prefixo. No freelance, o número de controle informado (de preferência o da issue do repositório) entra no nome, em minúsculas; sem número, só a descrição. Diz o que os Gates 0.3 conferem. É o primeiro extension point do overlay de empresa: uma empresa com outra política roda `jarvis fork eng-global-branch` em vez de forkar o `eng.start`.
