@@ -174,3 +174,15 @@ test("fora da skill, ninguém mais dita o padrão {TASK_MANAGER_KEY}-{titulo} se
     }
   }
 });
+
+test("o jarvis fork resolve eng-global-branch como skill (o extension point é forkável)", async () => {
+  const { resolveArtifact } = await import("../bin/commands/fork.js");
+  const artefato = resolveArtifact(root, "eng-global-branch");
+  assert.ok(artefato, `o jarvis fork não acha eng-global-branch. ${DE_PROPOSITO}`);
+  assert.equal(
+    artefato.type,
+    "skills",
+    `eng-global-branch resolvida como ${artefato.type}. ${DE_PROPOSITO}`
+  );
+  assert.equal(artefato.relPath, "skills/eng-global-branch", DE_PROPOSITO);
+});
