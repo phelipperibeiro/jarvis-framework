@@ -1,5 +1,5 @@
-// Confere a consistência do critério de parada e da rodada incremental do /eng.pre-pr (#191): o mesmo
-// valor escrito em mais de um arquivo (rótulos da variante B, teto de rodadas por urgência) e a numeração
+// Confere a consistência do critério de parada e da rodada incremental do /eng.pre-pr (#191, #195): o mesmo
+// valor escrito em mais de um arquivo (rótulos da variante B e da pergunta do teto, teto de rodadas por urgência) e a numeração
 // dos gates citada em três lugares do workflow. Guarda só o texto (a prosa não tem teste de comportamento).
 // Rode com: npm run test:filtro
 import { test } from "node:test";
@@ -66,6 +66,54 @@ test("os rótulos da variante B na tabela de transições são os mesmos do fech
   }
 });
 
+test("os rótulos da pergunta do teto na tabela de transições são os mesmos do fechamento", () => {
+  const linha = read(TRANSITIONS)
+    .split("\n")
+    .find((l) => l.startsWith("| `eng.pre-pr` |") && l.includes("Teto de rodadas atingido"));
+  assert.ok(linha, `${TRANSITIONS} sem a linha da pergunta do teto do eng.pre-pr. ${DE_PROPOSITO}`);
+  const celulas = linha.split("|").map((c) => c.trim());
+  const rotulos = celulas[celulas.length - 2]
+    .split(" · ")
+    .map((r) => r.replace(/\s*\(como hoje\)$/, "").trim());
+  assert.equal(
+    rotulos.length,
+    3,
+    `${TRANSITIONS}: a pergunta do teto deveria ter 3 opções. ${DE_PROPOSITO}`
+  );
+  // Só o bloco da pergunta do teto: os rótulos das variantes A e B ficam de fora.
+  const fechamento = secao(read(PRE_PR), "## Fechamento");
+  const inicio = fechamento.indexOf("**Pergunta do teto.**");
+  assert.notEqual(inicio, -1, `${PRE_PR}: o Fechamento sem "**Pergunta do teto.**". ${DE_PROPOSITO}`);
+  const fim = fechamento.indexOf("   Grave a escolha", inicio);
+  const bloco = fechamento.slice(inicio, fim === -1 ? undefined : fim);
+  const opcoes = bloco.split("\n").filter((l) => /^ {3}- \*\*/.test(l));
+  assert.equal(
+    opcoes.length,
+    rotulos.length,
+    `${PRE_PR}: a pergunta do teto tem ${opcoes.length} opções, a tabela de transições tem ${rotulos.length}. ${DE_PROPOSITO}`
+  );
+  for (const rotulo of rotulos) {
+    assert.ok(
+      opcoes.some((l) => l.includes(`**${rotulo}`)),
+      `${PRE_PR}: a pergunta do teto não tem a opção "${rotulo}" da tabela de transições. ${DE_PROPOSITO}`
+    );
+  }
+  // A pergunta e os rótulos também estão escritos na rule: ela não pode ficar defasada.
+  const pergunta = "Teto de {T} rodadas da urgência `{u}` atingido. Como seguir?";
+  for (const arquivo of [PRE_PR, PRE_PR_RULES, TRANSITIONS]) {
+    assert.ok(
+      read(arquivo).includes(pergunta),
+      `${arquivo} sem a pergunta do teto "${pergunta}". ${DE_PROPOSITO}`
+    );
+  }
+  for (const rotulo of rotulos) {
+    assert.ok(
+      read(PRE_PR_RULES).includes(`**${rotulo}`),
+      `${PRE_PR_RULES} sem o rótulo "${rotulo}" da pergunta do teto. ${DE_PROPOSITO}`
+    );
+  }
+});
+
 test("a variante B tem os rótulos de cada caso e a condição dela é a mesma nos três arquivos", () => {
   const fechamento = secao(read(PRE_PR), "## Fechamento");
   for (const rotulo of [
@@ -111,6 +159,26 @@ test("os textos de decisão da variante B são os mesmos no workflow e na rule",
       assert.ok(read(arquivo).includes(texto), `${arquivo} sem "${texto}". ${DE_PROPOSITO}`);
     }
   }
+});
+
+test("o registro da escolha no teto e das rodadas além do teto é o mesmo no workflow e na rule", () => {
+  for (const texto of ["escolha no teto:", "além do teto, por decisão da pessoa"]) {
+    for (const arquivo of [PRE_PR, PRE_PR_RULES]) {
+      assert.ok(read(arquivo).includes(texto), `${arquivo} sem "${texto}". ${DE_PROPOSITO}`);
+    }
+  }
+  // O PR Brief e o Resumo do modelo registram as duas coisas.
+  const modelo = read(PRE_PR);
+  assert.match(
+    modelo,
+    /^Critério de parada: .*escolha no teto: .*além do teto, por decisão da pessoa/m,
+    `${PRE_PR}: a linha do Resumo sem a escolha no teto e as rodadas além do teto. ${DE_PROPOSITO}`
+  );
+  assert.match(
+    modelo,
+    /^- Rodadas do pre-pr: .*além do teto, por decisão da pessoa/m,
+    `${PRE_PR}: o PR Brief sem as rodadas além do teto. ${DE_PROPOSITO}`
+  );
 });
 
 test("cada área da tabela da rodada incremental é uma área do modelo do relatório", () => {
