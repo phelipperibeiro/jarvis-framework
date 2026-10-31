@@ -21,7 +21,7 @@ Se `$ARGUMENTS` não trouxer o key: **perguntar e aguardar**. Não inventar. Nã
 - Freelance (`TASK_MANAGER` vazio): *Qual o seu número de controle para esta tarefa?*
 - Com board: *Qual o id do card no {TASK_MANAGER}?*
 
-Sem resposta → **PARAR**. Com resposta → seguir (pasta/branch em lowercase).
+Sem resposta → **PARAR**. Com resposta → seguir (pasta da sessão em lowercase; o nome da branch segue a skill `eng-global-branch`).
 
 ### Regra 0.2 — Proibido executar em branch protegida
 

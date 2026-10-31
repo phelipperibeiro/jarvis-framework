@@ -13,6 +13,9 @@ const read = (file) => readFileSync(join(root, file), "utf8");
 
 const SKILL = "skills/eng-global-branch/SKILL.md";
 
+// Espaços e quebras iguais, e espaço em volta de `|` ignorado (tabela reformatada não liga nem desliga a guarda).
+const norm = (texto) => texto.replace(/\s+/g, " ").replace(/\s*\|\s*/g, "|");
+
 // A mensagem de falha diz que a regra é guardada de propósito: mudá-la é mudar a skill e este teste.
 const DE_PROPOSITO =
   "A política de nome da branch é guardada de propósito numa skill só (#200): mude-a em skills/eng-global-branch/SKILL.md e em test/branch-chave.test.js, e nos outros arquivos só aponte para a skill.";
@@ -35,7 +38,7 @@ test("a skill eng-global-branch existe, é global e descreve a política inteira
     "{chave}-{titulo}", // sem convenção
     "A chave é identificador, não estilo", // caixa da chave (Q3)
     "o número, sem `#`", // GitHub e GitLab, de quem compõe
-    "Mudar a caixa da chave ou pôr `#` no nome", // regra de Nunca
+    "Mudar a caixa da chave de board ou pôr `#` no nome", // regra de Nunca
     "Nome da branch: `{nome}`?", // confirmação (Q2)
     "número da issue do `VERSION_CONTROL`", // freelance com número (Q4)
     "em minúsculas, como a pasta da sessão", // chave do freelance reconhecida pelo Gate 0.3
@@ -50,15 +53,22 @@ test("a skill eng-global-branch existe, é global e descreve a política inteira
     assert.ok(skill.includes(trecho), `${SKILL} sem "${trecho}". ${DE_PROPOSITO}`);
   }
   // Os marcadores que só a skill pode ter existem nela (senão a guarda "não copia" não vigia nada).
-  const skillSemEspacos = skill.replace(/\s+/g, " ");
   for (const marcador of SO_DA_SKILL) {
     assert.ok(
-      skillSemEspacos
-        .replace(/\| /g, "|")
-        .includes(marcador.replace(/\s+/g, " ").replace(/\| /g, "|")),
+      norm(skill).includes(norm(marcador)),
       `${SKILL} sem o marcador "${marcador}". ${DE_PROPOSITO}`
     );
   }
+  // "o número, sem `#`" tem de estar nos Padrões Críticos e no Passo 4 (apagar uma das duas passaria com includes).
+  assert.ok(
+    (skill.match(/o número, sem `#`/g) ?? []).length >= 2,
+    `${SKILL}: "o número, sem \`#\`" deveria aparecer nos Padrões Críticos e no Passo 4. ${DE_PROPOSITO}`
+  );
+  // O freelance sem número de controle (e não "de issue") é o que a tabela, o Passo 4 e os Gates dizem.
+  assert.ok(
+    !skill.includes("sem número de issue"),
+    `${SKILL} voltou a falar de "sem número de issue". ${DE_PROPOSITO}`
+  );
   assert.match(
     skill,
     /`feature\/199-company-overlay-fork`/,
@@ -96,19 +106,8 @@ const APONTAM = [
   "docs/engenharia/eng.start.md",
 ];
 
-test("o eng.start, as regras dele e o guia apontam para a skill e não repetem a regra", () => {
-  for (const arquivo of APONTAM) {
-    const texto = read(arquivo);
-    assert.ok(texto.includes("eng-global-branch"), `${arquivo} não cita a skill. ${DE_PROPOSITO}`);
-    assert.ok(
-      !texto.includes("siga a do projeto"),
-      `${arquivo}: "siga a do projeto" sem a chave voltou. ${DE_PROPOSITO}`
-    );
-    assert.ok(
-      !texto.includes("TASK-123-implementar-autenticacao-jwt"),
-      `${arquivo} repete a tabela de exemplos da skill. ${DE_PROPOSITO}`
-    );
-  }
+test("o eng.start chama a skill pela tabela de chamadas (o que o jarvis map e o test:comandos leem)", () => {
+  // Citar a skill e não copiar a regra dela é conferido para o escopo inteiro, no teste de ESCOPO.
   // A Fase 1.1 chama a skill pela tabela de chamadas (é o que o jarvis map e o test:comandos leem).
   assert.match(
     read("workflows/engineering/eng.start.md"),
@@ -137,16 +136,17 @@ function gate03(texto) {
 test("os quatro Gates 0.3 são idênticos e citam a skill", () => {
   const blocos = GATES.map((arquivo) => gate03(read(arquivo)));
   for (const [i, bloco] of blocos.entries()) {
-    assert.ok(bloco.length > 0, `${GATES[i]} sem a Regra 0.3. ${DE_PROPOSITO}`);
     assert.ok(
       bloco.includes("eng-global-branch"),
       `${GATES[i]}: o Gate 0.3 não cita a skill. ${DE_PROPOSITO}`
     );
-    assert.equal(
-      bloco,
-      blocos[0],
-      `${GATES[i]}: o Gate 0.3 difere do de ${GATES[0]}. ${DE_PROPOSITO}`
-    );
+    if (i > 0) {
+      assert.equal(
+        bloco,
+        blocos[0],
+        `${GATES[i]}: o Gate 0.3 difere do de ${GATES[0]}. ${DE_PROPOSITO}`
+      );
+    }
   }
 });
 
@@ -179,9 +179,13 @@ test("todo o escopo cita a skill, não proíbe a chave por convenção e não co
       !texto.includes("siga a do projeto"),
       `${arquivo}: "siga a do projeto" sem a chave voltou. ${DE_PROPOSITO}`
     );
+    assert.ok(
+      !texto.includes("sem número de issue"),
+      `${arquivo} voltou a falar de "sem número de issue". ${DE_PROPOSITO}`
+    );
     for (const marcador of SO_DA_SKILL) {
       assert.ok(
-        !texto.includes(marcador),
+        !norm(texto).includes(norm(marcador)),
         `${arquivo} copia da skill: "${marcador}". ${DE_PROPOSITO}`
       );
     }
@@ -217,7 +221,7 @@ test("eng.work, eng.pr, eng-global-pr e a regra de integração dizem de onde ve
   );
   assert.match(
     read("rules/engineering/eng.integrations-rules.md"),
-    /nome da branch vem da skill `eng-global-branch`[\s\S]*?número informado entra no nome/,
+    /nome da branch vem da skill `eng-global-branch`[\s\S]*?número informado entra no nome, em minúsculas/,
     `eng.integrations-rules.md: o freelance sem a frase do número da issue. ${DE_PROPOSITO}`
   );
   assert.match(
@@ -250,10 +254,32 @@ test("o renomeio da branch no eng.start só vale com as condições certas e vem
       `Fase 1.1 do eng.start sem "${trecho}" no renomeio. ${DE_PROPOSITO}`
     );
   }
+  const renomeio = fase.indexOf("git branch -m {NOME_DA_BRANCH}");
+  const checkout = fase.indexOf("git checkout {BRANCH_BASE}");
   assert.ok(
-    fase.indexOf("**Antes de trocar de branch**") < fase.indexOf("git checkout {BRANCH_BASE}"),
+    renomeio !== -1 && checkout !== -1,
+    `Fase 1.1 sem o renomeio ou sem o checkout da base. ${DE_PROPOSITO}`
+  );
+  assert.ok(
+    renomeio < checkout,
     `Fase 1.1: o renomeio voltou para depois do checkout da base. ${DE_PROPOSITO}`
   );
+});
+
+test("o Gate 0.1 das quatro rules não manda pôr a branch em minúsculas (a pasta da sessão sim)", () => {
+  for (const arquivo of GATES) {
+    const texto = read(arquivo);
+    assert.ok(
+      !texto.includes("pasta/branch em lowercase"),
+      `${arquivo}: o Gate 0.1 manda a branch em minúsculas, contra a Q3. ${DE_PROPOSITO}`
+    );
+    assert.ok(
+      texto.includes(
+        "pasta da sessão em lowercase; o nome da branch segue a skill `eng-global-branch`"
+      ),
+      `${arquivo}: o Gate 0.1 sem a referência à skill. ${DE_PROPOSITO}`
+    );
+  }
 });
 
 test("o Gate 0.2 das quatro rules aponta para a skill", () => {

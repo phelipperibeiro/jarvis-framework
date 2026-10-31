@@ -16,7 +16,7 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), e o
 - **`eng.start`** (Fase 1.1): monta o nome pela skill (ou pelo fork dela no overlay) em vez de "siga a convenção do projeto", que fazia a chave sumir do nome; branch existente sem a chave ganha a oferta de `git branch -m` só se não for a base, não for protegida, não tiver commit sobre a base nem upstream.
 - **Gates 0.2/0.3** (`eng.plan`, `eng.work`, `eng.pre-pr`, `eng.pr`), **`eng.pr`**, **`eng-global-pr`**, **`eng.work`** e os guias: apontam para a skill em vez de repetir o padrão `{TASK_MANAGER_KEY}-{titulo}`. O critério do Gate 0.3 não muda (o nome contém a chave).
 - **`eng.integrations-rules.md`** (freelance): a pergunta do número de controle sugere o número da issue do repositório; o nome da branch vem da skill.
-- **`jarvis tokens`**: +716 B por sessão (frontmatter da skill, a linha dela no `AGENTS.md` e a frase do freelance); snapshots "rules reais" de `profile-filter.test.js` +128 B.
+- **`jarvis tokens`**: +724 B por sessão (frontmatter da skill, a linha dela no `AGENTS.md` e a frase do freelance); snapshots "rules reais" de `profile-filter.test.js` +136 B.
 
 ## [8.3.0] - 2026-10-30
 

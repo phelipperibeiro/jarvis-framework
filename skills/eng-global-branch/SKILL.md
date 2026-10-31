@@ -68,7 +68,7 @@ Leia, nesta ordem, a seção de branches do `CONTRIBUTING.md`, do `AGENTS.md` ou
 
 - **Prefixo:** o `tipo` mapeado na tabela da convenção (`feature` → `feature/`, `bugfix` → `fix/`, `hotfix` → `hotfix/`, `refactor` → `refactor/`). Convenção sem tabela de prefixos, mas com formato com `/`: proponha o mais próximo e deixe a confirmação decidir.
 - **Convenção sem prefixo** (o formato não tem `/`, ex.: `TASK-123-feature-name`): não invente prefixo; o nome é `{chave}-{titulo}` no estilo da convenção.
-- **Freelance:** o número de controle informado (de preferência o número da issue no repositório, `VERSION_CONTROL`, GitHub ou GitLab; `F-042` também vale) entra como chave, **em minúsculas, como a pasta da sessão** (`eng.integrations-rules.md`): é o que faz o Gate 0.3 reconhecer a chave no nome. Sem número informado, a branch leva só a descrição.
+- **Freelance:** o número de controle informado (de preferência o número da issue no repositório, `VERSION_CONTROL`, GitHub ou GitLab; `F-042` também vale) entra como chave, **em minúsculas, como a pasta da sessão** (`eng.integrations-rules.md`): no freelance o `TASK_MANAGER_KEY` já é a resposta em minúsculas, e é isso que faz o Gate 0.3 reconhecer a chave no nome. Com board, a chave fica como o board a escreve. Sem número informado, a branch leva só a descrição.
 
 Exemplos:
 
@@ -99,12 +99,12 @@ O nome da branch **contém** a chave da tarefa (GitHub e GitLab: o número, sem 
 ### Nunca
 
 - Omitir a chave quando há card, nem por convenção do projeto
-- Mudar a caixa da chave ou pôr `#` no nome
+- Mudar a caixa da chave de board ou pôr `#` no nome
 - Criar a branch sem confirmar quando há convenção do projeto
 
 ### Sempre
 
-- Prefixo e estilo da convenção do projeto; chave como o board a escreve
+- Prefixo e estilo da convenção do projeto; chave como o board a escreve (freelance: em minúsculas)
 - Mostrar o nome composto antes de criar, quando há convenção
 
 ## Checklist de Conclusão
