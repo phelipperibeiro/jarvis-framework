@@ -148,7 +148,7 @@ Grave em `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/gate-checklist.md`:
 ## Resumo
 {3 a 5 frases: o que a branch faz, quantas lacunas por severidade e o principal risco.}
 
-Critério de parada: {atingido na rodada {N} (teto de {T} rodadas da urgência `{u}` | sem lacuna 🔴 ou 🟡 nova) | não atingido}
+Critério de parada: {atingido na rodada {N} (teto de {T} rodadas da urgência `{u}`{; escolha no teto: parar | mais uma rodada | só o relatório}{; rodadas {T+1} a {N} além do teto, por decisão da pessoa} | sem lacuna 🔴 ou 🟡 nova) | não atingido}
 
 ## Lacunas
 
@@ -167,7 +167,7 @@ Critério de parada: {atingido na rodada {N} (teto de {T} rodadas da urgência `
 - Resumo do que mudou:
 - Como testar:
 - Riscos / trade-offs:
-- Rodadas do pre-pr: {N} (🔴/🟡/⚪ por rodada: {a/b/c, …}); critério de parada: {rodada {K}, por {teto | sem lacuna nova} | não agiu}
+- Rodadas do pre-pr: {N} (🔴/🟡/⚪ por rodada: {a/b/c, …}); critério de parada: {rodada {K}, por {teto | sem lacuna nova}{; rodadas {a} a {b} além do teto, por decisão da pessoa} | não agiu}
 - Ajustes antes da aprovação: architecture.md {n} · plan.md {m}   ← da linha "Ajustes antes da aprovação" do cabeçalho de cada um ("—" se a linha não existir)
 - Lições desta tarefa: {até 3 linhas: o que deu mais voltas, por quê, e em qual rodada apareceu; só o que faria a próxima tarefa gastar menos rodadas}   ← registro só desta tarefa; guardar e recuperar lições entre tarefas é a #169
 - Labels sugeridos: {só o nome, ex.: `security`}   ← critério em `eng-security-rules.md` (auth, sessions, RBAC, CORS, CSP, permissões); a pessoa adiciona no host (o `jarvis vcs create-merge` não põe label); nem o label nem esta nota entram no `pull-request.md`; o `eng.pr` lembra o label na mensagem final
@@ -208,6 +208,8 @@ Com o teto atingido e lacuna pendente, a **pergunta do teto** (depois do passo 1
    - **Só gerar o relatório (como hoje)** (a última): o comando termina sem os passos 2, 3 e 4. É o fluxo que vale quando a pessoa não escolhe.
 
    Grave a escolha na linha `Critério de parada:` do relatório (`escolha no teto: parar | mais uma rodada | só o relatório`), atualizando a linha já gravada, antes de seguir.
+
+   Rodada além do teto: se a linha `Critério de parada:` da rodada anterior (a do arquivo renomeado) traz `escolha no teto: mais uma rodada` ou `rodadas … além do teto`, ou se o `Rodada:` desta é maior que o teto, a linha desta rodada acrescenta `rodadas {T+1} a {N} além do teto, por decisão da pessoa` (a faixa vai da primeira rodada acima do teto até esta). O PR Brief repete a faixa na linha "Rodadas do pre-pr". Sem pergunta do teto nesta rodada (sem pendência), a linha não leva `escolha no teto`.
 
 2. Peça as decisões com `AskUserQuestion`, depois da mensagem em markdown do passo 1 (com o link clicável).
 

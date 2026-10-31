@@ -147,6 +147,26 @@ test("os textos de decisão da variante B são os mesmos no workflow e na rule",
   }
 });
 
+test("o registro da escolha no teto e das rodadas além do teto é o mesmo no workflow e na rule", () => {
+  for (const texto of ["escolha no teto:", "além do teto, por decisão da pessoa"]) {
+    for (const arquivo of [PRE_PR, PRE_PR_RULES]) {
+      assert.ok(read(arquivo).includes(texto), `${arquivo} sem "${texto}". ${DE_PROPOSITO}`);
+    }
+  }
+  // O PR Brief e o Resumo do modelo registram as duas coisas.
+  const modelo = read(PRE_PR);
+  assert.match(
+    modelo,
+    /^Critério de parada: .*escolha no teto: .*além do teto, por decisão da pessoa/m,
+    `${PRE_PR}: a linha do Resumo sem a escolha no teto e as rodadas além do teto. ${DE_PROPOSITO}`
+  );
+  assert.match(
+    modelo,
+    /^- Rodadas do pre-pr: .*além do teto, por decisão da pessoa/m,
+    `${PRE_PR}: o PR Brief sem as rodadas além do teto. ${DE_PROPOSITO}`
+  );
+});
+
 test("cada área da tabela da rodada incremental é uma área do modelo do relatório", () => {
   const texto = read(PRE_PR);
   const modelo = texto.match(/^### \{Área: (.+)\}$/m);
