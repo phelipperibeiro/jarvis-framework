@@ -153,6 +153,11 @@ Grave a escolha no cabeçalho do `architecture.md` (`Branch base:`). O `eng.pr` 
 
 **Nome da branch:** monte-o com a skill `/eng-global-branch` (ou com o fork dela no overlay da empresa, pela rule de precedência): ela acha a convenção do projeto, compõe o nome (com card, a chave é obrigatória: `{prefixo}/{chave}-{titulo}` com convenção, `{chave}-{titulo}` sem), confirma com a pessoa quando há convenção e diz o que os Gates 0.3 dos comandos seguintes conferem.
 
+**Antes de trocar de branch**, olhe a branch atual (`git branch --show-current`):
+
+- Já tem a chave da tarefa no nome: use-a, sem criar nova (e ainda assim pergunte a base, para o `eng.pr`).
+- **Sem a chave**, **sem commit** sobre a base (`git log {BRANCH_BASE}..HEAD` vazio), **diferente de `{BRANCH_BASE}`**, **não protegida** (`main`, `master`, `develop`, `staging`, `homolog`) e **sem upstream** (`git rev-parse --abbrev-ref @{u}` falha): ofereça renomeá-la com `git branch -m {NOME_DA_BRANCH}` (nome montado pela skill). Fora dessas condições (é a base, está protegida, já foi publicada ou tem commits), não renomeie: crie uma branch nova abaixo; com commits e sem a chave, o Gate 0.3 dos comandos seguintes pergunta.
+
 ```bash
 # Garantir que a base está atualizada
 git checkout {BRANCH_BASE}
@@ -174,8 +179,6 @@ git checkout {NOME_DA_BRANCH}
 git branch --show-current
 ```
 
-> ⚠️ Se o usuário já estiver em uma branch com a chave da tarefa no nome, use-a sem criar nova (e ainda assim pergunte a base, para o `eng.pr`).
-> ⚠️ Branch atual **sem a chave** e **sem commit** sobre a base (`git log {BRANCH_BASE}..HEAD` vazio): ofereça renomeá-la com `git branch -m {NOME_DA_BRANCH}` (nome montado pela skill). Com commits, siga como está: o Gate 0.3 dos comandos seguintes pergunta.
 > ✅ A branch criada aqui será usada em todos os workflows subsequentes (work, pre-pr, pr). Ela é sempre uma branch de trabalho: nunca implemente direto na base.
 
 ### 1.2 Criar Diretório de Sessão

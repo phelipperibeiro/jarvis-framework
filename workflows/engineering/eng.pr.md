@@ -128,7 +128,7 @@ A branch segue o padrão da skill `eng-global-branch` (criada no `eng.start`): c
 | Situação | Ação |
 |----------|------|
 | Branch com `{TASK_MANAGER_KEY}` | ✅ Prosseguir |
-| Branch errada / `main` / `develop` | Fazer checkout na branch da tarefa: `git checkout {NOME_DA_BRANCH}` (a do `eng.start`) |
+| Branch errada / `main` / `develop` | Fazer checkout na branch da tarefa: `git checkout {NOME_DA_BRANCH}` (o `Branch:` do `architecture.md`) |
 
 ### 2.2 Confirmar Branch de Destino
 
@@ -141,7 +141,7 @@ Branch de destino: a **`Branch base:`** do `architecture.md` (`{BRANCH_BASE}`). 
 **Se não estiver na branch correta:**
 
 ```bash
-git checkout {NOME_DA_BRANCH}
+git checkout {NOME_DA_BRANCH}   # o Branch: do architecture.md da sessão
 ```
 
 ### 2.3 Verificar Commits da Branch

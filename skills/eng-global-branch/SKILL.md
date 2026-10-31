@@ -55,7 +55,7 @@ Fica de fora: a branch base (perguntada no `eng.start`), o formato do commit e o
 
 ### 1. Achar a convenção do projeto
 
-Leia, nesta ordem, a seção de branches do `CONTRIBUTING.md`, do `AGENTS.md` ou do `CLAUDE.md` do repositório. Convenção = um formato de nome (ex.: `<type>/<description>`) e, de preferência, a tabela de prefixos por tipo. Nada encontrado = **sem convenção**.
+Leia, nesta ordem, a seção de branches do `CONTRIBUTING.md`, do `AGENTS.md` ou do `CLAUDE.md` do repositório: **a primeira fonte que tiver uma seção de branches vence**. No modo workspace (`WORKSPACE_MODE=workspace`), o repositório é o da tarefa, não a raiz do workspace. Convenção = um formato de nome (ex.: `<type>/<description>`) e, de preferência, a tabela de prefixos por tipo. Nada encontrado = **sem convenção**.
 
 ### 2. Compor o nome
 
@@ -66,8 +66,9 @@ Leia, nesta ordem, a seção de branches do `CONTRIBUTING.md`, do `AGENTS.md` ou
 | Freelance, com o número da issue do `VERSION_CONTROL` | `{prefixo}/{numero}-{titulo}` (sem convenção: `{numero}-{titulo}`) |
 | Freelance, sem número | `{prefixo}/{titulo}` (sem convenção: `{titulo}`) |
 
-- **Prefixo:** o `tipo` mapeado na tabela da convenção (`feature` → `feature/`, `bugfix` → `fix/`, `hotfix` → `hotfix/`, `refactor` → `refactor/`). Convenção sem tabela de prefixos: proponha o mais próximo e deixe a confirmação decidir.
-- **Freelance:** o número de controle do freelance é, de preferência, o número da issue no repositório (`VERSION_CONTROL`, GitHub ou GitLab). Sem número, a branch leva só a descrição.
+- **Prefixo:** o `tipo` mapeado na tabela da convenção (`feature` → `feature/`, `bugfix` → `fix/`, `hotfix` → `hotfix/`, `refactor` → `refactor/`). Convenção sem tabela de prefixos, mas com formato com `/`: proponha o mais próximo e deixe a confirmação decidir.
+- **Convenção sem prefixo** (o formato não tem `/`, ex.: `TASK-123-feature-name`): não invente prefixo; o nome é `{chave}-{titulo}` no estilo da convenção.
+- **Freelance:** qualquer número de controle informado entra como chave; de preferência, o número da issue no repositório (`VERSION_CONTROL`, GitHub ou GitLab). Sem número, a branch leva só a descrição.
 
 Exemplos:
 
@@ -81,11 +82,11 @@ Exemplos:
 
 ### 3. Confirmar (só com convenção)
 
-Com convenção do projeto, mostre o nome e pergunte com `AskUserQuestion`: **"Nome da branch: `{nome}`?"** → **Usar esse nome (Recomendada)** / **Ajustar**. Com Ajustar, use o nome digitado, desde que mantenha a chave quando há card. Sem convenção, não pergunte.
+Com convenção do projeto, mostre o nome e pergunte com `AskUserQuestion`: **"Nome da branch: `{nome}`?"** → **Usar esse nome (Recomendada)** / **Ajustar**. Com Ajustar, use o nome digitado, desde que mantenha a chave quando há card; sem a chave, avise e pergunte de novo, e nunca crie a branch sem ela. Sem convenção, não pergunte.
 
 ### 4. O que os Gates 0.3 conferem
 
-O nome da branch **contém** a chave da tarefa. No freelance sem número de issue não há chave no nome, e o Gate pergunta "Confirmar que está na branch certa?" (esperado nesse caso).
+O nome da branch **contém** a chave da tarefa (GitHub e GitLab: o número, sem `#`). No freelance sem número de issue não há chave no nome, e o Gate pergunta "Confirmar que está na branch certa?" (esperado nesse caso).
 
 ### Skills invocados durante a execução do skill
 

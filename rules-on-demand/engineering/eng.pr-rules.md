@@ -48,7 +48,7 @@ Branch esperada: no padrão da skill eng-global-branch (ex.: feature/{TASK_MANAG
 
 ### Regra 0.3 — Branch deve corresponder ao TASK_MANAGER_KEY
 
-Se a branch atual **não contém** o `{TASK_MANAGER_KEY}` no nome:
+Se a branch atual **não contém** o `{TASK_MANAGER_KEY}` no nome (GitHub/GitLab: o número, sem `#`):
 
 ```
 ⚠️ ATENÇÃO: A branch atual ({BRANCH_ATUAL}) não corresponde à tarefa {TASK_MANAGER_KEY}.
@@ -102,7 +102,7 @@ O MR deve ser aberto para a branch especificada pelo usuário.
 **Branches comuns:**
 - `develop` - Para features e bugs
 - `main` - Para hotfixes (com aprovação)
-- `hotfix/{TASK_MANAGER_KEY}-{titulo-em-kebab-case}` - Para correções direto em produção (Apenas MRs com hotfix podem ser abertos diretamente para a branch main
+- `hotfix/…` (nome pela skill `eng-global-branch`) - Para correções direto em produção (Apenas MRs com hotfix podem ser abertos diretamente para a branch main
 sempre utiliza a branch main)
 
 ---

@@ -46,7 +46,7 @@ Branch esperada: no padrão da skill eng-global-branch (ex.: feature/{TASK_MANAG
 
 ### Regra 0.3 — Branch deve corresponder ao TASK_MANAGER_KEY
 
-Se a branch atual **não contém** o `{TASK_MANAGER_KEY}` no nome:
+Se a branch atual **não contém** o `{TASK_MANAGER_KEY}` no nome (GitHub/GitLab: o número, sem `#`):
 
 ```
 ⚠️ ATENÇÃO: A branch atual ({BRANCH_ATUAL}) não corresponde à tarefa {TASK_MANAGER_KEY}.

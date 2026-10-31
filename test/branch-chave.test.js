@@ -39,6 +39,10 @@ test("a skill eng-global-branch existe, é global e descreve a política inteira
     "número da issue do `VERSION_CONTROL`", // freelance com número (Q4)
     "Freelance, sem número", // fallback só com a descrição (Q4)
     "O que os Gates 0.3 conferem",
+    "no idioma que a convenção pede", // idioma do título (Q2)
+    "O nome da branch **contém** a chave da tarefa", // critério que os Gates 0.3 citam
+    "sem a chave, avise e pergunte de novo", // Ajustar nunca cria a branch sem a chave
+    "Convenção sem prefixo", // formato sem `/`
     "jarvis fork eng-global-branch", // extension point do overlay
   ]) {
     assert.ok(skill.includes(trecho), `${SKILL} sem "${trecho}". ${DE_PROPOSITO}`);
@@ -128,25 +132,75 @@ test("os quatro Gates 0.3 são idênticos e citam a skill", () => {
   }
 });
 
-test("eng.pr, eng-global-pr, eng.work, o guia do eng.pr e o freelance apontam para a skill", () => {
-  const arquivos = [
-    "workflows/engineering/eng.pr.md",
-    "rules-on-demand/engineering/eng.pr-rules.md",
-    "skills/eng-global-pr/SKILL.md",
-    "docs/engenharia/eng.pr.md",
-    "rules/engineering/eng.integrations-rules.md",
-  ];
-  for (const arquivo of arquivos) {
+// O escopo inteiro (decisão Q1): todos os arquivos que antes ditavam o nome da branch.
+const ESCOPO = [
+  ...APONTAM,
+  ...GATES,
+  "workflows/engineering/eng.pr.md",
+  "workflows/engineering/eng.work.md",
+  "rules-on-demand/engineering/eng.pr-rules.md",
+  "skills/eng-global-pr/SKILL.md",
+  "docs/engenharia/eng.pr.md",
+  "rules/engineering/eng.integrations-rules.md",
+];
+
+// Marcadores estáveis da regra, que só a skill pode ter (a tabela de composição e a regra da chave).
+const SO_DA_SKILL = [
+  "A chave é identificador, não estilo",
+  "| Com card, com convenção |",
+  "| Com card, sem convenção |",
+  "Freelance, sem número",
+  "TASK-123-implementar-autenticacao-jwt",
+];
+
+test("todo o escopo cita a skill, não proíbe a chave por convenção e não copia a regra dela", () => {
+  for (const arquivo of ESCOPO) {
     const texto = read(arquivo);
     assert.ok(texto.includes("eng-global-branch"), `${arquivo} não cita a skill. ${DE_PROPOSITO}`);
     assert.ok(
-      !texto.includes("TASK-123-implementar-autenticacao-jwt"),
-      `${arquivo} repete a tabela de exemplos da skill. ${DE_PROPOSITO}`
+      !texto.includes("siga a do projeto"),
+      `${arquivo}: "siga a do projeto" sem a chave voltou. ${DE_PROPOSITO}`
+    );
+    for (const marcador of SO_DA_SKILL) {
+      assert.ok(
+        !texto.includes(marcador),
+        `${arquivo} copia da skill: "${marcador}". ${DE_PROPOSITO}`
+      );
+    }
+  }
+});
+
+test("os Gates 0.3 mantêm o critério (contém a chave, sem # no GitHub/GitLab) e a nota do freelance", () => {
+  for (const arquivo of GATES) {
+    const bloco = gate03(read(arquivo));
+    assert.ok(
+      bloco.includes("**não contém** o `{TASK_MANAGER_KEY}`"),
+      `${arquivo}: o Gate 0.3 perdeu o critério "não contém a chave". ${DE_PROPOSITO}`
+    );
+    assert.ok(
+      bloco.includes("sem `#`"),
+      `${arquivo}: o Gate 0.3 não diz que a chave do GitHub/GitLab é o número sem "#". ${DE_PROPOSITO}`
+    );
+    assert.ok(
+      bloco.includes("freelance sem número de issue"),
+      `${arquivo}: o Gate 0.3 perdeu a nota do freelance sem número. ${DE_PROPOSITO}`
     );
   }
+});
+
+test("eng.work, eng.pr, eng-global-pr e a regra de integração dizem de onde vem o nome", () => {
   assert.ok(
-    !read("workflows/engineering/eng.work.md").includes("Branch: {TASK_MANAGER_KEY}-{titulo}"),
-    `eng.work.md: a mensagem final ainda dita o padrão antigo. ${DE_PROPOSITO}`
+    read("workflows/engineering/eng.work.md").includes("🌿 Branch: {NOME_DA_BRANCH}"),
+    `eng.work.md: a mensagem final sem {NOME_DA_BRANCH}. ${DE_PROPOSITO}`
+  );
+  assert.ok(
+    read("workflows/engineering/eng.pr.md").includes("o `Branch:` do `architecture.md`"),
+    `eng.pr.md não diz que o nome vem do Branch: do architecture.md. ${DE_PROPOSITO}`
+  );
+  assert.match(
+    read("rules/engineering/eng.integrations-rules.md"),
+    /nome da branch vem da skill `eng-global-branch`.*número da issue/,
+    `eng.integrations-rules.md: o freelance sem a frase do número da issue. ${DE_PROPOSITO}`
   );
   assert.match(
     read("skills/eng-global-pr/SKILL.md"),
@@ -155,18 +209,22 @@ test("eng.pr, eng-global-pr, eng.work, o guia do eng.pr e o freelance apontam pa
   );
 });
 
+test("o renomeio da branch no eng.start só vale para branch que não é a base, não é protegida e não tem upstream", () => {
+  const texto = read("workflows/engineering/eng.start.md");
+  for (const trecho of [
+    "diferente de `{BRANCH_BASE}`",
+    "não protegida",
+    "sem upstream",
+    "git rev-parse --abbrev-ref @{u}",
+  ]) {
+    assert.ok(texto.includes(trecho), `eng.start.md sem "${trecho}" no renomeio. ${DE_PROPOSITO}`);
+  }
+});
+
 test("fora da skill, ninguém mais dita o padrão {TASK_MANAGER_KEY}-{titulo} sem citar a skill", () => {
-  const arquivos = [
-    ...APONTAM,
-    ...GATES,
-    "workflows/engineering/eng.pr.md",
-    "skills/eng-global-pr/SKILL.md",
-  ];
-  for (const arquivo of arquivos) {
+  for (const arquivo of ESCOPO) {
     for (const [n, linha] of read(arquivo).split("\n").entries()) {
       if (!linha.includes("{TASK_MANAGER_KEY}-{titulo")) continue;
-      // A linha do hotfix já é composta (`hotfix/{KEY}-{titulo}`) e não fala do nome da branch de trabalho.
-      if (linha.includes("hotfix/{TASK_MANAGER_KEY}")) continue;
       assert.ok(
         linha.includes("eng-global-branch"),
         `${arquivo}:${n + 1} dita o padrão sem citar a skill: ${linha.trim()}. ${DE_PROPOSITO}`

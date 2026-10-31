@@ -1,6 +1,6 @@
 # Overlay de empresa (`COMPANY_PROFILE` e `/jarvis-fork`)
 
-> Para quem usa o Jarvis em mais de uma empresa, ou numa empresa com processo próprio (de onde nasce a branch, como se entrega, quais gates valem, campos do MR). Issue [#199](https://github.com/phelipperibeiro/jarvis-framework/issues/199).
+> Para quem usa o Jarvis em mais de uma empresa, ou numa empresa com processo próprio (de onde nasce a branch, como se entrega, quais gates valem, campos do MR). O primeiro ponto de extensão pronto é a política de nome da branch: `jarvis fork eng-global-branch` (issue [#200](https://github.com/phelipperibeiro/jarvis-framework/issues/200)). Issue [#199](https://github.com/phelipperibeiro/jarvis-framework/issues/199).
 
 ## O problema
 
@@ -15,7 +15,7 @@ Um **overlay por empresa**: uma pasta que espelha a estrutura do core e contém 
 ├── overlays/
 │   ├── stark-industries/        # o overlay padrão: todo workspace tem (vazio até o primeiro fork)
 │   └── acme/                    # o overlay de uma empresa, se COMPANY_PROFILE=acme
-│       ├── skills/eng-global-pr/SKILL.md          # fork: mesmo caminho e nome do core
+│       ├── skills/eng-global-branch/SKILL.md      # fork: mesmo caminho e nome do core
 │       ├── templates/pull-request.md
 │       └── rules-on-demand/engineering/eng.pr-rules.md
 ├── rules/
