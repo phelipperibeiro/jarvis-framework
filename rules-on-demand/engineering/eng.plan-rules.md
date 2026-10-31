@@ -98,7 +98,7 @@ O arquivo `plan.md` deve ser criado em:
 $SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/plan.md
 ```
 
-Onde `{TASK_MANAGER_KEY}` é o ID do card em **lowercase** (ex: `TASK-123` → `task-123`).
+Onde `{TASK_MANAGER_KEY}` é o ID do card, em **lowercase** no nome da pasta (ex: `TASK-123` → `task-123`); a branch não: o nome vem da skill `eng-global-branch`.
 
 ### 2. Pré-requisito
 

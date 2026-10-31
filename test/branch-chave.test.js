@@ -59,10 +59,16 @@ test("a skill eng-global-branch existe, é global e descreve a política inteira
       `${SKILL} sem o marcador "${marcador}". ${DE_PROPOSITO}`
     );
   }
-  // "o número, sem `#`" tem de estar nos Padrões Críticos e no Passo 4 (apagar uma das duas passaria com includes).
-  assert.ok(
-    (skill.match(/o número, sem `#`/g) ?? []).length >= 2,
-    `${SKILL}: "o número, sem \`#\`" deveria aparecer nos Padrões Críticos e no Passo 4. ${DE_PROPOSITO}`
+  // "o número, sem `#`" tem de estar nos Padrões Críticos (junto da regra da chave) e na seção dos Gates 0.3.
+  assert.match(
+    skill,
+    /A chave é identificador, não estilo[^\n]*o número, sem `#`/,
+    `${SKILL}: os Padrões Críticos perderam "o número, sem \`#\`". ${DE_PROPOSITO}`
+  );
+  assert.match(
+    skill,
+    /O nome da branch \*\*contém\*\* a chave da tarefa \([^)]*o número, sem `#`/,
+    `${SKILL}: a seção "O que os Gates 0.3 conferem" perdeu "o número, sem \`#\`". ${DE_PROPOSITO}`
   );
   // O freelance sem número de controle (e não "de issue") é o que a tabela, o Passo 4 e os Gates dizem.
   assert.ok(
@@ -313,4 +319,24 @@ test("o jarvis fork resolve eng-global-branch como skill (o extension point é f
     `eng-global-branch resolvida como ${artefato.type}. ${DE_PROPOSITO}`
   );
   assert.equal(artefato.relPath, "skills/eng-global-branch", DE_PROPOSITO);
+});
+
+test("a caixa da chave em minúsculas é dita só para a pasta da sessão, nunca para a variável nem para a branch", () => {
+  const arquivos = [
+    "workflows/engineering/eng.start.md",
+    "workflows/engineering/eng.plan.md",
+    "rules-on-demand/engineering/eng.start-rules.md",
+    "rules-on-demand/engineering/eng.plan-rules.md",
+    "rules-on-demand/engineering/eng.tech-spec-rules.md",
+    ...GATES,
+  ];
+  for (const arquivo of new Set(arquivos)) {
+    for (const [n, linha] of read(arquivo).split("\n").entries()) {
+      if (!/TASK_MANAGER_KEY/.test(linha) || !/lowercase/.test(linha)) continue;
+      assert.ok(
+        /nome da pasta|pasta da sessão|\*\*pasta\*\*/i.test(linha),
+        `${arquivo}:${n + 1} manda pôr o TASK_MANAGER_KEY em lowercase sem dizer que é a pasta: ${linha.trim()}. ${DE_PROPOSITO}`
+      );
+    }
+  }
 });

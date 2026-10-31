@@ -189,7 +189,7 @@ Crie o diretório da sessão se não existir:
 $SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/
 ```
 
-> ⚠️ **IMPORTANTE**: O `TASK_MANAGER_KEY` deve ser convertido para **lowercase**.
+> ⚠️ **IMPORTANTE**: O nome da **pasta** usa o `TASK_MANAGER_KEY` em **lowercase** (a branch não: o nome vem da skill `eng-global-branch`).
 > Exemplo: `TASK-123` → `task-123`
 
 ### 1.3 Registrar Início da Sessão
