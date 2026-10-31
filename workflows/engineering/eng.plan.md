@@ -37,7 +37,7 @@ Antes de executar este workflow:
 1. O arquivo `architecture.md` **DEVE existir** em `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/`
 2. Se não existir, peça ao usuário para executar o workflow `start` primeiro
 
-> 📁 **Padrão de pasta**: `{TASK_MANAGER_KEY}` é o ID do card em **lowercase** (ex: `TASK-123` → `task-123`)
+> 📁 **Padrão de pasta**: o nome da pasta usa o `{TASK_MANAGER_KEY}` (ID do card) em **lowercase** (ex: `TASK-123` → `task-123`); a branch não: o nome vem da skill `eng-global-branch`
 
 ### Skills invocados durante o workflow
 

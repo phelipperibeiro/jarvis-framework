@@ -32,7 +32,7 @@ O **único entregável** do `start` é:
 $SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/architecture.md
 ```
 
-> 📁 **Padrão**: `TASK_MANAGER_KEY` é o ID do card em **lowercase** (ex: `TASK-123` → `task-123`)
+> 📁 **Padrão**: o nome da pasta usa o `TASK_MANAGER_KEY` (ID do card) em **lowercase** (ex: `TASK-123` → `task-123`); a branch não: o nome vem da skill `eng-global-branch`
 
 Além dele, o `start` pode criar apenas os arquivos de apoio da própria sessão (`context.md` e `.timestamp_start`, em `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/`) e a branch de feature. Nenhum arquivo do projeto deve ser criado, modificado ou deletado.
 
@@ -57,7 +57,7 @@ O workflow **só é considerado completo** após:
    - Se não veio em `$ARGUMENTS`: **perguntar e aguardar**
      - Freelance (vazio): número de controle próprio (ex: `F-042`)
      - Com board: id do card naquele vendor
-   - Converter para **lowercase** (ex: `F-042` → `f-042`)
+   - Converter para **lowercase** só o nome da pasta (ex: `F-042` → `f-042`)
 
 2. **Criar diretório da sessão**
    - Caminho: `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/`
@@ -107,7 +107,7 @@ O nome da pasta de sessão é **sempre o TASK_MANAGER_KEY em lowercase**:
 ```
 
 **Regras:**
-- Converter para **lowercase**
+- Converter para **lowercase** (só o nome da pasta)
 - Manter o formato original (projeto-número)
 - Não adicionar sufixos ou descrições
 
@@ -118,6 +118,10 @@ O nome da pasta de sessão é **sempre o TASK_MANAGER_KEY em lowercase**:
 | `STORY-456`         | `$SESSIONS_DIR/eng/story-456/`       |
 | `BUG-789`           | `$SESSIONS_DIR/eng/bug-789/`         |
 | `SPIKE-42`          | `$SESSIONS_DIR/eng/spike-42/`        |
+
+### Branch de trabalho
+
+O nome da branch vem da skill `eng-global-branch` (ou do fork dela no overlay da empresa). Com card, a chave é obrigatória no nome; a convenção do projeto (ex.: `CONTRIBUTING.md`) define só o prefixo e o estilo.
 
 ---
 

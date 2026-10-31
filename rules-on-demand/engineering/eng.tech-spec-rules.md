@@ -72,7 +72,7 @@ Tech specs devem ser salvas na **sessão do projeto** (NÃO em master-docs):
 $SESSION_FOLDER/{TASK_MANAGER_KEY}/tech-spec.md
 ```
 
-> 📁 **Padrão**: O `TASK_MANAGER_KEY` deve ser o ID do card em **lowercase**.
+> 📁 **Padrão**: o nome da pasta usa o `TASK_MANAGER_KEY` (ID do card) em **lowercase**.
 
 **Exemplos:**
 
@@ -94,7 +94,7 @@ $SESSION_FOLDER/{TASK_MANAGER_KEY}/tech-spec.md
 - **Exemplo**: `$SESSIONS_DIR/eng/task-123/tech-spec.md`
 
 > ⚠️ **IMPORTANTE**: NÃO adicione descrições ou sufixos ao nome da pasta.
-> Use **apenas** o TASK_MANAGER_KEY convertido para lowercase.
+> Use **apenas** o TASK_MANAGER_KEY em lowercase (o nome da pasta, não o da branch).
 
 ---
 

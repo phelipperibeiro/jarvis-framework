@@ -28,6 +28,7 @@ Este comando inicia o **planejamento** de uma nova feature.
 | Cabeçalho (agente) | `eng.agent` (agente) | Sempre — identidade do workflow |
 | Fase 0.1: Análise de Contexto (CDD) | `/jarvis-context-detect` | Se `ENABLE_CDD=true` no ENV.md (execução obrigatória antes da Fase 1); `ENABLE_CDD=false` pula |
 | Fase 0.5: Advisor (opcional) | `eng.advisor.agent` (agente) | Se o usuário escolher usar o Advisor no alerta e o `architecture.md` tiver questões em aberto (aberto só na primeira questão) |
+| Fase 1.1: Criar Branch de Feature | `/eng-global-branch` | Sempre que criar ou renomear a branch de trabalho (compõe o nome e confirma quando o projeto tem convenção) |
 | Fase 2.2: Buscar Documentação Central | `/jarvis-docs-central` | Se `CENTRAL_DOCS_STORAGE` estiver configurado no ENV.md (buscar as funcionalidades já implementadas, `feature-*`, e entregas recentes; PRD, ARD e RFC ficam em `docs/jarvis/`) |
 | Fase 3.4: Estratégia de Testes | `eng.qa.test-architect` (agente) | Se a feature tiver requisitos de performance ou segurança (APIs públicas, dados sensíveis, alta carga ou requisitos não-funcionais explícitos) |
 | Fase 3.4: Estratégia de Testes | `/eng-platform` | Se a feature tiver requisitos de performance (latência, throughput, escalabilidade) |
@@ -150,19 +151,26 @@ Registre a escolha no cabeçalho do `architecture.md` (`Advisor:`). O agente `en
 
 Grave a escolha no cabeçalho do `architecture.md` (`Branch base:`). O `eng.pr` abre o PR para essa mesma branch.
 
+**Nome da branch:** monte-o com a skill `/eng-global-branch` (ou com o fork dela no overlay da empresa, pela rule de precedência): ela acha a convenção do projeto, compõe o nome (com card, a chave é obrigatória: `{prefixo}/{chave}-{titulo}` com convenção, `{chave}-{titulo}` sem), confirma com a pessoa quando há convenção e diz o que os Gates 0.3 dos comandos seguintes conferem.
+
+**Antes de trocar de branch**, olhe a branch atual (`git branch --show-current`):
+
+- Já tem a chave da tarefa no nome: use-a, sem criar nova (e ainda assim pergunte a base, para o `eng.pr`).
+- **Sem a chave**, **sem commit** sobre a base (`git log {BRANCH_BASE}..HEAD` vazio), **diferente de `{BRANCH_BASE}`**, **não protegida** (`main`, `master`, `develop`, `staging`, `homolog`) e **sem upstream** (`git rev-parse --abbrev-ref @{u}` falha): ofereça renomeá-la com `git branch -m {NOME_DA_BRANCH}` (nome montado pela skill). Se `{BRANCH_BASE}` não existir localmente, compare com `origin/{BRANCH_BASE}` (depois de `git fetch`); erro do git = não renomeie. **Renomeou:** não rode o bloco abaixo (a branch já é a da tarefa). **Recusou, ou fora dessas condições** (é a base, está protegida, já foi publicada ou tem commits): não renomeie e siga com o bloco abaixo, que cria uma branch nova; com commits e sem a chave, o Gate 0.3 dos comandos seguintes pergunta.
+
 ```bash
 # Garantir que a base está atualizada
 git checkout {BRANCH_BASE}
 git pull --ff-only origin {BRANCH_BASE}
 
-# Criar branch no padrão {TASK_MANAGER_KEY}-{titulo-em-kebab-case}
-git checkout -b {TASK_MANAGER_KEY}-{titulo-em-kebab-case}
+# Criar a branch com o nome montado pela skill eng-global-branch
+git checkout -b {NOME_DA_BRANCH}
 ```
 
 **Se a branch já existir**, fazer checkout nela:
 
 ```bash
-git checkout {TASK_MANAGER_KEY}-{titulo-em-kebab-case}
+git checkout {NOME_DA_BRANCH}
 ```
 
 **Verificar branch ativa:**
@@ -171,23 +179,6 @@ git checkout {TASK_MANAGER_KEY}-{titulo-em-kebab-case}
 git branch --show-current
 ```
 
-**Regras de nomenclatura:**
-
-| Campo | Regra |
-|-------|-------|
-| `TASK_MANAGER_KEY` | UPPERCASE (ex: `TASK-123`) |
-| Título | kebab-case — lowercase, hífens, sem acentos |
-| Tamanho | Máximo 50 caracteres no título |
-
-**Exemplos:**
-
-| TASK_MANAGER_KEY | Título | Branch |
-|----------|--------|--------|
-| `TASK-123` | "Implementar autenticação JWT" | `TASK-123-implementar-autenticacao-jwt` |
-| `BUG-789` | "Fix null pointer em login" | `BUG-789-fix-null-pointer-em-login` |
-
-> ⚠️ Se o usuário já estiver em uma branch com o padrão correto do TASK_MANAGER_KEY, use-a sem criar nova (e ainda assim pergunte a base, para o `eng.pr`).
-> ⚠️ Se o projeto tiver convenção própria de nome de branch (ex.: `CONTRIBUTING.md`), siga a do projeto.
 > ✅ A branch criada aqui será usada em todos os workflows subsequentes (work, pre-pr, pr). Ela é sempre uma branch de trabalho: nunca implemente direto na base.
 
 ### 1.2 Criar Diretório de Sessão
@@ -198,7 +189,7 @@ Crie o diretório da sessão se não existir:
 $SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/
 ```
 
-> ⚠️ **IMPORTANTE**: O `TASK_MANAGER_KEY` deve ser convertido para **lowercase**.
+> ⚠️ **IMPORTANTE**: O nome da **pasta** usa o `TASK_MANAGER_KEY` em **lowercase** (a branch não: o nome vem da skill `eng-global-branch`).
 > Exemplo: `TASK-123` → `task-123`
 
 ### 1.3 Registrar Início da Sessão
@@ -487,7 +478,7 @@ Quando o usuário aprovar, informe:
 
 ### ✅ FAÇA APENAS
 
-- ✅ Criar branch a partir da base escolhida pelo usuário, no padrão `{TASK_MANAGER_KEY}-{titulo}`
+- ✅ Criar branch a partir da base escolhida pelo usuário, com o nome montado pela skill `/eng-global-branch`
 - ✅ Criar o diretório `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/`
 - ✅ Criar o arquivo `architecture.md`
 - ✅ Investigar e analisar o codebase (leitura apenas)

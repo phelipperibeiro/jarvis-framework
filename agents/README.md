@@ -101,6 +101,7 @@ Quando um agente estiver atuando em um tema que possui skill correspondente, ele
 
 - **eng.docs** → `eng-global-docs-write` (principal) e `jarvis-docs-index` (quando houver índice).
 - **eng.pre-pr** → `eng-qa-planner` (cobertura) e `eng-global-docs-write` (docs).
+- **eng.start** (nome da branch) e **eng.pr** → `eng-global-branch` (política de nome da branch; o `eng.pr` também usa `eng-global-pr`).
 - **eng.pr** → `eng-global-pr`.
 - **Estratégia de testes, design de casos, automação, não funcionais, E2E, gestão de defeitos** → `eng-qa` (base) + `QA_SPECIALIZATIONS`.
 - **APIs, auth, workers, filas, caching, banco de dados** → regra `eng.specializations-rules.md` (área backend: `eng-backend` + `BACKEND_SPECIALIZATIONS`).

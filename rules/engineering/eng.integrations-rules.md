@@ -33,10 +33,10 @@ Para agir no vendor: 1) **`jarvis`** (`jarvis tasks comment`, `jarvis vcs create
 ```
 Não há TASK_MANAGER no ENV — modo freelance.
 Qual o seu número de controle para esta tarefa?
-(ex: F-042, CLIENTE-agosto, 2026-08-13)
+(ex: o número da issue no repositório, F-042, CLIENTE-agosto)
 ```
 
-3. Usar a resposta (lowercase) como pasta `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/` e no prefixo da branch.
+3. Usar a resposta (lowercase) como pasta `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/`. O nome da branch vem da skill `eng-global-branch` (o número informado entra no nome, em minúsculas; sem número, só a descrição).
 4. Eventos relevantes (abaixo) vão para o `task-log.md` da sessão pelo `/eng-global-task-comment` (formato no skill), não para board. Não mover card nem buscar issue no board.
 
 Com board definido, se o key não veio nos argumentos, perguntar o id do card naquele vendor (ex: Jira `TASK-123`, GitHub `#42`).

@@ -121,14 +121,14 @@ A branch de feature foi criada no `eng.start`. Verificar:
 git branch --show-current
 ```
 
-A branch deve seguir o padrão `{TASK_MANAGER_KEY}-{titulo-em-kebab-case}`.
+A branch segue o padrão da skill `eng-global-branch` (criada no `eng.start`): com card, contém o `{TASK_MANAGER_KEY}`.
 
 **Cenários:**
 
 | Situação | Ação |
 |----------|------|
 | Branch com `{TASK_MANAGER_KEY}` | ✅ Prosseguir |
-| Branch errada / `main` / `develop` | Fazer checkout na branch correta: `git checkout {TASK_MANAGER_KEY}-{titulo-kebab}` |
+| Branch errada / `main` / `develop` | Fazer checkout na branch da tarefa: `git checkout {NOME_DA_BRANCH}` (o `Branch:` do `architecture.md`) |
 
 ### 2.2 Confirmar Branch de Destino
 
@@ -141,7 +141,7 @@ Branch de destino: a **`Branch base:`** do `architecture.md` (`{BRANCH_BASE}`). 
 **Se não estiver na branch correta:**
 
 ```bash
-git checkout {TASK_MANAGER_KEY}-{titulo-em-kebab-case}
+git checkout {NOME_DA_BRANCH}   # o Branch: do architecture.md da sessão
 ```
 
 ### 2.3 Verificar Commits da Branch
@@ -451,7 +451,7 @@ Pergunte com `AskUserQuestion`: **"O PR já foi aprovado e mergeado?"**
 - ✅ Validar testes antes do commit
 - ✅ Adicionar arquivos específicos
 - ✅ Usar mensagem de commit padronizada
-- ✅ Criar branch no padrão `{TASK_MANAGER_KEY}-{titulo}`
+- ✅ Branch com o nome da skill `eng-global-branch`
 - ✅ Preencher template do MR completamente
 - ✅ Orientar a pessoa a mover o card para a etapa equivalente a "em revisão" (o Jarvis não move card)
 - ✅ Gerar o `pull-request.md` na sessão e só publicar com a escolha de publicar da Fase 0 (4.3)

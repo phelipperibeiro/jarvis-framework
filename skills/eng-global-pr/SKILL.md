@@ -106,22 +106,7 @@ npm run build 2>/dev/null || echo "Comando de build não encontrado"
 
 #### Padrão de Nomenclatura
 
-```
-{TASK_MANAGER_KEY}-{titulo-em-kebab-case}
-```
-
-**Regras:**
-- TASK_MANAGER_KEY em **UPPERCASE** (ex: `TASK-123`)
-- Título em **kebab-case** (lowercase, hífens)
-- Remover acentos e caracteres especiais
-- Máximo 50 caracteres no título
-
-**Exemplos:**
-
-| TASK_MANAGER_KEY | Título | Branch |
-|----------|--------|--------|
-| `TASK-123` | "Implementar autenticação JWT" | `TASK-123-implementar-autenticacao-jwt` |
-| `BUG-456` | "Fix: null pointer em login" | `BUG-456-fix-null-pointer-em-login` |
+O nome vem da skill `/eng-global-branch` (ou do fork dela no overlay da empresa): com card, `{prefixo}/{TASK_MANAGER_KEY}-{titulo}` quando o projeto tem convenção de nome, `{TASK_MANAGER_KEY}-{titulo}` sem. A regra completa e os exemplos estão só nela. Se a branch já existe (criada no `eng.start`), use-a.
 
 #### Criar Branch
 
@@ -256,6 +241,7 @@ rm -rf $SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/
 
 | Passo | Skill | Condição |
 |-------|-------|----------|
+| Passo 2 — Criar Branch | `/eng-global-branch` | Se a branch ainda não existir (normalmente o `eng.start` já a criou): monta o nome |
 | Passo 6 — Atualizar o card | `/eng-global-task-comment` | Com o Sim da pergunta (regra de ouro): comentário no card com o link do MR (freelance: registro no `task-log.md` da sessão) |
 
 ---
@@ -276,7 +262,7 @@ rm -rf $SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/
 - ✅ Validar testes antes do commit
 - ✅ Adicionar arquivos específicos
 - ✅ Usar mensagem de commit padronizada
-- ✅ Criar branch no padrão `{TASK_MANAGER_KEY}-{titulo}`
+- ✅ Criar branch com o nome da skill `/eng-global-branch`
 - ✅ Preencher template do MR completamente
 - ✅ Orientar a pessoa a mover o card para "In Review" (o Jarvis não move card)
 - ✅ Limpar sessão após criar MR

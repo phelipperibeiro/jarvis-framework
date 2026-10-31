@@ -6,6 +6,18 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), e o
 
 > Versões anteriores a `2.1.1` não foram documentadas retroativamente neste changelog — o histórico detalhado dessas versões continua disponível via `git log`.
 
+## [Não lançado]
+
+### Added
+- **Skill `/eng-global-branch` (#200)**: fonte única da política de nome da branch de trabalho. Com card, a chave é obrigatória no nome e a convenção do projeto (ex.: `CONTRIBUTING.md`) dá o prefixo e o estilo: `{prefixo}/{chave}-{titulo}` (ex.: `feature/199-company-overlay-fork`); sem convenção, `{chave}-{titulo}`, como antes. Com convenção, mostra o nome e confirma. A chave fica como o board a escreve (GitHub/GitLab sem `#`). Convenção sem `/` não ganha prefixo. No freelance, o número de controle informado (de preferência o da issue do repositório) entra no nome, em minúsculas; sem número, só a descrição. Diz o que os Gates 0.3 conferem. É o primeiro extension point do overlay de empresa: uma empresa com outra política roda `jarvis fork eng-global-branch` em vez de forkar o `eng.start`.
+- **Testes**: `branch-chave.test.js` no `test:filtro` (conteúdo da skill, frontmatter ≤ 500 B, os quatro Gates 0.3 idênticos, nenhum arquivo dita o padrão sem citar a skill).
+
+### Changed
+- **`eng.start`** (Fase 1.1): monta o nome pela skill (ou pelo fork dela no overlay) em vez de "siga a convenção do projeto", que fazia a chave sumir do nome; branch existente sem a chave ganha a oferta de `git branch -m` só se não for a base, não for protegida, não tiver commit sobre a base nem upstream.
+- **Gates 0.2/0.3** (`eng.plan`, `eng.work`, `eng.pre-pr`, `eng.pr`), **`eng.pr`**, **`eng-global-pr`**, **`eng.work`** e os guias: apontam para a skill em vez de repetir o padrão `{TASK_MANAGER_KEY}-{titulo}`. O critério do Gate 0.3 não muda (o nome contém a chave).
+- **`eng.integrations-rules.md`** (freelance): a pergunta do número de controle sugere o número da issue do repositório; o nome da branch vem da skill.
+- **`jarvis tokens`**: +724 B por sessão (frontmatter da skill, a linha dela no `AGENTS.md` e a frase do freelance); snapshots "rules reais" de `profile-filter.test.js` +136 B.
+
 ## [8.3.0] - 2026-10-30
 
 ### Added
