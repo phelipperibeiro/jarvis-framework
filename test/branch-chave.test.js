@@ -72,3 +72,31 @@ test("a skill está registrada onde as eng-global-* aparecem", () => {
     );
   }
 });
+
+// Arquivos que antes repetiam a regra de nome da branch; agora só apontam para a skill.
+const APONTAM = [
+  "workflows/engineering/eng.start.md",
+  "rules-on-demand/engineering/eng.start-rules.md",
+  "docs/engenharia/eng.start.md",
+];
+
+test("o eng.start, as regras dele e o guia apontam para a skill e não repetem a regra", () => {
+  for (const arquivo of APONTAM) {
+    const texto = read(arquivo);
+    assert.ok(texto.includes("eng-global-branch"), `${arquivo} não cita a skill. ${DE_PROPOSITO}`);
+    assert.ok(
+      !texto.includes("siga a do projeto"),
+      `${arquivo}: "siga a do projeto" sem a chave voltou. ${DE_PROPOSITO}`
+    );
+    assert.ok(
+      !texto.includes("TASK-123-implementar-autenticacao-jwt"),
+      `${arquivo} repete a tabela de exemplos da skill. ${DE_PROPOSITO}`
+    );
+  }
+  // A Fase 1.1 chama a skill pela tabela de chamadas (é o que o jarvis map e o test:comandos leem).
+  assert.match(
+    read("workflows/engineering/eng.start.md"),
+    /^\| Fase 1\.1: Criar Branch de Feature \| `\/eng-global-branch` \|/m,
+    `eng.start.md sem a linha da skill na tabela "Skills invocados". ${DE_PROPOSITO}`
+  );
+});

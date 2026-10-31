@@ -119,6 +119,10 @@ O nome da pasta de sessão é **sempre o TASK_MANAGER_KEY em lowercase**:
 | `BUG-789`           | `$SESSIONS_DIR/eng/bug-789/`         |
 | `SPIKE-42`          | `$SESSIONS_DIR/eng/spike-42/`        |
 
+### Branch de trabalho
+
+O nome da branch vem da skill `eng-global-branch` (ou do fork dela no overlay da empresa). Com card, a chave é obrigatória no nome; a convenção do projeto (ex.: `CONTRIBUTING.md`) define só o prefixo e o estilo.
+
 ---
 
 ## Qualidade do Architecture.md
