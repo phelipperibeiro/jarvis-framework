@@ -190,7 +190,7 @@ A **Resolução da rodada anterior** lista as lacunas da rodada anterior com dec
 
 - **Teto de rodadas**, pela `urgencia` do `context.md` (o mesmo campo do orçamento do `/eng.debug`): `alta` 3 · `normal` 5 · `baixa` 8; sem `context.md`, vale `normal`. Atingido quando o `Rodada:` desta rodada é igual ou maior que o teto.
 - **Rodada sem lacuna nova** (da rodada 2 em diante, e só se os gates de código e de cobertura de testes, itens 2 e 3, rodaram nesta rodada): nenhuma lacuna 🔴 ou 🟡 desta rodada é nova. Nova é a que não aparece na "Resolução da rodada anterior" como `Ainda presente` ou `Não reavaliada`. Atingido, leva à variante B (abaixo), mas não aceita 🟡 sozinho: só o teto aceita 🟡; com este gatilho, as 🟡 sem decisão são decididas uma a uma na própria variante B.
-- **Aviso de teto:** sempre que o teto for atingido e houver lacuna pendente, de qualquer severidade, comece a mensagem do passo 1 com: "⚠️ Teto de {T} rodadas da urgência `{u}` atingido; as pendências seguem abertas e cada rodada a mais fica registrada no PR."
+- **Aviso de teto:** sempre que o teto for atingido e houver lacuna pendente, de qualquer severidade, comece a mensagem do passo 1 com: "⚠️ Teto de {T} rodadas da urgência `{u}` atingido; as pendências seguem abertas. A seguir: parar ou mais uma rodada (cada rodada a mais fica registrada no PR)."
 
 Lacuna **pendente** é a sem decisão ou a herdada com `🔧 Corrigir`, inclusive as copiadas como "(não reavaliada nesta rodada)". Uma decisão herdada nunca é trocada por outra opção da variante B. O passo 2 tem duas variantes:
 
@@ -199,7 +199,16 @@ Lacuna **pendente** é a sem decisão ou a herdada com `🔧 Corrigir`, inclusiv
 | Nenhuma 🔴 pendente, nenhuma 🟡 herdada com `🔧 Corrigir`, há lacuna sem decisão, e as sem decisão são só ⚪, ou também 🟡 com o critério de parada atingido (teto ou rodada sem lacuna nova) | **B** (severidade como gatilho) |
 | Qualquer outro caso (inclusive sem lacuna pendente) | **A** (as perguntas de sempre) |
 
+Com o teto atingido e lacuna pendente, a **pergunta do teto** (depois do passo 1) escolhe o caminho; nada muda dentro das variantes.
+
 1. Mostre o semáforo, o resumo e a lista de lacunas por severidade, com o consolidado de links da sessão (regra 5 de `eng.transitions-rules.md`: tudo o que já existe, com o `gate-checklist.md` novo e, antes dele e em ordem, as rodadas anteriores `gate-checklist-rodada-{N}.md`; o atual leva a nota "rodada {N}, atual").
+   **Pergunta do teto.** Só quando o teto foi atingido e há lacuna pendente: na rodada que atinge o teto e em cada uma acima dele (sem pendência, o passo 4 já pergunta como seguir). Antes do passo 2, pergunte com `AskUserQuestion`: **"Teto de {T} rodadas da urgência `{u}` atingido. Como seguir?"**
+   - **Parar e seguir para o PR** (a primeira, a recomendada): segue o passo 2 pela tabela das variantes. Sem 🔴 pendente nem 🟡 herdada com `🔧 Corrigir`, é a variante B, como hoje. Com 🔴 pendente (ou 🟡 herdada com `🔧 Corrigir`), é a variante A direto em "Decidir uma a uma": cada 🔴 e 🟡 vira `🔧 Corrigir` ou `👍 Aceitar` com o motivo, nunca em bloco; o passo 4 vale como na variante A. As pendências seguem no PR Brief.
+   - **Mais uma rodada**: segue a variante A (as perguntas de sempre), mesmo que a tabela desse a B. O que ficar `🔧 Corrigir` é corrigido pelo `/eng.work` (no "Depois do work", escolha "Rodar o `/eng.pre-pr`") ou à mão, e o `/eng.pre-pr` roda de novo: a rodada seguinte fica além do teto.
+   - **Só gerar o relatório (como hoje)** (a última): o comando termina sem os passos 2, 3 e 4. É o fluxo que vale quando a pessoa não escolhe.
+
+   Grave a escolha na linha `Critério de parada:` do relatório (`escolha no teto: parar | mais uma rodada | só o relatório`), atualizando a linha já gravada, antes de seguir.
+
 2. Peça as decisões com `AskUserQuestion`, depois da mensagem em markdown do passo 1 (com o link clicável).
 
    **Variante A.** Se o gatilho "sem lacuna nova" foi atingido (há 🔴 pendente ou 🟡 herdada com `🔧 Corrigir`, senão seria a B), comece com: "ℹ️ Nenhuma 🔴 ou 🟡 nova nesta rodada: as pendentes são as da rodada anterior." Pergunta: **"O que fazer com as {n} lacunas encontradas ({a} 🔴 bloqueadoras, {b} 🟡 importantes)? Relatório: gate-checklist.md."**
