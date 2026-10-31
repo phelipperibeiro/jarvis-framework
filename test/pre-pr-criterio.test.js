@@ -98,6 +98,20 @@ test("os rótulos da pergunta do teto na tabela de transições são os mesmos d
       `${PRE_PR}: a pergunta do teto não tem a opção "${rotulo}" da tabela de transições. ${DE_PROPOSITO}`
     );
   }
+  // A pergunta e os rótulos também estão escritos na rule: ela não pode ficar defasada.
+  const pergunta = "Teto de {T} rodadas da urgência `{u}` atingido. Como seguir?";
+  for (const arquivo of [PRE_PR, PRE_PR_RULES, TRANSITIONS]) {
+    assert.ok(
+      read(arquivo).includes(pergunta),
+      `${arquivo} sem a pergunta do teto "${pergunta}". ${DE_PROPOSITO}`
+    );
+  }
+  for (const rotulo of rotulos) {
+    assert.ok(
+      read(PRE_PR_RULES).includes(`**${rotulo}`),
+      `${PRE_PR_RULES} sem o rótulo "${rotulo}" da pergunta do teto. ${DE_PROPOSITO}`
+    );
+  }
 });
 
 test("a variante B tem os rótulos de cada caso e a condição dela é a mesma nos três arquivos", () => {
