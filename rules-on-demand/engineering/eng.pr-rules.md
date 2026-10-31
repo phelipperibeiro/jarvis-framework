@@ -61,7 +61,7 @@ Confirmar que está na branch certa? (s/n)
 
 **→ Aguardar confirmação explícita antes de prosseguir.**
 
-O nome é montado pela skill `eng-global-branch` (ou pelo fork dela no overlay da empresa). No freelance sem número de issue, a branch não tem chave e esta confirmação é esperada.
+O nome é montado pela skill `eng-global-branch` (ou pelo fork dela no overlay da empresa). No freelance sem número de controle, a branch não tem chave e esta confirmação é esperada.
 
 ---
 

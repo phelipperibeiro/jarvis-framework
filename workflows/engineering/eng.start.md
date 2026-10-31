@@ -156,7 +156,7 @@ Grave a escolha no cabeçalho do `architecture.md` (`Branch base:`). O `eng.pr` 
 **Antes de trocar de branch**, olhe a branch atual (`git branch --show-current`):
 
 - Já tem a chave da tarefa no nome: use-a, sem criar nova (e ainda assim pergunte a base, para o `eng.pr`).
-- **Sem a chave**, **sem commit** sobre a base (`git log {BRANCH_BASE}..HEAD` vazio), **diferente de `{BRANCH_BASE}`**, **não protegida** (`main`, `master`, `develop`, `staging`, `homolog`) e **sem upstream** (`git rev-parse --abbrev-ref @{u}` falha): ofereça renomeá-la com `git branch -m {NOME_DA_BRANCH}` (nome montado pela skill). Fora dessas condições (é a base, está protegida, já foi publicada ou tem commits), não renomeie: crie uma branch nova abaixo; com commits e sem a chave, o Gate 0.3 dos comandos seguintes pergunta.
+- **Sem a chave**, **sem commit** sobre a base (`git log {BRANCH_BASE}..HEAD` vazio), **diferente de `{BRANCH_BASE}`**, **não protegida** (`main`, `master`, `develop`, `staging`, `homolog`) e **sem upstream** (`git rev-parse --abbrev-ref @{u}` falha): ofereça renomeá-la com `git branch -m {NOME_DA_BRANCH}` (nome montado pela skill). Se `{BRANCH_BASE}` não existir localmente, compare com `origin/{BRANCH_BASE}` (depois de `git fetch`); erro do git = não renomeie. **Renomeou:** não rode o bloco abaixo (a branch já é a da tarefa). **Recusou, ou fora dessas condições** (é a base, está protegida, já foi publicada ou tem commits): não renomeie e siga com o bloco abaixo, que cria uma branch nova; com commits e sem a chave, o Gate 0.3 dos comandos seguintes pergunta.
 
 ```bash
 # Garantir que a base está atualizada

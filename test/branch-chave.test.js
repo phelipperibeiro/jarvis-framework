@@ -34,9 +34,11 @@ test("a skill eng-global-branch existe, é global e descreve a política inteira
     "{prefixo}/{chave}-{titulo}", // composição com a convenção do projeto
     "{chave}-{titulo}", // sem convenção
     "A chave é identificador, não estilo", // caixa da chave (Q3)
-    "sem `#`", // GitHub e GitLab
+    "o número, sem `#`", // GitHub e GitLab, de quem compõe
+    "Mudar a caixa da chave ou pôr `#` no nome", // regra de Nunca
     "Nome da branch: `{nome}`?", // confirmação (Q2)
     "número da issue do `VERSION_CONTROL`", // freelance com número (Q4)
+    "em minúsculas, como a pasta da sessão", // chave do freelance reconhecida pelo Gate 0.3
     "Freelance, sem número", // fallback só com a descrição (Q4)
     "O que os Gates 0.3 conferem",
     "no idioma que a convenção pede", // idioma do título (Q2)
@@ -46,6 +48,16 @@ test("a skill eng-global-branch existe, é global e descreve a política inteira
     "jarvis fork eng-global-branch", // extension point do overlay
   ]) {
     assert.ok(skill.includes(trecho), `${SKILL} sem "${trecho}". ${DE_PROPOSITO}`);
+  }
+  // Os marcadores que só a skill pode ter existem nela (senão a guarda "não copia" não vigia nada).
+  const skillSemEspacos = skill.replace(/\s+/g, " ");
+  for (const marcador of SO_DA_SKILL) {
+    assert.ok(
+      skillSemEspacos
+        .replace(/\| /g, "|")
+        .includes(marcador.replace(/\s+/g, " ").replace(/\| /g, "|")),
+      `${SKILL} sem o marcador "${marcador}". ${DE_PROPOSITO}`
+    );
   }
   assert.match(
     skill,
@@ -113,7 +125,13 @@ const GATES = ["plan", "work", "pre-pr", "pr"].map(
 function gate03(texto) {
   const inicio = texto.indexOf("### Regra 0.3");
   const fim = texto.indexOf("\n---", inicio);
-  return texto.slice(inicio, fim);
+  const bloco = texto.slice(inicio, fim);
+  // Um separador dentro do bloco o truncaria sem erro: o bloco termina na pergunta e na nota do freelance.
+  assert.ok(
+    bloco.includes("esta confirmação é esperada"),
+    `O Gate 0.3 está truncado ou sem a nota do freelance. ${DE_PROPOSITO}`
+  );
+  return bloco;
 }
 
 test("os quatro Gates 0.3 são idênticos e citam a skill", () => {
@@ -182,7 +200,7 @@ test("os Gates 0.3 mantêm o critério (contém a chave, sem # no GitHub/GitLab)
       `${arquivo}: o Gate 0.3 não diz que a chave do GitHub/GitLab é o número sem "#". ${DE_PROPOSITO}`
     );
     assert.ok(
-      bloco.includes("freelance sem número de issue"),
+      bloco.includes("freelance sem número de controle"),
       `${arquivo}: o Gate 0.3 perdeu a nota do freelance sem número. ${DE_PROPOSITO}`
     );
   }
@@ -199,7 +217,7 @@ test("eng.work, eng.pr, eng-global-pr e a regra de integração dizem de onde ve
   );
   assert.match(
     read("rules/engineering/eng.integrations-rules.md"),
-    /nome da branch vem da skill `eng-global-branch`.*número da issue/,
+    /nome da branch vem da skill `eng-global-branch`[\s\S]*?número informado entra no nome/,
     `eng.integrations-rules.md: o freelance sem a frase do número da issue. ${DE_PROPOSITO}`
   );
   assert.match(
@@ -209,15 +227,41 @@ test("eng.work, eng.pr, eng-global-pr e a regra de integração dizem de onde ve
   );
 });
 
-test("o renomeio da branch no eng.start só vale para branch que não é a base, não é protegida e não tem upstream", () => {
+test("o renomeio da branch no eng.start só vale com as condições certas e vem antes do checkout da base", () => {
   const texto = read("workflows/engineering/eng.start.md");
+  // Só a Fase 1.1: do título até o próximo título de seção.
+  const inicio = texto.indexOf("### 1.1 Criar Branch de Feature");
+  const fim = texto.indexOf("### 1.2", inicio);
+  assert.ok(inicio !== -1 && fim !== -1, `eng.start.md sem a Fase 1.1. ${DE_PROPOSITO}`);
+  const fase = texto.slice(inicio, fim);
   for (const trecho of [
     "diferente de `{BRANCH_BASE}`",
     "não protegida",
+    "`homolog`",
     "sem upstream",
     "git rev-parse --abbrev-ref @{u}",
+    "git log {BRANCH_BASE}..HEAD",
+    "git branch -m {NOME_DA_BRANCH}",
+    "`origin/{BRANCH_BASE}`",
+    "não rode o bloco abaixo",
   ]) {
-    assert.ok(texto.includes(trecho), `eng.start.md sem "${trecho}" no renomeio. ${DE_PROPOSITO}`);
+    assert.ok(
+      fase.includes(trecho),
+      `Fase 1.1 do eng.start sem "${trecho}" no renomeio. ${DE_PROPOSITO}`
+    );
+  }
+  assert.ok(
+    fase.indexOf("**Antes de trocar de branch**") < fase.indexOf("git checkout {BRANCH_BASE}"),
+    `Fase 1.1: o renomeio voltou para depois do checkout da base. ${DE_PROPOSITO}`
+  );
+});
+
+test("o Gate 0.2 das quatro rules aponta para a skill", () => {
+  for (const arquivo of GATES) {
+    assert.ok(
+      read(arquivo).includes("Branch esperada: no padrão da skill eng-global-branch"),
+      `${arquivo}: o Gate 0.2 perdeu a referência à skill. ${DE_PROPOSITO}`
+    );
   }
 });
 

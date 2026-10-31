@@ -63,12 +63,12 @@ Leia, nesta ordem, a seção de branches do `CONTRIBUTING.md`, do `AGENTS.md` ou
 |---|---|
 | Com card, com convenção | `{prefixo}/{chave}-{titulo}` |
 | Com card, sem convenção | `{chave}-{titulo}` |
-| Freelance, com o número da issue do `VERSION_CONTROL` | `{prefixo}/{numero}-{titulo}` (sem convenção: `{numero}-{titulo}`) |
+| Freelance, com número de controle (de preferência o número da issue do `VERSION_CONTROL`) | `{prefixo}/{numero}-{titulo}` (sem convenção: `{numero}-{titulo}`) |
 | Freelance, sem número | `{prefixo}/{titulo}` (sem convenção: `{titulo}`) |
 
 - **Prefixo:** o `tipo` mapeado na tabela da convenção (`feature` → `feature/`, `bugfix` → `fix/`, `hotfix` → `hotfix/`, `refactor` → `refactor/`). Convenção sem tabela de prefixos, mas com formato com `/`: proponha o mais próximo e deixe a confirmação decidir.
 - **Convenção sem prefixo** (o formato não tem `/`, ex.: `TASK-123-feature-name`): não invente prefixo; o nome é `{chave}-{titulo}` no estilo da convenção.
-- **Freelance:** qualquer número de controle informado entra como chave; de preferência, o número da issue no repositório (`VERSION_CONTROL`, GitHub ou GitLab). Sem número, a branch leva só a descrição.
+- **Freelance:** o número de controle informado (de preferência o número da issue no repositório, `VERSION_CONTROL`, GitHub ou GitLab; `F-042` também vale) entra como chave, **em minúsculas, como a pasta da sessão** (`eng.integrations-rules.md`): é o que faz o Gate 0.3 reconhecer a chave no nome. Sem número informado, a branch leva só a descrição.
 
 Exemplos:
 
@@ -86,7 +86,7 @@ Com convenção do projeto, mostre o nome e pergunte com `AskUserQuestion`: **"N
 
 ### 4. O que os Gates 0.3 conferem
 
-O nome da branch **contém** a chave da tarefa (GitHub e GitLab: o número, sem `#`). No freelance sem número de issue não há chave no nome, e o Gate pergunta "Confirmar que está na branch certa?" (esperado nesse caso).
+O nome da branch **contém** a chave da tarefa (GitHub e GitLab: o número, sem `#`). No freelance sem número de controle não há chave no nome, e o Gate pergunta "Confirmar que está na branch certa?" (esperado nesse caso).
 
 ### Skills invocados durante a execução do skill
 
