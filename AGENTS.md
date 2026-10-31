@@ -65,6 +65,7 @@ prompts/
 │   │   ├── jarvis-report-issue/          # Auto-report de bugs no repo do Jarvis (CLI do host: gh)
 │   │   ├── jarvis-fork/                  # Fork guiado de um artefato do core para o overlay da empresa (COMPANY_PROFILE; CLI jarvis fork)
 │   │   ├── eng-global-task-comment/      # Comentário no card (Jira/GitHub/GitLab, pela CLI do vendor)
+│   │   ├── eng-global-branch/            # Política de nome da branch (composição, confirmação, Gate 0.3); forkável pelo overlay
 │   │   ├── jarvis-list-specializations/ # Lista especializações de stack instaladas e registradas
 │   │   ├── jarvis-create-specialization/ # Cria uma especialização de stack a partir do código do projeto e a registra
 │   │   ├── jarvis-evolution-architect/ # Mentor de arquitetura para a evolução do Jarvis

@@ -72,6 +72,11 @@ Skills existentes e planejadas do framework Jarvis.
 - **Escopo**: Jira/GitHub/GitLab pela CLI oficial do vendor (gh, glab, acli)
 - **Status**: `criado`
 
+### `eng-global-branch` ✅
+- **Trigger**: criar, renomear ou validar a branch de uma tarefa
+- **Escopo**: nome `{prefixo}/{chave}-{titulo}` (convenção do projeto + chave do card), confirmação, freelance com o número da issue, o que os Gates 0.3 conferem; primeiro extension point do overlay de empresa (#200)
+- **Status**: `criado`
+
 ---
 
 ## Skills Criadas — Engenharia de Dados

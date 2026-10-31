@@ -16,7 +16,7 @@ skills/
 ├── jarvis-context-detect/
 ├── jarvis-docs-central/              # sync/publish docs centrais
 ├── eng-backend/, eng-frontend/, eng-backend-nestjs/, …
-├── eng-global-pr/, eng-global-docs-write/, eng-global-task-comment/
+├── eng-global-pr/, eng-global-docs-write/, eng-global-task-comment/, eng-global-branch/
 ├── eng-global-investigation/   # método de investigação de bugs (usado pelo /eng.debug)
 ├── eng-global-tech-spec/       # método do /eng.build-tech-spec (Delivery Spec e Reference Spec)
 ├── eng-qa/, eng-qa-planner/    # base de QA + especializações em QA_SPECIALIZATIONS
@@ -67,6 +67,7 @@ Todo skill tem `metadata.area` (`qa`, `data`, `ai`, `frontend`, `backend`, `auto
 |-------|------|
 | `jarvis-init` | Cria ENV; Context7 obrigatório; board e git pela CLI oficial (`gh`, `glab`, `acli`), sem token, com a descoberta da CLI e o `*_ACCESS`; freelance OK; passo opcional **adicionar as stacks** (detecta a stack do workspace e registra ou cria a especialização) |
 | `eng-global-task-comment` | Mostra o texto e pergunta; com o Sim, comenta no card pela CLI do vendor (jira, github, gitlab) (regra de ouro); sem a CLI, grava o `task-comment-{YYYYMMDD-HHMM}.md`; no freelance, o `task-log.md` |
+| `eng-global-branch` | Fonte única da política de nome da branch: `{prefixo}/{chave}-{titulo}` com a convenção do projeto, `{chave}-{titulo}` sem; confirma o nome; freelance com o número da issue ou só a descrição; diz o que os Gates 0.3 conferem. Uma empresa com outra política forka só ela (`jarvis fork eng-global-branch`) |
 | `jarvis-report-issue` | Mostra o texto e pergunta; com o Sim, abre issue no `JARVIS_PROJECT` pela CLI do host (`gh`); sem a CLI, sem login ou sem rede, grava `.jarvis/issues/issue-{desc}.md` para abrir à mão |
 | `jarvis-list-specializations` | Lista as especializações instaladas (backend e frontend) e se estão registradas nas listas do `ENV.md`; só lê |
 | `jarvis-evolution-architect` | Mentor de arquitetura para a evolução do próprio Jarvis: questiona designs (agent, skill, workflow ou rule?), identifica gaps e recomenda com opinião técnica; só lê e pesquisa |

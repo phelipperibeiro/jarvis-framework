@@ -29,6 +29,8 @@ skills/
 │   └── SKILL.md
 ├── eng-global-task-comment/     # Comentário no card (Jira/GitHub/GitLab, pela CLI do vendor)
 │   └── SKILL.md
+├── eng-global-branch/           # Política de nome da branch de trabalho (composição, confirmação, Gate 0.3); forkável pelo overlay
+│   └── SKILL.md
 ├── jarvis-list-specializations/ # Lista especializações de stack instaladas e registradas
 │   └── SKILL.md
 ├── jarvis-evolution-architect/ # Mentor de arquitetura: analisa e recomenda a evolução do próprio Jarvis (SDD, CDD, Agentic SE)
@@ -238,6 +240,7 @@ Skills são invocados de formas diferentes dependendo da IDE:
 | `/eng.debug` (investigar um bug ou varrer um escopo) | `eng-global-investigation` |
 | `/eng.build-tech-spec` (Delivery Spec ou Reference Spec) | `eng-global-tech-spec` |
 | Comentário no card | `eng-global-task-comment` |
+| `eng.start` (nome da branch), Gates 0.2/0.3 | `eng-global-branch` |
 | `jarvis docs sync` | `jarvis-docs-central` |
 | `jarvis docs publish` | `jarvis-docs-central` |
 | Arquitetura C4 | `eng-backend-arch-c4` |
