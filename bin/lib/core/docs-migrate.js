@@ -73,7 +73,7 @@ function listFiles(dir) {
   return files;
 }
 
-/** Pares pasta antiga → pasta nova, na ordem do item 8 + discoveries. */
+/** Pares pasta antiga → pasta nova, na ordem do item 7 + discoveries. */
 function sourcePairs(f) {
   const pairs = [
     { from: `${f.docs}/product`, to: f.prod, discoveriesSub: true },
