@@ -3,7 +3,7 @@
 // Exceções declaradas (automáticas): `JARVIS_PROJECT=` vazio recebe o valor oficial do template, e
 // as chaves de REMOVED_KEYS (blocos que saíram do template, #209) são apagadas, sem ler o valor.
 // As outras exceções (CENTRAL_DOCS_LOCATION e esvaziar o TOKEN_TASK_MANAGER) pedem confirmação
-// e ficam no Upgrade (C) do skill jarvis-init (item 9). Mesmas regras dos itens 4, 9, 10 e 11.
+// e ficam no Upgrade (C) do skill jarvis-init (item 8). Mesmas regras dos itens 3, 4, 8, 9 e 10.
 import { readFileSync, writeFileSync } from "node:fs";
 import { detectWorkspaceMode } from "./workspace-mode.js";
 import { getVendor } from "../integrations/cli-runner.js";
