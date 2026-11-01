@@ -675,6 +675,10 @@ async function runUpgrade(cwd, flags) {
   logger.info(
     `  • ENV.md: ${addedKeys.length ? `+ ${addedKeys.join(", ")}` : "nenhuma variável nova"}`
   );
+  // Só os nomes: o valor das chaves apagadas nunca é lido (#209).
+  if (envPlan.removedApplied?.length) {
+    logger.info(`  • ENV.md: removidas (não são mais usadas): ${envPlan.removedApplied.join(", ")}`);
+  }
   if (addedKeys.includes("COMPANY_PROFILE")) {
     logger.info(
       `  • COMPANY_PROFILE: ${companyProfile ? "definido" : `default (${DEFAULT_COMPANY_PROFILE})`}`

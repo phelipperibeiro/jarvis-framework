@@ -1,8 +1,9 @@
 // Upgrade do ENV.md (`jarvis init --upgrade`): acrescenta as chaves do template que faltam.
 // Regra: só acrescenta. Nenhuma chave existente muda, preenchida, vazia ou com lista de opções.
-// Exceção declarada (automática): `JARVIS_PROJECT=` vazio recebe o valor oficial do template.
+// Exceções declaradas (automáticas): `JARVIS_PROJECT=` vazio recebe o valor oficial do template, e
+// as chaves de REMOVED_KEYS (blocos que saíram do template, #209) são apagadas, sem ler o valor.
 // As outras exceções (CENTRAL_DOCS_LOCATION e esvaziar o TOKEN_TASK_MANAGER) pedem confirmação
-// e ficam no Upgrade (C) do skill jarvis-init (item 9). Mesmas regras dos itens 4, 5, 9, 10 e 11.
+// e ficam no Upgrade (C) do skill jarvis-init (item 9). Mesmas regras dos itens 4, 9, 10 e 11.
 import { readFileSync, writeFileSync } from "node:fs";
 import { detectWorkspaceMode } from "./workspace-mode.js";
 import { getVendor } from "../integrations/cli-runner.js";
@@ -31,11 +32,55 @@ function isOptionList(value) {
   return /^\[.*\]$/.test(value);
 }
 
-// Bloco "Data Engineering": DATA_* só entram com HUB=DATA. DATA_SPECIALIZATIONS é
-// obrigatória em qualquer HUB (eng.specializations-rules.md) e nunca é excluída.
-function isDataOnlyKey(key) {
-  return key.startsWith("DATA_") && key !== "DATA_SPECIALIZATIONS";
-}
+// Blocos que saíram do template (#209): o upgrade apaga as chaves e, quando o bloco fica vazio,
+// a moldura dele. Os comentários são os do template na época; moldura diferente fica.
+const REMOVED_BLOCKS = Object.freeze([
+  {
+    title: "Mensageria (opcional)",
+    keys: ["MESSAGE_BROKER", "MESSAGE_BROKER_URL_API", "MESSAGE_BROKER_API_AUTH"],
+    comments: [],
+  },
+  {
+    title: "Banco de dados (opcional)",
+    keys: ["DATABASE", "USER_DATABASE", "PASSWORD_DATABASE", "HOST_DATABASE", "PORT_DATABASE"],
+    comments: [],
+  },
+  {
+    title: "Observabilidade (opcional)",
+    keys: ["OBSERVABILITY", "TOKEN_OBSERVABILITY", "OBSERVABILITY_ORG"],
+    comments: [],
+  },
+  { title: "SMTP (opcional)", keys: ["SMTP"], comments: [] },
+  {
+    title: "Data Engineering (só se HUB=DATA)",
+    keys: [
+      "DATA_ORCHESTRATOR",
+      "DATA_ETL_TOOL",
+      "DATA_QUALITY_TOOL",
+      "DATA_LAKE",
+      "DATA_QUERY_ENGINE",
+      "DATA_BI_TOOL",
+      "DATA_WAREHOUSE",
+      "DATA_REPO",
+    ],
+    comments: [
+      "# Obrigatório quando HUB=DATA. Omitir o bloco inteiro se o HUB for outro.",
+      "# Vazio se não houver warehouse dedicado.",
+    ],
+  },
+  {
+    title: "Code quality (opcional)",
+    keys: ["CODE_QUALITY_TOOL", "CODE_QUALITY_URL", "CODE_QUALITY_TOKEN"],
+    comments: [
+      "# Análise estática / quality gate. Em branco = sem MCP de code quality.",
+      "# URL da instância (self-hosted).",
+    ],
+  },
+]);
+
+export const REMOVED_KEYS = Object.freeze(REMOVED_BLOCKS.flatMap((b) => b.keys));
+
+const SEPARATOR = /^#\s*=+\s*$/;
 
 // Chave existente e vazia que o upgrade preenche com o valor do template (exceção automática).
 const FILL_WHEN_EMPTY = ["JARVIS_PROJECT"];
@@ -48,15 +93,15 @@ const AXES = ["TASK_MANAGER", "VERSION_CONTROL"];
  * @param {string} envText
  * @param {string} templateText
  * @param {{ workspaceDir?: string }} [options] - `workspaceDir`: pasta que contém o `$IDE/`, para detectar o `WORKSPACE_MODE`
- * @returns {{ added: {key: string, value: string}[], filled: {key: string, value: string}[], pending: string[], warnings: string[] }}
+ * @returns {{ added: {key: string, value: string}[], filled: {key: string, value: string}[], removed: string[], pending: string[], warnings: string[] }}
  *   `filled`: chaves existentes e vazias preenchidas com o valor do template (só `JARVIS_PROJECT`).
+ *   `removed`: chaves de REMOVED_KEYS presentes no ENV, que o upgrade apaga (só nomes).
  *   `pending` e `warnings` trazem só nomes de chave, nunca valores do ENV
  *   (exceto o nome do vendor não suportado, em `UNSUPPORTED:{CHAVE}:{vendor}`).
  */
 export function planEnvUpgrade(envText, templateText, { workspaceDir } = {}) {
   const env = parseEnvEntries(envText);
   const template = parseEnvEntries(templateText);
-  const hub = (env.get("HUB") || "").toUpperCase();
   const area = (env.get("AREA") || "").toUpperCase();
 
   const added = [];
@@ -65,8 +110,7 @@ export function planEnvUpgrade(envText, templateText, { workspaceDir } = {}) {
   const warnings = [];
 
   for (const [key, templateValue] of template) {
-    if (env.has(key)) continue;
-    if (hub !== "DATA" && isDataOnlyKey(key)) continue;
+    if (env.has(key) || REMOVED_KEYS.includes(key)) continue;
 
     let value = isOptionList(templateValue) ? "" : templateValue;
     if (key === "PROD_MODE") {
@@ -87,6 +131,8 @@ export function planEnvUpgrade(envText, templateText, { workspaceDir } = {}) {
 
   if (env.has("PROD_MODE") && !env.get("PROD_MODE")) pending.push("PROD_MODE");
 
+  const removed = [...env.keys()].filter((key) => REMOVED_KEYS.includes(key));
+
   for (const key of FILL_WHEN_EMPTY) {
     const value = template.get(key);
     if (env.has(key) && !env.get(key) && value && !isOptionList(value)) filled.push({ key, value });
@@ -106,22 +152,74 @@ export function planEnvUpgrade(envText, templateText, { workspaceDir } = {}) {
     warnings.push("CENTRAL_DOCS_REPO");
   }
 
-  return { added, filled, pending, warnings };
+  return { added, filled, removed, pending, warnings };
 }
 
 /**
- * Grava as chaves novas no fim do ENV, num bloco datado, e preenche as chaves de `plan.filled`
- * (linha `CHAVE=` vazia). Nenhuma outra linha existente muda.
+ * Apaga do texto do ENV as linhas das chaves pedidas e, nos blocos de REMOVED_BLOCKS que ficaram
+ * vazios, a moldura (separador, título, separador), os comentários do template e as linhas em
+ * branco logo depois (no fim do arquivo, também as de antes). Moldura com outra coisa dentro
+ * (chave ou comentário próprio) fica. Nunca lê o valor das chaves: casa só o nome antes do `=`.
+ * @param {string} text
+ * @param {string[]} keys
+ * @returns {{ text: string, removed: string[] }} `removed`: as chaves que de fato saíram
+ */
+export function removeEnvKeys(text, keys) {
+  const wanted = new Set(keys);
+  const removed = [];
+  let lines = text.split("\n").filter((line) => {
+    const m = line.match(/^\s*([A-Z][A-Z0-9_]*)=/);
+    if (!m || !wanted.has(m[1])) return true;
+    if (!removed.includes(m[1])) removed.push(m[1]);
+    return false;
+  });
+  if (removed.length === 0) return { text, removed };
+
+  const bare = (line) => line.replace(/\r$/, "").trim();
+  for (const block of REMOVED_BLOCKS) {
+    const i = lines.findIndex(
+      (line, n) =>
+        bare(line) === `# ${block.title}` &&
+        SEPARATOR.test(bare(lines[n - 1] ?? "")) &&
+        SEPARATOR.test(bare(lines[n + 1] ?? ""))
+    );
+    if (i < 0) continue;
+    let j = i + 2;
+    while (j < lines.length && (bare(lines[j]) === "" || block.comments.includes(bare(lines[j])))) {
+      j++;
+    }
+    if (j < lines.length && !SEPARATOR.test(bare(lines[j]))) continue;
+    if (j < lines.length) {
+      lines = [...lines.slice(0, i - 1), ...lines.slice(j)];
+      continue;
+    }
+    // Bloco no fim do arquivo: tira também as linhas em branco antes dele e termina numa quebra só.
+    let end = i - 1;
+    while (end > 0 && bare(lines[end - 1]) === "") end--;
+    lines = [...lines.slice(0, end), ""];
+  }
+  return { text: lines.join("\n"), removed };
+}
+
+/**
+ * Grava as chaves novas no fim do ENV, num bloco datado, preenche as chaves de `plan.filled`
+ * (linha `CHAVE=` vazia) e apaga as de `plan.removed` (`removeEnvKeys`). Nenhuma outra linha muda.
  * `overrides` troca o valor de chaves novas (ex.: recusa em mover os discoveries).
  * @returns {boolean} true se gravou
  */
 export function applyEnvUpgrade(envPath, plan, today, overrides = {}) {
   const filled = plan.filled || [];
-  if (plan.added.length === 0 && filled.length === 0) {
+  const toRemove = plan.removed || [];
+  if (plan.added.length === 0 && filled.length === 0 && toRemove.length === 0) {
     plan.filledApplied = [];
+    plan.removedApplied = [];
     return false;
   }
   let text = readFileSync(envPath, "utf-8");
+  // `plan.removedApplied`: só as chaves que de fato saíram (para o resumo não mentir).
+  const removal = removeEnvKeys(text, toRemove);
+  text = removal.text;
+  plan.removedApplied = removal.removed;
   // `plan.filledApplied`: só as chaves que de fato mudaram (para o resumo não mentir).
   plan.filledApplied = [];
   for (const { key, value } of filled) {

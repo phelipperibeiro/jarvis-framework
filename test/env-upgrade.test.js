@@ -5,7 +5,13 @@ import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, rmSync } from "nod
 import { tmpdir } from "node:os";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
-import { parseEnvEntries, planEnvUpgrade, applyEnvUpgrade } from "../bin/lib/core/env-upgrade.js";
+import {
+  parseEnvEntries,
+  planEnvUpgrade,
+  applyEnvUpgrade,
+  removeEnvKeys,
+  REMOVED_KEYS,
+} from "../bin/lib/core/env-upgrade.js";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -29,21 +35,24 @@ test("parseEnvEntries: chave vazia conta; comentário não", () => {
 });
 
 test("planEnvUpgrade: só chaves que faltam; existentes ficam fora (preenchida, vazia ou lista)", () => {
-  const env = "HUB=BACKEND\nTASK_MANAGER=github\nMESSAGE_BROKER=[rabbitmq, kafka]\nSMTP=\n";
-  const tpl = "TASK_MANAGER=[jira, linear]\nMESSAGE_BROKER=[x]\nSMTP=[google]\nNOVA=valor\n";
+  const env =
+    "HUB=BACKEND\nTASK_MANAGER=github\nMESSAGE_COMUNICATOR=[slack, discord]\nOBJECT_STORAGE=\n";
+  const tpl =
+    "TASK_MANAGER=[jira, linear]\nMESSAGE_COMUNICATOR=[x]\nOBJECT_STORAGE=[aws_s3]\nNOVA=valor\n";
   const plan = planEnvUpgrade(env, tpl);
   assert.deepEqual(plan.added, [{ key: "NOVA", value: "valor" }]);
 });
 
 test("planEnvUpgrade: lista de opções do template entra vazia", () => {
-  const plan = planEnvUpgrade("HUB=BACKEND\n", "DATABASE=[mysql, postgres]\n");
-  assert.deepEqual(plan.added, [{ key: "DATABASE", value: "" }]);
+  const plan = planEnvUpgrade("HUB=BACKEND\n", "OBJECT_STORAGE=[aws_s3, gcs]\n");
+  assert.deepEqual(plan.added, [{ key: "OBJECT_STORAGE", value: "" }]);
 });
 
-test("planEnvUpgrade: DATA_* só com HUB=DATA; DATA_SPECIALIZATIONS sempre", () => {
-  const tpl = "DATA_SPECIALIZATIONS=\nDATA_LAKE=[aws_s3]\n";
-  assert.deepEqual(keys(planEnvUpgrade("HUB=BACKEND\n", tpl)), ["DATA_SPECIALIZATIONS"]);
-  assert.deepEqual(keys(planEnvUpgrade("HUB=DATA\n", tpl)), ["DATA_SPECIALIZATIONS", "DATA_LAKE"]);
+test("planEnvUpgrade: DATA_SPECIALIZATIONS entra com qualquer HUB (sem regra do bloco DATA, #209)", () => {
+  const tpl = "DATA_SPECIALIZATIONS=\n";
+  for (const hub of ["DATA", "BACKEND", "FULLCYCLE"]) {
+    assert.deepEqual(keys(planEnvUpgrade(`HUB=${hub}\n`, tpl)), ["DATA_SPECIALIZATIONS"]);
+  }
 });
 
 test("planEnvUpgrade: PROD_MODE nova vem da AREA", () => {
@@ -88,6 +97,109 @@ test("applyEnvUpgrade: linhas antigas intactas, bloco datado no fim, idempotente
     );
     const again = planEnvUpgrade(after, tpl);
     assert.equal(applyEnvUpgrade(p, again, "2026-10-17"), false);
+    assert.equal(readFileSync(p, "utf-8"), after);
+  });
+});
+
+// #209: blocos que saíram do template. O upgrade apaga as chaves sem ler o valor.
+const BAR = "# =============================================================================";
+const frame = (title) => [BAR, `# ${title}`, BAR];
+
+test("planEnvUpgrade: removed traz só os nomes das chaves removidas presentes, sem valores", () => {
+  const env = "HUB=BACKEND\nSMTP=google\nPASSWORD_DATABASE=segredo\nMESSAGE_COMUNICATOR=slack\n";
+  const plan = planEnvUpgrade(env, "HUB=[A]\n");
+  assert.deepEqual(plan.removed, ["SMTP", "PASSWORD_DATABASE"]);
+  assert.ok(!JSON.stringify(plan).includes("segredo"));
+  assert.equal(REMOVED_KEYS.length, 23);
+  // Nunca volta pelo template (um template antigo ainda com o bloco não a acrescenta).
+  assert.deepEqual(planEnvUpgrade("HUB=BACKEND\n", "SMTP=[google]\nNOVA=1\n").added, [
+    { key: "NOVA", value: "1" },
+  ]);
+  assert.ok(!REMOVED_KEYS.includes("DATA_SPECIALIZATIONS"));
+});
+
+test("removeEnvKeys: apaga a chave e a moldura vazia; o resto fica igual", () => {
+  const text = [
+    "HUB=BACKEND",
+    "",
+    "",
+    ...frame("Mensageria (opcional)"),
+    "MESSAGE_BROKER=rabbitmq",
+    "MESSAGE_BROKER_URL_API=",
+    "",
+    "",
+    ...frame("Chat / comunicador (opcional)"),
+    "MESSAGE_COMUNICATOR=slack",
+    "",
+  ].join("\n");
+  const out = removeEnvKeys(text, ["MESSAGE_BROKER", "MESSAGE_BROKER_URL_API"]);
+  assert.deepEqual(out.removed, ["MESSAGE_BROKER", "MESSAGE_BROKER_URL_API"]);
+  assert.equal(
+    out.text,
+    [
+      "HUB=BACKEND",
+      "",
+      "",
+      ...frame("Chat / comunicador (opcional)"),
+      "MESSAGE_COMUNICATOR=slack",
+      "",
+    ].join("\n")
+  );
+});
+
+test("removeEnvKeys: moldura com comentários do template sai; no fim do arquivo também", () => {
+  const text = [
+    "HUB=DATA",
+    "",
+    "",
+    ...frame("Data Engineering (só se HUB=DATA)"),
+    "# Obrigatório quando HUB=DATA. Omitir o bloco inteiro se o HUB for outro.",
+    "DATA_LAKE=aws_s3",
+    "# Vazio se não houver warehouse dedicado.",
+    "DATA_WAREHOUSE=",
+    "",
+  ].join("\n");
+  assert.equal(removeEnvKeys(text, ["DATA_LAKE", "DATA_WAREHOUSE"]).text, "HUB=DATA\n");
+});
+
+test("removeEnvKeys: moldura com chave ou comentário próprio fica; só a chave sai", () => {
+  const comChave = [...frame("SMTP (opcional)"), "SMTP=ses", "MINHA_VAR=1", ""].join("\n");
+  assert.equal(
+    removeEnvKeys(comChave, ["SMTP"]).text,
+    [...frame("SMTP (opcional)"), "MINHA_VAR=1", ""].join("\n")
+  );
+  const comNota = [...frame("SMTP (opcional)"), "# nota minha", "SMTP=ses", ""].join("\n");
+  assert.equal(
+    removeEnvKeys(comNota, ["SMTP"]).text,
+    [...frame("SMTP (opcional)"), "# nota minha", ""].join("\n")
+  );
+});
+
+test("removeEnvKeys: casa só o nome inteiro da chave (SMTP_HOST e linha comentada ficam)", () => {
+  const text = "SMTP=ses\nSMTP_HOST=x\n# SMTP=antigo\n";
+  const out = removeEnvKeys(text, ["SMTP"]);
+  assert.equal(out.text, "SMTP_HOST=x\n# SMTP=antigo\n");
+  assert.deepEqual(out.removed, ["SMTP"]);
+  assert.deepEqual(removeEnvKeys(out.text, ["SMTP"]), { text: out.text, removed: [] });
+});
+
+test("removeEnvKeys: ENV com CRLF", () => {
+  const text = ["HUB=X", "", ...frame("SMTP (opcional)"), "SMTP=ses", ""].join("\r\n");
+  const out = removeEnvKeys(text, ["SMTP"]);
+  assert.equal(out.text, "HUB=X\r\n");
+});
+
+test("applyEnvUpgrade: só remoção grava, informa removedApplied e é idempotente", () => {
+  const original = `HUB=BACKEND\n\n\n${frame("SMTP (opcional)").join("\n")}\nSMTP=segredo\n`;
+  withTempEnv(original, (p) => {
+    const plan = planEnvUpgrade(original, "HUB=[A]\n");
+    assert.equal(applyEnvUpgrade(p, plan, "2026-11-01"), true);
+    assert.deepEqual(plan.removedApplied, ["SMTP"]);
+    const after = readFileSync(p, "utf-8");
+    assert.equal(after, "HUB=BACKEND\n");
+    const again = planEnvUpgrade(after, "HUB=[A]\n");
+    assert.deepEqual(again.removed, []);
+    assert.equal(applyEnvUpgrade(p, again, "2026-11-02"), false);
     assert.equal(readFileSync(p, "utf-8"), after);
   });
 });
