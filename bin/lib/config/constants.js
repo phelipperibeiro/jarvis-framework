@@ -143,6 +143,13 @@ export const OBSOLETE_PATHS = Object.freeze([
   "skills/eng-frontend-microfrontend",
   // eng.bug-audit (removido): virou o caso "varrer" do /eng.debug (#168)
   "workflows/engineering/eng.bug-audit.md",
+  // eng-backend-rabbitmq e data-rules (removidos na limpeza do ENV.md, #209): o skill operava o
+  // broker pelas variáveis MESSAGE_BROKER_*; a rule fixava uma stack de dados que a base eng-data
+  // já cobre de forma neutra. No Kiro, a rule vira steering/{nome} e o skill, steering/skills/.
+  "skills/eng-backend-rabbitmq",
+  "steering/skills/skill-eng-backend-rabbitmq.md",
+  "rules/engineering/data/data-rules.md",
+  "steering/data-rules.md",
 ]);
 
 /**

@@ -222,6 +222,24 @@ test("init --upgrade: skill antigo é listado e não é removido sem confirmaç�
   );
 });
 
+test("init --upgrade: apaga o skill eng-backend-rabbitmq e a rule data-rules instalados (#209)", () => {
+  withWorkspace(
+    {
+      ".claude/ENV.md": ENV_V520,
+      ".claude/skills/eng-backend-rabbitmq/SKILL.md": SKILL,
+      ".claude/skills/eng-backend-rabbitmq/references/4-troubleshooting.md": "# x\n",
+      ".claude/rules/engineering/data/data-rules.md": "# data\n",
+    },
+    (ws) => {
+      const r = run(ws, "--upgrade", "--ide", "claude", "--yes");
+      assert.equal(r.status, 0, r.stderr);
+      assert.ok(!existsSync(join(ws, ".claude/skills/eng-backend-rabbitmq")));
+      assert.ok(!existsSync(join(ws, ".claude/rules/engineering/data/data-rules.md")));
+      assert.ok(existsSync(join(ws, ".claude/skills/eng-backend/SKILL.md")));
+    }
+  );
+});
+
 test("init --upgrade --remove-stale: remove só o obsoleto; especialização registrada fica", () => {
   withWorkspace(
     {
