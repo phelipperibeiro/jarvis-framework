@@ -560,7 +560,7 @@ async function runUpgrade(cwd, flags) {
   for (const item of sync.errors) logger.error(`${RED}  ✗ ${item}${NC}`);
   setupMcp(workspaceDir, ide);
 
-  // 2. Variáveis novas (só acrescenta)
+  // 2. Variáveis novas (acrescenta; apaga só as que saíram do template, REMOVED_KEYS)
   const envText = readFileSync(envPath, "utf-8");
   const templateText = readFileSync(
     join(getFrameworkRoot(), "templates", "ENV-template.md"),
@@ -677,7 +677,9 @@ async function runUpgrade(cwd, flags) {
   );
   // Só os nomes: o valor das chaves apagadas nunca é lido (#209).
   if (envPlan.removedApplied?.length) {
-    logger.info(`  • ENV.md: removidas (não são mais usadas): ${envPlan.removedApplied.join(", ")}`);
+    logger.info(
+      `  • ENV.md: removidas (não são mais usadas): ${envPlan.removedApplied.join(", ")}`
+    );
   }
   if (addedKeys.includes("COMPANY_PROFILE")) {
     logger.info(
