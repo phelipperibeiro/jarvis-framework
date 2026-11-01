@@ -2,7 +2,6 @@
 description: Guia completo para criar, documentar e validar um novo pipeline de dados
 auto_execution_mode: 2
 agent: "$IDE/agents/engineering/data/eng.data-engineer.agent.md"
-rules_file: "$IDE/rules/engineering/data/data-rules.md"
 template_file: "$IDE/templates/engineering/data-pipeline-template.md"
 recommended_model: claude-sonnet-4-20250514
 model_tier: high
@@ -12,9 +11,8 @@ model_justification: Criação de pipeline envolve análise de fonte, modelagem 
 # data.new-pipeline
 
 Guia completo para criar um novo pipeline de dados — da concepção à produção —
-seguindo as convenções definidas em `$IDE/rules/engineering/data/data-rules.md`.
+seguindo a base `$IDE/skills/eng-data/SKILL.md` e as especializações de `DATA_SPECIALIZATIONS`.
 
-> 📋 **Rules**: `$IDE/rules/engineering/data/data-rules.md`
 > 📤 **Template**: `$IDE/templates/engineering/data-pipeline-template.md`
 > 🤖 **Agente**: `$IDE/agents/engineering/data/eng.data-engineer.agent.md`
 
@@ -229,7 +227,7 @@ Executar `data.contract.md` para formalizar:
 
 ---
 
-## Regras críticas (ver detalhamento completo em data-rules.md)
+## Regras críticas (detalhamento na base `eng-data`)
 
 ### Nunca
 - ❌ Deploy em produção sem Expectation Suite

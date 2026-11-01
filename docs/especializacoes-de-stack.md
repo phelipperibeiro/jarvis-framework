@@ -68,7 +68,7 @@ Formato: separado por vírgula (a leitura aceita colchetes e aspas, mas o framew
 
 ## Especializações que já vêm no framework
 
-Os skills de apoio abaixo viram especializações quando você os registra: `eng-backend-nestjs`, `eng-backend-rabbitmq`, `eng-backend-arch-c4` e `eng-backend-microservices-trace`.
+Os skills de apoio abaixo viram especializações quando você os registra: `eng-backend-nestjs`, `eng-backend-arch-c4` e `eng-backend-microservices-trace`.
 
 ## Nomes e áreas dos skills
 

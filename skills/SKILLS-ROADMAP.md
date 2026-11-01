@@ -33,11 +33,6 @@ Skills existentes e planejadas do framework Jarvis.
 > princípios agnósticos (tokens semânticos, contrato de props, shell/remote, dependência singleton)
 > entraram na base `eng-frontend` (temas 13 e 14). Resumo em `skills/frontend-skills-deleted.md`.
 
-### `eng-backend-rabbitmq` ✅
-- **Trigger**: mensageria, filas, events, consumers, producers, DLX
-- **Escopo**: RabbitMQ, `@golevelup/nestjs-rabbitmq`, retry, DLQ, idempotência
-- **Status**: `criado`
-
 ### `eng-backend-microservices-trace` ✅
 - **Trigger**: bug cross-service, rastreamento HTTP + AMQP
 - **Escopo**: correlation ID, tracing distribuído, diagnóstico de falhas entre microsserviços

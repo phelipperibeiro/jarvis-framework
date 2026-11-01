@@ -219,12 +219,13 @@ test("listRulesForProfile: AGENTS.md nunca é filtrado, rtk é opt-in, sem bloco
 // Issue #184 (pre-pr 22, 2026-10-28): +55 B em todos os perfis — eng.integrations-rules.md separa o repositório do create-merge (git remote) do --repo do create-issue.
 // Issue #199 (2026-10-30): +1 arquivo e +1126 B em todos os perfis — company-overlay-rules.md (994 B, universal: todo workspace tem um overlay) e a linha dela no rules/AGENTS.md (+132 B).
 // Issue #200 (2026-10-31): +136 B em todos os perfis — eng.integrations-rules.md (universal) aponta o nome da branch do freelance para a skill eng-global-branch (128 B na Fase 3, +8 B na Fase 6).
+// Issue #209 (2026-11-01): −1 arquivo e −7016 B só no FULLCYCLE — data-rules.md (HUB: DATA) removida; a base eng-data cobre o tema.
 const BASE = [
   [
     "FULLCYCLE/GENERALIST/ENGINEERING/CORE",
     profile("FULLCYCLE", "GENERALIST", "ENGINEERING"),
-    16,
-    105713,
+    15,
+    98697,
   ],
   ["BACKEND/SENIOR/ENGINEERING/CORE", profile("BACKEND", "SENIOR", "ENGINEERING"), 12, 72184],
   ["FRONTEND/PLENO/ENGINEERING/CORE", profile("FRONTEND", "PLENO", "ENGINEERING"), 12, 72727],
