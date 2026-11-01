@@ -91,7 +91,7 @@ Recomendação: ler o playbook de tomada de decisões em tecnologia do time (wik
 | Controle de versão (`$VERSION_CONTROL`) | Tech Lead | Pedir no chat do time |
 | Task manager (`$TASK_MANAGER`) | EM | Ticket / canal de acessos |
 | Cloud console | DevOps | Ticket / canal de acessos |
-| Observabilidade (`$OBSERVABILITY`) | DevOps | Pedir no canal de infra |
+| Observabilidade | DevOps | Pedir no canal de infra |
 | Chat (`$MESSAGE_COMUNICATOR`) | EM | Pedir no chat do time |
 | VPN | Infra | Ticket / canal de acessos |
 

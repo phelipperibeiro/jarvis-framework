@@ -2,7 +2,6 @@
 description: Guia para criar contrato de dados entre o time de Data e uma squad requisitante
 auto_execution_mode: 2
 agent: "$IDE/agents/engineering/data/eng.data-engineer.agent.md"
-rules_file: "$IDE/rules/engineering/data/data-rules.md"
 template_file: "$IDE/templates/engineering/data-contract-template.md"
 recommended_model: claude-sonnet-4-20250514
 model_tier: medium
@@ -12,9 +11,8 @@ model_justification: Criação de contrato é estruturada — preencher template
 # data.contract
 
 Guia para formalizar um contrato de dados entre o time de Data e uma squad requisitante,
-seguindo as convenções definidas em `$IDE/rules/engineering/data/data-rules.md`.
+seguindo a base `$IDE/skills/eng-data/SKILL.md` e as especializações de `DATA_SPECIALIZATIONS`.
 
-> 📋 **Rules**: `$IDE/rules/engineering/data/data-rules.md`
 > 📤 **Template**: `$IDE/templates/engineering/data-contract-template.md`
 > 🤖 **Agente**: `$IDE/agents/engineering/data/eng.data-engineer.agent.md`
 

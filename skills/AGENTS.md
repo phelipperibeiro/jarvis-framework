@@ -48,7 +48,6 @@ skills/
 │   └── references/
 ├── eng-backend-nestjs/           # Framework NestJS: módulos, DI, guards, interceptors, pipes, Passport/JWT
 │   └── SKILL.md
-├── eng-backend-rabbitmq/         # Mensageria RabbitMQ (HTTP API, codigo, arquitetura, troubleshooting)
 │   └── SKILL.md
 ├── eng-backend-microservices-trace/ # Rastreamento de bugs entre serviços (HTTP + AMQP); especialização de backend
 │   └── SKILL.md
@@ -248,7 +247,6 @@ Skills são invocados de formas diferentes dependendo da IDE:
 | Criar uma especialização de stack (backend ou frontend) a partir do código do projeto | `jarvis-create-specialization` |
 | Ajustar um comando do core a uma empresa sem editar o core (fork para `$IDE/overlays/{COMPANY_PROFILE}/`), listar, atualizar ou remover forks | `jarvis-fork` |
 | Decisão de arquitetura do Jarvis (agent, skill, workflow ou rule?), simplificação, tendências | `jarvis-evolution-architect` |
-| Mensageria, filas, RabbitMQ, events, consumers, producers | `eng-backend-rabbitmq` (especialização de backend: registrar em `BACKEND_SPECIALIZATIONS`) |
 | APIs, auth, workers, filas, caching, banco de dados | `eng-backend` (base) + `BACKEND_SPECIALIZATIONS` |
 | Componentes, UI, estado, estilos, performance, acessibilidade, design system/tokens, micro frontend | `eng-frontend` (base) + `FRONTEND_SPECIALIZATIONS` |
 | Sistemas, redes, cloud, IaC, contêineres, CI/CD, observabilidade, SRE, segurança de infra, FinOps | `eng-platform` (base) + `PLATFORM_SPECIALIZATIONS` |
@@ -316,7 +314,7 @@ Link para docs existentes?         → references/
 
 ### Skill grande com temas separaveis: roteador + references/
 
-O corpo do `SKILL.md` e carregado inteiro ao invocar a skill. Quando a skill tem **3 ou mais temas que se usam isoladamente** (por exemplo guards, testes, troubleshooting), mantenha no `SKILL.md` so o que vale sempre (objetivo, quando usar, padroes criticos, arvore de decisao, regras, checklist, a tabela de skills invocados) e uma tabela "Referencias" (Tema | Quando ler | Arquivo); cada tema vai para `references/{n}-{tema}.md`. Modelo: `skills/eng-backend/`. Ja seguem o modelo: `eng-backend-nestjs`, `eng-automation`, `eng-backend-rabbitmq`, `eng-platform`, `eng-qa`, `eng-ai`, `eng-data` e `eng-frontend`.
+O corpo do `SKILL.md` e carregado inteiro ao invocar a skill. Quando a skill tem **3 ou mais temas que se usam isoladamente** (por exemplo guards, testes, troubleshooting), mantenha no `SKILL.md` so o que vale sempre (objetivo, quando usar, padroes criticos, arvore de decisao, regras, checklist, a tabela de skills invocados) e uma tabela "Referencias" (Tema | Quando ler | Arquivo); cada tema vai para `references/{n}-{tema}.md`. Modelo: `skills/eng-backend/`. Ja seguem o modelo: `eng-backend-nestjs`, `eng-automation`, `eng-platform`, `eng-qa`, `eng-ai`, `eng-data` e `eng-frontend`.
 
 Nao converta procedimento sequencial (passo 1, 2, 3 que se le de ponta a ponta) nem skill pequena (menos de ~8 KB): nao ha tema para pular, so mais arquivos para ler.
 

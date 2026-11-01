@@ -161,24 +161,6 @@ VERSION_CONTROL_ACCESS=[cli, manual]
 
 
 # =============================================================================
-# Mensageria (opcional)
-# =============================================================================
-MESSAGE_BROKER=[rabbitmq, kafka, sqs]
-MESSAGE_BROKER_URL_API=
-MESSAGE_BROKER_API_AUTH=
-
-
-# =============================================================================
-# Banco de dados (opcional)
-# =============================================================================
-DATABASE=[mysql, postgres, mongodb]
-USER_DATABASE=
-PASSWORD_DATABASE=
-HOST_DATABASE=
-PORT_DATABASE=
-
-
-# =============================================================================
 # Chat / comunicador (opcional)
 # =============================================================================
 # slack: BOT_TOKEN + SIGNING_SECRET + APP_TOKEN (Socket Mode)
@@ -196,20 +178,6 @@ ALERTS_CHANNEL=
 # =============================================================================
 OBJECT_STORAGE=[aws_s3, gcs, azure_blob]
 TOKEN_OBJECT_STORAGE=
-
-
-# =============================================================================
-# Observabilidade (opcional)
-# =============================================================================
-OBSERVABILITY=[sentry, datadog, grafana]
-TOKEN_OBSERVABILITY=
-OBSERVABILITY_ORG=
-
-
-# =============================================================================
-# SMTP (opcional)
-# =============================================================================
-SMTP=[google, ses, sendgrid]
 
 
 # =============================================================================
@@ -231,31 +199,6 @@ RTK_ENABLED=false
 # Opus → opus, Fable → fable). No Claude Code só a família é respeitada: "Opus 5.5"
 # e "Opus 5" abrem o mesmo modelo; remova um deles se quiser só opções distintas.
 ADVISOR_MODELS="Sonnet 5.5,Opus 5.5,Opus 5,Fable 5.1"
-
-
-# =============================================================================
-# Data Engineering (só se HUB=DATA)
-# =============================================================================
-# Obrigatório quando HUB=DATA. Omitir o bloco inteiro se o HUB for outro.
-DATA_ORCHESTRATOR=[airflow, prefect, dagster, glue-scheduler]
-DATA_ETL_TOOL=[aws_glue, dbt, spark, pandas]
-DATA_QUALITY_TOOL=[great_expectations, soda, deequ]
-DATA_LAKE=[aws_s3, gcs, azure_adls]
-DATA_QUERY_ENGINE=[aws_athena, bigquery, redshift, trino]
-DATA_BI_TOOL=[metabase, looker, superset, power_bi]
-# Vazio se não houver warehouse dedicado.
-DATA_WAREHOUSE=[redshift, snowflake, bigquery]
-DATA_REPO=[data-pipelines, etl-jobs, analytics-pipelines]
-
-
-# =============================================================================
-# Code quality (opcional)
-# =============================================================================
-# Análise estática / quality gate. Em branco = sem MCP de code quality.
-CODE_QUALITY_TOOL=[sonarqube, codeclimate, deepsource]
-# URL da instância (self-hosted).
-CODE_QUALITY_URL=
-CODE_QUALITY_TOKEN=
 
 
 # =============================================================================

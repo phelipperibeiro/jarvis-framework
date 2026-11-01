@@ -46,18 +46,17 @@ Os templates de produto (PRD, FRD, épico, issue, breakdown e discovery) ficam e
 
 O skill `jarvis-init` **deve** copiar este arquivo inteiro e só substituir valores. Não inventar chaves.
 
-Cada assunto fica numa moldura de três linhas (`# ====`, título, `# ====`). No fim de todo caminho que grava o `ENV.md`, o `/jarvis-init` o valida contra este template (passo 9.5 do skill): cada problema vira uma pergunta, e o arquivo é regravado na mesma estrutura e ordem, com as chaves fora do template no último bloco, marcadas `# (descontinuada)`. O `jarvis init --upgrade` (terminal) só acrescenta as chaves novas no fim; para `COMPANY_PROFILE` (overlay de empresa, #199) ele pergunta o valor no terminal, e Enter, `--yes` ou entrada sem terminal gravam o default `stark-industries`.
+Cada assunto fica numa moldura de três linhas (`# ====`, título, `# ====`). No fim de todo caminho que grava o `ENV.md`, o `/jarvis-init` o valida contra este template (passo 9.5 do skill): cada problema vira uma pergunta, e o arquivo é regravado na mesma estrutura e ordem, com as chaves fora do template no último bloco, marcadas `# (descontinuada)`. O `jarvis init --upgrade` (terminal) acrescenta as chaves novas no fim e apaga as que saíram do template (lista em `REMOVED_KEYS`, `bin/lib/core/env-upgrade.js`; o resumo mostra só os nomes); para `COMPANY_PROFILE` (overlay de empresa, #199) ele pergunta o valor no terminal, e Enter, `--yes` ou entrada sem terminal gravam o default `stark-industries`.
 
 Inclui (entre outros):
 
 - Workspace / `USER` / `MAX_AI_EXECUTION_PERCENTAGE` / `ENABLE_CDD`
 - `SQUAD`, `HUB`, `AREA`, `POSITION`
 - Pastas IDE (`FLOWS_FOLDER`, `SESSIONS_DIR`, …)
-- Task manager (vazio = freelance), VCS, chat, DB, broker, observabilidade…
+- Task manager (vazio = freelance), VCS, chat, storage…
 - `BACKEND_SPECIALIZATIONS` e `FRONTEND_SPECIALIZATIONS` (seção "Especializações de stack"): listas de nomes de skill, separadas por vírgula, que os `eng.*` carregam junto da skill base; precisam **existir**, mesmo vazias (ver [especializações de stack](../especializacoes-de-stack.md))
 - `JARVIS_PROJECT`, `CENTRAL_DOCS_*`
 - `RTK_ENABLED`
-- Bloco `DATA_*` (só se `HUB=DATA`)
 
 ## No ciclo de vida
 

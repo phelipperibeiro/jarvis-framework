@@ -1,5 +1,5 @@
 // Documentos de trabalho nos caminhos antigos → docs/jarvis/… (`jarvis init --upgrade`).
-// Mesmas regras do item 8 do Upgrade (C) do skill jarvis-init: conflito no destino pula,
+// Mesmas regras do item 7 do Upgrade (C) do skill jarvis-init: conflito no destino pula,
 // pasta antiga removida só se ficar vazia, `git mv` quando versionado, `related_discovery`
 // reescrito pelo nome do arquivo e, na recusa, só chaves novas recebem o caminho antigo.
 import {
@@ -73,7 +73,7 @@ function listFiles(dir) {
   return files;
 }
 
-/** Pares pasta antiga → pasta nova, na ordem do item 8 + discoveries. */
+/** Pares pasta antiga → pasta nova, na ordem do item 7 + discoveries. */
 function sourcePairs(f) {
   const pairs = [
     { from: `${f.docs}/product`, to: f.prod, discoveriesSub: true },

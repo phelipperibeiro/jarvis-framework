@@ -6,6 +6,20 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), e o
 
 > Versões anteriores a `2.1.1` não foram documentadas retroativamente neste changelog — o histórico detalhado dessas versões continua disponível via `git log`.
 
+## [Unreleased]
+
+### Changed
+- **`jarvis init --upgrade` apaga as variáveis removidas (#209)**: as 23 chaves listadas em *Removed* saem dos `ENV.md` existentes, sem pergunta, junto com a moldura de comentário do bloco que ficar vazio (moldura com chave ou comentário próprio fica). O valor nunca é lido nem mostrado: o resumo diz só "ENV.md: removidas (não são mais usadas): {nomes}". É uma nova exceção declarada à regra "o upgrade só acrescenta", também no Upgrade do `/jarvis-init` (item 4 novo; a lista foi renumerada). O upgrade nunca acrescenta uma dessas chaves, mesmo com um template antigo.
+- **`HUB=DATA` gera o `ENV.md` igual aos outros HUBs (#209)**: sem o bloco Data Engineering, a única variável de dados é `DATA_SPECIALIZATIONS`, que o upgrade acrescenta em qualquer HUB.
+- **Upgrade apaga das instalações o skill `eng-backend-rabbitmq` e a rule `data-rules.md` (#209)** (`OBSOLETE_PATHS`, inclusive as cópias do Kiro em `steering/`).
+- **Workflows `data.new-pipeline` e `data.contract` e agente `eng.data-engineer` (#209)**: apontam para a base `eng-data` no lugar da rule removida; o agente não cita mais `$DATA_REPO` nem `$DATA_REQUESTS_CHANNEL` (variável que nunca existiu no template), como também o `data-contract-template.md`.
+
+### Removed
+- **Seis blocos do `ENV-template.md` (#209)**, sem uso, e quatro deles pediam segredo no `ENV.md`: mensageria (`MESSAGE_BROKER`, `MESSAGE_BROKER_URL_API`, `MESSAGE_BROKER_API_AUTH`), banco de dados (`DATABASE`, `USER_DATABASE`, `PASSWORD_DATABASE`, `HOST_DATABASE`, `PORT_DATABASE`), observabilidade (`OBSERVABILITY`, `TOKEN_OBSERVABILITY`, `OBSERVABILITY_ORG`), `SMTP`, code quality (`CODE_QUALITY_TOOL`, `CODE_QUALITY_URL`, `CODE_QUALITY_TOKEN`) e Data Engineering (`DATA_ORCHESTRATOR`, `DATA_ETL_TOOL`, `DATA_QUALITY_TOOL`, `DATA_LAKE`, `DATA_QUERY_ENGINE`, `DATA_BI_TOOL`, `DATA_WAREHOUSE`, `DATA_REPO`). `DATA_SPECIALIZATIONS` fica.
+- **No `/jarvis-init` (#209)**: o passo 3.1 (perguntas `DATA_*`), a regra do bloco DATA (criação, Upgrade e conferência 9.5), o passo 6.1 (instalava o `sonarqube-mcp-server` e gravava o token no `ENV.md`; o 6.2 virou 6.1) e as linhas dessas variáveis na tabela de opcionais. Em `assets/mcp-configs.md`, a seção "MCPs Opcionais — Code Quality".
+- **Skill `eng-backend-rabbitmq` (#209)**: a parte de operar o broker dependia das `MESSAGE_BROKER_*`. Mensageria segue na base `eng-backend`. Quem o registrou em `BACKEND_SPECIALIZATIONS` passa a ver o aviso de skill inexistente.
+- **Rule `rules/engineering/data/data-rules.md` (#209)**: fixava uma stack (Great Expectations, Athena/S3, Glue, Airflow, Metabase) que a base `eng-data` cobre de forma neutra. Os perfis `HUB=DATA` e `FULLCYCLE` carregam 7.016 B a menos no início da sessão.
+
 ## [8.4.0] - 2026-10-31
 
 ### Added

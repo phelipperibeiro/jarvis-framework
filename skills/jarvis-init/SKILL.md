@@ -74,7 +74,7 @@ Regras que **substituem** qualquer trecho legado deste skill ou dos assets:
 │        ↓                                                    │
 │  5.1 FLATTEN → Workflows para raiz (se IDE ≠ claude)        │
 │        ↓                                                    │
-│  6. VALIDAR → Context7 (obrigatório) + MCPs opcionais       │
+│  6. VALIDAR → Context7 (obrigatório)                        │
 │        ↓                                                    │
 │  7. CRIAR → AGENTS.md                                       │
 │        ↓                                                    │
@@ -213,21 +213,20 @@ Identificar qual IDE o usuário está utilizando:
 
 **Se opção C (Upgrade):**
 
-> No terminal, rode antes `jarvis init --upgrade --ide {ide}`: ele atualiza os arquivos do framework, acrescenta as variáveis novas e move os documentos para as pastas novas (itens 1–8, 10 a 12). Aqui ficam o Central docs antigo (item 9), as pendências que ele listar e o passo das stacks.
-> **O upgrade só acrescenta chaves novas:** nenhuma chave já existente, preenchida ou não, é alterada, salvo as exceções declaradas no item 9 (`CENTRAL_DOCS_LOCATION` e `TOKEN_TASK_MANAGER`, com confirmação; `JARVIS_PROJECT` vazio, automático). Depois, a validação final (passo 9.5) pode reorganizar o arquivo, mover chaves para o assunto delas e corrigir valores fora das opções, sempre perguntando: nenhum valor muda sem a resposta da pessoa.
+> No terminal, rode antes `jarvis init --upgrade --ide {ide}`: ele atualiza os arquivos do framework, acrescenta as variáveis novas e move os documentos para as pastas novas (itens 1–7, 9 a 11). Aqui ficam o Central docs antigo (item 8), as pendências que ele listar e o passo das stacks.
+> **O upgrade só acrescenta chaves novas:** nenhuma chave já existente, preenchida ou não, é alterada, salvo as exceções declaradas nos itens 4 e 8 (`CENTRAL_DOCS_LOCATION` e `TOKEN_TASK_MANAGER`, com confirmação; `JARVIS_PROJECT` vazio e as chaves removidas do template, automáticos). Depois, a validação final (passo 9.5) pode reorganizar o arquivo, mover chaves para o assunto delas e corrigir valores fora das opções, sempre perguntando: nenhum valor muda sem a resposta da pessoa.
 > Trocou o `ARTIFACT_STYLE` (ou HUB, POSITION, AREA, SQUAD) à mão? O Passo 8 copia ou remove as rules desse perfil.
 
 1. Ler todas as chaves do `templates/ENV-template.md`
 2. Ler todas as chaves do `$IDE/ENV.md` existente
-3. Ler `HUB` do ENV.md existente
-4. Se `HUB≠DATA`: excluir do diff todas as chaves `DATA_*` (exceto `DATA_SPECIALIZATIONS`, que é obrigatória em qualquer HUB) — não propor adicioná-las
-5. Calcular diff: chaves no template que **não existem** no ENV.md atual (respeitando exclusão de DATA_* para não-DATA)
-6. Se não houver diff:
+3. Calcular diff: chaves no template que **não existem** no ENV.md atual
+4. **Exceção — chaves removidas do template (#209):** apague, sem perguntar, as linhas das chaves de mensageria, banco, observabilidade, SMTP, code quality e Data Engineering (`MESSAGE_BROKER*`, `DATABASE`, `*_DATABASE`, `OBSERVABILITY*`, `TOKEN_OBSERVABILITY`, `SMTP`, `CODE_QUALITY_*` e as `DATA_*`, **menos** `DATA_SPECIALIZATIONS`; lista em `REMOVED_KEYS`, `bin/lib/core/env-upgrade.js`) e a moldura de comentário do bloco que ficar vazio. Nunca leia, mostre ou copie o valor; avise só com os nomes (`ENV.md: removidas (não são mais usadas): …`). O `jarvis init --upgrade` já faz isso no terminal
+5. Se não houver diff:
    ```
    ✅ ENV.md já está atualizado. Nenhuma variável nova encontrada.
    ```
    Oferecer o **passo 9 (adicionar as stacks)**, que a pessoa pode pular, rodar o **passo 9.5 (validar o ENV.md)** e então encerrar.
-7. Se houver diff, exibir prévia:
+6. Se houver diff, exibir prévia:
    ```
    🔍 Variáveis novas encontradas no template:
      + NOVA_VAR_1=
@@ -235,27 +234,27 @@ Identificar qual IDE o usuário está utilizando:
 
    Serão adicionadas no assunto de cada uma, na posição do template, sem alterar os valores existentes.
    ```
-8. **Exceção — documentos nos caminhos antigos:** procure documentos de trabalho em `$DOCS_FOLDER/product`, `$DOCS_FOLDER/engineering/{ARD,RFC,qa,swagger,openapi,robots,c4}`, `docs/engineering/{robots,swagger,openapi,c4}` e os discoveries em `$PROD_DOCS/discoveries/`.
+7. **Exceção — documentos nos caminhos antigos:** procure documentos de trabalho em `$DOCS_FOLDER/product`, `$DOCS_FOLDER/engineering/{ARD,RFC,qa,swagger,openapi,robots,c4}`, `docs/engineering/{robots,swagger,openapi,c4}` e os discoveries em `$PROD_DOCS/discoveries/`.
    - Se houver, liste o que encontrou e pergunte com `AskUserQuestion` (uma pergunta para todos) se move para `docs/jarvis/…` (`$PROD_DOCS`, `$ENG_DOCS/…` e, para os discoveries, `$DISCOVERIES_DOCS`). Use `git mv` quando o arquivo for versionado e `mv` quando não for e, só se a raiz do workspace tiver `.git`, garanta `docs/jarvis/` no `.gitignore`.
    - **Conflito** (arquivo com o mesmo nome no destino): não sobrescreva; liste e pule esse arquivo. A pasta antiga só é removida se ficar vazia.
    - **`related_discovery`:** depois de mover discoveries, nos `.md` de `$PROD_DOCS`, troque todo `related_discovery:` cujo **nome de arquivo** seja o de um discovery movido pelo caminho novo (relativo ao workspace). Isso também conserta valores que já estavam quebrados.
    - **Sem confirmação, não mova nada:** as chaves **novas** recebem o caminho antigo (`DISCOVERIES_DOCS=$PROD_DOCS/discoveries`; `PROD_DOCS`/`ENG_DOCS` só se também forem novas). Chave que já existe não muda: avise que os documentos ficaram no caminho antigo.
    - Depois, ofereça a carga inicial do Central docs (Passo 5.3).
-9. **Exceção — Central docs antigo:** se o `ENV.md` tiver `CENTRAL_DOCS_REPO` preenchido e não tiver `CENTRAL_DOCS_STORAGE`, propor a migração (só com confirmação): `CENTRAL_DOCS_STORAGE=filesystem`, `CENTRAL_DOCS_LOCATION=docs/jarvis/central-docs` (Passo 5.2) e `git clone {CENTRAL_DOCS_REPO} {LOCATION}`. Depois, comentar a linha antiga (`# CENTRAL_DOCS_REPO=… (migrado em YYYY-MM-DD)`) e `CENTRAL_DOCS_CACHE_TTL`. Sem confirmação, não mexe e avisa que os comandos de docs vão pedir o Upgrade.
+8. **Exceção — Central docs antigo:** se o `ENV.md` tiver `CENTRAL_DOCS_REPO` preenchido e não tiver `CENTRAL_DOCS_STORAGE`, propor a migração (só com confirmação): `CENTRAL_DOCS_STORAGE=filesystem`, `CENTRAL_DOCS_LOCATION=docs/jarvis/central-docs` (Passo 5.2) e `git clone {CENTRAL_DOCS_REPO} {LOCATION}`. Depois, comentar a linha antiga (`# CENTRAL_DOCS_REPO=… (migrado em YYYY-MM-DD)`) e `CENTRAL_DOCS_CACHE_TTL`. Sem confirmação, não mexe e avisa que os comandos de docs vão pedir o Upgrade.
    - **Central docs no padrão antigo do modo workspace:** se `CENTRAL_DOCS_LOCATION` for `./central-docs` (ou `central-docs`) e essa pasta existir, ofereça com `AskUserQuestion` (**Mover** | **Manter**) mover para `docs/jarvis/central-docs`, o padrão atual. Com **Mover**: se o destino já existir, não sobrescreva (avise e mantenha); senão, `mv ./central-docs docs/jarvis/central-docs` e troque o valor de `CENTRAL_DOCS_LOCATION` no `ENV.md`. Esta é a única alteração de uma chave existente no Upgrade e só acontece com a confirmação. Com **Manter**, nada muda.
-9.1. **Exceção — `TOKEN_TASK_MANAGER` com valor:** o token não é mais usado (o board passa pela CLI do vendor). Nunca leia, mostre ou copie o valor: confira só se a linha tem algo depois do `=`. Explique e oriente o login da CLI do `TASK_MANAGER` (ex.: `acli jira auth login`). Pergunte com `AskUserQuestion` (**Esvaziar a linha** | **Manter**). Com **Esvaziar**, troque a linha por `TOKEN_TASK_MANAGER=`; com **Manter**, nada muda e avise que o valor fica sem uso no ENV. É a segunda exceção declarada à regra "o upgrade só acrescenta" (a primeira é a `CENTRAL_DOCS_LOCATION`).
-9.2. **Exceção — `JARVIS_PROJECT` vazio:** grave `https://github.com/phelipperibeiro/jarvis-framework` sem perguntar e avise ("estava vazio; preenchido com o repositório oficial do Jarvis"). Preenchido com qualquer valor, não muda. O `jarvis init --upgrade` já faz isso no terminal.
-9.3. **Eixos sem forma de acesso:** se `TASK_MANAGER` ou `VERSION_CONTROL` estiver preenchido com um vendor do catálogo e o `*_ACCESS` correspondente estiver ausente, vazio ou inválido (fora de `cli`/`manual`; avise o valor errado), faça para aquele eixo o Passo 4 (descoberta da CLI, forma de acesso e variáveis), com a gravação única do fim. Vendor fora do catálogo (Linear, Asana, Bitbucket): avise que não é suportado e que o eixo fica em freelance; não mude a chave.
-10. **Exceção — `PROD_MODE`:** se `PROD_MODE` estiver entre as chaves novas, grave pelo `AREA`: `ENGINEERING` → `developer-guided`, `PRODUCT` → `product-led`. Com outra `AREA` (ou vazia), faça a mesma pergunta do Passo 3 (Pergunta 8 — modo de condução) e grave a resposta. `PROD_MODE` que já existe, mesmo vazia, não muda. As demais chaves continuam sem pergunta.
+8.1. **Exceção — `TOKEN_TASK_MANAGER` com valor:** o token não é mais usado (o board passa pela CLI do vendor). Nunca leia, mostre ou copie o valor: confira só se a linha tem algo depois do `=`. Explique e oriente o login da CLI do `TASK_MANAGER` (ex.: `acli jira auth login`). Pergunte com `AskUserQuestion` (**Esvaziar a linha** | **Manter**). Com **Esvaziar**, troque a linha por `TOKEN_TASK_MANAGER=`; com **Manter**, nada muda e avise que o valor fica sem uso no ENV. É a segunda exceção declarada à regra "o upgrade só acrescenta" (a primeira é a `CENTRAL_DOCS_LOCATION`).
+8.2. **Exceção — `JARVIS_PROJECT` vazio:** grave `https://github.com/phelipperibeiro/jarvis-framework` sem perguntar e avise ("estava vazio; preenchido com o repositório oficial do Jarvis"). Preenchido com qualquer valor, não muda. O `jarvis init --upgrade` já faz isso no terminal.
+8.3. **Eixos sem forma de acesso:** se `TASK_MANAGER` ou `VERSION_CONTROL` estiver preenchido com um vendor do catálogo e o `*_ACCESS` correspondente estiver ausente, vazio ou inválido (fora de `cli`/`manual`; avise o valor errado), faça para aquele eixo o Passo 4 (descoberta da CLI, forma de acesso e variáveis), com a gravação única do fim. Vendor fora do catálogo (Linear, Asana, Bitbucket): avise que não é suportado e que o eixo fica em freelance; não mude a chave.
+9. **Exceção — `PROD_MODE`:** se `PROD_MODE` estiver entre as chaves novas, grave pelo `AREA`: `ENGINEERING` → `developer-guided`, `PRODUCT` → `product-led`. Com outra `AREA` (ou vazia), faça a mesma pergunta do Passo 3 (Pergunta 8 — modo de condução) e grave a resposta. `PROD_MODE` que já existe, mesmo vazia, não muda. As demais chaves continuam sem pergunta.
     - **`WORKSPACE_MODE`:** o `jarvis init --upgrade` já grava o modo detectado (raiz sem `.git` e 1+ subpastas com `.git/` = `workspace`; raiz com `.git` = `project`). Se a chave existir vazia, detecte do mesmo jeito e grave; se existir preenchida, não muda.
     - **`.gitignore` numa raiz sem `.git` (ex.: `WORKSPACE_MODE=workspace`):** a raiz não é versionada, então esse arquivo não tem efeito. Não o apague; só avise: `ℹ️ O .gitignore da raiz do workspace não tem efeito (a raiz não é um repositório). Pode removê-lo se quiser.`
-11. Acrescentar as novas variáveis no assunto de cada uma, na posição do template, junto das chaves do mesmo assunto (ex.: uma `DATA_*` nova vai para o bloco Data Engineering, ao lado das irmãs), com o comentário do template. Sem bloco datado no fim. O `jarvis init --upgrade` (terminal) acrescenta no fim, num bloco `# --- Upgrade ... ---`, por ser determinístico; o passo 9.5 põe essas chaves no lugar.
-12. Confirmar:
+10. Acrescentar as novas variáveis no assunto de cada uma, na posição do template, junto das chaves do mesmo assunto (ex.: uma `*_SPECIALIZATIONS` nova vai para o bloco de especializações, ao lado das irmãs), com o comentário do template. Sem bloco datado no fim. O `jarvis init --upgrade` (terminal) acrescenta no fim, num bloco `# --- Upgrade ... ---`, por ser determinístico; o passo 9.5 põe essas chaves no lugar.
+11. Confirmar:
    ```
    ✅ ENV.md atualizado! N variável(is) nova(s) adicionada(s).
    ⚠️ Preencha os valores em branco antes de usar os novos recursos.
    ```
-13. Oferecer o **passo 9 (adicionar as stacks)**, que a pessoa pode pular, rodar o **passo 9.5 (validar o ENV.md)** e então encerrar (não continuar para o fluxo de onboarding completo).
+12. Oferecer o **passo 9 (adicionar as stacks)**, que a pessoa pode pular, rodar o **passo 9.5 (validar o ENV.md)** e então encerrar (não continuar para o fluxo de onboarding completo).
 
 **⚠️ OBRIGATÓRIO - Criação do ENV.md**:
 
@@ -267,10 +266,9 @@ O ENV.md DEVE ser criado usando como base **TODO O CONTEÚDO** de:
 Fluxo correto:
 1. Ler o conteúdo completo de `templates/ENV-template.md`
 2. Substituir os valores das variáveis conforme coletado do usuário
-3. Se `HUB≠DATA`: remover o bloco DATA_* inteiro
-4. Garantir `SESSIONS_DIR=.jarvis/sessions` e `JARVIS_PROJECT=https://github.com/phelipperibeiro/jarvis-framework` (ou URL que o usuário informar)
-5. Escrever `$IDE/ENV.md` com o restante do template (incluindo variáveis vazias)
-6. As 6 chaves de especialização ficam **vazias**, exceto `QA_SPECIALIZATIONS`, que vem com `eng-qa-planner` (único hoje, pré-registrado por padrão — ver `templates/ENV-template.md`): não são perguntadas aqui. O registro/ajuste é feito no **passo 9 (adicionar as stacks)**, ou depois, a qualquer momento: consulta com `jarvis-list-specializations` e criação com `jarvis-create-specialization` (só backend/frontend).
+3. Garantir `SESSIONS_DIR=.jarvis/sessions` e `JARVIS_PROJECT=https://github.com/phelipperibeiro/jarvis-framework` (ou URL que o usuário informar)
+4. Escrever `$IDE/ENV.md` com o restante do template (incluindo variáveis vazias)
+5. As 6 chaves de especialização ficam **vazias**, exceto `QA_SPECIALIZATIONS`, que vem com `eng-qa-planner` (único hoje, pré-registrado por padrão — ver `templates/ENV-template.md`): não são perguntadas aqui. O registro/ajuste é feito no **passo 9 (adicionar as stacks)**, ou depois, a qualquer momento: consulta com `jarvis-list-specializations` e criação com `jarvis-create-specialization` (só backend/frontend).
 
 ### 3. Coletar Variáveis Obrigatórias
 
@@ -564,29 +562,6 @@ function validateTextOption(userInput, optionsList) {
 
 Se alguma validação de campo livre falhar, informar o erro claramente e solicitar novamente.
 
-### 3.1 Variáveis de Hub DATA (condicional — obrigatório se HUB=DATA)
-
-**Executar apenas se `HUB=DATA`** foi selecionado no passo anterior.
-
-Se `HUB≠DATA`: pular este passo inteiramente — as variáveis `DATA_*` **não serão incluídas** no ENV.md gerado.
-
-Se `HUB=DATA`: coletar as variáveis abaixo **uma por vez**, todas obrigatórias:
-
-| Variável | Pergunta | Exemplos de valor |
-|----------|----------|-------------------|
-| `DATA_ORCHESTRATOR` | Qual o orquestrador de pipelines? | `airflow`, `prefect`, `dagster`, `glue-scheduler` |
-| `DATA_ETL_TOOL` | Qual a ferramenta de transformação ETL? | `aws_glue`, `dbt`, `spark`, `pandas` |
-| `DATA_QUALITY_TOOL` | Qual a ferramenta de qualidade de dados? | `great_expectations`, `soda`, `deequ` |
-| `DATA_LAKE` | Qual o armazenamento do data lake? | `aws_s3`, `gcs`, `azure_adls` |
-| `DATA_QUERY_ENGINE` | Qual a engine de query analítica? | `aws_athena`, `bigquery`, `redshift`, `trino` |
-| `DATA_BI_TOOL` | Qual a ferramenta de BI/dashboards? | `metabase`, `looker`, `superset`, `power_bi` |
-| `DATA_WAREHOUSE` | Há data warehouse dedicado? Se sim, qual? *(aceita vazio)* | `redshift`, `snowflake`, `bigquery` |
-| `DATA_REPO` | Qual o nome do repositório de scripts de pipeline? | `data-pipelines`, `etl-jobs`, `analytics-pipelines` |
-
-> Perguntar uma por vez, aguardando resposta antes da próxima.
-> `DATA_WAREHOUSE` aceita valor vazio — informar ao usuário que pode ser configurado depois.
-> `ALERTS_CHANNEL` é uma variável genérica do projeto (não específica de DATA) — já terá sido configurada nas variáveis principais.
-
 ### 4. Perguntar Sobre Variáveis Opcionais
 
 ```
@@ -635,20 +610,11 @@ Se **A** ou **B**, perguntar sobre cada variável opcional conforme seleção �
 | `TASK_MANAGER_URL_BASE` | *(vazio)* | GitHub/GitLab: repositório dos cards (obrigatório); Jira: o site, só para o link |
 | `VERSION_CONTROL` | *(vazio)* | `github`, `gitlab` |
 | `VERSION_CONTROL_ACCESS` | *(vazio)* | `cli` ou `manual` |
-| `MESSAGE_BROKER` | *(vazio)* | `rabbitmq`, `kafka`, `sqs` |
-| `MESSAGE_BROKER_URL_API` | *(vazio)* | API do broker |
-| `MESSAGE_BROKER_API_AUTH` | *(vazio)* | Auth do broker |
-| `DATABASE` | *(vazio)* | `mysql`, `postgres`, `mongodb` |
-| `USER_DATABASE` / `PASSWORD_DATABASE` / `HOST_DATABASE` / `PORT_DATABASE` | *(vazio)* | Credenciais DB |
 | `MESSAGE_COMUNICATOR` | *(vazio)* | `slack`, `discord`, `teams` |
 | `MESSAGE_COMUNICATOR_BOT_TOKEN` / `_SIGNING_SECRET` / `_APP_TOKEN` | *(vazio)* | Tokens do chat |
 | `ALERTS_CHANNEL` | *(vazio)* | Canal de alertas |
 | `OBJECT_STORAGE` | *(vazio)* | `aws_s3`, `gcs`, `azure_blob` |
 | `TOKEN_OBJECT_STORAGE` | *(vazio)* | Token storage |
-| `OBSERVABILITY` | *(vazio)* | `sentry`, `datadog`, `grafana` |
-| `TOKEN_OBSERVABILITY` / `OBSERVABILITY_ORG` | *(vazio)* | Observabilidade |
-| `SMTP` | *(vazio)* | `google`, `ses`, `sendgrid` |
-| `CODE_QUALITY_TOOL` / `_URL` / `_TOKEN` | *(vazio)* | SonarQube etc. |
 | `TEST_FOLDER` | *(vazio)* | Pasta de testes |
 | `JARVIS_PROJECT` | `https://github.com/phelipperibeiro/jarvis-framework` | URL completa do repo do framework (`/jarvis-report-issue`); trocar só para um fork |
 | `CENTRAL_DOCS_STORAGE` / `_LOCATION` | `filesystem` / pasta padrão do modo de trabalho | Central docs (o que foi implementado), configurado no Passo 5.2; vazio = desligado |
@@ -704,24 +670,20 @@ cat templates/ENV-template.md
 #    - Se IDE=claude → FLOWS_FOLDER=commands
 #    - Caso contrário → FLOWS_FOLDER=workflows
 
-# 5. BLOCO DATA_* — incluir ou omitir conforme HUB:
-#    - Se HUB=DATA ou HUB=FULLCYCLE → incluir o bloco com os valores coletados no passo 3.1
-#    - Caso contrário                → REMOVER completamente o bloco Data Engineering e todas as DATA_*
-
-# 6. Garantir chaves de sistema do template:
+# 5. Garantir chaves de sistema do template:
 #    SESSIONS_DIR=.jarvis/sessions
 #    ENABLE_CDD=true
 #    JARVIS_PROJECT=https://github.com/phelipperibeiro/jarvis-framework  (se usuário não sobrescrever)
 #    NÃO incluir: TOKEN_VERSION_CONTROL, PROJECT_NAME, EVENT_BUS*, metrics*
 
-# 7. Criar pastas de sessão no workspace (pasta que contém $IDE/):
+# 6. Criar pastas de sessão no workspace (pasta que contém $IDE/):
 mkdir -p .jarvis/sessions/eng .jarvis/sessions/prod .jarvis/sessions/qa
 
-# 8. Documentos de trabalho em docs/jarvis/ — nos DOIS modos de trabalho:
+# 7. Documentos de trabalho em docs/jarvis/ — nos DOIS modos de trabalho:
 #    JARVIS_DOCS=$DOCS_FOLDER/jarvis, PROD_DOCS=$JARVIS_DOCS/product, ENG_DOCS=$JARVIS_DOCS/engineering
 #    (valores do template). Uma docs/ já existente não é tocada.
 
-# 9. .gitignore — SÓ se a raiz do workspace for um repositório (tem .git).
+# 8. .gitignore — SÓ se a raiz do workspace for um repositório (tem .git).
 #    Raiz sem .git (modo workspace, ou pasta sem nenhum repositório) não é versionada:
 #    NÃO crie nem altere o .gitignore da raiz.
 if [ -e .git ]; then
@@ -766,16 +728,6 @@ Com o Central docs ligado:
 2. Se encontrar algum, mostre a contagem e pergunte com `AskUserQuestion` (**Sim / Não**): **"Gerar o Central docs agora a partir desses documentos?"**
 3. Com **Sim**, chame `/eng.spec-consolidate --inicial`. Ele agrupa os documentos por funcionalidade, gera um `feature-*.md` por grupo (sem registro de entrega, porque não há PR) e só publica depois da revisão e do seu Sim.
 4. Com **Não**, siga. Dá para rodar o `/eng.spec-consolidate --inicial` depois.
-
-**⚠️ REGRA CRÍTICA — Bloco DATA:**
-
-```javascript
-if (HUB === 'DATA' || HUB === 'FULLCYCLE') {
-  // Incluir bloco DATA_* com valores coletados no passo 3.1
-} else {
-  // Remover do ENV.md gerado o bloco Data Engineering e todas as DATA_*
-}
-```
 
 **⚠️ REGRA CRÍTICA - FLOWS_FOLDER:**
 
@@ -841,7 +793,7 @@ TASK_MANAGER_URL_BASE=
 # =============================================================================
 VERSION_CONTROL=
 VERSION_CONTROL_ACCESS=
-# ... restante do template, cada assunto na sua moldura (MESSAGE_*, DATABASE, JARVIS_PROJECT, CENTRAL_DOCS_*, etc.)
+# ... restante do template, cada assunto na sua moldura (MESSAGE_COMUNICATOR*, OBJECT_STORAGE, JARVIS_PROJECT, CENTRAL_DOCS_*, etc.)
 JARVIS_PROJECT=https://github.com/phelipperibeiro/jarvis-framework
 ```
 
@@ -951,55 +903,7 @@ Corrija o arquivo (formato em assets/mcp-configs.md), {Para ativar} e rode /jarv
 
 > **Configurações detalhadas**: Ver `assets/mcp-configs.md`
 
-### 6.1 — Provisionar MCPs Opcionais (não bloqueante)
-
-Após validar os MCPs obrigatórios, verificar se o ENV.md contém ferramentas opcionais que requerem MCP local:
-
-**Code Quality (`CODE_QUALITY_TOOL`)**:
-
-```bash
-grep "CODE_QUALITY_TOOL=" $IDE/ENV.md
-```
-
-Se `CODE_QUALITY_TOOL` estiver preenchido (ex: `sonarqube`):
-
-1. Verificar se o MCP server já está instalado:
-   ```bash
-   which sonarqube-mcp-server 2>/dev/null
-   ```
-
-2. Se **não instalado** — perguntar ao usuário:
-   ```
-   CODE_QUALITY_TOOL=sonarqube detectado no ENV.md.
-   Para integrar com o quality gate, preciso instalar o MCP server.
-
-   Instalar sonarqube-mcp-server globalmente via npm? (Sim / Não / Pular)
-   ```
-
-   - **Sim**: executar `npm install -g sonarqube-mcp-server`, obter path via `which`, provisionar no arquivo de config da IDE (ver `assets/mcp-configs.md` para paths por IDE)
-   - **Não / Pular**: registrar como pendente e continuar
-
-3. Se **já instalado** — obter path absoluto via `which` e provisionar no arquivo de config da IDE
-
-4. Verificar se `CODE_QUALITY_URL` e `CODE_QUALITY_TOKEN` estão preenchidos no ENV.md:
-   - Se vazios → perguntar ao usuário:
-     ```
-     Qual a URL da instância do SonarQube? (ex: https://sonarqube.empresa.com)
-     Qual o token de autenticação?
-     ```
-   - Salvar no ENV.md
-
-5. Testar conexão:
-   ```javascript
-   mcp__sonarqube__list_projects({})
-   ```
-   - Se falhar → avisar mas **não bloquear**
-
-> Este passo é **não bloqueante** — se o usuário pular ou a instalação falhar,
-> o init continua normalmente. O MCP pode ser configurado depois manualmente
-> seguindo `assets/mcp-configs.md`.
-
-### 6.2 — Perfil de Plugins Claude Code (apenas se IDE=claude, opcional)
+### 6.1 — Perfil de Plugins Claude Code (apenas se IDE=claude, opcional)
 
 **Executar apenas se `IDE=claude`**. Para qualquer outro IDE: pular inteiramente.
 
@@ -1189,23 +1093,22 @@ Roda no fim de todo caminho que grava o `ENV.md`: criação (opção A ou ENV.md
 
 | Verificação | Exemplo | Correção sugerida (primeira opção, "(Recomendada)") |
 |---|---|---|
-| Chave do template ausente | falta `WORKSPACE_MODE` | Acrescentar no assunto dela, com o padrão do template. Não conta como ausente uma `DATA_*` (exceto `DATA_SPECIALIZATIONS`) quando o HUB não exige o bloco DATA (regra do bloco DATA, abaixo) |
+| Chave do template ausente | falta `WORKSPACE_MODE` | Acrescentar no assunto dela, com o padrão do template. |
 | Chave fora do template (saiu dele ou é do projeto) | `QA_SIGNOFF_BRANCHES`, `MINHA_VAR` | Mover para o bloco final "Variáveis fora do template", com `# (descontinuada)` numa linha própria logo acima da chave e o valor intacto |
 | Chave duplicada | `HUB=` duas vezes | Manter a preenchida (ou a última) |
 | Valor fora das opções | `HUB=BACKEN`, `MAX_AI_EXECUTION_PERCENTAGE=40`, `TASK_MANAGER_ACCESS=api` | Perguntar o valor, com as opções do template ou do `taxonomy.md` (as mesmas perguntas do passo 3) |
 | `COMPANY_PROFILE` vazio, fora do padrão ou igual a uma pasta do core | `COMPANY_PROFILE=`, `COMPANY_PROFILE=Acme Corp`, `COMPANY_PROFILE=rules` | A mesma pergunta do item 6 do passo 4 (default `stark-industries` primeiro). Vazio não é válido: a chave sempre tem um perfil |
 | Obrigatória vazia | `SQUAD=` | A mesma pergunta do passo 3 |
 | Lista de exemplo não escolhida | `TASK_MANAGER=[jira, github, gitlab]` | Escolher uma ou esvaziar |
-| Fora da ordem ou do assunto | blocos `# --- Upgrade ... ---` no fim; uma `DATA_*` longe das irmãs | Regravar na ordem do template |
+| Fora da ordem ou do assunto | blocos `# --- Upgrade ... ---` no fim; uma `*_SPECIALIZATIONS` longe das irmãs | Regravar na ordem do template |
 | Comentários ou separadores diferentes dos do template | comentário antigo; `# --- Assunto ---` | Trocar pelos do template (a pergunta avisa que comentários próprios se perdem) |
-| Bloco DATA fora da regra do HUB | `DATA_*` com `HUB=BACKEND` | Regra do bloco DATA (sempre exceto `DATA_SPECIALIZATIONS`, obrigatória em qualquer HUB): `HUB=DATA` exige o bloco (as que faltarem contam como ausentes); `HUB=FULLCYCLE` o deixa opcional (nem ausente, nem a remover), como a criação (passo 5) e o Upgrade (item 4) já fazem; outro HUB: sugerir remover o bloco |
 
-Não pergunte de novo o que as exceções 9 a 9.3 do Upgrade já resolveram nesta execução.
+Não pergunte de novo o que as exceções 8 a 8.3 do Upgrade já resolveram nesta execução.
 
 **2. Perguntar cada problema** com `AskUserQuestion`: **uma pergunta por problema**, em chamadas de até 4 abas, agrupadas por tipo de verificação. Cada pergunta tem a correção sugerida como primeira opção, marcada "(Recomendada)", e uma opção que mantém o arquivo como está (ex.: "Manter como está"). Nada é corrigido sem resposta. Sem problema nenhum, não pergunte: avise `✅ ENV.md conferido: nada a corrigir.`
 
 **3. Regravar (só o que foi aceito).**
-- **Reorganização aceita:** use a estrutura do template (ordem, comentários e molduras), mas só com as chaves que o arquivo já tem mais as acrescentadas por resposta: chave que a pessoa recusou acrescentar não entra, e um bloco inteiro que o arquivo não tem (como o DATA, fora da regra do HUB) não volta. Ponha o valor atual de cada chave no lugar dela, cada uma no seu assunto e junto das irmãs, e desfaça os blocos datados. As chaves fora do template vão para o último bloco, "Variáveis fora do template", cada uma com `# (descontinuada)` logo acima. **Nenhuma chave é apagada**, salvo as que a pessoa mandou remover numa resposta (como o bloco DATA). O comentário fica numa linha própria: na mesma linha da chave, o CLI o leria como parte do valor.
+- **Reorganização aceita:** use a estrutura do template (ordem, comentários e molduras), mas só com as chaves que o arquivo já tem mais as acrescentadas por resposta: chave que a pessoa recusou acrescentar não entra. Ponha o valor atual de cada chave no lugar dela, cada uma no seu assunto e junto das irmãs, e desfaça os blocos datados. As chaves fora do template vão para o último bloco, "Variáveis fora do template", cada uma com `# (descontinuada)` logo acima. **Nenhuma chave é apagada**, salvo as que a pessoa mandou remover numa resposta. O comentário fica numa linha própria: na mesma linha da chave, o CLI o leria como parte do valor.
 - **Reorganização recusada:** grave só as correções de conteúdo aceitas, no lugar em que cada chave está, sem mover o resto.
 - **Conferência antes de gravar:** o **conjunto de chaves** depois é o de antes, mais as acrescentadas e menos as removidas por resposta; e o mapa chave → valor das chaves mantidas é igual (só mudam as corrigidas por resposta). Se não for, não grave e avise: `⚠️ A regravação mudaria chaves ou valores que não foram respondidos: nada gravado.`
 
@@ -1304,7 +1207,7 @@ Apresentar checklist de onboarding por período (Dia 1, Semana 1, Mês 1).
 ### ✅ SEMPRE FAÇA
 
 - ✅ **SEMPRE usar templates/ENV-template.md como base**
-- ✅ **SEMPRE copiar TODO o conteúdo do template** (exceto bloco DATA_* se HUB≠DATA)
+- ✅ **SEMPRE copiar TODO o conteúdo do template**
 - ✅ **SEMPRE preservar variáveis vazias do template**
 - ✅ **SEMPRE ajustar FLOWS_FOLDER baseado no IDE (commands para claude, workflows para outros)**
 - ✅ **SEMPRE perguntar UMA variável POR VEZ e aguardar resposta antes da próxima**
@@ -1510,15 +1413,12 @@ Bem-vindo! 🎉
 - [ ] Não gravou TOKEN_VERSION_CONTROL / PROJECT_NAME / EVENT_BUS*
 - [ ] Perguntou sobre variáveis opcionais
 - [ ] **Ajustou FLOWS_FOLDER baseado no IDE (commands se claude, workflows se outros)**
-- [ ] **Se HUB=DATA: coletou variáveis DATA_* obrigatórias (passo 3.1)**
-- [ ] **Se HUB≠DATA: bloco DATA_* removido completamente do ENV.md gerado**
 - [ ] Criou arquivo ENV.md usando template completo
 - [ ] **Se IDE ≠ claude: moveu todos os workflows de subpastas para a raiz de `$IDE/workflows/`**
 - [ ] Garantiu o Context7 no arquivo de MCP da IDE e o validou (ou o registrou como pendente de ativação)
 - [ ] Se TASK_MANAGER/VERSION_CONTROL definidos: descobriu a CLI (instalada e logada) e gravou `*_ACCESS` (`cli` ou `manual`) após confirmação
 - [ ] Se TASK_MANAGER vazio: pulou a descoberta do board
 - [ ] Não pediu nem gravou token do board ou do git
-- [ ] Provisionou MCPs opcionais (Code Quality, se configurado)
 - [ ] Criou AGENTS.md
 - [ ] Ofereceu o passo 9 (adicionar as stacks), que é pulável; a detecção só leu e mostrou antes de sugerir; listas atualizadas sem duplicar
 - [ ] Confirmou criação com usuário

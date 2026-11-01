@@ -40,6 +40,9 @@ const ENV_V520 = [
   "",
 ].join("\n");
 
+// #209: o upgrade apaga MESSAGE_BROKER e SMTP (blocos que saíram do template); o resto fica igual.
+const semRemovidas = (text) => text.replace(/^(MESSAGE_BROKER|SMTP)=.*\n/gm, "");
+
 const OLD = "docs/jarvis/product/discoveries/discovery-001-x.md";
 const NEW = "docs/jarvis/discoveries/discovery-001-x.md";
 const PRD = "docs/jarvis/product/prd-001-x/prd-001-x.md";
@@ -93,7 +96,10 @@ test("init --upgrade --yes: chaves novas, PROD_MODE pela AREA, discovery movido,
       assert.equal(r.status, 0, r.stderr);
 
       const env = readFileSync(join(ws, ".claude/ENV.md"), "utf-8");
-      assert.ok(env.startsWith(ENV_V520), "linhas existentes do ENV mudaram");
+      assert.ok(env.startsWith(semRemovidas(ENV_V520)), "linhas existentes do ENV mudaram");
+      assert.doesNotMatch(env, /^(MESSAGE_BROKER|SMTP)=/m);
+      assert.match(r.stdout, /removidas \(não são mais usadas\): MESSAGE_BROKER, SMTP/);
+      assert.doesNotMatch(r.stdout, /rabbitmq/);
       assert.match(env, /^DISCOVERIES_FOLDER_NAME=discoveries$/m);
       assert.match(env, /^DISCOVERIES_DOCS=\$JARVIS_DOCS\/\$DISCOVERIES_FOLDER_NAME$/m);
       assert.match(env, /^PROD_MODE=developer-guided$/m);
@@ -143,7 +149,7 @@ test("init --upgrade: Central docs antigo só gera aviso; PROD_MODE= existente n
     const r = run(ws, "--upgrade", "--ide", "claude");
     assert.equal(r.status, 0, r.stderr);
     const after = readFileSync(join(ws, ".claude/ENV.md"), "utf-8");
-    assert.ok(after.startsWith(env));
+    assert.ok(after.startsWith(semRemovidas(env)));
     assert.match(after, /^PROD_MODE=$/m);
     assert.ok(!existsSync(join(ws, "docs/jarvis/central-docs/.git")));
     assert.match(r.stdout, /CENTRAL_DOCS_REPO/);
@@ -171,7 +177,7 @@ test("init --upgrade: WORKSPACE_MODE=workspace quando a raiz não é repositóri
     const r = run(ws, "--upgrade", "--ide", "claude", "--yes");
     assert.equal(r.status, 0, r.stderr);
     const env = readFileSync(join(ws, ".claude/ENV.md"), "utf-8");
-    assert.ok(env.startsWith(ENV_V520), "linhas existentes do ENV mudaram");
+    assert.ok(env.startsWith(semRemovidas(ENV_V520)), "linhas existentes do ENV mudaram");
     assert.match(env, /^WORKSPACE_MODE=workspace$/m);
 
     const again = run(ws, "--upgrade", "--ide", "claude", "--yes");
@@ -212,6 +218,24 @@ test("init --upgrade: skill antigo é listado e não é removido sem confirmaç�
       assert.match(r.stdout, /Skills instalados que saíram do framework/);
       assert.match(r.stdout, /skill-antigo/);
       assert.ok(existsSync(join(ws, ".claude/skills/skill-antigo/SKILL.md")));
+    }
+  );
+});
+
+test("init --upgrade: apaga o skill eng-backend-rabbitmq e a rule data-rules instalados (#209)", () => {
+  withWorkspace(
+    {
+      ".claude/ENV.md": ENV_V520,
+      ".claude/skills/eng-backend-rabbitmq/SKILL.md": SKILL,
+      ".claude/skills/eng-backend-rabbitmq/references/4-troubleshooting.md": "# x\n",
+      ".claude/rules/engineering/data/data-rules.md": "# data\n",
+    },
+    (ws) => {
+      const r = run(ws, "--upgrade", "--ide", "claude", "--yes");
+      assert.equal(r.status, 0, r.stderr);
+      assert.ok(!existsSync(join(ws, ".claude/skills/eng-backend-rabbitmq")));
+      assert.ok(!existsSync(join(ws, ".claude/rules/engineering/data/data-rules.md")));
+      assert.ok(existsSync(join(ws, ".claude/skills/eng-backend/SKILL.md")));
     }
   );
 });
@@ -708,7 +732,7 @@ test("init (Atualizar): com a versão igual, sem seta X → X e com o ENV.md com
     assert.equal(primeira.status, 0, primeira.stderr);
     const envPath = join(ws, ".claude/ENV.md");
     // As linhas que já existiam continuam iguais e no lugar; as novas entram no fim.
-    assert.ok(readFileSync(envPath, "utf-8").startsWith(ENV_SEM_BOARD.trimEnd()));
+    assert.ok(readFileSync(envPath, "utf-8").startsWith(semRemovidas(ENV_SEM_BOARD).trimEnd()));
     const completo = readFileSync(envPath, "utf-8");
 
     const segunda = runWithInput(ws, "\n", "--ide", "claude");

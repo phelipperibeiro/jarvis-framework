@@ -54,7 +54,6 @@ prompts/
 │   │   ├── eng-frontend/          # Base neutra de frontend (design system/tokens e micro frontend inclusos; + especializações em FRONTEND_SPECIALIZATIONS)
 │   │   ├── eng-backend-nestjs/            # Framework NestJS: módulos, DI, guards, interceptors
 │   │   ├── eng-global-pr/
-│   │   ├── eng-backend-rabbitmq/          # Mensageria RabbitMQ
 │   │   ├── eng-data/              # Base neutra de dados (+ especializações em DATA_SPECIALIZATIONS)
 │   │   ├── eng-automation/           # Web scraping, Puppeteer, ETL
 │   │   ├── jarvis-init/
