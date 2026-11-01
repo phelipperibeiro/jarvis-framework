@@ -176,7 +176,8 @@ export function removeEnvKeys(text, keys) {
   if (removed.length === 0) return { text, removed };
 
   const bare = (line) => line.replace(/\r$/, "").trim();
-  for (const block of REMOVED_BLOCKS) {
+  // Só os blocos de onde saiu alguma chave: moldura vazia de outro bloco é escolha da pessoa.
+  for (const block of REMOVED_BLOCKS.filter((b) => b.keys.some((k) => removed.includes(k)))) {
     const i = lines.findIndex(
       (line, n) =>
         bare(line) === `# ${block.title}` &&

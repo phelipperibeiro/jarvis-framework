@@ -183,6 +183,54 @@ test("removeEnvKeys: casa só o nome inteiro da chave (SMTP_HOST e linha comenta
   assert.deepEqual(removeEnvKeys(out.text, ["SMTP"]), { text: out.text, removed: [] });
 });
 
+test("removeEnvKeys: só mexe na moldura do bloco de onde a chave saiu", () => {
+  const text = [
+    ...frame("Mensageria (opcional)"),
+    "MESSAGE_BROKER=x",
+    "",
+    "",
+    ...frame("SMTP (opcional)"),
+    "",
+    "",
+    ...frame("Chat / comunicador (opcional)"),
+    "MESSAGE_COMUNICATOR=slack",
+    "",
+  ].join("\n");
+  assert.equal(
+    removeEnvKeys(text, ["MESSAGE_BROKER"]).text,
+    [
+      ...frame("SMTP (opcional)"),
+      "",
+      "",
+      ...frame("Chat / comunicador (opcional)"),
+      "MESSAGE_COMUNICATOR=slack",
+      "",
+    ].join("\n")
+  );
+});
+
+test("removeEnvKeys: subconjunto das chaves do bloco mantém a moldura; duplicada sai inteira", () => {
+  const text = [
+    ...frame("Banco de dados (opcional)"),
+    "DATABASE=pg",
+    "DATABASE=my",
+    "HOST_DATABASE=h",
+    "",
+  ].join("\n");
+  const out = removeEnvKeys(text, ["DATABASE"]);
+  assert.deepEqual(out.removed, ["DATABASE"]);
+  assert.equal(out.text, [...frame("Banco de dados (opcional)"), "HOST_DATABASE=h", ""].join("\n"));
+});
+
+test("applyEnvUpgrade: remove e acrescenta no mesmo passe", () => {
+  const original = `HUB=BACKEND\n\n\n${frame("SMTP (opcional)").join("\n")}\nSMTP=ses\n`;
+  withTempEnv(original, (p) => {
+    const plan = planEnvUpgrade(original, "HUB=[A]\nNOVA=1\n");
+    assert.equal(applyEnvUpgrade(p, plan, "2026-11-01"), true);
+    assert.equal(readFileSync(p, "utf-8"), "HUB=BACKEND\n\n# --- Upgrade 2026-11-01 ---\nNOVA=1\n");
+  });
+});
+
 test("removeEnvKeys: ENV com CRLF", () => {
   const text = ["HUB=X", "", ...frame("SMTP (opcional)"), "SMTP=ses", ""].join("\r\n");
   const out = removeEnvKeys(text, ["SMTP"]);
