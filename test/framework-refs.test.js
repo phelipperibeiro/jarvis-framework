@@ -67,17 +67,23 @@ test("links relativos de skills, templates e workflows existem", () => {
   assert.deepEqual(broken, [], `links quebrados:\n${broken.join("\n")}`);
 });
 
-// Os roteadores (SKILL.md) citam references/ entre crases, sem $IDE nem link markdown.
+// Os roteadores (SKILL.md) citam references/ entre crases, sem $IDE nem link markdown. Aceita `./` antes
+// e subpastas; caminho colado a outro (skills/x/references/…) é de outro skill e fica de fora. Nomes com
+// chaves ({a|b}) são exemplos e não casam.
 test("references/….md citados em cada SKILL.md existem na pasta do skill", () => {
   const broken = [];
+  let checked = 0;
   for (const name of readdirSync(join(root, "skills"))) {
     const file = join(root, "skills", name, "SKILL.md");
     if (!existsSync(file)) continue;
-    for (const m of readFileSync(file, "utf8").matchAll(/(?<![\w/.-])references\/[\w.-]+\.md/g)) {
+    const text = readFileSync(file, "utf8");
+    for (const m of text.matchAll(/(?<![\w/.-])(?:\.\/)?references\/(?:[\w.-]+\/)*[\w.-]+\.md/g)) {
+      checked++;
       if (!existsSync(join(root, "skills", name, m[0])))
         broken.push(`skills/${name}/SKILL.md: ${m[0]}`);
     }
   }
+  assert.ok(checked > 0, "nenhuma citação de references/ encontrada: a regex parou de casar?");
   assert.deepEqual(broken, [], `references quebradas:\n${broken.join("\n")}`);
 });
 
