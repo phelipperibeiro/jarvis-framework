@@ -949,3 +949,32 @@ test("init --upgrade: sem os 4 eixos, não filtra e manda ao /jarvis-init upgrad
     );
   });
 });
+
+test("init --upgrade: instalação 8.4.0 → estado final de rules/ e rules-on-demand/ (#83)", () => {
+  const antigas = [
+    "engineering/eng.bump-rules.md",
+    "engineering/eng.docs-scraping-rules.md",
+    "engineering/rpa/eng.rpa-rules.md",
+    "AGENTS.md",
+    "product/README.md",
+    "engineering/eng.start-rules.md",
+  ];
+  const files = {
+    ".claude/ENV.md": ENV_PERFIL,
+    "jarvis-lock.json": '{"version":"8.4.0","ide":"claude"}',
+  };
+  for (const a of antigas) files[`.claude/rules/${a}`] = "# rule da 8.4.0\n";
+  withWorkspace(files, (ws) => {
+    const r = run(ws, "--upgrade", "--ide", "claude", "--yes");
+    assert.equal(r.status, 0, r.stderr);
+    for (const a of antigas) {
+      assert.ok(!existsSync(join(ws, ".claude/rules", a)), `rules/${a} deveria ter saído`);
+    }
+    // Do perfil BACKEND/SENIOR/ENGINEERING: fica o que é dele e o que é de qualquer AREA.
+    assert.ok(existsSync(join(ws, ".claude/rules/engineering/eng-rules.md")));
+    assert.ok(!existsSync(join(ws, ".claude/rules/product/prod.spec-rules.md")));
+    assert.ok(existsSync(join(ws, ".claude/rules-on-demand/product/prod.spec-common-rules.md")));
+    assert.ok(existsSync(join(ws, ".claude/rules-on-demand/engineering/eng.rpa-rules.md")));
+    assert.ok(existsSync(join(ws, ".claude/rules-on-demand/engineering/eng.start-rules.md")));
+  });
+});
