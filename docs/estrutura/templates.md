@@ -23,18 +23,18 @@ templates/
     ├── c4-model-template.md
     ├── plan-template.md
     ├── PR-template.md
-    ├── breakdown-subtasks-template.md
+    ├── breakdown-subtasks-template.md  # formato de cada subtarefa (template_file do eng.breakdown-subtasks)
     ├── debug-report-template.md      # relatório do /eng.debug (caso investigar)
     ├── bug-audit-report-template.md  # relatório do /eng.debug (caso varrer)
     ├── data-pipeline-template.md
     ├── data-contract-template.md
     ├── work-progress-template.md
     └── qa/
-        ├── qa.cypress-test-template.md
-        ├── qa.quality-report-template.md
         ├── qa.release-signoff-template.md
         ├── qa.sprint-plan-template.md
-        └── eng.qa.quality-gate-*-template.md
+        ├── qa.test-strategy-template.md         # estratégia do Modo A do eng.qa.test-planner
+        ├── qa.test-coverage-report-template.md  # relatório de cobertura do Modo B do eng.qa.test-planner
+        └── qa.test-suite-report-template.md     # relatório de teste do eng.qa.testing-engineer
 ```
 
 Os templates de produto (PRD, FRD, épico, issue, breakdown e discovery) ficam em `templates/product/`, que é o que `$PROD_TEMPLATES` aponta; o núcleo engineering está nesta árvore.

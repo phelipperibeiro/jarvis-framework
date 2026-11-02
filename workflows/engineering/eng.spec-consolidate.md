@@ -4,8 +4,6 @@ auto_execution_mode: 3
 agent: "$IDE/agents/engineering/eng.docs-consolidator.agent.md"
 template_file: "$IDE/templates/engineering/central-feature-template.md"
 recommended_model: opus
-model_tier: high
-model_justification: Consolidar exige ler e cruzar muitas fontes (documentos, decisões, diff e commits) e escrever um registro completo e sem ambiguidade
 ---
 
 # Consolidar no Central docs

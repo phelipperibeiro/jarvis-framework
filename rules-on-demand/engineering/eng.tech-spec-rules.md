@@ -1,7 +1,3 @@
----
-env_file: "@/ENV.md"
----
-
 > **Applies to:** HUB: all | POSITION: all | AREA: all | SQUAD: all
 
 # Regras de Tech Spec e Especificação Técnica
@@ -166,6 +162,7 @@ O `/eng.build-tech-spec` tem dois modos, escolhidos na triagem do workflow:
    - API de terceiros instável
    - Mudanças em dependências externas
    - Bloqueios por outras histórias
+   - Conflitos com outras histórias em desenvolvimento
 
 3. **Riscos de Dados**
    - Migração complexa
@@ -329,6 +326,7 @@ Use este checklist antes de finalizar uma tech spec:
 - [ ] Estratégia de testes definida
 - [ ] Considerações de segurança
 - [ ] Considerações de performance
+- [ ] Considerações de escalabilidade
 - [ ] Documentação a atualizar
 
 **Qualidade:**

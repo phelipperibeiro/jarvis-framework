@@ -5,8 +5,6 @@ agent: "$IDE/agents/engineering/eng.agent.md"
 rules_file: "$IDE/rules-on-demand/engineering/eng.work-rules.md"
 template_file: "$IDE/templates/engineering/work-progress-template.md"
 recommended_model: claude-sonnet-4-20250514
-model_tier: very_high
-model_justification: Implementação de código requer máxima precisão, entendimento profundo do codebase e geração de código de alta qualidade
 ---
 
 # Engineer Work

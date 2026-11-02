@@ -4,8 +4,6 @@ auto_execution_mode: 3
 agent: "$IDE/agents/engineering/eng.rpa.agent.md"
 rules_file: "$IDE/rules-on-demand/engineering/eng.rpa-rules.md"
 recommended_model: claude-sonnet-4-20250514
-model_tier: high
-model_justification: Requer análise de sistemas externos, decisões de arquitetura de robô e geração de código resiliente
 ---
 
 # eng.rpa.robot

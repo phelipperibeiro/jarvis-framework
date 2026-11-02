@@ -1,6 +1,6 @@
-# Regras de Padrões Cypress — QA Engineering
-
 > **Applies to:** HUB: QA | POSITION: all | AREA: ENGINEERING | SQUAD: all
+
+# Regras de Padrões Cypress — QA Engineering
 
 Convenções obrigatórias para a escrita e manutenção da suíte de testes E2E em Cypress + TypeScript.
 Estas regras são carregadas automaticamente pelo `warm-up` quando `HUB=QA`.

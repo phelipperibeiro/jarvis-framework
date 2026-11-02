@@ -26,7 +26,7 @@ templates/
 │   ├── tech-spec-template.md       # Especificacao tecnica
 │   ├── tech-spec-delivery-template.md # Formatos de entrega da tech spec (Jira, mensagem final, fluxo)
 │   ├── ref-spec-template.md        # Especificação técnica de referência (Reference Spec do eng.build-tech-spec)
-│   ├── breakdown-subtasks-template.md # Subtarefa detalhada (workflow eng.breakdown-subtasks)
+│   ├── breakdown-subtasks-template.md # Formato de cada subtarefa (template_file do eng.breakdown-subtasks)
 │   ├── plan-template.md            # Plano de execucao
 │   ├── work-progress-template.md   # Progresso de trabalho
 │   ├── PR-template.md              # Pull Request
@@ -36,7 +36,10 @@ templates/
 │   ├── data-contract-template.md   # Contrato de dados
 │   └── qa/                         # Templates de QA
 │       ├── qa.release-signoff-template.md # Sign-off QA pre-deploy (GO/NO-GO)
-│       └── qa.sprint-plan-template.md     # Planejamento de capacidade QA da sprint
+│       ├── qa.sprint-plan-template.md     # Planejamento de capacidade QA da sprint
+│       ├── qa.test-strategy-template.md   # Estrategia de testes (Modo A do eng.qa.test-planner)
+│       ├── qa.test-coverage-report-template.md # Relatorio de cobertura (Modo B do eng.qa.test-planner)
+│       └── qa.test-suite-report-template.md # Relatorio de teste do eng.qa.testing-engineer
 └── product/                        # Templates de produto ($PROD_TEMPLATES)
     ├── prod-prd-template.md        # Product Requirements Document
     ├── prod-frd-template.md        # Functional Requirements Document

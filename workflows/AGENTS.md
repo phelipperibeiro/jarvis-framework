@@ -101,6 +101,20 @@ Utilize o arquivo `../../workflows/[dominio]/nome-do-workflow.md` como template.
 
 ## Estrutura de um Workflow
 
+### Frontmatter
+
+| Campo | Obrigatório | Quem lê |
+|---|---|---|
+| `description` | sim, ≤ 160 caracteres | Claude Code (lista de comandos), OpenCode, Kiro, `jarvis list` |
+| `recommended_model` | não | `jarvis list`/`jarvis info`; OpenCode (`model:` do comando) |
+| `auto_execution_mode` | não | Windsurf (modo de execução do workflow) |
+| `agent` | não | OpenCode (`agent:` do comando); persona citada no corpo |
+| `rules_file`, `template_file` | não | o corpo do workflow manda ler |
+| `name` | não; se houver, igual ao nome do arquivo | — |
+| `version` | não | `jarvis info` |
+
+Não use `model:` em workflow: no Claude Code ele troca o modelo da sessão durante o comando.
+
 Todo workflow deve conter:
 
 ```markdown

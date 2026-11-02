@@ -1,4 +1,3 @@
-
 > **Applies to:** HUB: all | POSITION: all | AREA: ENGINEERING | SQUAD: all
 
 Vamos preparar isso para um release aumentando o número da versão.

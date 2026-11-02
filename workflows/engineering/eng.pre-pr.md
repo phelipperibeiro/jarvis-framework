@@ -1,11 +1,8 @@
 ---
 description: Revisão de lacunas antes de abrir o PR/MR, com o relatório gate-checklist.md na sessão
 auto_execution_mode: 3
-env_file: "@/ENV.md"
 rules_file: "$IDE/rules-on-demand/engineering/eng.pre-pr-rules.md"
 recommended_model: claude-sonnet-4-20250514
-model_tier: high
-model_justification: Revisão multi-agente requer coordenação, análise de código, validação de testes e verificação de conformidade
 ---
 
 # pre-pr

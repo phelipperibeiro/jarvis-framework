@@ -1,11 +1,8 @@
 ---
 description: Planejamento de capacidade QA para uma sprint — avalia risco de cada task e distribui entre QAs e Quality Champions
 auto_execution_mode: 2
-env_file: "@/ENV.md"
 rules_file: "$IDE/rules/engineering/qa/eng.qa.cypress-standards-rules.md"
 recommended_model: claude-sonnet-4-20250514
-model_tier: high
-model_justification: Análise de risco multi-task e alocação de capacidade requer raciocínio estratégico
 ---
 
 # qa.sprint-planning

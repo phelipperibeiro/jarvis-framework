@@ -2,10 +2,7 @@
 name: prod.spec.epic
 description: Fluxo de trabalho para criação de épicos que agrupam histórias de usuários e tarefas relacionadas seguindo as diretrizes do Product Spec Kit.
 auto_execution_mode: 3
-env_file: "@/ENV.md"
 recommended_model: opus
-model_tier: medium
-model_justification: Criação de épicos segue templates estruturados e requer compreensão de contexto de produto
 ---
 
 # Crie um fluxo de trabalho épico

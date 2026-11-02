@@ -2,8 +2,6 @@
 description: Junta os daily.md das sessões em um relatório por dia (mapa mental), com alertas das sessões sem daily.md
 auto_execution_mode: 3
 recommended_model: sonnet
-model_tier: medium
-model_justification: Leitura de poucos arquivos e síntese curta; a janela, as datas e os alertas já vêm prontos do CLI
 ---
 
 # Relatório dos daily.md

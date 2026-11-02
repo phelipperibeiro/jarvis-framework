@@ -1,10 +1,7 @@
 ---
-description: Prepara o contexto de uma tarefa nova carregando só o que é relevante (mapa de tecnologias do workspace, repositórios, especialidades, recorte do Central docs, entregas recentes e versões) e o guarda por apelido para o /eng.start ou o /prod.spec usar.
+description: Prepara contexto de tarefa nova (workspace, repositórios, especialidades, Central docs, entregas, versões) e o guarda por apelido para /eng.start ou /prod.spec.
 version: "2.0"
 auto_execution_mode: 1
-env_file: "@/ENV.md"
-model_tier: low
-model_justification: Leitura seletiva e perguntas de escopo — não requer raciocínio complexo
 ---
 
 # warm-up — preparação de contexto da tarefa

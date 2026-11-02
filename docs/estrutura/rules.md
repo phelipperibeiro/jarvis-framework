@@ -102,6 +102,8 @@ Regras mais específicas têm precedência sobre regras gerais.
 
 ### Estrutura obrigatória de um arquivo de regra
 
+Sem frontmatter YAML. Exceção: `description`, quando a rule precisa de descrição no steering do Kiro. O bloco `Applies to` é a 1ª linha (ou a 1ª depois desse frontmatter). **Não declarar `trigger:` no frontmatter.** O Claude Code ignora o campo e carrega toda rule da pasta (sem `paths`) no início da sessão. Quem filtra a rule por perfil é o bloco `applies_to`.
+
 ```markdown
 > **Applies to:** HUB: {valor ou all} | POSITION: {valor ou all} | AREA: {valor ou all} | SQUAD: {valor ou all}
 

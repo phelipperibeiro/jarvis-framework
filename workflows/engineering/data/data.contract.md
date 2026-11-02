@@ -4,8 +4,6 @@ auto_execution_mode: 2
 agent: "$IDE/agents/engineering/data/eng.data-engineer.agent.md"
 template_file: "$IDE/templates/engineering/data-contract-template.md"
 recommended_model: claude-sonnet-4-20250514
-model_tier: medium
-model_justification: Criação de contrato é estruturada — preencher template com informações fornecidas, sem necessidade de raciocínio arquitetural complexo
 ---
 
 # data.contract

@@ -1,11 +1,8 @@
 ---
 name: prod.spec.ard
-description: Ponto de entrada de produto para o ARD (Architecture Requirements Document): levanta com o PM os requisitos arquiteturais em termos de produto e conduz o ARD pelo fluxo de engenharia.
+description: Porta de entrada de produto para o ARD (Architecture Requirements Document); levanta com o PM os requisitos arquiteturais e conduz o ARD pela engenharia.
 auto_execution_mode: 3
-env_file: "@/ENV.md"
 recommended_model: opus
-model_tier: medium
-model_justification: Levantamento estruturado de requisitos arquiteturais a partir de PRD e FRD, seguido da condução do fluxo de engenharia existente
 ---
 
 # ARD a partir do produto (Architecture Requirements Document)

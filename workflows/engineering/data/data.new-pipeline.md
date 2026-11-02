@@ -4,8 +4,6 @@ auto_execution_mode: 2
 agent: "$IDE/agents/engineering/data/eng.data-engineer.agent.md"
 template_file: "$IDE/templates/engineering/data-pipeline-template.md"
 recommended_model: claude-sonnet-4-20250514
-model_tier: high
-model_justification: Criação de pipeline envolve análise de fonte, modelagem de schema, definição de qualidade e geração de documentação técnica detalhada
 ---
 
 # data.new-pipeline

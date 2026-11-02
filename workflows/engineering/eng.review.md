@@ -1,10 +1,6 @@
 ---
 description: Fluxo de trabalho de Engenharia para revisão de solução ou PR
-globs:
-  alwaysApply: false
 recommended_model: claude-sonnet-4-20250514
-model_tier: high
-model_justification: Revisão de código requer análise crítica, identificação de riscos, edge cases e sugestões de melhorias
 ---
 
 # Workflow de Engenharia – Revisão de Solução / Pull Request

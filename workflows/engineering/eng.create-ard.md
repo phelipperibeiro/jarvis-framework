@@ -1,11 +1,6 @@
 ---
 description: Fluxo de trabalho de Engenharia para criação/iteração de ARD
-globs:
-  alwaysApply: false
-  env_file: "@/ENV.md"
 recommended_model: opus
-model_tier: high
-model_justification: Documentação arquitetural requer análise de requisitos, trade-offs técnicos e decisões bem fundamentadas
 ---
 
 # Workflow de Engenharia – ARD (Architecture Requirements Document)

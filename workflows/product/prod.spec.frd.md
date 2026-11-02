@@ -2,10 +2,7 @@
 name: prod.spec.frd
 description: Fluxo para criação de FRD (Functional Requirements Document), que auxilia na definição detalhada dos requisitos funcionais de uma feature
 auto_execution_mode: 3
-env_file: "@/ENV.md"
 recommended_model: opus
-model_tier: high
-model_justification: FRDs requerem análise detalhada de requisitos funcionais, comportamento de usuário e especificações técnicas
 ---
 
 # FRD - Functional Requirements Document

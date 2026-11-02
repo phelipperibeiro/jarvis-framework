@@ -1,7 +1,3 @@
----
-env_file: "@/ENV.md"
----
-
 > **Applies to:** HUB: all | POSITION: all | AREA: ENGINEERING | SQUAD: all
 
 # Regras de Seguranca para Engenharia

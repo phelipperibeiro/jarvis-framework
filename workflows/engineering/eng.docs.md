@@ -1,10 +1,7 @@
 ---
 description: Documentação (engenharia)
 auto_execution_mode: 3
-env_file: "@/ENV.md"
 recommended_model: claude-sonnet-4-20250514
-model_tier: medium
-model_justification: Documentação técnica requer clareza e precisão, mas é menos complexa que implementação de código
 ---
 
 # eng.docs
