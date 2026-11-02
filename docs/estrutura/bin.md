@@ -45,7 +45,7 @@ bin/
 | `jarvis whoami` | Resolve `USER` (ENV → git → SO) |
 | `jarvis docs sync\|publish` | Integração com repo central de docs |
 | `jarvis install-rtk` | rustup (se preciso) + `cargo install rtk` |
-| `jarvis rules sync` | Filtra `.$IDE/rules/` e `.$IDE/rules-on-demand/` pelo perfil do ENV.md e aplica o overlay de `COMPANY_PROFILE` (Passo 8 do `/jarvis-init`); sai com 1, sem gravar, sem ENV.md, com eixo faltando ou com o lock de outra versão |
+| `jarvis rules sync` | Filtra `.$IDE/rules/` e `.$IDE/rules-on-demand/` pelo perfil do ENV.md e aplica o overlay de `COMPANY_PROFILE` (Passo 8 do `/jarvis-init`); sai com 1, sem gravar, sem ENV.md numa pasta de IDE (sem `--ide`, vale a pasta do ENV.md), com eixo faltando ou com o lock de outra versão |
 | `jarvis tokens` | Estima o que carrega no início da sessão para um perfil (rules, `AGENTS.md`, frontmatter dos skills, `warm-up`) |
 | `jarvis map <nome>` | Árvore em texto do que um workflow, skill ou agente chama (`--reverse`: quem o chama; `--depth N`) |
 | `jarvis fork <nome> [--candidate]` / `--list` / `<nome> --update [--diff]` / `<nome> --delete` | Overlay de empresa (#199): copia um artefato do core para `.$IDE/overlays/{COMPANY_PROFILE}/` com carimbo (`forked_from`, `forked_at`); lista o que está forkado em colunas (sem comparar); recarimba (e, com `--diff`, mostra o diff fork × core atual); remove (rule volta ao core na IDE). Confere por `realpath` que grava e apaga só dentro do overlay. A conversa é da skill `/jarvis-fork`; é o único comando que grava em `overlays/` |

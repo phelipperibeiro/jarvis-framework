@@ -1,8 +1,8 @@
 import { existsSync, readFileSync } from "node:fs";
-import { dirname, join } from "node:path";
+import { basename, dirname, join } from "node:path";
 import { resolveEnvPath, loadEnv } from "../lib/env-loader.js";
 import { syncRulesForProfile } from "../lib/core/sync-engine.js";
-import { getIDEFolder } from "../lib/config/ide-config.js";
+import { getIDEFolder, getIDEValues } from "../lib/config/ide-config.js";
 import { LOCK_FILE } from "../lib/config/constants.js";
 import { getPackageInfo } from "../lib/utils/paths.js";
 import { logger, configureFromFlags } from "../lib/utils/logger.js";
@@ -48,11 +48,12 @@ export async function rulesSync(flags) {
   } catch (err) {
     fail(err.message);
   }
-  // Sem ENV.md numa pasta de IDE, o resolveEnvPath cai no layout legado (ENV.md na raiz): aqui isso
-  // filtraria a própria pasta, então o comando recusa.
-  if (resolved.source === "auto-detect (root)" || !existsSync(resolved.path)) {
+  // Sem --ide, a pasta filtrada é a do ENV.md. Fora de uma pasta de IDE (o fallback legado do
+  // resolveEnvPath, ou um --env-file/JARVIS_ENV_FILE em outro lugar), o comando gravaria rules ali.
+  const ideFolders = getIDEValues().map((ide) => `.${getIDEFolder(ide)}`);
+  if (!flags.ide && !ideFolders.includes(basename(dirname(resolved.path)))) {
     fail(
-      `ENV.md não encontrado na pasta de uma IDE a partir de ${process.cwd()}: rode \`jarvis init\` ou passe --ide`
+      `ENV.md não encontrado na pasta de uma IDE (${resolved.path}): rode \`jarvis init\` ou passe --ide`
     );
   }
   const envText = readFileSync(resolved.path, "utf-8");

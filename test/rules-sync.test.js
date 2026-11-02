@@ -102,7 +102,7 @@ test("rules sync: sem --ide e sem ENV.md numa pasta de IDE, sai com 1 e a mensag
       const r = run(ws, []);
       assert.equal(r.status, 1, `legado ${legado}`);
       assert.match(r.stderr + r.stdout, /ENV\.md não encontrado na pasta de uma IDE/);
-      assert.doesNotMatch(r.stderr, /node:fs|at /);
+      assert.doesNotMatch(r.stderr, /node:fs|\n\s+at /);
       assert.ok(!existsSync(join(ws, "rules")));
       assert.ok(!existsSync(join(ws, "overlays")));
       assert.equal(readFileSync(join(ws, ".claude", FRONT), "utf-8"), "antes\n");
@@ -128,5 +128,35 @@ test("rules sync: falha ao gravar uma rule sai com 1 e lista o erro", () => {
     const r = run(ws);
     assert.equal(r.status, 1);
     assert.match(r.stderr + r.stdout, /✗ rules\/engineering\/eng-rules\.md: /);
+  });
+});
+
+test("rules sync: --env-file ou JARVIS_ENV_FILE fora de uma pasta de IDE sai com 1, sem gravar nada", () => {
+  withWorkspace({ lock: VERSION }, (ws) => {
+    mkdirSync(join(ws, "config"));
+    writeFileSync(join(ws, "config", "ENV.md"), PERFIL);
+    const casos = [
+      run(ws, ["--env-file", join("config", "ENV.md")]),
+      spawnSync("node", [cli, "rules", "sync"], {
+        cwd: ws,
+        encoding: "utf-8",
+        env: { ...ENV_LIMPO, NO_COLOR: "1", JARVIS_ENV_FILE: join(ws, "config", "ENV.md") },
+      }),
+    ];
+    for (const [i, r] of casos.entries()) {
+      assert.equal(r.status, 1, `caso ${i}`);
+      assert.match(r.stderr + r.stdout, /ENV\.md não encontrado na pasta de uma IDE/);
+      assert.ok(!existsSync(join(ws, "config", "rules")), `caso ${i}`);
+      assert.ok(!existsSync(join(ws, "config", "overlays")), `caso ${i}`);
+      assert.equal(readFileSync(join(ws, ".claude", FRONT), "utf-8"), "antes\n");
+    }
+  });
+});
+
+test("rules sync: --env-file dentro da pasta da IDE continua valendo", () => {
+  withWorkspace({ env: PERFIL, lock: VERSION }, (ws) => {
+    const r = run(ws, ["--env-file", join(".claude", "ENV.md")]);
+    assert.equal(r.status, 0, r.stderr);
+    assert.ok(!existsSync(join(ws, ".claude", FRONT)));
   });
 });
