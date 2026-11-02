@@ -1,7 +1,3 @@
----
-env_file: "@/ENV.md"
----
-
 > **Applies to:** HUB: all | POSITION: all | AREA: all | SQUAD: all
 
 # Regras de Tech Spec e Especificação Técnica

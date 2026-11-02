@@ -243,16 +243,21 @@ test("listRulesForProfile: rtk é opt-in, sem bloco é universal, recursivo em s
 // não mudam. Em contrapartida os 4 workflows perderam ≈ 5,5 KB, lidos só quando o comando roda.
 // Issue #93 (#206, 2026-11-01): −1.445 B em todos os perfis (seções de etapa da eng-security-rules.md
 // para rules-on-demand/engineering/eng.security-rules.md); nenhum arquivo a menos.
+// Issue #109 (#207, fase 6, 2026-11-02): frontmatter morto removido das rules (env_file em 4 de
+// rules/, name/author/version em eng.frontend-rules.md). FULLCYCLE −150 B e FRONTEND −150 B; BACKEND
+// −90 B e QA −90 B (o frontend só entra em FULLCYCLE e FRONTEND; rtk-rules.md não entra no BASE
+// porque só é copiada com RTK ligado); nenhum arquivo a menos. Total removido no repo, incluindo
+// rules-on-demand: −211 B.
 const BASE = [
   [
     "FULLCYCLE/GENERALIST/ENGINEERING/CORE",
     profile("FULLCYCLE", "GENERALIST", "ENGINEERING"),
     10,
-    75112,
+    74962,
   ],
-  ["BACKEND/SENIOR/ENGINEERING/CORE", profile("BACKEND", "SENIOR", "ENGINEERING"), 7, 47076],
-  ["FRONTEND/PLENO/ENGINEERING/CORE", profile("FRONTEND", "PLENO", "ENGINEERING"), 8, 55435],
-  ["QA/QA-ENGINEER/ENGINEERING/CORE", profile("QA", "QA-ENGINEER", "ENGINEERING"), 8, 54671],
+  ["BACKEND/SENIOR/ENGINEERING/CORE", profile("BACKEND", "SENIOR", "ENGINEERING"), 7, 46986],
+  ["FRONTEND/PLENO/ENGINEERING/CORE", profile("FRONTEND", "PLENO", "ENGINEERING"), 8, 55285],
+  ["QA/QA-ENGINEER/ENGINEERING/CORE", profile("QA", "QA-ENGINEER", "ENGINEERING"), 8, 54581],
 ];
 
 for (const [nome, p, arquivos, bytes] of BASE) {
