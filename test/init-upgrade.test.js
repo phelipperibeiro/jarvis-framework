@@ -743,8 +743,11 @@ test("init (Atualizar): com a versão igual, sem seta X → X e com o ENV.md com
   });
 });
 
+// Perfil completo (os 4 eixos): sem ele, o upgrade não filtra as rules e pede o /jarvis-init (#83).
+const ENV_PERFIL = ENV_SEM_BOARD.replace("HUB=BACKEND", "HUB=BACKEND\nPOSITION=SENIOR\nSQUAD=CORE");
+
 test("init --upgrade: sem pendência, não manda rodar o /jarvis-init upgrade", () => {
-  withWorkspace({ ".claude/ENV.md": ENV_SEM_BOARD }, (ws) => {
+  withWorkspace({ ".claude/ENV.md": ENV_PERFIL }, (ws) => {
     const r = run(ws, "--upgrade", "--ide", "claude", "--yes");
     assert.equal(r.status, 0, r.stderr);
     assert.doesNotMatch(r.stdout, /Agora rode/);
@@ -911,4 +914,38 @@ test("promptCompanyProfile: inválido é perguntado de novo (com aviso); inváli
     ["Nome inválido: use l", "Nome inválido de nov"]
   );
   assert.match(warned[1], /gravando o default stark-industries/);
+});
+
+// --- Filtro de rules pelo perfil no --upgrade (#83) ---
+
+test("upgradePendencies: eixo do perfil vazio é pendência (#83)", () => {
+  assert.deepEqual(
+    upgradePendencies({ pendingAxes: [], envPlan: {}, missingProfile: ["POSITION", "SQUAD"] }),
+    ["preencher POSITION, SQUAD (as rules ficam sem o filtro do perfil)"]
+  );
+});
+
+test("init --upgrade: com o perfil completo, filtra as rules como o jarvis rules sync (#83)", () => {
+  withWorkspace({ ".claude/ENV.md": ENV_PERFIL }, (ws) => {
+    const r = run(ws, "--upgrade", "--ide", "claude", "--yes");
+    assert.equal(r.status, 0, r.stderr);
+    assert.match(r.stdout, /Rules filtradas pelo perfil \(BACKEND\/SENIOR\/ENGINEERING\/CORE\)/);
+    // AREA: PRODUCT não é do perfil; a rule comum dos prod.spec.* (AREA: all) fica.
+    assert.ok(!existsSync(join(ws, ".claude/rules/product/prod.spec-rules.md")));
+    assert.ok(existsSync(join(ws, ".claude/rules/engineering/eng-rules.md")));
+    assert.ok(existsSync(join(ws, ".claude/rules-on-demand/product/prod.spec-common-rules.md")));
+  });
+});
+
+test("init --upgrade: sem os 4 eixos, não filtra e manda ao /jarvis-init upgrade (#83)", () => {
+  withWorkspace({ ".claude/ENV.md": ENV_SEM_BOARD }, (ws) => {
+    const r = run(ws, "--upgrade", "--ide", "claude", "--yes");
+    assert.equal(r.status, 0, r.stderr);
+    assert.doesNotMatch(r.stdout, /Rules filtradas pelo perfil/);
+    assert.ok(existsSync(join(ws, ".claude/rules/product/prod.spec-rules.md")));
+    assert.match(
+      r.stdout,
+      /Agora rode .*\/jarvis-init upgrade.* preencher POSITION, SQUAD \(as rules ficam sem o filtro do perfil\)/
+    );
+  });
 });

@@ -1,7 +1,7 @@
 import { existsSync, mkdirSync, readFileSync, realpathSync } from "node:fs";
 import { join, dirname, basename, resolve, sep } from "node:path";
 import { createInterface } from "node:readline";
-import { syncAssets, applyRuleOverlay } from "../lib/core/sync-engine.js";
+import { syncAssets, applyRuleOverlay, syncRulesForProfile } from "../lib/core/sync-engine.js";
 import { discoverAll } from "../lib/core/scanner.js";
 import {
   IDES,
@@ -58,18 +58,26 @@ export function parseMenuChoice(answer, { hasEnv }) {
   return null;
 }
 
+/** Eixos do perfil que o filtro de rules exige (o mesmo do `jarvis rules sync`). */
+const PROFILE_AXES = ["HUB", "POSITION", "AREA", "SQUAD"];
+
 /**
  * O que ainda pede o `/jarvis-init upgrade` na IDE depois do `jarvis init --upgrade` (#189, Q4).
  * Só as pendências que o terminal não resolve: eixo sem forma de acesso, chave vazia, Central docs
  * no formato antigo e TOKEN_TASK_MANAGER com valor. Não contam o aviso de WORKSPACE_MODE (conferir
  * no ENV.md), vendor não suportado (vira freelance) nem as chaves novas acrescentadas (Q15: o
  * `/jarvis-init` as põe no assunto delas na próxima vez que rodar). Nunca inclui valores do ENV.
- * @param {{ pendingAxes: string[], envPlan: { pending?: string[], warnings?: string[] } }} input
+ * Eixo do perfil vazio (HUB, POSITION, AREA, SQUAD) também conta: sem ele, o upgrade não filtra
+ * as rules (#83).
+ * @param {{ pendingAxes: string[], envPlan: { pending?: string[], warnings?: string[] }, missingProfile?: string[] }} input
  * @returns {string[]} um motivo por pendência; vazio = nada pendente
  */
-export function upgradePendencies({ pendingAxes, envPlan }) {
+export function upgradePendencies({ pendingAxes, envPlan, missingProfile = [] }) {
   const reasons = [];
   if (pendingAxes.length) reasons.push(`confirmar o acesso de ${pendingAxes.join(" e ")}`);
+  if (missingProfile.length) {
+    reasons.push(`preencher ${missingProfile.join(", ")} (as rules ficam sem o filtro do perfil)`);
+  }
   if (envPlan.pending?.length) reasons.push(`preencher ${envPlan.pending.join(", ")}`);
   const warnings = envPlan.warnings || [];
   if (warnings.includes("CENTRAL_DOCS_REPO")) reasons.push("migrar o Central docs");
@@ -502,7 +510,8 @@ async function reportCliDiscovery(entries) {
 /**
  * `jarvis init --upgrade`: atualiza um projeto já configurado em uma passada.
  * 1. arquivos do framework (como o --force, sem perguntar); 2. só as chaves novas do ENV;
- * 3. documentos dos caminhos antigos → docs/jarvis/… (com confirmação ou --yes).
+ * 3. documentos dos caminhos antigos → docs/jarvis/… (com confirmação ou --yes); 4. rules
+ * filtradas pelo perfil do ENV (como o `jarvis rules sync`), só com os 4 eixos preenchidos.
  * Nunca imprime valores do ENV, só nomes de chave e caminhos.
  * @returns {Promise<number>} código de saída
  */
@@ -663,6 +672,31 @@ async function runUpgrade(cwd, flags) {
     rewritten = rewriteRelatedDiscovery(workspaceDir, env, moved);
   }
 
+  // 3.4 Rules do perfil (#83): o mesmo filtro do `jarvis rules sync` (Passo 8 do /jarvis-init),
+  // com o ENV.md já gravado. O syncAssets copiou rules/ e rules-on-demand/ inteiras; sem os 4
+  // eixos, não filtra e a pendência leva ao /jarvis-init upgrade.
+  const finalEnvText = readFileSync(envPath, "utf-8");
+  const finalEnv = parseEnvEntries(finalEnvText);
+  const profileValue = (key) => {
+    const value = (finalEnv.get(key) || "").trim();
+    return value && !/^\[.*\]$/.test(value) ? value : "";
+  };
+  const missingProfile = PROFILE_AXES.filter((axis) => !profileValue(axis));
+  let rulesSync = null;
+  if (!missingProfile.length) {
+    rulesSync = syncRulesForProfile(
+      join(workspaceDir, `.${getIDEFolder(ide)}`),
+      {
+        HUB: profileValue("HUB"),
+        POSITION: profileValue("POSITION"),
+        AREA: profileValue("AREA"),
+        SQUAD: profileValue("SQUAD"),
+        ARTIFACT_STYLE: profileValue("ARTIFACT_STYLE") || "ai-generated",
+      },
+      { rtkEnabled: profileValue("RTK_ENABLED") === "true", envText: finalEnvText }
+    );
+  }
+
   // 4. Resumo (só nomes de chave e caminhos)
   const pkg = getPackageInfo();
   logger.info("");
@@ -699,6 +733,14 @@ async function runUpgrade(cwd, flags) {
   for (const e of moveErrors) logger.error(`${RED}  ✗ ${e}${NC}`);
   if (staleRemoved.length) logger.info(`  • Skills antigos removidos: ${staleRemoved.join(", ")}`);
   for (const e of staleErrors) logger.error(`${RED}  ✗ ${e}${NC}`);
+  if (rulesSync) {
+    const copied = rulesSync.copied.rules + rulesSync.copied["rules-on-demand"];
+    logger.info(
+      `  • Rules filtradas pelo perfil (${PROFILE_AXES.map(profileValue).join("/")}): ${copied} copiada(s), ${rulesSync.removed} removida(s)`
+    );
+    for (const w of rulesSync.warnings) logger.info(`${YELLOW}  ⚠️  ${w}${NC}`);
+    for (const e of rulesSync.errors) logger.error(`${RED}  ✗ ${e}${NC}`);
+  }
   for (const k of envPlan.pending) {
     logger.info(`${YELLOW}  ⚠️  ${k} está vazio: responda no /jarvis-init upgrade${NC}`);
   }
@@ -733,12 +775,14 @@ async function runUpgrade(cwd, flags) {
     const access = (futureEntries.get(`${key}_ACCESS`) || "").trim();
     return getVendor(futureEntries.get(key)) && (!access || /^\[.*\]$/.test(access));
   });
-  const pending = upgradePendencies({ pendingAxes, envPlan });
+  const pending = upgradePendencies({ pendingAxes, envPlan, missingProfile });
   logger.info("");
   logger.info(
     pending.length
       ? `${CYAN}➡️  Agora rode ${BOLD}/jarvis-init upgrade${NC}${CYAN} na IDE: ${pending.join("; ")}.${NC}\n`
       : `${GREEN}✓ Nada pendente na IDE.${NC}\n`
   );
-  return sync.errors.length || moveErrors.length || staleErrors.length ? 1 : 0;
+  return sync.errors.length || moveErrors.length || staleErrors.length || rulesSync?.errors.length
+    ? 1
+    : 0;
 }
