@@ -26,6 +26,7 @@ rules/
 rules-on-demand/                    # lidas pelo workflow; não carregadas no início da sessão
 ├── engineering/
 │   ├── eng.start-rules.md
+│   ├── eng.gate0-rules.md        # Gate 0 de eng.plan, eng.work, eng.pre-pr e eng.pr
 │   ├── eng.plan-rules.md
 │   ├── eng.work-rules.md
 │   ├── eng.pre-pr-rules.md
