@@ -252,16 +252,18 @@ test("listRulesForProfile: rtk é opt-in, sem bloco é universal, recursivo em s
 // rules-on-demand/engineering/qa/, com um ponteiro de 463 B no caminho antigo de rules/. QA e
 // FULLCYCLE −7.132 B; BACKEND e FRONTEND não mudam; nenhum arquivo a menos. A parte de dados da
 // #118 ficou sem objeto (a data-rules.md saiu na #209).
+// Issue #121 (#208, fase 2, 2026-11-02): eng.specializations-rules.md perdeu a citação de
+// skills/security-skills-deleted.md, que não existe. −41 B nos 4 perfis; nenhum arquivo a menos.
 const BASE = [
   [
     "FULLCYCLE/GENERALIST/ENGINEERING/CORE",
     profile("FULLCYCLE", "GENERALIST", "ENGINEERING"),
     10,
-    67830,
+    67789,
   ],
-  ["BACKEND/SENIOR/ENGINEERING/CORE", profile("BACKEND", "SENIOR", "ENGINEERING"), 7, 46986],
-  ["FRONTEND/PLENO/ENGINEERING/CORE", profile("FRONTEND", "PLENO", "ENGINEERING"), 8, 55285],
-  ["QA/QA-ENGINEER/ENGINEERING/CORE", profile("QA", "QA-ENGINEER", "ENGINEERING"), 8, 47449],
+  ["BACKEND/SENIOR/ENGINEERING/CORE", profile("BACKEND", "SENIOR", "ENGINEERING"), 7, 46945],
+  ["FRONTEND/PLENO/ENGINEERING/CORE", profile("FRONTEND", "PLENO", "ENGINEERING"), 8, 55244],
+  ["QA/QA-ENGINEER/ENGINEERING/CORE", profile("QA", "QA-ENGINEER", "ENGINEERING"), 8, 47408],
 ];
 
 for (const [nome, p, arquivos, bytes] of BASE) {

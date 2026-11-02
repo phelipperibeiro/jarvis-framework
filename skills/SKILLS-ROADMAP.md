@@ -8,12 +8,12 @@ Skills existentes e planejadas do framework Jarvis.
 
 ### `eng-frontend` ✅
 - **Trigger**: componentes, estado, bundle, performance de UI, acessibilidade, SSR/SSG
-- **Escopo**: React 19, Next.js 15 App Router, Tailwind, Zustand, Core Web Vitals, Blade/Laravel
+- **Escopo**: base neutra de frontend web (HTML, CSS, JS/DOM, estado, UI/UX, acessibilidade, performance, testes, design system, micro frontend); especializações de stack em `FRONTEND_SPECIALIZATIONS`
 - **Status**: `criado`
 
 ### `eng-backend` ✅
 - **Trigger**: APIs REST/GraphQL, autenticação, workers, jobs, integrações externas, caching
-- **Escopo**: NestJS, JWT/OAuth2/RBAC, RabbitMQ, Redis, webhooks, circuit breaker
+- **Escopo**: base neutra de backend (APIs, auth, banco, concorrência, arquitetura de servidor, testes, segurança, performance); especializações de stack em `BACKEND_SPECIALIZATIONS` (ex.: `eng-backend-nestjs`)
 - **Status**: `criado`
 
 ### `eng-backend-nestjs` ✅
@@ -27,11 +27,11 @@ Skills existentes e planejadas do framework Jarvis.
 - **Status**: `criado`
 
 > `eng-automation-robot-builder` (conversão de fluxo manual em robô Playwright via Stagehand) foi
-> removido em 2026-10-05 — resumo em `skills/automation-skills-deleted.md`.
+> removido em 2026-10-05 — registro no comentário de `OBSOLETE_PATHS` (`bin/lib/config/constants.js`).
 
 > `eng-frontend-design-system` e `eng-frontend-microfrontend` foram removidos em 2026-10-05 — os
 > princípios agnósticos (tokens semânticos, contrato de props, shell/remote, dependência singleton)
-> entraram na base `eng-frontend` (temas 13 e 14). Resumo em `skills/frontend-skills-deleted.md`.
+> entraram na base `eng-frontend` (temas 13 e 14). Registro no comentário de `OBSOLETE_PATHS` (`bin/lib/config/constants.js`).
 
 ### `eng-backend-microservices-trace` ✅
 - **Trigger**: bug cross-service, rastreamento HTTP + AMQP
@@ -40,7 +40,7 @@ Skills existentes e planejadas do framework Jarvis.
 
 > `eng-devops-performance-engineer` (performance, profiling, load testing, caching) foi removido em
 > 2026-10-05 — os temas de profiling, testes de carga/chaos engineering e cache multi-camada
-> entraram no `eng-platform` (temas 14, 15, 16). Resumo em `skills/devops-skills-deleted.md`.
+> entraram no `eng-platform` (temas 14, 15, 16). Registro no comentário de `OBSOLETE_PATHS` (`bin/lib/config/constants.js`).
 
 ### `eng-backend-arch-c4` ✅
 - **Trigger**: arquitetura C4, diagramas de contexto/container/componente
@@ -82,7 +82,7 @@ Skills existentes e planejadas do framework Jarvis.
 - **Status**: `criado`
 
 > Os antigos `eng-data-engineer`, `eng-data-bi`, `eng-data-debug`, `eng-data-onboard` e
-> `eng-data-orchestrator` foram removidos em 2026-10-05 — resumo em `skills/data-skills-deleted.md`.
+> `eng-data-orchestrator` foram removidos em 2026-10-05 — registro no comentário de `OBSOLETE_PATHS` (`bin/lib/config/constants.js`).
 
 ---
 
@@ -101,8 +101,8 @@ Skills existentes e planejadas do framework Jarvis.
 > Os demais skills de QA (gate, unit-test, e2e, cypress-e2e, exploratory, dev-guide, bug-report,
 > quality-report, testsprite, a11y-audit, graphql-contract, e2e-spec-writer) foram removidos em
 > 2026-10-05 — a área QA ficou só com a base (`eng-qa`) e a especialização de planejamento
-> (`eng-qa-planner`), e outras especializações entram conforme a necessidade. Resumo de 3 linhas
-> de cada um em `skills/qa-skills-deleted.md`.
+> (`eng-qa-planner`), e outras especializações entram conforme a necessidade. Registro no
+> comentário de `OBSOLETE_PATHS` (`bin/lib/config/constants.js`).
 
 ---
 
@@ -168,8 +168,7 @@ Removidas: `checkin`, `checkout`, `daily`, `task-log`, `send-priority`, `sent-pr
 > `eng-security-triage`, `eng-security-patch`) foi descontinuada em 2026-10-05. Segurança de código
 > de aplicação já é padrão embutido em `eng-backend`/`eng-frontend`; segurança de infraestrutura e
 > fundamentos de segurança da informação entram no `eng-platform` (temas 9 e 13) ou em uma
-> especialização registrada em `PLATFORM_SPECIALIZATIONS`. Resumo de 3 linhas de cada skill
-> removido em `skills/security-skills-deleted.md`.
+> especialização registrada em `PLATFORM_SPECIALIZATIONS`. Registro em `CHANGELOG.md` (3.0.0).
 
 ### `eng-ui`
 - **Trigger**: padrões de UI, layouts, responsividade, grids, animações
@@ -193,7 +192,6 @@ Removidas: `checkin`, `checkout`, `daily`, `task-log`, `send-priority`, `sent-pr
 
 ### `eng-laravel`
 - **Trigger**: Laravel, Blade, Eloquent, migrations PHP, artisan
-- **Escopo**: coberto parcialmente por `eng-frontend` (contexto Blade)
 - **Status**: `planejado`
 
 ---
@@ -202,8 +200,8 @@ Removidas: `checkin`, `checkout`, `daily`, `task-log`, `send-priority`, `sent-pr
 
 | # | Skill | Status | Justificativa |
 |---|-------|--------|--------------|
-| 1 | `eng-frontend` | ✅ criado | Alta demanda, dois contextos (React + PHP/Blade) |
-| 2 | `eng-backend` | ✅ criado | APIs, auth, workers RabbitMQ — core do produto |
+| 1 | `eng-frontend` | ✅ criado | Base neutra de frontend web |
+| 2 | `eng-backend` | ✅ criado | Base neutra de backend (APIs, auth, workers) |
 | 3 | `eng-backend-nestjs` | ✅ criado | Framework principal — DI, guards, Passport/JWT |
 | 4 | `eng-automation` | ✅ criado | Base neutra de RPA, web e automação de APIs |
 | 8 | `eng-database` | planejado | Área densa com muitos anti-patterns críticos |

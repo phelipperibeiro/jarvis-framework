@@ -14,16 +14,7 @@ A pasta `workflows/` contem os **templates de execucao** dos comandos slash. Cad
 
 ```
 workflows/
-├── init.md                         # Inicializacao do framework
 ├── warm-up.md                      # Preparacao de sessao
-├── warm-up@1.1.md                  # Versao alternativa
-├── help.md                         # Guia de ajuda
-│
-├── docs/                           # Workflows de documentacao
-│   ├── build-product-docs.md
-│   ├── build-business-docs.md
-│   ├── build-tech-docs.md
-│   └── build-index.md
 │
 ├── product/                        # Workflows de produto
 │   ├── prod.spec.md               # Entrypoint de specs
@@ -49,7 +40,7 @@ workflows/
     ├── eng.create-rfc.md          # Criar RFC
     ├── eng.build-tech-spec.md     # Tech Spec (Delivery Spec ou Reference Spec)
     ├── eng.breakdown-subtasks.md  # Subtarefas
-    ├── light-arch.md              # Design leve
+    ├── eng.light-arch.md          # Design leve
     ├── frontend/
     │   ├── eng.frontend-component.md   # Criar/refatorar componente frontend
     │   ├── eng.frontend-review.md      # Revisão de PR frontend
@@ -64,16 +55,10 @@ workflows/
 
 ## Relacao Command → Workflow
 
-Cada command em `commands/` referencia um workflow:
-
-```markdown
-# nome-do-command
-Utilize o arquivo `../../workflows/[dominio]/nome-do-workflow.md` como template.
-```
+Na IDE, cada workflow é instalado como command na pasta de comandos dela (ex.: `.claude/commands/`); o nome do command é o nome do arquivo.
 
 | Command | Workflow |
 |---------|----------|
-| `/init` | `init.md` |
 | `/warm-up` | `warm-up.md` |
 | `/eng.start` | `engineering/eng.start.md` |
 | `/eng.plan` | `engineering/eng.plan.md` |
@@ -91,11 +76,9 @@ Utilize o arquivo `../../workflows/[dominio]/nome-do-workflow.md` como template.
 
 | Tipo | Padrao | Exemplos |
 |------|--------|----------|
-| Workflow global | `{nome}.md` | `init.md`, `warm-up.md` |
-| Workflow versionado | `{nome}@{versao}.md` | `warm-up@1.1.md` |
+| Workflow global | `{nome}.md` | `warm-up.md`, `taxonomy.md` |
 | Workflow de engenharia | `eng.{acao}.md` | `eng.start.md`, `eng.pr.md` |
 | Workflow de produto | `prod.{acao}.md` | `prod.spec.prd.md` |
-| Workflow de docs | `build-{tipo}-docs.md` | `build-tech-docs.md` |
 
 ---
 

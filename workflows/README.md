@@ -9,7 +9,6 @@ Este diretório contém os workflows (templates) usados pelos comandos slash do 
 ```
 workflows/
 ├── warm-up.md                    # Preparação de sessão
-├── warm-up@1.1.md                # Variante do warm-up
 │
 ├── product/                      # Gestão de Produto & Requisitos
 │   ├── prod.spec.md              # Entrypoint de especificações
@@ -55,7 +54,6 @@ workflows/
 | Workflow | Propósito |
 |----------|-----------|
 | `warm-up.md` | Preparar sessão carregando contexto do projeto |
-| `warm-up@1.1.md` | Variante do warm-up (versão 1.1) |
 
 ---
 
