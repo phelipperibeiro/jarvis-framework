@@ -86,9 +86,12 @@ test("todo skill tem metadata.area reconhecida (eng.skills-rules.md)", () => {
 });
 
 // O Central docs trocou CENTRAL_DOCS_REPO por CENTRAL_DOCS_STORAGE + CENTRAL_DOCS_LOCATION.
-// Só a migração do /jarvis-init ainda cita a variável antiga (#193).
+// Só a migração do /jarvis-init (Upgrade C, assets/upgrade.md) cita a variável antiga (#193).
 test("o framework não cita CENTRAL_DOCS_REPO fora da migração do jarvis-init", () => {
-  const allowed = [join("skills", "jarvis-init", "SKILL.md")];
+  const allowed = [
+    join("skills", "jarvis-init", "SKILL.md"),
+    join("skills", "jarvis-init", "assets", "upgrade.md"),
+  ];
   const folders = ["skills", "templates", "workflows", "rules", "rules-on-demand", "agents"];
   const found = folders
     .flatMap((folder) => walk(join(root, folder)))

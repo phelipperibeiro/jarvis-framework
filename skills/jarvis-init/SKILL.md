@@ -52,6 +52,9 @@ Regras que **substituem** qualquer trecho legado deste skill ou dos assets:
 - **Guia de Setup**: `$IDE/skills/jarvis-init/assets/setup-guide.md`
 - **Passo "adicionar as stacks"**: `$IDE/skills/jarvis-init/assets/passo-adicionar-stacks.md` e `$IDE/skills/jarvis-init/assets/sinais-de-stack.md`
 - **Passo 8 sem o CLI**: `$IDE/skills/jarvis-init/assets/rules-sync-manual.md` (fallback do `jarvis rules sync`)
+- **Upgrade (C)**: `$IDE/skills/jarvis-init/assets/upgrade.md`
+- **Opções padrão e exemplos de validação**: `$IDE/skills/jarvis-init/assets/validacoes.md`
+- **Exemplo de execução**: `$IDE/skills/jarvis-init/assets/exemplo-execucao.md`
 - **Saída**: `$IDE/ENV.md`, `AGENTS.md`, `{workspace}/.jarvis/sessions/{eng,prod,qa}/`
 
 ---
@@ -179,7 +182,7 @@ const validPositions = extractOptions(taxonomyContent, 'Positions')
 const validAreas = extractOptions(taxonomyContent, 'Areas')
 ```
 
-> **⚠️ Se taxonomy.md não existir**: Use valores padrão hardcoded como fallback
+> **⚠️ Se taxonomy.md não existir ou for inválido**: use os valores padrão e mostre o aviso de `assets/validacoes.md` (seção "Valores Padrão (Fallback)").
 
 ### 2. Detectar IDE
 
@@ -214,48 +217,7 @@ Identificar qual IDE o usuário está utilizando:
 
 **Se opção C (Upgrade):**
 
-> No terminal, rode antes `jarvis init --upgrade --ide {ide}`: ele atualiza os arquivos do framework, acrescenta as variáveis novas e move os documentos para as pastas novas (itens 1–7, 9 a 11). Aqui ficam o Central docs antigo (item 8), as pendências que ele listar e o passo das stacks.
-> **O upgrade só acrescenta chaves novas:** nenhuma chave já existente, preenchida ou não, é alterada, salvo as exceções declaradas nos itens 4 e 8 (`CENTRAL_DOCS_LOCATION` e `TOKEN_TASK_MANAGER`, com confirmação; `JARVIS_PROJECT` vazio e as chaves removidas do template, automáticos). Depois, a validação final (passo 9.5) pode reorganizar o arquivo, mover chaves para o assunto delas e corrigir valores fora das opções, sempre perguntando: nenhum valor muda sem a resposta da pessoa.
-> Trocou o `ARTIFACT_STYLE` (ou HUB, POSITION, AREA, SQUAD) à mão? O Passo 8 copia ou remove as rules desse perfil.
-
-1. Ler todas as chaves do `templates/ENV-template.md`
-2. Ler todas as chaves do `$IDE/ENV.md` existente
-3. Calcular diff: chaves no template que **não existem** no ENV.md atual
-4. **Exceção — chaves removidas do template (#209):** apague, sem perguntar, as linhas das chaves de mensageria, banco, observabilidade, SMTP, code quality e Data Engineering (`MESSAGE_BROKER*`, `DATABASE`, `*_DATABASE`, `OBSERVABILITY*`, `TOKEN_OBSERVABILITY`, `SMTP`, `CODE_QUALITY_*` e as `DATA_*`, **menos** `DATA_SPECIALIZATIONS`; lista em `REMOVED_KEYS`, `bin/lib/core/env-upgrade.js`) e a moldura de comentário do bloco que ficar vazio. Nunca leia, mostre ou copie o valor; avise só com os nomes (`ENV.md: removidas (não são mais usadas): …`). O `jarvis init --upgrade` já faz isso no terminal
-5. Se não houver diff:
-   ```
-   ✅ ENV.md já está atualizado. Nenhuma variável nova encontrada.
-   ```
-   Oferecer o **passo 9 (adicionar as stacks)**, que a pessoa pode pular, rodar o **passo 9.5 (validar o ENV.md)** e então encerrar.
-6. Se houver diff, exibir prévia:
-   ```
-   🔍 Variáveis novas encontradas no template:
-     + NOVA_VAR_1=
-     + NOVA_VAR_2=valor-padrão
-
-   Serão adicionadas no assunto de cada uma, na posição do template, sem alterar os valores existentes.
-   ```
-7. **Exceção — documentos nos caminhos antigos:** procure documentos de trabalho em `$DOCS_FOLDER/product`, `$DOCS_FOLDER/engineering/{ARD,RFC,qa,swagger,openapi,robots,c4}`, `docs/engineering/{robots,swagger,openapi,c4}` e os discoveries em `$PROD_DOCS/discoveries/`.
-   - Se houver, liste o que encontrou e pergunte com `AskUserQuestion` (uma pergunta para todos) se move para `docs/jarvis/…` (`$PROD_DOCS`, `$ENG_DOCS/…` e, para os discoveries, `$DISCOVERIES_DOCS`). Use `git mv` quando o arquivo for versionado e `mv` quando não for e, só se a raiz do workspace tiver `.git`, garanta `docs/jarvis/` no `.gitignore`.
-   - **Conflito** (arquivo com o mesmo nome no destino): não sobrescreva; liste e pule esse arquivo. A pasta antiga só é removida se ficar vazia.
-   - **`related_discovery`:** depois de mover discoveries, nos `.md` de `$PROD_DOCS`, troque todo `related_discovery:` cujo **nome de arquivo** seja o de um discovery movido pelo caminho novo (relativo ao workspace). Isso também conserta valores que já estavam quebrados.
-   - **Sem confirmação, não mova nada:** as chaves **novas** recebem o caminho antigo (`DISCOVERIES_DOCS=$PROD_DOCS/discoveries`; `PROD_DOCS`/`ENG_DOCS` só se também forem novas). Chave que já existe não muda: avise que os documentos ficaram no caminho antigo.
-   - Depois, ofereça a carga inicial do Central docs (Passo 5.3).
-8. **Exceção — Central docs antigo:** se o `ENV.md` tiver `CENTRAL_DOCS_REPO` preenchido e não tiver `CENTRAL_DOCS_STORAGE`, propor a migração (só com confirmação): `CENTRAL_DOCS_STORAGE=filesystem`, `CENTRAL_DOCS_LOCATION=docs/jarvis/central-docs` (Passo 5.2) e `git clone {CENTRAL_DOCS_REPO} {LOCATION}`. Depois, comentar a linha antiga (`# CENTRAL_DOCS_REPO=… (migrado em YYYY-MM-DD)`) e `CENTRAL_DOCS_CACHE_TTL`. Sem confirmação, não mexe e avisa que os comandos de docs vão pedir o Upgrade.
-   - **Central docs no padrão antigo do modo workspace:** se `CENTRAL_DOCS_LOCATION` for `./central-docs` (ou `central-docs`) e essa pasta existir, ofereça com `AskUserQuestion` (**Mover** | **Manter**) mover para `docs/jarvis/central-docs`, o padrão atual. Com **Mover**: se o destino já existir, não sobrescreva (avise e mantenha); senão, `mv ./central-docs docs/jarvis/central-docs` e troque o valor de `CENTRAL_DOCS_LOCATION` no `ENV.md`. Esta é a única alteração de uma chave existente no Upgrade e só acontece com a confirmação. Com **Manter**, nada muda.
-8.1. **Exceção — `TOKEN_TASK_MANAGER` com valor:** o token não é mais usado (o board passa pela CLI do vendor). Nunca leia, mostre ou copie o valor: confira só se a linha tem algo depois do `=`. Explique e oriente o login da CLI do `TASK_MANAGER` (ex.: `acli jira auth login`). Pergunte com `AskUserQuestion` (**Esvaziar a linha** | **Manter**). Com **Esvaziar**, troque a linha por `TOKEN_TASK_MANAGER=`; com **Manter**, nada muda e avise que o valor fica sem uso no ENV. É a segunda exceção declarada à regra "o upgrade só acrescenta" (a primeira é a `CENTRAL_DOCS_LOCATION`).
-8.2. **Exceção — `JARVIS_PROJECT` vazio:** grave `https://github.com/phelipperibeiro/jarvis-framework` sem perguntar e avise ("estava vazio; preenchido com o repositório oficial do Jarvis"). Preenchido com qualquer valor, não muda. O `jarvis init --upgrade` já faz isso no terminal.
-8.3. **Eixos sem forma de acesso:** se `TASK_MANAGER` ou `VERSION_CONTROL` estiver preenchido com um vendor do catálogo e o `*_ACCESS` correspondente estiver ausente, vazio ou inválido (fora de `cli`/`manual`; avise o valor errado), faça para aquele eixo o Passo 4 (descoberta da CLI, forma de acesso e variáveis), com a gravação única do fim. Vendor fora do catálogo (Linear, Asana, Bitbucket): avise que não é suportado e que o eixo fica em freelance; não mude a chave.
-9. **Exceção — `PROD_MODE`:** se `PROD_MODE` estiver entre as chaves novas, grave pelo `AREA`: `ENGINEERING` → `developer-guided`, `PRODUCT` → `product-led`. Com outra `AREA` (ou vazia), faça a mesma pergunta do Passo 3 (Pergunta 8 — modo de condução) e grave a resposta. `PROD_MODE` que já existe, mesmo vazia, não muda. As demais chaves continuam sem pergunta.
-    - **`WORKSPACE_MODE`:** o `jarvis init --upgrade` já grava o modo detectado (raiz sem `.git` e 1+ subpastas com `.git/` = `workspace`; raiz com `.git` = `project`). Se a chave existir vazia, detecte do mesmo jeito e grave; se existir preenchida, não muda.
-    - **`.gitignore` numa raiz sem `.git` (ex.: `WORKSPACE_MODE=workspace`):** a raiz não é versionada, então esse arquivo não tem efeito. Não o apague; só avise: `ℹ️ O .gitignore da raiz do workspace não tem efeito (a raiz não é um repositório). Pode removê-lo se quiser.`
-10. Acrescentar as novas variáveis no assunto de cada uma, na posição do template, junto das chaves do mesmo assunto (ex.: uma `*_SPECIALIZATIONS` nova vai para o bloco de especializações, ao lado das irmãs), com o comentário do template. Sem bloco datado no fim. O `jarvis init --upgrade` (terminal) acrescenta no fim, num bloco `# --- Upgrade ... ---`, por ser determinístico; o passo 9.5 põe essas chaves no lugar.
-11. Confirmar:
-   ```
-   ✅ ENV.md atualizado! N variável(is) nova(s) adicionada(s).
-   ⚠️ Preencha os valores em branco antes de usar os novos recursos.
-   ```
-12. Oferecer o **passo 9 (adicionar as stacks)**, que a pessoa pode pular, rodar o **passo 9.5 (validar o ENV.md)** e então encerrar (não continuar para o fluxo de onboarding completo).
+Siga `assets/upgrade.md` do começo ao fim (nota do terminal e itens 1-12). Ele termina oferecendo o passo 9, rodando o 9.5 e encerrando, sem continuar o onboarding.
 
 **⚠️ OBRIGATÓRIO - Criação do ENV.md**:
 
@@ -1139,8 +1101,8 @@ Apresentar checklist de onboarding por período (Dia 1, Semana 1, Mês 1).
 
 | Erro | Ação |
 |------|------|
-| **taxonomy.md não encontrado** | Usar DEFAULT_OPTIONS (CORE + hubs com DATA) e avisar |
-| **taxonomy.md inválido/corrompido** | Usar DEFAULT_OPTIONS e alertar |
+| **taxonomy.md não encontrado** | Usar DEFAULT_OPTIONS (`assets/validacoes.md`) (CORE + hubs com DATA) e avisar |
+| **taxonomy.md inválido/corrompido** | Usar DEFAULT_OPTIONS (`assets/validacoes.md`) e alertar |
 | **AskUserQuestion não disponível** | Usar texto numerado para todas as opções fixas — não bloquear o init |
 | **Múltiplas perguntas feitas de uma vez** | ERRO CRÍTICO - NUNCA faça isso. Pergunte uma por vez e aguarde resposta |
 | **WORKSPACE vazio** | Usar o nome da pasta que contém `$IDE/`; confirmar com o usuário |
@@ -1151,108 +1113,6 @@ Apresentar checklist de onboarding por período (Dia 1, Semana 1, Mês 1).
 | CLI do board/git ausente ou sem login | Mostrar o link de instalação/login, oferecer `manual` e **continuar** (1 tentativa) |
 | Stack não detectada | Perguntar ao usuário |
 | IDE não detectada | Perguntar ao usuário qual IDE usa |
-
-### Exemplo de Validação
-
-**Exemplo 1: HUB (5 opções) - Texto Numerado**
-
-```
-Qual o hub do projeto?
-
-1. AI
-2. FRONTEND
-3. BACKEND
-4. QA
-5. DATA
-```
-
-Validar número ou nome contra a lista do taxonomy (**inclui DATA**).
-
----
-
-**Exemplo 2: SQUAD - Texto Numerado**
-
-```
-Qual o nome do seu squad?
-
-Opções disponíveis: (lidas de taxonomy.md)
-1. CORE - Time principal
-
-Digite o número ou nome do squad:
-```
-
-```javascript
-const selected = validateTextOption(userInput, extractSquadsFromTaxonomy())
-if (!selected) {
-  console.log("❌ Squad inválido. Digite um número ou nome válido da lista.")
-}
-```
-
-### Valores Padrão (Fallback)
-
-Se `taxonomy.md` não existir ou estiver corrompido, usar:
-
-```javascript
-const DEFAULT_OPTIONS = {
-  SQUADS: ['CORE'],
-  HUBS: ['AI', 'FRONTEND', 'BACKEND', 'QA', 'DATA', 'FULLCYCLE'],
-  POSITIONS: ['HEAD', 'JUNIOR', 'PLENO', 'SENIOR', 'TECH LEAD', 'SPECIALIST', 'PM', 'TPM', 'GPM', 'CTO', 'GENERALIST'],
-  AREAS: ['ENGINEERING', 'PRODUCT']
-}
-```
-
-**Avisar usuário:**
-```
-⚠️ Arquivo taxonomy.md não encontrado. Usando opções padrão (CORE + hubs com DATA).
-Para customizar, edite taxonomy.md e rode /taxonomy validate.
-```
-
----
-
-## Exemplo de Execução
-
-**Usuário**: `/jarvis-init`
-
-**Agente** *(resolve identidade local — ENV.md / git / SO)*:
-```
-✅ Identidade: joao@example.com
-   USER será gravado no ENV.md.
-
-📋 Vamos configurar o ambiente do framework.
-
-Pergunta 1: Workspace detectado: `{pasta}`. Usar esse nome?
-```
-
-*[Uma pergunta por vez, aguardando resposta...]*
-
-```
-Pergunta 2: Qual IDE você está usando?
-[mostrar opções em texto numerado]
-
-Pergunta 3: Qual o nome do seu squad?
-[mostrar opções do taxonomy em texto numerado]
-
-Pergunta 4: Qual o hub do projeto?
-[texto numerado com AI, FRONTEND, BACKEND, QA, DATA, FULLCYCLE]
-
-Pergunta 5: Qual a área do projeto?
-[AskUserQuestion ou texto numerado]
-
-Pergunta 6: Qual o limite de execução da AI? (60-100)
-
-Pergunta 7: Qual seu cargo?
-[mostrar opções em texto numerado]
-
-Pergunta 8: Modo dos comandos de produto?
-[AskUserQuestion: Product-Led | Developer-Guided, sem opção sugerida]
-
-Pergunta 9: Estilo dos artefatos?
-[AskUserQuestion: AI-Generated (padrão) | Human-Generated]
-
-Pergunta 10 (opcional): Usa board de cards? jira/github/gitlab ou Nenhum (freelance) → descoberta da CLI e variáveis (Passo 4)
-```
-
-**Agente**: *(cria ENV.md + `.jarvis/sessions/{eng,prod,qa}`, valida Context7, cria AGENTS.md e confirma)*
 
 ---
 
