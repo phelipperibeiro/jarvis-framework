@@ -34,11 +34,7 @@ B: História / Task — implementação específica, pronta para desenvolvimento
 
 ## Processo de Criação da Tech Spec
 
-### ═══════════════════════════════════════════════
-
 ### FASE 1: Entendimento Profundo
-
-### ═══════════════════════════════════════════════
 
 #### 1.1 Leitura e Análise do Card
 
@@ -179,11 +175,7 @@ Independente do resultado, registre na Tech Spec:
 
 ## Caminho A: Épico → Tech Spec Arquitetural
 
-### ═══════════════════════════════════════════════
-
 ### FASE 2A: Investigação Arquitetural
-
-### ═══════════════════════════════════════════════
 
 Foco em entender o sistema como um todo — não arquivos específicos, mas fronteiras e contratos.
 
@@ -206,11 +198,7 @@ Foco em entender o sistema como um todo — não arquivos específicos, mas fron
 
 ---
 
-### ═══════════════════════════════════════════════
-
 ### FASE 3A: Proposta Arquitetural
-
-### ═══════════════════════════════════════════════
 
 Este é o **output principal** da Tech Spec de épico.
 
@@ -254,11 +242,7 @@ Apresente resumo executivo, diagramas e principais decisões. **Aguarde aprovaç
 
 ---
 
-### ═══════════════════════════════════════════════
-
 ### FASE 4A: Geração do Documento Arquitetural
-
-### ═══════════════════════════════════════════════
 
 Salve em: `$SESSIONS_DIR/eng/{epic-slug}/tech-spec-arch.md`
 
@@ -291,11 +275,7 @@ Após salvar, exiba:
 
 ## Caminho B: História → Tech Spec de Implementação
 
-### ═══════════════════════════════════════════════
-
 ### FASE 2: Investigação Técnica do Codebase
-
-### ═══════════════════════════════════════════════
 
 #### 2.1 Identificação de Componentes
 
@@ -318,6 +298,8 @@ Use as ferramentas de busca para identificar:
 - Entenda padrões e convenções existentes
 - Identifique dependências
 
+**WebSearch** para documentação externa (se necessário)
+
 #### 2.2 Análise de Documentação Existente
 
 Verifique se há documentação relevante:
@@ -326,6 +308,8 @@ Verifique se há documentação relevante:
 - **FRD relacionada**: `$DOCS_FOLDER/**/*frd*.md` ou anexos no card (lidos pela CLI ou colados pelo usuário)
 - **ADRs (Architecture Decision Records)**: `$DOCS_FOLDER/ARD/*.md` ou `./sessions/**/adr.md`
 - **README e documentação técnica**: `README.md`, `ARCHITECTURE.md`, `API.md`
+- `$DOCS_FOLDER/**/*.md` (documentação geral do projeto)
+- `$SESSIONS_DIR/eng/**/*.md` (tech specs e ADRs de sessões anteriores)
 
 #### 2.3 Identificação de Padrões e Convenções
 
@@ -369,11 +353,7 @@ Identifique:
 
 ---
 
-### ═══════════════════════════════════════════════
-
 ### FASE 2.5: Avaliação de Complexidade (obrigatória)
-
-### ═══════════════════════════════════════════════
 
 Antes de propor qualquer arquitetura, classifique a feature com critérios objetivos. Isso define o nível de complexidade **permitido** na proposta.
 
@@ -407,11 +387,7 @@ Implicação para a proposta arquitetural:
 
 ---
 
-### ═══════════════════════════════════════════════
-
 ### FASE 3: Proposta Arquitetural
-
-### ═══════════════════════════════════════════════
 
 #### 3.1 Análise de Soluções Possíveis
 
@@ -491,11 +467,7 @@ Se o usuário pedir mudanças:
 
 ---
 
-### ═══════════════════════════════════════════════
-
 ### FASE 4: Quebra em Subtarefas Executáveis
-
-### ═══════════════════════════════════════════════
 
 #### 4.1 Estratégia de Faseamento
 
@@ -506,7 +478,7 @@ Divida a implementação em **fases lógicas e incrementais**:
 - Cada fase entrega **valor testável**
 - Fases são **sequenciais** quando há dependência
 - Fases podem ser **paralelas** quando independentes
-- Entre **4 horas e 1 dia por subtarefa** (fatia vertical completa)
+- Tamanho de cada subtarefa: princípios 3 e 5 da rule (fatia vertical, 4h a 1 dia)
 
 **Exemplo de Fases:**
 
@@ -518,34 +490,7 @@ Divida a implementação em **fases lógicas e incrementais**:
 
 Para cada subtarefa, documente:
 
-**Estrutura Obrigatória:**
-
-```
-SUBTASK-XXX: {Nome claro e acionável}
-
-Descrição:
-{Descrição técnica detalhada - O QUE fazer e COMO fazer}
-
-Arquivos a Modificar/Criar:
-- path/to/file1.py - [Modificação/Criação] - {Descrição}
-- path/to/file2.tsx - [Modificação/Criação] - {Descrição}
-
-Critérios de Aceitação Técnicos:
-- [ ] {Critério testável 1}
-- [ ] {Critério testável 2}
-- [ ] {Critério testável 3}
-
-Testes Requeridos:
-- [ ] Teste unitário: {descrição}
-- [ ] Teste de integração: {descrição}
-
-Dependências:
-{Nenhuma / SUBTASK-XXX deve estar concluída}
-
-Estimativa: {X horas}
-
-Prioridade: {P0 (crítica) / P1 (alta) / P2 (média)}
-```
+o formato de `#### SUBTASK-XXX` da seção 3 do `tech-spec-template.md` (todos os campos), seguindo o princípio 3 da rule.
 
 #### 4.3 Mapeamento de Dependências
 
@@ -568,8 +513,6 @@ STORY-XXX: {História original}
       └─ Depende de: SUBTASK-003
 ```
 
-> Cada subtarefa é uma fatia vertical de 4h a 1 dia. Nunca divida por camada (só migration, só modelo, só serviço).
-
 #### 4.4 Validação da Quebra
 
 Valide que:
@@ -580,87 +523,27 @@ Valide que:
 - [ ] Estimativas são **realistas** (entre 4h e 1 dia cada)
 - [ ] Todas as subtarefas somadas **cobrem 100% da história**
 
-**Checklist de fatia vertical (obrigatório para cada subtarefa):**
-
-- [ ] Mergeada isoladamente, a aplicação **continua funcionando**?
-- [ ] A entrega é **observável** — testável, demonstrável ou verificável?
-- [ ] A subtarefa tem **implementação funcional** (não apenas contratos, interfaces ou tipos sem comportamento)?
-
-> Se qualquer item for "não" → reagrupar com a subtarefa seguinte até formar uma fatia vertical completa.
->
-> ❌ Evitar: `[BACKEND] Criar interfaces e contratos do módulo X`
-> ✅ Preferir: `[BACKEND] Criar endpoint GET /X/:id com retorno de dado real`
+Aplique a cada subtarefa o "Template de Validação" do princípio 3 da rule; se qualquer item for "não", reagrupe com a subtarefa seguinte até formar uma fatia vertical completa.
 
 ---
-
-### ═══════════════════════════════════════════════
 
 ### FASE 5: Documentação de Riscos e Considerações
 
-### ═══════════════════════════════════════════════
-
 #### 5.1 Identificação de Riscos
 
-Para cada risco identificado, documente:
-
-| Risco                | Probabilidade    | Impacto          | Mitigação      | Plano B       |
-| -------------------- | ---------------- | ---------------- | -------------- | ------------- |
-| {Descrição do risco} | Alta/Média/Baixa | Alto/Médio/Baixo | {Como mitigar} | {Alternativa} |
-
-**Tipos de riscos comuns:**
-
-- Dependências externas instáveis
-- Performance degradada
-- Complexidade subestimada
-- Mudanças em APIs de terceiros
-- Conflitos com outras histórias em desenvolvimento
+Liste os riscos na tabela da seção 10 do template (probabilidade, impacto, mitigação, plano B), pelas categorias do princípio 4 da rule.
 
 #### 5.2 Considerações Técnicas
 
-Documente:
-
-**Segurança:**
-
-- Validação de inputs
-- Autenticação/Autorização
-- Proteção contra OWASP Top 10
-- Criptografia de dados sensíveis
-
-**Performance:**
-
-- Requisitos de latência (ex: API < 200ms no p95)
-- Requisitos de throughput (ex: X req/seg)
-- Otimizações planejadas
-- Métricas a monitorar
-
-**Escalabilidade:**
-
-- Como escala horizontalmente
-- Gargalos potenciais
-- Limitações conhecidas
-
-**Observabilidade:**
-
-- Logs necessários
-- Métricas a adicionar
-- Alertas a configurar
+Preencha a seção 4 do template (segurança, performance, escalabilidade, observabilidade, acessibilidade).
 
 #### 5.3 Casos Extremos e Erros
 
-Para cada caso extremo/erro:
-
-- **Cenário**: O que pode acontecer
-- **Comportamento esperado**: Como sistema deve reagir
-- **Solução técnica**: Como implementar
-- **Mensagem ao usuário**: O que mostrar (se aplicável)
+Preencha a seção 5 do template: para cada caso extremo ou erro, cenário, comportamento esperado, solução técnica e mensagem ao usuário (se aplicável).
 
 ---
 
-### ═══════════════════════════════════════════════
-
 ### FASE 6: Criação do Artefato Tech Spec
-
-### ═══════════════════════════════════════════════
 
 #### 6.1 Geração do Documento
 
@@ -675,26 +558,7 @@ Exemplo: `$SESSIONS_DIR/eng/story-123/tech-spec.md`
 
 #### 6.2 Revisão de Qualidade
 
-Valide que o documento contém:
-
-**Conteúdo Obrigatório:**
-
-- [ ] Contexto claro da história de negócio
-- [ ] Análise técnica detalhada
-- [ ] Decisões arquiteturais documentadas com justificativas
-- [ ] Plano de implementação faseado
-- [ ] Subtarefas detalhadas com critérios de aceitação
-- [ ] Riscos identificados e mitigados
-- [ ] Estratégia de testes definida
-- [ ] Considerações de segurança, performance, escalabilidade
-
-**Qualidade:**
-
-- [ ] Linguagem clara e objetiva (evite jargões sem definição)
-- [ ] Diagramas úteis e legíveis
-- [ ] Links para documentos relacionados funcionam
-- [ ] Estimativas realistas
-- [ ] Nenhuma ambiguidade crítica
+Valide o documento pelo "Checklist de Revisão" de `eng.tech-spec-rules.md` (seção "Validação de Tech Spec").
 
 #### 6.3 Apresentação ao Usuário
 
@@ -713,11 +577,7 @@ Só com board configurado (no freelance não há issue: pule este passo). Só h�
 
 ---
 
-### ═══════════════════════════════════════════════
-
 ### FASE 7: Criação de Subtarefas (automática só no Jira)
-
-### ═══════════════════════════════════════════════
 
 > **Escopo:** a criação automática de subtarefas é só no Jira, pela `acli`. Em GitHub ou GitLab, ou no Jira sem a `acli` logada ou com `TASK_MANAGER_ACCESS=manual`, esta fase entrega o template formatado e as instruções para a pessoa criar as subtarefas à mão; como não há envio, a 7.3 não faz a pergunta nesse caso. A generalização para `gh`/`glab` fica para uma issue à parte.
 
@@ -761,11 +621,7 @@ Use o formato **Comentário na história original** de `$IDE/templates/engineeri
 
 ---
 
-### ═══════════════════════════════════════════════
-
 ### FASE 8: Validação Final e Entrega
-
-### ═══════════════════════════════════════════════
 
 #### 8.1 Checklist de Conclusão
 
@@ -789,30 +645,6 @@ Forneça ao usuário:
 Use o formato **Mensagem de entrega** de `$IDE/templates/engineering/tech-spec-delivery-template.md`; um exemplo preenchido está na seção **Exemplo de output final** do mesmo arquivo.
 
 > 🔀 **Fronteira com o `/eng.breakdown-subtasks`:** esta Tech Spec já entrega as subtarefas como fatias verticais de 4h a 1 dia, prontas para virar cards. Se cada fatia precisar ser reescrita como passo a passo para outra pessoa executar sem perguntar (ex.: time com juniores ou fatias para pessoas diferentes), rode o `/eng.breakdown-subtasks` com esta Tech Spec: ele não gera a spec, só detalha as fatias.
-
----
-
-## Ferramentas e Recursos
-
-### Ferramentas de Análise de Codebase
-
-- **Glob**: Encontrar arquivos por padrão
-- **Grep**: Buscar código por regex
-- **Read**: Ler conteúdo de arquivos
-- **WebSearch**: Buscar documentação externa (se necessário)
-
-### Documentação a Consultar
-
-- `$DOCS_FOLDER/**/*.md` - Documentação geral do projeto
-- `$SESSIONS_DIR/eng/**/*.md` - Tech specs e ADRs de sessões anteriores
-- `README.md` - Visão geral do projeto
-- `ARCHITECTURE.md` - Arquitetura do sistema (se existir)
-- Anexos no card (lidos pela CLI ou colados) - PRD, FRD, ARD, RFC
-
-### Templates
-
-- `templates/engineering/tech-spec-template.md` - Template de Tech Spec
-- `templates/engineering/tech-spec-delivery-template.md` - Formatos de entrega (descrição da subtarefa no Jira, comentário na história, mensagem de entrega, exemplo e fluxo resumido)
 
 ---
 
