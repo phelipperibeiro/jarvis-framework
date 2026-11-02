@@ -40,7 +40,8 @@ rules-on-demand/                    # lidas pelo workflow; não carregadas no in
 │   └── qa/
 │       └── eng.qa.cypress-standards-rules.md # convenções da suíte E2E (em rules/engineering/qa/ fica só o ponteiro)
 ├── product/
-│   └── prod.guided-rules.md        # modo Developer-Guided (só com PROD_MODE=developer-guided)
+│   ├── prod.guided-rules.md        # modo Developer-Guided (só com PROD_MODE=developer-guided)
+│   └── prod.spec-common-rules.md   # princípios e busca de contexto dos prod.spec.* (lida pelo comando, qualquer AREA)
 ├── doc-links-rules.md              # links clicáveis nos documentos gerados (lida pelos comandos que gravam documentos)
 └── warm-up-consume-rules.md        # consumo do /warm-up (só quando há aquecimento)
 ```

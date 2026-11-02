@@ -175,27 +175,6 @@ A terminologia inconsistente cria confusão. "Cliente" vs "Usuário" vs "Cliente
 - O documento novo referencia o discovery de origem no campo `related_discovery` do frontmatter.
 - Quando a informação do documento novo divergir do discovery, **avise o usuário na conversa** e crie no documento novo a seção **"Divergências"** (somente quando houver), com o que mudou e por quê, em poucas linhas.
 
-### Princípios dos comandos `prod.spec.*`
-
-Valem para os comandos que escrevem um documento (PRD, FRD, épico, issue, breakdown):
-
-1. **Sempre use o template** do documento, em `$PROD_TEMPLATES`, para o output final.
-2. **Nunca crie o arquivo final com suposições não validadas**: confirme as sugestões primeiro.
-3. **Seja inteligente, não robótico**: analise o contexto e proponha sugestões inteligentes, sem perguntas vazias.
-
-### Busca de contexto (`$PROD_DOCS` sempre; Central docs se configurado)
-
-Antes de começar o documento:
-
-1. A busca em `$PROD_DOCS` é sempre feita: procure o documento de trabalho (PRD, FRD, épico) pelo nome ou contexto informado, pelo Jira ID ou `TASK_MANAGER_KEY` e por tags semânticas. O Central docs não guarda esses documentos.
-2. Se `CENTRAL_DOCS_STORAGE` estiver definido no `ENV.md`, rode também `jarvis docs sync --silent` e consulte no Central docs as funcionalidades já implementadas relacionadas (o que existe hoje). Vazio, pule só o `jarvis docs sync`.
-3. Se encontrar, informe ("✅ {tipo} encontrado: [caminho]") e use-o como base ou contexto.
-4. O que cada comando busca, quando e o que faz ao não encontrar (perguntar ou seguir) está no próprio workflow.
-
-### Central docs
-
-Os documentos destes comandos são **documentos de trabalho**: ficam em `$PROD_DOCS`/`$ENG_DOCS` (`docs/jarvis/`) e **não** são publicados no Central docs. O Central docs registra só o que foi implementado, e quem o atualiza é o `/eng.spec-consolidate`, depois do PR da entrega.
-
 ## Exceções
 
 Quando o usuário pedir explicitamente outro formato ou nível de detalhe para um documento, registre a decisão no próprio documento e siga o pedido.
@@ -205,4 +184,5 @@ Quando o usuário pedir explicitamente outro formato ou nível de detalhe para u
 - `prod-rules.md`: regras gerais de produto (ambiente, comandos, nomes de arquivos, status e perguntas ao usuário)
 - `../../templates/product/`: templates dos documentos
 - `../../workflows/product/`: os comandos `prod.spec.*`
+- `../../rules-on-demand/product/prod.spec-common-rules.md`: princípios, busca de contexto e Central docs dos comandos `prod.spec.*` (lida pelo próprio comando)
 - `prod.spec.discovery.md` (workflow) e `prod-discovery-template.md`: o comando e o formato do discovery, o rascunho que os comandos acima podem usar como insumo

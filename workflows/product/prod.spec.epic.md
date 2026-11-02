@@ -9,6 +9,8 @@ recommended_model: opus
 
 > 🎓 **Modo de condução**: leia `PROD_MODE` no `$IDE/ENV.md`. Se for `developer-guided`, **antes de começar leia `$IDE/rules-on-demand/product/prod.guided-rules.md` e siga-o** em toda a conversa. Vazio ou `product-led`: siga este fluxo como está.
 >
+> 📋 **Princípios e busca de contexto**: antes de começar, leia `$IDE/rules-on-demand/product/prod.spec-common-rules.md` e siga-a.
+>
 > 🤖 **Modelo**: se a IDE informar o modelo desta sessão e ele for de outra família que o `recommended_model` do documento (ou do template, se o documento for novo), avise em uma linha e siga, sem bloquear e sem repetir. Sem essa informação, não avise.
 
 Antes de iniciar, revise o arquivo de regras invioláveis em `$PROD_RULES/**/*`. Se você não estiver familiarizado com essa variável, leia as regras diretamente na pasta `.$IDE/rules/product/**/*.*`.
@@ -120,6 +122,6 @@ Após a aprovação do usuário:
 1. Atualize a PRD com as alterações relacionadas ao épico
 2. Atualize o arquivo de breakdown (plan) com as alterações relacionadas ao épico
 
-**Busca de contexto:** ver `$PROD_RULES/prod.spec-rules.md`. Aqui, antes de criar o épico, busca em `$PROD_DOCS` o **PRD e os épicos existentes relacionados** usando o contexto do usuário e os carrega como contexto, informando o usuário. Se não encontrar, segue o fluxo normal (sem perguntar).
+**Busca de contexto:** ver `$IDE/rules-on-demand/product/prod.spec-common-rules.md`. Aqui, antes de criar o épico, busca em `$PROD_DOCS` o **PRD e os épicos existentes relacionados** usando o contexto do usuário e os carrega como contexto, informando o usuário. Se não encontrar, segue o fluxo normal (sem perguntar).
 
-**Central docs:** documento de trabalho, não é publicado no Central docs (ver `$PROD_RULES/prod.spec-rules.md`).
+**Central docs:** documento de trabalho, não é publicado no Central docs (ver `$IDE/rules-on-demand/product/prod.spec-common-rules.md`).
