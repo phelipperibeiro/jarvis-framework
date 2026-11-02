@@ -248,16 +248,20 @@ test("listRulesForProfile: rtk é opt-in, sem bloco é universal, recursivo em s
 // −90 B e QA −90 B (o frontend só entra em FULLCYCLE e FRONTEND; rtk-rules.md não entra no BASE
 // porque só é copiada com RTK ligado); nenhum arquivo a menos. Total removido no repo, incluindo
 // rules-on-demand: −211 B.
+// Issue #118 (#208, fase 1, 2026-11-02): eng.qa.cypress-standards-rules.md para
+// rules-on-demand/engineering/qa/, com um ponteiro de 463 B no caminho antigo de rules/. QA e
+// FULLCYCLE −7.132 B; BACKEND e FRONTEND não mudam; nenhum arquivo a menos. A parte de dados da
+// #118 ficou sem objeto (a data-rules.md saiu na #209).
 const BASE = [
   [
     "FULLCYCLE/GENERALIST/ENGINEERING/CORE",
     profile("FULLCYCLE", "GENERALIST", "ENGINEERING"),
     10,
-    74962,
+    67830,
   ],
   ["BACKEND/SENIOR/ENGINEERING/CORE", profile("BACKEND", "SENIOR", "ENGINEERING"), 7, 46986],
   ["FRONTEND/PLENO/ENGINEERING/CORE", profile("FRONTEND", "PLENO", "ENGINEERING"), 8, 55285],
-  ["QA/QA-ENGINEER/ENGINEERING/CORE", profile("QA", "QA-ENGINEER", "ENGINEERING"), 8, 54581],
+  ["QA/QA-ENGINEER/ENGINEERING/CORE", profile("QA", "QA-ENGINEER", "ENGINEERING"), 8, 47449],
 ];
 
 for (const [nome, p, arquivos, bytes] of BASE) {
@@ -282,4 +286,19 @@ test("rules reais: artifact-style-rules.md só com ARTIFACT_STYLE=human-generate
     tem({ ...profile("BACKEND", "SENIOR", "ENGINEERING"), ARTIFACT_STYLE: "human-generated" }),
     true
   );
+});
+
+test("rules reais: a rule Cypress inteira está em rules-on-demand/ e o ponteiro em rules/ (#118)", () => {
+  const caminho = join("engineering", "qa", "eng.qa.cypress-standards-rules.md");
+  for (const p of [
+    profile("QA", "QA-ENGINEER", "ENGINEERING"),
+    profile("FULLCYCLE", "GENERALIST", "ENGINEERING"),
+  ]) {
+    const emRules = listRulesForProfile(join(root, "rules"), p).find((r) => r.path === caminho);
+    const sobDemanda = listRulesForProfile(join(root, "rules-on-demand"), p).find(
+      (r) => r.path === caminho
+    );
+    assert.ok(emRules && emRules.bytes < 600, `${p.HUB}: ponteiro em rules/ com menos de 600 B`);
+    assert.ok(sobDemanda && sobDemanda.bytes > 7000, `${p.HUB}: rule inteira em rules-on-demand/`);
+  }
 });

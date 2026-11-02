@@ -19,7 +19,7 @@ rules/
 │   ├── eng.skills-rules.md       # área obrigatória nos skills e aviso de skill inexistente
 │   ├── … (integrations, …)
 │   ├── frontend/
-│   └── qa/
+│   └── qa/                       # ponteiro: o texto está em rules-on-demand/
 └── product/
     └── prod-rules.md
 
@@ -36,7 +36,9 @@ rules-on-demand/                    # lidas pelo workflow; não carregadas no in
 │   ├── eng.breakdown-subtasks-rules.md
 │   ├── eng.bump-rules.md
 │   ├── eng.security-rules.md      # seções de etapa da eng-security-rules (architecture.md e gate-checklist.md)
-│   └── eng.rpa-rules.md          # inclui a documentação de robôs (HUB: all)
+│   ├── eng.rpa-rules.md          # inclui a documentação de robôs (HUB: all)
+│   └── qa/
+│       └── eng.qa.cypress-standards-rules.md # convenções da suíte E2E (ponteiro em rules/engineering/qa/)
 ├── product/
 │   └── prod.guided-rules.md        # modo Developer-Guided (só com PROD_MODE=developer-guided)
 ├── doc-links-rules.md              # links clicáveis nos documentos gerados (lida pelos comandos que gravam documentos)
@@ -71,7 +73,7 @@ Isso reduz tokens carregados na sessão.
 ## No ciclo de vida
 
 1. Editadas neste repo.
-2. `jarvis init` copia o conjunto **inteiro** para `.$IDE/rules/` e `.$IDE/rules-on-demand/` (sync bruto; as rules que saíram de `rules/` são removidas das instalações antigas via `OBSOLETE_PATHS`).
+2. `jarvis init` copia o conjunto **inteiro** para `.$IDE/rules/` e `.$IDE/rules-on-demand/` (sync bruto; as rules que saíram de `rules/` são removidas das instalações antigas via `OBSOLETE_PATHS`; se a rule virou um ponteiro no mesmo caminho, como a de Cypress em `qa/`, o caminho **não** entra em `OBSOLETE_PATHS`: o sync sobrescreve a instalação antiga com o ponteiro).
 3. `/jarvis-init` **filtra** de novo conforme perfil (e RTK) (Passo 8 → `jarvis rules sync`).
 
 Se você só rodar `jarvis init` sem o skill de init, a IDE pode ter rules a mais do que o perfil precisa — o filtro fino é responsabilidade do `/jarvis-init`.
