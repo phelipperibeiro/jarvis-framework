@@ -103,12 +103,7 @@ workflows/
 
 ## Relação Command → Workflow
 
-Cada command em `commands/` referencia seu workflow correspondente:
-
-```markdown
-# nome-do-command
-Utilize o arquivo `../../workflows/[dominio]/nome-do-workflow.md` como template para este comando.
-```
+Na IDE, cada workflow é instalado como command na pasta de comandos dela (ex.: `.claude/commands/`); o nome do command é o nome do arquivo.
 
 ---
 
@@ -116,7 +111,7 @@ Utilize o arquivo `../../workflows/[dominio]/nome-do-workflow.md` como template 
 
 ### 1. Inicialização de Projeto
 ```bash
-/init
+/jarvis-init
 /warm-up
 /prod.spec.prd
 ```

@@ -175,7 +175,7 @@ Workflows de engenharia seguem fases restritas:
 ### Nunca
 
 - Criar workflow sem command correspondente
-- Pular validacao de ENV.md (exceto `/init`)
+- Pular validacao de ENV.md (exceto `/jarvis-init`)
 - Misturar fases de desenvolvimento em um workflow
 - Executar codigo em fase de planejamento
 - Fazer commit em fase de implementacao
@@ -183,7 +183,7 @@ Workflows de engenharia seguem fases restritas:
 
 ### Sempre
 
-- Validar ENV.md no inicio (exceto `/init`)
+- Validar ENV.md no inicio (exceto `/jarvis-init`)
 - Respeitar restricoes de fase
 - Definir output esperado
 - Incluir mensagem de conclusao
@@ -197,7 +197,7 @@ Workflows de engenharia seguem fases restritas:
 ### Inicializacao de Projeto
 
 ```bash
-/init
+/jarvis-init
 /warm-up
 /prod.spec.prd
 ```
@@ -218,9 +218,7 @@ Workflows de engenharia seguem fases restritas:
 
 ```bash
 /warm-up
-/build-product-docs
-/build-tech-docs
-/build-index
+/eng.docs
 ```
 
 ---
@@ -228,19 +226,17 @@ Workflows de engenharia seguem fases restritas:
 ## Criando Novo Workflow
 
 1. Identificar necessidade (verificar existentes)
-2. Criar command em `commands/`
-3. Criar workflow seguindo estrutura padrao, incluindo a tabela `Skills invocados durante o workflow`
-4. Definir restricoes de fase (se engenharia)
-5. Vincular a templates (se aplicavel)
-6. Atualizar README.md
-7. Testar fluxo completo
+2. Criar workflow seguindo estrutura padrao, incluindo a tabela `Skills invocados durante o workflow` (a IDE o instala como command com o nome do arquivo)
+3. Definir restricoes de fase (se engenharia)
+4. Vincular a templates (se aplicavel)
+5. Atualizar README.md
+6. Testar fluxo completo
 
 ---
 
 ## Referencias
 
 - `README.md` - Lista completa de workflows
-- `../commands/` - Commands que invocam workflows
 - `../skills/` - Skills invocados por workflows
 - `../templates/` - Templates usados por workflows
 - `../rules/` - Regras que governam workflows
