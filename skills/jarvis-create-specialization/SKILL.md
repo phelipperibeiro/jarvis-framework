@@ -1,19 +1,15 @@
 ---
 name: jarvis-create-specialization
 description: >
-  Cria uma especialização de stack (backend ou frontend) a partir do código do projeto: lê o
-  projeto, gera o skill (SKILL.md e references/), mostra para revisão e, só depois da confirmação,
-  grava eng-<área>-<stack> com a marcação area e stack e o registra na lista da área no ENV.md.
-  Trigger: Use para adaptar o framework a uma stack nova ou do seu projeto (por exemplo, Go ou
-  Vue), sem escrever o skill à mão nem editar arquivos do framework.
-license: AGPL-3.0
-compatibility: Designed for Claude Code (or similar products)
+  Cria uma especialização de stack (backend ou frontend) a partir do código do projeto: gera o
+  skill (SKILL.md e references/), mostra para revisão e, só com a confirmação, grava
+  eng-<área>-<stack> (area e stack) e o registra na lista da área no ENV.md. Trigger: adaptar o
+  framework a uma stack nova ou do projeto (ex: Go, Vue) sem escrever o skill à mão.
 allowed-tools: Read Write Edit Glob Grep Bash
 metadata:
   author: jarvis-team
   version: "1.0"
   area: global
-# Campos Claude Code-specific (não fazem parte da spec oficial agentskills.io):
 argument-hint: "[backend|frontend] [stack]"
 disable-model-invocation: false
 ---

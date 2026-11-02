@@ -1,20 +1,16 @@
 ---
 name: eng-backend-nestjs
 description: >
-  Especialista em NestJS com domínio profundo em arquitetura de módulos, injeção de dependências,
-  guards, interceptors, pipes, middleware, testes com Jest/Supertest, TypeORM/Prisma e autenticação
-  com Passport/JWT. Inclui diagnóstico de erros de DI, decisões arquiteturais e padrões enterprise.
-  Trigger: Use para problemas ou features específicas do framework NestJS — módulos, DI, decorators,
-  ciclo de vida de requisição, configuração avançada, debugging de erros ou implementação de testes.
-license: AGPL-3.0
-compatibility: Designed for Claude Code (or similar products)
+  Especialista em NestJS: módulos, injeção de dependências, guards, interceptors, pipes,
+  middleware, Jest/Supertest, TypeORM/Prisma, autenticação Passport/JWT, diagnóstico de erros
+  de DI e padrões enterprise. Trigger: problemas ou features do NestJS — módulos, DI,
+  decorators, ciclo de vida de requisição, configuração avançada, debugging ou testes.
 allowed-tools: Read Write Edit Glob Grep Bash
 metadata:
   author: jarvis-team
   version: "2.0"
   area: backend
   stack: nestjs
-# Campos Claude Code-specific (não fazem parte da spec oficial agentskills.io):
 argument-hint: "[módulo|guard|interceptor|pipe|teste|auth|config|erro] [contexto]"
 disable-model-invocation: false
 ---

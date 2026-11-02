@@ -1,20 +1,17 @@
 ---
 name: eng-frontend
 description: >
-  Skill base de desenvolvimento frontend para a plataforma web, válida em qualquer framework:
-  HTML semântico, CSS e design responsivo, JavaScript e DOM, estado e componentes, UI e UX,
-  acessibilidade, performance, APIs do navegador, testes, segurança do cliente, design system/tokens
-  e arquitetura de micro frontend. Pode ser complementada por skills especializados de uma stack.
-  Trigger: Use para componentes, interface, estado, bundle, renderização, Core Web Vitals,
-  acessibilidade (WCAG), design system, micro frontend, testes de interface ou frontend em geral.
-license: AGPL-3.0
-compatibility: Designed for Claude Code (or similar products)
+  Base de frontend web, neutra de framework: HTML semântico, CSS responsivo, JavaScript/DOM,
+  estado e componentes, UI/UX, acessibilidade, performance, APIs do navegador, testes,
+  segurança do cliente, design system/tokens, micro frontend; + especializações de stack.
+  Trigger: componentes, interface, estado, bundle, renderização, Core Web Vitals,
+  acessibilidade (WCAG), design system, micro frontend, testes de interface ou frontend em
+  geral.
 allowed-tools: Read Write Edit Glob Grep Bash
 metadata:
   author: jarvis-team
   version: "2.0"
   area: frontend
-# Campos Claude Code-specific (não fazem parte da spec oficial agentskills.io):
 argument-hint: "[componente|feature|problema|performance|acessibilidade|estado] [contexto]"
 disable-model-invocation: false
 ---

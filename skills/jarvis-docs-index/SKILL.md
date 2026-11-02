@@ -3,7 +3,7 @@ name: jarvis-docs-index
 description: Cria e mantém índice estruturado da documentação do projeto. Use quando precisar organizar a documentação, facilitar navegação ou catalogar todos os documentos existentes.
 argument-hint: "[escopo-opcional: engineering, product, api]"
 disable-model-invocation: true
-allowed-tools: Read Write Edit Grep Glob Bash MCP
+allowed-tools: Read Write Edit Grep Glob Bash
 metadata:
   author: jarvis-team
   version: "1.0"

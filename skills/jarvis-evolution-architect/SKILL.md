@@ -1,10 +1,9 @@
 ---
 name: jarvis-evolution-architect
-description: Arquiteto especialista em evolução do Jarvis Framework. Analisa decisões arquiteturais, questiona designs, identifica gaps, pesquisa tendências e recomenda evoluções usando SDD, CDD e Agentic Software Engineering como lentes. Atua como mentor técnico responsável pela coerência e simplicidade do framework.
+description: Arquiteto da evolução do Jarvis Framework. Analisa e questiona decisões arquiteturais, identifica gaps, pesquisa tendências e recomenda evoluções com as lentes SDD, CDD e Agentic Software Engineering; mentor da coerência e simplicidade do framework.
 argument-hint: "[descrição do problema ou questão arquitetural]"
 disable-model-invocation: false
 allowed-tools: Read Bash Grep Glob WebSearch WebFetch
-license: AGPL-3.0
 metadata:
   author: jarvis-team
   version: "1.0"

@@ -3,7 +3,7 @@ name: eng-backend-arch-c4
 description: Cria e mantém documentação de arquitetura usando C4 Model. Use quando precisar documentar sistemas com diagramas de Contexto, Container, Componente e Código.
 argument-hint: "[nivel: context|container|component|code] [sistema-opcional]"
 disable-model-invocation: false
-allowed-tools: Read Write Edit Grep Glob Bash MCP
+allowed-tools: Read Write Edit Grep Glob Bash
 metadata:
   author: jarvis-team
   version: "1.0"

@@ -1,19 +1,15 @@
 ---
 name: eng-backend
 description: >
-  Skill base de desenvolvimento backend, válida em qualquer linguagem ou framework: design de APIs,
-  autenticação e autorização, banco de dados, concorrência, arquitetura de servidor, testes, segurança,
-  performance e tratamento de erros. Pode ser complementada por skills especializados de uma stack.
-  Trigger: Use para APIs, autenticação, lógica de negócio, workers, jobs, integrações, caching,
-  banco de dados ou backend em geral.
-license: AGPL-3.0
-compatibility: Designed for Claude Code (or similar products)
+  Base de backend, neutra de linguagem e framework: APIs, autenticação e autorização, banco de
+  dados, concorrência, arquitetura de servidor, testes, segurança, performance e erros; +
+  especializações de stack. Trigger: APIs, autenticação, lógica de negócio, workers, jobs,
+  filas e mensageria, integrações, caching, banco de dados ou backend em geral.
 allowed-tools: Read Write Edit Glob Grep Bash
 metadata:
   author: jarvis-team
   version: "2.0"
   area: backend
-# Campos Claude Code-specific (não fazem parte da spec oficial agentskills.io):
 argument-hint: "[endpoint|auth|worker|integração|refactor|debug] [contexto]"
 disable-model-invocation: false
 ---

@@ -1,20 +1,16 @@
 ---
 name: eng-ai
 description: >
-  Skill base de IA, válida em qualquer modelo, provedor ou biblioteca: fundamentos de machine
-  learning, matemática e estatística, dados para IA, deep learning e modelos fundacionais,
-  LLMs/chatbots/agentes/RAG, avaliação e experimentação, engenharia de sistemas de IA, MLOps,
-  produto de IA, arquitetura de soluções de IA, governança e segurança/IA responsável.
-  Trigger: Use para features com LLM, RAG, agentes, chatbots, embeddings, modelos de ML,
-  avaliação/experimentação, MLOps ou qualquer decisão sobre construir/operar sistemas de IA.
-license: AGPL-3.0
-compatibility: Designed for Claude Code (or similar products)
+  Base de IA, neutra de modelo e provedor: machine learning, matemática/estatística, dados para
+  IA, deep learning e modelos fundacionais, LLMs/chatbots/agentes/RAG, avaliação e
+  experimentação, engenharia de sistemas de IA, MLOps, produto e arquitetura de IA, governança
+  e IA responsável. Trigger: features com LLM, RAG, agentes, chatbots, embeddings, modelos de
+  ML, avaliação, MLOps ou decisões sobre sistemas de IA.
 allowed-tools: Read Write Edit Glob Grep Bash WebFetch WebSearch
 metadata:
   author: jarvis-team
   version: "1.0"
   area: ai
-# Campos Claude Code-specific (não fazem parte da spec oficial agentskills.io):
 argument-hint: "[llm|rag|agente|avaliacao|mlops|arquitetura] [contexto]"
 disable-model-invocation: false
 ---

@@ -1,22 +1,17 @@
 ---
 name: jarvis-fork
 description: >
-  Ajusta o Jarvis a uma empresa sem editar o core: conduz uma conversa curta até achar onde um
-  workflow, skill, agente, rule ou template do core não está servindo, propõe o menor ajuste,
-  simula o efeito e, só com o Sim, grava o fork no overlay da empresa ($IDE/overlays/{COMPANY_PROFILE}/)
-  pelo CLI `jarvis fork`. Também lista (--list), atualiza (--update) e remove (--delete) forks, e
-  pergunta se o ajuste é só da empresa ou vale para o core (abre a issue pelo jarvis-report-issue).
-  Trigger: Use quando um comando do Jarvis insiste num fluxo que não é o da empresa (base da
-  branch, entrega, gates, template de MR, regra interna) ou quando alguém pede para "customizar
-  o Jarvis para este cliente".
-license: AGPL-3.0
-compatibility: Designed for Claude Code (or similar products)
+  Ajusta o Jarvis a uma empresa sem editar o core: acha onde um workflow, skill, agente, rule
+  ou template não serve, propõe o menor ajuste, simula e, só com o Sim, grava o fork no overlay
+  ($IDE/overlays/{COMPANY_PROFILE}/) via `jarvis fork`; lista, atualiza e remove forks (--list,
+  --update, --delete); se valer para o core, abre issue pelo jarvis-report-issue. Trigger:
+  comando do Jarvis num fluxo que não é o da empresa (base da branch, entrega, gates, template
+  de MR, regra interna) ou "customizar o Jarvis para este cliente".
 allowed-tools: Read Write Edit Glob Grep Bash
 metadata:
   author: jarvis-team
   version: "1.0"
   area: global
-# Campos Claude Code-specific (não fazem parte da spec oficial agentskills.io):
 argument-hint: "[artefato] [--list|--update|--delete]"
 disable-model-invocation: false
 ---

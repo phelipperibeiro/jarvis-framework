@@ -6,7 +6,6 @@ description: >
   Trigger: Use quando precisar verificar se o código novo ou modificado possui testes adequados antes do merge.
 argument-hint: "[caminho-opcional]"
 allowed-tools: Read Grep Glob Bash
-license: AGPL-3.0
 metadata:
   author: jarvis-team
   version: "2.0"

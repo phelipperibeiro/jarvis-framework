@@ -3,8 +3,7 @@ name: jarvis-init
 description: Inicializa o framework JARVIS e guia novos membros no processo de onboarding. Use quando precisar configurar o ambiente, criar ENV.md, validar MCPs ou orientar um novo desenvolvedor.
 argument-hint: "[upgrade | nome-do-membro-opcional]"
 disable-model-invocation: false
-allowed-tools: Read Write Edit Grep Glob Bash MCP
-license: AGPL-3.0
+allowed-tools: Read Write Edit Grep Glob Bash
 metadata:
   author: jarvis-team
   version: "1.1"
