@@ -947,3 +947,39 @@ test("syncRulesForProfile: falha ao gravar uma rule vai para errors e as outras 
     assert.ok(existsSync(join(ideDir, "rules", "universal.md")));
   });
 });
+
+test("syncAssets (kiro): upgrade sobre instalação existente não solta skill-*.md em steering/ (#83)", () => {
+  withJarvisRoot((root, target) => {
+    buildMinimalFramework(root);
+    write(
+      root,
+      "skills/bloco-skill/SKILL.md",
+      [
+        "---",
+        "name: bloco-skill",
+        "description: >",
+        "  Atende a Zona Norte",
+        "  e a Sul.",
+        "---",
+        "# corpo",
+      ].join("\n")
+    );
+    const opts = { workflowsFolder: "steering" };
+    syncAssets(target, "kiro", opts);
+    // Instalação afetada por upgrades antigos: um solto com par e um arquivo da pessoa sem par.
+    write(target, ".kiro/steering/skill-test-skill.md", "solto antigo");
+    write(target, ".kiro/steering/skill-meu.md", "da pessoa");
+    syncAssets(target, "kiro", opts);
+
+    const steering = join(target, ".kiro/steering");
+    const soltos = readdirSync(steering).filter((n) => n.startsWith("skill-"));
+    assert.deepEqual(soltos, ["skill-meu.md"], "só fica o arquivo sem par em steering/skills/");
+    assert.ok(existsSync(join(steering, "skills/skill-test-skill.md")));
+    assert.ok(existsSync(join(steering, "skills/skill-bloco-skill.md")));
+    // A description em bloco passa inteira, sem cortar na letra "Z".
+    assert.match(
+      readFileSync(join(steering, "skills/skill-bloco-skill.md"), "utf-8"),
+      /^description: "Atende a Zona Norte e a Sul\."$/m
+    );
+  });
+});

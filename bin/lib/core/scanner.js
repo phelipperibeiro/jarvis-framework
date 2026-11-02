@@ -1,7 +1,11 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { getFrameworkRoot } from "../utils/paths.js";
-import { parseFrontmatter } from "../utils/frontmatter.js";
+import {
+  extractFrontmatterBlock,
+  parseFrontmatter,
+  readDescription,
+} from "../utils/frontmatter.js";
 
 function extractDeps(content) {
   const deps = { rules: [], templates: [], skills: [], agents: [] };
@@ -37,11 +41,12 @@ function scanDir(dir, type) {
         if (existsSync(skillFile)) {
           const content = readFileSync(skillFile, "utf-8");
           const fm = parseFrontmatter(content);
+          const description = readDescription(extractFrontmatterBlock(content));
           results.push({
             id: fm.name || entry.name,
             type,
             name: fm.name || entry.name,
-            description: fm.description || "",
+            description,
             version: fm.version || "1.0.0",
             deps: extractDeps(content),
             path: skillFile,
@@ -59,13 +64,14 @@ function scanDir(dir, type) {
 
     const content = readFileSync(fullPath, "utf-8");
     const fm = parseFrontmatter(content);
+    const description = readDescription(extractFrontmatterBlock(content));
     const id = entry.name.replace(".md", "");
 
     results.push({
       id,
       type,
-      name: fm.description || id,
-      description: fm.description || "",
+      name: description || id,
+      description,
       model: fm.model || fm.recommended_model || "",
       version: fm.version || "1.0.0",
       deps: extractDeps(content),
