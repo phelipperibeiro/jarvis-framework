@@ -48,7 +48,6 @@ skills/
 │   └── references/
 ├── eng-backend-nestjs/           # Framework NestJS: módulos, DI, guards, interceptors, pipes, Passport/JWT
 │   └── SKILL.md
-│   └── SKILL.md
 ├── eng-backend-microservices-trace/ # Rastreamento de bugs entre serviços (HTTP + AMQP); especialização de backend
 │   └── SKILL.md
 ├── eng-platform/         # Base neutra de platform/infra (+ especializações em PLATFORM_SPECIALIZATIONS)
@@ -82,7 +81,8 @@ skills/
 ├── jarvis-fork/                 # Fork guiado de um artefato do core para o overlay da empresa (COMPANY_PROFILE; CLI jarvis fork)
 │   └── SKILL.md
 ├── jarvis-context-detect/       # Detecta contexto do projeto/tarefa
-│   └── SKILL.md
+│   ├── SKILL.md
+│   └── references/              # cdd-aplicado-a-prompts.md, eng.work.md (tabelas da Fase 0 do eng.work)
 └── jarvis-docs-central/         # Sync/publish docs no central-docs (GitHub/GitLab)
     └── SKILL.md
 ```
@@ -121,7 +121,6 @@ description: >
 argument-hint: "[argumentos]"
 disable-model-invocation: false
 allowed-tools: Read Edit Write Glob Grep Bash
-license: AGPL-3.0
 metadata:
   author: jarvis-team
   version: "1.0"
@@ -129,6 +128,8 @@ metadata:
   stack: golang        # só em especializações de backend/frontend
 ---
 ```
+
+> A `description` entra no prompt de toda sessão: uma frase do que o skill cobre e `Trigger:` com quando usar, sem repetir o que já está no corpo. Use bloco `>` se o texto tiver `": "`. `allowed-tools` só com ferramentas existentes (Read, Write, Edit, Glob, Grep, Bash, WebFetch, WebSearch…); ele libera a ferramenta sem pedir permissão.
 
 > **`metadata.area` é obrigatório.** Um skill instalado sem área reconhecida faz os comandos `eng.*` serem bloqueados (ver `rules/engineering/eng.skills-rules.md`).
 

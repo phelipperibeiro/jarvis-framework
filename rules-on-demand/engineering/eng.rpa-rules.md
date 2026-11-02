@@ -7,6 +7,8 @@
 Definir padrões de arquitetura, estrutura de projeto, resiliência, observabilidade e segurança
 para robôs de automação RPA. Toda implementação nova deve seguir estas regras.
 
+**Segurança:** antes de escrever o `architecture.md` das Fases N1.5 e U2.5 do `eng.rpa.robot`, leia `$IDE/rules-on-demand/engineering/eng.security-rules.md`, seção "Fase: eng.start", e siga-a.
+
 ---
 
 ## 0. Princípios Fundamentais

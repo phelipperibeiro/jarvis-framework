@@ -6,7 +6,6 @@ description: >
 argument-hint: "[jira-key-opcional]"
 disable-model-invocation: false
 allowed-tools: Read Grep Glob Bash
-license: AGPL-3.0
 metadata:
   author: jarvis-team
   version: "1.0"
@@ -398,9 +397,37 @@ cat $SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/context.md
 Se o arquivo existir e for recente (< 1 hora), usar perfil existente.
 Se não existir ou for antigo, executar detecção novamente.
 
+Os workflows abaixo refinam essa regra.
+
+### eng.start
+
+Com `ENABLE_CDD=true`, roda a detecção mesmo que já exista `context.md` (Fase 0.1); o perfil é apresentado pelo skill e ajustado com `--override`.
+
+| Tipo detectado | Impacto no workflow |
+|----------------|---------------------|
+| `hotfix` | Skip 3.3 (padrões), architecture.md mínimo |
+| `bugfix` | Architecture.md simplificado, foco em root cause |
+| `feature` | Fluxo completo com todas as fases |
+| `refactor` | Aumentar Fase 3 (análise de impacto) |
+
+| Autonomia | Comportamento |
+|-----------|---------------|
+| `alta` | Executar mais, perguntar menos, documentar decisões tomadas |
+| `média` | Balanço entre execução e validação |
+| `baixa` | Apresentar opções ao invés de decidir, aguardar validação |
+
+### eng.work
+
+Reaproveita o `context.md` existente; sem ele, roda a detecção (Fase 0). Não reapresenta o perfil. As tabelas de calibração estão em [references/eng.work.md](references/eng.work.md), lido só pelo `eng.work`.
+
+### eng.debug
+
+Reaproveita o `context.md` existente; sem ele, roda a detecção (Passo 1 de `eng.debug.md`). A `urgencia` define o orçamento de etapas.
+
 ---
 
 ## Recursos Adicionais
 
 - **Template**: Veja [assets/context-profile-template.md](assets/context-profile-template.md)
 - **Documentação CDD**: Veja `$IDE/skills/jarvis-context-detect/references/cdd-aplicado-a-prompts.md`
+- **Calibração do `eng.work`**: Veja `$IDE/skills/jarvis-context-detect/references/eng.work.md`

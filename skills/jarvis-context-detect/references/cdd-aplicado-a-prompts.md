@@ -126,7 +126,7 @@ Em `eng-rules.md`, nova seção "Regras Graduais por Contexto (CDD)" com tabelas
 
 | Agent | Mudança |
 |-------|---------|
-| `eng.agent.md` | Seção "Calibração Contextual (CDD)" com detecção automática de projeto (testes, TypeScript strict, CI/CD), detecção de urgência por palavras-chave, ajuste silencioso de comportamento |
+| `eng.agent.md` | Seção "Calibração Contextual (CDD)": segue o `context.md` (gerado pelo skill) e mantém só o modo pela mensagem do usuário e a comunicação por `POSITION` sem `context.md`; ajuste silencioso |
 | `eng.qa.testing-engineer.md` | Calibração por cobertura existente, tipo de tarefa, POSITION e urgência |
 
 ### 4. CONTEXT_PROFILE

@@ -8,7 +8,6 @@ description: >
 argument-hint: "[path-do-arquivo-criado-ou-modificado]"
 disable-model-invocation: false
 allowed-tools: Read Write Edit Grep Glob Bash
-license: AGPL-3.0
 metadata:
   author: jarvis-team
   version: "2.0"

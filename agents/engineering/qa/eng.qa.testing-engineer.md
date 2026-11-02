@@ -127,29 +127,7 @@ Ler a spec fornecida e verificar:
 
 ## Calibração Contextual (CDD)
 
-> **Princípio**: Adaptar o rigor e cobertura de testes ao contexto real do projeto e da tarefa.
-> 📚 **Skill**: Use `/jarvis-context-detect` para detecção automatizada do contexto
-
-### Herdar Contexto da Sessão
-
-Se existir arquivo `context.md` na sessão (gerado por `/jarvis-context-detect`), use-o:
-
-```bash
-# Localização: $SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/context.md
-```
-
-```yaml
-CONTEXT_PROFILE:
-  tipo: [hotfix|bugfix|feature|refactor]
-  urgencia: [normal|alta|baixa]
-  rigor: [mínimo|padrão|alto]
-  comunicacao: [didático|direto|estratégico]
-  projeto:
-    testes: [existentes|ausentes]
-    cobertura: [alta|média|baixa]
-```
-
-> Se `context.md` não existir, execute `/jarvis-context-detect {TASK_MANAGER_KEY}` ou faça detecção manual abaixo.
+Se existir `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/context.md` (gerado por `/jarvis-context-detect`; campos descritos no skill), aplique as tabelas abaixo ao `CONTEXT_PROFILE` dele. Se não existir, execute `/jarvis-context-detect {TASK_MANAGER_KEY}` ou faça a detecção manual.
 
 ### Calibração por Tipo de Tarefa (do context.md)
 

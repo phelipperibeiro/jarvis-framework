@@ -23,7 +23,12 @@ import {
   isExcludedFromSync,
   withOverlayMarker,
   readOverlayMarker,
+  syncRulesForProfile,
 } from "../bin/lib/core/sync-engine.js";
+import { listRulesForProfile } from "../bin/lib/core/profile-filter.js";
+import { createHash } from "node:crypto";
+import { dirname, relative, sep } from "node:path";
+import { fileURLToPath } from "node:url";
 
 function withJarvisRoot(fn) {
   const root = mkdtempSync(join(tmpdir(), "jarvis-root-"));
@@ -168,6 +173,41 @@ test("syncAssets: codex gera openai.yaml por skill com name/description do front
     const yaml = readFileSync(yamlPath, "utf-8");
     assert.match(yaml, /^name: test-skill$/m);
     assert.match(yaml, /description: "Um skill de teste"/);
+  });
+});
+
+test("syncAssets: codex não corta a description na letra Z (bloco > e último campo)", () => {
+  withJarvisRoot((root, target) => {
+    buildMinimalFramework(root);
+    write(
+      root,
+      "skills/z-skill/SKILL.md",
+      [
+        "---",
+        "name: z-skill",
+        "description: >",
+        "  Base com QA_SPECIALIZATIONS e Zod.",
+        "  Trigger: quando usar.",
+        "metadata:",
+        "  area: qa",
+        "---",
+      ].join("\n")
+    );
+    write(
+      root,
+      "skills/fim-skill/SKILL.md",
+      "---\nname: fim-skill\ndescription: Zoom no fim\n---\n"
+    );
+
+    syncAssets(target, "codex", {});
+
+    const yaml = (skill) =>
+      readFileSync(join(target, `.codex/skills/${skill}/openai.yaml`), "utf-8");
+    assert.match(
+      yaml("z-skill"),
+      /description: "Base com QA_SPECIALIZATIONS e Zod\. Trigger: quando usar\."/
+    );
+    assert.match(yaml("fim-skill"), /description: "Zoom no fim"/);
   });
 });
 
@@ -641,5 +681,247 @@ test("overlay: segundo sync com o mesmo perfil mantém a rule só do overlay sem
       JSON.stringify(again.copied)
     );
     assert.ok(again.copied.includes("(overlay) rules/so-da-acme.md"));
+  });
+});
+
+// ---------------------------------------------------------------------------
+// syncRulesForProfile: Passo 8 do /jarvis-init pelo CLI (#102)
+// ---------------------------------------------------------------------------
+
+const AT = (hub, pos, area, squad, style) =>
+  `> **Applies to:** HUB: ${hub} | POSITION: ${pos} | AREA: ${area} | SQUAD: ${squad}` +
+  (style ? ` | ARTIFACT_STYLE: ${style}` : "");
+const BACKEND = { HUB: "BACKEND", POSITION: "SENIOR", AREA: "ENGINEERING", SQUAD: "CORE" };
+
+/** Core com uma rule de cada caso e a pasta da IDE com o ENV.md (sem COMPANY_PROFILE → default). */
+function buildRulesFixture(root, target, envExtra = "") {
+  write(root, "rules/engineering/eng-rules.md", `${AT("all", "all", "all", "all")}\n# eng\n`);
+  write(
+    root,
+    "rules/engineering/frontend/x.md",
+    `${AT("FRONTEND", "all", "ENGINEERING", "all")}\n`
+  );
+  write(root, "rules/product/y.md", `${AT("all", "all", "PRODUCT", "all")}\n`);
+  write(root, "rules/universal.md", "# sem bloco\n");
+  write(root, "rules/rtk-rules.md", `${AT("all", "all", "all", "all")}\n# rtk\n`);
+  write(
+    root,
+    "rules/artifact-style-rules.md",
+    `${AT("all", "all", "all", "all", "human-generated")}\n`
+  );
+  write(
+    root,
+    "rules-on-demand/engineering/eng.plan-rules.md",
+    `${AT("all", "all", "ENGINEERING", "all")}\n`
+  );
+  write(
+    root,
+    "rules-on-demand/product/prod.guided-rules.md",
+    `${AT("all", "all", "PRODUCT", "all")}\n`
+  );
+  write(target, ".claude/ENV.md", `HUB=BACKEND\nCOMPANY_PROFILE=acme\n${envExtra}`);
+  return join(target, ".claude");
+}
+
+const ideFiles = (ideDir, dir) => {
+  const base = join(ideDir, dir);
+  if (!existsSync(base)) return [];
+  const out = [];
+  const walk = (d) => {
+    for (const e of readdirSync(d, { withFileTypes: true })) {
+      const f = join(d, e.name);
+      if (e.isDirectory()) walk(f);
+      else if (e.name.endsWith(".md")) out.push(relative(base, f).split(sep).join("/"));
+    }
+  };
+  walk(base);
+  return out.sort();
+};
+
+test("syncRulesForProfile: perfil BACKEND recebe a que bate e a universal, não a de FRONTEND nem a de PRODUCT (a)", () => {
+  withJarvisRoot((root, target) => {
+    const ideDir = buildRulesFixture(root, target);
+    const r = syncRulesForProfile(ideDir, BACKEND, { frameworkRoot: root });
+    assert.deepEqual(ideFiles(ideDir, "rules"), ["engineering/eng-rules.md", "universal.md"]);
+    assert.equal(r.universal, 1);
+    assert.equal(r.copied.rules, 2);
+  });
+});
+
+test("syncRulesForProfile: rtk-rules.md só com rtkEnabled (b)", () => {
+  withJarvisRoot((root, target) => {
+    const ideDir = buildRulesFixture(root, target);
+    syncRulesForProfile(ideDir, BACKEND, { frameworkRoot: root, rtkEnabled: true });
+    assert.ok(ideFiles(ideDir, "rules").includes("rtk-rules.md"));
+    syncRulesForProfile(ideDir, BACKEND, { frameworkRoot: root, rtkEnabled: false });
+    assert.ok(!ideFiles(ideDir, "rules").includes("rtk-rules.md"));
+  });
+});
+
+test("syncRulesForProfile: artifact-style só para ARTIFACT_STYLE=human-generated (c)", () => {
+  withJarvisRoot((root, target) => {
+    const ideDir = buildRulesFixture(root, target);
+    syncRulesForProfile(
+      ideDir,
+      { ...BACKEND, ARTIFACT_STYLE: "human-generated" },
+      { frameworkRoot: root }
+    );
+    assert.ok(ideFiles(ideDir, "rules").includes("artifact-style-rules.md"));
+    syncRulesForProfile(
+      ideDir,
+      { ...BACKEND, ARTIFACT_STYLE: "ai-generated" },
+      { frameworkRoot: root }
+    );
+    assert.ok(!ideFiles(ideDir, "rules").includes("artifact-style-rules.md"));
+  });
+});
+
+test("syncRulesForProfile: rule que deixou de bater sai; a que passou a bater é copiada (d)", () => {
+  withJarvisRoot((root, target) => {
+    const ideDir = buildRulesFixture(root, target);
+    write(ideDir, "rules/engineering/frontend/x.md", "cópia antiga");
+    const r = syncRulesForProfile(ideDir, BACKEND, { frameworkRoot: root });
+    assert.ok(!existsSync(join(ideDir, "rules/engineering/frontend/x.md")));
+    assert.equal(r.removed, 1);
+    syncRulesForProfile(ideDir, { ...BACKEND, HUB: "FRONTEND" }, { frameworkRoot: root });
+    assert.ok(existsSync(join(ideDir, "rules/engineering/frontend/x.md")));
+  });
+});
+
+test("syncRulesForProfile: overlay com o mesmo caminho vale pelo Applies to dele, marcado; se não bate, sai (e)", () => {
+  withJarvisRoot((root, target) => {
+    const ideDir = buildRulesFixture(root, target);
+    // O core manda a eng-rules para todos; o overlay acme só para FRONTEND.
+    write(
+      ideDir,
+      "overlays/acme/rules/engineering/eng-rules.md",
+      `${AT("FRONTEND", "all", "all", "all")}\n# acme\n`
+    );
+    const r = syncRulesForProfile(ideDir, BACKEND, { frameworkRoot: root });
+    assert.ok(!existsSync(join(ideDir, "rules/engineering/eng-rules.md")));
+    assert.equal(r.fromOverlay, 0);
+    const r2 = syncRulesForProfile(
+      ideDir,
+      { ...BACKEND, HUB: "FRONTEND" },
+      { frameworkRoot: root }
+    );
+    const copia = readFileSync(join(ideDir, "rules/engineering/eng-rules.md"), "utf-8");
+    assert.equal(readOverlayMarker(copia), "acme");
+    assert.match(copia, /# acme/);
+    assert.equal(r2.fromOverlay, 1);
+  });
+});
+
+test("syncRulesForProfile: rule própria da pessoa (fora do core e do overlay) fica intacta (f)", () => {
+  withJarvisRoot((root, target) => {
+    const ideDir = buildRulesFixture(root, target);
+    write(ideDir, "rules/minha-rule.md", `${AT("FRONTEND", "all", "all", "all")}\nminha\n`);
+    syncRulesForProfile(ideDir, BACKEND, { frameworkRoot: root });
+    assert.equal(
+      readFileSync(join(ideDir, "rules/minha-rule.md"), "utf-8"),
+      `${AT("FRONTEND", "all", "all", "all")}\nminha\n`
+    );
+  });
+});
+
+test("syncRulesForProfile: rules-on-demand/ é filtrada igual (g)", () => {
+  withJarvisRoot((root, target) => {
+    const ideDir = buildRulesFixture(root, target);
+    write(ideDir, "rules-on-demand/product/prod.guided-rules.md", "antiga");
+    const r = syncRulesForProfile(ideDir, BACKEND, { frameworkRoot: root });
+    assert.deepEqual(ideFiles(ideDir, "rules-on-demand"), ["engineering/eng.plan-rules.md"]);
+    assert.equal(r.copied["rules-on-demand"], 1);
+  });
+});
+
+test("syncRulesForProfile: overlays/ fica intacto, conferido por hash; a pasta do perfil é criada se faltar (h)", () => {
+  withJarvisRoot((root, target) => {
+    const ideDir = buildRulesFixture(root, target);
+    const semPasta = syncRulesForProfile(ideDir, BACKEND, { frameworkRoot: root });
+    assert.equal(semPasta.folderCreated, true);
+    write(
+      ideDir,
+      "overlays/acme/rules/engineering/eng-rules.md",
+      `${AT("all", "all", "all", "all")}\n# acme\n`
+    );
+    const hash = () => {
+      const h = createHash("sha256");
+      for (const f of ideFiles(ideDir, "overlays"))
+        h.update(f + readFileSync(join(ideDir, "overlays", f)));
+      return h.digest("hex");
+    };
+    const antes = hash();
+    const r = syncRulesForProfile(ideDir, BACKEND, { frameworkRoot: root });
+    assert.equal(hash(), antes);
+    assert.equal(r.folderCreated, false);
+  });
+});
+
+test("syncRulesForProfile: com o rules/ real e sem overlay, o resultado é o de listRulesForProfile nos 4 perfis do BASE", () => {
+  const repo = join(dirname(fileURLToPath(import.meta.url)), "..");
+  const perfis = [
+    { HUB: "FULLCYCLE", POSITION: "GENERALIST", AREA: "ENGINEERING", SQUAD: "CORE" },
+    BACKEND,
+    { HUB: "FRONTEND", POSITION: "PLENO", AREA: "ENGINEERING", SQUAD: "CORE" },
+    { HUB: "QA", POSITION: "QA-ENGINEER", AREA: "ENGINEERING", SQUAD: "CORE" },
+  ];
+  for (const perfil of perfis) {
+    const target = mkdtempSync(join(tmpdir(), "jarvis-rules-equiv-"));
+    try {
+      const ideDir = join(target, ".claude");
+      mkdirSync(join(ideDir, "overlays", "stark-industries"), { recursive: true });
+      writeFileSync(join(ideDir, "ENV.md"), "HUB=X\n");
+      syncRulesForProfile(ideDir, perfil, { frameworkRoot: repo });
+      for (const dir of ["rules", "rules-on-demand"]) {
+        const esperado = listRulesForProfile(join(repo, dir), perfil)
+          .map((r) => r.path)
+          .sort();
+        assert.deepEqual(ideFiles(ideDir, dir), esperado, `${perfil.HUB}: ${dir}/`);
+      }
+    } finally {
+      rmSync(target, { recursive: true, force: true });
+    }
+  }
+});
+
+test("syncRulesForProfile: com dryRun não grava nem apaga, e conta o que faria", () => {
+  withJarvisRoot((root, target) => {
+    const ideDir = buildRulesFixture(root, target);
+    write(ideDir, "rules/engineering/frontend/x.md", "cópia antiga");
+    const r = syncRulesForProfile(ideDir, BACKEND, { frameworkRoot: root, dryRun: true });
+    assert.deepEqual(ideFiles(ideDir, "rules"), ["engineering/frontend/x.md"]);
+    assert.ok(!existsSync(join(ideDir, "overlays", "acme")));
+    assert.equal(r.removed, 1);
+    assert.equal(r.copied.rules, 2);
+  });
+});
+
+test("syncRulesForProfile: envText vale no lugar do ENV.md do disco; COMPANY_PROFILE inválido vira aviso e o default", () => {
+  withJarvisRoot((root, target) => {
+    const ideDir = buildRulesFixture(root, target);
+    const globex = syncRulesForProfile(ideDir, BACKEND, {
+      frameworkRoot: root,
+      envText: "COMPANY_PROFILE=globex\n",
+    });
+    assert.equal(globex.companyProfile, "globex");
+    assert.ok(existsSync(join(ideDir, "overlays", "globex")));
+    const invalido = syncRulesForProfile(ideDir, BACKEND, {
+      frameworkRoot: root,
+      envText: "COMPANY_PROFILE=../x\n",
+    });
+    assert.equal(invalido.companyProfile, "stark-industries");
+    assert.ok(invalido.warnings.length > 0);
+  });
+});
+
+test("syncRulesForProfile: falha ao gravar uma rule vai para errors e as outras seguem", () => {
+  withJarvisRoot((root, target) => {
+    const ideDir = buildRulesFixture(root, target);
+    // Uma pasta no lugar do arquivo de destino faz a cópia falhar.
+    mkdirSync(join(ideDir, "rules", "engineering", "eng-rules.md"), { recursive: true });
+    const r = syncRulesForProfile(ideDir, BACKEND, { frameworkRoot: root });
+    assert.equal(r.errors.length, 1);
+    assert.match(r.errors[0], /^rules\/engineering\/eng-rules\.md: /);
+    assert.ok(existsSync(join(ideDir, "rules", "universal.md")));
   });
 });

@@ -1,8 +1,11 @@
 ---
 name: eng-global-task-comment
 description: >
-  Adiciona um comentário no card do TASK_MANAGER (Jira, GitHub Issues ou GitLab Issues) pela CLI oficial do vendor, só depois de mostrar o texto e o usuário dizer Sim (regra de ouro); sem board (freelance), registra no task-log.md da sessão.
-  Trigger: registrar no card um evento relevante: desvio do plano, auditoria do Advisor, bloqueio, link do MR ou outro evento que você aprove (nunca início ou fim de etapa).
+  Adiciona comentário no card do TASK_MANAGER (Jira, GitHub ou GitLab Issues) pela CLI do
+  vendor, só depois de mostrar o texto e ter o Sim (regra de ouro); sem board (freelance),
+  registra no task-log.md da sessão. Trigger: evento relevante no card: desvio do plano,
+  auditoria do Advisor, bloqueio, link do MR ou outro aprovado (nunca início ou fim de
+  etapa).
 argument-hint: "{TASK_MANAGER_KEY} {mensagem}"
 disable-model-invocation: false
 allowed-tools: Read Write Bash

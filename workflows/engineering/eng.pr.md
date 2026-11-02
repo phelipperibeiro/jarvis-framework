@@ -391,7 +391,7 @@ Regras em `$IDE/rules-on-demand/engineering/eng.pr-rules.md` (seção "daily.md"
 - Branch: {NOME_DA_BRANCH}
 - MR: {LINK_DO_MR}   ← sem PR publicado: "— (abra à mão com o pull-request.md)"
 - Card: {URL do card, pela tabela da 4.1}   ← só com board; com o PR aberto, mova-o para a etapa equivalente a "em revisão" (o Jarvis não move card)
-- Labels: {labels sugeridos no PR Brief do gate-checklist.md, ex.: security}   ← só se houver; sem o relatório, ou sem o campo nele, avalie `eng-security-rules.md` direto; a pessoa adiciona no host (o `jarvis vcs create-merge` não põe label)
+- Labels: {labels sugeridos no PR Brief do gate-checklist.md, ex.: security}   ← só se houver; sem o relatório, ou sem o campo nele, avalie `rules-on-demand/engineering/eng.security-rules.md` (seção "Fase: eng.pre-pr") direto; a pessoa adiciona no host (o `jarvis vcs create-merge` não põe label)
 
 📊 Validações:
 - Testes: ✅ Passando

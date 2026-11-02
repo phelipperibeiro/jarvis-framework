@@ -6,6 +6,8 @@
 
 O workflow `start` tem como **único objetivo** criar o documento de arquitetura (`architecture.md`) para uma nova feature/tarefa. É uma etapa de **planejamento**, não de execução.
 
+**Segurança:** antes de escrever o `architecture.md`, leia `$IDE/rules-on-demand/engineering/eng.security-rules.md`, seção "Fase: eng.start", e siga-a.
+
 ---
 
 ## Princípios Fundamentais

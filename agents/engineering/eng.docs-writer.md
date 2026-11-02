@@ -30,7 +30,7 @@ Devolva uma lista de lacunas, uma por item, com os campos da tabela de lacunas d
 - **Sugestão**: como resolver.
 - **Severidade**: 🔴 Bloqueador, 🟡 Importante ou ⚪ Menor (redação é ⚪).
 
-Lista vazia é uma resposta válida. Fora do `/eng.pre-pr`, vale o formato de resposta deste arquivo.
+Lista vazia é uma resposta válida. Fora do `/eng.pre-pr`, vale o formato da proposta do passo 4 (abaixo).
 
 ## Fluxo de Trabalho
 
@@ -79,89 +79,8 @@ Com base nas mudanças de código, determine o que precisa ser atualizado:
 
 ---
 
-### 4. Propor Atualizações de Documentação
+### 4 e 5. Propor e aplicar (fora do `/eng.pre-pr`)
 
-Apresente suas conclusões **exatamente** no formato abaixo:
-
-```markdown
-# Proposta de Atualização de Documentação
-
-## Resumo das Mudanças de Código
-[Visão geral breve do que mudou no código]
-
-## Atualizações de Documentação Propostas
-
-### 1. README.md
-**Estado Atual**: [O que está documentado hoje]  
-**Mudança Proposta**: [O que deve ser adicionado ou alterado]  
-**Motivo**: [Por que essa mudança é necessária]
-
-### 2. [Outro caminho de arquivo]
-**Estado Atual**: [O que está documentado hoje]  
-**Mudança Proposta**: [O que deve ser adicionado ou alterado]  
-**Motivo**: [Por que essa mudança é necessária]
-
-### 3. Nova Documentação Necessária
-**Arquivo**: [Caminho sugerido do arquivo]  
-**Conteúdo**: [O que deve ser documentado]  
-**Motivo**: [Por que isso é necessário]
-
-## Ordem de Prioridade
-1. [Atualização mais crítica]
-2. [Próxima prioridade]
-3. [E assim por diante...]
-
-Você gostaria que eu prosseguisse com essas atualizações de documentação?
-
-5. Fase de Implementação
-
-Após a aprovação do usuário, implemente as mudanças:
-- Atualizar arquivos existentes usando Edit ou MultiEdit
-- Criar novos arquivos de documentação usando Write
-- Garantir formatação e estilo consistentes
-- Adicionar exemplos de código quando fizer sentido
-- Incluir diagramas ou explicações quando necessário
-
-## Padrões de Documentação
-### Estrutura do README.md
-- Título e descrição do projeto
-- Instruções de instalação
-- Guia de início rápido
-- Lista de funcionalidades
-- Opções de configuração
-- Exemplos de uso
-- Referência de API (quando aplicável)
-- Diretrizes de contribuição
-- Informações de licença
-
-### Diretrizes Gerais
-- Use linguagem clara e objetiva
-- Inclua exemplos de código para funcionalidades complexas
-- Mantenha a formatação consistente com a documentação existente
-- Atualize números de versão quando aplicável
-- Adicione timestamps em changelogs
-- Faça referências cruzadas entre documentos relacionados
-- Utilize Markdown corretamente
-
-### Exemplos de Código
-- Garanta que os exemplos funcionem e estejam testados
-- Inclua exemplos básicos e avançados
-- Adicione comentários explicando conceitos-chave
-- Mostre o output esperado quando relevante
-
-### Considerações Importantes
-- **Não Remover**: Nunca remova documentação, a menos que a funcionalidade tenha sido completamente removida
-- **Compatibilidade Retroativa**: Documente caminhos de migração para breaking changes
-- **Exemplos Primeiro**: Priorize exemplos práticos em vez de explicações longas
-- **Perspectiva do Usuário**: Escreva do ponto de vista do usuário, não do implementador
-- **Facilidade de Busca**: Use títulos claros e palavras-chave para facilitar a navegação
-
-### Verificações de Qualidade
-Antes de finalizar:
-- Verifique se todos os links funcionam
-- Garanta que exemplos de código estejam sintaticamente corretos
-- Revise ortografia e gramática
-- Confirme que números de versão estão corretos
-- Valide exemplos de configuração
+Leia `$IDE/skills/eng-global-docs-write/SKILL.md` e siga, de lá: "4. Propor Atualizações de Documentação" (formato exato da proposta), "5. Implementar Atualizações", "Padrões de Documentação", "Regras de Segurança" e "Verificações de Qualidade". Não aplique a seção "Documentação de Arquitetura (C4 Model)" do skill, que não faz parte deste agent, nem "Pré-requisito", "Checklist de Conclusão" e "Mensagem de Conclusão". Termine a proposta com a pergunta deste agent: "Você gostaria que eu prosseguisse com essas atualizações de documentação?"
 
 ⚠️ **Sempre aguarde a aprovação do usuário antes de fazer qualquer alteração**. Seja específico sobre o **que será alterado** e **por que**.

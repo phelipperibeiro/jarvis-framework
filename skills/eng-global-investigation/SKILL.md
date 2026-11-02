@@ -1,13 +1,12 @@
 ---
 name: eng-global-investigation
 description: >
-  Método de investigação de bugs, válido em qualquer stack: achar a causa raiz antes de propor
-  correção, hipóteses com evidência, limite de tentativas, veredito honesto e crítico antes de
-  concluir. Traz a política de acesso por ambiente (somente leitura por padrão; produção sempre só
-  leitura) e a regra de nada publicado no card. É o "como" do /eng.debug, nos casos investigar e varrer.
-  Trigger: Use ao investigar um bug, incidente, teste que falha ou comportamento inesperado, ou ao varrer um escopo atrás de problemas.
+  Método de investigação de bugs, neutro de stack: causa raiz antes da correção, hipóteses com
+  evidência, limite de tentativas, veredito honesto; acesso só leitura por padrão (produção
+  sempre); nada publicado no card. É o "como" do /eng.debug (investigar e varrer). Trigger:
+  bug, incidente, teste que falha, comportamento inesperado ou varrer um escopo atrás de
+  problemas.
 allowed-tools: Read Grep Glob Bash
-license: AGPL-3.0
 metadata:
   author: jarvis-team
   version: "1.0"

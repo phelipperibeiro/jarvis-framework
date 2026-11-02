@@ -1,21 +1,17 @@
 ---
 name: eng-data
 description: >
-  Skill base de dados, válida em qualquer banco, motor de processamento ou ferramenta de BI:
-  fundamentos de dados, modelagem, bancos de dados, arquitetura de dados (warehouse/lake/lakehouse),
-  pipelines e integração (ETL/ELT), qualidade de dados, governança/metadados/MDM, estatística e
-  pensamento analítico, analytics e BI, ciência de dados, DataOps e segurança/privacidade de dados.
-  Pode ser complementada por especializações registradas em DATA_SPECIALIZATIONS.
-  Trigger: Use para pipelines de dados, modelagem, queries analíticas, dashboards, contratos de
-  dados, qualidade/governança de dados, onboarding de fonte nova ou diagnóstico de pipeline.
-license: AGPL-3.0
-compatibility: Designed for Claude Code (or similar products)
+  Base de dados, neutra de banco, motor e BI: modelagem, bancos, arquitetura
+  (warehouse/lake/lakehouse), pipelines e integração ETL/ELT, qualidade,
+  governança/metadados/MDM, estatística, analytics e BI, ciência de dados, DataOps,
+  segurança/privacidade de dados; + DATA_SPECIALIZATIONS. Trigger: pipelines de dados,
+  modelagem, queries analíticas, dashboards, contratos de dados, qualidade/governança,
+  onboarding de fonte nova ou diagnóstico de pipeline.
 allowed-tools: Read Write Edit Glob Grep Bash
 metadata:
   author: jarvis-team
   version: "1.0"
   area: data
-# Campos Claude Code-specific (não fazem parte da spec oficial agentskills.io):
 argument-hint: "[pipeline|modelo|qualidade|dashboard|contrato|orquestracao] [contexto]"
 disable-model-invocation: false
 ---

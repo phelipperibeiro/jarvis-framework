@@ -12,19 +12,7 @@ padrao embutido nas bases `eng-backend`/`eng-frontend`; seguranca de infraestrut
 de seguranca da informacao (risco, ameacas, identidade, resposta a incidente, GRC, privacidade)
 ficam no `eng-platform` (temas 9 e 13).
 
----
-
-## Fase: eng.start (Arquitetura)
-
-Ao definir a arquitetura de uma feature, o agente DEVE incluir no `architecture.md`:
-
-1. **Dados sensiveis** — listar PII, dados financeiros e credenciais envolvidas na feature
-2. **Superficie de ataque** — mapear endpoints publicos vs. autenticados
-3. **Modelo de auth** — definir como autenticacao e autorizacao se aplicam (JWT, session, OAuth, RBAC)
-4. **Integracoes externas** — listar e validar que usam TLS; documentar retry e fallback
-5. **Estrategia de sanitizacao** — se a feature recebe inputs de usuario, documentar como serao validados
-
-> Se a feature nao envolve nenhum destes pontos, registrar explicitamente: "Sem superficie de seguranca identificada".
+> **Por etapa:** o que entra no `architecture.md` (`eng.start`, `eng.rpa.robot`, `eng.debug`) e o checklist de segurança do `gate-checklist.md` (`eng.pre-pr`) estão em `$IDE/rules-on-demand/engineering/eng.security-rules.md`, lido por esses comandos.
 
 ---
 
@@ -90,23 +78,6 @@ O agente DEVE aplicar as seguintes regras em todo codigo gerado ou revisado:
 - Lockfile (`package-lock.json`, `yarn.lock`, `pnpm-lock.yaml`) SEMPRE commitado
 - Ao adicionar dependencia nova: verificar manutencao ativa, downloads e issues conhecidas
 - `npm audit` (ou equivalente) nao deve ter vulnerabilidades HIGH ou CRITICAL antes de abrir PR
-
----
-
-## Fase: eng.pre-pr (Validacao)
-
-O agente DEVE incluir no checklist de pre-PR as seguintes verificacoes de seguranca:
-
-- [ ] **Secrets scan**: nenhum token, senha ou API key no diff
-- [ ] **Dependencias**: `npm audit` sem vulnerabilidades HIGH/CRITICAL
-- [ ] **Lockfile**: commitado e atualizado
-- [ ] **Inputs**: todo endpoint novo ou alterado valida inputs com schema
-- [ ] **Auth guard**: todo endpoint novo tem guard (ou `@Public()` explicito com justificativa)
-- [ ] **Outputs**: erros nao vazam detalhes internos
-
-Se o PR toca em areas sensiveis (auth, sessions, RBAC, CORS, CSP, permissoes), o agente DEVE:
-1. Registrar no PR Brief do `gate-checklist.md` que o PR leva o label `security` e orientar a pessoa a adiciona-lo ao PR (o Jarvis nao altera o PR no vendor sem perguntar, regra de ouro; o `jarvis vcs create-merge` nao poe label)
-2. Seguir o gate de seguranca inline do `eng.pre-pr` (sanitizacao, auth guards, headers, secrets scan, `npm audit`) antes do merge
 
 ---
 

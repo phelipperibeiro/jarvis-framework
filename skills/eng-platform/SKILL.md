@@ -1,25 +1,19 @@
 ---
 name: eng-platform
 description: >
-  Skill base de platform & infraestrutura, válida em qualquer provedor de nuvem, orquestrador ou
-  ferramenta de pipeline: sistemas, redes, cloud, infraestrutura como código, contêineres e
-  orquestração, CI/CD, observabilidade, confiabilidade (SRE), segurança de infraestrutura e
-  fundamentos de segurança da informação (risco, ameaças, identidade, resposta, GRC, privacidade),
-  resiliência, platform-as-product, FinOps, profiling e diagnóstico de performance, testes de
-  carga/chaos engineering e cache multi-camada. Pode ser complementada por skills especializados
-  de ferramenta ou provedor (ex: Terraform, Kubernetes, AWS, Datadog, k6).
-  Trigger: Use para provisionar ou alterar infraestrutura, criar/ajustar pipelines de CI/CD,
-  instrumentar observabilidade, planejar confiabilidade ou alta disponibilidade, hardening de
-  infraestrutura, modelar ameaças, responder a incidente de segurança, diagnosticar gargalo de
-  performance, planejar teste de carga/chaos ou projetar estratégia de cache, ou analisar custo de nuvem.
-license: AGPL-3.0
-compatibility: Designed for Claude Code (or similar products)
+  Base de platform e infraestrutura, neutra de provedor e ferramenta: sistemas, redes, cloud,
+  IaC, contêineres e orquestração, CI/CD, observabilidade, SRE, resiliência,
+  platform-as-product, FinOps, profiling e diagnóstico de performance, carga/chaos, cache
+  multi-camada e segurança de infra e da informação (risco, ameaças, identidade, resposta, GRC,
+  privacidade); especializações por ferramenta ou provedor (ex: Terraform, Kubernetes, AWS,
+  Datadog, k6). Trigger: provisionar ou alterar infra, CI/CD, observabilidade,
+  confiabilidade/alta disponibilidade, hardening, modelar ameaças, incidente de segurança,
+  gargalo de performance, teste de carga/chaos, cache ou custo de nuvem.
 allowed-tools: Read Write Edit Glob Grep Bash
 metadata:
   author: jarvis-team
   version: "1.0"
   area: platform
-# Campos Claude Code-specific (não fazem parte da spec oficial agentskills.io):
 argument-hint: "[iac|cicd|observabilidade|incidente|seguranca-infra|seguranca-info|custo|performance|cache|chaos] [contexto]"
 disable-model-invocation: false
 ---

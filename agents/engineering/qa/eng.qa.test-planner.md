@@ -70,42 +70,7 @@ Para detecção automatizada do contexto (calibração contextual do agente):
 
 ## Calibração Contextual (CDD)
 
-> **Princípio**: Adaptar o rigor e cobertura de testes ao contexto real do projeto e da tarefa.
-> 📚 **Skill**: Use `/jarvis-context-detect` para detecção automatizada do contexto
-> ⚠️ **Pré-requisito**: `ENABLE_CDD=true` no `ENV.md`. Se desativado, usar comportamento padrão.
-
-### Validar se CDD está Habilitado
-
-Antes de aplicar CDD, verificar `$IDE/ENV.md`:
-
-```bash
-# Se ENABLE_CDD=false ou não está definido:
-→ Usar cobertura PADRÃO (80% para features)
-→ Ignorar context.md
-
-# Se ENABLE_CDD=true:
-→ Ler context.md e aplicar calibração contextual
-```
-
-### Herdar Contexto da Sessão
-
-Se existir arquivo `context.md` na sessão (gerado por `/jarvis-context-detect`), use-o:
-
-```bash
-# Localização: $SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/context.md
-```
-
-```yaml
-CONTEXT_PROFILE:
-  tipo: [hotfix|bugfix|feature|refactor]
-  urgencia: [normal|alta|baixa]
-  rigor: [mínimo|padrão|alto]
-  projeto:
-    cobertura: [alta|média|baixa]
-    testes: [existentes|ausentes]
-```
-
-> Se `context.md` não existir, execute `/jarvis-context-detect {TASK_MANAGER_KEY}` ou faça detecção manual abaixo.
+Com `ENABLE_CDD=true` no `ENV.md`: se existir `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/context.md` (gerado por `/jarvis-context-detect`; campos descritos no skill), aplique as tabelas abaixo ao `CONTEXT_PROFILE` dele; se não existir, execute `/jarvis-context-detect {TASK_MANAGER_KEY}` ou faça a detecção manual. Com `ENABLE_CDD=false` ou não definido: use a cobertura PADRÃO (80% para features) e ignore o `context.md`.
 
 ### Calibração por Tipo de Tarefa
 
