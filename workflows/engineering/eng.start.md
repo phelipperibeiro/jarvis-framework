@@ -5,8 +5,6 @@ agent: "$IDE/agents/engineering/eng.agent.md"
 rules_file: "$IDE/rules-on-demand/engineering/eng.start-rules.md"
 template_file: "$IDE/templates/engineering/architecture-template.md"
 recommended_model: claude-sonnet-4-20250514
-model_tier: high
-model_justification: Requer análise arquitetural profunda, investigação de codebase e raciocínio complexo para criar documentação técnica de qualidade
 ---
 
 # start

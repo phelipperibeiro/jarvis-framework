@@ -1,11 +1,8 @@
 ---
 name: prod.spec.discovery
-description: Investigação inicial de uma ideia: mostra primeiro o que entendeu, faz poucas perguntas de alto impacto (com recomendação), propõe abordagens e registra um rascunho com scorecard, veredito e próximo passo sugerido, sem chutar.
+description: Investigação inicial de uma ideia. Mostra o que entendeu, faz poucas perguntas de alto impacto com recomendação e registra rascunho com scorecard e veredito.
 auto_execution_mode: 3
-env_file: "@/ENV.md"
 recommended_model: opus
-model_tier: high
-model_justification: Discovery exige separar fatos de suposições, escolher as perguntas de maior impacto e julgar evidências sem presumir dados
 ---
 
 # Discovery (investigação inicial de uma ideia)

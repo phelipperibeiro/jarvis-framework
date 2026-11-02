@@ -1,8 +1,6 @@
 ---
 description: Fluxo de trabalho de Engenharia para criação/iteração de RFC seguindo o RFC-Playbook
 recommended_model: claude-sonnet-4-20250514
-model_tier: high
-model_justification: RFCs requerem análise de decisões técnicas complexas, trade-offs e governança de arquitetura
 ---
 
 # Workflow de Engenharia – RFC (Request for Comments)

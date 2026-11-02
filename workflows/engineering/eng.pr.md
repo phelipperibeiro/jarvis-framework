@@ -5,8 +5,6 @@ agent: "$IDE/agents/engineering/eng.agent.md"
 rules_file: "$IDE/rules-on-demand/engineering/eng.pr-rules.md"
 template_file: "$IDE/templates/engineering/PR-template.md"
 recommended_model: claude-sonnet-4-20250514
-model_tier: medium
-model_justification: Operações Git e preenchimento de templates são tarefas estruturadas que não requerem raciocínio extremamente complexo
 ---
 
 # Pull Request / Merge Request

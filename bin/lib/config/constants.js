@@ -248,44 +248,6 @@ export const OPENCODE_DEFAULT_PERMISSIONS = Object.freeze({
 });
 
 /**
- * Campos de frontmatter Jarvis-only que devem ser removidos para OpenCode commands
- * @constant {ReadonlyArray<string>}
- */
-export const OPENCODE_STRIP_FIELDS = Object.freeze([
-  "auto_execution_mode",
-  "rules_file",
-  "template_file",
-  "model_tier",
-  "model_justification",
-  "recommended_model",
-  "env_file",
-  "globs",
-]);
-
-/**
- * Campos de frontmatter Jarvis-only que devem ser removidos para steering files Kiro
- * @constant {ReadonlyArray<string>}
- */
-export const KIRO_STRIP_FIELDS = Object.freeze([
-  "trigger",
-  "auto_execution_mode",
-  "rules_file",
-  "template_file",
-  "model_tier",
-  "model_justification",
-  "recommended_model",
-  "env_file",
-  "globs",
-  "agent",
-  "allowed-tools",
-  "disable-model-invocation",
-  "compatibility",
-  "license",
-  "metadata",
-  "argument-hint",
-]);
-
-/**
  * Mapeamento de HUB Jarvis para fileMatchPattern do Kiro
  * Usado para gerar steering files de rules com inclusion: fileMatch
  * @constant {Readonly<Record<string, string>>}

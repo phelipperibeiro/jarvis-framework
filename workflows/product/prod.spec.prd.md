@@ -1,11 +1,8 @@
 ---
 name: prod.spec.prd
-description: Alterar ou criar um especificação de produto PRD - Product Requirement Document seguindo o template especificado, regras invioláveis, possibilitando a utilização por agentes de IA e humanos.
+description: Cria ou altera um PRD (Product Requirement Document) seguindo o template e as regras invioláveis, para uso por agentes de IA e por humanos.
 auto_execution_mode: 3
-env_file: "@/ENV.md"
 recommended_model: opus
-model_tier: high
-model_justification: PRDs requerem análise profunda de requisitos, estruturação de documentos complexos e compreensão de contexto de negócio
 ---
 
 # PRD - Product Requirement Document

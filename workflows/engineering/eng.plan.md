@@ -5,8 +5,6 @@ agent: "$IDE/agents/engineering/eng.agent.md"
 rules_file: "$IDE/rules-on-demand/engineering/eng.plan-rules.md"
 template_file: "$IDE/templates/engineering/plan-template.md"
 recommended_model: claude-sonnet-4-20250514
-model_tier: high
-model_justification: Planejamento detalhado requer decomposição de tarefas complexas, análise de dependências e estimativas precisas
 ---
 
 # Engineer Plan

@@ -2,8 +2,6 @@
 description: Workflow para quebrar Tech Spec em subtarefas ULTRA DETALHADAS e executáveis
 auto_execution_mode: 0
 recommended_model: claude-sonnet-4-20250514
-model_tier: high
-model_justification: Decomposição de tarefas requer análise detalhada, geração de código de exemplo e estruturação de subtarefas executáveis
 rules_file: "$IDE/rules-on-demand/engineering/eng.breakdown-subtasks-rules.md"
 template_file: "$IDE/templates/engineering/breakdown-subtasks-template.md"
 ---

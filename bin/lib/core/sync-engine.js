@@ -24,8 +24,6 @@ import {
   LOCK_FILE,
   OPENCODE_MODEL_MAP,
   OPENCODE_DEFAULT_PERMISSIONS,
-  OPENCODE_STRIP_FIELDS,
-  KIRO_STRIP_FIELDS,
   KIRO_HUB_FILE_PATTERNS,
 } from "../config/constants.js";
 
@@ -583,7 +581,7 @@ function transformOpenCodeAgents(agentsDir) {
 
 /**
  * Transforma frontmatter de commands (workflows) Jarvis para formato OpenCode.
- * Remove campos Jarvis-only, converte model e agent path para nome.
+ * Remonta o frontmatter só com description, agent (nome) e model (resolvido de recommended_model).
  * @param {string} commandsDir - Caminho para .opencode/commands/
  */
 function transformOpenCodeCommands(commandsDir) {
@@ -678,9 +676,7 @@ function flattenDir(dir, rootDir) {
 
 /**
  * Converte o frontmatter de um arquivo .md para um steering file Kiro.
- * - Remove campos Jarvis-only (KIRO_STRIP_FIELDS)
- * - Adiciona `inclusion` se não presente
- * - Preserva `name` e `description`
+ * - Remonta o frontmatter só com inclusion e description (e fileMatchPattern, quando houver)
  * @param {string} content - Conteúdo original do .md
  * @param {string} inclusion - Valor de inclusion: "auto" | "manual" | "fileMatch"
  * @param {string} [fileMatchPattern] - Pattern para inclusion: fileMatch

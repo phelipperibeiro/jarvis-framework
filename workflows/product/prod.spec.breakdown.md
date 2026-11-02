@@ -1,11 +1,8 @@
 ---
 name: prod.spec.breakdown
-description: Quebra uma especificação de produto grande (Documento de Requisitos de Produto ou Documento de Requisitos Funcionais) em fatias gerenciáveis — versões, épicos e histórias — sem perder o objetivo de valor.
+description: Quebra um PRD ou FRD (Documento de Requisitos de Produto ou Funcionais) grande em versões, épicos e histórias, sem perder o objetivo de valor.
 auto_execution_mode: 3
-env_file: "@/ENV.md"
 recommended_model: opus
-model_tier: high
-model_justification: Breakdown de produto exige julgamento de valor, sequenciamento e decomposição em entregas incrementais
 ---
 
 # Quebra de especificação (breakdown)

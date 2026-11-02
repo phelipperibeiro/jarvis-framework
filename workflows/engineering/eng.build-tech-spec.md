@@ -5,8 +5,6 @@ recommended_model: claude-sonnet-4-20250514
 rules_file: $IDE/rules-on-demand/engineering/eng.tech-spec-rules.md
 template_file: $IDE/templates/engineering/tech-spec-template.md
 # Reference Spec usa $IDE/templates/engineering/ref-spec-template.md (o scanner lê um template só; ver Passo 3)
-model_tier: very_high
-model_justification: Tech Spec requer análise profunda de requisitos, decisões arquiteturais, decomposição de tarefas e documentação técnica detalhada
 ---
 
 # Tech Spec Generator

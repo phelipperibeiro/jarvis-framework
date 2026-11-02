@@ -1,10 +1,6 @@
 ---
 description: Investiga um bug ou varre um escopo atrás de problemas, só lendo, com o relatório na sessão
-globs:
-  alwaysApply: false
 recommended_model: sonnet
-model_tier: very_high
-model_justification: Debugging requer raciocínio complexo, formulação de hipóteses, análise de evidências e correlação de múltiplas fontes de informação
 ---
 
 # Workflow de Engenharia – Debugging e Varredura de Bugs
