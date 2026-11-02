@@ -160,41 +160,7 @@ O push só sai depois da escolha de publicar da Fase 0 do `eng.pr` (regra de our
 
 ## Template do Merge Request
 
-O MR deve seguir o template em `$IDE/templates/engineering/PR-template.md`:
-
-```markdown
-## Descrição
-
-{Objetivo claro do MR em 2-3 frases}
-
-## Tarefas Relacionadas
-
-- [x] [{TASK_MANAGER_KEY}]({TASK_MANAGER_URL_BASE}/browse/{TASK_MANAGER_KEY})
-
-## Mudanças Propostas
-
-- {Mudança 1}
-- {Mudança 2}
-- {Mudança N}
-
-## Testes Realizados
-
-- {Tipo de teste}: {Resultado}
-- Unitários: ✅ Passando
-- Lint: ✅ OK
-
-## Revisores
-
-- @{revisor1}
-- @{revisor2}
-
-## Checklist de Revisão
-
-- [x] As mudanças estão alinhadas com os requisitos da tarefa do Jira
-- [x] Os testes foram executados e passaram
-- [x] O código segue as convenções de estilo
-- [ ] A documentação foi atualizada (se necessário)
-```
+O texto do MR segue o template escolhido na Fase 4.1 do `eng.pr` (o do projeto, se existir; senão `$IDE/templates/engineering/PR-template.md`), preenchido com a tarefa e com o link do card pela tabela "URL do card" de `eng.integrations-rules.md`.
 
 ---
 

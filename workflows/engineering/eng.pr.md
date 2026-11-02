@@ -324,35 +324,8 @@ git push
 
 ### 7.1 Registrar Métricas de Lead Time
 
-Calcule e registre o lead time (tempo desde eng.start até PR criado):
-
-```bash
-# Calcular lead time se .timestamp_start existir
-if [ -f $SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/.timestamp_start ]; then
-  START_TIME=$(cat $SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/.timestamp_start)
-  END_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-
-  # Calcular diferença em minutos (macOS/Linux compatível)
-  if [[ "$OSTYPE" == "darwin"* ]]; then
-    # macOS
-    START_EPOCH=$(date -j -f "%Y-%m-%dT%H:%M:%SZ" "$START_TIME" +%s 2>/dev/null || echo 0)
-    END_EPOCH=$(date +%s)
-  else
-    # Linux
-    START_EPOCH=$(date -d "$START_TIME" +%s 2>/dev/null || echo 0)
-    END_EPOCH=$(date +%s)
-  fi
-
-  LEAD_TIME_MINUTOS=$(( (END_EPOCH - START_EPOCH) / 60 ))
-  LEAD_TIME_HORAS=$(awk "BEGIN {printf \"%.1f\", $LEAD_TIME_MINUTOS/60}")
-
-  echo "$LEAD_TIME_MINUTOS" > $SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/.lead_time_minutes
-
-  LEAD_TIME_MSG="⏱️ Lead time: $LEAD_TIME_HORAS horas ($LEAD_TIME_MINUTOS minutos)"
-else
-  LEAD_TIME_MSG="⏱️ Lead time: não calculado (timestamp inicial ausente)"
-fi
-```
+Lead time = minutos inteiros (truncados) entre o `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/.timestamp_start` (UTC, gravado pelo `eng.start`) e agora; calcule com `date` (GNU: `date -d`; macOS: `date -j -f "%Y-%m-%dT%H:%M:%SZ"`). Grave os minutos em `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/.lead_time_minutes` e use, na mensagem final (7.3), `LEAD_TIME_MSG` = `⏱️ Lead time: {horas} horas ({minutos} minutos)`, com horas = minutos ÷ 60, com uma casa decimal.
+Sem o `.timestamp_start`: não grave nada e use `⏱️ Lead time: não calculado (timestamp inicial ausente)`.
 
 ### 7.2 Registrar o esforço em `daily.md`
 
