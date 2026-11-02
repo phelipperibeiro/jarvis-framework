@@ -16,7 +16,8 @@ A pasta `skills/` contem **playbooks executaveis** que sao a fonte de verdade op
 skills/
 ├── eng-backend-arch-c4/          # Diagramas C4
 │   ├── SKILL.md
-│   └── assets/
+│   ├── assets/
+│   └── references/
 ├── eng-global-docs-write/       # Escrita de documentacao
 │   └── SKILL.md
 ├── eng-global-investigation/    # Método de investigação de bugs (causa raiz, hipóteses, veredito, política de acesso); usado pelo /eng.debug
@@ -47,7 +48,8 @@ skills/
 │   ├── SKILL.md
 │   └── references/
 ├── eng-backend-nestjs/           # Framework NestJS: módulos, DI, guards, interceptors, pipes, Passport/JWT
-│   └── SKILL.md
+│   ├── SKILL.md
+│   └── references/
 ├── eng-backend-microservices-trace/ # Rastreamento de bugs entre serviços (HTTP + AMQP); especialização de backend
 │   └── SKILL.md
 ├── eng-platform/         # Base neutra de platform/infra (+ especializações em PLATFORM_SPECIALIZATIONS)
@@ -315,7 +317,7 @@ Link para docs existentes?         → references/
 
 ### Skill grande com temas separaveis: roteador + references/
 
-O corpo do `SKILL.md` e carregado inteiro ao invocar a skill. Quando a skill tem **3 ou mais temas que se usam isoladamente** (por exemplo guards, testes, troubleshooting), mantenha no `SKILL.md` so o que vale sempre (objetivo, quando usar, padroes criticos, arvore de decisao, regras, checklist, a tabela de skills invocados) e uma tabela "Referencias" (Tema | Quando ler | Arquivo); cada tema vai para `references/{n}-{tema}.md`. Modelo: `skills/eng-backend/`. Ja seguem o modelo: `eng-backend-nestjs`, `eng-automation`, `eng-platform`, `eng-qa`, `eng-ai`, `eng-data` e `eng-frontend`.
+O corpo do `SKILL.md` e carregado inteiro ao invocar a skill. Quando a skill tem **3 ou mais temas que se usam isoladamente** (por exemplo guards, testes, troubleshooting), mantenha no `SKILL.md` so o que vale sempre (objetivo, quando usar, padroes criticos, arvore de decisao, regras, checklist, a tabela de skills invocados) e uma tabela "Referencias" (Tema | Quando ler | Arquivo); cada tema vai para `references/{n}-{tema}.md`. Modelo: `skills/eng-backend/`. Ja seguem o modelo: `eng-backend-nestjs`, `eng-backend-arch-c4`, `eng-automation`, `eng-platform`, `eng-qa`, `eng-ai`, `eng-data` e `eng-frontend`.
 
 Nao converta procedimento sequencial (passo 1, 2, 3 que se le de ponta a ponta) nem skill pequena (menos de ~8 KB): nao ha tema para pular, so mais arquivos para ler.
 

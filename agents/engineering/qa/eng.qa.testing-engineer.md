@@ -26,7 +26,7 @@ Para detecção automatizada do contexto (calibração contextual do agente):
 - Uso: `/jarvis-context-detect {TASK_MANAGER_KEY}`
 
 > **Stack E2E primária**: Cypress + TypeScript com Page Objects, `data-testid` e `cy.intercept`.
-> Consultar `$RULES_FOLDER/engineering/qa/eng.qa.cypress-standards-rules.md` para convenções do projeto.
+> Consultar `$IDE/rules-on-demand/engineering/qa/eng.qa.cypress-standards-rules.md` para convenções do projeto.
 >
 > **Testes unitários**: linguagem/framework nativo do projeto (TypeScript/Jest, Python/pytest, etc.)
 > A especialização de E2E registrada em `QA_SPECIALIZATIONS` (via a base `eng-qa`) complementa, não substitui Cypress.
@@ -35,7 +35,7 @@ Para detecção automatizada do contexto (calibração contextual do agente):
 
 ## Cypress E2E — Domínio e Debugging
 
-> 🔒 **Fonte de verdade de convenções**: `$RULES_FOLDER/engineering/qa/eng.qa.cypress-standards-rules.md`
+> 🔒 **Fonte de verdade de convenções**: `$IDE/rules-on-demand/engineering/qa/eng.qa.cypress-standards-rules.md`
 > Sempre ler antes de sugerir padrões ou gerar código. Para **gerar** uma spec nova, use a especialização de Cypress registrada em `QA_SPECIALIZATIONS` (via a base `eng-qa`); esta seção cobre o julgamento por trás de revisar, debugar e manter specs existentes.
 
 ### Domínios de Expertise

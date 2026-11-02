@@ -54,6 +54,8 @@ bin/
 | `jarvis vcs create-merge` / `create-issue` | Abre PR/MR (`gh pr create`/`glab mr create`, respeitando o `VERSION_CONTROL_ACCESS`; `--ide`/`--env-file` no `create-merge`) e issue (`JARVIS_PROJECT` com URL completa); mesmas saídas. `ACCESS` `manual` ou inválido e ENV.md ambíguo saem com 3 |
 | `jarvis --version` | Lê `package.json` |
 
+**Orçamento de tokens:** `test/token-report.test.js` falha se o contexto base (o mesmo cálculo do `jarvis tokens`) de um dos 6 perfis de referência passar do orçamento (valor medido + 2%, arredondado para cima à centena). Aumento intencional: recalcule pela fórmula e atualize `ORCAMENTO` no mesmo PR, dizendo o motivo. Reduções não exigem mudar o teste.
+
 ## Sync (`sync-engine`)
 
 Pastas sincronizadas (`SYNC_DIRS`): `agents`, `skills`, `workflows`, `templates`, `rules`, `scripts` (se existir).

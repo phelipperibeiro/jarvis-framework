@@ -1,7 +1,7 @@
 // Testes do filtro de rules por perfil. Rode com: npm run test:filtro
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from "node:fs";
+import { mkdtempSync, mkdirSync, writeFileSync, rmSync, readFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -248,16 +248,22 @@ test("listRulesForProfile: rtk é opt-in, sem bloco é universal, recursivo em s
 // −90 B e QA −90 B (o frontend só entra em FULLCYCLE e FRONTEND; rtk-rules.md não entra no BASE
 // porque só é copiada com RTK ligado); nenhum arquivo a menos. Total removido no repo, incluindo
 // rules-on-demand: −211 B.
+// Issue #118 (#208, fase 1, 2026-11-02): eng.qa.cypress-standards-rules.md para
+// rules-on-demand/engineering/qa/, com um ponteiro de 463 B no caminho antigo de rules/. QA e
+// FULLCYCLE −7.132 B; BACKEND e FRONTEND não mudam; nenhum arquivo a menos. A parte de dados da
+// #118 ficou sem objeto (a data-rules.md saiu na #209).
+// Issue #121 (#208, fase 2, 2026-11-02): eng.specializations-rules.md perdeu a citação de
+// skills/security-skills-deleted.md, que não existe. −41 B nos 4 perfis; nenhum arquivo a menos.
 const BASE = [
   [
     "FULLCYCLE/GENERALIST/ENGINEERING/CORE",
     profile("FULLCYCLE", "GENERALIST", "ENGINEERING"),
     10,
-    74962,
+    67789,
   ],
-  ["BACKEND/SENIOR/ENGINEERING/CORE", profile("BACKEND", "SENIOR", "ENGINEERING"), 7, 46986],
-  ["FRONTEND/PLENO/ENGINEERING/CORE", profile("FRONTEND", "PLENO", "ENGINEERING"), 8, 55285],
-  ["QA/QA-ENGINEER/ENGINEERING/CORE", profile("QA", "QA-ENGINEER", "ENGINEERING"), 8, 54581],
+  ["BACKEND/SENIOR/ENGINEERING/CORE", profile("BACKEND", "SENIOR", "ENGINEERING"), 7, 46945],
+  ["FRONTEND/PLENO/ENGINEERING/CORE", profile("FRONTEND", "PLENO", "ENGINEERING"), 8, 55244],
+  ["QA/QA-ENGINEER/ENGINEERING/CORE", profile("QA", "QA-ENGINEER", "ENGINEERING"), 8, 47408],
 ];
 
 for (const [nome, p, arquivos, bytes] of BASE) {
@@ -281,5 +287,25 @@ test("rules reais: artifact-style-rules.md só com ARTIFACT_STYLE=human-generate
   assert.equal(
     tem({ ...profile("BACKEND", "SENIOR", "ENGINEERING"), ARTIFACT_STYLE: "human-generated" }),
     true
+  );
+});
+
+test("rules reais: a rule Cypress inteira está em rules-on-demand/ e o ponteiro em rules/ (#118)", () => {
+  const caminho = join("engineering", "qa", "eng.qa.cypress-standards-rules.md");
+  for (const p of [
+    profile("QA", "QA-ENGINEER", "ENGINEERING"),
+    profile("FULLCYCLE", "GENERALIST", "ENGINEERING"),
+  ]) {
+    const emRules = listRulesForProfile(join(root, "rules"), p).find((r) => r.path === caminho);
+    const sobDemanda = listRulesForProfile(join(root, "rules-on-demand"), p).find(
+      (r) => r.path === caminho
+    );
+    assert.ok(emRules && emRules.bytes < 600, `${p.HUB}: ponteiro em rules/ com menos de 600 B`);
+    assert.ok(sobDemanda && sobDemanda.bytes > 7000, `${p.HUB}: rule inteira em rules-on-demand/`);
+  }
+  // O ponteiro tem de continuar mandando ler a rule inteira, não só ser pequeno.
+  assert.match(
+    readFileSync(join(root, "rules", caminho), "utf8"),
+    /\$IDE\/rules-on-demand\/engineering\/qa\/eng\.qa\.cypress-standards-rules\.md/
   );
 });

@@ -68,7 +68,7 @@ Vale para qualquer comando `eng.*` e seus agentes, ao iniciar um trabalho que se
 
 - `ai`, `devops`, `global` e `product` ainda não têm lista — fora do escopo desta regra até que apareça necessidade real (evolução futura).
 - Skills dessas áreas não passam por esta regra.
-- A área `security` foi descontinuada (2026-10-05): não existe mais skill própria nem lista. Segurança de infraestrutura e fundamentos de segurança da informação entram em `PLATFORM_SPECIALIZATIONS`; segurança de código de aplicação já é padrão embutido em `eng-backend`/`eng-frontend`. Ver `skills/security-skills-deleted.md`.
+- A área `security` foi descontinuada (2026-10-05): não existe mais skill própria nem lista. Segurança de infraestrutura e fundamentos de segurança da informação entram em `PLATFORM_SPECIALIZATIONS`; segurança de código de aplicação já é padrão embutido em `eng-backend`/`eng-frontend`.
 
 ## Referências
 

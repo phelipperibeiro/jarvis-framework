@@ -14,16 +14,7 @@ A pasta `workflows/` contem os **templates de execucao** dos comandos slash. Cad
 
 ```
 workflows/
-├── init.md                         # Inicializacao do framework
 ├── warm-up.md                      # Preparacao de sessao
-├── warm-up@1.1.md                  # Versao alternativa
-├── help.md                         # Guia de ajuda
-│
-├── docs/                           # Workflows de documentacao
-│   ├── build-product-docs.md
-│   ├── build-business-docs.md
-│   ├── build-tech-docs.md
-│   └── build-index.md
 │
 ├── product/                        # Workflows de produto
 │   ├── prod.spec.md               # Entrypoint de specs
@@ -49,7 +40,7 @@ workflows/
     ├── eng.create-rfc.md          # Criar RFC
     ├── eng.build-tech-spec.md     # Tech Spec (Delivery Spec ou Reference Spec)
     ├── eng.breakdown-subtasks.md  # Subtarefas
-    ├── light-arch.md              # Design leve
+    ├── eng.light-arch.md          # Design leve
     ├── frontend/
     │   ├── eng.frontend-component.md   # Criar/refatorar componente frontend
     │   ├── eng.frontend-review.md      # Revisão de PR frontend
@@ -64,16 +55,10 @@ workflows/
 
 ## Relacao Command → Workflow
 
-Cada command em `commands/` referencia um workflow:
-
-```markdown
-# nome-do-command
-Utilize o arquivo `../../workflows/[dominio]/nome-do-workflow.md` como template.
-```
+Na IDE, cada workflow é instalado como command na pasta de comandos dela (ex.: `.claude/commands/`); o nome do command é o nome do arquivo.
 
 | Command | Workflow |
 |---------|----------|
-| `/init` | `init.md` |
 | `/warm-up` | `warm-up.md` |
 | `/eng.start` | `engineering/eng.start.md` |
 | `/eng.plan` | `engineering/eng.plan.md` |
@@ -91,11 +76,9 @@ Utilize o arquivo `../../workflows/[dominio]/nome-do-workflow.md` como template.
 
 | Tipo | Padrao | Exemplos |
 |------|--------|----------|
-| Workflow global | `{nome}.md` | `init.md`, `warm-up.md` |
-| Workflow versionado | `{nome}@{versao}.md` | `warm-up@1.1.md` |
+| Workflow global | `{nome}.md` | `warm-up.md`, `taxonomy.md` |
 | Workflow de engenharia | `eng.{acao}.md` | `eng.start.md`, `eng.pr.md` |
 | Workflow de produto | `prod.{acao}.md` | `prod.spec.prd.md` |
-| Workflow de docs | `build-{tipo}-docs.md` | `build-tech-docs.md` |
 
 ---
 
@@ -191,16 +174,15 @@ Workflows de engenharia seguem fases restritas:
 
 ### Nunca
 
-- Criar workflow sem command correspondente
-- Pular validacao de ENV.md (exceto `/init`)
+- Pular validacao de ENV.md (exceto `/jarvis-init`)
 - Misturar fases de desenvolvimento em um workflow
 - Executar codigo em fase de planejamento
-- Fazer commit em fase de implementacao
+- Fazer push ou abrir PR em fase de implementacao
 - Duplicar workflow existente
 
 ### Sempre
 
-- Validar ENV.md no inicio (exceto `/init`)
+- Validar ENV.md no inicio (exceto `/jarvis-init`)
 - Respeitar restricoes de fase
 - Definir output esperado
 - Incluir mensagem de conclusao
@@ -214,7 +196,7 @@ Workflows de engenharia seguem fases restritas:
 ### Inicializacao de Projeto
 
 ```bash
-/init
+/jarvis-init
 /warm-up
 /prod.spec.prd
 ```
@@ -235,9 +217,7 @@ Workflows de engenharia seguem fases restritas:
 
 ```bash
 /warm-up
-/build-product-docs
-/build-tech-docs
-/build-index
+/eng.docs
 ```
 
 ---
@@ -245,19 +225,17 @@ Workflows de engenharia seguem fases restritas:
 ## Criando Novo Workflow
 
 1. Identificar necessidade (verificar existentes)
-2. Criar command em `commands/`
-3. Criar workflow seguindo estrutura padrao, incluindo a tabela `Skills invocados durante o workflow`
-4. Definir restricoes de fase (se engenharia)
-5. Vincular a templates (se aplicavel)
-6. Atualizar README.md
-7. Testar fluxo completo
+2. Criar workflow seguindo estrutura padrao, incluindo a tabela `Skills invocados durante o workflow` (a IDE o instala como command com o nome do arquivo)
+3. Definir restricoes de fase (se engenharia)
+4. Vincular a templates (se aplicavel)
+5. Atualizar README.md
+6. Testar fluxo completo
 
 ---
 
 ## Referencias
 
 - `README.md` - Lista completa de workflows
-- `../commands/` - Commands que invocam workflows
 - `../skills/` - Skills invocados por workflows
 - `../templates/` - Templates usados por workflows
 - `../rules/` - Regras que governam workflows

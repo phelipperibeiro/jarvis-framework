@@ -34,7 +34,7 @@ Este comando executa a **implementação de código** seguindo o plano de execu�
 | Fase 3 › 3.3.2 Implementar Testes Faltantes (Opção A) | `eng.qa.testing-engineer` (agente) | Se o test-planner identificar gaps e a estratégia do `architecture.md` seção 6.5 indicar testes manuais (unitário/integração) |
 | Fase 3 › 3.3.2 Implementar Testes Faltantes (Opção B) | `/eng-qa` | Se a estratégia do `architecture.md` seção 6.5 indicar uma especialização registrada em `QA_SPECIALIZATIONS` |
 | Fase 3 › 3.1 Implementar Código (exceção) | `eng.advisor.agent` (agente) | Só por exceção: questão nova em aberto, com o Advisor habilitado no `eng.start` (cabeçalho do `architecture.md`) |
-| Fase 5 › 5.4 e "Se houver bloqueio técnico" | `/eng-global-task-comment` | Se houver desvio do plano: mudança de direção, fase bloqueada ou questão nova consultada ao Advisor, só com o Sim da pergunta (regra de ouro; freelance: o skill registra no `task-log.md`); sem o Sim, o texto fica no `task-comment-*.md` |
+| Fase 5 › 5.2 e "Se houver bloqueio técnico" | `/eng-global-task-comment` | Se houver desvio do plano: mudança de direção, fase bloqueada ou questão nova consultada ao Advisor, só com o Sim da pergunta (regra de ouro; freelance: o skill registra no `task-log.md`); sem o Sim, o texto fica no `task-comment-*.md` |
 
 ---
 
@@ -273,59 +273,7 @@ Se o usuário solicitar mudanças:
 
 ## Fase 5: Atualização do plan.md
 
-### 5.1 Commit da Fase (Gitflow)
-
-Após aprovação do usuário, commitar as mudanças desta fase:
-
-#### 5.1.1 Determinar Layer e Scope
-
-Com base nos arquivos modificados na fase, identificar:
-
-| Layer | Indicadores |
-|-------|-------------|
-| `Backend` | controllers, services, repositories, workers, queues, migrations |
-| `Frontend` | components, pages, hooks, styles, assets |
-| `Fullstack` | mudanças em ambas as camadas |
-| `Infra` | CI/CD, Docker, configs de infraestrutura |
-| `Tests` | apenas arquivos de teste |
-| `Docs` | apenas documentação |
-
-**Scope**: nome do módulo/serviço principal afetado (ex: `account-api`, `auth-module`, `dashboard`)
-
-#### 5.1.2 Adicionar Arquivos Específicos
-
-> ⚠️ **NUNCA use `git add .`**
-
-```bash
-git status  # Ver arquivos alterados pela fase
-git add {arquivo1} {arquivo2} ...  # Adicionar apenas os da fase atual
-```
-
-#### 5.1.3 Criar Commit
-
-**Formato obrigatório:**
-
-```
-{TASK_MANAGER_KEY} [{Layer}][{scope}] {título da fase}
-```
-
-**Exemplos:**
-
-```bash
-git commit -m "PLAT-202 [Backend][account-api] Implementar autenticação JWT"
-git commit -m "PLAT-202 [Frontend][auth-module] Adicionar formulário de login"
-git commit -m "BUG-89 [Backend][payment-service] Fix: null pointer no processamento"
-```
-
-**Comando:**
-
-```bash
-git commit -m "{TASK_MANAGER_KEY} [{Layer}][{scope}] {título da fase}"
-```
-
----
-
-### 5.3 Marcar Fase como Concluída
+### 5.1 Marcar Fase como Concluída
 
 Atualize o `plan.md`:
 
@@ -333,7 +281,7 @@ Atualize o `plan.md`:
 2. Mudar status da fase para `[Completada ✅]`
 3. Adicionar seção de comentários
 
-### 5.4 Adicionar Comentários
+### 5.2 Adicionar Comentários
 
 ```markdown
 ### Comentários:
@@ -353,6 +301,9 @@ Após validação do usuário e atualização do `plan.md`, commitar a fase na b
 ```bash
 # Verificar branch (deve ser a branch criada no eng.start)
 git branch --show-current
+
+# Ver os arquivos alterados pela fase
+git status
 
 # Adicionar arquivos específicos da fase (NUNCA git add .)
 git add {arquivo1} {arquivo2} ... {arquivos da fase}

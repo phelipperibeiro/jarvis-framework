@@ -10,11 +10,48 @@
 3. Se usado em outro módulo, verificar `exports[]` do módulo de origem
 4. Erros de digitação em barrel exports (`index.ts`) também causam este erro
 
+```typescript
+// ❌ Erro comum: exportar o módulo em vez do service
+@Module({
+  exports: [UserModule] // ERRADO
+})
+
+// ✅ Correto: exportar o service
+@Module({
+  exports: [UserService] // CORRETO
+})
+```
+
 ### "Circular dependency detected"
 **Proibido usar `forwardRef`.** Seguir obrigatoriamente:
 1. Refatorar a estrutura de módulos — rever responsabilidades
 2. Extrair lógica compartilhada para um terceiro módulo
 3. Ajustar escopo do provider como última alternativa
+
+```bash
+# Detectar circular dependency no build
+npm run build -- --watch=false 2>&1 | grep -i "circular"
+```
+
+```typescript
+// ✅ Solução correta: extrair para módulo compartilhado
+@Module({
+  providers: [SharedService],
+  exports: [SharedService],
+})
+export class SharedModule {}
+
+// AModule e BModule importam SharedModule em vez de dependerem um do outro
+@Module({
+  imports: [SharedModule],
+})
+export class AModule {}
+
+@Module({
+  imports: [SharedModule],
+})
+export class BModule {}
+```
 
 ### "Unknown authentication strategy 'jwt'"
 1. Importar `Strategy` de `'passport-jwt'`, **não** de `'passport-local'`
