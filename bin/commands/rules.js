@@ -11,17 +11,28 @@ import { RED, GREEN, YELLOW, CYAN, NC } from "../lib/utils/ui.js";
 const AXES = ["HUB", "POSITION", "AREA", "SQUAD"];
 
 /**
- * Versão do `jarvis-lock.json` da pasta (a da IDE ou a raiz do workspace), ou `null` sem o arquivo
- * (ou ilegível).
+ * Versão do `jarvis-lock.json` da pasta (a da IDE ou a raiz do workspace), ou `null` sem o arquivo.
+ * Arquivo presente, mas ilegível ou sem `version`, interrompe o comando: não cai para outro lock.
  * @param {string} dir
  */
 function readLock(dir) {
   const lockPath = join(dir, LOCK_FILE);
   if (!existsSync(lockPath)) return null;
+  let version;
   try {
-    return JSON.parse(readFileSync(lockPath, "utf-8")).version || null;
+    version = JSON.parse(readFileSync(lockPath, "utf-8")).version;
   } catch {
-    return null;
+    // tratado abaixo
+  }
+  if (!version) fail(`${lockPath} ilegível ou sem versão: rode \`jarvis init --upgrade\``);
+  return version;
+}
+
+/** Pasta (o `cwd` ou uma acima) que tem a pasta `folder` da IDE, ou `null`. */
+function findWorkspaceWith(folder) {
+  for (let dir = process.cwd(); ; dir = dirname(dir)) {
+    if (existsSync(join(dir, folder))) return dir;
+    if (dirname(dir) === dir) return null;
   }
 }
 
@@ -51,7 +62,8 @@ export async function rulesSync(flags) {
   }
   // Sem --ide, a pasta filtrada é a do ENV.md. Fora de uma pasta de IDE (o fallback legado do
   // resolveEnvPath, ou um --env-file/JARVIS_ENV_FILE em outro lugar), o comando gravaria rules ali.
-  // Com --ide, o ENV.md pode vir de fora de uma IDE, mas não da pasta de outra IDE.
+  // Com --ide, o ENV.md pode vir de fora de uma IDE (o workspace é então a pasta, o cwd ou uma
+  // acima, que tem a .{ide}/), mas não da pasta de outra IDE.
   const ideFolders = getIDEValues().map((ide) => `.${getIDEFolder(ide)}`);
   const envFolder = basename(dirname(resolved.path));
   if (!flags.ide && !ideFolders.includes(envFolder)) {
@@ -59,14 +71,22 @@ export async function rulesSync(flags) {
       `ENV.md não encontrado na pasta de uma IDE (${resolved.path}): rode \`jarvis init\` ou passe --ide`
     );
   }
-  const ideDir = flags.ide
-    ? join(resolved.root, `.${getIDEFolder(flags.ide)}`)
-    : dirname(resolved.path);
-  if (flags.ide && ideFolders.includes(envFolder) && envFolder !== basename(ideDir)) {
+  const ideFolder = flags.ide ? `.${getIDEFolder(flags.ide)}` : envFolder;
+  if (ideFolders.includes(envFolder) && envFolder !== ideFolder) {
     fail(
-      `ENV.md de outra IDE (${envFolder}/) com --ide ${flags.ide}: use o ENV.md de ${basename(ideDir)}/`
+      `ENV.md de outra IDE (${envFolder}/) com --ide ${flags.ide}: use o ENV.md de ${ideFolder}/`
     );
   }
+  let workspaceDir = dirname(dirname(resolved.path));
+  if (!ideFolders.includes(envFolder)) {
+    workspaceDir = findWorkspaceWith(ideFolder);
+    if (workspaceDir === null) {
+      fail(
+        `Pasta ${ideFolder}/ não encontrada a partir de ${process.cwd()}: rode o comando na pasta do workspace`
+      );
+    }
+  }
+  const ideDir = join(workspaceDir, ideFolder);
   const envText = readFileSync(resolved.path, "utf-8");
   const env = loadEnv(process.cwd(), resolved.path);
 
@@ -74,7 +94,7 @@ export async function rulesSync(flags) {
   if (missing.length > 0) fail(`Perfil incompleto no ENV.md: faltam ${missing.join(", ")}`);
 
   // O lock da IDE filtrada vale primeiro: com duas IDEs, o da raiz é o do último init.
-  const lock = readLock(ideDir) ?? readLock(resolved.root);
+  const lock = readLock(ideDir) ?? readLock(workspaceDir);
   const running = getPackageInfo().version;
   if (lock === null) fail(`Sem ${LOCK_FILE} no workspace: rode \`jarvis init\``);
   if (lock !== running) {

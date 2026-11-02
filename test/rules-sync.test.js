@@ -209,13 +209,57 @@ test("rules sync: o lock da pasta da IDE vale antes do da raiz", () => {
   });
 });
 
-test("rules sync: jarvis-lock.json ilegível conta como ausente e sai com 1", () => {
+test("rules sync: jarvis-lock.json ilegível sai com 1, também na pasta da IDE com o da raiz válido", () => {
   withWorkspace({ env: PERFIL }, (ws) => {
     writeFileSync(join(ws, "jarvis-lock.json"), "{");
     const r = run(ws);
     assert.equal(r.status, 1);
-    assert.match(r.stderr + r.stdout, /Sem jarvis-lock\.json no workspace/);
+    assert.match(r.stderr + r.stdout, /jarvis-lock\.json ilegível ou sem versão/);
     assert.equal(readFileSync(join(ws, ".claude", FRONT), "utf-8"), "antes\n");
+  });
+  withWorkspace({ env: PERFIL, lock: VERSION }, (ws) => {
+    writeFileSync(join(ws, ".claude", "jarvis-lock.json"), "{");
+    const r = run(ws);
+    assert.equal(r.status, 1);
+    assert.match(r.stderr + r.stdout, /\.claude.jarvis-lock\.json ilegível ou sem versão/);
+    assert.equal(readFileSync(join(ws, ".claude", FRONT), "utf-8"), "antes\n");
+  });
+});
+
+test("rules sync: --ide com o ENV.md na raiz (ou numa subpasta funda) usa o workspace da pasta da IDE", () => {
+  for (const envRel of ["ENV.md", join("a", "b", "ENV.md")]) {
+    withWorkspace({ lock: VERSION }, (ws) => {
+      mkdirSync(join(ws, "a", "b"), { recursive: true });
+      writeFileSync(join(ws, envRel), PERFIL);
+      const r = run(ws, ["--ide", "claude", "--env-file", envRel]);
+      assert.equal(r.status, 0, `${envRel}: ${r.stderr}`);
+      assert.ok(!existsSync(join(ws, ".claude", FRONT)), envRel);
+    });
+  }
+});
+
+test("rules sync: --ide com ENV.md de fora e sem a pasta da IDE no caminho sai com 1, sem gravar", () => {
+  withWorkspace({ lock: VERSION }, (ws) => {
+    writeFileSync(join(ws, "ENV.md"), PERFIL);
+    const r = run(ws, ["--ide", "cursor", "--env-file", "ENV.md"]);
+    assert.equal(r.status, 1);
+    assert.match(r.stderr + r.stdout, /Pasta \.cursor\/ não encontrada/);
+    assert.ok(!existsSync(join(ws, ".cursor")));
+  });
+});
+
+test("rules sync: workspace dentro de outro grava só no de dentro", () => {
+  withWorkspace({ lock: VERSION }, (fora) => {
+    const dentro = join(fora, "projeto");
+    mkdirSync(join(dentro, ".claude", "rules", "engineering", "frontend"), { recursive: true });
+    writeFileSync(join(dentro, ".claude", FRONT), "antes\n");
+    writeFileSync(join(dentro, "jarvis-lock.json"), JSON.stringify({ version: VERSION }));
+    mkdirSync(join(dentro, "config"));
+    writeFileSync(join(dentro, "config", "ENV.md"), PERFIL);
+    const r = run(dentro, ["--ide", "claude", "--env-file", join("config", "ENV.md")]);
+    assert.equal(r.status, 0, r.stderr);
+    assert.ok(!existsSync(join(dentro, ".claude", FRONT)));
+    assert.equal(readFileSync(join(fora, ".claude", FRONT), "utf-8"), "antes\n");
   });
 });
 
