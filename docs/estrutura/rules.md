@@ -59,7 +59,7 @@ Muitas rules começam com:
 
 Um 5º campo é opcional: `| ARTIFACT_STYLE: human-generated`. Sem ele, a rule vale para qualquer estilo. É assim que `rules/artifact-style-rules.md` só chega a quem escolheu `ARTIFACT_STYLE=human-generated` no ENV (FULLCYCLE e GENERALIST não são coringa neste eixo).
 
-No `/jarvis-init` (passo de sync de rules):
+No `/jarvis-init` (passo de sync de rules, que roda `jarvis rules sync`):
 
 1. Lê `HUB`, `POSITION`, `AREA`, `SQUAD` e `ARTIFACT_STYLE` (vazio = `ai-generated`) do ENV
 2. Copia para `.$IDE/rules/` e `.$IDE/rules-on-demand/` só o que **bate** no perfil
@@ -72,7 +72,7 @@ Isso reduz tokens carregados na sessão.
 
 1. Editadas neste repo.
 2. `jarvis init` copia o conjunto **inteiro** para `.$IDE/rules/` e `.$IDE/rules-on-demand/` (sync bruto; as rules que saíram de `rules/` são removidas das instalações antigas via `OBSOLETE_PATHS`).
-3. `/jarvis-init` **filtra** de novo conforme perfil (e RTK).
+3. `/jarvis-init` **filtra** de novo conforme perfil (e RTK) (Passo 8 → `jarvis rules sync`).
 
 Se você só rodar `jarvis init` sem o skill de init, a IDE pode ter rules a mais do que o perfil precisa — o filtro fino é responsabilidade do `/jarvis-init`.
 

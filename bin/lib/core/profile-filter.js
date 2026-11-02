@@ -1,10 +1,10 @@
 /**
  * @fileoverview Filtro de rules por perfil (bloco "Applies to").
  *
- * Espelha em JS a lógica do Passo 8 ("Profile-Aware Rules Sync") do skill
- * `skills/jarvis-init/SKILL.md`, que é executada pela IA: ao mudar uma,
- * mude a outra. A documentação de autoria (hierarquia, convenções, estrutura
- * de regra) vive em `docs/estrutura/rules.md`.
+ * Usado por `jarvis tokens` e `jarvis rules sync` (Passo 8 do `/jarvis-init`). O fallback em
+ * prosa, para quando o CLI não está disponível, é `skills/jarvis-init/assets/rules-sync-manual.md`:
+ * ao mudar a lógica aqui, mude lá também. A documentação de autoria (hierarquia, convenções,
+ * estrutura de regra) vive em `docs/estrutura/rules.md`.
  *
  * Regras:
  * - Os eixos (HUB, POSITION, AREA, SQUAD e o opcional ARTIFACT_STYLE) são combinados com AND.

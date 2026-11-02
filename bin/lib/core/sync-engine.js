@@ -15,6 +15,7 @@ import { getFrameworkRoot } from "../utils/paths.js";
 import { getIDEFolder } from "../config/ide-config.js";
 import { extractFrontmatterBlock } from "../utils/frontmatter.js";
 import { readCompanyProfile } from "./company-profile.js";
+import { parseAppliesTo, matchesProfile } from "./profile-filter.js";
 import {
   SYNC_DIRS,
   SYNC_ROOT_FILES,
@@ -322,12 +323,15 @@ function removeOrphanOverlayRules(ideDir, overlayDir, result, { dryRun, framewor
  * ou apagado dentro dela. Caminho que resolve (realpath) para fora do overlay é ignorado com aviso.
  * @param {string} ideDir - Pasta da IDE (ex.: `{workspace}/.claude`)
  * @param {{ copied: string[], skipped: string[], errors: string[] }} result - Acumulador do sync
- * @param {{ dryRun?: boolean }} [opts]
+ * @param {{ dryRun?: boolean, frameworkRoot?: string, envText?: string }} [opts] - `envText`: o
+ *   ENV.md já lido (o `jarvis rules sync` passa o mesmo de onde veio o perfil); sem ele, lê o da IDE
  * @returns {string} O perfil ativo
  */
-export function applyRuleOverlay(ideDir, result, { dryRun = false, frameworkRoot } = {}) {
-  const envPath = join(ideDir, "ENV.md");
-  const envText = existsSync(envPath) ? readFileSync(envPath, "utf-8") : undefined;
+export function applyRuleOverlay(ideDir, result, { dryRun = false, frameworkRoot, envText } = {}) {
+  if (envText === undefined) {
+    const envPath = join(ideDir, "ENV.md");
+    envText = existsSync(envPath) ? readFileSync(envPath, "utf-8") : undefined;
+  }
   const { profile, warning } = readCompanyProfile(envText);
   if (warning) result.skipped.push(`(overlay) ${warning}`);
 
@@ -377,6 +381,96 @@ export function applyRuleOverlay(ideDir, result, { dryRun = false, frameworkRoot
     }
   }
   return profile;
+}
+
+/**
+ * Passo 8 do `/jarvis-init` (Profile-Aware Rules Sync) pelo CLI (#102): deixa em `.{ide}/rules/` e
+ * `.{ide}/rules-on-demand/` só as rules do perfil, com o filtro de `profile-filter.js`.
+ * Candidatos de cada pasta: todo `.md` do core mais os do overlay ativo que o core não tem. O arquivo
+ * efetivo é o do overlay, se existir (e estiver dentro dele), senão o do core; o `Applies to` lido é
+ * o dele. Entra → copia do core (o do overlay já foi gravado, marcado, por `applyRuleOverlay`); não
+ * entra → sai da IDE. `rtk-rules.md` só com `rtkEnabled`. Arquivo da IDE que não é candidato não é tocado.
+ * @param {string} ideDir - Pasta da IDE (ex.: `{workspace}/.claude`)
+ * @param {{ HUB: string, POSITION: string, AREA: string, SQUAD: string, ARTIFACT_STYLE?: string }} profile
+ * @param {{ rtkEnabled?: boolean, frameworkRoot?: string, dryRun?: boolean, envText?: string }} [opts]
+ * @returns {{ companyProfile: string, copied: Record<string, number>, removed: number,
+ *   universal: number, fromOverlay: number, folderCreated: boolean, warnings: string[], errors: string[] }}
+ */
+export function syncRulesForProfile(
+  ideDir,
+  profile,
+  { rtkEnabled = false, frameworkRoot = getFrameworkRoot(), dryRun = false, envText } = {}
+) {
+  const overlayResult = { copied: [], skipped: [], errors: [] };
+  const companyProfile = applyRuleOverlay(ideDir, overlayResult, {
+    dryRun,
+    frameworkRoot,
+    envText,
+  });
+  const overlayDir = join(ideDir, "overlays", companyProfile);
+  const overlayRoot = existsSync(overlayDir) ? realpathSync(overlayDir) : null;
+  const out = {
+    companyProfile,
+    copied: {},
+    removed: 0,
+    universal: 0,
+    fromOverlay: 0,
+    folderCreated: overlayResult.copied.some((line) =>
+      line.startsWith(`Overlay ${companyProfile}:`)
+    ),
+    warnings: overlayResult.skipped,
+    errors: overlayResult.errors,
+  };
+
+  for (const dir of OVERLAY_RULE_DIRS) {
+    out.copied[dir] = 0;
+    // caminho relativo (com `sep` do sistema) → arquivo do overlay válido, se houver
+    const fromOverlay = new Map();
+    if (overlayRoot && existsSync(join(overlayDir, dir))) {
+      const files = [];
+      collectOverlayFiles(join(overlayDir, dir), files);
+      for (const file of files) {
+        try {
+          if (realpathSync(file).startsWith(overlayRoot + sep))
+            fromOverlay.set(relative(join(overlayDir, dir), file), file);
+        } catch {
+          // link quebrado: applyRuleOverlay já avisou; vale o core
+        }
+      }
+    }
+    const coreDir = join(frameworkRoot, dir);
+    const coreFiles = [];
+    if (existsSync(coreDir)) collectMdFiles(coreDir, coreFiles);
+    const candidates = new Set([
+      ...coreFiles.map((file) => relative(coreDir, file)),
+      ...fromOverlay.keys(),
+    ]);
+
+    for (const rel of [...candidates].sort()) {
+      const overlayFile = fromOverlay.get(rel);
+      const source = overlayFile ?? join(coreDir, rel);
+      const dest = join(ideDir, dir, rel);
+      try {
+        const appliesTo = parseAppliesTo(readFileSync(source, "utf-8"));
+        const rtkOk = !rel.split(sep).join("/").endsWith("rtk-rules.md") || rtkEnabled;
+        if (rtkOk && matchesProfile(appliesTo, profile)) {
+          if (!overlayFile && !dryRun) {
+            mkdirSync(dirname(dest), { recursive: true });
+            cpSync(source, dest);
+          }
+          out.copied[dir]++;
+          if (appliesTo === null) out.universal++;
+          if (overlayFile) out.fromOverlay++;
+        } else if (existsSync(dest)) {
+          if (!dryRun) rmSync(dest, { force: true });
+          out.removed++;
+        }
+      } catch (err) {
+        out.errors.push(`${dir}/${rel.split(sep).join("/")}: ${err.message}`);
+      }
+    }
+  }
+  return out;
 }
 
 /**
