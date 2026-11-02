@@ -178,7 +178,7 @@ Workflows de engenharia seguem fases restritas:
 - Pular validacao de ENV.md (exceto `/jarvis-init`)
 - Misturar fases de desenvolvimento em um workflow
 - Executar codigo em fase de planejamento
-- Fazer commit em fase de implementacao
+- Fazer push ou abrir PR em fase de implementacao
 - Duplicar workflow existente
 
 ### Sempre
