@@ -276,9 +276,28 @@ test("syncAssets: instalação antiga é limpa (claude, windsurf e kiro) pelo OB
       "skills/product-roadmap-report/README.md",
       "agents/AGENTS.md",
       "agents/README.md",
+      // rules que saíram de rules/ na auditoria de tokens (#84, #86/#133)
+      "rules/engineering/eng.bump-rules.md",
+      "rules/engineering/eng.docs-scraping-rules.md",
+      "rules/engineering/rpa/eng.rpa-rules.md",
+      "rules/AGENTS.md",
+      "rules/product/README.md",
+      // templates e skill duplicado removidos (#91, #92)
+      "templates/engineering/swagger-template.md",
+      "templates/engineering/CONTACTS-template.md",
+      "templates/cdd-aplicado-a-prompts.md",
+      "skills/product-roadmap-report/rules/detailed-guide.md",
     ],
     windsurf: ["workflows/AGENTS.md", "workflows/README.md", "workflows/all-tools.md"],
-    kiro: ["steering/AGENTS.md", "steering/README.md", "steering/all-tools.md"],
+    kiro: [
+      "steering/AGENTS.md",
+      "steering/README.md",
+      "steering/all-tools.md",
+      // cópias do Kiro das rules que saíram de rules/ (#83)
+      "steering/eng.bump-rules.md",
+      "steering/eng.docs-scraping-rules.md",
+      "steering/eng.rpa-rules.md",
+    ],
   };
   for (const [ide, arquivos] of Object.entries(antigos)) {
     withJarvisRoot((root, target) => {
@@ -299,6 +318,9 @@ test("syncAssets: instalação antiga é limpa (claude, windsurf e kiro) pelo OB
         existsSync(join(target, `.${ide}/AGENTS.md`)),
         `${ide}: AGENTS.md da raiz da IDE deve ficar`
       );
+      // A limpeza não leva junto a rule que continua no framework (nem a cópia dela no Kiro).
+      assert.ok(existsSync(join(target, `.${ide}/rules/engineering/eng-rules.md`)));
+      if (ide === "kiro") assert.ok(existsSync(join(target, ".kiro/steering/eng-rules.md")));
     });
   }
 });
