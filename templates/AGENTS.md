@@ -36,7 +36,10 @@ templates/
 │   ├── data-contract-template.md   # Contrato de dados
 │   └── qa/                         # Templates de QA
 │       ├── qa.release-signoff-template.md # Sign-off QA pre-deploy (GO/NO-GO)
-│       └── qa.sprint-plan-template.md     # Planejamento de capacidade QA da sprint
+│       ├── qa.sprint-plan-template.md     # Planejamento de capacidade QA da sprint
+│       ├── qa.test-strategy-template.md   # Estrategia de testes (Modo A do eng.qa.test-planner)
+│       ├── qa.test-coverage-report-template.md # Relatorio de cobertura (Modo B do eng.qa.test-planner)
+│       └── qa.test-suite-report-template.md # Relatorio de teste do eng.qa.testing-engineer
 └── product/                        # Templates de produto ($PROD_TEMPLATES)
     ├── prod-prd-template.md        # Product Requirements Document
     ├── prod-frd-template.md        # Functional Requirements Document
