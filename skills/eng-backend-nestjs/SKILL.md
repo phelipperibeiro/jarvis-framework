@@ -127,10 +127,11 @@ Soluções em ordem obrigatória de preferência:
 2. **Extrair lógica compartilhada para um terceiro módulo** (recomendado)
 3. **Ajustar escopo do provider** — mudar para `TRANSIENT` ou `REQUEST` se apropriado
 
+Comando de detecção e exemplo: `references/6-problemas-comuns.md` › "Circular dependency detected".
+
 ### Padrão 5: Antes de Implementar Testes — Verificar Schematics
 
-Antes de escrever qualquer teste (unitário ou de integração), verificar se existe um schematic com modelo:
-Comandos: `references/5-testes.md` › "Antes de escrever testes".
+Antes de escrever qualquer teste (unitário ou de integração), verificar se existe um schematic com modelo (comandos em `references/5-testes.md` › "Antes de escrever testes").
 
 Consultar o **Guia de Testes Automatizados** do projeto antes de implementar: `(guia de testes do projeto)`
 

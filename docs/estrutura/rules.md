@@ -38,7 +38,7 @@ rules-on-demand/                    # lidas pelo workflow; não carregadas no in
 │   ├── eng.security-rules.md      # seções de etapa da eng-security-rules (architecture.md e gate-checklist.md)
 │   ├── eng.rpa-rules.md          # inclui a documentação de robôs (HUB: all)
 │   └── qa/
-│       └── eng.qa.cypress-standards-rules.md # convenções da suíte E2E (ponteiro em rules/engineering/qa/)
+│       └── eng.qa.cypress-standards-rules.md # convenções da suíte E2E (em rules/engineering/qa/ fica só o ponteiro)
 ├── product/
 │   └── prod.guided-rules.md        # modo Developer-Guided (só com PROD_MODE=developer-guided)
 ├── doc-links-rules.md              # links clicáveis nos documentos gerados (lida pelos comandos que gravam documentos)

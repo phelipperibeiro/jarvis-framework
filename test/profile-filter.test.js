@@ -1,7 +1,7 @@
 // Testes do filtro de rules por perfil. Rode com: npm run test:filtro
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from "node:fs";
+import { mkdtempSync, mkdirSync, writeFileSync, rmSync, readFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -303,4 +303,9 @@ test("rules reais: a rule Cypress inteira está em rules-on-demand/ e o ponteiro
     assert.ok(emRules && emRules.bytes < 600, `${p.HUB}: ponteiro em rules/ com menos de 600 B`);
     assert.ok(sobDemanda && sobDemanda.bytes > 7000, `${p.HUB}: rule inteira em rules-on-demand/`);
   }
+  // O ponteiro tem de continuar mandando ler a rule inteira, não só ser pequeno.
+  assert.match(
+    readFileSync(join(root, "rules", caminho), "utf8"),
+    /\$IDE\/rules-on-demand\/engineering\/qa\/eng\.qa\.cypress-standards-rules\.md/
+  );
 });

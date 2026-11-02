@@ -174,7 +174,6 @@ Workflows de engenharia seguem fases restritas:
 
 ### Nunca
 
-- Criar workflow sem command correspondente
 - Pular validacao de ENV.md (exceto `/jarvis-init`)
 - Misturar fases de desenvolvimento em um workflow
 - Executar codigo em fase de planejamento
