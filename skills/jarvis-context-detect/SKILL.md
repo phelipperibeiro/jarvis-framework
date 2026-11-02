@@ -401,7 +401,7 @@ Os workflows abaixo refinam essa regra.
 
 ### eng.start
 
-Roda a detecção sempre (Fase 0.1); o perfil é apresentado pelo skill e ajustado com `--override`.
+Com `ENABLE_CDD=true`, roda a detecção mesmo que já exista `context.md` (Fase 0.1); o perfil é apresentado pelo skill e ajustado com `--override`.
 
 | Tipo detectado | Impacto no workflow |
 |----------------|---------------------|

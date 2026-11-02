@@ -176,6 +176,41 @@ test("syncAssets: codex gera openai.yaml por skill com name/description do front
   });
 });
 
+test("syncAssets: codex não corta a description na letra Z (bloco > e último campo)", () => {
+  withJarvisRoot((root, target) => {
+    buildMinimalFramework(root);
+    write(
+      root,
+      "skills/z-skill/SKILL.md",
+      [
+        "---",
+        "name: z-skill",
+        "description: >",
+        "  Base com QA_SPECIALIZATIONS e Zod.",
+        "  Trigger: quando usar.",
+        "metadata:",
+        "  area: qa",
+        "---",
+      ].join("\n")
+    );
+    write(
+      root,
+      "skills/fim-skill/SKILL.md",
+      "---\nname: fim-skill\ndescription: Zoom no fim\n---\n"
+    );
+
+    syncAssets(target, "codex", {});
+
+    const yaml = (skill) =>
+      readFileSync(join(target, `.codex/skills/${skill}/openai.yaml`), "utf-8");
+    assert.match(
+      yaml("z-skill"),
+      /description: "Base com QA_SPECIALIZATIONS e Zod\. Trigger: quando usar\."/
+    );
+    assert.match(yaml("fim-skill"), /description: "Zoom no fim"/);
+  });
+});
+
 test("syncAssets: dryRun não escreve nada no disco", () => {
   withJarvisRoot((root, target) => {
     buildMinimalFramework(root);

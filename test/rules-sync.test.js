@@ -94,7 +94,19 @@ test("rules sync: sem --ide, filtra a pasta da IDE onde está o ENV.md", () => {
   });
 });
 
-test("rules sync: sem --ide e sem ENV.md numa pasta de IDE, sai com 1 e a mensagem, sem gravar nada", () => {
+// Sem --ide, o resolveEnvPath sobe pelas pastas acima do workspace do teste: um `.{ide}/ENV.md`
+// acima do tmpdir() (TMPDIR dentro de um workspace do Jarvis) mudaria o resultado sem defeito no código.
+const IDE_FOLDERS = [".windsurf", ".claude", ".cursor", ".codex", ".opencode", ".agents", ".kiro"];
+function envAcimaDoTmp() {
+  for (let dir = tmpdir(); ; dir = dirname(dir)) {
+    if (IDE_FOLDERS.some((f) => existsSync(join(dir, f, "ENV.md")))) return dir;
+    if (dirname(dir) === dir) return null;
+  }
+}
+
+test("rules sync: sem --ide e sem ENV.md numa pasta de IDE, sai com 1 e a mensagem, sem gravar nada", (t) => {
+  const acima = envAcimaDoTmp();
+  if (acima) return t.skip(`há um ENV.md de IDE em ${acima}, acima do tmpdir()`);
   // Sem ENV.md nenhum e com o ENV.md na raiz (layout legado): os dois caem no fallback da raiz.
   for (const legado of [false, true]) {
     withWorkspace({ lock: VERSION }, (ws) => {
@@ -158,5 +170,64 @@ test("rules sync: --env-file dentro da pasta da IDE continua valendo", () => {
     const r = run(ws, ["--env-file", join(".claude", "ENV.md")]);
     assert.equal(r.status, 0, r.stderr);
     assert.ok(!existsSync(join(ws, ".claude", FRONT)));
+  });
+});
+
+test("rules sync: --ide com ENV.md de fora de uma IDE filtra a pasta da IDE pedida", () => {
+  withWorkspace({ lock: VERSION }, (ws) => {
+    mkdirSync(join(ws, "config"));
+    writeFileSync(join(ws, "config", "ENV.md"), PERFIL);
+    const r = run(ws, ["--ide", "claude", "--env-file", join("config", "ENV.md")]);
+    assert.equal(r.status, 0, r.stderr);
+    assert.ok(!existsSync(join(ws, ".claude", FRONT)));
+    assert.ok(!existsSync(join(ws, "config", "rules")));
+  });
+});
+
+test("rules sync: --ide com o ENV.md da pasta de outra IDE sai com 1, sem gravar nada", () => {
+  withWorkspace({ env: PERFIL, lock: VERSION, ide: "cursor" }, (ws) => {
+    const r = run(ws, ["--ide", "claude", "--env-file", join(".cursor", "ENV.md")]);
+    assert.equal(r.status, 1);
+    assert.match(r.stderr + r.stdout, /ENV\.md de outra IDE \(\.cursor\/\) com --ide claude/);
+    assert.equal(readFileSync(join(ws, ".claude", FRONT), "utf-8"), "antes\n");
+  });
+});
+
+test("rules sync: o lock da pasta da IDE vale antes do da raiz", () => {
+  // Raiz na versão atual (o último init foi de outra IDE) e .claude/ antiga: recusa.
+  withWorkspace({ env: PERFIL, lock: VERSION }, (ws) => {
+    writeFileSync(join(ws, ".claude", "jarvis-lock.json"), JSON.stringify({ version: "0.0.1" }));
+    const r = run(ws);
+    assert.equal(r.status, 1);
+    assert.match(r.stderr + r.stdout, new RegExp(`assets da 0\\.0\\.1 e Jarvis ${VERSION}`));
+    assert.equal(readFileSync(join(ws, ".claude", FRONT), "utf-8"), "antes\n");
+  });
+  // Raiz antiga e .claude/ na versão atual: segue.
+  withWorkspace({ env: PERFIL, lock: "0.0.1" }, (ws) => {
+    writeFileSync(join(ws, ".claude", "jarvis-lock.json"), JSON.stringify({ version: VERSION }));
+    assert.equal(run(ws).status, 0);
+  });
+});
+
+test("rules sync: jarvis-lock.json ilegível conta como ausente e sai com 1", () => {
+  withWorkspace({ env: PERFIL }, (ws) => {
+    writeFileSync(join(ws, "jarvis-lock.json"), "{");
+    const r = run(ws);
+    assert.equal(r.status, 1);
+    assert.match(r.stderr + r.stdout, /Sem jarvis-lock\.json no workspace/);
+    assert.equal(readFileSync(join(ws, ".claude", FRONT), "utf-8"), "antes\n");
+  });
+});
+
+test("rules sync: RTK_ENABLED=true no ENV.md traz a rtk-rules.md e mostra o aviso do overlay", () => {
+  withWorkspace({ env: `${PERFIL}RTK_ENABLED=true\n`, lock: VERSION }, (ws) => {
+    const r = run(ws);
+    assert.equal(r.status, 0, r.stderr);
+    assert.ok(existsSync(join(ws, ".claude", "rules", "rtk-rules.md")));
+    assert.match(r.stdout, /⚠️ {2}\(overlay\) .*COMPANY_PROFILE vazio/);
+  });
+  withWorkspace({ env: PERFIL, lock: VERSION }, (ws) => {
+    assert.equal(run(ws).status, 0);
+    assert.ok(!existsSync(join(ws, ".claude", "rules", "rtk-rules.md")));
   });
 });

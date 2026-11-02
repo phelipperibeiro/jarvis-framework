@@ -81,7 +81,8 @@ skills/
 ├── jarvis-fork/                 # Fork guiado de um artefato do core para o overlay da empresa (COMPANY_PROFILE; CLI jarvis fork)
 │   └── SKILL.md
 ├── jarvis-context-detect/       # Detecta contexto do projeto/tarefa
-│   └── SKILL.md
+│   ├── SKILL.md
+│   └── references/              # cdd-aplicado-a-prompts.md, eng.work.md (tabelas da Fase 0 do eng.work)
 └── jarvis-docs-central/         # Sync/publish docs no central-docs (GitHub/GitLab)
     └── SKILL.md
 ```

@@ -39,7 +39,7 @@ function parseSkillFrontmatter(content) {
   if (fm === null) return null;
   const name = (fm.match(/^name:\s*(.+)$/m) || [])[1]?.trim();
   // description pode ser multiline com `>`
-  const descMatch = fm.match(/^description:\s*[>|]?\n?([\s\S]*?)(?=\n\S|\n---|Z)/m);
+  const descMatch = fm.match(/^description:\s*[>|]?\n?([\s\S]*?)(?=\n\S|\n---|$(?![\s\S]))/m);
   const description = descMatch
     ? descMatch[1].replace(/^\s+/gm, "").replace(/\n+/g, " ").trim()
     : "";
