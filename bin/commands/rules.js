@@ -35,8 +35,8 @@ function fail(message) {
 /**
  * `jarvis rules sync`: Passo 8 do `/jarvis-init` pelo CLI (#102). Filtra `.{ide}/rules/` e
  * `.{ide}/rules-on-demand/` pelo perfil do ENV.md e aplica o overlay de `COMPANY_PROFILE`.
- * Sai com 1, sem gravar nada, sem ENV.md, com eixo faltando ou com o lock ausente ou de outra
- * versão (os assets da IDE seriam de outra versão que as rules do Jarvis em uso).
+ * Sai com 1, sem gravar nada, sem ENV.md numa pasta de IDE, com eixo faltando ou com o lock ausente
+ * ou de outra versão (os assets da IDE seriam de outra versão que as rules do Jarvis em uso).
  * @param {{ ide?: string, "env-file"?: string }} flags
  */
 export async function rulesSync(flags) {
@@ -47,6 +47,13 @@ export async function rulesSync(flags) {
     resolved = resolveEnvPath(process.cwd(), flags);
   } catch (err) {
     fail(err.message);
+  }
+  // Sem ENV.md numa pasta de IDE, o resolveEnvPath cai no layout legado (ENV.md na raiz): aqui isso
+  // filtraria a própria pasta, então o comando recusa.
+  if (resolved.source === "auto-detect (root)" || !existsSync(resolved.path)) {
+    fail(
+      `ENV.md não encontrado na pasta de uma IDE a partir de ${process.cwd()}: rode \`jarvis init\` ou passe --ide`
+    );
   }
   const envText = readFileSync(resolved.path, "utf-8");
   const env = loadEnv(process.cwd(), resolved.path);

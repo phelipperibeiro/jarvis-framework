@@ -848,3 +848,45 @@ test("syncRulesForProfile: com o rules/ real e sem overlay, o resultado é o de 
     }
   }
 });
+
+test("syncRulesForProfile: com dryRun não grava nem apaga, e conta o que faria", () => {
+  withJarvisRoot((root, target) => {
+    const ideDir = buildRulesFixture(root, target);
+    write(ideDir, "rules/engineering/frontend/x.md", "cópia antiga");
+    const r = syncRulesForProfile(ideDir, BACKEND, { frameworkRoot: root, dryRun: true });
+    assert.deepEqual(ideFiles(ideDir, "rules"), ["engineering/frontend/x.md"]);
+    assert.ok(!existsSync(join(ideDir, "overlays", "acme")));
+    assert.equal(r.removed, 1);
+    assert.equal(r.copied.rules, 2);
+  });
+});
+
+test("syncRulesForProfile: envText vale no lugar do ENV.md do disco; COMPANY_PROFILE inválido vira aviso e o default", () => {
+  withJarvisRoot((root, target) => {
+    const ideDir = buildRulesFixture(root, target);
+    const globex = syncRulesForProfile(ideDir, BACKEND, {
+      frameworkRoot: root,
+      envText: "COMPANY_PROFILE=globex\n",
+    });
+    assert.equal(globex.companyProfile, "globex");
+    assert.ok(existsSync(join(ideDir, "overlays", "globex")));
+    const invalido = syncRulesForProfile(ideDir, BACKEND, {
+      frameworkRoot: root,
+      envText: "COMPANY_PROFILE=../x\n",
+    });
+    assert.equal(invalido.companyProfile, "stark-industries");
+    assert.ok(invalido.warnings.length > 0);
+  });
+});
+
+test("syncRulesForProfile: falha ao gravar uma rule vai para errors e as outras seguem", () => {
+  withJarvisRoot((root, target) => {
+    const ideDir = buildRulesFixture(root, target);
+    // Uma pasta no lugar do arquivo de destino faz a cópia falhar.
+    mkdirSync(join(ideDir, "rules", "engineering", "eng-rules.md"), { recursive: true });
+    const r = syncRulesForProfile(ideDir, BACKEND, { frameworkRoot: root });
+    assert.equal(r.errors.length, 1);
+    assert.match(r.errors[0], /^rules\/engineering\/eng-rules\.md: /);
+    assert.ok(existsSync(join(ideDir, "rules", "universal.md")));
+  });
+});

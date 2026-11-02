@@ -14,12 +14,15 @@ const PERFIL = "HUB=BACKEND\nPOSITION=SENIOR\nAREA=ENGINEERING\nSQUAD=CORE\n";
 // Rule que não bate com BACKEND: se o comando gravasse algo, ela sairia da IDE.
 const FRONT = "rules/engineering/frontend/eng.frontend-rules.md";
 
-function withWorkspace({ env, lock }, fn) {
+function withWorkspace({ env, lock, ide = "claude" }, fn) {
   const ws = mkdtempSync(join(tmpdir(), "jarvis-rules-sync-"));
   try {
     mkdirSync(join(ws, ".claude", "rules", "engineering", "frontend"), { recursive: true });
     writeFileSync(join(ws, ".claude", FRONT), "antes\n");
-    if (env !== undefined) writeFileSync(join(ws, ".claude", "ENV.md"), env);
+    if (env !== undefined) {
+      mkdirSync(join(ws, `.${ide}`), { recursive: true });
+      writeFileSync(join(ws, `.${ide}`, "ENV.md"), env);
+    }
     if (lock !== undefined)
       writeFileSync(join(ws, "jarvis-lock.json"), JSON.stringify({ version: lock }));
     return fn(ws);
@@ -28,11 +31,15 @@ function withWorkspace({ env, lock }, fn) {
   }
 }
 
-const run = (ws) =>
-  spawnSync("node", [cli, "rules", "sync", "--ide", "claude"], {
+// Sem IDE nem JARVIS_ENV_FILE herdados: o ENV.md vem só do workspace do teste.
+const ENV_LIMPO = Object.fromEntries(
+  Object.entries(process.env).filter(([k]) => k !== "IDE" && k !== "JARVIS_ENV_FILE")
+);
+const run = (ws, args = ["--ide", "claude"]) =>
+  spawnSync("node", [cli, "rules", "sync", ...args], {
     cwd: ws,
     encoding: "utf-8",
-    env: { ...process.env, NO_COLOR: "1" },
+    env: { ...ENV_LIMPO, NO_COLOR: "1" },
   });
 
 test("rules sync: sem ENV.md sai com 1 e não altera a IDE", () => {
@@ -76,5 +83,50 @@ test("rules sync: com perfil e lock certos filtra a IDE e mostra o resumo do Pas
     assert.match(r.stdout, /Copiadas : \d+ arquivos \(rules\/: \d+ \| rules-on-demand\/: \d+\)/);
     assert.match(r.stdout, /Removidas: 1 arquivos/);
     assert.match(r.stdout, /Overlay stark-industries: pasta criada/);
+  });
+});
+
+test("rules sync: sem --ide, filtra a pasta da IDE onde está o ENV.md", () => {
+  withWorkspace({ env: PERFIL, lock: VERSION }, (ws) => {
+    const r = run(ws, []);
+    assert.equal(r.status, 0, r.stderr);
+    assert.ok(!existsSync(join(ws, ".claude", FRONT)));
+  });
+});
+
+test("rules sync: sem --ide e sem ENV.md numa pasta de IDE, sai com 1 e a mensagem, sem gravar nada", () => {
+  // Sem ENV.md nenhum e com o ENV.md na raiz (layout legado): os dois caem no fallback da raiz.
+  for (const legado of [false, true]) {
+    withWorkspace({ lock: VERSION }, (ws) => {
+      if (legado) writeFileSync(join(ws, "ENV.md"), PERFIL);
+      const r = run(ws, []);
+      assert.equal(r.status, 1, `legado ${legado}`);
+      assert.match(r.stderr + r.stdout, /ENV\.md não encontrado na pasta de uma IDE/);
+      assert.doesNotMatch(r.stderr, /node:fs|at /);
+      assert.ok(!existsSync(join(ws, "rules")));
+      assert.ok(!existsSync(join(ws, "overlays")));
+      assert.equal(readFileSync(join(ws, ".claude", FRONT), "utf-8"), "antes\n");
+    });
+  }
+});
+
+test("rules sync: --ide de outra IDE filtra só a pasta dela", () => {
+  withWorkspace({ env: PERFIL, lock: VERSION, ide: "cursor" }, (ws) => {
+    mkdirSync(join(ws, ".cursor", "rules", "engineering", "frontend"), { recursive: true });
+    writeFileSync(join(ws, ".cursor", FRONT), "antes\n");
+    const r = run(ws, ["--ide", "cursor"]);
+    assert.equal(r.status, 0, r.stderr);
+    assert.ok(!existsSync(join(ws, ".cursor", FRONT)));
+    assert.equal(readFileSync(join(ws, ".claude", FRONT), "utf-8"), "antes\n");
+  });
+});
+
+test("rules sync: falha ao gravar uma rule sai com 1 e lista o erro", () => {
+  withWorkspace({ env: PERFIL, lock: VERSION }, (ws) => {
+    // Uma pasta no lugar do arquivo de destino faz a cópia falhar.
+    mkdirSync(join(ws, ".claude", "rules", "engineering", "eng-rules.md"), { recursive: true });
+    const r = run(ws);
+    assert.equal(r.status, 1);
+    assert.match(r.stderr + r.stdout, /✗ rules\/engineering\/eng-rules\.md: /);
   });
 });
