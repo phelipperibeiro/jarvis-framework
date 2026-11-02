@@ -26,7 +26,7 @@ templates/
 │   ├── tech-spec-template.md       # Especificacao tecnica
 │   ├── tech-spec-delivery-template.md # Formatos de entrega da tech spec (Jira, mensagem final, fluxo)
 │   ├── ref-spec-template.md        # Especificação técnica de referência (Reference Spec do eng.build-tech-spec)
-│   ├── breakdown-subtasks-template.md # Subtarefa detalhada (workflow eng.breakdown-subtasks)
+│   ├── breakdown-subtasks-template.md # Formato de cada subtarefa (template_file do eng.breakdown-subtasks)
 │   ├── plan-template.md            # Plano de execucao
 │   ├── work-progress-template.md   # Progresso de trabalho
 │   ├── PR-template.md              # Pull Request

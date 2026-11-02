@@ -23,7 +23,7 @@ templates/
     ├── c4-model-template.md
     ├── plan-template.md
     ├── PR-template.md
-    ├── breakdown-subtasks-template.md
+    ├── breakdown-subtasks-template.md  # formato de cada subtarefa (template_file do eng.breakdown-subtasks)
     ├── debug-report-template.md      # relatório do /eng.debug (caso investigar)
     ├── bug-audit-report-template.md  # relatório do /eng.debug (caso varrer)
     ├── data-pipeline-template.md
