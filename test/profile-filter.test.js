@@ -241,16 +241,18 @@ test("listRulesForProfile: rtk é opt-in, sem bloco é universal, recursivo em s
 // antes do rebase sobre a main, que já tinha enxugado a rule). Só o perfil
 // FULLCYCLE/GENERALIST do BASE a carrega (GENERALIST satisfaz qualquer AREA); BACKEND, FRONTEND e QA
 // não mudam. Em contrapartida os 4 workflows perderam ≈ 5,5 KB, lidos só quando o comando roda.
+// Issue #93 (#206, 2026-11-01): −1.445 B em todos os perfis (seções de etapa da eng-security-rules.md
+// para rules-on-demand/engineering/eng.security-rules.md); nenhum arquivo a menos.
 const BASE = [
   [
     "FULLCYCLE/GENERALIST/ENGINEERING/CORE",
     profile("FULLCYCLE", "GENERALIST", "ENGINEERING"),
     10,
-    76557,
+    75112,
   ],
-  ["BACKEND/SENIOR/ENGINEERING/CORE", profile("BACKEND", "SENIOR", "ENGINEERING"), 7, 48521],
-  ["FRONTEND/PLENO/ENGINEERING/CORE", profile("FRONTEND", "PLENO", "ENGINEERING"), 8, 56880],
-  ["QA/QA-ENGINEER/ENGINEERING/CORE", profile("QA", "QA-ENGINEER", "ENGINEERING"), 8, 56116],
+  ["BACKEND/SENIOR/ENGINEERING/CORE", profile("BACKEND", "SENIOR", "ENGINEERING"), 7, 47076],
+  ["FRONTEND/PLENO/ENGINEERING/CORE", profile("FRONTEND", "PLENO", "ENGINEERING"), 8, 55435],
+  ["QA/QA-ENGINEER/ENGINEERING/CORE", profile("QA", "QA-ENGINEER", "ENGINEERING"), 8, 54671],
 ];
 
 for (const [nome, p, arquivos, bytes] of BASE) {

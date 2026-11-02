@@ -19,7 +19,6 @@ rules/
 │   ├── eng.skills-rules.md       # área obrigatória nos skills e aviso de skill inexistente
 │   ├── … (integrations, …)
 │   ├── frontend/
-│   ├── data/
 │   └── qa/
 └── product/
     └── prod-rules.md
@@ -35,6 +34,7 @@ rules-on-demand/                    # lidas pelo workflow; não carregadas no in
 │   ├── eng.transitions-rules.md
 │   ├── eng.breakdown-subtasks-rules.md
 │   ├── eng.bump-rules.md
+│   ├── eng.security-rules.md      # seções de etapa da eng-security-rules (architecture.md e gate-checklist.md)
 │   └── eng.rpa-rules.md          # inclui a documentação de robôs (HUB: all)
 ├── product/
 │   └── prod.guided-rules.md        # modo Developer-Guided (só com PROD_MODE=developer-guided)

@@ -6,6 +6,8 @@
 
 O workflow `pre-pr` valida a branch antes de abrir um Merge Request — revisão de código, testes, documentação e qualidade.
 
+**Segurança:** leia `$IDE/rules-on-demand/engineering/eng.security-rules.md`, seção "Fase: eng.pre-pr", e aplique-a no `gate-checklist.md` (checklist e label `security` no PR Brief).
+
 ---
 
 ## ⛔ Gate 0: Pré-requisitos Obrigatórios
