@@ -918,7 +918,7 @@ Se não existir na raiz do projeto:
 ### 8. Profile-Aware Rules Sync
 
 **Executar após gravar o ENV.md** (criar, atualizar B, upgrade C e no item 4 do 9.5).
-Na pasta do workspace, rode `jarvis rules sync --ide {ide}` e mostre à pessoa o resumo que ele imprime. O comando filtra `$IDE/rules/` e `$IDE/rules-on-demand/` pelo perfil do ENV.md (HUB, POSITION, AREA, SQUAD, ARTIFACT_STYLE; `rtk-rules.md` só com RTK_ENABLED=true), aplica o overlay de `COMPANY_PROFILE` (cria a pasta vazia do perfil se faltar) e não toca em arquivo que não seja do core nem do overlay. Não filtre à mão. O `jarvis init --upgrade` já roda esse filtro no fim, quando o ENV.md tem os 4 eixos; o Passo 8 continua valendo na criação do ENV.md e sempre que o perfil muda.
+Na pasta do workspace, rode `jarvis rules sync --ide {ide}` e mostre à pessoa o resumo que ele imprime. O comando filtra `$IDE/rules/` e `$IDE/rules-on-demand/` pelo perfil do ENV.md (HUB, POSITION, AREA, SQUAD, ARTIFACT_STYLE; `rtk-rules.md` só com RTK_ENABLED=true), aplica o overlay de `COMPANY_PROFILE` (cria a pasta vazia do perfil se faltar) e não toca em arquivo que não seja do core nem do overlay. Não filtre à mão. O `jarvis init --upgrade` e a reinstalação (`--force` ou a opção 2 do menu) já rodam esse filtro no fim, quando o ENV.md tem os 4 eixos (ali, a `rtk-rules.md` pede também o `rtk` no PATH); o Passo 8 continua valendo na criação do ENV.md e sempre que o perfil muda.
 Sem o `jarvis` no PATH, ou se o comando sair com erro (ENV incompleto, versão do lock diferente), siga `assets/rules-sync-manual.md`.
 
 ---

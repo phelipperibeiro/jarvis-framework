@@ -76,9 +76,9 @@ Isso reduz tokens carregados na sessão.
 
 1. Editadas neste repo.
 2. `jarvis init` copia o conjunto **inteiro** para `.$IDE/rules/` e `.$IDE/rules-on-demand/` (sync bruto; as rules que saíram de `rules/` são removidas das instalações antigas via `OBSOLETE_PATHS`; se a rule virou um ponteiro no mesmo caminho, como a de Cypress em `qa/`, o caminho **não** entra em `OBSOLETE_PATHS`: o sync sobrescreve a instalação antiga com o ponteiro).
-3. `/jarvis-init` **filtra** de novo conforme perfil (e RTK) (Passo 8 → `jarvis rules sync`).
+3. `/jarvis-init` **filtra** de novo conforme perfil (e RTK) (Passo 8 → `jarvis rules sync`). O `jarvis init --upgrade` e a reinstalação (`--force` ou a opção 2 do menu) já rodam o mesmo filtro no fim quando o `ENV.md` tem HUB, POSITION, AREA e SQUAD; nesses dois caminhos, a `rtk-rules.md` pede também o `rtk` no PATH. No Kiro, o filtro grava ou apaga o `steering/{nome}` junto com a rule.
 
-Se você só rodar `jarvis init` sem o skill de init, a IDE pode ter rules a mais do que o perfil precisa — o filtro fino é responsabilidade do `/jarvis-init`.
+Se você só rodar `jarvis init` numa pasta nova (sem `ENV.md`), a IDE fica com rules a mais do que o perfil precisa até o `/jarvis-init`, responsável pelo filtro fino.
 
 ## Para quem vai criar ou editar uma rule
 
