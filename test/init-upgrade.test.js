@@ -990,3 +990,46 @@ test("init --upgrade (kiro): o steering fica só com as rules do perfil (#83)", 
     assert.ok(!existsSync(join(steering, "eng.frontend-rules.md")));
   });
 });
+
+// PATH sem nenhuma pasta que tenha um `rtk` (a máquina de quem roda pode ter o real).
+function runSemRtk(ws, ...args) {
+  const path = (process.env.PATH || "")
+    .split(":")
+    .filter((d) => d && !existsSync(join(d, "rtk")))
+    .join(":");
+  return spawnSync(process.execPath, [cli, "init", ...args], {
+    cwd: ws,
+    input: "",
+    encoding: "utf-8",
+    stdio: "pipe",
+    env: { ...process.env, JARVIS_SKIP_CLI_CHECK: "1", PATH: path },
+  });
+}
+
+const ENV_PERFIL_RTK = ENV_PERFIL.replace("RTK_ENABLED=false", "RTK_ENABLED=true");
+
+test("init --upgrade: RTK_ENABLED=true sem o rtk no PATH não traz a rtk-rules.md (#83)", () => {
+  withWorkspace({ ".claude/ENV.md": ENV_PERFIL_RTK }, (ws) => {
+    const r = runSemRtk(ws, "--upgrade", "--ide", "claude", "--yes");
+    assert.equal(r.status, 0, r.stderr);
+    assert.ok(!existsSync(join(ws, ".claude/rules/rtk-rules.md")));
+  });
+});
+
+test("init --upgrade: RTK_ENABLED=true com o rtk no PATH traz a rtk-rules.md (#83)", () => {
+  withWorkspace({ ".claude/ENV.md": ENV_PERFIL_RTK }, (ws) => {
+    const r = runWithFakeRtk(ws, "", "--upgrade", "--ide", "claude", "--yes");
+    assert.equal(r.status, 0, r.stderr);
+    assert.ok(existsSync(join(ws, ".claude/rules/rtk-rules.md")));
+  });
+});
+
+test("init --force: reinstalação com o ENV.md completo filtra as rules como o --upgrade (#83)", () => {
+  withWorkspace({ ".claude/ENV.md": ENV_PERFIL }, (ws) => {
+    const r = run(ws, "--ide", "claude", "--force");
+    assert.equal(r.status, 0, r.stderr);
+    assert.match(r.stdout, /Rules filtradas pelo perfil \(BACKEND\/SENIOR\/ENGINEERING\/CORE\)/);
+    assert.ok(!existsSync(join(ws, ".claude/rules/product/prod.spec-rules.md")));
+    assert.ok(existsSync(join(ws, ".claude/rules/engineering/eng-rules.md")));
+  });
+});

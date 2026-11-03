@@ -481,6 +481,19 @@ export function syncRulesForProfile(
 }
 
 /**
+ * O `rtk` (Token Killer) está no PATH e responde ao `rtk gain --help`?
+ * @returns {boolean}
+ */
+export function rtkAvailable() {
+  try {
+    execSync("rtk gain --help 2>/dev/null", { stdio: "pipe" });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
  * Detecta RTK no PATH e reconcilia RTK_ENABLED no ENV.md + rtk-rules.md na IDE.
  * - RTK encontrado → RTK_ENABLED=true no ENV.md, mantém rule
  * - RTK não encontrado → remove rtk-rules.md da IDE, mantém RTK_ENABLED=false
@@ -491,14 +504,7 @@ export function syncRulesForProfile(
 function reconcileRtk(ideDir, targetDir, ide, { keepEnvValues = false } = {}) {
   const rtkRulePath = join(ideDir, "rules", "rtk-rules.md");
   const envPath = join(ideDir, "ENV.md");
-  const hasRtk = (() => {
-    try {
-      execSync("rtk gain --help 2>/dev/null", { stdio: "pipe" });
-      return true;
-    } catch {
-      return false;
-    }
-  })();
+  const hasRtk = rtkAvailable();
 
   if (hasRtk) {
     // Ativar RTK_ENABLED no ENV.md se existir e estiver false

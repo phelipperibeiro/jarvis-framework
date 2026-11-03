@@ -1,7 +1,12 @@
 import { existsSync, mkdirSync, readFileSync, realpathSync } from "node:fs";
 import { join, dirname, basename, resolve, sep } from "node:path";
 import { createInterface } from "node:readline";
-import { syncAssets, applyRuleOverlay, syncRulesForProfile } from "../lib/core/sync-engine.js";
+import {
+  syncAssets,
+  applyRuleOverlay,
+  syncRulesForProfile,
+  rtkAvailable,
+} from "../lib/core/sync-engine.js";
 import { discoverAll } from "../lib/core/scanner.js";
 import {
   IDES,
@@ -60,6 +65,51 @@ export function parseMenuChoice(answer, { hasEnv }) {
 
 /** Eixos do perfil que o filtro de rules exige (o mesmo do `jarvis rules sync`). */
 const PROFILE_AXES = ["HUB", "POSITION", "AREA", "SQUAD"];
+
+/**
+ * Filtra `.{ide}/rules/` e `rules-on-demand/` pelo perfil do ENV.md, como o `jarvis rules sync`
+ * (#83). Usado no fim do `--upgrade` e da reinstalação, depois que o `syncAssets` copiou as rules
+ * inteiras. Sem os 4 eixos (vazios ou com o exemplo `[...]` do template), não filtra. A
+ * `rtk-rules.md` só entra com `RTK_ENABLED=true` e o `rtk` no PATH (o `reconcileRtk` a tira sem ele).
+ * @param {string} workspaceDir
+ * @param {string} ide
+ * @param {string} envPath
+ * @returns {{ rulesSync: ReturnType<typeof syncRulesForProfile> | null, missingProfile: string[], profileLabel: string }}
+ */
+export function filterRulesByEnv(workspaceDir, ide, envPath) {
+  const envText = readFileSync(envPath, "utf-8");
+  const entries = parseEnvEntries(envText);
+  const value = (key) => {
+    const v = (entries.get(key) || "").trim();
+    return v && !/^\[.*\]$/.test(v) ? v : "";
+  };
+  const missingProfile = PROFILE_AXES.filter((axis) => !value(axis));
+  const profileLabel = PROFILE_AXES.map(value).join("/");
+  if (missingProfile.length) return { rulesSync: null, missingProfile, profileLabel };
+  const rulesSync = syncRulesForProfile(
+    join(workspaceDir, `.${getIDEFolder(ide)}`),
+    {
+      HUB: value("HUB"),
+      POSITION: value("POSITION"),
+      AREA: value("AREA"),
+      SQUAD: value("SQUAD"),
+      ARTIFACT_STYLE: value("ARTIFACT_STYLE") || "ai-generated",
+    },
+    { rtkEnabled: value("RTK_ENABLED") === "true" && rtkAvailable(), envText }
+  );
+  return { rulesSync, missingProfile, profileLabel };
+}
+
+/** Linha de resumo do filtro de rules, com avisos e erros (nada sem filtro). */
+function logRulesFilter(rulesSync, profileLabel) {
+  if (!rulesSync) return;
+  const copied = rulesSync.copied.rules + rulesSync.copied["rules-on-demand"];
+  logger.info(
+    `  • Rules filtradas pelo perfil (${profileLabel}): ${copied} copiada(s), ${rulesSync.removed} removida(s)`
+  );
+  for (const w of rulesSync.warnings) logger.info(`${YELLOW}  ⚠️  ${w}${NC}`);
+  for (const e of rulesSync.errors) logger.error(`${RED}  ✗ ${e}${NC}`);
+}
 
 /**
  * O que ainda pede o `/jarvis-init upgrade` na IDE depois do `jarvis init --upgrade` (#189, Q4).
@@ -342,6 +392,14 @@ export async function init(flags) {
   }
   for (const item of result.errors) {
     logger.error(`${RED}  ✗ ${item}${NC}`);
+  }
+  // Reinstalação com o ENV.md preenchido: o mesmo filtro do --upgrade (#83). Sem ENV.md (instalação
+  // nova) ou sem os 4 eixos, o Passo 8 do /jarvis-init filtra depois.
+  const envOnDisk = join(ideDir, "ENV.md");
+  if (forceSync && existsSync(envOnDisk)) {
+    const { rulesSync, profileLabel } = filterRulesByEnv(cwd, ide, envOnDisk);
+    logRulesFilter(rulesSync, profileLabel);
+    if (rulesSync?.errors.length) process.exitCode = 1;
   }
 
   const jarvisRoot = join(cwd, ".jarvis");
@@ -672,30 +730,8 @@ async function runUpgrade(cwd, flags) {
     rewritten = rewriteRelatedDiscovery(workspaceDir, env, moved);
   }
 
-  // 3.4 Rules do perfil (#83): o mesmo filtro do `jarvis rules sync` (Passo 8 do /jarvis-init),
-  // com o ENV.md já gravado. O syncAssets copiou rules/ e rules-on-demand/ inteiras; sem os 4
-  // eixos, não filtra e a pendência leva ao /jarvis-init upgrade.
-  const finalEnvText = readFileSync(envPath, "utf-8");
-  const finalEnv = parseEnvEntries(finalEnvText);
-  const profileValue = (key) => {
-    const value = (finalEnv.get(key) || "").trim();
-    return value && !/^\[.*\]$/.test(value) ? value : "";
-  };
-  const missingProfile = PROFILE_AXES.filter((axis) => !profileValue(axis));
-  let rulesSync = null;
-  if (!missingProfile.length) {
-    rulesSync = syncRulesForProfile(
-      join(workspaceDir, `.${getIDEFolder(ide)}`),
-      {
-        HUB: profileValue("HUB"),
-        POSITION: profileValue("POSITION"),
-        AREA: profileValue("AREA"),
-        SQUAD: profileValue("SQUAD"),
-        ARTIFACT_STYLE: profileValue("ARTIFACT_STYLE") || "ai-generated",
-      },
-      { rtkEnabled: profileValue("RTK_ENABLED") === "true", envText: finalEnvText }
-    );
-  }
+  // 3.4 Rules do perfil (#83): o mesmo filtro do `jarvis rules sync`, com o ENV.md já gravado.
+  const { rulesSync, missingProfile, profileLabel } = filterRulesByEnv(workspaceDir, ide, envPath);
 
   // 4. Resumo (só nomes de chave e caminhos)
   const pkg = getPackageInfo();
@@ -733,14 +769,7 @@ async function runUpgrade(cwd, flags) {
   for (const e of moveErrors) logger.error(`${RED}  ✗ ${e}${NC}`);
   if (staleRemoved.length) logger.info(`  • Skills antigos removidos: ${staleRemoved.join(", ")}`);
   for (const e of staleErrors) logger.error(`${RED}  ✗ ${e}${NC}`);
-  if (rulesSync) {
-    const copied = rulesSync.copied.rules + rulesSync.copied["rules-on-demand"];
-    logger.info(
-      `  • Rules filtradas pelo perfil (${PROFILE_AXES.map(profileValue).join("/")}): ${copied} copiada(s), ${rulesSync.removed} removida(s)`
-    );
-    for (const w of rulesSync.warnings) logger.info(`${YELLOW}  ⚠️  ${w}${NC}`);
-    for (const e of rulesSync.errors) logger.error(`${RED}  ✗ ${e}${NC}`);
-  }
+  logRulesFilter(rulesSync, profileLabel);
   for (const k of envPlan.pending) {
     logger.info(`${YELLOW}  ⚠️  ${k} está vazio: responda no /jarvis-init upgrade${NC}`);
   }

@@ -28,9 +28,10 @@ export function extractFrontmatterBlock(content) {
 
 /**
  * Lê o `description` de um bloco de frontmatter, numa linha só: o valor na mesma linha (sem as
- * aspas) ou o bloco `>`/`|` (as linhas recuadas seguintes, unidas por espaço), que é como os
- * SKILL.md e parte dos agents e workflows o escrevem. Fonte única do `jarvis list` e da geração
- * para Codex, OpenCode e Kiro, que antes liam o bloco como ">" (#83).
+ * aspas; `\"` vira `"`) ou o bloco `>`/`|`, com ou sem indicador (`>-`, `|+`, `>2`), unido numa
+ * linha por espaço, que é como os SKILL.md e parte dos agents e workflows o escrevem. Fonte única
+ * do `jarvis list` e da geração para Codex, OpenCode e Kiro, que antes liam o bloco como ">" (#83).
+ * String entre aspas que continua na linha seguinte não é suportada (nenhum arquivo do framework usa).
  * @param {string | null} block - Bloco do frontmatter (`extractFrontmatterBlock`)
  * @returns {string} A descrição, ou "" sem o campo
  */
@@ -41,11 +42,10 @@ export function readDescription(block) {
   if (start === -1) return "";
 
   let value = lines[start].slice("description:".length).trim();
-  if (value && !/^[>|][+-]?$/.test(value)) {
-    if (
-      (value.startsWith('"') && value.endsWith('"')) ||
-      (value.startsWith("'") && value.endsWith("'"))
-    ) {
+  if (value && !/^[>|](?:[1-9][+-]?|[+-][1-9]?)?$/.test(value)) {
+    if (value.length > 1 && value.startsWith('"') && value.endsWith('"')) {
+      value = value.slice(1, -1).replace(/\\"/g, '"');
+    } else if (value.length > 1 && value.startsWith("'") && value.endsWith("'")) {
       value = value.slice(1, -1);
     }
     return value;

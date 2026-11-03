@@ -98,3 +98,9 @@ test("rules reais: o Applies to vem na 1ª linha ou logo depois do frontmatter (
   visitar(join(raiz, "rules-on-demand"));
   assert.deepEqual(fora, []);
 });
+
+test("readDescription: indicadores de bloco e aspas escapadas (#83)", () => {
+  assert.equal(readDescription("description: >2\n  a\n  b\nlicense: MIT"), "a b");
+  assert.equal(readDescription("description: |-\n  x"), "x");
+  assert.equal(readDescription('description: "diz \\"oi\\""'), 'diz "oi"');
+});
