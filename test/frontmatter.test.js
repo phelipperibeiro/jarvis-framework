@@ -6,7 +6,8 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { mkdtempSync, readFileSync, readdirSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { readDescription } from "../bin/lib/utils/frontmatter.js";
 import { discoverAll } from "../bin/lib/core/scanner.js";
 import { syncAssets } from "../bin/lib/core/sync-engine.js";
@@ -76,4 +77,24 @@ test("OpenCode: agents e commands gerados do framework real sem description '>' 
   } finally {
     rmSync(target, { recursive: true, force: true });
   }
+});
+
+test("rules reais: o Applies to vem na 1ª linha ou logo depois do frontmatter (#83)", () => {
+  const raiz = join(dirname(fileURLToPath(import.meta.url)), "..");
+  const fora = [];
+  const visitar = (dir) => {
+    for (const e of readdirSync(dir, { withFileTypes: true })) {
+      const caminho = join(dir, e.name);
+      if (e.isDirectory()) visitar(caminho);
+      else if (e.name.endsWith(".md") && !["AGENTS.md", "README.md"].includes(e.name)) {
+        const texto = readFileSync(caminho, "utf-8");
+        const fm = texto.match(/^---\n[\s\S]*?\n---\n/);
+        const corpo = (fm ? texto.slice(fm[0].length) : texto).replace(/^\n+/, "");
+        if (!corpo.startsWith("> **Applies to:**")) fora.push(caminho.slice(raiz.length + 1));
+      }
+    }
+  };
+  visitar(join(raiz, "rules"));
+  visitar(join(raiz, "rules-on-demand"));
+  assert.deepEqual(fora, []);
 });
