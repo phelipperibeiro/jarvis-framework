@@ -1,12 +1,10 @@
 ---
 name: eng-backend-microservices-trace
 description: >
-  Rastreamento automático de um bug específico (card do TASK_MANAGER) em arquitetura de microsserviços.
-  Parte do fluxo descrito no card, mapeia as chamadas HTTP e AMQP desse fluxo entre serviços,
-  analisa contratos em cada boundary e gera hipóteses rankeadas de causa raiz.
-  Trigger: Use quando um bug (TASK_MANAGER_KEY) suspeito de cruzar mais de um microsserviço.
-license: AGPL-3.0
-compatibility: Designed for Claude Code (or similar products)
+  Rastreia um bug (card do TASK_MANAGER) em microsserviços: parte do fluxo do card, mapeia as
+  chamadas HTTP e AMQP entre serviços, analisa contratos em cada boundary e gera hipóteses
+  rankeadas de causa raiz. Trigger: bug (TASK_MANAGER_KEY) suspeito de cruzar mais de um
+  microsserviço.
 allowed-tools: Read Glob Grep Bash
 metadata:
   author: jarvis-team

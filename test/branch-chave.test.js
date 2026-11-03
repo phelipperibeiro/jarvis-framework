@@ -122,9 +122,11 @@ test("o eng.start chama a skill pela tabela de chamadas (o que o jarvis map e o 
   );
 });
 
-const GATES = ["plan", "work", "pre-pr", "pr"].map(
+// As quatro rules de etapa apontam o Gate 0, que mora num arquivo só (#97).
+const RULES_DE_ETAPA = ["plan", "work", "pre-pr", "pr"].map(
   (cmd) => `rules-on-demand/engineering/eng.${cmd}-rules.md`
 );
+const GATES = ["rules-on-demand/engineering/eng.gate0-rules.md"];
 
 // Bloco do Gate 0.3: do título até o separador `---` seguinte.
 function gate03(texto) {
@@ -139,26 +141,31 @@ function gate03(texto) {
   return bloco;
 }
 
-test("os quatro Gates 0.3 são idênticos e citam a skill", () => {
-  const blocos = GATES.map((arquivo) => gate03(read(arquivo)));
-  for (const [i, bloco] of blocos.entries()) {
-    assert.ok(
-      bloco.includes("eng-global-branch"),
-      `${GATES[i]}: o Gate 0.3 não cita a skill. ${DE_PROPOSITO}`
+test("o Gate 0 mora só em eng.gate0-rules.md e as quatro rules o apontam", () => {
+  for (const arquivo of RULES_DE_ETAPA) {
+    const texto = read(arquivo);
+    assert.equal(
+      texto.split("eng.gate0-rules.md").length - 1,
+      1,
+      `${arquivo}: não aponta o eng.gate0-rules.md uma vez. ${DE_PROPOSITO}`
     );
-    if (i > 0) {
-      assert.equal(
-        bloco,
-        blocos[0],
-        `${GATES[i]}: o Gate 0.3 difere do de ${GATES[0]}. ${DE_PROPOSITO}`
-      );
-    }
+    assert.ok(
+      !texto.includes("### Regra 0.3"),
+      `${arquivo}: ainda tem uma cópia do Gate 0. ${DE_PROPOSITO}`
+    );
+  }
+  for (const arquivo of GATES) {
+    assert.ok(
+      gate03(read(arquivo)).includes("eng-global-branch"),
+      `${arquivo}: o Gate 0.3 não cita a skill. ${DE_PROPOSITO}`
+    );
   }
 });
 
 // O escopo inteiro (decisão Q1): todos os arquivos que antes ditavam o nome da branch.
 const ESCOPO = [
   ...APONTAM,
+  ...RULES_DE_ETAPA,
   ...GATES,
   "workflows/engineering/eng.pr.md",
   "workflows/engineering/eng.work.md",

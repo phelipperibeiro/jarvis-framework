@@ -27,10 +27,44 @@ export function extractFrontmatterBlock(content) {
 }
 
 /**
+ * Lê o `description` de um bloco de frontmatter, numa linha só: o valor na mesma linha (sem as
+ * aspas; `\"` vira `"`) ou o bloco `>`/`|`, com ou sem indicador (`>-`, `|+`, `>2`), unido numa
+ * linha por espaço, que é como os SKILL.md e parte dos agents e workflows o escrevem. Fonte única
+ * do `jarvis list` e da geração para Codex, OpenCode e Kiro, que antes liam o bloco como ">" (#83).
+ * String entre aspas que continua na linha seguinte não é suportada (nenhum arquivo do framework usa).
+ * @param {string | null} block - Bloco do frontmatter (`extractFrontmatterBlock`)
+ * @returns {string} A descrição, ou "" sem o campo
+ */
+export function readDescription(block) {
+  if (!block) return "";
+  const lines = block.split("\n");
+  const start = lines.findIndex((line) => line.startsWith("description:"));
+  if (start === -1) return "";
+
+  let value = lines[start].slice("description:".length).trim();
+  if (value && !/^[>|](?:[1-9][+-]?|[+-][1-9]?)?$/.test(value)) {
+    if (value.length > 1 && value.startsWith('"') && value.endsWith('"')) {
+      value = value.slice(1, -1).replace(/\\"/g, '"');
+    } else if (value.length > 1 && value.startsWith("'") && value.endsWith("'")) {
+      value = value.slice(1, -1);
+    }
+    return value;
+  }
+
+  // Bloco: segue enquanto a linha é recuada (ou vazia); para na próxima chave sem recuo.
+  const parts = [];
+  for (const line of lines.slice(start + 1)) {
+    if (line.trim() === "") continue;
+    if (!/^\s/.test(line)) break;
+    parts.push(line.trim());
+  }
+  return parts.join(" ");
+}
+
+/**
  * Parseia um bloco de frontmatter YAML simples (`chave: valor`, uma por linha,
  * sem indentação). Não suporta estruturas aninhadas, listas ou blocos
- * multilinha (`>`/`|`) — para isso, veja `sync-engine.js#parseSkillFrontmatter`,
- * que extrai campos específicos com necessidades diferentes.
+ * multilinha (`>`/`|`); para o `description` em bloco, use `readDescription`.
  * @param {string} content - Conteúdo completo do arquivo (com ou sem frontmatter)
  * @returns {Record<string, string>} Metadados; `{}` se não houver frontmatter
  */

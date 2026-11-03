@@ -5,8 +5,6 @@ agent: "$IDE/agents/engineering/eng.agent.md"
 rules_file: "$IDE/rules-on-demand/engineering/eng.work-rules.md"
 template_file: "$IDE/templates/engineering/work-progress-template.md"
 recommended_model: claude-sonnet-4-20250514
-model_tier: very_high
-model_justification: Implementação de código requer máxima precisão, entendimento profundo do codebase e geração de código de alta qualidade
 ---
 
 # Engineer Work
@@ -27,7 +25,7 @@ Este comando executa a **implementação de código** seguindo o plano de execu�
 | Passo | Skill | Condição |
 |-------|-------|----------|
 | Cabeçalho (agente) | `eng.agent` (agente) | Sempre — identidade do workflow |
-| Fase 0 › 0.1 Verificar ou Gerar Contexto da Sessão | `/jarvis-context-detect` | Se `ENABLE_CDD=true` e o `context.md` não existir (obrigatório antes da Fase 1) |
+| Fase 0 | `/jarvis-context-detect` | Se `ENABLE_CDD=true` e o `context.md` não existir (obrigatório antes da Fase 1) |
 | Fase 3 › 3.1 Implementar Código (skill de domínio) | `/eng-frontend` (via `eng.specializations-rules.md`) | Se o domínio da feature for frontend (componentes, UI, estado, estilos, bundle, a11y); a regra também carrega `FRONTEND_SPECIALIZATIONS` |
 | Fase 3 › 3.1 Implementar Código (skill de domínio) | `/eng-backend` (via `eng.specializations-rules.md`) | Se o domínio da feature for backend (endpoints, auth, workers, filas, cache, banco, integrações); a regra também carrega `BACKEND_SPECIALIZATIONS` |
 | Fase 3 › 3.1 Implementar Código (skill de domínio) | `/eng-automation` (via `eng.specializations-rules.md`) | Se o domínio da feature for RPA, scraping, extração de dados, ETL ou parsing; a regra também carrega `AUTOMATION_SPECIALIZATIONS` |
@@ -36,28 +34,13 @@ Este comando executa a **implementação de código** seguindo o plano de execu�
 | Fase 3 › 3.3.2 Implementar Testes Faltantes (Opção A) | `eng.qa.testing-engineer` (agente) | Se o test-planner identificar gaps e a estratégia do `architecture.md` seção 6.5 indicar testes manuais (unitário/integração) |
 | Fase 3 › 3.3.2 Implementar Testes Faltantes (Opção B) | `/eng-qa` | Se a estratégia do `architecture.md` seção 6.5 indicar uma especialização registrada em `QA_SPECIALIZATIONS` |
 | Fase 3 › 3.1 Implementar Código (exceção) | `eng.advisor.agent` (agente) | Só por exceção: questão nova em aberto, com o Advisor habilitado no `eng.start` (cabeçalho do `architecture.md`) |
-| Fase 5 › 5.4 e "Se houver bloqueio técnico" | `/eng-global-task-comment` | Se houver desvio do plano: mudança de direção, fase bloqueada ou questão nova consultada ao Advisor, só com o Sim da pergunta (regra de ouro; freelance: o skill registra no `task-log.md`); sem o Sim, o texto fica no `task-comment-*.md` |
+| Fase 5 › 5.2 e "Se houver bloqueio técnico" | `/eng-global-task-comment` | Se houver desvio do plano: mudança de direção, fase bloqueada ou questão nova consultada ao Advisor, só com o Sim da pergunta (regra de ouro; freelance: o skill registra no `task-log.md`); sem o Sim, o texto fica no `task-comment-*.md` |
 
 ---
 
 ## Regra de Execução Máxima
 
-Este workflow **DEVE respeitar** o limite `MAX_AI_EXECUTION_PERCENTAGE` definido no `ENV.md`:
-
-- **Valor padrão**: Se não estiver definido, assumir **80%**
-- **Valor mínimo**: **60%** — se configurado abaixo, tratar como 60% e avisar o usuário
-- **Valor máximo**: **100%** — se configurado acima de 100, tratar como 100%
-
-**Comportamento esperado:**
-
-1. Ao iniciar, leia `MAX_AI_EXECUTION_PERCENTAGE` do `ENV.md`
-2. Conte o total de tarefas no to-do gerado pelo `eng.plan`
-3. Calcule: `tarefas_executáveis = floor(total × (MAX / 100))`
-4. Execute apenas até esse número de tarefas do to-do — ao atingir, **PARE**
-5. Reporte o que foi feito, liste o que resta e aguarde instrução explícita do usuário
-6. Nunca tente contornar ou ignorar este limite
-
-**Exemplo:** Plano com 10 tarefas e `MAX_AI_EXECUTION_PERCENTAGE=80` → IA executa as 8 primeiras tarefas do to-do, para e aguarda o humano.
+Este workflow respeita o limite `MAX_AI_EXECUTION_PERCENTAGE` do `ENV.md`, conforme `$RULES_FOLDER/engineering/eng-rules.md` (cálculo sobre o to-do do `plan.md`; ao atingir o limite, parar, reportar e aguardar o usuário).
 
 ---
 
@@ -78,80 +61,7 @@ Ler `TASK_MANAGER` do `$IDE/ENV.md`. Seguir `$IDE/rules/engineering/eng.integrat
 
 ## Fase 0: Análise de Contexto (CDD)
 
-> 🎯 **Objetivo**: Adaptar o rigor de implementação e validação com base no contexto real.
-> ⚙️ **Configurável**: Controlada pela variável `ENABLE_CDD` no ENV.md
-
-**Verificação de Ativação:**
-
-```bash
-grep "^ENABLE_CDD=" $IDE/ENV.md
-```
-
-- Se `ENABLE_CDD=false` ou não definida → **Pular esta fase** e usar comportamento padrão (Fase 1)
-- Se `ENABLE_CDD=true` → Executar obrigatoriamente os passos 0.1 e 0.2 abaixo
-
-### 0.1 Verificar ou Gerar Contexto da Sessão
-
-**OBRIGATÓRIO quando `ENABLE_CDD=true`**: verificar se `context.md` já existe:
-
-```bash
-cat $SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/context.md 2>/dev/null
-```
-
-- Se **existir** → ler o `CONTEXT_PROFILE` e continuar para 0.2
-- Se **não existir** → **invocar o skill `/jarvis-context-detect {TASK_MANAGER_KEY}` agora** (não continuar sem ele)
-
-```
-/jarvis-context-detect {TASK_MANAGER_KEY}
-```
-
-> ⚠️ Não avance para a Fase 1 sem `context.md` gerado.
-
-```yaml
-CONTEXT_PROFILE:
-  tipo: [hotfix|bugfix|feature|refactor]
-  urgencia: [normal|alta|baixa]
-  rigor: [mínimo|padrão|alto]
-  comunicacao: [didático|direto|estratégico]
-  autonomia: [baixa|média|alta]
-  projeto:
-    testes: [existentes|ausentes]
-    typescript: [strict|relaxado|ausente]
-    cicd: [configurado|ausente]
-```
-
-### 0.2 Adaptar Implementação por Contexto
-
-| Tipo | Impacto na Implementação |
-|------|--------------------------|
-| `hotfix` | Foco cirúrgico, skip testes extensivos, validação mínima |
-| `bugfix` | Implementar fix + teste que reproduz o bug |
-| `feature` | Fluxo completo com testes e validações |
-| `refactor` | Testes obrigatórios antes E depois, garantir comportamento idêntico |
-
-### 0.3 Calibração de Testes (do context.md)
-
-Use as características do projeto detectadas:
-
-| projeto.testes | Comportamento |
-|----------------|---------------|
-| `existentes` | Exigir testes para código novo, seguir padrões |
-| `ausentes` | Sugerir testes, mas não bloquear |
-
-| projeto.cicd | Comportamento |
-|--------------|---------------|
-| `configurado` | Executar validações locais antes de finalizar |
-| `ausente` | Alertar sobre ausência de validação automática |
-
-### 0.4 Ajuste de Autonomia (do context.md)
-
-| autonomia | Comportamento na Implementação |
-|-----------|--------------------------------|
-| `alta` | Implementar fase completa, pausar apenas entre fases |
-| `média` | Implementar, pausar em decisões de design |
-| `baixa` | Apresentar cada arquivo antes de criar, aguardar aprovação |
-
-> 💡 O contexto é herdado do `eng.start` e não precisa ser re-apresentado ao usuário.
+Leia `ENABLE_CDD` no `$IDE/ENV.md` (`grep "^ENABLE_CDD=" $IDE/ENV.md`). Com `false` ou sem a variável, pule para a Fase 1 com o comportamento padrão. Com `true`, leia o `CONTEXT_PROFILE` de `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/context.md`; sem o arquivo, execute **agora** `/jarvis-context-detect {TASK_MANAGER_KEY}` (obrigatório) e não avance para a Fase 1 sem o `context.md`. Calibre a implementação pelo perfil, conforme `$IDE/skills/jarvis-context-detect/references/eng.work.md`. O perfil vem do `eng.start` e não é reapresentado ao usuário.
 
 ---
 
@@ -363,59 +273,7 @@ Se o usuário solicitar mudanças:
 
 ## Fase 5: Atualização do plan.md
 
-### 5.1 Commit da Fase (Gitflow)
-
-Após aprovação do usuário, commitar as mudanças desta fase:
-
-#### 5.1.1 Determinar Layer e Scope
-
-Com base nos arquivos modificados na fase, identificar:
-
-| Layer | Indicadores |
-|-------|-------------|
-| `Backend` | controllers, services, repositories, workers, queues, migrations |
-| `Frontend` | components, pages, hooks, styles, assets |
-| `Fullstack` | mudanças em ambas as camadas |
-| `Infra` | CI/CD, Docker, configs de infraestrutura |
-| `Tests` | apenas arquivos de teste |
-| `Docs` | apenas documentação |
-
-**Scope**: nome do módulo/serviço principal afetado (ex: `account-api`, `auth-module`, `dashboard`)
-
-#### 5.1.2 Adicionar Arquivos Específicos
-
-> ⚠️ **NUNCA use `git add .`**
-
-```bash
-git status  # Ver arquivos alterados pela fase
-git add {arquivo1} {arquivo2} ...  # Adicionar apenas os da fase atual
-```
-
-#### 5.1.3 Criar Commit
-
-**Formato obrigatório:**
-
-```
-{TASK_MANAGER_KEY} [{Layer}][{scope}] {título da fase}
-```
-
-**Exemplos:**
-
-```bash
-git commit -m "PLAT-202 [Backend][account-api] Implementar autenticação JWT"
-git commit -m "PLAT-202 [Frontend][auth-module] Adicionar formulário de login"
-git commit -m "BUG-89 [Backend][payment-service] Fix: null pointer no processamento"
-```
-
-**Comando:**
-
-```bash
-git commit -m "{TASK_MANAGER_KEY} [{Layer}][{scope}] {título da fase}"
-```
-
----
-
-### 5.3 Marcar Fase como Concluída
+### 5.1 Marcar Fase como Concluída
 
 Atualize o `plan.md`:
 
@@ -423,7 +281,7 @@ Atualize o `plan.md`:
 2. Mudar status da fase para `[Completada ✅]`
 3. Adicionar seção de comentários
 
-### 5.4 Adicionar Comentários
+### 5.2 Adicionar Comentários
 
 ```markdown
 ### Comentários:
@@ -443,6 +301,9 @@ Após validação do usuário e atualização do `plan.md`, commitar a fase na b
 ```bash
 # Verificar branch (deve ser a branch criada no eng.start)
 git branch --show-current
+
+# Ver os arquivos alterados pela fase
+git status
 
 # Adicionar arquivos específicos da fase (NUNCA git add .)
 git add {arquivo1} {arquivo2} ... {arquivos da fase}

@@ -1,22 +1,17 @@
 ---
 name: eng-automation
 description: >
-  Skill base de automação, válida em qualquer linguagem, biblioteca de coleta ou ferramenta de RPA:
-  fundamentos de automação, aquisição de dados, automação de navegador, scraping/crawling,
-  automação de APIs (REST/GraphQL/SOAP), webhooks e integração, RPA, extração de dados estruturados
-  e de documentos, ingestão de dados, CAPTCHA/anti-bot, limites de taxa e cortesia, agendamento e
-  orquestração, retentativa e tratamento de erros, autenticação/credenciais e observabilidade.
-  Pode ser complementada por especializações registradas em AUTOMATION_SPECIALIZATIONS.
-  Trigger: Use para RPA, web scraping, automação de browser, automação de APIs, extração de dados,
-  ingestão de dados ou qualquer automação de processo/fluxo de trabalho.
-license: AGPL-3.0
-compatibility: Designed for Claude Code (or similar products)
+  Base de automação, neutra de linguagem e ferramenta: automação de navegador,
+  scraping/crawling, APIs (REST/GraphQL/SOAP), webhooks e integração, RPA, extração de dados e
+  documentos, ingestão, CAPTCHA/anti-bot, limites de taxa, agendamento, retentativa e
+  tratamento de erros, autenticação/credenciais e observabilidade; +
+  AUTOMATION_SPECIALIZATIONS. Trigger: RPA, web scraping, automação de browser ou de APIs,
+  extração ou ingestão de dados, automação de processo/fluxo de trabalho.
 allowed-tools: Read Write Edit Glob Grep Bash
 metadata:
   author: jarvis-team
   version: "1.0"
   area: automation
-# Campos Claude Code-specific (não fazem parte da spec oficial agentskills.io):
 argument-hint: "[scraping|rpa|api|extracao|ingestao] [contexto]"
 disable-model-invocation: false
 ---
@@ -213,6 +208,7 @@ Automação reúne várias áreas (Data Acquisition, Web Automation, API Automat
 - Validar dados extraídos e detectar mudança de estrutura da fonte
 - Tratar erros com retry e idempotência em tudo que roda sozinho
 - Registrar logs e métricas suficientes para diagnosticar falha sem acesso ao ambiente
+- Ao criar ou corrigir um robô (inclusive pelo `/eng.debug` ou pelo `/eng.work`), atualizar o `{robot-tag}-robot.md` seguindo a seção 6 de `$IDE/rules-on-demand/engineering/eng.rpa-rules.md`
 
 ---
 

@@ -1,10 +1,9 @@
 ---
 name: jarvis-docs-central
-description: Integração com o Central docs, o registro do que foi implementado (um documento completo por funcionalidade e um registro por entrega, gerados pelo /eng.spec-consolidate), guardado por um adaptador de armazenamento (hoje uma pasta do disco, com git opcional). Busca, publica e indexa pelo CLI jarvis docs.
+description: Integração com o Central docs (o registro do implementado, com um documento por funcionalidade e um por entrega, gerados pelo /eng.spec-consolidate), num adaptador de armazenamento (pasta do disco, git opcional). Busca, publica e indexa pelo CLI jarvis docs.
 argument-hint: "[contexto da tarefa]"
 allowed-tools: Bash Read Write
 disable-model-invocation: false
-license: AGPL-3.0
 metadata:
   author: jarvis-team
   version: "5.0"

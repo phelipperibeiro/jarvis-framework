@@ -1,19 +1,15 @@
 ---
 name: jarvis-list-specializations
 description: >
-  Lista as especializações instaladas no projeto nas 6 áreas com especialização (backend, frontend,
-  qa, data, automation, platform), a área de cada uma e se está registrada na variável
-  `{ÁREA}_SPECIALIZATIONS` correspondente. Só lê: não altera o ENV.md, as listas nem nenhum skill.
-  Trigger: Use para ver quais especializações existem, quais estão registradas e quais skills estão
-  sem marcação de área.
-license: AGPL-3.0
-compatibility: Designed for Claude Code (or similar products)
+  Lista as especializações instaladas nas 6 áreas (backend, frontend, qa, data, automation,
+  platform), a área de cada uma e se está registrada em `{ÁREA}_SPECIALIZATIONS`. Só lê, não
+  altera nada. Trigger: ver especializações existentes e registradas e skills sem marcação de
+  área.
 allowed-tools: Read Bash Glob Grep
 metadata:
   author: jarvis-team
   version: "1.0"
   area: global
-# Campos Claude Code-specific (não fazem parte da spec oficial agentskills.io):
 argument-hint: "[backend|frontend|qa|data|automation|platform]"
 disable-model-invocation: false
 ---

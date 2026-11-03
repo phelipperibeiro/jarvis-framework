@@ -1,13 +1,11 @@
 ---
 name: eng-global-tech-spec
 description: >
-  Método de especificação técnica do /eng.build-tech-spec, em dois modos: Delivery Spec (Tech Spec a
-  partir de um épico ou de uma história, com subtarefas de 4h a 1 dia para a história) e Reference
-  Spec (especificação técnica normativa, sem card e sem subtarefas: contratos, convenções, perfis
-  de spec). Cada modo tem o seu arquivo em references/, lido só quando o modo é escolhido.
-  Trigger: Use ao escrever uma Delivery Spec (Tech Spec a partir de um card) ou uma Reference Spec (spec técnica de referência).
+  Método do /eng.build-tech-spec em dois modos, cada um com seu arquivo em references/:
+  Delivery Spec (a partir de épico ou história, com subtarefas de 4h a 1 dia) e Reference Spec
+  (normativa, sem card nem subtarefas: contratos, convenções, perfis). Trigger: escrever uma
+  Delivery Spec (Tech Spec de um card) ou uma Reference Spec.
 allowed-tools: Read Grep Glob Bash
-license: AGPL-3.0
 metadata:
   author: jarvis-team
   version: "1.0"

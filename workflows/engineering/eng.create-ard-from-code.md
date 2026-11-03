@@ -1,8 +1,6 @@
 ---
 description: Fluxo de trabalho de Engenharia para criação/iteração de ARD baseado no código do repositório
 recommended_model: claude-sonnet-4-20250514
-model_tier: high
-model_justification: Análise de codebase e extração de arquitetura requer compreensão profunda de código e padrões
 ---
 
 # Workflow de Engenharia – ARD a partir do Código (Architecture Requirement Document)

@@ -1,11 +1,7 @@
 ---
 name: eng.frontend-component
 description: >
-  Workflow para criar ou refatorar um componente frontend com qualidade:
-  análise de contexto, decisão entre componente compartilhado e local, implementação com
-  acessibilidade e testes. Neutro de stack: o framework, as bibliotecas e as convenções
-  vêm do projeto e das especializações registradas em FRONTEND_SPECIALIZATIONS.
-author: jarvis-team
+  Cria ou refatora um componente frontend: contexto, compartilhado ou local, acessibilidade e testes; neutro de stack (projeto e FRONTEND_SPECIALIZATIONS).
 version: "1.1"
 
 ---

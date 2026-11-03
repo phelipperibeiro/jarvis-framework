@@ -13,17 +13,17 @@ import { execSync } from "node:child_process";
 import { join, relative, basename, dirname, sep } from "node:path";
 import { getFrameworkRoot } from "../utils/paths.js";
 import { getIDEFolder } from "../config/ide-config.js";
-import { extractFrontmatterBlock } from "../utils/frontmatter.js";
+import { extractFrontmatterBlock, readDescription } from "../utils/frontmatter.js";
 import { readCompanyProfile } from "./company-profile.js";
+import { parseAppliesTo, matchesProfile } from "./profile-filter.js";
 import {
   SYNC_DIRS,
   SYNC_ROOT_FILES,
+  SYNC_EXCLUDE,
   OBSOLETE_PATHS,
   LOCK_FILE,
   OPENCODE_MODEL_MAP,
   OPENCODE_DEFAULT_PERMISSIONS,
-  OPENCODE_STRIP_FIELDS,
-  KIRO_STRIP_FIELDS,
   KIRO_HUB_FILE_PATTERNS,
 } from "../config/constants.js";
 
@@ -36,11 +36,7 @@ function parseSkillFrontmatter(content) {
   const fm = extractFrontmatterBlock(content);
   if (fm === null) return null;
   const name = (fm.match(/^name:\s*(.+)$/m) || [])[1]?.trim();
-  // description pode ser multiline com `>`
-  const descMatch = fm.match(/^description:\s*[>|]?\n?([\s\S]*?)(?=\n\S|\n---|Z)/m);
-  const description = descMatch
-    ? descMatch[1].replace(/^\s+/gm, "").replace(/\n+/g, " ").trim()
-    : "";
+  const description = readDescription(fm);
   return name ? { name, description } : null;
 }
 
@@ -66,6 +62,18 @@ function generateCodexOpenAIYaml(skillsDir) {
   }
 }
 
+/**
+ * Indica se um arquivo de uma pasta de SYNC_DIRS fica de fora da cópia para a IDE
+ * (documentação de pasta, ver SYNC_EXCLUDE).
+ * @param {string} dir - Pasta de SYNC_DIRS (ex.: "workflows")
+ * @param {string} relPath - Caminho relativo à pasta, com `/` (vazio para a própria pasta)
+ * @returns {boolean}
+ */
+export function isExcludedFromSync(dir, relPath) {
+  const rules = SYNC_EXCLUDE[dir];
+  return rules ? rules.some((re) => re.test(relPath)) : false;
+}
+
 export function syncAssets(targetDir, ide, opts = {}) {
   const frameworkRoot = getFrameworkRoot();
   const ideDir = join(targetDir, `.${getIDEFolder(ide)}`);
@@ -88,7 +96,12 @@ export function syncAssets(targetDir, ide, opts = {}) {
 
     try {
       if (!opts.dryRun) {
-        cpSync(src, dest, { recursive: true, force: opts.force ?? true });
+        cpSync(src, dest, {
+          recursive: true,
+          force: opts.force ?? true,
+          filter: (srcPath) =>
+            !isExcludedFromSync(dir, relative(src, srcPath).split(sep).join("/")),
+        });
       }
       result.copied.push(`${destDirName}/`);
     } catch (err) {
@@ -121,10 +134,12 @@ export function syncAssets(targetDir, ide, opts = {}) {
     }
   }
 
-  // Flatten workflows subfolders — todas as IDEs requerem arquivos na raiz sem subpastas
+  // Flatten workflows subfolders — todas as IDEs requerem arquivos na raiz sem subpastas.
+  // No Kiro a pasta de workflows é a própria steering/, onde o transformKiroAssets grava
+  // steering/skills/: achatá-la no upgrade soltava os skill-*.md na raiz (#83).
   const workflowsDest = join(ideDir, opts.workflowsFolder || "workflows");
   if (existsSync(workflowsDest)) {
-    const moved = flattenDir(workflowsDest);
+    const moved = flattenDir(workflowsDest, undefined, ide === "kiro" ? ["skills"] : []);
     if (moved > 0) result.copied.push(`(flatten) ${moved} workflows movidos para raiz`);
   }
 
@@ -304,12 +319,15 @@ function removeOrphanOverlayRules(ideDir, overlayDir, result, { dryRun, framewor
  * ou apagado dentro dela. Caminho que resolve (realpath) para fora do overlay é ignorado com aviso.
  * @param {string} ideDir - Pasta da IDE (ex.: `{workspace}/.claude`)
  * @param {{ copied: string[], skipped: string[], errors: string[] }} result - Acumulador do sync
- * @param {{ dryRun?: boolean }} [opts]
+ * @param {{ dryRun?: boolean, frameworkRoot?: string, envText?: string }} [opts] - `envText`: o
+ *   ENV.md já lido (o `jarvis rules sync` passa o mesmo de onde veio o perfil); sem ele, lê o da IDE
  * @returns {string} O perfil ativo
  */
-export function applyRuleOverlay(ideDir, result, { dryRun = false, frameworkRoot } = {}) {
-  const envPath = join(ideDir, "ENV.md");
-  const envText = existsSync(envPath) ? readFileSync(envPath, "utf-8") : undefined;
+export function applyRuleOverlay(ideDir, result, { dryRun = false, frameworkRoot, envText } = {}) {
+  if (envText === undefined) {
+    const envPath = join(ideDir, "ENV.md");
+    envText = existsSync(envPath) ? readFileSync(envPath, "utf-8") : undefined;
+  }
   const { profile, warning } = readCompanyProfile(envText);
   if (warning) result.skipped.push(`(overlay) ${warning}`);
 
@@ -362,6 +380,120 @@ export function applyRuleOverlay(ideDir, result, { dryRun = false, frameworkRoot
 }
 
 /**
+ * Passo 8 do `/jarvis-init` (Profile-Aware Rules Sync) pelo CLI (#102): deixa em `.{ide}/rules/` e
+ * `.{ide}/rules-on-demand/` só as rules do perfil, com o filtro de `profile-filter.js`.
+ * Candidatos de cada pasta: todo `.md` do core mais os do overlay ativo que o core não tem. O arquivo
+ * efetivo é o do overlay, se existir (e estiver dentro dele), senão o do core; o `Applies to` lido é
+ * o dele. Entra → copia do core (o do overlay já foi gravado, marcado, por `applyRuleOverlay`); não
+ * entra → sai da IDE. `rtk-rules.md` só com `rtkEnabled`. Arquivo da IDE que não é candidato não é tocado.
+ * @param {string} ideDir - Pasta da IDE (ex.: `{workspace}/.claude`)
+ * @param {{ HUB: string, POSITION: string, AREA: string, SQUAD: string, ARTIFACT_STYLE?: string }} profile
+ * @param {{ rtkEnabled?: boolean, frameworkRoot?: string, dryRun?: boolean, envText?: string }} [opts]
+ * @returns {{ companyProfile: string, copied: Record<string, number>, removed: number,
+ *   universal: number, fromOverlay: number, folderCreated: boolean, warnings: string[], errors: string[] }}
+ */
+export function syncRulesForProfile(
+  ideDir,
+  profile,
+  { rtkEnabled = false, frameworkRoot = getFrameworkRoot(), dryRun = false, envText } = {}
+) {
+  const overlayResult = { copied: [], skipped: [], errors: [] };
+  const companyProfile = applyRuleOverlay(ideDir, overlayResult, {
+    dryRun,
+    frameworkRoot,
+    envText,
+  });
+  const overlayDir = join(ideDir, "overlays", companyProfile);
+  const overlayRoot = existsSync(overlayDir) ? realpathSync(overlayDir) : null;
+  const out = {
+    companyProfile,
+    copied: {},
+    removed: 0,
+    universal: 0,
+    fromOverlay: 0,
+    folderCreated: overlayResult.copied.some((line) =>
+      line.startsWith(`Overlay ${companyProfile}:`)
+    ),
+    warnings: overlayResult.skipped,
+    errors: overlayResult.errors,
+  };
+
+  // No Kiro, a IDE carrega steering/ (cópia de rules/ feita pelo transformKiroAssets): o filtro
+  // mantém o steering de cada rule junto com ela (#83).
+  const kiro = basename(ideDir) === ".kiro";
+
+  for (const dir of OVERLAY_RULE_DIRS) {
+    out.copied[dir] = 0;
+    // caminho relativo (com `sep` do sistema) → arquivo do overlay válido, se houver
+    const fromOverlay = new Map();
+    if (overlayRoot && existsSync(join(overlayDir, dir))) {
+      const files = [];
+      collectOverlayFiles(join(overlayDir, dir), files);
+      for (const file of files) {
+        try {
+          if (realpathSync(file).startsWith(overlayRoot + sep))
+            fromOverlay.set(relative(join(overlayDir, dir), file), file);
+        } catch {
+          // link quebrado: applyRuleOverlay já avisou; vale o core
+        }
+      }
+    }
+    const coreDir = join(frameworkRoot, dir);
+    const coreFiles = [];
+    if (existsSync(coreDir)) collectMdFiles(coreDir, coreFiles);
+    const candidates = new Set([
+      ...coreFiles.map((file) => relative(coreDir, file)),
+      ...fromOverlay.keys(),
+    ]);
+
+    for (const rel of [...candidates].sort()) {
+      const overlayFile = fromOverlay.get(rel);
+      const source = overlayFile ?? join(coreDir, rel);
+      const dest = join(ideDir, dir, rel);
+      try {
+        const appliesTo = parseAppliesTo(readFileSync(source, "utf-8"));
+        const rtkOk = !rel.split(sep).join("/").endsWith("rtk-rules.md") || rtkEnabled;
+        if (rtkOk && matchesProfile(appliesTo, profile)) {
+          if (!overlayFile && !dryRun) {
+            mkdirSync(dirname(dest), { recursive: true });
+            cpSync(source, dest);
+          }
+          out.copied[dir]++;
+          if (appliesTo === null) out.universal++;
+          if (overlayFile) out.fromOverlay++;
+          if (kiro && dir === "rules" && !dryRun && existsSync(dest))
+            writeKiroRuleSteering(ideDir, dest);
+        } else if (existsSync(dest)) {
+          if (!dryRun) rmSync(dest, { force: true });
+          out.removed++;
+        }
+        if (kiro && dir === "rules" && !dryRun && !existsSync(dest)) {
+          const name = basename(rel);
+          if (name !== "AGENTS.md" && name !== "README.md")
+            rmSync(join(ideDir, "steering", name), { force: true });
+        }
+      } catch (err) {
+        out.errors.push(`${dir}/${rel.split(sep).join("/")}: ${err.message}`);
+      }
+    }
+  }
+  return out;
+}
+
+/**
+ * O `rtk` (Token Killer) está no PATH e responde ao `rtk gain --help`?
+ * @returns {boolean}
+ */
+export function rtkAvailable() {
+  try {
+    execSync("rtk gain --help 2>/dev/null", { stdio: "pipe" });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
  * Detecta RTK no PATH e reconcilia RTK_ENABLED no ENV.md + rtk-rules.md na IDE.
  * - RTK encontrado → RTK_ENABLED=true no ENV.md, mantém rule
  * - RTK não encontrado → remove rtk-rules.md da IDE, mantém RTK_ENABLED=false
@@ -372,14 +504,7 @@ export function applyRuleOverlay(ideDir, result, { dryRun = false, frameworkRoot
 function reconcileRtk(ideDir, targetDir, ide, { keepEnvValues = false } = {}) {
   const rtkRulePath = join(ideDir, "rules", "rtk-rules.md");
   const envPath = join(ideDir, "ENV.md");
-  const hasRtk = (() => {
-    try {
-      execSync("rtk gain --help 2>/dev/null", { stdio: "pipe" });
-      return true;
-    } catch {
-      return false;
-    }
-  })();
+  const hasRtk = rtkAvailable();
 
   if (hasRtk) {
     // Ativar RTK_ENABLED no ENV.md se existir e estiver false
@@ -449,7 +574,7 @@ function transformOpenCodeAgents(agentsDir) {
     const body = content.slice(fmMatch[0].length).trim();
 
     // Extract fields from Jarvis frontmatter
-    const description = (fm.match(/^description:\s*(.+)$/m) || [])[1]?.trim() || "";
+    const description = readDescription(fm);
     const model = (fm.match(/^model:\s*(.+)$/m) || [])[1]?.trim();
     const name = basename(filePath, ".md");
     const isMainAgent = name === "eng.agent" || name === "eng-agent";
@@ -471,7 +596,7 @@ function transformOpenCodeAgents(agentsDir) {
 
 /**
  * Transforma frontmatter de commands (workflows) Jarvis para formato OpenCode.
- * Remove campos Jarvis-only, converte model e agent path para nome.
+ * Remonta o frontmatter só com description, agent (nome) e model (resolvido de recommended_model).
  * @param {string} commandsDir - Caminho para .opencode/commands/
  */
 function transformOpenCodeCommands(commandsDir) {
@@ -488,7 +613,7 @@ function transformOpenCodeCommands(commandsDir) {
     const body = content.slice(fmMatch[0].length).trim();
 
     // Extract fields
-    const description = (fm.match(/^description:\s*(.+)$/m) || [])[1]?.trim() || "";
+    const description = readDescription(fm);
     const model =
       (fm.match(/^recommended_model:\s*(.+)$/m) || [])[1]?.trim() ||
       (fm.match(/^model:\s*(.+)$/m) || [])[1]?.trim();
@@ -541,11 +666,19 @@ function collectMdFiles(dir, acc) {
   }
 }
 
-function flattenDir(dir, rootDir) {
+/**
+ * Move os .md das subpastas de `dir` para a raiz e apaga as subpastas.
+ * @param {string} dir
+ * @param {string} [rootDir] - Raiz para onde os arquivos vão (recursão)
+ * @param {string[]} [skip] - Subpastas do primeiro nível que ficam como estão
+ * @returns {number} Quantos arquivos foram movidos
+ */
+function flattenDir(dir, rootDir, skip = []) {
   const root = rootDir ?? dir;
   let moved = 0;
   for (const entry of readdirSync(dir, { withFileTypes: true })) {
     const fullPath = join(dir, entry.name);
+    if (entry.isDirectory() && skip.includes(entry.name)) continue;
     if (entry.isDirectory()) {
       moved += flattenDir(fullPath, root);
       try {
@@ -566,9 +699,7 @@ function flattenDir(dir, rootDir) {
 
 /**
  * Converte o frontmatter de um arquivo .md para um steering file Kiro.
- * - Remove campos Jarvis-only (KIRO_STRIP_FIELDS)
- * - Adiciona `inclusion` se não presente
- * - Preserva `name` e `description`
+ * - Remonta o frontmatter só com inclusion e description (e fileMatchPattern, quando houver)
  * @param {string} content - Conteúdo original do .md
  * @param {string} inclusion - Valor de inclusion: "auto" | "manual" | "fileMatch"
  * @param {string} [fileMatchPattern] - Pattern para inclusion: fileMatch
@@ -585,13 +716,7 @@ function toKiroSteeringFile(content, inclusion, fileMatchPattern) {
 
   if (fmMatch) {
     const fm = fmMatch[1];
-    const description = (fm.match(/^description:\s*[>|]?\s*\n?([\s\S]*?)(?=\n\S|\n---|Z)/m) ||
-      [])[1];
-    const descInline = (fm.match(/^description:\s*(.+)$/m) || [])[1];
-    const finalDesc = (description || descInline || "")
-      .replace(/^\s+/gm, "")
-      .replace(/\n+/g, " ")
-      .trim();
+    const finalDesc = readDescription(fm);
     if (finalDesc) lines.push(`description: "${finalDesc.replace(/"/g, '\\"')}"`);
   }
 
@@ -609,6 +734,24 @@ function detectRuleHub(content) {
   if (!match) return null;
   const hub = match[1].trim().toUpperCase();
   return hub === "ALL" ? null : hub;
+}
+
+/**
+ * Grava o steering de uma rule do Kiro (`steering/{nome}`), com `inclusion` pelo HUB da rule.
+ * Arquivos de índice (`AGENTS.md`, `README.md`) não viram steering.
+ * @param {string} kiroDir - Pasta `.kiro/`
+ * @param {string} filePath - Rule em `.kiro/rules/`
+ */
+function writeKiroRuleSteering(kiroDir, filePath) {
+  const name = basename(filePath);
+  if (name === "AGENTS.md" || name === "README.md") return;
+  const content = readFileSync(filePath, "utf-8");
+  const hub = detectRuleHub(content);
+  const pattern = hub ? KIRO_HUB_FILE_PATTERNS[hub] : null;
+  const inclusion = pattern ? "fileMatch" : "auto";
+  const steeringDir = join(kiroDir, "steering");
+  mkdirSync(steeringDir, { recursive: true });
+  writeFileSync(join(steeringDir, name), toKiroSteeringFile(content, inclusion, pattern), "utf-8");
 }
 
 /**
@@ -641,19 +784,7 @@ function transformKiroAssets(kiroDir, targetDir) {
     const ruleFiles = [];
     collectMdFiles(rulesDir, ruleFiles);
 
-    for (const filePath of ruleFiles) {
-      const name = basename(filePath);
-      // Ignorar arquivos de índice/meta
-      if (name === "AGENTS.md" || name === "README.md") continue;
-
-      const content = readFileSync(filePath, "utf-8");
-      const hub = detectRuleHub(content);
-      const pattern = hub ? KIRO_HUB_FILE_PATTERNS[hub] : null;
-      const inclusion = pattern ? "fileMatch" : "auto";
-      const transformed = toKiroSteeringFile(content, inclusion, pattern);
-
-      writeFileSync(join(steeringDir, name), transformed, "utf-8");
-    }
+    for (const filePath of ruleFiles) writeKiroRuleSteering(kiroDir, filePath);
   }
 
   // 3. Skills — copiar SKILL.md de cada skill para steering/skills/skill-{nome}.md
@@ -671,6 +802,8 @@ function transformKiroAssets(kiroDir, targetDir) {
       const content = readFileSync(skillMdPath, "utf-8");
       const transformed = toKiroSteeringFile(content, "manual");
       writeFileSync(join(steeringSkillsDir, `skill-${skillName}.md`), transformed, "utf-8");
+      // Cópia solta que upgrades antigos deixaram na raiz de steering/ (só a que tem par aqui).
+      rmSync(join(steeringDir, `skill-${skillName}.md`), { force: true });
     }
   }
 }

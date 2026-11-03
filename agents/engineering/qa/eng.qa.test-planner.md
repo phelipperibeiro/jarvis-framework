@@ -70,42 +70,7 @@ Para detecção automatizada do contexto (calibração contextual do agente):
 
 ## Calibração Contextual (CDD)
 
-> **Princípio**: Adaptar o rigor e cobertura de testes ao contexto real do projeto e da tarefa.
-> 📚 **Skill**: Use `/jarvis-context-detect` para detecção automatizada do contexto
-> ⚠️ **Pré-requisito**: `ENABLE_CDD=true` no `ENV.md`. Se desativado, usar comportamento padrão.
-
-### Validar se CDD está Habilitado
-
-Antes de aplicar CDD, verificar `$IDE/ENV.md`:
-
-```bash
-# Se ENABLE_CDD=false ou não está definido:
-→ Usar cobertura PADRÃO (80% para features)
-→ Ignorar context.md
-
-# Se ENABLE_CDD=true:
-→ Ler context.md e aplicar calibração contextual
-```
-
-### Herdar Contexto da Sessão
-
-Se existir arquivo `context.md` na sessão (gerado por `/jarvis-context-detect`), use-o:
-
-```bash
-# Localização: $SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/context.md
-```
-
-```yaml
-CONTEXT_PROFILE:
-  tipo: [hotfix|bugfix|feature|refactor]
-  urgencia: [normal|alta|baixa]
-  rigor: [mínimo|padrão|alto]
-  projeto:
-    cobertura: [alta|média|baixa]
-    testes: [existentes|ausentes]
-```
-
-> Se `context.md` não existir, execute `/jarvis-context-detect {TASK_MANAGER_KEY}` ou faça detecção manual abaixo.
+Com `ENABLE_CDD=true` no `ENV.md`: se existir `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/context.md` (gerado por `/jarvis-context-detect`; campos descritos no skill), aplique as tabelas abaixo ao `CONTEXT_PROFILE` dele; se não existir, execute `/jarvis-context-detect {TASK_MANAGER_KEY}` ou faça a detecção manual. Com `ENABLE_CDD=false` ou não definido: use a cobertura PADRÃO (80% para features) e ignore o `context.md`.
 
 ### Calibração por Tipo de Tarefa
 
@@ -242,49 +207,7 @@ Antes de finalizar cada cenário, aplicar este filtro:
 
 Salvar em: `$ENG_DOCS/qa/strategies/{task-id}-test-strategy.md`
 
-Estrutura obrigatória:
-```
-# Estratégia de Testes — {feature}
-
-## Perguntas em Aberto
-(incluir apenas se houver perguntas do A.4 sem resposta)
-Estas dúvidas não foram respondidas antes da geração deste plano.
-Se respondidas, os cenários abaixo podem ser refinados ou expandidos.
-
-**{Título da pergunta}**
-{texto da pergunta}
-
----
-
-## Riscos Identificados
-
-- {risco 1 em texto corrido — área, o que pode falhar e impacto}
-- {risco 2}
-
----
-
-## Cenários de Teste
-
-**{Nome da área ou fluxo — em linguagem do usuário, nunca nome de componente técnico}**
-
-Dado que {contexto}, quando {ação}, então {resultado esperado}.
-
-Dado que {contexto}, quando {ação}, então {resultado esperado}.
-
-**{Próxima área ou fluxo}**
-
-Dado que {contexto}, quando {ação}, então {resultado esperado}.
-
----
-
-## Recomendações de Testes Adicionais
-
-**{Foco}** — {time-box}
-{O que explorar e por quê}
-
-**{Próximo foco}** — {time-box}
-{O que explorar e por quê}
-```
+Estrutura obrigatória: a de `$IDE/templates/engineering/qa/qa.test-strategy-template.md` (leia o template e siga-o exatamente).
 
 Regras de formato:
 - Sem tabelas em nenhuma seção
@@ -368,70 +291,7 @@ Isso permite:
 
 ### B.6. Gerar Relatório de Cobertura de Testes
 
-Crie um arquivo **`$ENG_DOCS/qa/{task-id}-test_coverage_branch_report.md`** contendo:
-
-```markdown
-# Análise de Cobertura de Testes da Branch
-
-## Informações da Branch
-- Branch: [nome da branch atual]
-- Base: [main/master]
-- Total de arquivos alterados: [número]
-- Arquivos com problemas de cobertura de testes: [número]
-
-## Resumo Executivo
-[Visão geral breve da cobertura de testes das mudanças da branch e principais preocupações]
-
-## Análise dos Arquivos Alterados
-
-### 1. [Caminho do Arquivo]
-**Mudanças Realizadas**:
-- [Resumo do que mudou]
-
-**Cobertura de Testes Atual**:
-- Arquivo de teste: [caminho do teste ou "Nenhum arquivo de teste encontrado"]
-- Status da cobertura: [Totalmente coberto / Parcialmente coberto / Não coberto]
-
-**Testes Ausentes**:
-- [ ] [Cenário de teste específico necessário]
-- [ ] [Outro cenário de teste]
-
-**Prioridade**: [Alta / Média / Baixa]
-**Justificativa**: [Por que esses testes são importantes]
-
-### 2. [Próximo arquivo...]
-[Mesma estrutura]
-
-## Plano de Implementação de Testes
-
-### Testes de Alta Prioridade
-1. **[Arquivo/Funcionalidade]**
-   - Arquivo de teste a criar/atualizar: [caminho]
-   - Cenários de teste:
-     - [Caso de teste específico com descrição]
-     - [Outro caso de teste]
-   - Exemplo de estrutura de teste:
-   ```[linguagem]
-   [Exemplo curto de estrutura de teste]
-
-### Testes de Média Prioridade
-[Mesma estrutura]
-
-### Testes de Baixa Prioridade
-[Mesma estrutura]
-
-## Estatísticas Resumo
-Arquivos analisados: [número]
-Arquivos com cobertura adequada: [número]
-Arquivos que precisam de testes adicionais: [número]
-Total de cenários de teste identificados: [número]
-Esforço estimado: [estimativa aproximada]
-
-## Recomendações
-[Recomendação principal]
-[Outra recomendação]
-[etc.]
-```
+Crie o arquivo **`$ENG_DOCS/qa/{task-id}-test_coverage_branch_report.md`** com a estrutura de `$IDE/templates/engineering/qa/qa.test-coverage-report-template.md` (leia o template e siga-o exatamente).
 
 ---
 

@@ -3,7 +3,7 @@ name: eng-global-docs-write
 description: Analisa mudanças de código na branch atual e atualiza a documentação do projeto. Use após completar implementações para manter docs sincronizados com o código.
 argument-hint: "[escopo-opcional: readme, api, architecture]"
 disable-model-invocation: false
-allowed-tools: Read Write Edit Grep Glob Bash MCP
+allowed-tools: Read Write Edit Grep Glob Bash
 metadata:
   author: jarvis-team
   version: "1.0"

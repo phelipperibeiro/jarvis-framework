@@ -16,7 +16,8 @@ A pasta `skills/` contem **playbooks executaveis** que sao a fonte de verdade op
 skills/
 ├── eng-backend-arch-c4/          # Diagramas C4
 │   ├── SKILL.md
-│   └── assets/
+│   ├── assets/
+│   └── references/
 ├── eng-global-docs-write/       # Escrita de documentacao
 │   └── SKILL.md
 ├── eng-global-investigation/    # Método de investigação de bugs (causa raiz, hipóteses, veredito, política de acesso); usado pelo /eng.debug
@@ -47,8 +48,8 @@ skills/
 │   ├── SKILL.md
 │   └── references/
 ├── eng-backend-nestjs/           # Framework NestJS: módulos, DI, guards, interceptors, pipes, Passport/JWT
-│   └── SKILL.md
-│   └── SKILL.md
+│   ├── SKILL.md
+│   └── references/
 ├── eng-backend-microservices-trace/ # Rastreamento de bugs entre serviços (HTTP + AMQP); especialização de backend
 │   └── SKILL.md
 ├── eng-platform/         # Base neutra de platform/infra (+ especializações em PLATFORM_SPECIALIZATIONS)
@@ -82,7 +83,8 @@ skills/
 ├── jarvis-fork/                 # Fork guiado de um artefato do core para o overlay da empresa (COMPANY_PROFILE; CLI jarvis fork)
 │   └── SKILL.md
 ├── jarvis-context-detect/       # Detecta contexto do projeto/tarefa
-│   └── SKILL.md
+│   ├── SKILL.md
+│   └── references/              # cdd-aplicado-a-prompts.md, eng.work.md (tabelas da Fase 0 do eng.work)
 └── jarvis-docs-central/         # Sync/publish docs no central-docs (GitHub/GitLab)
     └── SKILL.md
 ```
@@ -121,7 +123,6 @@ description: >
 argument-hint: "[argumentos]"
 disable-model-invocation: false
 allowed-tools: Read Edit Write Glob Grep Bash
-license: AGPL-3.0
 metadata:
   author: jarvis-team
   version: "1.0"
@@ -129,6 +130,8 @@ metadata:
   stack: golang        # só em especializações de backend/frontend
 ---
 ```
+
+> A `description` entra no prompt de toda sessão: uma frase do que o skill cobre e `Trigger:` com quando usar, sem repetir o que já está no corpo. Use bloco `>` se o texto tiver `": "`. `allowed-tools` só com ferramentas existentes (Read, Write, Edit, Glob, Grep, Bash, WebFetch, WebSearch…); ele libera a ferramenta sem pedir permissão.
 
 > **`metadata.area` é obrigatório.** Um skill instalado sem área reconhecida faz os comandos `eng.*` serem bloqueados (ver `rules/engineering/eng.skills-rules.md`).
 
@@ -314,7 +317,7 @@ Link para docs existentes?         → references/
 
 ### Skill grande com temas separaveis: roteador + references/
 
-O corpo do `SKILL.md` e carregado inteiro ao invocar a skill. Quando a skill tem **3 ou mais temas que se usam isoladamente** (por exemplo guards, testes, troubleshooting), mantenha no `SKILL.md` so o que vale sempre (objetivo, quando usar, padroes criticos, arvore de decisao, regras, checklist, a tabela de skills invocados) e uma tabela "Referencias" (Tema | Quando ler | Arquivo); cada tema vai para `references/{n}-{tema}.md`. Modelo: `skills/eng-backend/`. Ja seguem o modelo: `eng-backend-nestjs`, `eng-automation`, `eng-platform`, `eng-qa`, `eng-ai`, `eng-data` e `eng-frontend`.
+O corpo do `SKILL.md` e carregado inteiro ao invocar a skill. Quando a skill tem **3 ou mais temas que se usam isoladamente** (por exemplo guards, testes, troubleshooting), mantenha no `SKILL.md` so o que vale sempre (objetivo, quando usar, padroes criticos, arvore de decisao, regras, checklist, a tabela de skills invocados) e uma tabela "Referencias" (Tema | Quando ler | Arquivo); cada tema vai para `references/{n}-{tema}.md`. Modelo: `skills/eng-backend/`. Ja seguem o modelo: `eng-backend-nestjs`, `eng-backend-arch-c4`, `eng-automation`, `eng-platform`, `eng-qa`, `eng-ai`, `eng-data` e `eng-frontend`.
 
 Nao converta procedimento sequencial (passo 1, 2, 3 que se le de ponta a ponta) nem skill pequena (menos de ~8 KB): nao ha tema para pular, so mais arquivos para ler.
 

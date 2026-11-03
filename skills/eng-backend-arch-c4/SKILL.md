@@ -3,7 +3,7 @@ name: eng-backend-arch-c4
 description: Cria e mantém documentação de arquitetura usando C4 Model. Use quando precisar documentar sistemas com diagramas de Contexto, Container, Componente e Código.
 argument-hint: "[nivel: context|container|component|code] [sistema-opcional]"
 disable-model-invocation: false
-allowed-tools: Read Write Edit Grep Glob Bash MCP
+allowed-tools: Read Write Edit Grep Glob Bash
 metadata:
   author: jarvis-team
   version: "1.0"
@@ -88,7 +88,7 @@ ls -la $ENG_DOCS/c4/ 2>/dev/null || echo "Nenhum diagrama C4"
 ls -la $DOCS_FOLDER/architecture/adr/ 2>/dev/null
 ```
 
-**Se existirem diagramas**: ler antes de modificar, propor atualizações incrementais.
+**Se existirem diagramas**: ler antes de modificar, propor atualizações incrementais. → leia `references/5-atualizacao-e-adrs.md`.
 
 ### 2. Detectar Stack e Padrões
 
@@ -108,6 +108,8 @@ O script detecta automaticamente:
 ### 3. Propor Diagrama (antes de criar)
 
 **IMPORTANTE**: Sempre apresentar proposta ao usuário antes de gerar o diagrama.
+
+Antes de montar a proposta, leia o guia do nível pedido: `references/{1-nivel-context|2-nivel-container|3-nivel-component|4-nivel-code}.md`.
 
 ```markdown
 ## Proposta de Diagrama C4 - {Nível}
@@ -146,6 +148,8 @@ Posso prosseguir com a geração do diagrama?
 
 Ver templates em `$IDE/templates/engineering/c4-model-template.md`
 
+Checklist do nível: no guia lido no passo 3.
+
 ### 5. Validar Diagrama
 
 Após criar, verificar consistência:
@@ -158,57 +162,11 @@ ls -d src/*/ 2>/dev/null
 cat docker-compose.yml 2>/dev/null | grep -E "^\s+\w+:"
 ```
 
----
+### Skills invocados durante a execução do skill
 
-## Guia por Nível
-
-### Context (Nível 1)
-
-**Perguntas a responder:**
-1. Quem são os usuários do sistema?
-2. Com quais sistemas externos ele se comunica?
-3. Qual o propósito principal do sistema?
-
-**Checklist:**
-- [ ] Sistema principal identificado
-- [ ] Usuários/personas mapeados
-- [ ] Sistemas externos identificados
-- [ ] Propósito claro
-
-### Container (Nível 2)
-
-**Perguntas a responder:**
-1. Quais aplicações compõem o sistema?
-2. Quais bancos de dados são usados?
-3. Como os containers se comunicam?
-4. Há filas ou mensageria?
-
-**Checklist:**
-- [ ] Todos os containers identificados
-- [ ] Tecnologias documentadas
-- [ ] Comunicação clara
-- [ ] Bancos e filas mapeados
-
-### Component (Nível 3)
-
-**Perguntas a responder:**
-1. Quais são os principais módulos/serviços?
-2. Como eles se relacionam?
-3. Quais padrões são usados (MVC, Clean, Hexagonal)?
-
-**Checklist:**
-- [ ] Componentes principais identificados
-- [ ] Responsabilidades claras
-- [ ] Dependências mapeadas
-
-### Code (Nível 4) - Raramente usado
-
-**Perguntas a responder:**
-1. Quais classes/interfaces são críticas?
-2. Há algoritmos complexos que precisam ser documentados?
-3. Existem padrões de design importantes (Factory, Strategy)?
-
-**Quando usar:** Apenas para algoritmos complexos, padrões críticos ou código legado difícil de entender.
+| Passo | Skill | Condição |
+|-------|-------|----------|
+| — | Nenhuma — skill autocontida | — |
 
 ---
 
@@ -243,37 +201,15 @@ cat docker-compose.yml 2>/dev/null | grep -E "^\s+\w+:"
 
 ---
 
-## Fluxo de Atualização
+## Referências (leia só o tema que a tarefa pedir)
 
-Quando já existem diagramas:
-
-```bash
-# Ver mudanças arquiteturais recentes
-git log --oneline -20 -- "src/" "docker-compose*" "Dockerfile*"
-git diff origin/main --name-only | grep -E "docker|config|src/(domain|infrastructure)"
-```
-
-| Mudança Detectada | Nível | Ação |
-|-------------------|-------|------|
-| Novo sistema externo | Context | Adicionar |
-| Novo container/serviço | Container | Adicionar |
-| Novo módulo/componente | Component | Atualizar |
-
-### Skills invocados durante a execução do skill
-
-| Passo | Skill | Condição |
-|-------|-------|----------|
-| — | Nenhuma — skill autocontida | — |
-
----
-
-## Integração com ADRs
-
-| Situação | ADR | C4 |
-|----------|-----|-----|
-| Novo sistema externo | Sim | Atualizar Context |
-| Novo banco de dados | Sim | Atualizar Container |
-| Mudança de pattern | Sim | Atualizar Component |
+| Tema | Quando ler | Arquivo |
+|------|------------|---------|
+| Guia do nível Context | Antes da proposta (passo 3), nível pedido = Context | `references/1-nivel-context.md` |
+| Guia do nível Container | Antes da proposta (passo 3), nível pedido = Container | `references/2-nivel-container.md` |
+| Guia do nível Component | Antes da proposta (passo 3), nível pedido = Component | `references/3-nivel-component.md` |
+| Guia do nível Code | Antes da proposta (passo 3), nível pedido = Code | `references/4-nivel-code.md` |
+| Atualização e ADRs | Já existem diagramas em `$ENG_DOCS/c4/` ou a mudança pede ADR | `references/5-atualizacao-e-adrs.md` |
 
 ---
 

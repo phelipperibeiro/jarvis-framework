@@ -5,8 +5,6 @@ agent: "$IDE/agents/engineering/eng.agent.md"
 rules_file: "$IDE/rules-on-demand/engineering/eng.start-rules.md"
 template_file: "$IDE/templates/engineering/architecture-template.md"
 recommended_model: claude-sonnet-4-20250514
-model_tier: high
-model_justification: Requer análise arquitetural profunda, investigação de codebase e raciocínio complexo para criar documentação técnica de qualidade
 ---
 
 # start
@@ -62,66 +60,7 @@ Ler `TASK_MANAGER` do `$IDE/ENV.md`. Seguir `$IDE/rules/engineering/eng.integrat
 
 ## Fase 0.1: Análise de Contexto (CDD)
 
-> 🎯 **Objetivo**: Adaptar o rigor e cerimônia do workflow com base no contexto real da tarefa.
-> ⚙️ **Configurável**: Controlada pela variável `ENABLE_CDD` no ENV.md
-
-**Verificação de Ativação:**
-
-```bash
-grep "^ENABLE_CDD=" $IDE/ENV.md
-```
-
-- Se `ENABLE_CDD=false` ou não definida → **Pular esta fase** e ir direto para Fase 1
-
-- Se `ENABLE_CDD=true` → **Executar obrigatoriamente o skill `/jarvis-context-detect` agora** (não pular, não sugerir ao usuário — executar)
-
-### 0.1 Executar Detecção de Contexto
-
-**OBRIGATÓRIO quando `ENABLE_CDD=true`**: invocar o skill imediatamente antes de qualquer outra ação:
-
-```
-/jarvis-context-detect {TASK_MANAGER_KEY}
-```
-
-> ⚠️ Não continue para a Fase 1 sem que o `/jarvis-context-detect` tenha sido executado com sucesso e o `context.md` gerado.
-
-O skill `/jarvis-context-detect` irá:
-- Analisar a branch, Jira key e características do projeto
-- Ler POSITION e MAX_AI_EXECUTION_PERCENTAGE do ENV.md
-- Gerar o arquivo `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/context.md`
-
-### 0.2 Herdar CONTEXT_PROFILE
-
-Após a detecção, o arquivo `context.md` conterá:
-
-```
-CONTEXT_PROFILE:
-  tipo: [hotfix|bugfix|feature|refactor]
-  urgencia: [normal|alta|baixa]
-  rigor: [mínimo|padrão|alto]
-  comunicacao: [didático|direto|estratégico]
-  autonomia: [baixa|média|alta]
-```
-
-### 0.3 Adaptar Workflow por Contexto
-
-| Tipo detectado | Impacto no workflow |
-|----------------|---------------------|
-| `hotfix` | Skip 3.3 (padrões), architecture.md mínimo |
-| `bugfix` | Architecture.md simplificado, foco em root cause |
-| `feature` | Fluxo completo com todas as fases |
-| `refactor` | Aumentar Fase 3 (análise de impacto) |
-
-| Autonomia | Comportamento |
-|-----------|---------------|
-| `alta` | Executar mais, perguntar menos, documentar decisões tomadas |
-| `média` | Balanço entre execução e validação |
-| `baixa` | Apresentar opções ao invés de decidir, aguardar validação |
-
-### 0.4 Confirmar com Usuário
-
-O perfil detectado será apresentado automaticamente pelo skill.
-Se o usuário solicitar ajustes, re-execute com `--override`.
+Leia `ENABLE_CDD` no `$IDE/ENV.md` (`grep "^ENABLE_CDD=" $IDE/ENV.md`). Com `false` ou sem a variável, pule a detecção e o Warm-up abaixo (ele precisa do `context.md`); a Fase 0.5 (Advisor) continua. Com `true`, execute **agora** `/jarvis-context-detect {TASK_MANAGER_KEY}` (obrigatório: não sugira, execute), mesmo que a sessão já tenha um `context.md`, e não avance para a Fase 1 sem o `context.md` gerado. O skill apresenta o perfil; se o usuário pedir ajuste, rode-o de novo com `--override`. Calibre as fases seguintes pelo `CONTEXT_PROFILE`, conforme `jarvis-context-detect` › "Integração com Workflows" › `eng.start`.
 
 ### Warm-up (se houver)
 

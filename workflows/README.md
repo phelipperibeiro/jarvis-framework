@@ -9,8 +9,6 @@ Este diretório contém os workflows (templates) usados pelos comandos slash do 
 ```
 workflows/
 ├── warm-up.md                    # Preparação de sessão
-├── warm-up@1.1.md                # Variante do warm-up
-├── all-tools.md                  # Listar ferramentas
 │
 ├── product/                      # Gestão de Produto & Requisitos
 │   ├── prod.spec.md              # Entrypoint de especificações
@@ -56,8 +54,6 @@ workflows/
 | Workflow | Propósito |
 |----------|-----------|
 | `warm-up.md` | Preparar sessão carregando contexto do projeto |
-| `warm-up@1.1.md` | Variante do warm-up (versão 1.1) |
-| `all-tools.md` | Listar todas as ferramentas disponíveis |
 
 ---
 
@@ -107,12 +103,7 @@ workflows/
 
 ## Relação Command → Workflow
 
-Cada command em `commands/` referencia seu workflow correspondente:
-
-```markdown
-# nome-do-command
-Utilize o arquivo `../../workflows/[dominio]/nome-do-workflow.md` como template para este comando.
-```
+Na IDE, cada workflow é instalado como command na pasta de comandos dela (ex.: `.claude/commands/`); o nome do command é o nome do arquivo.
 
 ---
 
@@ -120,7 +111,7 @@ Utilize o arquivo `../../workflows/[dominio]/nome-do-workflow.md` como template 
 
 ### 1. Inicialização de Projeto
 ```bash
-/init
+/jarvis-init
 /warm-up
 /prod.spec.prd
 ```

@@ -1,10 +1,9 @@
 ---
 name: jarvis-report-issue
-description: Reporta um bug ou propõe uma melhoria no próprio framework Jarvis. Classifica o report (bug ou melhoria), monta a issue no formato do tipo e a abre no repo do Jarvis (o JARVIS_PROJECT, hoje no GitHub) pela CLI do host (gh issue create), com a label certa, só depois de mostrar o texto e o usuário dizer Sim (regra de ouro); sem a CLI ou sem o Sim, deixa a issue pronta em .jarvis/issues/.
+description: Reporta um bug ou propõe uma melhoria no próprio Jarvis. Classifica, monta a issue no formato do tipo e a abre no repo do Jarvis (JARVIS_PROJECT, no GitHub) com `gh issue create` e a label certa, só depois de mostrar o texto e o usuário dizer Sim (regra de ouro); sem a CLI ou sem o Sim, deixa a issue em .jarvis/issues/.
 argument-hint: "[descrição opcional do problema ou da melhoria]"
 disable-model-invocation: false
 allowed-tools: Read Bash Grep Glob
-license: AGPL-3.0
 metadata:
   author: jarvis-team
   version: "1.1"

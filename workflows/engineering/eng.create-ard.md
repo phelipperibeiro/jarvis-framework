@@ -1,11 +1,6 @@
 ---
 description: Fluxo de trabalho de Engenharia para criação/iteração de ARD
-globs:
-  alwaysApply: false
-  env_file: "@/ENV.md"
 recommended_model: opus
-model_tier: high
-model_justification: Documentação arquitetural requer análise de requisitos, trade-offs técnicos e decisões bem fundamentadas
 ---
 
 # Workflow de Engenharia – ARD (Architecture Requirements Document)
@@ -23,7 +18,7 @@ usando o template `$IDE/templates/engineering/ARD-template.md`, sempre alinhado 
 
 - contexto do projeto definido em `$IDE/ENV.md`
 - regras de engenharia em `$IDE/rules/engineering/eng-rules.md`
-- regras de versionamento em `$IDE/rules/engineering/eng.bump-rules.md`
+- regras de versionamento em `$IDE/rules-on-demand/engineering/eng.bump-rules.md`
 - identidade em `$IDE/agents/engineering/eng.agent.md`
 
 ### Skills invocados durante o workflow
@@ -78,7 +73,7 @@ usando o template `$IDE/templates/engineering/ARD-template.md`, sempre alinhado 
 
 Aplicar **SemVer (x.y.z)** no campo `Versão` do ARD, seguindo obrigatoriamente:
 
-- `$IDE/rules/engineering/eng.bump-rules.md`
+- `$IDE/rules-on-demand/engineering/eng.bump-rules.md`
 
 Regras:
 

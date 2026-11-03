@@ -1,10 +1,6 @@
 ---
 description: Investiga um bug ou varre um escopo atrás de problemas, só lendo, com o relatório na sessão
-globs:
-  alwaysApply: false
 recommended_model: sonnet
-model_tier: very_high
-model_justification: Debugging requer raciocínio complexo, formulação de hipóteses, análise de evidências e correlação de múltiplas fontes de informação
 ---
 
 # Workflow de Engenharia – Debugging e Varredura de Bugs
@@ -113,7 +109,7 @@ Valem em todo o passo, sem exceção (skill):
 
 - `debug-report.md` sempre, com o veredito (`confirmado`, `provável` ou `inconclusivo`).
 - Correção trivial (um arquivo, sem alternativa, sem risco) → próximo: `/eng.work {TASK_MANAGER_KEY}`, dizendo que o `/eng.plan` foi pulado e por quê.
-- Correção com alternativas ou risco → grave também o `architecture.md` curto (tipo `bugfix`, alternativas como Questões em Aberto) e indique `/eng.plan {TASK_MANAGER_KEY}`.
+- Correção com alternativas ou risco → grave também o `architecture.md` curto (tipo `bugfix`, alternativas como Questões em Aberto, com os itens da seção "Fase: eng.start" de `$IDE/rules-on-demand/engineering/eng.security-rules.md`) e indique `/eng.plan {TASK_MANAGER_KEY}`.
 - Inconclusivo → indique os dados que faltam e como obtê-los.
 
 **Varrer:**

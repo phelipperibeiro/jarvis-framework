@@ -1,7 +1,7 @@
 ---
 name: product-roadmap-report
-description: Cria e atualiza relatórios estruturados de roadmap de produto a partir de reuniões, mensagens, documentos ou notas. Use quando usuários precisam extrair atualizações de roadmap em relatórios markdown com seções de resumo, problemas, riscos e ações, consolidar múltiplos relatórios de times, atualizar relatórios existentes mantendo ordem cronológica reversa, salvar/modificar relatórios no Obsidian vault, ou mencionar termos como "relatório de roadmap", "atualização de produto", "sync", "war room", "relatório do time" ou "atualização semanal".
-allowed-tools: conversation_search, google_drive_search, google_drive_fetch, Bash, WebFetch
+description: Cria e atualiza relatórios markdown de roadmap de produto (resumo, problemas, riscos, ações) a partir de reuniões, mensagens, documentos ou notas; consolida relatórios de times, mantém ordem cronológica reversa e salva no Obsidian vault. Use quando mencionarem "relatório de roadmap", "atualização de produto", "sync", "war room", "relatório do time" ou "atualização semanal".
+allowed-tools: Bash, WebFetch
 metadata:
   author: jarvis-team
   version: "1.0.0"
@@ -20,6 +20,7 @@ Extraia informações de status do projeto de diversas fontes (reuniões, mensag
 - Lista consolidada de projetos
 
 Por favor, siga o `rules/status-report-rules.md` para obter orientações corretas e conhecer as regras principais desta skill.
+Para exemplos extensos, orientações por seção e casos de borda, consulte `references/detailed-guide.md`.
 
 ## Instruções
 Sempre interaja com o usuário no mesmo idioma que ele estiver usando.

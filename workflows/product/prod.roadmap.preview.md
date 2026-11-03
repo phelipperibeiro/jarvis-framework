@@ -2,10 +2,7 @@
 name: prod.roadmap.preview
 description: Conhecer e ter visibilidade do roadmap de entregas planejadas do produto, como períodos de entrega, nome dos projetos e responsáveis.
 auto_execution_mode: 3
-env_file: "@/ENV.md"
 recommended_model: opus
-model_tier: high
-model_justification: Gestores e time precisam entender quais as próximas prioridades de entrega que serão feitas pelos times baseados nas informações disponíveis no projeto e também no task manager utilizado pela empresa.
 ---
 
 # Roadmap Preview

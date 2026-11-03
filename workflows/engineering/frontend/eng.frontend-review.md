@@ -1,11 +1,7 @@
 ---
 name: eng.frontend-review
 description: >
-  Workflow de revisão de código específico para PRs frontend: tipagem, tokens de design,
-  acessibilidade, performance e testes. Neutro de stack: a linguagem, o framework e as
-  convenções vêm do projeto e das especializações registradas em FRONTEND_SPECIALIZATIONS.
-  Complementa o eng.review genérico com checklist frontend aprofundado.
-author: jarvis-team
+  Revisão de PR frontend: tipagem, tokens de design, acessibilidade, performance, testes; complementa eng.review; neutra de stack (FRONTEND_SPECIALIZATIONS).
 version: "1.1"
 
 ---

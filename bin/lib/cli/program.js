@@ -24,6 +24,7 @@ import { docsSync } from "../../commands/docs-sync.js";
 import { docsPublish } from "../../commands/docs-publish.js";
 import { installRtk } from "../../commands/install-rtk.js";
 import { tokens } from "../../commands/tokens.js";
+import { rulesSync } from "../../commands/rules.js";
 import { map } from "../../commands/map.js";
 import { fork } from "../../commands/fork.js";
 import { dailyReport } from "../../commands/daily-report.js";
@@ -177,6 +178,14 @@ export function buildProgram() {
     .option("--ide <ide>")
     .option("--env-file <path>")
     .action((options) => tokens(toLegacyFlags(options)));
+
+  const rules = cmd(program, "rules").description("Rules da pasta da IDE");
+  const rulesSyncCmd = cmd(rules, "sync").description(
+    "Filtrar rules/ e rules-on-demand/ da IDE pelo perfil do ENV.md (Passo 8 do /jarvis-init)"
+  );
+  withEnvOptions(withLogOptions(rulesSyncCmd)).action((options) =>
+    rulesSync(toLegacyFlags(options))
+  );
 
   cmd(program, "fork")
     .description(

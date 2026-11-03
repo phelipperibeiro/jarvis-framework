@@ -10,58 +10,7 @@ O workflow `pr` tem como objetivo **gerar o `pull-request.md` e, depois da pergu
 
 ## ⛔ Gate 0: Pré-requisitos Obrigatórios
 
-> Esta regra é executada **antes de qualquer ação**. Se qualquer condição falhar, o workflow para imediatamente.
-
-### Regra 0.1 — TASK_MANAGER_KEY obrigatório
-
-Ler `TASK_MANAGER` do ENV.md. Ver `eng.integrations-rules.md` (freelance vs board).
-
-Se `$ARGUMENTS` não trouxer o key: **perguntar e aguardar**. Não inventar. Não exigir `XXX-000`.
-
-- Freelance (`TASK_MANAGER` vazio): *Qual o seu número de controle para esta tarefa?*
-- Com board: *Qual o id do card no {TASK_MANAGER}?*
-
-Sem resposta → **PARAR**. Com resposta → seguir (pasta da sessão em lowercase; o nome da branch segue a skill `eng-global-branch`).
-
-**→ PARAR. Não executar nenhuma fase.**
-
-### Regra 0.2 — Proibido executar em branch protegida
-
-Verificar branch atual:
-
-```bash
-git branch --show-current
-```
-
-Se for `main`, `master`, `develop`, `staging` ou `homolog`:
-
-```
-🚫 BLOQUEADO: Você está em uma branch protegida ({BRANCH_ATUAL}).
-
-Este workflow só pode ser executado em uma branch de feature.
-Execute /eng.start {TASK_MANAGER_KEY} primeiro para criar a branch correta.
-
-Branch esperada: no padrão da skill eng-global-branch (ex.: feature/{TASK_MANAGER_KEY}-{titulo} ou {TASK_MANAGER_KEY}-{titulo})
-```
-
-**→ PARAR. Não executar nenhuma fase.**
-
-### Regra 0.3 — Branch deve corresponder ao TASK_MANAGER_KEY
-
-Se a branch atual **não contém** o `{TASK_MANAGER_KEY}` no nome (GitHub/GitLab: o número, sem `#`):
-
-```
-⚠️ ATENÇÃO: A branch atual ({BRANCH_ATUAL}) não corresponde à tarefa {TASK_MANAGER_KEY}.
-
-  Branch atual:  {BRANCH_ATUAL}
-  Esperado:      branch contendo {TASK_MANAGER_KEY} (padrão da skill eng-global-branch, ex.: feature/{TASK_MANAGER_KEY}-{titulo})
-
-Confirmar que está na branch certa? (s/n)
-```
-
-**→ Aguardar confirmação explícita antes de prosseguir.**
-
-O nome é montado pela skill `eng-global-branch` (ou pelo fork dela no overlay da empresa). No freelance sem número de controle, a branch não tem chave e esta confirmação é esperada.
+Antes de qualquer ação, leia `$IDE/rules-on-demand/engineering/eng.gate0-rules.md` e aplique as Regras 0.1 (chave da tarefa), 0.2 (branch protegida) e 0.3 (a branch contém a chave, no padrão da skill `eng-global-branch`). Se qualquer condição falhar, o workflow para imediatamente.
 
 ---
 
@@ -110,22 +59,22 @@ sempre utiliza a branch main)
 
 ## Fluxo de Execução
 
+As fases seguem as do workflow `eng.pr`, com o mesmo número.
+
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                                                             │
+│  0. ESCOLHER → o que fazer com o PR (Fase 0, regra de ouro) │
+│        ↓                                                    │
 │  1. VALIDAR → Testes passando, lint OK                      │
 │        ↓                                                    │
-│  2. CRIAR BRANCH → nome da skill eng-global-branch          │
+│  2. VERIFICAR BRANCH → a do eng.start, commits do work      │
 │        ↓                                                    │
-│  3. STAGE → git add (arquivos específicos)                  │
+│  3. PUSH → Enviar para remote (depois da Fase 0)            │
 │        ↓                                                    │
-│  4. COMMIT → Mensagem padronizada                           │
+│  4. CRIAR MR/PR → pull-request.md + CLI do VERSION_CONTROL  │
 │        ↓                                                    │
-│  5. PUSH → Enviar para remote (depois da Fase 0)            │
-│        ↓                                                    │
-│  6. CRIAR MR (desenvolvedor) → Template, depois da Fase 0   │
-│        ↓                                                    │
-│  7. ORIENTAR (desenvolvedor) → Mover o card para "In Review"│
+│  5. ATUALIZAR BOARD → a pessoa move o card; link do MR      │
 │                                                             │
 └─────────────────────────────────────────────────────────────┘
 ```
@@ -134,7 +83,7 @@ sempre utiliza a branch main)
 
 ## Comportamento Esperado
 
-### Fase 1: Validação
+### Fase 1: Validação Pré-PR
 
 1. **Executar testes**
    ```bash
@@ -153,35 +102,16 @@ sempre utiliza a branch main)
 
 **Se qualquer validação falhar**, corrigir antes de prosseguir.
 
-### Fase 2: Criação da Branch
+### Fase 2: Verificar Branch
 
-1. **Obter informações do Jira**
-   - TASK_MANAGER_KEY (ex: `TASK-123`)
-   - Título da tarefa
-
-2. **Criar branch**
-   ```bash
-   git checkout -b {NOME_DA_BRANCH}   # nome montado pela skill eng-global-branch
-   ```
-
-3. **Confirmar criação**
+1. **Branch da tarefa**: a criada no `eng.start`, com o nome da skill `eng-global-branch` (com card, contém o `TASK_MANAGER_KEY`; freelance, o número de controle).
    ```bash
    git branch --show-current
    ```
+2. **Branch de destino**: a `Branch base:` do `architecture.md` (seção "Branch de Destino" acima).
+3. **Commits**: os das fases do `eng.work` (`git log {BRANCH_BASE}..HEAD --oneline`). Ajuste fora do `eng.work` vira um commit com os arquivos adicionados um a um (nunca `git add .`) e a mensagem do padrão acima.
 
-### Fase 3: Stage e Commit
-
-1. **Adicionar arquivos específicos** (NUNCA usar `git add .`)
-   ```bash
-   git add {arquivo1} {arquivo2} ...
-   ```
-
-2. **Criar commit**
-   ```bash
-   git commit -m "{TASK_MANAGER_KEY} {tipo}({escopo}): {descrição}"
-   ```
-
-### Fase 4: Push
+### Fase 3: Push
 
 O push só sai depois da escolha de publicar da Fase 0 do `eng.pr` (regra de ouro, `eng.integrations-rules.md`).
 
@@ -190,62 +120,27 @@ O push só sai depois da escolha de publicar da Fase 0 do `eng.pr` (regra de our
    git push -u origin {nome-da-branch}
    ```
 
-### Fase 5: Criar Merge Request
+### Fase 4: Criar Merge Request / Pull Request
 
-1. **Preencher template do MR** com:
+1. **Texto**: o `pull-request.md` da sessão, no template da seção abaixo, com:
    - Descrição clara do objetivo
-   - Link para o card do Jira
+   - Link para o card (tabela "URL do card" de `eng.integrations-rules.md`; freelance, o número de controle em texto)
    - Lista de mudanças realizadas
    - Testes executados
    - Checklist de revisão
+2. **Branch de destino**: a `Branch base:` do `architecture.md`.
+3. **Criar**: pela CLI do vendor do `VERSION_CONTROL` (Fase 4.4 do workflow), só com o Sim; sem a CLI, o `pull-request.md` fica pronto para a pessoa abrir o MR/PR à mão.
 
-2. **Definir branch de destino** (conforme solicitado pelo usuário)
+### Fase 5: Atualizar Board
 
-3. **Criar MR** fica a cargo do desenvolvedor criar o MR da branch de origem para a destino, você pode retornar o link rápido de criação do MR do gitlab.
-
-### Fase 6: Atualizar Jira
-
-1. Desenvolvedor deve mover o card para "In Review"
+1. A pessoa move o card para a etapa equivalente a "em revisão" no board do `TASK_MANAGER` (o Jarvis não move card). Freelance: pular.
+2. O link do MR vai no card uma única vez, pelo `/eng-global-task-comment`, só com o Sim.
 
 ---
 
 ## Template do Merge Request
 
-O MR deve seguir o template em `$IDE/templates/engineering/PR-template.md`:
-
-```markdown
-## Descrição
-
-{Objetivo claro do MR em 2-3 frases}
-
-## Tarefas Relacionadas
-
-- [x] [{TASK_MANAGER_KEY}]({TASK_MANAGER_URL_BASE}/browse/{TASK_MANAGER_KEY})
-
-## Mudanças Propostas
-
-- {Mudança 1}
-- {Mudança 2}
-- {Mudança N}
-
-## Testes Realizados
-
-- {Tipo de teste}: {Resultado}
-- Unitários: ✅ Passando
-- Lint: ✅ OK
-
-## Revisores
-
-- @{revisor1}
-- @{revisor2}
-
-## Checklist de Revisão
-
-- [x] As mudanças estão alinhadas com os requisitos da tarefa do Jira
-- [x] Os testes foram executados e passaram
-- [x] O código segue as convenções de estilo
-- [ ] A documentação foi atualizada (se necessário)
-```
+O texto do MR segue o template escolhido na Fase 4.1 do `eng.pr` (o do projeto, se existir; senão `$IDE/templates/engineering/PR-template.md`), preenchido com a tarefa e com o link do card pela tabela "URL do card" de `eng.integrations-rules.md`.
 
 ---
 
@@ -306,7 +201,7 @@ Antes de considerar o PR completo:
 - [ ] Push realizado (só com o Sim)
 - [ ] MR criado a partir do `pull-request.md` (só com o Sim)
 - [ ] Branch de destino correta
-- [ ] Card do Jira movido para "In Review"
+- [ ] Pessoa orientada a mover o card no board (o Jarvis não move card)
 - [ ] Comentários de code review processados
 - [ ] `pull-request.md` aprovado na sessão (e publicado, se o usuário respondeu Sim)
 - [ ] Pergunta "O PR já foi aprovado e mergeado?" no fim (Sim → `/eng.spec-consolidate`)

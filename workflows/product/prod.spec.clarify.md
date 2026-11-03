@@ -1,11 +1,8 @@
 ---
 name: prod.spec.clarify
-description: Identificar áreas subespecificadas na especificação da feature atual fazendo até 5 perguntas de esclarecimento altamente direcionadas e incorporando as respostas de volta na spec.
+description: Identifica áreas subespecificadas na spec da feature atual com até 5 perguntas de esclarecimento direcionadas e incorpora as respostas na spec.
 auto_execution_mode: 3
-env_file: "@/ENV.md"
 recommended_model: opus
-model_tier: medium
-model_justification: Esclarecimento de specs requer análise estruturada e formulação de perguntas, mas segue processo bem definido
 ---
 
 > 🔥 **Warm-up**: se `$SESSIONS_DIR/warm-ups/` tiver aquecimentos, leia `$IDE/rules-on-demand/warm-up-consume-rules.md` e siga-o antes de começar (grava em `$SESSIONS_DIR/prod/{id do documento}/context.md`).

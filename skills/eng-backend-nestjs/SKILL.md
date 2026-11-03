@@ -1,20 +1,16 @@
 ---
 name: eng-backend-nestjs
 description: >
-  Especialista em NestJS com domínio profundo em arquitetura de módulos, injeção de dependências,
-  guards, interceptors, pipes, middleware, testes com Jest/Supertest, TypeORM/Prisma e autenticação
-  com Passport/JWT. Inclui diagnóstico de erros de DI, decisões arquiteturais e padrões enterprise.
-  Trigger: Use para problemas ou features específicas do framework NestJS — módulos, DI, decorators,
-  ciclo de vida de requisição, configuração avançada, debugging de erros ou implementação de testes.
-license: AGPL-3.0
-compatibility: Designed for Claude Code (or similar products)
+  Especialista em NestJS: módulos, injeção de dependências, guards, interceptors, pipes,
+  middleware, Jest/Supertest, TypeORM/Prisma, autenticação Passport/JWT, diagnóstico de erros
+  de DI e padrões enterprise. Trigger: problemas ou features do NestJS — módulos, DI,
+  decorators, ciclo de vida de requisição, configuração avançada, debugging ou testes.
 allowed-tools: Read Write Edit Glob Grep Bash
 metadata:
   author: jarvis-team
   version: "2.0"
   area: backend
   stack: nestjs
-# Campos Claude Code-specific (não fazem parte da spec oficial agentskills.io):
 argument-hint: "[módulo|guard|interceptor|pipe|teste|auth|config|erro] [contexto]"
 disable-model-invocation: false
 ---
@@ -120,24 +116,9 @@ Quando aparecer `Nest can't resolve dependencies of [Service] (?, +)`:
 3. Verificar se o provider está em `providers[]` do módulo correto
 4. Se cruza fronteiras de módulo, verificar `exports[]` do módulo de origem
 
-```typescript
-// ❌ Erro comum: exportar o módulo em vez do service
-@Module({
-  exports: [UserModule] // ERRADO
-})
-
-// ✅ Correto: exportar o service
-@Module({
-  exports: [UserService] // CORRETO
-})
-```
+Exemplo (exportar o service, não o módulo): `references/6-problemas-comuns.md`.
 
 ### Padrão 4: Dependência Circular — Detectar e Resolver
-
-```bash
-# Detectar circular dependency no build
-npm run build -- --watch=false 2>&1 | grep -i "circular"
-```
 
 **`forwardRef` é proibido neste projeto.** É uma má prática reconhecida pelo próprio framework — mascara problemas reais de design.
 
@@ -146,43 +127,13 @@ Soluções em ordem obrigatória de preferência:
 2. **Extrair lógica compartilhada para um terceiro módulo** (recomendado)
 3. **Ajustar escopo do provider** — mudar para `TRANSIENT` ou `REQUEST` se apropriado
 
-```typescript
-// ✅ Solução correta: extrair para módulo compartilhado
-@Module({
-  providers: [SharedService],
-  exports: [SharedService],
-})
-export class SharedModule {}
-
-// AModule e BModule importam SharedModule em vez de dependerem um do outro
-@Module({
-  imports: [SharedModule],
-})
-export class AModule {}
-
-@Module({
-  imports: [SharedModule],
-})
-export class BModule {}
-```
+Comando de detecção e exemplo: `references/6-problemas-comuns.md` › "Circular dependency detected".
 
 ### Padrão 5: Antes de Implementar Testes — Verificar Schematics
 
-Antes de escrever qualquer teste (unitário ou de integração), verificar se existe um schematic com modelo:
+Antes de escrever qualquer teste (unitário ou de integração), verificar se existe um schematic com modelo (comandos em `references/5-testes.md` › "Antes de escrever testes").
 
-```bash
-# Verificar schematics disponíveis no projeto
-find . -name "*.schematic.json" -o -name "collection.json" 2>/dev/null | head -5
-
-# Verificar se há templates de teste na CLI configurada
-cat nest-cli.json | grep -i "schematic\|collection"
-
-# Verificar se há arquivos *.spec.ts de referência para o padrão do projeto
-find src -name "*.spec.ts" | head -5
-```
-
-Consultar o **Guia de Testes Automatizados** do projeto antes de implementar:
-`(guia de testes do projeto)`
+Consultar o **Guia de Testes Automatizados** do projeto antes de implementar: `(guia de testes do projeto)`
 
 ---
 

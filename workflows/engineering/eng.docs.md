@@ -1,10 +1,7 @@
 ---
 description: Documentação (engenharia)
 auto_execution_mode: 3
-env_file: "@/ENV.md"
 recommended_model: claude-sonnet-4-20250514
-model_tier: medium
-model_justification: Documentação técnica requer clareza e precisão, mas é menos complexa que implementação de código
 ---
 
 # eng.docs
@@ -33,7 +30,7 @@ O assistente deve:
 1. Ativar o contexto de Engenharia:
    - $IDE/agents/engineering/eng.agent.md
    - $IDE/rules/engineering/eng-rules.md
-   - $IDE/rules/engineering/eng.bump-rules.md
+   - $IDE/rules-on-demand/engineering/eng.bump-rules.md
    - $IDE/ENV.md
 
 2. Ativar o agente de documentação:

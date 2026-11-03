@@ -1,10 +1,7 @@
 ---
 name: eng.frontend-perf-audit
 description: >
-  Workflow de auditoria de performance frontend: Core Web Vitals, análise do pacote entregue,
-  renderização desnecessária e oportunidades de otimização. Neutro de stack: ferramentas e
-  técnicas específicas vêm do projeto e das especializações registradas em FRONTEND_SPECIALIZATIONS.
-author: jarvis-team
+  Auditoria de performance frontend: Core Web Vitals, pacote entregue, renderização desnecessária; neutra de stack (projeto e FRONTEND_SPECIALIZATIONS).
 version: "1.1"
 
 ---

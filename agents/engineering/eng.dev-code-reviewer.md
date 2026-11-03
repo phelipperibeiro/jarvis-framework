@@ -41,7 +41,7 @@ Para cada arquivo alterado, avalie:
  - Uso excessivo de memória
  - Otimização de queries de banco de dados
  - Oportunidades de cache
- - Preocupações de Segurança (ref: `$IDE/rules/engineering/eng-security-rules.md`)
+ - Preocupações de Segurança (ref: `$IDE/rules/engineering/eng-security-rules.md` e o checklist da seção "Fase: eng.pre-pr" de `$IDE/rules-on-demand/engineering/eng.security-rules.md`)
  - Validação de entrada (schema obrigatório: Zod, Joi, class-validator)
  - Riscos de SQL Injection (queries SEMPRE parametrizadas)
  - Vulnerabilidades de XSS (sanitização de outputs, CSP)

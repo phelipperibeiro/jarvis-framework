@@ -3,8 +3,7 @@ name: jarvis-init
 description: Inicializa o framework JARVIS e guia novos membros no processo de onboarding. Use quando precisar configurar o ambiente, criar ENV.md, validar MCPs ou orientar um novo desenvolvedor.
 argument-hint: "[upgrade | nome-do-membro-opcional]"
 disable-model-invocation: false
-allowed-tools: Read Write Edit Grep Glob Bash MCP
-license: AGPL-3.0
+allowed-tools: Read Write Edit Grep Glob Bash
 metadata:
   author: jarvis-team
   version: "1.1"
@@ -51,6 +50,10 @@ Regras que **substituem** qualquer trecho legado deste skill ou dos assets:
 - **Checklist Onboarding**: `$IDE/skills/jarvis-init/assets/onboarding-checklist.md`
 - **Guia de Setup**: `$IDE/skills/jarvis-init/assets/setup-guide.md`
 - **Passo "adicionar as stacks"**: `$IDE/skills/jarvis-init/assets/passo-adicionar-stacks.md` e `$IDE/skills/jarvis-init/assets/sinais-de-stack.md`
+- **Passo 8 sem o CLI**: `$IDE/skills/jarvis-init/assets/rules-sync-manual.md` (fallback do `jarvis rules sync`)
+- **Upgrade (C)**: `$IDE/skills/jarvis-init/assets/upgrade.md`
+- **Opções padrão e exemplos de validação**: `$IDE/skills/jarvis-init/assets/validacoes.md`
+- **Exemplo de execução**: `$IDE/skills/jarvis-init/assets/exemplo-execucao.md`
 - **Saída**: `$IDE/ENV.md`, `AGENTS.md`, `{workspace}/.jarvis/sessions/{eng,prod,qa}/`
 
 ---
@@ -78,7 +81,7 @@ Regras que **substituem** qualquer trecho legado deste skill ou dos assets:
 │        ↓                                                    │
 │  7. CRIAR → AGENTS.md                                       │
 │        ↓                                                    │
-│  8. SYNC RULES → Filtrar por perfil (HUB/POSITION/AREA/SQUAD)│
+│  8. SYNC RULES → jarvis rules sync (perfil do ENV.md)       │
 │        ↓                                                    │
 │  9. STACKS → Adicionar as stacks (opcional, pulável)        │
 │        ↓                                                    │
@@ -178,7 +181,7 @@ const validPositions = extractOptions(taxonomyContent, 'Positions')
 const validAreas = extractOptions(taxonomyContent, 'Areas')
 ```
 
-> **⚠️ Se taxonomy.md não existir**: Use valores padrão hardcoded como fallback
+> **⚠️ Se taxonomy.md não existir ou for inválido**: use os valores padrão e mostre o aviso de `assets/validacoes.md` (seção "Valores Padrão (Fallback)").
 
 ### 2. Detectar IDE
 
@@ -213,48 +216,7 @@ Identificar qual IDE o usuário está utilizando:
 
 **Se opção C (Upgrade):**
 
-> No terminal, rode antes `jarvis init --upgrade --ide {ide}`: ele atualiza os arquivos do framework, acrescenta as variáveis novas e move os documentos para as pastas novas (itens 1–7, 9 a 11). Aqui ficam o Central docs antigo (item 8), as pendências que ele listar e o passo das stacks.
-> **O upgrade só acrescenta chaves novas:** nenhuma chave já existente, preenchida ou não, é alterada, salvo as exceções declaradas nos itens 4 e 8 (`CENTRAL_DOCS_LOCATION` e `TOKEN_TASK_MANAGER`, com confirmação; `JARVIS_PROJECT` vazio e as chaves removidas do template, automáticos). Depois, a validação final (passo 9.5) pode reorganizar o arquivo, mover chaves para o assunto delas e corrigir valores fora das opções, sempre perguntando: nenhum valor muda sem a resposta da pessoa.
-> Trocou o `ARTIFACT_STYLE` (ou HUB, POSITION, AREA, SQUAD) à mão? O Passo 8 copia ou remove as rules desse perfil.
-
-1. Ler todas as chaves do `templates/ENV-template.md`
-2. Ler todas as chaves do `$IDE/ENV.md` existente
-3. Calcular diff: chaves no template que **não existem** no ENV.md atual
-4. **Exceção — chaves removidas do template (#209):** apague, sem perguntar, as linhas das chaves de mensageria, banco, observabilidade, SMTP, code quality e Data Engineering (`MESSAGE_BROKER*`, `DATABASE`, `*_DATABASE`, `OBSERVABILITY*`, `TOKEN_OBSERVABILITY`, `SMTP`, `CODE_QUALITY_*` e as `DATA_*`, **menos** `DATA_SPECIALIZATIONS`; lista em `REMOVED_KEYS`, `bin/lib/core/env-upgrade.js`) e a moldura de comentário do bloco que ficar vazio. Nunca leia, mostre ou copie o valor; avise só com os nomes (`ENV.md: removidas (não são mais usadas): …`). O `jarvis init --upgrade` já faz isso no terminal
-5. Se não houver diff:
-   ```
-   ✅ ENV.md já está atualizado. Nenhuma variável nova encontrada.
-   ```
-   Oferecer o **passo 9 (adicionar as stacks)**, que a pessoa pode pular, rodar o **passo 9.5 (validar o ENV.md)** e então encerrar.
-6. Se houver diff, exibir prévia:
-   ```
-   🔍 Variáveis novas encontradas no template:
-     + NOVA_VAR_1=
-     + NOVA_VAR_2=valor-padrão
-
-   Serão adicionadas no assunto de cada uma, na posição do template, sem alterar os valores existentes.
-   ```
-7. **Exceção — documentos nos caminhos antigos:** procure documentos de trabalho em `$DOCS_FOLDER/product`, `$DOCS_FOLDER/engineering/{ARD,RFC,qa,swagger,openapi,robots,c4}`, `docs/engineering/{robots,swagger,openapi,c4}` e os discoveries em `$PROD_DOCS/discoveries/`.
-   - Se houver, liste o que encontrou e pergunte com `AskUserQuestion` (uma pergunta para todos) se move para `docs/jarvis/…` (`$PROD_DOCS`, `$ENG_DOCS/…` e, para os discoveries, `$DISCOVERIES_DOCS`). Use `git mv` quando o arquivo for versionado e `mv` quando não for e, só se a raiz do workspace tiver `.git`, garanta `docs/jarvis/` no `.gitignore`.
-   - **Conflito** (arquivo com o mesmo nome no destino): não sobrescreva; liste e pule esse arquivo. A pasta antiga só é removida se ficar vazia.
-   - **`related_discovery`:** depois de mover discoveries, nos `.md` de `$PROD_DOCS`, troque todo `related_discovery:` cujo **nome de arquivo** seja o de um discovery movido pelo caminho novo (relativo ao workspace). Isso também conserta valores que já estavam quebrados.
-   - **Sem confirmação, não mova nada:** as chaves **novas** recebem o caminho antigo (`DISCOVERIES_DOCS=$PROD_DOCS/discoveries`; `PROD_DOCS`/`ENG_DOCS` só se também forem novas). Chave que já existe não muda: avise que os documentos ficaram no caminho antigo.
-   - Depois, ofereça a carga inicial do Central docs (Passo 5.3).
-8. **Exceção — Central docs antigo:** se o `ENV.md` tiver `CENTRAL_DOCS_REPO` preenchido e não tiver `CENTRAL_DOCS_STORAGE`, propor a migração (só com confirmação): `CENTRAL_DOCS_STORAGE=filesystem`, `CENTRAL_DOCS_LOCATION=docs/jarvis/central-docs` (Passo 5.2) e `git clone {CENTRAL_DOCS_REPO} {LOCATION}`. Depois, comentar a linha antiga (`# CENTRAL_DOCS_REPO=… (migrado em YYYY-MM-DD)`) e `CENTRAL_DOCS_CACHE_TTL`. Sem confirmação, não mexe e avisa que os comandos de docs vão pedir o Upgrade.
-   - **Central docs no padrão antigo do modo workspace:** se `CENTRAL_DOCS_LOCATION` for `./central-docs` (ou `central-docs`) e essa pasta existir, ofereça com `AskUserQuestion` (**Mover** | **Manter**) mover para `docs/jarvis/central-docs`, o padrão atual. Com **Mover**: se o destino já existir, não sobrescreva (avise e mantenha); senão, `mv ./central-docs docs/jarvis/central-docs` e troque o valor de `CENTRAL_DOCS_LOCATION` no `ENV.md`. Esta é a única alteração de uma chave existente no Upgrade e só acontece com a confirmação. Com **Manter**, nada muda.
-8.1. **Exceção — `TOKEN_TASK_MANAGER` com valor:** o token não é mais usado (o board passa pela CLI do vendor). Nunca leia, mostre ou copie o valor: confira só se a linha tem algo depois do `=`. Explique e oriente o login da CLI do `TASK_MANAGER` (ex.: `acli jira auth login`). Pergunte com `AskUserQuestion` (**Esvaziar a linha** | **Manter**). Com **Esvaziar**, troque a linha por `TOKEN_TASK_MANAGER=`; com **Manter**, nada muda e avise que o valor fica sem uso no ENV. É a segunda exceção declarada à regra "o upgrade só acrescenta" (a primeira é a `CENTRAL_DOCS_LOCATION`).
-8.2. **Exceção — `JARVIS_PROJECT` vazio:** grave `https://github.com/phelipperibeiro/jarvis-framework` sem perguntar e avise ("estava vazio; preenchido com o repositório oficial do Jarvis"). Preenchido com qualquer valor, não muda. O `jarvis init --upgrade` já faz isso no terminal.
-8.3. **Eixos sem forma de acesso:** se `TASK_MANAGER` ou `VERSION_CONTROL` estiver preenchido com um vendor do catálogo e o `*_ACCESS` correspondente estiver ausente, vazio ou inválido (fora de `cli`/`manual`; avise o valor errado), faça para aquele eixo o Passo 4 (descoberta da CLI, forma de acesso e variáveis), com a gravação única do fim. Vendor fora do catálogo (Linear, Asana, Bitbucket): avise que não é suportado e que o eixo fica em freelance; não mude a chave.
-9. **Exceção — `PROD_MODE`:** se `PROD_MODE` estiver entre as chaves novas, grave pelo `AREA`: `ENGINEERING` → `developer-guided`, `PRODUCT` → `product-led`. Com outra `AREA` (ou vazia), faça a mesma pergunta do Passo 3 (Pergunta 8 — modo de condução) e grave a resposta. `PROD_MODE` que já existe, mesmo vazia, não muda. As demais chaves continuam sem pergunta.
-    - **`WORKSPACE_MODE`:** o `jarvis init --upgrade` já grava o modo detectado (raiz sem `.git` e 1+ subpastas com `.git/` = `workspace`; raiz com `.git` = `project`). Se a chave existir vazia, detecte do mesmo jeito e grave; se existir preenchida, não muda.
-    - **`.gitignore` numa raiz sem `.git` (ex.: `WORKSPACE_MODE=workspace`):** a raiz não é versionada, então esse arquivo não tem efeito. Não o apague; só avise: `ℹ️ O .gitignore da raiz do workspace não tem efeito (a raiz não é um repositório). Pode removê-lo se quiser.`
-10. Acrescentar as novas variáveis no assunto de cada uma, na posição do template, junto das chaves do mesmo assunto (ex.: uma `*_SPECIALIZATIONS` nova vai para o bloco de especializações, ao lado das irmãs), com o comentário do template. Sem bloco datado no fim. O `jarvis init --upgrade` (terminal) acrescenta no fim, num bloco `# --- Upgrade ... ---`, por ser determinístico; o passo 9.5 põe essas chaves no lugar.
-11. Confirmar:
-   ```
-   ✅ ENV.md atualizado! N variável(is) nova(s) adicionada(s).
-   ⚠️ Preencha os valores em branco antes de usar os novos recursos.
-   ```
-12. Oferecer o **passo 9 (adicionar as stacks)**, que a pessoa pode pular, rodar o **passo 9.5 (validar o ENV.md)** e então encerrar (não continuar para o fluxo de onboarding completo).
+Siga `assets/upgrade.md` do começo ao fim (nota do terminal e itens 1-12). Ele termina oferecendo o passo 9, rodando o 9.5 e encerrando, sem continuar o onboarding.
 
 **⚠️ OBRIGATÓRIO - Criação do ENV.md**:
 
@@ -955,106 +917,9 @@ Se não existir na raiz do projeto:
 
 ### 8. Profile-Aware Rules Sync
 
-**Executar após gravar o ENV.md** (nos fluxos create, update B e upgrade C).
-
-Objetivo: garantir que `$IDE/rules/` e `$IDE/rules-on-demand/` contenham apenas as rules relevantes para o perfil do usuário, reduzindo tokens carregados em sessão. A pasta `rules/` é carregada no início da sessão; a `rules-on-demand/` guarda as rules de uma etapa ou transversais, que cada workflow lê quando precisa (o Claude Code não a carrega sozinho). O filtro é o mesmo nas duas pastas, e `bin/lib/core/profile-filter.js` o espelha em JS (usado por `jarvis tokens`): ao mudar a lógica aqui, mude lá e em `rules/AGENTS.md`.
-
-**Passos:**
-
-```
-1. Ler HUB, POSITION, AREA, SQUAD e ARTIFACT_STYLE (vazio = `ai-generated`) do ENV.md recém-gravado
-2. Para cada uma das duas pastas (rules/ e rules-on-demand/), listar todos os arquivos .md (recursivo, exceto AGENTS.md) do core, mais os de `$IDE/overlays/{COMPANY_PROFILE}/{pasta}/` que o core não tem
-3. Para cada arquivo:
-   a. Ler o bloco `> **Applies to:**` (primeira ocorrência no arquivo)
-   b. Se o bloco não existir → tratar como universal → copiar sempre
-   c. Se existir → verificar matching (ver lógica abaixo)
-   d. **Condição especial RTK**: se o arquivo for `rtk-rules.md`,
-      copiar APENAS se `RTK_ENABLED=true` no ENV.md
-      (mesmo que o perfil bata, RTK é opt-in)
-   e. Se bate com o perfil → copiar para a mesma pasta em $IDE/ (rules/ → $IDE/rules/, rules-on-demand/ → $IDE/rules-on-demand/), preservando subpastas.
-      **RuleResolver (#199):** a origem é `$IDE/overlays/{COMPANY_PROFILE}/{pasta}/{relPath}` se esse arquivo existir (o fork da empresa, mesmo caminho e nome), senão a do core. O `Applies to` lido é o do arquivo que será copiado. A cópia vinda do overlay recebe, logo depois do frontmatter (ou na primeira linha, sem frontmatter), a linha `> Overlay: {COMPANY_PROFILE} (forked_from {valor do frontmatter, ou "sem carimbo"})`. **Nada é gravado em `$IDE/overlays/`**: a única exceção é criar a pasta vazia do perfil (`mkdir`), feita pelo `jarvis init` e por este Passo 8 (nota abaixo do resumo)
-   f. Se não bate → deletar de $IDE/ se existir lá
-   g. **Órfãs do overlay (#199):** arquivo em `$IDE/rules/` ou `$IDE/rules-on-demand/` cuja **primeira linha útil depois do frontmatter** é exatamente `> Overlay: {perfil} (forked_from …)` e que não existe em `$IDE/overlays/{COMPANY_PROFILE}/` (ficou de outro perfil, ou saiu do overlay à mão): se existe no core → copiar a versão do core por cima (sem marcação); senão → deletar de $IDE/. Uma rule que só cite a marcação no corpo não conta. O arquivo do overlay nunca é tocado
-4. Exibir resumo ao usuário
-```
-
-**Lógica de matching:**
-
-Um arquivo é copiado se **todas** as condições forem satisfeitas:
-
-```javascript
-function matchesProfile(appliesTo, profile) {
-  const matches = (list, value) =>
-    list === 'all' || list.split(',').map(s => s.trim()).includes(value)
-
-  // FULLCYCLE é superusuário do eixo HUB: satisfaz qualquer applies_to HUB
-  const hubMatches = profile.HUB === 'FULLCYCLE' || matches(appliesTo.HUB, profile.HUB)
-
-  // GENERALIST é superusuário dos eixos POSITION e AREA: transita entre
-  // ENGINEERING/PRODUCT e satisfaz qualquer POSITION exigida
-  const positionMatches = profile.POSITION === 'GENERALIST' || matches(appliesTo.POSITION, profile.POSITION)
-  const areaMatches = profile.POSITION === 'GENERALIST' || matches(appliesTo.AREA, profile.AREA)
-
-  // ARTIFACT_STYLE (5º campo opcional): ausente no bloco = 'all'; perfil vazio = 'ai-generated'.
-  // Sem coringa: FULLCYCLE e GENERALIST não o satisfazem (é escolha da pessoa, não papel).
-  const styleMatches = matches(appliesTo.ARTIFACT_STYLE || 'all', profile.ARTIFACT_STYLE || 'ai-generated')
-
-  return (
-    hubMatches &&
-    positionMatches &&
-    areaMatches &&
-    matches(appliesTo.SQUAD, profile.SQUAD) &&
-    styleMatches
-  )
-}
-```
-
-**Parser do bloco `applies_to`:**
-
-```javascript
-// Exemplo de bloco: > **Applies to:** HUB: all | POSITION: all | AREA: all | SQUAD: all
-// 5º campo opcional:  ... | SQUAD: all | ARTIFACT_STYLE: human-generated
-function parseAppliesTo(fileContent) {
-  const match = fileContent.match(
-    /> \*\*Applies to:\*\* HUB: ([^|]+)\| POSITION: ([^|]+)\| AREA: ([^|]+)\| SQUAD: ([^|\n]+)(?:\| ARTIFACT_STYLE: ([^|\n]+))?/
-  )
-  if (!match) return null // sem bloco = universal
-  return {
-    HUB:            match[1].trim(),
-    POSITION:       match[2].trim(),
-    AREA:           match[3].trim(),
-    SQUAD:          match[4].trim(),
-    ARTIFACT_STYLE: (match[5] || 'all').trim(),
-  }
-}
-```
-
-**Copiar preservando subpastas:**
-
-```bash
-# Exemplo: rules/engineering/frontend/eng.frontend-rules.md
-# Destino: $IDE/rules/engineering/frontend/eng.frontend-rules.md
-# (o mesmo vale para rules-on-demand/ → $IDE/rules-on-demand/)
-mkdir -p "$IDE/$pasta/$(dirname $relPath)"
-cp "$pasta/$relPath" "$IDE/$pasta/$relPath"   # $pasta = rules ou rules-on-demand
-```
-
-**Saída para o usuário:**
-
-```
-🔍 Sincronizando rules para o perfil: HUB={HUB} | POSITION={POSITION} | AREA={AREA} | SQUAD={SQUAD} | ARTIFACT_STYLE={ARTIFACT_STYLE}
-
-✅ Rules sincronizadas:
-   Copiadas : N arquivos (rules/: N | rules-on-demand/: N)
-   Removidas: N arquivos (não batem com o perfil)
-   Universais: N arquivos (sem applies_to — sempre copiadas)
-   Do overlay: N arquivos ({COMPANY_PROFILE})
-   Overlay {COMPANY_PROFILE}: pasta criada        ← só quando `$IDE/overlays/{COMPANY_PROFILE}/` não existia
-```
-
-> **Pasta do perfil (#199):** se `$IDE/overlays/{COMPANY_PROFILE}/` não existir, crie-a vazia (`mkdir -p`) e mostre a linha acima. É a única escrita permitida em `$IDE/overlays/`: nenhum arquivo é gravado, alterado ou apagado lá. O `jarvis init` faz o mesmo; aqui vale para quem roda só o `/jarvis-init`.
-
-> **Nota**: `rules/AGENTS.md` é sempre copiado — nunca filtrado.
+**Executar após gravar o ENV.md** (criar, atualizar B, upgrade C e no item 4 do 9.5).
+Na pasta do workspace, rode `jarvis rules sync --ide {ide}` e mostre à pessoa o resumo que ele imprime. O comando filtra `$IDE/rules/` e `$IDE/rules-on-demand/` pelo perfil do ENV.md (HUB, POSITION, AREA, SQUAD, ARTIFACT_STYLE; `rtk-rules.md` só com RTK_ENABLED=true), aplica o overlay de `COMPANY_PROFILE` (cria a pasta vazia do perfil se faltar) e não toca em arquivo que não seja do core nem do overlay. Não filtre à mão. O `jarvis init --upgrade` e a reinstalação (`--force` ou a opção 2 do menu) já rodam esse filtro no fim, quando o ENV.md tem os 4 eixos (ali, a `rtk-rules.md` pede também o `rtk` no PATH); o Passo 8 continua valendo na criação do ENV.md e sempre que o perfil muda.
+Sem o `jarvis` no PATH, ou se o comando sair com erro (ENV incompleto, versão do lock diferente), siga `assets/rules-sync-manual.md`.
 
 ---
 
@@ -1235,8 +1100,8 @@ Apresentar checklist de onboarding por período (Dia 1, Semana 1, Mês 1).
 
 | Erro | Ação |
 |------|------|
-| **taxonomy.md não encontrado** | Usar DEFAULT_OPTIONS (CORE + hubs com DATA) e avisar |
-| **taxonomy.md inválido/corrompido** | Usar DEFAULT_OPTIONS e alertar |
+| **taxonomy.md não encontrado** | Usar DEFAULT_OPTIONS (`assets/validacoes.md`) (CORE + hubs com DATA) e avisar |
+| **taxonomy.md inválido/corrompido** | Usar DEFAULT_OPTIONS (`assets/validacoes.md`) e alertar |
 | **AskUserQuestion não disponível** | Usar texto numerado para todas as opções fixas — não bloquear o init |
 | **Múltiplas perguntas feitas de uma vez** | ERRO CRÍTICO - NUNCA faça isso. Pergunte uma por vez e aguarde resposta |
 | **WORKSPACE vazio** | Usar o nome da pasta que contém `$IDE/`; confirmar com o usuário |
@@ -1247,108 +1112,6 @@ Apresentar checklist de onboarding por período (Dia 1, Semana 1, Mês 1).
 | CLI do board/git ausente ou sem login | Mostrar o link de instalação/login, oferecer `manual` e **continuar** (1 tentativa) |
 | Stack não detectada | Perguntar ao usuário |
 | IDE não detectada | Perguntar ao usuário qual IDE usa |
-
-### Exemplo de Validação
-
-**Exemplo 1: HUB (5 opções) - Texto Numerado**
-
-```
-Qual o hub do projeto?
-
-1. AI
-2. FRONTEND
-3. BACKEND
-4. QA
-5. DATA
-```
-
-Validar número ou nome contra a lista do taxonomy (**inclui DATA**).
-
----
-
-**Exemplo 2: SQUAD - Texto Numerado**
-
-```
-Qual o nome do seu squad?
-
-Opções disponíveis: (lidas de taxonomy.md)
-1. CORE - Time principal
-
-Digite o número ou nome do squad:
-```
-
-```javascript
-const selected = validateTextOption(userInput, extractSquadsFromTaxonomy())
-if (!selected) {
-  console.log("❌ Squad inválido. Digite um número ou nome válido da lista.")
-}
-```
-
-### Valores Padrão (Fallback)
-
-Se `taxonomy.md` não existir ou estiver corrompido, usar:
-
-```javascript
-const DEFAULT_OPTIONS = {
-  SQUADS: ['CORE'],
-  HUBS: ['AI', 'FRONTEND', 'BACKEND', 'QA', 'DATA', 'FULLCYCLE'],
-  POSITIONS: ['HEAD', 'JUNIOR', 'PLENO', 'SENIOR', 'TECH LEAD', 'SPECIALIST', 'PM', 'TPM', 'GPM', 'CTO', 'GENERALIST'],
-  AREAS: ['ENGINEERING', 'PRODUCT']
-}
-```
-
-**Avisar usuário:**
-```
-⚠️ Arquivo taxonomy.md não encontrado. Usando opções padrão (CORE + hubs com DATA).
-Para customizar, edite taxonomy.md e rode /taxonomy validate.
-```
-
----
-
-## Exemplo de Execução
-
-**Usuário**: `/jarvis-init`
-
-**Agente** *(resolve identidade local — ENV.md / git / SO)*:
-```
-✅ Identidade: joao@example.com
-   USER será gravado no ENV.md.
-
-📋 Vamos configurar o ambiente do framework.
-
-Pergunta 1: Workspace detectado: `{pasta}`. Usar esse nome?
-```
-
-*[Uma pergunta por vez, aguardando resposta...]*
-
-```
-Pergunta 2: Qual IDE você está usando?
-[mostrar opções em texto numerado]
-
-Pergunta 3: Qual o nome do seu squad?
-[mostrar opções do taxonomy em texto numerado]
-
-Pergunta 4: Qual o hub do projeto?
-[texto numerado com AI, FRONTEND, BACKEND, QA, DATA, FULLCYCLE]
-
-Pergunta 5: Qual a área do projeto?
-[AskUserQuestion ou texto numerado]
-
-Pergunta 6: Qual o limite de execução da AI? (60-100)
-
-Pergunta 7: Qual seu cargo?
-[mostrar opções em texto numerado]
-
-Pergunta 8: Modo dos comandos de produto?
-[AskUserQuestion: Product-Led | Developer-Guided, sem opção sugerida]
-
-Pergunta 9: Estilo dos artefatos?
-[AskUserQuestion: AI-Generated (padrão) | Human-Generated]
-
-Pergunta 10 (opcional): Usa board de cards? jira/github/gitlab ou Nenhum (freelance) → descoberta da CLI e variáveis (Passo 4)
-```
-
-**Agente**: *(cria ENV.md + `.jarvis/sessions/{eng,prod,qa}`, valida Context7, cria AGENTS.md e confirma)*
 
 ---
 
@@ -1436,11 +1199,6 @@ Bem-vindo! 🎉
 - **Detecção de IDE**: A variável `$IDE` é detectada automaticamente (`.windsurf/`, `.claude/`, `.cursor/`, `.codex/`, `.opencode/`, `.agents/`)
 - **Nunca inventar dados**: Se informação não estiver disponível, perguntar ao usuário
 - **Nunca expor credenciais**: Tokens e senhas nunca devem ser expostos no chat
-- **MAX_AI_EXECUTION_PERCENTAGE**:
-  - Valor padrão: 100
-  - Valor mínimo: 60
-  - Intervalo válido: 60-100
-  - Valores fora do intervalo são ajustados automaticamente
 - **Segurança primeiro**: Em caso de dúvida, priorizar segurança e integridade de dados
 - **Ações destrutivas**: Nunca executar sem confirmação explícita do usuário
 

@@ -97,7 +97,7 @@ Mesmos passos 2 e 3 do [Get Started](#get-started) acima — `jarvis init --ide 
 
 ```bash
 npm install -g jarvis-ai-framework@latest
-jarvis init --upgrade --ide {ide}   # assets + variáveis novas do ENV.md + documentos para as pastas novas
+jarvis init --upgrade --ide {ide}   # assets + variáveis novas do ENV.md + documentos para as pastas novas + rules filtradas pelo perfil
 ```
 
 `jarvis init --ide {ide}` numa pasta já instalada mostra o menu **Atualizar** (Enter, o mesmo que o `--upgrade`) / **Reinstalar** (o mesmo que o `--force`) / **Cancelar**, com a versão instalada e a do pacote. No fim, ele só manda rodar o `/jarvis-init upgrade` quando há pendência.

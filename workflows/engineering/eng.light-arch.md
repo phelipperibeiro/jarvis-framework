@@ -1,10 +1,7 @@
 ---
 description: Design arquitetural leve
 auto_execution_mode: 3
-env_file: "@/ENV.md"
 recommended_model: claude-sonnet-4-20250514
-model_tier: high
-model_justification: Design arquitetural requer análise de codebase, padrões existentes e propostas de estrutura técnica
 ---
 
 # light-arch

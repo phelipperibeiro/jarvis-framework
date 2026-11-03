@@ -83,6 +83,9 @@ export const OBSOLETE_PATHS = Object.freeze([
   "rules/engineering/eng.pre-pr-rules.md",
   "rules/engineering/eng.tech-spec-rules.md",
   "rules/engineering/eng.breakdown-subtasks-rules.md",
+  "rules/engineering/eng.bump-rules.md",
+  "rules/engineering/eng.docs-scraping-rules.md",
+  "rules/engineering/rpa",
   // Consolidação de QA (removidos): área QA ficou só com eng-qa (base) e eng-qa-planner
   "skills/eng-qa-test-plan",
   "skills/eng-qa-gate",
@@ -150,7 +153,56 @@ export const OBSOLETE_PATHS = Object.freeze([
   "steering/skills/skill-eng-backend-rabbitmq.md",
   "rules/engineering/data/data-rules.md",
   "steering/data-rules.md",
+  // Cópias do Kiro (steering/{nome}) das rules que saíram de rules/ no #133 (bump e rpa, com a
+  // docs-scraping fundida); rules-on-demand/ não vira steering, então nada válido tem esses nomes.
+  "steering/eng.bump-rules.md",
+  "steering/eng.docs-scraping-rules.md",
+  "steering/eng.rpa-rules.md",
+  // rules/AGENTS.md e rules/product/README.md (issue #84): conteúdo de autoria movido
+  // para docs/estrutura/rules.md; rules/product/README.md era órfão, sem referências
+  "rules/AGENTS.md",
+  "rules/product/README.md",
+  // Documentação de pasta e all-tools (issue #89): deixaram de ser copiados para a IDE (ver
+  // SYNC_EXCLUDE). O nome da pasta de workflows varia por IDE (commands, workflows, steering).
+  "commands/AGENTS.md",
+  "commands/README.md",
+  "commands/all-tools.md",
+  "workflows/AGENTS.md",
+  "workflows/README.md",
+  "workflows/all-tools.md",
+  "steering/AGENTS.md",
+  "steering/README.md",
+  "steering/all-tools.md",
+  "skills/AGENTS.md",
+  "skills/SKILLS-ROADMAP.md",
+  "skills/jarvis-docs-central/README.md",
+  "skills/product-roadmap-report/README.md",
+  "agents/AGENTS.md",
+  "agents/README.md",
+  // product-roadmap-report (issue #91): rules/detailed-guide.md era cópia de references/detailed-guide.md
+  // (a mantida), com uma linha de plugin externo inexistente
+  "skills/product-roadmap-report/rules/detailed-guide.md",
+  // templates sem consumidor (issue #92): swagger e CONTACTS apagados; o ensaio CDD foi para
+  // skills/jarvis-context-detect/references/
+  "templates/engineering/swagger-template.md",
+  "templates/engineering/CONTACTS-template.md",
+  "templates/cdd-aplicado-a-prompts.md",
 ]);
+
+/**
+ * Arquivos de documentação de pasta que ficam só no repositório do framework e não são
+ * copiados para a IDE. Por pasta de `SYNC_DIRS`, expressões aplicadas ao caminho relativo
+ * (com `/`) dentro dela. `workflows/` vira `commands/` ou `steering/` conforme a IDE e é
+ * achatado depois da cópia; barrar na origem evita que um README aninhado sobrescreva outro.
+ * Em `skills/` todo `*.md` da raiz sai (skill é sempre uma pasta); em `agents/` só os nomes de
+ * documentação, porque um agent pode ficar direto na raiz da pasta.
+ * @constant {Readonly<Record<string, ReadonlyArray<RegExp>>>}
+ */
+export const SYNC_EXCLUDE = Object.freeze({
+  workflows: Object.freeze([/(^|\/)(AGENTS|README)\.md$/]),
+  skills: Object.freeze([/^[^/]+\.md$/, /^[^/]+\/README\.md$/]),
+  agents: Object.freeze([/^(AGENTS|README)\.md$/]),
+});
 
 /**
  * Arquivos da raiz que devem ser sincronizados
@@ -199,44 +251,6 @@ export const OPENCODE_DEFAULT_PERMISSIONS = Object.freeze({
   grep: "allow",
   task: "allow",
 });
-
-/**
- * Campos de frontmatter Jarvis-only que devem ser removidos para OpenCode commands
- * @constant {ReadonlyArray<string>}
- */
-export const OPENCODE_STRIP_FIELDS = Object.freeze([
-  "auto_execution_mode",
-  "rules_file",
-  "template_file",
-  "model_tier",
-  "model_justification",
-  "recommended_model",
-  "env_file",
-  "globs",
-]);
-
-/**
- * Campos de frontmatter Jarvis-only que devem ser removidos para steering files Kiro
- * @constant {ReadonlyArray<string>}
- */
-export const KIRO_STRIP_FIELDS = Object.freeze([
-  "trigger",
-  "auto_execution_mode",
-  "rules_file",
-  "template_file",
-  "model_tier",
-  "model_justification",
-  "recommended_model",
-  "env_file",
-  "globs",
-  "agent",
-  "allowed-tools",
-  "disable-model-invocation",
-  "compatibility",
-  "license",
-  "metadata",
-  "argument-hint",
-]);
 
 /**
  * Mapeamento de HUB Jarvis para fileMatchPattern do Kiro

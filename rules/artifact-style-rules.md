@@ -52,4 +52,4 @@ Esta rule só é copiada para `$IDE/rules/` quando o perfil tem `ARTIFACT_STYLE=
 - `templates/ENV-template.md` (`ARTIFACT_STYLE`)
 - `skills/jarvis-init/SKILL.md` (Pergunta 9 e Passo 8)
 - `workflows/engineering/eng.pr.md` (conferência antes do push)
-- `rules/AGENTS.md` (eixo `ARTIFACT_STYLE` do `Applies to`)
+- `docs/estrutura/rules.md` (eixo `ARTIFACT_STYLE` do `Applies to`)

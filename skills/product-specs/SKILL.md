@@ -2,9 +2,7 @@
 name: product-specs
 description: Ações e fluxos de trabalho para criar, modificar, analisar e atualizar especificações de produto como PRDs, FRDs, Storys, e tarefas de gerenciamento de produtos e projetos.
 argument-hint: "Peça para criar, atualizar ou modificar uma especificação de PRD, FRD ou Story."
-allowed-tools: conversation_search, google_drive_search, google_drive_fetch, figma
 disable-model-invocation: false
-license: AGPL-3.0
 metadata:
   author: jarvis-team
   version: "1.0"
@@ -27,7 +25,7 @@ Esta skill é só a **porta de entrada** das especificações de produto: ela **
 | Esclarecer uma especificação | `/prod.spec.clarify` | `$IDE/$FLOWS_FOLDER/prod.spec.clarify.md` |
 | Quebrar uma especificação grande | `/prod.spec.breakdown` | `$IDE/$FLOWS_FOLDER/prod.spec.breakdown.md` |
 
-Antes de executar, leia as regras de produto em `$PROD_RULES` (`prod-rules.md` e `prod.spec-rules.md`).
+Antes de executar, leia as regras de produto em `$PROD_RULES` (`prod-rules.md` e `prod.spec-rules.md`) e `$IDE/rules-on-demand/product/prod.spec-common-rules.md`.
 
 Para outras necessidades de produto sem workflow próprio, aplique as boas práticas comumente utilizadas por gerentes de produto.
 

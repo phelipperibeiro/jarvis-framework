@@ -2,15 +2,14 @@
 name: prod.spec.frd
 description: Fluxo para criação de FRD (Functional Requirements Document), que auxilia na definição detalhada dos requisitos funcionais de uma feature
 auto_execution_mode: 3
-env_file: "@/ENV.md"
 recommended_model: opus
-model_tier: high
-model_justification: FRDs requerem análise detalhada de requisitos funcionais, comportamento de usuário e especificações técnicas
 ---
 
 # FRD - Functional Requirements Document
 
 > 🎓 **Modo de condução**: leia `PROD_MODE` no `$IDE/ENV.md`. Se for `developer-guided`, **antes de começar leia `$IDE/rules-on-demand/product/prod.guided-rules.md` e siga-o** em toda a conversa. Vazio ou `product-led`: siga este fluxo como está.
+>
+> 📋 **Princípios e busca de contexto**: antes de começar, leia `$IDE/rules-on-demand/product/prod.spec-common-rules.md` e siga-a.
 >
 > 🤖 **Modelo**: se a IDE informar o modelo desta sessão e ele for de outra família que o `recommended_model` do documento (ou do template, se o documento for novo), avise em uma linha e siga, sem bloquear e sem repetir. Sem essa informação, não avise.
 
@@ -40,10 +39,7 @@ Utilize o `$ARGUMENTS` que o usuário passar como ponto de partida e para entend
 |-------|-------|----------|
 | Busca no Central Docs (condicional) | `/jarvis-docs-central` (via `jarvis docs sync --silent`) | Se `CENTRAL_DOCS_STORAGE` estiver definido no ENV.md |
 
-## Princípios Fundamentais
-1. **Sempre use o template** `$PROD_TEMPLATES/prod-frd-template.md` para o output final
-2. **Nunca crie o arquivo final com suposições não validadas** — sempre confirme sugestões primeiro
-3. **Seja inteligente, não robótico** — analise o contexto e proponha sugestões inteligentes, não faça perguntas vazias
+**Princípios:** ver `$IDE/rules-on-demand/product/prod.spec-common-rules.md` (Princípios dos comandos `prod.spec.*`). Template deste comando: `$PROD_TEMPLATES/prod-frd-template.md`.
 
 ---
 
@@ -61,26 +57,7 @@ A FRD não é um épico, história ou task: ela serve como documento de detalham
 
 ---
 
-## Busca de contexto (`$PROD_DOCS` sempre; Central docs se configurado)
-
-A busca em `$PROD_DOCS` é sempre feita. A consulta ao Central docs (o que já foi implementado) só acontece se `CENTRAL_DOCS_STORAGE` estiver definido no ENV.md; vazio, pule só o `jarvis docs sync`.
-
-1. **Buscar PRD correspondente:**
-   - Consultar no Central docs as funcionalidades já implementadas relacionadas (o que existe hoje):
-     ```bash
-     jarvis docs sync --silent
-     ```
-   - Buscar o PRD relacionado em `$PROD_DOCS` (documento de trabalho; o Central docs não guarda PRD) usando:
-     - Nome/contexto fornecido pelo usuário
-     - Jira ID (se disponível)
-     - Tags semânticas
-   - Se o PRD for encontrado em `$PROD_DOCS`:
-     - Carregar automaticamente como base para o FRD
-     - Informar ao usuário: "✅ PRD encontrado: [caminho]"
-     - Passar como contexto para o Gate 1 (Fluxo de Trabalho, abaixo)
-   - Se não encontrado:
-     - Perguntar ao usuário se tem PRD localmente
-     - Continuar com fluxo normal
+**Busca de contexto:** ver `$IDE/rules-on-demand/product/prod.spec-common-rules.md`. Aqui, busca sempre o **PRD pai** em `$PROD_DOCS` (base do FRD, inclusive para FRD novo). Se encontrar, carrega como base do FRD e passa como contexto ao Gate 1; se não encontrar, pergunta se o usuário tem o PRD localmente e segue o fluxo normal.
 
 ## Fluxo de Trabalho
 
@@ -190,7 +167,4 @@ O sistema deve validar os dados do formulário.
   - Se for uma spec nova:
     - Salve na pasta `$PROD_DOCS` seguindo todos os padrões de nomenclatura e estrutura de pastas já estabelecidos em `$PROD_RULES/**/*`
 
-## Central docs
-
-Este documento é um **documento de trabalho**: fica em `$PROD_DOCS`/`$ENG_DOCS` (`docs/jarvis/`) e **não** é publicado no Central docs. O Central docs registra só o que foi implementado, e quem o atualiza é o `/eng.spec-consolidate`, depois do PR da entrega.
-
+**Central docs:** documento de trabalho, não é publicado no Central docs (ver `$IDE/rules-on-demand/product/prod.spec-common-rules.md`).

@@ -26,7 +26,7 @@ Para detecção automatizada do contexto (calibração contextual do agente):
 - Uso: `/jarvis-context-detect {TASK_MANAGER_KEY}`
 
 > **Stack E2E primária**: Cypress + TypeScript com Page Objects, `data-testid` e `cy.intercept`.
-> Consultar `$RULES_FOLDER/engineering/qa/eng.qa.cypress-standards-rules.md` para convenções do projeto.
+> Consultar `$IDE/rules-on-demand/engineering/qa/eng.qa.cypress-standards-rules.md` para convenções do projeto.
 >
 > **Testes unitários**: linguagem/framework nativo do projeto (TypeScript/Jest, Python/pytest, etc.)
 > A especialização de E2E registrada em `QA_SPECIALIZATIONS` (via a base `eng-qa`) complementa, não substitui Cypress.
@@ -35,7 +35,7 @@ Para detecção automatizada do contexto (calibração contextual do agente):
 
 ## Cypress E2E — Domínio e Debugging
 
-> 🔒 **Fonte de verdade de convenções**: `$RULES_FOLDER/engineering/qa/eng.qa.cypress-standards-rules.md`
+> 🔒 **Fonte de verdade de convenções**: `$IDE/rules-on-demand/engineering/qa/eng.qa.cypress-standards-rules.md`
 > Sempre ler antes de sugerir padrões ou gerar código. Para **gerar** uma spec nova, use a especialização de Cypress registrada em `QA_SPECIALIZATIONS` (via a base `eng-qa`); esta seção cobre o julgamento por trás de revisar, debugar e manter specs existentes.
 
 ### Domínios de Expertise
@@ -127,29 +127,7 @@ Ler a spec fornecida e verificar:
 
 ## Calibração Contextual (CDD)
 
-> **Princípio**: Adaptar o rigor e cobertura de testes ao contexto real do projeto e da tarefa.
-> 📚 **Skill**: Use `/jarvis-context-detect` para detecção automatizada do contexto
-
-### Herdar Contexto da Sessão
-
-Se existir arquivo `context.md` na sessão (gerado por `/jarvis-context-detect`), use-o:
-
-```bash
-# Localização: $SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/context.md
-```
-
-```yaml
-CONTEXT_PROFILE:
-  tipo: [hotfix|bugfix|feature|refactor]
-  urgencia: [normal|alta|baixa]
-  rigor: [mínimo|padrão|alto]
-  comunicacao: [didático|direto|estratégico]
-  projeto:
-    testes: [existentes|ausentes]
-    cobertura: [alta|média|baixa]
-```
-
-> Se `context.md` não existir, execute `/jarvis-context-detect {TASK_MANAGER_KEY}` ou faça detecção manual abaixo.
+Se existir `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/context.md` (gerado por `/jarvis-context-detect`; campos descritos no skill), aplique as tabelas abaixo ao `CONTEXT_PROFILE` dele. Se não existir, execute `/jarvis-context-detect {TASK_MANAGER_KEY}` ou faça a detecção manual.
 
 ### Calibração por Tipo de Tarefa (do context.md)
 
@@ -322,34 +300,7 @@ def test_invalid_input_raises_error():
 
 ### Relatório de Teste Padrão
 
-```markdown
-## Suíte de Testes para [Nome do Módulo/Função]
-
-### Resumo de Cobertura de Testes
-- Caminho feliz: [X] testes
-- Casos extremos: [X] testes
-- Condições de erro: [X] testes
-- Total de testes: [X]
-
-### Testes Escritos
-[Lista de funções de teste com descrições breves]
-
-### Problemas Encontrados que Precisam de Mudanças de Implementação
-1. **[Descrição do Problema]**
-   - Problema: [O que está errado]
-   - Impacto: [Por que importa]
-   - Correção sugerida: [Como abordar]
-
-### Notas de Teste
-- [Qualquer suposição feita]
-- [Limitações dos testes atuais]
-- [Sugestões para testes de integração]
-
-### Executando os Testes
-```bash
-pytest test_filename.py -v
-```
-```
+Use a estrutura de `$IDE/templates/engineering/qa/qa.test-suite-report-template.md` (leia o template e siga-o exatamente).
 
 ---
 

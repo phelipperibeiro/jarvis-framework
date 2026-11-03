@@ -1,22 +1,17 @@
 ---
 name: eng-qa
 description: >
-  Skill base de qualidade e testes, válida em qualquer stack, framework de teste ou ferramenta de
-  automação: fundamentos de qualidade, estratégia e planejamento, design de casos, testes manuais e
-  exploratórios, automação, API/integração/contrato, interface/compatibilidade/mobile, performance,
-  confiabilidade, segurança, acessibilidade, dados de teste, gestão de testes e defeitos, e
-  arquitetura de QA. Pode ser complementada por especializações registradas em QA_SPECIALIZATIONS
-  (ex: eng-qa-planner).
-  Trigger: Use para planejar estratégia de testes, identificar lacunas de cobertura, projetar casos
-  de teste, decidir o que automatizar ou para qualquer dúvida sobre qualidade de software em geral.
-license: AGPL-3.0
-compatibility: Designed for Claude Code (or similar products)
+  Base de qualidade e testes, neutra de stack e ferramenta: estratégia e planejamento, design
+  de casos, testes manuais/exploratórios, automação, API/integração/contrato,
+  interface/compatibilidade/mobile, performance, confiabilidade, segurança, acessibilidade,
+  dados de teste, gestão de defeitos e arquitetura de QA; + QA_SPECIALIZATIONS (ex:
+  eng-qa-planner). Trigger: estratégia de testes, lacunas de cobertura, casos de teste, o que
+  automatizar ou qualidade de software em geral.
 allowed-tools: Read Write Edit Glob Grep Bash
 metadata:
   author: jarvis-team
   version: "1.0"
   area: qa
-# Campos Claude Code-specific (não fazem parte da spec oficial agentskills.io):
 argument-hint: "[estrategia|design-casos|automacao|performance|seguranca|a11y] [contexto]"
 disable-model-invocation: false
 ---

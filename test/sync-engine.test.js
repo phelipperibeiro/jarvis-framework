@@ -18,7 +18,17 @@ import {
 } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { syncAssets, withOverlayMarker, readOverlayMarker } from "../bin/lib/core/sync-engine.js";
+import {
+  syncAssets,
+  isExcludedFromSync,
+  withOverlayMarker,
+  readOverlayMarker,
+  syncRulesForProfile,
+} from "../bin/lib/core/sync-engine.js";
+import { listRulesForProfile } from "../bin/lib/core/profile-filter.js";
+import { createHash } from "node:crypto";
+import { dirname, relative, sep } from "node:path";
+import { fileURLToPath } from "node:url";
 
 function withJarvisRoot(fn) {
   const root = mkdtempSync(join(tmpdir(), "jarvis-root-"));
@@ -166,6 +176,41 @@ test("syncAssets: codex gera openai.yaml por skill com name/description do front
   });
 });
 
+test("syncAssets: codex não corta a description na letra Z (bloco > e último campo)", () => {
+  withJarvisRoot((root, target) => {
+    buildMinimalFramework(root);
+    write(
+      root,
+      "skills/z-skill/SKILL.md",
+      [
+        "---",
+        "name: z-skill",
+        "description: >",
+        "  Base com QA_SPECIALIZATIONS e Zod.",
+        "  Trigger: quando usar.",
+        "metadata:",
+        "  area: qa",
+        "---",
+      ].join("\n")
+    );
+    write(
+      root,
+      "skills/fim-skill/SKILL.md",
+      "---\nname: fim-skill\ndescription: Zoom no fim\n---\n"
+    );
+
+    syncAssets(target, "codex", {});
+
+    const yaml = (skill) =>
+      readFileSync(join(target, `.codex/skills/${skill}/openai.yaml`), "utf-8");
+    assert.match(
+      yaml("z-skill"),
+      /description: "Base com QA_SPECIALIZATIONS e Zod\. Trigger: quando usar\."/
+    );
+    assert.match(yaml("fim-skill"), /description: "Zoom no fim"/);
+  });
+});
+
 test("syncAssets: dryRun não escreve nada no disco", () => {
   withJarvisRoot((root, target) => {
     buildMinimalFramework(root);
@@ -175,6 +220,140 @@ test("syncAssets: dryRun não escreve nada no disco", () => {
     assert.ok(!existsSync(join(target, ".claude")));
     assert.ok(result.copied.length > 0); // reporta o que faria, sem fazer
   });
+});
+
+/** Arquivos de documentação de pasta (não são componentes) em cada SYNC_DIRS do fixture. */
+function addDocFiles(root) {
+  write(root, "workflows/AGENTS.md");
+  write(root, "workflows/README.md");
+  write(root, "workflows/sub/README.md");
+  write(root, "workflows/warm-up.md");
+  write(root, "skills/AGENTS.md");
+  write(root, "skills/SKILLS-ROADMAP.md");
+  write(root, "skills/test-skill/README.md");
+  write(root, "skills/test-skill/references/README.md");
+  write(root, "agents/README.md");
+  write(root, "agents/AGENTS.md");
+}
+
+test("syncAssets: AGENTS.md, README.md e roadmap não chegam à IDE; componentes continuam sendo copiados", () => {
+  withJarvisRoot((root, target) => {
+    buildMinimalFramework(root);
+    addDocFiles(root);
+
+    const result = syncAssets(target, "claude", { workflowsFolder: "commands" });
+
+    assert.equal(result.errors.length, 0, JSON.stringify(result.errors));
+    // documentação de pasta fica só no repositório
+    assert.ok(!existsSync(join(target, ".claude/commands/AGENTS.md")));
+    assert.ok(!existsSync(join(target, ".claude/commands/README.md")));
+    assert.ok(!existsSync(join(target, ".claude/skills/AGENTS.md")));
+    assert.ok(!existsSync(join(target, ".claude/skills/SKILLS-ROADMAP.md")));
+    assert.ok(!existsSync(join(target, ".claude/skills/test-skill/README.md")));
+    assert.ok(!existsSync(join(target, ".claude/agents/AGENTS.md")));
+    assert.ok(!existsSync(join(target, ".claude/agents/README.md")));
+    // componentes e conteúdo continuam
+    assert.ok(existsSync(join(target, ".claude/skills/test-skill/SKILL.md")));
+    assert.ok(existsSync(join(target, ".claude/skills/test-skill/references/README.md")));
+    assert.ok(existsSync(join(target, ".claude/agents/eng.agent.md")));
+    assert.ok(existsSync(join(target, ".claude/commands/eng.start.md")));
+    assert.ok(existsSync(join(target, ".claude/commands/warm-up.md")));
+    // SYNC_ROOT_FILES continuam, inclusive o AGENTS.md da raiz da IDE
+    assert.ok(existsSync(join(target, ".claude/taxonomy.md")));
+    assert.ok(existsSync(join(target, ".claude/AGENTS.md")));
+  });
+});
+
+test("syncAssets: instalação antiga é limpa (claude, windsurf e kiro) pelo OBSOLETE_PATHS", () => {
+  const antigos = {
+    claude: [
+      "commands/AGENTS.md",
+      "commands/README.md",
+      "commands/all-tools.md",
+      "skills/AGENTS.md",
+      "skills/SKILLS-ROADMAP.md",
+      "skills/jarvis-docs-central/README.md",
+      "skills/product-roadmap-report/README.md",
+      "agents/AGENTS.md",
+      "agents/README.md",
+      // rules que saíram de rules/ na auditoria de tokens (#84, #86/#133)
+      "rules/engineering/eng.bump-rules.md",
+      "rules/engineering/eng.docs-scraping-rules.md",
+      "rules/engineering/rpa/eng.rpa-rules.md",
+      "rules/AGENTS.md",
+      "rules/product/README.md",
+      // templates e skill duplicado removidos (#91, #92)
+      "templates/engineering/swagger-template.md",
+      "templates/engineering/CONTACTS-template.md",
+      "templates/cdd-aplicado-a-prompts.md",
+      "skills/product-roadmap-report/rules/detailed-guide.md",
+    ],
+    windsurf: ["workflows/AGENTS.md", "workflows/README.md", "workflows/all-tools.md"],
+    kiro: [
+      "steering/AGENTS.md",
+      "steering/README.md",
+      "steering/all-tools.md",
+      // cópias do Kiro das rules que saíram de rules/ (#83)
+      "steering/eng.bump-rules.md",
+      "steering/eng.docs-scraping-rules.md",
+      "steering/eng.rpa-rules.md",
+    ],
+  };
+  for (const [ide, arquivos] of Object.entries(antigos)) {
+    withJarvisRoot((root, target) => {
+      buildMinimalFramework(root);
+      for (const arquivo of arquivos) write(target, `.${ide}/${arquivo}`, "antigo");
+
+      syncAssets(target, ide, {
+        workflowsFolder: ide === "claude" ? "commands" : ide === "kiro" ? "steering" : "workflows",
+      });
+
+      for (const arquivo of arquivos) {
+        assert.ok(
+          !existsSync(join(target, `.${ide}/${arquivo}`)),
+          `${ide}: ${arquivo} deveria ter sido removido`
+        );
+      }
+      assert.ok(
+        existsSync(join(target, `.${ide}/AGENTS.md`)),
+        `${ide}: AGENTS.md da raiz da IDE deve ficar`
+      );
+      // A limpeza não leva junto a rule que continua no framework (nem a cópia dela no Kiro).
+      assert.ok(existsSync(join(target, `.${ide}/rules/engineering/eng-rules.md`)));
+      if (ide === "kiro") assert.ok(existsSync(join(target, ".kiro/steering/eng-rules.md")));
+    });
+  }
+});
+
+test("isExcludedFromSync: só documentação de pasta fica de fora; componentes e conteúdo passam", () => {
+  const fora = [
+    ["workflows", "AGENTS.md"],
+    ["workflows", "README.md"],
+    ["workflows", "product/README.md"], // aninhado: o flatten faria colidir com o da raiz
+    ["skills", "AGENTS.md"],
+    ["skills", "SKILLS-ROADMAP.md"],
+    ["skills", "jarvis-docs-central/README.md"],
+    ["agents", "AGENTS.md"],
+    ["agents", "README.md"],
+  ];
+  const dentro = [
+    ["workflows", ""], // a própria pasta
+    ["workflows", "warm-up.md"],
+    ["workflows", "taxonomy.md"],
+    ["workflows", "engineering/eng.start.md"],
+    ["skills", ""],
+    ["skills", "eng-backend/SKILL.md"],
+    ["skills", "eng-backend/references/README.md"], // conteúdo da skill, não documentação de pasta
+    ["skills", "eng-backend/assets/template.md"],
+    ["agents", "eng.agent.md"], // agent direto na raiz de agents/ é componente
+    ["agents", "engineering/eng.agent.md"],
+    ["agents", "engineering/README.md"], // só os da raiz de agents/ saem
+    ["templates", "AGENTS.md"], // fora do escopo da #89 (follow-up na #83)
+    ["rules", "engineering/eng-rules.md"],
+  ];
+  for (const [dir, rel] of fora) assert.equal(isExcludedFromSync(dir, rel), true, `${dir}/${rel}`);
+  for (const [dir, rel] of dentro)
+    assert.equal(isExcludedFromSync(dir, rel), false, `${dir}/${rel}`);
 });
 
 // OBSOLETE_PATHS guarda os workflows pelo caminho do framework (workflows/engineering/...),
@@ -524,5 +703,332 @@ test("overlay: segundo sync com o mesmo perfil mantém a rule só do overlay sem
       JSON.stringify(again.copied)
     );
     assert.ok(again.copied.includes("(overlay) rules/so-da-acme.md"));
+  });
+});
+
+// ---------------------------------------------------------------------------
+// syncRulesForProfile: Passo 8 do /jarvis-init pelo CLI (#102)
+// ---------------------------------------------------------------------------
+
+const AT = (hub, pos, area, squad, style) =>
+  `> **Applies to:** HUB: ${hub} | POSITION: ${pos} | AREA: ${area} | SQUAD: ${squad}` +
+  (style ? ` | ARTIFACT_STYLE: ${style}` : "");
+const BACKEND = { HUB: "BACKEND", POSITION: "SENIOR", AREA: "ENGINEERING", SQUAD: "CORE" };
+
+/** Core com uma rule de cada caso e a pasta da IDE com o ENV.md (sem COMPANY_PROFILE → default). */
+function buildRulesFixture(root, target, envExtra = "") {
+  write(root, "rules/engineering/eng-rules.md", `${AT("all", "all", "all", "all")}\n# eng\n`);
+  write(
+    root,
+    "rules/engineering/frontend/x.md",
+    `${AT("FRONTEND", "all", "ENGINEERING", "all")}\n`
+  );
+  write(root, "rules/product/y.md", `${AT("all", "all", "PRODUCT", "all")}\n`);
+  write(root, "rules/universal.md", "# sem bloco\n");
+  write(root, "rules/rtk-rules.md", `${AT("all", "all", "all", "all")}\n# rtk\n`);
+  write(
+    root,
+    "rules/artifact-style-rules.md",
+    `${AT("all", "all", "all", "all", "human-generated")}\n`
+  );
+  write(
+    root,
+    "rules-on-demand/engineering/eng.plan-rules.md",
+    `${AT("all", "all", "ENGINEERING", "all")}\n`
+  );
+  write(
+    root,
+    "rules-on-demand/product/prod.guided-rules.md",
+    `${AT("all", "all", "PRODUCT", "all")}\n`
+  );
+  write(target, ".claude/ENV.md", `HUB=BACKEND\nCOMPANY_PROFILE=acme\n${envExtra}`);
+  return join(target, ".claude");
+}
+
+const ideFiles = (ideDir, dir) => {
+  const base = join(ideDir, dir);
+  if (!existsSync(base)) return [];
+  const out = [];
+  const walk = (d) => {
+    for (const e of readdirSync(d, { withFileTypes: true })) {
+      const f = join(d, e.name);
+      if (e.isDirectory()) walk(f);
+      else if (e.name.endsWith(".md")) out.push(relative(base, f).split(sep).join("/"));
+    }
+  };
+  walk(base);
+  return out.sort();
+};
+
+test("syncRulesForProfile: perfil BACKEND recebe a que bate e a universal, não a de FRONTEND nem a de PRODUCT (a)", () => {
+  withJarvisRoot((root, target) => {
+    const ideDir = buildRulesFixture(root, target);
+    const r = syncRulesForProfile(ideDir, BACKEND, { frameworkRoot: root });
+    assert.deepEqual(ideFiles(ideDir, "rules"), ["engineering/eng-rules.md", "universal.md"]);
+    assert.equal(r.universal, 1);
+    assert.equal(r.copied.rules, 2);
+  });
+});
+
+test("syncRulesForProfile: rtk-rules.md só com rtkEnabled (b)", () => {
+  withJarvisRoot((root, target) => {
+    const ideDir = buildRulesFixture(root, target);
+    syncRulesForProfile(ideDir, BACKEND, { frameworkRoot: root, rtkEnabled: true });
+    assert.ok(ideFiles(ideDir, "rules").includes("rtk-rules.md"));
+    syncRulesForProfile(ideDir, BACKEND, { frameworkRoot: root, rtkEnabled: false });
+    assert.ok(!ideFiles(ideDir, "rules").includes("rtk-rules.md"));
+  });
+});
+
+test("syncRulesForProfile: artifact-style só para ARTIFACT_STYLE=human-generated (c)", () => {
+  withJarvisRoot((root, target) => {
+    const ideDir = buildRulesFixture(root, target);
+    syncRulesForProfile(
+      ideDir,
+      { ...BACKEND, ARTIFACT_STYLE: "human-generated" },
+      { frameworkRoot: root }
+    );
+    assert.ok(ideFiles(ideDir, "rules").includes("artifact-style-rules.md"));
+    syncRulesForProfile(
+      ideDir,
+      { ...BACKEND, ARTIFACT_STYLE: "ai-generated" },
+      { frameworkRoot: root }
+    );
+    assert.ok(!ideFiles(ideDir, "rules").includes("artifact-style-rules.md"));
+  });
+});
+
+test("syncRulesForProfile: rule que deixou de bater sai; a que passou a bater é copiada (d)", () => {
+  withJarvisRoot((root, target) => {
+    const ideDir = buildRulesFixture(root, target);
+    write(ideDir, "rules/engineering/frontend/x.md", "cópia antiga");
+    const r = syncRulesForProfile(ideDir, BACKEND, { frameworkRoot: root });
+    assert.ok(!existsSync(join(ideDir, "rules/engineering/frontend/x.md")));
+    assert.equal(r.removed, 1);
+    syncRulesForProfile(ideDir, { ...BACKEND, HUB: "FRONTEND" }, { frameworkRoot: root });
+    assert.ok(existsSync(join(ideDir, "rules/engineering/frontend/x.md")));
+  });
+});
+
+test("syncRulesForProfile: overlay com o mesmo caminho vale pelo Applies to dele, marcado; se não bate, sai (e)", () => {
+  withJarvisRoot((root, target) => {
+    const ideDir = buildRulesFixture(root, target);
+    // O core manda a eng-rules para todos; o overlay acme só para FRONTEND.
+    write(
+      ideDir,
+      "overlays/acme/rules/engineering/eng-rules.md",
+      `${AT("FRONTEND", "all", "all", "all")}\n# acme\n`
+    );
+    const r = syncRulesForProfile(ideDir, BACKEND, { frameworkRoot: root });
+    assert.ok(!existsSync(join(ideDir, "rules/engineering/eng-rules.md")));
+    assert.equal(r.fromOverlay, 0);
+    const r2 = syncRulesForProfile(
+      ideDir,
+      { ...BACKEND, HUB: "FRONTEND" },
+      { frameworkRoot: root }
+    );
+    const copia = readFileSync(join(ideDir, "rules/engineering/eng-rules.md"), "utf-8");
+    assert.equal(readOverlayMarker(copia), "acme");
+    assert.match(copia, /# acme/);
+    assert.equal(r2.fromOverlay, 1);
+  });
+});
+
+test("syncRulesForProfile: rule própria da pessoa (fora do core e do overlay) fica intacta (f)", () => {
+  withJarvisRoot((root, target) => {
+    const ideDir = buildRulesFixture(root, target);
+    write(ideDir, "rules/minha-rule.md", `${AT("FRONTEND", "all", "all", "all")}\nminha\n`);
+    syncRulesForProfile(ideDir, BACKEND, { frameworkRoot: root });
+    assert.equal(
+      readFileSync(join(ideDir, "rules/minha-rule.md"), "utf-8"),
+      `${AT("FRONTEND", "all", "all", "all")}\nminha\n`
+    );
+  });
+});
+
+test("syncRulesForProfile: rules-on-demand/ é filtrada igual (g)", () => {
+  withJarvisRoot((root, target) => {
+    const ideDir = buildRulesFixture(root, target);
+    write(ideDir, "rules-on-demand/product/prod.guided-rules.md", "antiga");
+    const r = syncRulesForProfile(ideDir, BACKEND, { frameworkRoot: root });
+    assert.deepEqual(ideFiles(ideDir, "rules-on-demand"), ["engineering/eng.plan-rules.md"]);
+    assert.equal(r.copied["rules-on-demand"], 1);
+  });
+});
+
+test("syncRulesForProfile: overlays/ fica intacto, conferido por hash; a pasta do perfil é criada se faltar (h)", () => {
+  withJarvisRoot((root, target) => {
+    const ideDir = buildRulesFixture(root, target);
+    const semPasta = syncRulesForProfile(ideDir, BACKEND, { frameworkRoot: root });
+    assert.equal(semPasta.folderCreated, true);
+    write(
+      ideDir,
+      "overlays/acme/rules/engineering/eng-rules.md",
+      `${AT("all", "all", "all", "all")}\n# acme\n`
+    );
+    const hash = () => {
+      const h = createHash("sha256");
+      for (const f of ideFiles(ideDir, "overlays"))
+        h.update(f + readFileSync(join(ideDir, "overlays", f)));
+      return h.digest("hex");
+    };
+    const antes = hash();
+    const r = syncRulesForProfile(ideDir, BACKEND, { frameworkRoot: root });
+    assert.equal(hash(), antes);
+    assert.equal(r.folderCreated, false);
+  });
+});
+
+test("syncRulesForProfile: com o rules/ real e sem overlay, o resultado é o de listRulesForProfile nos 4 perfis do BASE", () => {
+  const repo = join(dirname(fileURLToPath(import.meta.url)), "..");
+  const perfis = [
+    { HUB: "FULLCYCLE", POSITION: "GENERALIST", AREA: "ENGINEERING", SQUAD: "CORE" },
+    BACKEND,
+    { HUB: "FRONTEND", POSITION: "PLENO", AREA: "ENGINEERING", SQUAD: "CORE" },
+    { HUB: "QA", POSITION: "QA-ENGINEER", AREA: "ENGINEERING", SQUAD: "CORE" },
+  ];
+  for (const perfil of perfis) {
+    const target = mkdtempSync(join(tmpdir(), "jarvis-rules-equiv-"));
+    try {
+      const ideDir = join(target, ".claude");
+      mkdirSync(join(ideDir, "overlays", "stark-industries"), { recursive: true });
+      writeFileSync(join(ideDir, "ENV.md"), "HUB=X\n");
+      syncRulesForProfile(ideDir, perfil, { frameworkRoot: repo });
+      for (const dir of ["rules", "rules-on-demand"]) {
+        const esperado = listRulesForProfile(join(repo, dir), perfil)
+          .map((r) => r.path)
+          .sort();
+        assert.deepEqual(ideFiles(ideDir, dir), esperado, `${perfil.HUB}: ${dir}/`);
+      }
+    } finally {
+      rmSync(target, { recursive: true, force: true });
+    }
+  }
+});
+
+test("syncRulesForProfile: com dryRun não grava nem apaga, e conta o que faria", () => {
+  withJarvisRoot((root, target) => {
+    const ideDir = buildRulesFixture(root, target);
+    write(ideDir, "rules/engineering/frontend/x.md", "cópia antiga");
+    const r = syncRulesForProfile(ideDir, BACKEND, { frameworkRoot: root, dryRun: true });
+    assert.deepEqual(ideFiles(ideDir, "rules"), ["engineering/frontend/x.md"]);
+    assert.ok(!existsSync(join(ideDir, "overlays", "acme")));
+    assert.equal(r.removed, 1);
+    assert.equal(r.copied.rules, 2);
+  });
+});
+
+test("syncRulesForProfile: envText vale no lugar do ENV.md do disco; COMPANY_PROFILE inválido vira aviso e o default", () => {
+  withJarvisRoot((root, target) => {
+    const ideDir = buildRulesFixture(root, target);
+    const globex = syncRulesForProfile(ideDir, BACKEND, {
+      frameworkRoot: root,
+      envText: "COMPANY_PROFILE=globex\n",
+    });
+    assert.equal(globex.companyProfile, "globex");
+    assert.ok(existsSync(join(ideDir, "overlays", "globex")));
+    const invalido = syncRulesForProfile(ideDir, BACKEND, {
+      frameworkRoot: root,
+      envText: "COMPANY_PROFILE=../x\n",
+    });
+    assert.equal(invalido.companyProfile, "stark-industries");
+    assert.ok(invalido.warnings.length > 0);
+  });
+});
+
+test("syncRulesForProfile: falha ao gravar uma rule vai para errors e as outras seguem", () => {
+  withJarvisRoot((root, target) => {
+    const ideDir = buildRulesFixture(root, target);
+    // Uma pasta no lugar do arquivo de destino faz a cópia falhar.
+    mkdirSync(join(ideDir, "rules", "engineering", "eng-rules.md"), { recursive: true });
+    const r = syncRulesForProfile(ideDir, BACKEND, { frameworkRoot: root });
+    assert.equal(r.errors.length, 1);
+    assert.match(r.errors[0], /^rules\/engineering\/eng-rules\.md: /);
+    assert.ok(existsSync(join(ideDir, "rules", "universal.md")));
+  });
+});
+
+test("syncAssets (kiro): upgrade sobre instalação existente não solta skill-*.md em steering/ (#83)", () => {
+  withJarvisRoot((root, target) => {
+    buildMinimalFramework(root);
+    write(
+      root,
+      "skills/bloco-skill/SKILL.md",
+      [
+        "---",
+        "name: bloco-skill",
+        "description: >",
+        "  Atende a Zona Norte",
+        "  e a Sul.",
+        "---",
+        "# corpo",
+      ].join("\n")
+    );
+    const opts = { workflowsFolder: "steering" };
+    syncAssets(target, "kiro", opts);
+    // Instalação afetada por upgrades antigos: um solto com par e um arquivo da pessoa sem par.
+    write(target, ".kiro/steering/skill-test-skill.md", "solto antigo");
+    write(target, ".kiro/steering/skill-meu.md", "da pessoa");
+    syncAssets(target, "kiro", opts);
+
+    const steering = join(target, ".kiro/steering");
+    const soltos = readdirSync(steering).filter((n) => n.startsWith("skill-"));
+    assert.deepEqual(soltos, ["skill-meu.md"], "só fica o arquivo sem par em steering/skills/");
+    assert.ok(existsSync(join(steering, "skills/skill-test-skill.md")));
+    assert.ok(existsSync(join(steering, "skills/skill-bloco-skill.md")));
+    // A description em bloco passa inteira, sem cortar na letra "Z".
+    assert.match(
+      readFileSync(join(steering, "skills/skill-bloco-skill.md"), "utf-8"),
+      /^description: "Atende a Zona Norte e a Sul\."$/m
+    );
+  });
+});
+
+test("syncRulesForProfile (kiro): o steering acompanha o filtro de rules (#83)", () => {
+  withJarvisRoot((root, target) => {
+    buildRulesFixture(root, target);
+    const kiroDir = join(target, ".kiro");
+    write(target, ".kiro/ENV.md", "HUB=BACKEND\n");
+    // Instalação com o steering de todas as rules (o que o transformKiroAssets gera) e um workflow.
+    for (const n of ["eng-rules.md", "x.md", "y.md", "universal.md", "rtk-rules.md"])
+      write(target, `.kiro/steering/${n}`, "antigo");
+    write(target, ".kiro/steering/eng.start.md", "workflow");
+
+    syncRulesForProfile(kiroDir, BACKEND, { frameworkRoot: root });
+
+    const steering = readdirSync(join(kiroDir, "steering")).filter((n) => n.endsWith(".md"));
+    assert.deepEqual(steering.sort(), ["eng-rules.md", "eng.start.md", "universal.md"]);
+    // A rule que fica tem o steering regravado a partir da rule (não o arquivo antigo).
+    assert.match(
+      readFileSync(join(kiroDir, "steering/eng-rules.md"), "utf-8"),
+      /^inclusion: auto$/m
+    );
+    assert.equal(readFileSync(join(kiroDir, "steering/eng.start.md"), "utf-8"), "workflow");
+  });
+});
+
+test("syncAssets (claude): workflows/skills/ é achatada como as outras subpastas (#83)", () => {
+  withJarvisRoot((root, target) => {
+    buildMinimalFramework(root);
+    write(root, "workflows/skills/x.md", "# x");
+    syncAssets(target, "claude", { workflowsFolder: "commands" });
+    assert.ok(existsSync(join(target, ".claude/commands/x.md")));
+    assert.ok(!existsSync(join(target, ".claude/commands/skills")));
+  });
+});
+
+test("syncRulesForProfile (kiro): rule com HUB vira fileMatch e o README do steering fica (#83)", () => {
+  withJarvisRoot((root, target) => {
+    buildRulesFixture(root, target);
+    const kiroDir = join(target, ".kiro");
+    write(target, ".kiro/ENV.md", "HUB=FRONTEND\n");
+    write(target, ".kiro/steering/README.md", "índice");
+    const FRONTEND = { ...BACKEND, HUB: "FRONTEND" };
+
+    syncRulesForProfile(kiroDir, FRONTEND, { frameworkRoot: root });
+
+    // x.md (HUB: FRONTEND) fica e vira fileMatch; README/AGENTS do steering não são tocados.
+    assert.match(readFileSync(join(kiroDir, "steering/x.md"), "utf-8"), /^inclusion: fileMatch$/m);
+    assert.equal(readFileSync(join(kiroDir, "steering/README.md"), "utf-8"), "índice");
   });
 });

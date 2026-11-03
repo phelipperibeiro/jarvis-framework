@@ -2,6 +2,19 @@
 
 > Parte do skill `eng-backend-nestjs`. Leia este arquivo quando a tarefa envolver testes unitários, de integração ou e2e.
 
+### Antes de escrever testes
+
+```bash
+# Verificar schematics disponíveis no projeto
+find . -name "*.schematic.json" -o -name "collection.json" 2>/dev/null | head -5
+
+# Verificar se há templates de teste na CLI configurada
+cat nest-cli.json | grep -i "schematic\|collection"
+
+# Verificar se há arquivos *.spec.ts de referência para o padrão do projeto
+find src -name "*.spec.ts" | head -5
+```
+
 ### Testes
 
 > **Obrigatório**: Antes de escrever qualquer teste, verificar se existe schematic ou modelo no projeto (ver Padrão 5).

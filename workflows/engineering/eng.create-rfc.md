@@ -1,8 +1,6 @@
 ---
 description: Fluxo de trabalho de Engenharia para criação/iteração de RFC seguindo o RFC-Playbook
 recommended_model: claude-sonnet-4-20250514
-model_tier: high
-model_justification: RFCs requerem análise de decisões técnicas complexas, trade-offs e governança de arquitetura
 ---
 
 # Workflow de Engenharia – RFC (Request for Comments)
@@ -23,7 +21,7 @@ Este workflow existe para garantir:
 
 Além disso, quando houver campo `Versão` no RFC, aplicar obrigatoriamente:
 
-- `$IDE/rules/engineering/eng.bump-rules.md`
+- `$IDE/rules-on-demand/engineering/eng.bump-rules.md`
 
 ### Skills invocados durante o workflow
 
@@ -72,7 +70,7 @@ Além disso, quando houver campo `Versão` no RFC, aplicar obrigatoriamente:
 
 Aplicar **SemVer (x.y.z)** no campo `Versão` do RFC, seguindo obrigatoriamente:
 
-- `$IDE/rules/engineering/eng.bump-rules.md`
+- `$IDE/rules-on-demand/engineering/eng.bump-rules.md`
 
 Regras:
 

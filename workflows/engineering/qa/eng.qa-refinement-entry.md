@@ -2,8 +2,6 @@
 description: Analisa spec/PRD/FRD de uma feature e gera estratégia de testes com critérios de aceite e mapeamento de cenários de risco
 auto_execution_mode: 2
 agent: "$IDE/agents/engineering/qa/eng.qa.test-planner.md"
-model_tier: high
-model_justification: Análise de requisitos e geração de estratégia de testes exige raciocínio profundo
 ---
 
 # qa.refinement-entry

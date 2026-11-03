@@ -1,16 +1,15 @@
 ---
 name: prod.spec.breakdown
-description: Quebra uma especificação de produto grande (Documento de Requisitos de Produto ou Documento de Requisitos Funcionais) em fatias gerenciáveis — versões, épicos e histórias — sem perder o objetivo de valor.
+description: Quebra um PRD ou FRD (Documento de Requisitos de Produto ou Funcionais) grande em versões, épicos e histórias, sem perder o objetivo de valor.
 auto_execution_mode: 3
-env_file: "@/ENV.md"
 recommended_model: opus
-model_tier: high
-model_justification: Breakdown de produto exige julgamento de valor, sequenciamento e decomposição em entregas incrementais
 ---
 
 # Quebra de especificação (breakdown)
 
 > 🎓 **Modo de condução**: leia `PROD_MODE` no `$IDE/ENV.md`. Se for `developer-guided`, **antes de começar leia `$IDE/rules-on-demand/product/prod.guided-rules.md` e siga-o** em toda a conversa. Vazio ou `product-led`: siga este fluxo como está.
+>
+> 📋 **Princípios e busca de contexto**: antes de começar, leia `$IDE/rules-on-demand/product/prod.spec-common-rules.md` e siga-a.
 >
 > 🤖 **Modelo**: se a IDE informar o modelo desta sessão e ele for de outra família que o `recommended_model` do documento (ou do template, se o documento for novo), avise em uma linha e siga, sem bloquear e sem repetir. Sem essa informação, não avise.
 
@@ -64,13 +63,7 @@ Utilize o `$ARGUMENTS` como ponto de partida (caminho da spec, nome da feature o
 
 O artefato de breakdown segue o template `$PROD_TEMPLATES/prod-breakdown-template.md`.
 
-## Busca de contexto (`$PROD_DOCS` sempre; Central docs se configurado)
-
-O Documento de Requisitos de Produto / funcional vem sempre de `$PROD_DOCS`. Se `CENTRAL_DOCS_STORAGE` estiver no `ENV.md`, além disso:
-
-1. `jarvis docs sync --silent` (best-effort)
-2. Localizar no Central docs as funcionalidades já implementadas relacionadas (nome, tags, `TASK_MANAGER_KEY`); o Documento de Requisitos de Produto / funcional vem de `$PROD_DOCS`
-3. Usar como contexto; se não achar, seguir com arquivos locais em `$PROD_DOCS`
+**Busca de contexto:** ver `$IDE/rules-on-demand/product/prod.spec-common-rules.md`. Aqui, em modo best-effort, localiza em `$PROD_DOCS` o **PRD/FRD pai** (nome, tags, `TASK_MANAGER_KEY`) e, com o Central docs configurado, as funcionalidades já implementadas relacionadas; usa como contexto e, se não achar, segue com os arquivos locais (sem perguntar).
 
 ## Sessões
 

@@ -184,4 +184,5 @@ Quando o usuário pedir explicitamente outro formato ou nível de detalhe para u
 - `prod-rules.md`: regras gerais de produto (ambiente, comandos, nomes de arquivos, status e perguntas ao usuário)
 - `../../templates/product/`: templates dos documentos
 - `../../workflows/product/`: os comandos `prod.spec.*`
+- `../../rules-on-demand/product/prod.spec-common-rules.md`: princípios, busca de contexto e Central docs dos comandos `prod.spec.*` (lida pelo próprio comando)
 - `prod.spec.discovery.md` (workflow) e `prod-discovery-template.md`: o comando e o formato do discovery, o rascunho que os comandos acima podem usar como insumo

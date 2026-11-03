@@ -39,7 +39,9 @@ test("caminhos $IDE/... citados no framework existem (inclusive em blocos de có
   for (const folder of folders) {
     for (const file of walk(join(root, folder))) {
       const text = readFileSync(file, "utf8");
-      for (const m of text.matchAll(/\$IDE\/((?:skills|templates|workflows|rules|rules-on-demand|agents)\/[^\s`'")\]|,;]+)/g)) {
+      for (const m of text.matchAll(
+        /\$IDE\/((?:skills|templates|workflows|rules|rules-on-demand|agents)\/[^\s`'")\]|,;]+)/g
+      )) {
         // Pontuação e negrito colados no fim (`**$IDE/x.md**`) não fazem parte do caminho.
         const path = m[1].replace(/[.:*]+$/, "");
         if (isPlaceholder(path)) continue;
@@ -65,6 +67,26 @@ test("links relativos de skills, templates e workflows existem", () => {
   assert.deepEqual(broken, [], `links quebrados:\n${broken.join("\n")}`);
 });
 
+// Os roteadores (SKILL.md) citam references/ entre crases, sem $IDE nem link markdown. Aceita `./` antes
+// e subpastas; caminho colado a outro (skills/x/references/…) é de outro skill e fica de fora. Nomes com
+// chaves ({a|b}) são exemplos e não casam.
+test("references/….md citados em cada SKILL.md existem na pasta do skill", () => {
+  const broken = [];
+  let checked = 0;
+  for (const name of readdirSync(join(root, "skills"))) {
+    const file = join(root, "skills", name, "SKILL.md");
+    if (!existsSync(file)) continue;
+    const text = readFileSync(file, "utf8");
+    for (const m of text.matchAll(/(?<![\w/.-])(?:\.\/)?references\/(?:[\w.-]+\/)*[\w.-]+\.md/g)) {
+      checked++;
+      if (!existsSync(join(root, "skills", name, m[0])))
+        broken.push(`skills/${name}/SKILL.md: ${m[0]}`);
+    }
+  }
+  assert.ok(checked > 0, "nenhuma citação de references/ encontrada: a regex parou de casar?");
+  assert.deepEqual(broken, [], `references quebradas:\n${broken.join("\n")}`);
+});
+
 test("todo skill tem metadata.area reconhecida (eng.skills-rules.md)", () => {
   const rule = readFileSync(join(root, "rules", "engineering", "eng.skills-rules.md"), "utf8");
   const line = rule.match(/\*\*Áreas reconhecidas:\*\*(.+)/);
@@ -86,9 +108,12 @@ test("todo skill tem metadata.area reconhecida (eng.skills-rules.md)", () => {
 });
 
 // O Central docs trocou CENTRAL_DOCS_REPO por CENTRAL_DOCS_STORAGE + CENTRAL_DOCS_LOCATION.
-// Só a migração do /jarvis-init ainda cita a variável antiga (#193).
+// Só a migração do /jarvis-init (Upgrade C, assets/upgrade.md) cita a variável antiga (#193).
 test("o framework não cita CENTRAL_DOCS_REPO fora da migração do jarvis-init", () => {
-  const allowed = [join("skills", "jarvis-init", "SKILL.md")];
+  const allowed = [
+    join("skills", "jarvis-init", "SKILL.md"),
+    join("skills", "jarvis-init", "assets", "upgrade.md"),
+  ];
   const folders = ["skills", "templates", "workflows", "rules", "rules-on-demand", "agents"];
   const found = folders
     .flatMap((folder) => walk(join(root, folder)))
