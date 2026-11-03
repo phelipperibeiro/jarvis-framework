@@ -1097,6 +1097,9 @@ test("init --upgrade: eixo com o exemplo [..] do template não filtra e vira pen
   );
 });
 
+// Limite conhecido: o código de saída 1 do CLI (upgrade e reinstalação) com erro do filtro não tem
+// teste isolado. No único caso que faz o filtro falhar (destino não gravável), o syncAssets aplica o
+// mesmo overlay e falha antes; aqui fica provado que o filtro devolve o erro.
 test("filterRulesByEnv: devolve o erro de gravação para o código de saída (#83)", () => {
   withWorkspace(
     {

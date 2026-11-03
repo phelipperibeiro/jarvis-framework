@@ -111,3 +111,8 @@ test("readDescription: CRLF, valor vazio e description aninhada (#83)", () => {
   assert.equal(readDescription('description: ""'), "");
   assert.equal(readDescription("name: x\nmetadata:\n  description: aninhada"), "");
 });
+
+test("readDescription: uma aspa sozinha continua como está (#83)", () => {
+  assert.equal(readDescription('description: "'), '"');
+  assert.equal(readDescription("description: '"), "'");
+});

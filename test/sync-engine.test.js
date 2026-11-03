@@ -1016,3 +1016,19 @@ test("syncAssets (claude): workflows/skills/ é achatada como as outras subpasta
     assert.ok(!existsSync(join(target, ".claude/commands/skills")));
   });
 });
+
+test("syncRulesForProfile (kiro): rule com HUB vira fileMatch e o README do steering fica (#83)", () => {
+  withJarvisRoot((root, target) => {
+    buildRulesFixture(root, target);
+    const kiroDir = join(target, ".kiro");
+    write(target, ".kiro/ENV.md", "HUB=FRONTEND\n");
+    write(target, ".kiro/steering/README.md", "índice");
+    const FRONTEND = { ...BACKEND, HUB: "FRONTEND" };
+
+    syncRulesForProfile(kiroDir, FRONTEND, { frameworkRoot: root });
+
+    // x.md (HUB: FRONTEND) fica e vira fileMatch; README/AGENTS do steering não são tocados.
+    assert.match(readFileSync(join(kiroDir, "steering/x.md"), "utf-8"), /^inclusion: fileMatch$/m);
+    assert.equal(readFileSync(join(kiroDir, "steering/README.md"), "utf-8"), "índice");
+  });
+});
