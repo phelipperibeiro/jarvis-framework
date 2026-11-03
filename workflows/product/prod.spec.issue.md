@@ -9,6 +9,8 @@ recommended_model: opus
 
 > 🎓 **Modo de condução**: leia `PROD_MODE` no `$IDE/ENV.md`. Se for `developer-guided`, **antes de começar leia `$IDE/rules-on-demand/product/prod.guided-rules.md` e siga-o** em toda a conversa. Vazio ou `product-led`: siga este fluxo como está.
 >
+> 📋 **Princípios e busca de contexto**: antes de começar, leia `$IDE/rules-on-demand/product/prod.spec-common-rules.md` e siga-a.
+>
 > 🤖 **Modelo**: se a IDE informar o modelo desta sessão e ele for de outra família que o `recommended_model` do documento (ou do template, se o documento for novo), avise em uma linha e siga, sem bloquear e sem repetir. Sem essa informação, não avise.
 
 Antes de iniciar, revise o arquivo de regras invioláveis em `$PROD_RULES/**/*.*`.

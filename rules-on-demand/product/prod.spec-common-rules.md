@@ -8,7 +8,7 @@ Princípios, busca de contexto e lugar dos documentos que valem para todos os co
 
 ## Escopo
 
-Lida pelo próprio comando, antes de começar: `prod.spec.prd`, `prod.spec.frd`, `prod.spec.epic` e `prod.spec.breakdown`.
+Lida pelo próprio comando, antes de começar: `prod.spec.prd`, `prod.spec.frd`, `prod.spec.epic`, `prod.spec.issue` e `prod.spec.breakdown`.
 
 ## Regras
 
