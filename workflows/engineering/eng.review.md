@@ -1,6 +1,6 @@
 ---
 description: Fluxo de trabalho de Engenharia para revisão de solução ou PR
-recommended_model: claude-sonnet-4-20250514
+recommended_model: claude-sonnet-5
 ---
 
 # Workflow de Engenharia – Revisão de Solução / Pull Request

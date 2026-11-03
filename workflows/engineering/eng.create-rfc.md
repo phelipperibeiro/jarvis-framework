@@ -1,6 +1,6 @@
 ---
 description: Fluxo de trabalho de Engenharia para criação/iteração de RFC seguindo o RFC-Playbook
-recommended_model: claude-sonnet-4-20250514
+recommended_model: claude-sonnet-5
 ---
 
 # Workflow de Engenharia – RFC (Request for Comments)

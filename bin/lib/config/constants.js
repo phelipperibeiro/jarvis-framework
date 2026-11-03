@@ -222,7 +222,7 @@ export const OPENCODE_MODEL_MAP = Object.freeze({
   // Anthropic — IDs completos
   "claude-opus-4-6-20250529": "anthropic/claude-opus-4-6",
   "claude-sonnet-4-6-20250514": "anthropic/claude-sonnet-4-6",
-  "claude-sonnet-4-20250514": "anthropic/claude-sonnet-4-6",
+  "claude-sonnet-5": "anthropic/claude-sonnet-4-6",
   "claude-haiku-4-5-20250414": "anthropic/claude-haiku-4-5-20250414",
   // OpenAI
   "gpt-4o": "openai/gpt-4o",

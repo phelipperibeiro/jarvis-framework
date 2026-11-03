@@ -1,7 +1,7 @@
 ---
 description: Planejamento de capacidade QA para uma sprint — avalia risco de cada task e distribui entre QAs e Quality Champions
 auto_execution_mode: 2
-recommended_model: claude-sonnet-4-20250514
+recommended_model: claude-sonnet-5
 ---
 
 # qa.sprint-planning

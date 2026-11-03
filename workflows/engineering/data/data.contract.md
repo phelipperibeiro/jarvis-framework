@@ -3,7 +3,7 @@ description: Guia para criar contrato de dados entre o time de Data e uma squad 
 auto_execution_mode: 2
 agent: "$IDE/agents/engineering/data/eng.data-engineer.agent.md"
 template_file: "$IDE/templates/engineering/data-contract-template.md"
-recommended_model: claude-sonnet-4-20250514
+recommended_model: claude-sonnet-5
 ---
 
 # data.contract

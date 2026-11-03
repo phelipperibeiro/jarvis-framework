@@ -1,6 +1,6 @@
 ---
 description: Fluxo de trabalho de Engenharia para criação/iteração de ARD baseado no código do repositório
-recommended_model: claude-sonnet-4-20250514
+recommended_model: claude-sonnet-5
 ---
 
 # Workflow de Engenharia – ARD a partir do Código (Architecture Requirement Document)

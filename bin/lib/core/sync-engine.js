@@ -538,7 +538,7 @@ function reconcileRtk(ideDir, targetDir, ide, { keepEnvValues = false } = {}) {
 
 /**
  * Resolve o model Jarvis para formato OpenCode (provider/model-id).
- * @param {string} model - Model no formato Jarvis (ex: "opus", "claude-sonnet-4-20250514")
+ * @param {string} model - Model no formato Jarvis (ex: "opus", "claude-sonnet-5")
  * @returns {string} Model no formato OpenCode (ex: "anthropic/claude-opus-4-6")
  */
 function resolveOpenCodeModel(model) {

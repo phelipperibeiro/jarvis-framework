@@ -4,7 +4,7 @@ auto_execution_mode: 3
 agent: "$IDE/agents/engineering/eng.agent.md"
 rules_file: "$IDE/rules-on-demand/engineering/eng.plan-rules.md"
 template_file: "$IDE/templates/engineering/plan-template.md"
-recommended_model: claude-sonnet-4-20250514
+recommended_model: claude-sonnet-5
 ---
 
 # Engineer Plan

@@ -3,7 +3,7 @@ description: Ciclo de vida de um robô RPA — criar novo ou manter existente
 auto_execution_mode: 3
 agent: "$IDE/agents/engineering/eng.rpa.agent.md"
 rules_file: "$IDE/rules-on-demand/engineering/eng.rpa-rules.md"
-recommended_model: claude-sonnet-4-20250514
+recommended_model: claude-sonnet-5
 ---
 
 # eng.rpa.robot

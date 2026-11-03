@@ -3,7 +3,7 @@ description: Guia completo para criar, documentar e validar um novo pipeline de 
 auto_execution_mode: 2
 agent: "$IDE/agents/engineering/data/eng.data-engineer.agent.md"
 template_file: "$IDE/templates/engineering/data-pipeline-template.md"
-recommended_model: claude-sonnet-4-20250514
+recommended_model: claude-sonnet-5
 ---
 
 # data.new-pipeline

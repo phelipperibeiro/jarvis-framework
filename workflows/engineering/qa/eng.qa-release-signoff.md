@@ -1,7 +1,7 @@
 ---
 description: Sign-off QA pré-deploy — verifica cobertura de testes e bugs abertos para a branch, produz decisão GO/NO-GO
 auto_execution_mode: 2
-recommended_model: claude-sonnet-4-20250514
+recommended_model: claude-sonnet-5
 ---
 
 # qa.release-signoff

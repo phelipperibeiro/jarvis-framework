@@ -1,7 +1,7 @@
 ---
 description: Documentação (engenharia)
 auto_execution_mode: 3
-recommended_model: claude-sonnet-4-20250514
+recommended_model: claude-sonnet-5
 ---
 
 # eng.docs

@@ -1,7 +1,7 @@
 ---
 description: Delivery Spec (Tech Spec a partir de um card, épico ou história) ou Reference Spec (especificação técnica de referência)
 auto_execution_mode: 3
-recommended_model: claude-sonnet-4-20250514
+recommended_model: claude-sonnet-5
 rules_file: $IDE/rules-on-demand/engineering/eng.tech-spec-rules.md
 template_file: $IDE/templates/engineering/tech-spec-template.md
 # Reference Spec usa $IDE/templates/engineering/ref-spec-template.md (o scanner lê um template só; ver Passo 3)

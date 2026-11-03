@@ -2,7 +2,7 @@
 description: Revisão de lacunas antes de abrir o PR/MR, com o relatório gate-checklist.md na sessão
 auto_execution_mode: 3
 rules_file: "$IDE/rules-on-demand/engineering/eng.pre-pr-rules.md"
-recommended_model: claude-sonnet-4-20250514
+recommended_model: claude-sonnet-5
 ---
 
 # pre-pr
