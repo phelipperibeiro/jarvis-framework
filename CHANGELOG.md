@@ -6,7 +6,7 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), e o
 
 > Versões anteriores a `2.1.1` não foram documentadas retroativamente neste changelog — o histórico detalhado dessas versões continua disponível via `git log`.
 
-## [Unreleased]
+## [8.5.0] - 2026-11-02
 
 ### Added
 - **`jarvis rules sync [--ide] [--env-file]` (#102)**: o Passo 8 do `/jarvis-init` (filtro de `.{ide}/rules/` e `.{ide}/rules-on-demand/` pelo perfil do `ENV.md`, com o overlay de `COMPANY_PROFILE`) pelo CLI, com o mesmo resumo de antes. Sai com 1, sem gravar nada, sem `ENV.md` numa pasta de IDE (com `--ide`, o `ENV.md` pode vir de fora, mas não da pasta de outra IDE), com eixo do perfil faltando ou com o `jarvis-lock.json` ausente, ilegível ou de outra versão (o da pasta da IDE vale antes do da raiz). Sem o comando, o skill segue a prosa antiga, agora em `skills/jarvis-init/assets/rules-sync-manual.md`.
