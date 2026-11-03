@@ -2,7 +2,7 @@
 
 Lido pelo passo 2 do `SKILL.md` quando o `ENV.md` existe e a opção é C (ou o argumento é `upgrade`).
 
-> No terminal, rode antes `jarvis init --upgrade --ide {ide}`: ele atualiza os arquivos do framework, acrescenta as variáveis novas e move os documentos para as pastas novas (itens 1–7, 9 a 11). Aqui ficam o Central docs antigo (item 8), as pendências que ele listar e o passo das stacks.
+> No terminal, rode antes `jarvis init --upgrade --ide {ide}`: ele atualiza os arquivos do framework, acrescenta as variáveis novas, move os documentos para as pastas novas (itens 1–7, 9 a 11) e, com HUB, POSITION, AREA e SQUAD preenchidos, filtra as rules pelo perfil (com eixo vazio, lista a pendência). Aqui ficam o Central docs antigo (item 8), as pendências que ele listar e o passo das stacks.
 > **O upgrade só acrescenta chaves novas:** nenhuma chave já existente, preenchida ou não, é alterada, salvo as exceções declaradas nos itens 4 e 8 (`CENTRAL_DOCS_LOCATION` e `TOKEN_TASK_MANAGER`, com confirmação; `JARVIS_PROJECT` vazio e as chaves removidas do template, automáticos). Depois, a validação final (passo 9.5) pode reorganizar o arquivo, mover chaves para o assunto delas e corrigir valores fora das opções, sempre perguntando: nenhum valor muda sem a resposta da pessoa.
 > Trocou o `ARTIFACT_STYLE` (ou HUB, POSITION, AREA, SQUAD) à mão? O Passo 8 copia ou remove as rules desse perfil.
 

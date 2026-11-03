@@ -21,7 +21,8 @@ rules/
 │   ├── frontend/
 │   └── qa/                       # ponteiro: o texto está em rules-on-demand/
 └── product/
-    └── prod-rules.md
+    ├── prod-rules.md
+    └── prod.spec-rules.md            # escrita de spec (AREA: PRODUCT)
 
 rules-on-demand/                    # lidas pelo workflow; não carregadas no início da sessão
 ├── engineering/
@@ -90,7 +91,9 @@ Esta seção era antes `rules/AGENTS.md`. Esse arquivo foi removido: era o únic
 2. rules/engineering/eng-rules.md
 3. rules-on-demand/engineering/eng.{comando}-rules.md
 4. rules-on-demand/product/prod.guided-rules.md (só com PROD_MODE=developer-guided)
-5. rules/product/prod-rules.md (mais baixa)
+5. rules-on-demand/product/prod.spec-common-rules.md (lida pelos prod.spec.* que gravam documento)
+6. rules/product/prod.spec-rules.md
+7. rules/product/prod-rules.md (mais baixa)
 ```
 
 Regras mais específicas têm precedência sobre regras gerais.

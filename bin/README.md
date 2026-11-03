@@ -31,7 +31,7 @@ bin/
     │   ├── fetch-file.js       # openStorageFromEnv() + fetchFile() — `docs sync`/`docs fetch`/`docs publish`
     │   ├── publish-file.js     # tipos, resolveDestPath() e publishFile() — `docs publish`
     │   └── storage/            # adaptadores (CENTRAL_DOCS_STORAGE): index.js (fábrica), filesystem.js (pasta + git), build-index.js
-    ├── utils/                 # logger.js, ui.js, paths.js, frontmatter.js, git-parser.js
+    ├── utils/                 # logger.js, ui.js, paths.js, frontmatter.js (inclui readDescription), git-parser.js
     ├── flow-map/              # `jarvis map` — grafo de chamadas entre workflows/skills/agents
     ├── auth/                  # session.js (auth.json legado, hoje só `jarvis logout` o lê)
     └── env-loader.js          # Resolve e lê o ENV.md ($IDE/ENV.md)
