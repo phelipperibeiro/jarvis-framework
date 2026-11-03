@@ -418,6 +418,10 @@ export function syncRulesForProfile(
     errors: overlayResult.errors,
   };
 
+  // No Kiro, a IDE carrega steering/ (cópia de rules/ feita pelo transformKiroAssets): o filtro
+  // mantém o steering de cada rule junto com ela (#83).
+  const kiro = basename(ideDir) === ".kiro";
+
   for (const dir of OVERLAY_RULE_DIRS) {
     out.copied[dir] = 0;
     // caminho relativo (com `sep` do sistema) → arquivo do overlay válido, se houver
@@ -457,9 +461,16 @@ export function syncRulesForProfile(
           out.copied[dir]++;
           if (appliesTo === null) out.universal++;
           if (overlayFile) out.fromOverlay++;
+          if (kiro && dir === "rules" && !dryRun && existsSync(dest))
+            writeKiroRuleSteering(ideDir, dest);
         } else if (existsSync(dest)) {
           if (!dryRun) rmSync(dest, { force: true });
           out.removed++;
+        }
+        if (kiro && dir === "rules" && !dryRun && !existsSync(dest)) {
+          const name = basename(rel);
+          if (name !== "AGENTS.md" && name !== "README.md")
+            rmSync(join(ideDir, "steering", name), { force: true });
         }
       } catch (err) {
         out.errors.push(`${dir}/${rel.split(sep).join("/")}: ${err.message}`);
@@ -720,6 +731,24 @@ function detectRuleHub(content) {
 }
 
 /**
+ * Grava o steering de uma rule do Kiro (`steering/{nome}`), com `inclusion` pelo HUB da rule.
+ * Arquivos de índice (`AGENTS.md`, `README.md`) não viram steering.
+ * @param {string} kiroDir - Pasta `.kiro/`
+ * @param {string} filePath - Rule em `.kiro/rules/`
+ */
+function writeKiroRuleSteering(kiroDir, filePath) {
+  const name = basename(filePath);
+  if (name === "AGENTS.md" || name === "README.md") return;
+  const content = readFileSync(filePath, "utf-8");
+  const hub = detectRuleHub(content);
+  const pattern = hub ? KIRO_HUB_FILE_PATTERNS[hub] : null;
+  const inclusion = pattern ? "fileMatch" : "auto";
+  const steeringDir = join(kiroDir, "steering");
+  mkdirSync(steeringDir, { recursive: true });
+  writeFileSync(join(steeringDir, name), toKiroSteeringFile(content, inclusion, pattern), "utf-8");
+}
+
+/**
  * Transforma os assets copiados para .kiro/ em steering files.
  * 1. Workflows em steering/ → adiciona inclusion: manual
  * 2. Rules em rules/ → copia para steering/ com inclusion: auto ou fileMatch
@@ -749,19 +778,7 @@ function transformKiroAssets(kiroDir, targetDir) {
     const ruleFiles = [];
     collectMdFiles(rulesDir, ruleFiles);
 
-    for (const filePath of ruleFiles) {
-      const name = basename(filePath);
-      // Ignorar arquivos de índice/meta
-      if (name === "AGENTS.md" || name === "README.md") continue;
-
-      const content = readFileSync(filePath, "utf-8");
-      const hub = detectRuleHub(content);
-      const pattern = hub ? KIRO_HUB_FILE_PATTERNS[hub] : null;
-      const inclusion = pattern ? "fileMatch" : "auto";
-      const transformed = toKiroSteeringFile(content, inclusion, pattern);
-
-      writeFileSync(join(steeringDir, name), transformed, "utf-8");
-    }
+    for (const filePath of ruleFiles) writeKiroRuleSteering(kiroDir, filePath);
   }
 
   // 3. Skills — copiar SKILL.md de cada skill para steering/skills/skill-{nome}.md

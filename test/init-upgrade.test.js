@@ -978,3 +978,15 @@ test("init --upgrade: instalação 8.4.0 → estado final de rules/ e rules-on-d
     assert.ok(existsSync(join(ws, ".claude/rules-on-demand/engineering/eng.start-rules.md")));
   });
 });
+
+test("init --upgrade (kiro): o steering fica só com as rules do perfil (#83)", () => {
+  withWorkspace({ ".kiro/ENV.md": ENV_PERFIL.replace("IDE=claude", "IDE=kiro") }, (ws) => {
+    const r = run(ws, "--upgrade", "--ide", "kiro", "--yes");
+    assert.equal(r.status, 0, r.stderr);
+    const steering = join(ws, ".kiro/steering");
+    assert.ok(existsSync(join(steering, "eng-rules.md")));
+    // AREA: PRODUCT e HUB: FRONTEND não são do perfil BACKEND/SENIOR/ENGINEERING.
+    assert.ok(!existsSync(join(steering, "prod.spec-rules.md")));
+    assert.ok(!existsSync(join(steering, "eng.frontend-rules.md")));
+  });
+});

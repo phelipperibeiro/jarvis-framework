@@ -983,3 +983,26 @@ test("syncAssets (kiro): upgrade sobre instalação existente não solta skill-*
     );
   });
 });
+
+test("syncRulesForProfile (kiro): o steering acompanha o filtro de rules (#83)", () => {
+  withJarvisRoot((root, target) => {
+    buildRulesFixture(root, target);
+    const kiroDir = join(target, ".kiro");
+    write(target, ".kiro/ENV.md", "HUB=BACKEND\n");
+    // Instalação com o steering de todas as rules (o que o transformKiroAssets gera) e um workflow.
+    for (const n of ["eng-rules.md", "x.md", "y.md", "universal.md", "rtk-rules.md"])
+      write(target, `.kiro/steering/${n}`, "antigo");
+    write(target, ".kiro/steering/eng.start.md", "workflow");
+
+    syncRulesForProfile(kiroDir, BACKEND, { frameworkRoot: root });
+
+    const steering = readdirSync(join(kiroDir, "steering")).filter((n) => n.endsWith(".md"));
+    assert.deepEqual(steering.sort(), ["eng-rules.md", "eng.start.md", "universal.md"]);
+    // A rule que fica tem o steering regravado a partir da rule (não o arquivo antigo).
+    assert.match(
+      readFileSync(join(kiroDir, "steering/eng-rules.md"), "utf-8"),
+      /^inclusion: auto$/m
+    );
+    assert.equal(readFileSync(join(kiroDir, "steering/eng.start.md"), "utf-8"), "workflow");
+  });
+});
