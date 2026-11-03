@@ -1006,3 +1006,13 @@ test("syncRulesForProfile (kiro): o steering acompanha o filtro de rules (#83)",
     assert.equal(readFileSync(join(kiroDir, "steering/eng.start.md"), "utf-8"), "workflow");
   });
 });
+
+test("syncAssets (claude): workflows/skills/ é achatada como as outras subpastas (#83)", () => {
+  withJarvisRoot((root, target) => {
+    buildMinimalFramework(root);
+    write(root, "workflows/skills/x.md", "# x");
+    syncAssets(target, "claude", { workflowsFolder: "commands" });
+    assert.ok(existsSync(join(target, ".claude/commands/x.md")));
+    assert.ok(!existsSync(join(target, ".claude/commands/skills")));
+  });
+});

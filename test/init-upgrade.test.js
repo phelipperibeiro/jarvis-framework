@@ -17,7 +17,12 @@ import { tmpdir } from "node:os";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawnSync } from "node:child_process";
-import { parseMenuChoice, upgradePendencies, promptCompanyProfile } from "../bin/commands/init.js";
+import {
+  parseMenuChoice,
+  upgradePendencies,
+  promptCompanyProfile,
+  filterRulesByEnv,
+} from "../bin/commands/init.js";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const cli = join(root, "bin", "jarvis.js");
@@ -1032,4 +1037,84 @@ test("init --force: reinstalação com o ENV.md completo filtra as rules como o 
     assert.ok(!existsSync(join(ws, ".claude/rules/product/prod.spec-rules.md")));
     assert.ok(existsSync(join(ws, ".claude/rules/engineering/eng-rules.md")));
   });
+});
+
+const RULE_TODOS =
+  "> **Applies to:** HUB: all | POSITION: all | AREA: all | SQUAD: all\n\n# empresa\n";
+
+test("init --upgrade: falha ao gravar uma rule do overlay sai com 1 e mostra o ✗ (#83)", () => {
+  withWorkspace(
+    {
+      ".claude/ENV.md": ENV_PERFIL,
+      ".claude/overlays/stark-industries/rules/empresa-rules.md": RULE_TODOS,
+    },
+    (ws) => {
+      // Uma pasta no lugar do destino da rule do overlay (o syncAssets e o filtro a aplicam).
+      mkdirSync(join(ws, ".claude/rules/empresa-rules.md"), { recursive: true });
+      const r = run(ws, "--upgrade", "--ide", "claude", "--yes");
+      assert.equal(r.status, 1);
+      assert.match(r.stdout + r.stderr, /✗ .*empresa-rules\.md/);
+    }
+  );
+});
+
+test("init --upgrade: o filtro aplica a rule do overlay do COMPANY_PROFILE (#83)", () => {
+  withWorkspace(
+    {
+      ".claude/ENV.md": ENV_PERFIL,
+      ".claude/overlays/stark-industries/rules/empresa-rules.md": RULE_TODOS,
+    },
+    (ws) => {
+      const r = run(ws, "--upgrade", "--ide", "claude", "--yes");
+      assert.equal(r.status, 0, r.stderr);
+      assert.match(readFileSync(join(ws, ".claude/rules/empresa-rules.md"), "utf-8"), /# empresa/);
+    }
+  );
+});
+
+test("init --upgrade: ARTIFACT_STYLE decide a artifact-style-rules.md (#83)", () => {
+  for (const [estilo, presente] of [
+    ["human-generated", true],
+    ["", false],
+  ]) {
+    withWorkspace({ ".claude/ENV.md": `${ENV_PERFIL}ARTIFACT_STYLE=${estilo}\n` }, (ws) => {
+      const r = run(ws, "--upgrade", "--ide", "claude", "--yes");
+      assert.equal(r.status, 0, r.stderr);
+      assert.equal(existsSync(join(ws, ".claude/rules/artifact-style-rules.md")), presente, estilo);
+    });
+  }
+});
+
+test("init --upgrade: eixo com o exemplo [..] do template não filtra e vira pendência (#83)", () => {
+  withWorkspace(
+    { ".claude/ENV.md": ENV_PERFIL.replace("POSITION=SENIOR", "POSITION=[SENIOR]") },
+    (ws) => {
+      const r = run(ws, "--upgrade", "--ide", "claude", "--yes");
+      assert.equal(r.status, 0, r.stderr);
+      assert.doesNotMatch(r.stdout, /Rules filtradas pelo perfil/);
+      assert.match(r.stdout, /preencher POSITION \(as rules ficam sem o filtro do perfil\)/);
+    }
+  );
+});
+
+test("filterRulesByEnv: devolve o erro de gravação para o código de saída (#83)", () => {
+  withWorkspace(
+    {
+      ".claude/ENV.md": ENV_PERFIL,
+      ".claude/overlays/stark-industries/rules/empresa-rules.md": RULE_TODOS,
+    },
+    (ws) => {
+      mkdirSync(join(ws, ".claude/rules/empresa-rules.md"), { recursive: true });
+      const { rulesSync, missingProfile } = filterRulesByEnv(
+        ws,
+        "claude",
+        join(ws, ".claude/ENV.md")
+      );
+      assert.deepEqual(missingProfile, []);
+      assert.ok(
+        rulesSync.errors.some((e) => /empresa-rules\.md/.test(e)),
+        rulesSync.errors.join("; ")
+      );
+    }
+  );
 });

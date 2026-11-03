@@ -104,3 +104,10 @@ test("readDescription: indicadores de bloco e aspas escapadas (#83)", () => {
   assert.equal(readDescription("description: |-\n  x"), "x");
   assert.equal(readDescription('description: "diz \\"oi\\""'), 'diz "oi"');
 });
+
+test("readDescription: CRLF, valor vazio e description aninhada (#83)", () => {
+  assert.equal(readDescription("name: x\r\ndescription: Com CRLF\r\nversion: 1\r"), "Com CRLF");
+  assert.equal(readDescription("description: >\r\n  a\r\n  b\r\nlicense: MIT\r"), "a b");
+  assert.equal(readDescription('description: ""'), "");
+  assert.equal(readDescription("name: x\nmetadata:\n  description: aninhada"), "");
+});
