@@ -254,12 +254,15 @@ test("listRulesForProfile: rtk é opt-in, sem bloco é universal, recursivo em s
 // #118 ficou sem objeto (a data-rules.md saiu na #209).
 // Issue #121 (#208, fase 2, 2026-11-02): eng.specializations-rules.md perdeu a citação de
 // skills/security-skills-deleted.md, que não existe. −41 B nos 4 perfis; nenhum arquivo a menos.
+// Issue #83 (lacunas do pré-PR, 2026-11-02): as 3 seções do #105/#139 saem de prod.spec-rules.md
+// (AREA: PRODUCT) para rules-on-demand/product/prod.spec-common-rules.md (AREA: all), lida pelos 4
+// workflows, e a rule ganha a linha que aponta para ela. Só FULLCYCLE/GENERALIST muda: −1.360 B.
 const BASE = [
   [
     "FULLCYCLE/GENERALIST/ENGINEERING/CORE",
     profile("FULLCYCLE", "GENERALIST", "ENGINEERING"),
     10,
-    67789,
+    66429,
   ],
   ["BACKEND/SENIOR/ENGINEERING/CORE", profile("BACKEND", "SENIOR", "ENGINEERING"), 7, 46945],
   ["FRONTEND/PLENO/ENGINEERING/CORE", profile("FRONTEND", "PLENO", "ENGINEERING"), 8, 55244],
@@ -308,4 +311,37 @@ test("rules reais: a rule Cypress inteira está em rules-on-demand/ e o ponteiro
     readFileSync(join(root, "rules", caminho), "utf8"),
     /\$IDE\/rules-on-demand\/engineering\/qa\/eng\.qa\.cypress-standards-rules\.md/
   );
+});
+
+test("rules reais: prod.spec-common-rules.md em rules-on-demand/ chega a qualquer AREA (#83)", () => {
+  const caminho = join("product", "prod.spec-common-rules.md");
+  for (const p of [
+    profile("BACKEND", "SENIOR", "ENGINEERING"),
+    profile("FULLCYCLE", "PM", "PRODUCT"),
+  ]) {
+    const sobDemanda = listRulesForProfile(join(root, "rules-on-demand"), p).find(
+      (r) => r.path === caminho
+    );
+    assert.ok(sobDemanda, `${p.HUB}/${p.AREA}: rule comum dos prod.spec.* em rules-on-demand/`);
+    // As 3 seções não voltam para rules/ (lá, só AREA: PRODUCT e GENERALIST as recebiam).
+    for (const r of listRulesForProfile(join(root, "rules"), p)) {
+      assert.doesNotMatch(
+        readFileSync(join(root, "rules", r.path), "utf8"),
+        /^### Busca de contexto/m,
+        `${r.path} não deve ter a seção Busca de contexto`
+      );
+    }
+  }
+  // Os 4 workflows mandam ler a rule antes de começar.
+  // O skill product-specs também a cita entre as rules que lê antes de executar.
+  assert.match(
+    readFileSync(join(root, "skills", "product-specs", "SKILL.md"), "utf8"),
+    /\$IDE\/rules-on-demand\/product\/prod\.spec-common-rules\.md/
+  );
+  for (const w of ["prd", "frd", "epic", "issue", "breakdown"]) {
+    assert.match(
+      readFileSync(join(root, "workflows", "product", `prod.spec.${w}.md`), "utf8"),
+      /antes de começar, leia `\$IDE\/rules-on-demand\/product\/prod\.spec-common-rules\.md`/
+    );
+  }
 });

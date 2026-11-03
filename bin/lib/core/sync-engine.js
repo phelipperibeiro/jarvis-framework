@@ -13,7 +13,7 @@ import { execSync } from "node:child_process";
 import { join, relative, basename, dirname, sep } from "node:path";
 import { getFrameworkRoot } from "../utils/paths.js";
 import { getIDEFolder } from "../config/ide-config.js";
-import { extractFrontmatterBlock } from "../utils/frontmatter.js";
+import { extractFrontmatterBlock, readDescription } from "../utils/frontmatter.js";
 import { readCompanyProfile } from "./company-profile.js";
 import { parseAppliesTo, matchesProfile } from "./profile-filter.js";
 import {
@@ -36,11 +36,7 @@ function parseSkillFrontmatter(content) {
   const fm = extractFrontmatterBlock(content);
   if (fm === null) return null;
   const name = (fm.match(/^name:\s*(.+)$/m) || [])[1]?.trim();
-  // description pode ser multiline com `>`
-  const descMatch = fm.match(/^description:\s*[>|]?\n?([\s\S]*?)(?=\n\S|\n---|$(?![\s\S]))/m);
-  const description = descMatch
-    ? descMatch[1].replace(/^\s+/gm, "").replace(/\n+/g, " ").trim()
-    : "";
+  const description = readDescription(fm);
   return name ? { name, description } : null;
 }
 
@@ -138,10 +134,12 @@ export function syncAssets(targetDir, ide, opts = {}) {
     }
   }
 
-  // Flatten workflows subfolders — todas as IDEs requerem arquivos na raiz sem subpastas
+  // Flatten workflows subfolders — todas as IDEs requerem arquivos na raiz sem subpastas.
+  // No Kiro a pasta de workflows é a própria steering/, onde o transformKiroAssets grava
+  // steering/skills/: achatá-la no upgrade soltava os skill-*.md na raiz (#83).
   const workflowsDest = join(ideDir, opts.workflowsFolder || "workflows");
   if (existsSync(workflowsDest)) {
-    const moved = flattenDir(workflowsDest);
+    const moved = flattenDir(workflowsDest, undefined, ide === "kiro" ? ["skills"] : []);
     if (moved > 0) result.copied.push(`(flatten) ${moved} workflows movidos para raiz`);
   }
 
@@ -420,6 +418,10 @@ export function syncRulesForProfile(
     errors: overlayResult.errors,
   };
 
+  // No Kiro, a IDE carrega steering/ (cópia de rules/ feita pelo transformKiroAssets): o filtro
+  // mantém o steering de cada rule junto com ela (#83).
+  const kiro = basename(ideDir) === ".kiro";
+
   for (const dir of OVERLAY_RULE_DIRS) {
     out.copied[dir] = 0;
     // caminho relativo (com `sep` do sistema) → arquivo do overlay válido, se houver
@@ -459,9 +461,16 @@ export function syncRulesForProfile(
           out.copied[dir]++;
           if (appliesTo === null) out.universal++;
           if (overlayFile) out.fromOverlay++;
+          if (kiro && dir === "rules" && !dryRun && existsSync(dest))
+            writeKiroRuleSteering(ideDir, dest);
         } else if (existsSync(dest)) {
           if (!dryRun) rmSync(dest, { force: true });
           out.removed++;
+        }
+        if (kiro && dir === "rules" && !dryRun && !existsSync(dest)) {
+          const name = basename(rel);
+          if (name !== "AGENTS.md" && name !== "README.md")
+            rmSync(join(ideDir, "steering", name), { force: true });
         }
       } catch (err) {
         out.errors.push(`${dir}/${rel.split(sep).join("/")}: ${err.message}`);
@@ -469,6 +478,19 @@ export function syncRulesForProfile(
     }
   }
   return out;
+}
+
+/**
+ * O `rtk` (Token Killer) está no PATH e responde ao `rtk gain --help`?
+ * @returns {boolean}
+ */
+export function rtkAvailable() {
+  try {
+    execSync("rtk gain --help 2>/dev/null", { stdio: "pipe" });
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 /**
@@ -482,14 +504,7 @@ export function syncRulesForProfile(
 function reconcileRtk(ideDir, targetDir, ide, { keepEnvValues = false } = {}) {
   const rtkRulePath = join(ideDir, "rules", "rtk-rules.md");
   const envPath = join(ideDir, "ENV.md");
-  const hasRtk = (() => {
-    try {
-      execSync("rtk gain --help 2>/dev/null", { stdio: "pipe" });
-      return true;
-    } catch {
-      return false;
-    }
-  })();
+  const hasRtk = rtkAvailable();
 
   if (hasRtk) {
     // Ativar RTK_ENABLED no ENV.md se existir e estiver false
@@ -559,7 +574,7 @@ function transformOpenCodeAgents(agentsDir) {
     const body = content.slice(fmMatch[0].length).trim();
 
     // Extract fields from Jarvis frontmatter
-    const description = (fm.match(/^description:\s*(.+)$/m) || [])[1]?.trim() || "";
+    const description = readDescription(fm);
     const model = (fm.match(/^model:\s*(.+)$/m) || [])[1]?.trim();
     const name = basename(filePath, ".md");
     const isMainAgent = name === "eng.agent" || name === "eng-agent";
@@ -598,7 +613,7 @@ function transformOpenCodeCommands(commandsDir) {
     const body = content.slice(fmMatch[0].length).trim();
 
     // Extract fields
-    const description = (fm.match(/^description:\s*(.+)$/m) || [])[1]?.trim() || "";
+    const description = readDescription(fm);
     const model =
       (fm.match(/^recommended_model:\s*(.+)$/m) || [])[1]?.trim() ||
       (fm.match(/^model:\s*(.+)$/m) || [])[1]?.trim();
@@ -651,11 +666,19 @@ function collectMdFiles(dir, acc) {
   }
 }
 
-function flattenDir(dir, rootDir) {
+/**
+ * Move os .md das subpastas de `dir` para a raiz e apaga as subpastas.
+ * @param {string} dir
+ * @param {string} [rootDir] - Raiz para onde os arquivos vão (recursão)
+ * @param {string[]} [skip] - Subpastas do primeiro nível que ficam como estão
+ * @returns {number} Quantos arquivos foram movidos
+ */
+function flattenDir(dir, rootDir, skip = []) {
   const root = rootDir ?? dir;
   let moved = 0;
   for (const entry of readdirSync(dir, { withFileTypes: true })) {
     const fullPath = join(dir, entry.name);
+    if (entry.isDirectory() && skip.includes(entry.name)) continue;
     if (entry.isDirectory()) {
       moved += flattenDir(fullPath, root);
       try {
@@ -693,13 +716,7 @@ function toKiroSteeringFile(content, inclusion, fileMatchPattern) {
 
   if (fmMatch) {
     const fm = fmMatch[1];
-    const description = (fm.match(/^description:\s*[>|]?\s*\n?([\s\S]*?)(?=\n\S|\n---|Z)/m) ||
-      [])[1];
-    const descInline = (fm.match(/^description:\s*(.+)$/m) || [])[1];
-    const finalDesc = (description || descInline || "")
-      .replace(/^\s+/gm, "")
-      .replace(/\n+/g, " ")
-      .trim();
+    const finalDesc = readDescription(fm);
     if (finalDesc) lines.push(`description: "${finalDesc.replace(/"/g, '\\"')}"`);
   }
 
@@ -717,6 +734,24 @@ function detectRuleHub(content) {
   if (!match) return null;
   const hub = match[1].trim().toUpperCase();
   return hub === "ALL" ? null : hub;
+}
+
+/**
+ * Grava o steering de uma rule do Kiro (`steering/{nome}`), com `inclusion` pelo HUB da rule.
+ * Arquivos de índice (`AGENTS.md`, `README.md`) não viram steering.
+ * @param {string} kiroDir - Pasta `.kiro/`
+ * @param {string} filePath - Rule em `.kiro/rules/`
+ */
+function writeKiroRuleSteering(kiroDir, filePath) {
+  const name = basename(filePath);
+  if (name === "AGENTS.md" || name === "README.md") return;
+  const content = readFileSync(filePath, "utf-8");
+  const hub = detectRuleHub(content);
+  const pattern = hub ? KIRO_HUB_FILE_PATTERNS[hub] : null;
+  const inclusion = pattern ? "fileMatch" : "auto";
+  const steeringDir = join(kiroDir, "steering");
+  mkdirSync(steeringDir, { recursive: true });
+  writeFileSync(join(steeringDir, name), toKiroSteeringFile(content, inclusion, pattern), "utf-8");
 }
 
 /**
@@ -749,19 +784,7 @@ function transformKiroAssets(kiroDir, targetDir) {
     const ruleFiles = [];
     collectMdFiles(rulesDir, ruleFiles);
 
-    for (const filePath of ruleFiles) {
-      const name = basename(filePath);
-      // Ignorar arquivos de índice/meta
-      if (name === "AGENTS.md" || name === "README.md") continue;
-
-      const content = readFileSync(filePath, "utf-8");
-      const hub = detectRuleHub(content);
-      const pattern = hub ? KIRO_HUB_FILE_PATTERNS[hub] : null;
-      const inclusion = pattern ? "fileMatch" : "auto";
-      const transformed = toKiroSteeringFile(content, inclusion, pattern);
-
-      writeFileSync(join(steeringDir, name), transformed, "utf-8");
-    }
+    for (const filePath of ruleFiles) writeKiroRuleSteering(kiroDir, filePath);
   }
 
   // 3. Skills — copiar SKILL.md de cada skill para steering/skills/skill-{nome}.md
@@ -779,6 +802,8 @@ function transformKiroAssets(kiroDir, targetDir) {
       const content = readFileSync(skillMdPath, "utf-8");
       const transformed = toKiroSteeringFile(content, "manual");
       writeFileSync(join(steeringSkillsDir, `skill-${skillName}.md`), transformed, "utf-8");
+      // Cópia solta que upgrades antigos deixaram na raiz de steering/ (só a que tem par aqui).
+      rmSync(join(steeringDir, `skill-${skillName}.md`), { force: true });
     }
   }
 }

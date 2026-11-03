@@ -276,9 +276,28 @@ test("syncAssets: instalação antiga é limpa (claude, windsurf e kiro) pelo OB
       "skills/product-roadmap-report/README.md",
       "agents/AGENTS.md",
       "agents/README.md",
+      // rules que saíram de rules/ na auditoria de tokens (#84, #86/#133)
+      "rules/engineering/eng.bump-rules.md",
+      "rules/engineering/eng.docs-scraping-rules.md",
+      "rules/engineering/rpa/eng.rpa-rules.md",
+      "rules/AGENTS.md",
+      "rules/product/README.md",
+      // templates e skill duplicado removidos (#91, #92)
+      "templates/engineering/swagger-template.md",
+      "templates/engineering/CONTACTS-template.md",
+      "templates/cdd-aplicado-a-prompts.md",
+      "skills/product-roadmap-report/rules/detailed-guide.md",
     ],
     windsurf: ["workflows/AGENTS.md", "workflows/README.md", "workflows/all-tools.md"],
-    kiro: ["steering/AGENTS.md", "steering/README.md", "steering/all-tools.md"],
+    kiro: [
+      "steering/AGENTS.md",
+      "steering/README.md",
+      "steering/all-tools.md",
+      // cópias do Kiro das rules que saíram de rules/ (#83)
+      "steering/eng.bump-rules.md",
+      "steering/eng.docs-scraping-rules.md",
+      "steering/eng.rpa-rules.md",
+    ],
   };
   for (const [ide, arquivos] of Object.entries(antigos)) {
     withJarvisRoot((root, target) => {
@@ -299,6 +318,9 @@ test("syncAssets: instalação antiga é limpa (claude, windsurf e kiro) pelo OB
         existsSync(join(target, `.${ide}/AGENTS.md`)),
         `${ide}: AGENTS.md da raiz da IDE deve ficar`
       );
+      // A limpeza não leva junto a rule que continua no framework (nem a cópia dela no Kiro).
+      assert.ok(existsSync(join(target, `.${ide}/rules/engineering/eng-rules.md`)));
+      if (ide === "kiro") assert.ok(existsSync(join(target, ".kiro/steering/eng-rules.md")));
     });
   }
 });
@@ -923,5 +945,90 @@ test("syncRulesForProfile: falha ao gravar uma rule vai para errors e as outras 
     assert.equal(r.errors.length, 1);
     assert.match(r.errors[0], /^rules\/engineering\/eng-rules\.md: /);
     assert.ok(existsSync(join(ideDir, "rules", "universal.md")));
+  });
+});
+
+test("syncAssets (kiro): upgrade sobre instalação existente não solta skill-*.md em steering/ (#83)", () => {
+  withJarvisRoot((root, target) => {
+    buildMinimalFramework(root);
+    write(
+      root,
+      "skills/bloco-skill/SKILL.md",
+      [
+        "---",
+        "name: bloco-skill",
+        "description: >",
+        "  Atende a Zona Norte",
+        "  e a Sul.",
+        "---",
+        "# corpo",
+      ].join("\n")
+    );
+    const opts = { workflowsFolder: "steering" };
+    syncAssets(target, "kiro", opts);
+    // Instalação afetada por upgrades antigos: um solto com par e um arquivo da pessoa sem par.
+    write(target, ".kiro/steering/skill-test-skill.md", "solto antigo");
+    write(target, ".kiro/steering/skill-meu.md", "da pessoa");
+    syncAssets(target, "kiro", opts);
+
+    const steering = join(target, ".kiro/steering");
+    const soltos = readdirSync(steering).filter((n) => n.startsWith("skill-"));
+    assert.deepEqual(soltos, ["skill-meu.md"], "só fica o arquivo sem par em steering/skills/");
+    assert.ok(existsSync(join(steering, "skills/skill-test-skill.md")));
+    assert.ok(existsSync(join(steering, "skills/skill-bloco-skill.md")));
+    // A description em bloco passa inteira, sem cortar na letra "Z".
+    assert.match(
+      readFileSync(join(steering, "skills/skill-bloco-skill.md"), "utf-8"),
+      /^description: "Atende a Zona Norte e a Sul\."$/m
+    );
+  });
+});
+
+test("syncRulesForProfile (kiro): o steering acompanha o filtro de rules (#83)", () => {
+  withJarvisRoot((root, target) => {
+    buildRulesFixture(root, target);
+    const kiroDir = join(target, ".kiro");
+    write(target, ".kiro/ENV.md", "HUB=BACKEND\n");
+    // Instalação com o steering de todas as rules (o que o transformKiroAssets gera) e um workflow.
+    for (const n of ["eng-rules.md", "x.md", "y.md", "universal.md", "rtk-rules.md"])
+      write(target, `.kiro/steering/${n}`, "antigo");
+    write(target, ".kiro/steering/eng.start.md", "workflow");
+
+    syncRulesForProfile(kiroDir, BACKEND, { frameworkRoot: root });
+
+    const steering = readdirSync(join(kiroDir, "steering")).filter((n) => n.endsWith(".md"));
+    assert.deepEqual(steering.sort(), ["eng-rules.md", "eng.start.md", "universal.md"]);
+    // A rule que fica tem o steering regravado a partir da rule (não o arquivo antigo).
+    assert.match(
+      readFileSync(join(kiroDir, "steering/eng-rules.md"), "utf-8"),
+      /^inclusion: auto$/m
+    );
+    assert.equal(readFileSync(join(kiroDir, "steering/eng.start.md"), "utf-8"), "workflow");
+  });
+});
+
+test("syncAssets (claude): workflows/skills/ é achatada como as outras subpastas (#83)", () => {
+  withJarvisRoot((root, target) => {
+    buildMinimalFramework(root);
+    write(root, "workflows/skills/x.md", "# x");
+    syncAssets(target, "claude", { workflowsFolder: "commands" });
+    assert.ok(existsSync(join(target, ".claude/commands/x.md")));
+    assert.ok(!existsSync(join(target, ".claude/commands/skills")));
+  });
+});
+
+test("syncRulesForProfile (kiro): rule com HUB vira fileMatch e o README do steering fica (#83)", () => {
+  withJarvisRoot((root, target) => {
+    buildRulesFixture(root, target);
+    const kiroDir = join(target, ".kiro");
+    write(target, ".kiro/ENV.md", "HUB=FRONTEND\n");
+    write(target, ".kiro/steering/README.md", "índice");
+    const FRONTEND = { ...BACKEND, HUB: "FRONTEND" };
+
+    syncRulesForProfile(kiroDir, FRONTEND, { frameworkRoot: root });
+
+    // x.md (HUB: FRONTEND) fica e vira fileMatch; README/AGENTS do steering não são tocados.
+    assert.match(readFileSync(join(kiroDir, "steering/x.md"), "utf-8"), /^inclusion: fileMatch$/m);
+    assert.equal(readFileSync(join(kiroDir, "steering/README.md"), "utf-8"), "índice");
   });
 });

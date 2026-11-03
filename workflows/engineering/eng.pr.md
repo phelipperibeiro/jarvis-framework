@@ -324,6 +324,7 @@ git push
 
 Lead time = minutos inteiros (truncados) entre o `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/.timestamp_start` (UTC, gravado pelo `eng.start`) e agora; calcule com `date` (GNU: `date -d`; macOS: `date -j -f "%Y-%m-%dT%H:%M:%SZ"`). Grave os minutos em `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/.lead_time_minutes` e use, na mensagem final (7.3), `LEAD_TIME_MSG` = `⏱️ Lead time: {horas} horas ({minutos} minutos)`, com horas = minutos ÷ 60, com uma casa decimal.
 Sem o `.timestamp_start`: não grave nada e use `⏱️ Lead time: não calculado (timestamp inicial ausente)`.
+Ilegível (o `date` não converte o conteúdo): não grave nada e use `⏱️ Lead time: não calculado (timestamp inicial ilegível)`.
 
 ### 7.2 Registrar o esforço em `daily.md`
 

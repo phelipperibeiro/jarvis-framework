@@ -9,6 +9,8 @@ recommended_model: opus
 
 > 🎓 **Modo de condução**: leia `PROD_MODE` no `$IDE/ENV.md`. Se for `developer-guided`, **antes de começar leia `$IDE/rules-on-demand/product/prod.guided-rules.md` e siga-o** em toda a conversa. Vazio ou `product-led`: siga este fluxo como está.
 >
+> 📋 **Princípios e busca de contexto**: antes de começar, leia `$IDE/rules-on-demand/product/prod.spec-common-rules.md` e siga-a.
+>
 > 🤖 **Modelo**: se a IDE informar o modelo desta sessão e ele for de outra família que o `recommended_model` do documento (ou do template, se o documento for novo), avise em uma linha e siga, sem bloquear e sem repetir. Sem essa informação, não avise.
 
 Este comando tem como objetivo criar, atualizar ou editar uma PRD seguindo o template especificado e as instruções.
@@ -36,11 +38,11 @@ Utilize o `$ARGUMENTS` que o usuário passar como ponto de partida e para entend
 |-------|-------|----------|
 | Busca no Central Docs (condicional) | `/jarvis-docs-central` (via `jarvis docs sync --silent`) | Se `CENTRAL_DOCS_STORAGE` estiver definido no ENV.md (PRD novo ou iteração; o PRD existente vem de `$PROD_DOCS`) |
 
-**Princípios:** ver `$PROD_RULES/prod.spec-rules.md` (Princípios dos comandos `prod.spec.*`). Template deste comando: `$PROD_TEMPLATES/prod-prd-template.md`.
+**Princípios:** ver `$IDE/rules-on-demand/product/prod.spec-common-rules.md` (Princípios dos comandos `prod.spec.*`). Template deste comando: `$PROD_TEMPLATES/prod-prd-template.md`.
 
 ---
 
-**Busca de contexto:** ver `$PROD_RULES/prod.spec-rules.md`. Aqui, busca o **PRD existente** em `$PROD_DOCS` apenas na iteração de um PRD (PRD novo pula essa busca; a consulta ao Central docs, se configurado, continua). Se encontrar, carrega como base e usa como contexto para o Gate 1; se não encontrar, pergunta se o usuário tem o PRD localmente e segue o fluxo normal.
+**Busca de contexto:** ver `$IDE/rules-on-demand/product/prod.spec-common-rules.md`. Aqui, busca o **PRD existente** em `$PROD_DOCS` apenas na iteração de um PRD (PRD novo pula essa busca; a consulta ao Central docs, se configurado, continua). Se encontrar, carrega como base e usa como contexto para o Gate 1; se não encontrar, pergunta se o usuário tem o PRD localmente e segue o fluxo normal.
 
 ## Fluxo de Trabalho
 
@@ -148,4 +150,4 @@ Quais métricas? A) Engajamento B) Receita C) Outro
   - Se for uma spec nova:
     - Salve na pasta `$PROD_DOCS` seguindo todos os padrões de nomenclatura e estrutura de pastas já estabelecidos em `$PROD_RULES/**/*`
 
-**Central docs:** documento de trabalho, não é publicado no Central docs (ver `$PROD_RULES/prod.spec-rules.md`).
+**Central docs:** documento de trabalho, não é publicado no Central docs (ver `$IDE/rules-on-demand/product/prod.spec-common-rules.md`).

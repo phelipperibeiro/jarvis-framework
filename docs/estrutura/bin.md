@@ -71,7 +71,8 @@ Efeitos colaterais no init:
 - Órfãs do overlay (#199): cópia em `rules/`/`rules-on-demand/` da IDE cuja primeira linha útil é a marcação `> Overlay: {perfil} (forked_from …)` e que o overlay **ativo** não tem (ficou de outro perfil, ou saiu do overlay à mão) volta à versão do core, se o core a tem, ou é removida da IDE. Rule própria que só cite a marcação no corpo não é tocada. `ENV.md` sem a chave `COMPANY_PROFILE` (anterior à #199) avisa ℹ️ e usa o default
 - `--upgrade`: ao acrescentar `COMPANY_PROFILE` num ENV antigo, pergunta o perfil no terminal (Enter, `--yes` ou sem TTY = `stark-industries`); com um perfil próprio respondido, reaplica o overlay desse perfil depois de gravar o ENV (o sync anterior rodou com o default)
 - `jarvis fork` normaliza CRLF ao ler o fork e ao copiar rules para a IDE (fork editado no Windows não perde o carimbo); o recarimbo (`--update`) regrava o fork em LF
-- Transformações por IDE (Codex `openai.yaml`, OpenCode frontmatter, Kiro steering)
+- `--upgrade` e reinstalação (`--force` ou opção 2 do menu): no fim, com HUB, POSITION, AREA e SQUAD preenchidos no ENV.md, filtram `rules/` e `rules-on-demand/` pelo perfil como o `jarvis rules sync` (`filterRulesByEnv` em `commands/init.js`); a `rtk-rules.md` só entra com `RTK_ENABLED=true` e o `rtk` no PATH. No `--upgrade`, eixo vazio (ou com o exemplo `[...]` do template) não filtra e vira pendência para o `/jarvis-init upgrade` (#83)
+- Transformações por IDE (Codex `openai.yaml`, OpenCode frontmatter, Kiro steering). A `description` vem do `readDescription` (`utils/frontmatter.js`), que lê o valor na linha e o bloco `>`/`|`. No Kiro, a pasta de workflows é a própria `steering/`: o flatten deixa `steering/skills/` de fora, e o filtro de rules grava ou apaga o `steering/{nome}` junto com a rule (#83)
 
 ## Banner e versão
 

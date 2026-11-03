@@ -9,6 +9,8 @@ recommended_model: opus
 
 > 🎓 **Modo de condução**: leia `PROD_MODE` no `$IDE/ENV.md`. Se for `developer-guided`, **antes de começar leia `$IDE/rules-on-demand/product/prod.guided-rules.md` e siga-o** em toda a conversa. Vazio ou `product-led`: siga este fluxo como está.
 >
+> 📋 **Princípios e busca de contexto**: antes de começar, leia `$IDE/rules-on-demand/product/prod.spec-common-rules.md` e siga-a.
+>
 > 🤖 **Modelo**: se a IDE informar o modelo desta sessão e ele for de outra família que o `recommended_model` do documento (ou do template, se o documento for novo), avise em uma linha e siga, sem bloquear e sem repetir. Sem essa informação, não avise.
 
 Este comando transforma uma especificação **grande demais para executar de uma vez** em um **plano detalhado (breakdown)**: versões / releases, épicos e esboço de histórias ou tarefas — com foco em **valor perceptível ao usuário**, não só em camadas técnicas.
@@ -61,7 +63,7 @@ Utilize o `$ARGUMENTS` como ponto de partida (caminho da spec, nome da feature o
 
 O artefato de breakdown segue o template `$PROD_TEMPLATES/prod-breakdown-template.md`.
 
-**Busca de contexto:** ver `$PROD_RULES/prod.spec-rules.md`. Aqui, em modo best-effort, localiza em `$PROD_DOCS` o **PRD/FRD pai** (nome, tags, `TASK_MANAGER_KEY`) e, com o Central docs configurado, as funcionalidades já implementadas relacionadas; usa como contexto e, se não achar, segue com os arquivos locais (sem perguntar).
+**Busca de contexto:** ver `$IDE/rules-on-demand/product/prod.spec-common-rules.md`. Aqui, em modo best-effort, localiza em `$PROD_DOCS` o **PRD/FRD pai** (nome, tags, `TASK_MANAGER_KEY`) e, com o Central docs configurado, as funcionalidades já implementadas relacionadas; usa como contexto e, se não achar, segue com os arquivos locais (sem perguntar).
 
 ## Sessões
 

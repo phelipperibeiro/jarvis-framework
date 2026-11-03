@@ -153,6 +153,11 @@ export const OBSOLETE_PATHS = Object.freeze([
   "steering/skills/skill-eng-backend-rabbitmq.md",
   "rules/engineering/data/data-rules.md",
   "steering/data-rules.md",
+  // Cópias do Kiro (steering/{nome}) das rules que saíram de rules/ no #133 (bump e rpa, com a
+  // docs-scraping fundida); rules-on-demand/ não vira steering, então nada válido tem esses nomes.
+  "steering/eng.bump-rules.md",
+  "steering/eng.docs-scraping-rules.md",
+  "steering/eng.rpa-rules.md",
   // rules/AGENTS.md e rules/product/README.md (issue #84): conteúdo de autoria movido
   // para docs/estrutura/rules.md; rules/product/README.md era órfão, sem referências
   "rules/AGENTS.md",

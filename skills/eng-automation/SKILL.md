@@ -208,6 +208,7 @@ Automação reúne várias áreas (Data Acquisition, Web Automation, API Automat
 - Validar dados extraídos e detectar mudança de estrutura da fonte
 - Tratar erros com retry e idempotência em tudo que roda sozinho
 - Registrar logs e métricas suficientes para diagnosticar falha sem acesso ao ambiente
+- Ao criar ou corrigir um robô (inclusive pelo `/eng.debug` ou pelo `/eng.work`), atualizar o `{robot-tag}-robot.md` seguindo a seção 6 de `$IDE/rules-on-demand/engineering/eng.rpa-rules.md`
 
 ---
 

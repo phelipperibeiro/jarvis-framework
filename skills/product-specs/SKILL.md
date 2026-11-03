@@ -25,7 +25,7 @@ Esta skill é só a **porta de entrada** das especificações de produto: ela **
 | Esclarecer uma especificação | `/prod.spec.clarify` | `$IDE/$FLOWS_FOLDER/prod.spec.clarify.md` |
 | Quebrar uma especificação grande | `/prod.spec.breakdown` | `$IDE/$FLOWS_FOLDER/prod.spec.breakdown.md` |
 
-Antes de executar, leia as regras de produto em `$PROD_RULES` (`prod-rules.md` e `prod.spec-rules.md`).
+Antes de executar, leia as regras de produto em `$PROD_RULES` (`prod-rules.md` e `prod.spec-rules.md`) e `$IDE/rules-on-demand/product/prod.spec-common-rules.md`.
 
 Para outras necessidades de produto sem workflow próprio, aplique as boas práticas comumente utilizadas por gerentes de produto.
 

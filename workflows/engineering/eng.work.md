@@ -25,7 +25,7 @@ Este comando executa a **implementação de código** seguindo o plano de execu�
 | Passo | Skill | Condição |
 |-------|-------|----------|
 | Cabeçalho (agente) | `eng.agent` (agente) | Sempre — identidade do workflow |
-| Fase 0 › 0.1 Verificar ou Gerar Contexto da Sessão | `/jarvis-context-detect` | Se `ENABLE_CDD=true` e o `context.md` não existir (obrigatório antes da Fase 1) |
+| Fase 0 | `/jarvis-context-detect` | Se `ENABLE_CDD=true` e o `context.md` não existir (obrigatório antes da Fase 1) |
 | Fase 3 › 3.1 Implementar Código (skill de domínio) | `/eng-frontend` (via `eng.specializations-rules.md`) | Se o domínio da feature for frontend (componentes, UI, estado, estilos, bundle, a11y); a regra também carrega `FRONTEND_SPECIALIZATIONS` |
 | Fase 3 › 3.1 Implementar Código (skill de domínio) | `/eng-backend` (via `eng.specializations-rules.md`) | Se o domínio da feature for backend (endpoints, auth, workers, filas, cache, banco, integrações); a regra também carrega `BACKEND_SPECIALIZATIONS` |
 | Fase 3 › 3.1 Implementar Código (skill de domínio) | `/eng-automation` (via `eng.specializations-rules.md`) | Se o domínio da feature for RPA, scraping, extração de dados, ETL ou parsing; a regra também carrega `AUTOMATION_SPECIALIZATIONS` |

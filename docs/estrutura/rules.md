@@ -21,7 +21,8 @@ rules/
 │   ├── frontend/
 │   └── qa/                       # ponteiro: o texto está em rules-on-demand/
 └── product/
-    └── prod-rules.md
+    ├── prod-rules.md
+    └── prod.spec-rules.md            # escrita de spec (AREA: PRODUCT)
 
 rules-on-demand/                    # lidas pelo workflow; não carregadas no início da sessão
 ├── engineering/
@@ -40,7 +41,8 @@ rules-on-demand/                    # lidas pelo workflow; não carregadas no in
 │   └── qa/
 │       └── eng.qa.cypress-standards-rules.md # convenções da suíte E2E (em rules/engineering/qa/ fica só o ponteiro)
 ├── product/
-│   └── prod.guided-rules.md        # modo Developer-Guided (só com PROD_MODE=developer-guided)
+│   ├── prod.guided-rules.md        # modo Developer-Guided (só com PROD_MODE=developer-guided)
+│   └── prod.spec-common-rules.md   # princípios e busca de contexto dos prod.spec.* (lida pelo comando, qualquer AREA)
 ├── doc-links-rules.md              # links clicáveis nos documentos gerados (lida pelos comandos que gravam documentos)
 └── warm-up-consume-rules.md        # consumo do /warm-up (só quando há aquecimento)
 ```
@@ -74,9 +76,9 @@ Isso reduz tokens carregados na sessão.
 
 1. Editadas neste repo.
 2. `jarvis init` copia o conjunto **inteiro** para `.$IDE/rules/` e `.$IDE/rules-on-demand/` (sync bruto; as rules que saíram de `rules/` são removidas das instalações antigas via `OBSOLETE_PATHS`; se a rule virou um ponteiro no mesmo caminho, como a de Cypress em `qa/`, o caminho **não** entra em `OBSOLETE_PATHS`: o sync sobrescreve a instalação antiga com o ponteiro).
-3. `/jarvis-init` **filtra** de novo conforme perfil (e RTK) (Passo 8 → `jarvis rules sync`).
+3. `/jarvis-init` **filtra** de novo conforme perfil (e RTK) (Passo 8 → `jarvis rules sync`). O `jarvis init --upgrade` e a reinstalação (`--force` ou a opção 2 do menu) já rodam o mesmo filtro no fim quando o `ENV.md` tem HUB, POSITION, AREA e SQUAD; nesses dois caminhos, a `rtk-rules.md` pede também o `rtk` no PATH. No Kiro, o filtro grava ou apaga o `steering/{nome}` junto com a rule.
 
-Se você só rodar `jarvis init` sem o skill de init, a IDE pode ter rules a mais do que o perfil precisa — o filtro fino é responsabilidade do `/jarvis-init`.
+Se você só rodar `jarvis init` numa pasta nova (sem `ENV.md`), a IDE fica com rules a mais do que o perfil precisa até o `/jarvis-init`, responsável pelo filtro fino.
 
 ## Para quem vai criar ou editar uma rule
 
@@ -89,7 +91,9 @@ Esta seção era antes `rules/AGENTS.md`. Esse arquivo foi removido: era o únic
 2. rules/engineering/eng-rules.md
 3. rules-on-demand/engineering/eng.{comando}-rules.md
 4. rules-on-demand/product/prod.guided-rules.md (só com PROD_MODE=developer-guided)
-5. rules/product/prod-rules.md (mais baixa)
+5. rules-on-demand/product/prod.spec-common-rules.md (lida pelos prod.spec.* que gravam documento)
+6. rules/product/prod.spec-rules.md
+7. rules/product/prod-rules.md (mais baixa)
 ```
 
 Regras mais específicas têm precedência sobre regras gerais.

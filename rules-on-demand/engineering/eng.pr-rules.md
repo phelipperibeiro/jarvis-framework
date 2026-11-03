@@ -59,22 +59,22 @@ sempre utiliza a branch main)
 
 ## Fluxo de Execução
 
+As fases seguem as do workflow `eng.pr`, com o mesmo número.
+
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                                                             │
+│  0. ESCOLHER → o que fazer com o PR (Fase 0, regra de ouro) │
+│        ↓                                                    │
 │  1. VALIDAR → Testes passando, lint OK                      │
 │        ↓                                                    │
-│  2. CRIAR BRANCH → nome da skill eng-global-branch          │
+│  2. VERIFICAR BRANCH → a do eng.start, commits do work      │
 │        ↓                                                    │
-│  3. STAGE → git add (arquivos específicos)                  │
+│  3. PUSH → Enviar para remote (depois da Fase 0)            │
 │        ↓                                                    │
-│  4. COMMIT → Mensagem padronizada                           │
+│  4. CRIAR MR/PR → pull-request.md + CLI do VERSION_CONTROL  │
 │        ↓                                                    │
-│  5. PUSH → Enviar para remote (depois da Fase 0)            │
-│        ↓                                                    │
-│  6. CRIAR MR (desenvolvedor) → Template, depois da Fase 0   │
-│        ↓                                                    │
-│  7. ORIENTAR (desenvolvedor) → Mover o card para "In Review"│
+│  5. ATUALIZAR BOARD → a pessoa move o card; link do MR      │
 │                                                             │
 └─────────────────────────────────────────────────────────────┘
 ```
@@ -83,7 +83,7 @@ sempre utiliza a branch main)
 
 ## Comportamento Esperado
 
-### Fase 1: Validação
+### Fase 1: Validação Pré-PR
 
 1. **Executar testes**
    ```bash
@@ -102,35 +102,16 @@ sempre utiliza a branch main)
 
 **Se qualquer validação falhar**, corrigir antes de prosseguir.
 
-### Fase 2: Criação da Branch
+### Fase 2: Verificar Branch
 
-1. **Obter informações do Jira**
-   - TASK_MANAGER_KEY (ex: `TASK-123`)
-   - Título da tarefa
-
-2. **Criar branch**
-   ```bash
-   git checkout -b {NOME_DA_BRANCH}   # nome montado pela skill eng-global-branch
-   ```
-
-3. **Confirmar criação**
+1. **Branch da tarefa**: a criada no `eng.start`, com o nome da skill `eng-global-branch` (com card, contém o `TASK_MANAGER_KEY`; freelance, o número de controle).
    ```bash
    git branch --show-current
    ```
+2. **Branch de destino**: a `Branch base:` do `architecture.md` (seção "Branch de Destino" acima).
+3. **Commits**: os das fases do `eng.work` (`git log {BRANCH_BASE}..HEAD --oneline`). Ajuste fora do `eng.work` vira um commit com os arquivos adicionados um a um (nunca `git add .`) e a mensagem do padrão acima.
 
-### Fase 3: Stage e Commit
-
-1. **Adicionar arquivos específicos** (NUNCA usar `git add .`)
-   ```bash
-   git add {arquivo1} {arquivo2} ...
-   ```
-
-2. **Criar commit**
-   ```bash
-   git commit -m "{TASK_MANAGER_KEY} {tipo}({escopo}): {descrição}"
-   ```
-
-### Fase 4: Push
+### Fase 3: Push
 
 O push só sai depois da escolha de publicar da Fase 0 do `eng.pr` (regra de ouro, `eng.integrations-rules.md`).
 
@@ -139,22 +120,21 @@ O push só sai depois da escolha de publicar da Fase 0 do `eng.pr` (regra de our
    git push -u origin {nome-da-branch}
    ```
 
-### Fase 5: Criar Merge Request
+### Fase 4: Criar Merge Request / Pull Request
 
-1. **Preencher template do MR** com:
+1. **Texto**: o `pull-request.md` da sessão, no template da seção abaixo, com:
    - Descrição clara do objetivo
-   - Link para o card do Jira
+   - Link para o card (tabela "URL do card" de `eng.integrations-rules.md`; freelance, o número de controle em texto)
    - Lista de mudanças realizadas
    - Testes executados
    - Checklist de revisão
+2. **Branch de destino**: a `Branch base:` do `architecture.md`.
+3. **Criar**: pela CLI do vendor do `VERSION_CONTROL` (Fase 4.4 do workflow), só com o Sim; sem a CLI, o `pull-request.md` fica pronto para a pessoa abrir o MR/PR à mão.
 
-2. **Definir branch de destino** (conforme solicitado pelo usuário)
+### Fase 5: Atualizar Board
 
-3. **Criar MR** fica a cargo do desenvolvedor criar o MR da branch de origem para a destino, você pode retornar o link rápido de criação do MR do gitlab.
-
-### Fase 6: Atualizar Jira
-
-1. Desenvolvedor deve mover o card para "In Review"
+1. A pessoa move o card para a etapa equivalente a "em revisão" no board do `TASK_MANAGER` (o Jarvis não move card). Freelance: pular.
+2. O link do MR vai no card uma única vez, pelo `/eng-global-task-comment`, só com o Sim.
 
 ---
 
@@ -221,7 +201,7 @@ Antes de considerar o PR completo:
 - [ ] Push realizado (só com o Sim)
 - [ ] MR criado a partir do `pull-request.md` (só com o Sim)
 - [ ] Branch de destino correta
-- [ ] Card do Jira movido para "In Review"
+- [ ] Pessoa orientada a mover o card no board (o Jarvis não move card)
 - [ ] Comentários de code review processados
 - [ ] `pull-request.md` aprovado na sessão (e publicado, se o usuário respondeu Sim)
 - [ ] Pergunta "O PR já foi aprovado e mergeado?" no fim (Sim → `/eng.spec-consolidate`)
