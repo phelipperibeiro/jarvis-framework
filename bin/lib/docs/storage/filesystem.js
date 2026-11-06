@@ -16,7 +16,7 @@ import { createMergeRequest as defaultCreateMergeRequest, newMergeRequestUrl } f
 import { logger } from "../../utils/logger.js";
 import { buildIndex, walkFiles } from "./build-index.js";
 import { archiveEntries } from "../finish-delivery.js";
-import { applyCentralMigration } from "../migrate-central.js";
+import { planCentralMigration, applyCentralMigration } from "../migrate-central.js";
 
 /**
  * Executa `git` na pasta informada, sem shell.
@@ -468,16 +468,21 @@ export function createFilesystemStorage({
 
     /**
      * `jarvis docs migrate --apply` (#220, Q2/Q6): move o layout antigo para a estrutura por
-     * funcionalidade. Sem `.git`, aplica direto na cópia local (como sempre). **Com** `.git`,
-     * entra numa branch e PR próprios — sem isso, a migração mexia na cópia local, na branch em
-     * que ela estivesse, sem `pull` antes, podendo misturar a migração com a branch de outro PR
-     * (#220 item 2, gate de código).
+     * funcionalidade. Sem `.git`, aplica direto na cópia local (como sempre, com o `plan` já
+     * calculado pelo chamador, para o dry-run mostrar o mesmo plano). **Com** `.git`, entra numa
+     * branch e PR próprios — sem isso, a migração mexia na cópia local, na branch em que ela
+     * estivesse, sem `pull` antes, podendo misturar a migração com a branch de outro PR (#220
+     * item 2, gate de código). Nesse caso, o plano é **recalculado depois do `pull`** (não usa
+     * o `plan` recebido): a árvore pode ter mudado desde o dry-run, e um plano desatualizado
+     * levaria a mover arquivo que não existe mais ou a não detectar um conflito novo (rodada 2,
+     * N4). O índice entra no mesmo commit da migração, não fica de fora.
      * @param {Object} p
-     * @param {{moves: Array<{from: string, to: string}>}} p.plan - De `planCentralMigration`
+     * @param {{moves: Array<{from: string, to: string}>}} p.plan - De `planCentralMigration` (usado só sem `.git`)
+     * @param {string} p.squad - Para recalcular o plano depois do `pull` (só com `.git`)
      * @param {string} [p.timestamp] - Para o nome da pasta de backup (testável)
      * @returns {Promise<{moved: Array, backupDir: string, errors: string[], sha?: string, branch?: string, mr?: Object}>}
      */
-    async migrateApply({ plan, timestamp }) {
+    async migrateApply({ plan, squad, timestamp }) {
       ensureLocation();
 
       if (!isGit) {
@@ -494,14 +499,16 @@ export function createFilesystemStorage({
       git(["checkout", "-B", branch, targetBranch], location);
 
       try {
-        const result = applyCentralMigration(location, plan, timestamp);
+        const freshPlan = planCentralMigration(location, squad);
+        const result = applyCentralMigration(location, freshPlan, timestamp);
         if (result.moved.length === 0) {
           return result;
         }
-        const paths = result.moved.flatMap((m) => [m.from, m.to]);
+        const indexPath = this.buildIndex(squad);
+        const paths = [...result.moved.flatMap((m) => [m.from, m.to]), indexPath];
         if (existsSync(join(location, ".gitignore"))) paths.push(".gitignore");
         // `-A` com pathspec: cobre a remoção do `from` (já movido pelo `rename`) e a adição do
-        // `to`, limitado só a esses caminhos — não é um `git add -A` geral.
+        // `to`/índice, limitado só a esses caminhos — não é um `git add -A` geral.
         git(["add", "-A", "--", ...paths], location);
         if (nothingStaged(git, location)) {
           return result; // conteúdo idêntico ao que já está em targetBranch (#220, N6)

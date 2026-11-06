@@ -650,7 +650,7 @@ test("git: migrateApply move numa branch e PR próprios, sem mexer direto na bra
     );
     const plan = planCentralMigration(clone, "CORE");
 
-    const r = await s.migrateApply({ plan, timestamp: "2026-11-06T00-00-00" });
+    const r = await s.migrateApply({ plan, squad: "CORE", timestamp: "2026-11-06T00-00-00" });
 
     assert.equal(r.moved.length, 2);
     assert.equal(calls.length, 1, "um PR só para a migração");
@@ -660,6 +660,13 @@ test("git: migrateApply move numa branch e PR próprios, sem mexer direto na bra
     assert.ok(files.includes("CORE/loja/checkout/checkout.md"));
     assert.ok(files.includes("CORE/loja/checkout/deliveries/delivery-2026-10-15-t-1.md"));
     assert.ok(!files.includes("CORE/product/loja/feature-checkout.md"), "o arquivo antigo saiu da branch");
+    // #220, rodada 2, N4: o índice tem que ir no MESMO commit da migração, não fora dele.
+    assert.ok(files.includes("CORE/index.md"), "o índice entrou no commit da migração");
+    assert.equal(
+      git(["log", "--oneline", `main..${r.branch}`], origin).split("\n").length,
+      1,
+      "um commit só, com a migração e o índice juntos"
+    );
   } finally {
     rmSync(base, { recursive: true, force: true });
   }

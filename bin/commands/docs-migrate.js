@@ -82,15 +82,20 @@ export async function docsMigrate(flags = {}) {
     return;
   }
 
-  const result = await storage.migrateApply({ plan });
+  const result = await storage.migrateApply({ plan, squad });
 
   logger.info(`\n✅ ${result.moved.length} arquivo(s) movido(s)`);
   logger.info(`🗄️  Cópia dos originais em: ${result.backupDir}`);
   if (result.branch) logger.info(`🌿 Branch: ${result.branch}`);
   if (result.mr) logger.info(`🔀 Pull/Merge Request: ${result.mr.url}`);
 
-  const indexPath = storage.buildIndex(squad);
-  logger.info(`🗂️  Índice regenerado: ${indexPath}`);
+  // Com .git, o índice já foi regenerado e comitado dentro de migrateApply, na branch de
+  // trabalho (rodada 2, N4) — regenerá-lo aqui de novo rodaria na branch base, sem o que
+  // acabou de ser migrado. Sem .git, não há branch nenhuma: regenera direto na cópia local.
+  if (!storage.isGit) {
+    const indexPath = storage.buildIndex(squad);
+    logger.info(`🗂️  Índice regenerado: ${indexPath}`);
+  }
 
   if (result.errors.length > 0) {
     logger.error(`⚠️  ${result.errors.length} erro(s):`);
