@@ -15,6 +15,7 @@ import { basename, dirname, extname, isAbsolute, join, relative, resolve, sep } 
 import { createMergeRequest as defaultCreateMergeRequest, newMergeRequestUrl } from "../../vcs/api.js";
 import { logger } from "../../utils/logger.js";
 import { buildIndex, walkFiles } from "./build-index.js";
+import { archiveEntries } from "../finish-delivery.js";
 
 /**
  * Executa `git` na pasta informada, sem shell.
@@ -174,7 +175,7 @@ export function createFilesystemStorage({
       } catch (error) {
         logger.warn(`⚠️  git pull falhou (${error.message.split("\n")[0]}); seguindo com a cópia local.`);
       }
-      git(["checkout", "-b", branch], location);
+      git(["checkout", "-B", branch, targetBranch], location);
 
       try {
         mkdirSync(dirname(dest), { recursive: true });
@@ -268,12 +269,18 @@ export function createFilesystemStorage({
       } catch (error) {
         logger.warn(`⚠️  git pull falhou (${error.message.split("\n")[0]}); seguindo com a cópia local.`);
       }
-      git(["checkout", "-b", branch], location);
+      // `-B` (não `-b`): idempotente — uma segunda tentativa com o mesmo slug (depois de falha
+      // no push/PR) reusa a branch, em vez de falhar com "branch já existe" (#220, item 12).
+      git(["checkout", "-B", branch, targetBranch], location);
 
       try {
         const published = copyAll();
         const indexPath = this.buildIndex(squad);
         const changed = published.filter((p) => !p.skipped).map((p) => p.destPath);
+        if (changed.length === 0) {
+          // Lote todo `skipped` (ex.: só home.md já existente): nada para commitar/publicar.
+          return { published, indexPath };
+        }
         git(["add", "--", ...changed, indexPath], location);
         git(["commit", "-m", `docs(${squad}): consolidação ${slug || ""}`.trim()], location);
         const sha = git(["rev-parse", "HEAD"], location);
@@ -308,6 +315,84 @@ export function createFilesystemStorage({
         }
 
         return { published, indexPath, sha, branch, mr };
+      } finally {
+        try {
+          git(["checkout", targetBranch], location);
+        } catch {
+          // a branch de trabalho fica; o erro original (se houver) é o que importa
+        }
+      }
+    },
+
+    /**
+     * Passo `--archive` (#220, Q3/Q14): copia os originais ligados a uma entrega para
+     * `archive/`, sem apagar nada. Sem `.git`, é a mesma cópia local de sempre — a pessoa
+     * já é avisada (no comando) de que `archive/` é a única proteção. **Com** `.git`, a
+     * cópia entra numa branch e PR próprios, como o `publishBatch`: sem isso, a promessa
+     * de "arquivar antes de apagar" das Q3/Q14 não valia — o arquivo ficava solto na cópia
+     * local de quem rodou o comando, nunca chegava ao remote (item 2, gate de código).
+     * @param {Object} p
+     * @param {string} p.squad
+     * @param {string} p.produto
+     * @param {Array<Object>} p.entries - Entradas do manifesto (mutadas com `archiveDestPath`/`archivedHash`)
+     * @returns {Promise<{archived: Array, skipped: Array, errors: string[], sha?: string, branch?: string, mr?: Object}>}
+     */
+    async archiveBatch({ squad, produto, entries }) {
+      ensureLocation();
+
+      if (!isGit) {
+        return archiveEntries({ root: location, squad, produto, entries });
+      }
+
+      const branch = `docs/${squad.toLowerCase()}-archive-${Date.now()}`;
+      git(["checkout", targetBranch], location);
+      try {
+        git(["pull", "--ff-only", "origin", targetBranch], location);
+      } catch (error) {
+        logger.warn(`⚠️  git pull falhou (${error.message.split("\n")[0]}); seguindo com a cópia local.`);
+      }
+      git(["checkout", "-B", branch, targetBranch], location);
+
+      try {
+        const result = archiveEntries({ root: location, squad, produto, entries });
+        const changed = result.archived.map((a) => a.archiveDestPath);
+        if (changed.length === 0) {
+          return result;
+        }
+        git(["add", "--", ...changed], location);
+        git(["commit", "-m", `docs(${squad}): arquiva ${changed.length} documento(s) de trabalho`], location);
+        const sha = git(["rev-parse", "HEAD"], location);
+
+        git(["push", "-u", "origin", branch], location);
+        const remoteUrl = git(["remote", "get-url", "origin"], location);
+        const description = `## Arquivamento\n\n${changed.map((d) => `- \`${d}\``).join("\n")}`;
+        let mr = null;
+        try {
+          mr = await createMergeRequest(
+            remoteUrl,
+            {
+              source: branch,
+              target: targetBranch,
+              title: `docs(${squad}): arquivamento de ${changed.length} documento(s)`,
+              description,
+            },
+            deps.fileEnvResult ? { fileEnvResult: deps.fileEnvResult } : {}
+          );
+        } catch (error) {
+          if (error.sent) throw error;
+          let link = "";
+          try {
+            link = newMergeRequestUrl(remoteUrl, branch, targetBranch);
+          } catch {
+            // remote fora de github/gitlab: sem link
+          }
+          logger.warn(
+            `⚠️  MR não aberto (${error.message.split("\n")[0]}). A branch ${branch} já está no remote` +
+              (link ? `; abra o MR à mão: ${link}` : "; abra o MR à mão no host.")
+          );
+        }
+
+        return { ...result, sha, branch, mr };
       } finally {
         try {
           git(["checkout", targetBranch], location);

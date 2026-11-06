@@ -425,6 +425,118 @@ test("git: publishBatch commita a entrega inteira numa branch e um PR só", asyn
   }
 });
 
+test("git: publishBatch com uma branch local já existente (retry) reusa em vez de falhar (#220 item 12)", async () => {
+  const { base, clone } = gitFixture();
+  try {
+    // Simula uma tentativa anterior que criou a branch local e não chegou a terminar
+    // (ex.: push falhou): a branch já existe quando `publishBatch` roda de novo.
+    git(["checkout", "-b", "docs/core-retry-1"], clone);
+    git(["checkout", "main"], clone);
+
+    const feature = join(base, "feature-checkout.md");
+    writeFileSync(feature, PRD);
+    const s = getStorage(
+      { CENTRAL_DOCS_STORAGE: "filesystem", CENTRAL_DOCS_LOCATION: clone, CENTRAL_DOCS_TARGET_BRANCH: "main" },
+      { root: base, deps: { createMergeRequest: async () => ({ vendor: "github", iid: 1, url: "x" }) } }
+    );
+
+    const r = await s.publishBatch({
+      squad: "CORE",
+      slug: "retry-1",
+      files: [{ localFile: feature, destPath: "CORE/loja/checkout/checkout.md", tipo: "feature" }],
+    });
+
+    assert.equal(r.branch, "docs/core-retry-1");
+    assert.equal(git(["branch", "--show-current"], clone), "main");
+  } finally {
+    rmSync(base, { recursive: true, force: true });
+  }
+});
+
+test("git: publishBatch com lote todo pulado (home.md já existe) não tenta comitar (#220 item 12)", async () => {
+  const { base, clone } = gitFixture();
+  try {
+    write(join(clone, "CORE/home.md"), "# já existe\n");
+    git(["add", "CORE/home.md"], clone);
+    git(["commit", "-m", "home existente"], clone);
+
+    const home = join(base, "home.md");
+    writeFileSync(home, "# home nova\n");
+    const s = getStorage(
+      { CENTRAL_DOCS_STORAGE: "filesystem", CENTRAL_DOCS_LOCATION: clone, CENTRAL_DOCS_TARGET_BRANCH: "main" },
+      { root: base, deps: { createMergeRequest: async () => assert.fail("não deveria abrir PR") } }
+    );
+
+    const r = await s.publishBatch({
+      squad: "CORE",
+      slug: "so-home",
+      files: [{ localFile: home, destPath: "CORE/home.md", tipo: "home" }],
+    });
+
+    assert.equal(r.published[0].skipped, true);
+    assert.equal(r.mr, undefined);
+    assert.equal(git(["branch", "--show-current"], clone), "main");
+  } finally {
+    rmSync(base, { recursive: true, force: true });
+  }
+});
+
+test("git: archiveBatch copia os originais numa branch e PR próprios (#220 item 2)", async () => {
+  const { base, origin, clone } = gitFixture();
+  try {
+    const original = join(base, "prd-001-checkout.md");
+    writeFileSync(original, "---\nid: PRD-001\nstatus: in_progress\n---\n# PRD\n");
+    const calls = [];
+    const s = getStorage(
+      { CENTRAL_DOCS_STORAGE: "filesystem", CENTRAL_DOCS_LOCATION: clone, CENTRAL_DOCS_TARGET_BRANCH: "main" },
+      {
+        root: base,
+        deps: {
+          createMergeRequest: async (url, opts) => {
+            calls.push({ url, opts });
+            return { vendor: "github", iid: 11, url: "https://example/pr/11" };
+          },
+        },
+      }
+    );
+    const entries = [{ tipo: "prd", feature: "checkout", originalPath: original }];
+
+    const r = await s.archiveBatch({ squad: "CORE", produto: "loja", entries });
+
+    assert.equal(r.archived.length, 1);
+    assert.equal(calls.length, 1, "um PR só para o arquivamento");
+    assert.equal(git(["branch", "--show-current"], clone), "main");
+    assert.ok(existsSync(original), "o original continua onde estava");
+
+    const files = git(["ls-tree", "-r", "--name-only", r.branch], origin).split("\n");
+    assert.ok(files.includes("CORE/loja/checkout/archive/prd-001-checkout.md"));
+    const archived = git(["show", `${r.branch}:CORE/loja/checkout/archive/prd-001-checkout.md`], origin);
+    assert.match(archived, new RegExp(`origin: ${original.replace(/[/\\]/g, "\\$&")}`));
+    assert.match(archived, /original_status: in_progress/);
+  } finally {
+    rmSync(base, { recursive: true, force: true });
+  }
+});
+
+test("git: archiveBatch sem nenhuma entrada arquivável não comita nem abre PR (#220 item 2)", async () => {
+  const { base, clone } = gitFixture();
+  try {
+    const s = getStorage(
+      { CENTRAL_DOCS_STORAGE: "filesystem", CENTRAL_DOCS_LOCATION: clone, CENTRAL_DOCS_TARGET_BRANCH: "main" },
+      { root: base, deps: { createMergeRequest: async () => assert.fail("não deveria abrir PR") } }
+    );
+    // Entradas sem originalPath (feature/delivery/product/home/history): nada a arquivar.
+    const entries = [{ tipo: "feature", feature: "checkout" }];
+
+    const r = await s.archiveBatch({ squad: "CORE", produto: "loja", entries });
+
+    assert.equal(r.archived.length, 0);
+    assert.equal(git(["branch", "--show-current"], clone), "main");
+  } finally {
+    rmSync(base, { recursive: true, force: true });
+  }
+});
+
 test("git: sem CLI (indisponível) o push fica e o MR é null; enviado com erro sobe", async () => {
   const { base, clone } = gitFixture();
   try {

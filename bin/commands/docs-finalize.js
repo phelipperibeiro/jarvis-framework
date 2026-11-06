@@ -43,14 +43,24 @@ export async function docsFinalize(flags = {}) {
   }
 
   let env;
+  let storage;
   try {
-    ({ env } = openStorageFromEnv(flags));
+    ({ env, storage } = openStorageFromEnv(flags));
   } catch (error) {
     logger.error("❌ Central docs:", error.message);
     process.exit(1);
   }
 
-  const { finalized, changed, rewritten, errors } = finalizeEntries({ entries, env });
+  const squad = flags.squad || env.SQUAD;
+  const produto = flags.produto || flags.workspace || env.WORKSPACE;
+
+  const { finalized, changed, rewritten, errors } = finalizeEntries({
+    entries,
+    env,
+    root: storage?.location,
+    squad,
+    produto,
+  });
 
   logger.info(`🧹 Finalização — ${finalized.length} original(is) removido(s)`);
   for (const f of finalized) logger.info(`   - ${f.originalPath}`);
@@ -59,8 +69,8 @@ export async function docsFinalize(flags = {}) {
     for (const r of rewritten) logger.info(`   - ${r}`);
   }
   if (changed.length > 0) {
-    logger.info(`⚠️  ${changed.length} documento(s) mudaram desde o --archive e NÃO foram removidos:`);
-    for (const c of changed) logger.info(`   - ${c.originalPath}`);
+    logger.info(`⚠️  ${changed.length} documento(s) NÃO foram removidos:`);
+    for (const c of changed) logger.info(`   - ${c.originalPath} (${c.reason})`);
   }
   if (errors.length > 0) {
     logger.error(`⚠️  ${errors.length} erro(s):`);

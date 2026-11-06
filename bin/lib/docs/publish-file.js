@@ -53,9 +53,17 @@ export const VALID_TYPES = Object.freeze([
   ...DECISION_DOC_TYPES,
 ]);
 
-const SEGMENT = /^[A-Za-z0-9][A-Za-z0-9_-]*$/;
+/** @constant {RegExp} Formato aceito por squad, produto, feature, slug e task key (exportado para `docs-migrate.js`, #220) */
+export const SEGMENT = /^[A-Za-z0-9][A-Za-z0-9_-]*$/;
 
-function assertSegment(label, value) {
+/**
+ * Valida um segmento de caminho (squad, produto, feature…) contra `SEGMENT`.
+ * Exportado para outros comandos (`docs-migrate.js`) validarem antes de montar caminhos.
+ * @param {string} label - Nome do campo, para a mensagem de erro
+ * @param {string} value
+ * @throws {Error} valor vazio ou fora do formato
+ */
+export function assertSegment(label, value) {
   if (!value || !SEGMENT.test(value)) {
     throw new Error(
       `${label} inválido: "${value ?? ""}" (use letras, números, "-" ou "_", sem "/" nem "..")`
@@ -219,6 +227,7 @@ export async function publishFiles({ storage, squad, produto, slug, files }) {
   if (!files || files.length === 0) {
     throw new Error("Nenhum arquivo para publicar (manifesto vazio).");
   }
+  if (slug) assertSegment("Slug", slug);
 
   const resolved = files.map((f) => {
     logger.info(`Validando frontmatter de ${f.localFile}...`);

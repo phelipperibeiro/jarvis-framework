@@ -1,6 +1,5 @@
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { openStorageFromEnv } from "../lib/docs/fetch-file.js";
-import { archiveEntries } from "../lib/docs/finish-delivery.js";
 import { logger, configureFromFlags } from "../lib/utils/logger.js";
 
 /**
@@ -65,8 +64,7 @@ export async function docsArchive(flags = {}) {
     );
   }
 
-  const { archived, skipped, errors } = archiveEntries({
-    root: storage.location,
+  const { archived, skipped, errors, branch, mr } = await storage.archiveBatch({
     squad,
     produto,
     entries,
@@ -77,6 +75,8 @@ export async function docsArchive(flags = {}) {
   logger.info(`📦 Arquivamento — ${archived.length} documento(s) copiado(s) para archive/`);
   for (const a of archived) logger.info(`   - ${a.originalPath} → ${a.archiveDestPath}`);
   for (const s of skipped) logger.info(`   ⚠️  Pulado (${s.reason}): ${s.originalPath}`);
+  if (branch) logger.info(`🌿 Branch: ${branch}`);
+  if (mr) logger.info(`🔀 Pull/Merge Request: ${mr.url}`);
   if (errors.length > 0) {
     logger.error(`⚠️  ${errors.length} erro(s):`);
     for (const e of errors) logger.error(`   - ${e}`);
