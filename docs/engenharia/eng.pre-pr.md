@@ -34,7 +34,7 @@ O comando percorre "gates" de revisão. Alguns sempre rodam, outros só quando a
 | Testes automatizados nas mudanças (`eng-qa` + especialização registrada) | Sempre na rodada 1; depois, se algo mudou |
 | Revisão de interface: TypeScript, tokens, acessibilidade (`eng.frontend.agent`) | Se houver mudança de UI |
 | Usabilidade: estados vazios, carregando, mensagens de erro (`eng.ux-designer`) | Se houver nova feature de UI ou mudança de fluxo |
-| Documentação desatualizada (`eng.docs-writer`, sem editar) | Sempre na rodada 1; depois, se algo mudou |
+| Documentação desatualizada (`eng.docs-writer`, sem editar) — inclusive funcionalidade removida/renomeada que ainda aparece no `docs/`, e texto de histórico (comparação com versão anterior) que pertence ao Central docs, não ao guia de uso | Sempre na rodada 1; depois, se algo mudou |
 | Revisão de segurança (checklist inline: sanitização, auth guards, headers, secrets, `npm audit`) | Se tocar auth, sessões, inputs, CORS, CSP, permissões ou endpoints públicos |
 
 **Rodada incremental:** da segunda rodada em diante, um revisor só roda de novo se o que ele lê mudou desde a rodada anterior (o `Commit:` do relatório anterior). Quem roda revisa a branch inteira. Uma lacuna que ficou sem revisão continua pendente: ela é copiada para a rodada nova com a decisão que já tinha, e não some do relatório.

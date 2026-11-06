@@ -37,6 +37,9 @@ jarvis docs sync                                  # resumo: funcionalidades e en
 jarvis docs fetch CORE/index.md                   # conteúdo de um arquivo (exit 2 se não existir)
 jarvis docs publish --file .../consolidation/feature-checkout.md --tipo feature            # pelo /eng.spec-consolidate, depois do Sim (regra de ouro)
 jarvis docs publish --file .../consolidation/delivery-2026-10-15-task-123.md --tipo delivery  # idem
+jarvis docs publish --manifest .../consolidation/manifest.json --slug task-123  # a entrega inteira, numa branch/PR só
+jarvis docs archive --manifest .../consolidation/manifest.json    # guarda os originais em archive/, sem apagar
+jarvis docs finalize --manifest .../consolidation/manifest.json   # apaga os originais já arquivados (irreversível)
 jarvis docs migrate [--apply]                     # layout antigo -> por funcionalidade; dry-run por padrão
 ```
 

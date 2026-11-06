@@ -34,6 +34,8 @@ Para cada fase do plano:
 7. **Faz o commit da fase**, com arquivos adicionados um a um e a chave da tarefa na mensagem
 8. **Pergunta** se você quer iniciar a próxima fase e espera a resposta
 
+Quando todas as fases terminam, antes de perguntar o que fazer depois, ele **oferece** gerar ou atualizar a documentação do projeto a partir da entrega (opcional, não trava o fluxo, e não entra na conta de `MAX_AI_EXECUTION_PERCENTAGE`). Com Sim, usa o skill `eng-global-docs-write` e comita a atualização em separado. Com Não, segue direto; se a documentação ficou desatualizada, é o `/eng.pre-pr` (Gate 9) que aponta depois.
+
 ## O limite da IA
 
 O comando respeita `MAX_AI_EXECUTION_PERCENTAGE` do `ENV.md` (padrão 80, mínimo 60, máximo 100). Ele conta as tarefas do plano e executa só até `floor(total × MAX / 100)`. Ao atingir o limite, **para**, conta o que fez, lista o que sobrou e pergunta como você quer continuar. Ele nunca contorna esse limite. As tarefas restantes ele pode ajudar a explicar, mas quem executa é você.

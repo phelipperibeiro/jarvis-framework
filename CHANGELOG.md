@@ -6,6 +6,23 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), e o
 
 > Versões anteriores a `2.1.1` não foram documentadas retroativamente neste changelog — o histórico detalhado dessas versões continua disponível via `git log`.
 
+## [Unreleased]
+
+### Added
+- **Central docs por funcionalidade (#220)**: a estrutura passa de `{SQUAD}/{product,engineering}/{produto}/{feature,delivery}-*.md` para `{SQUAD}/{produto}/{funcionalidade}/...`, com `deliveries/`, `decisions/` e `archive/` por funcionalidade, `history/{task_key}/` e `{produto}.md` por produto, e `{SQUAD}/home.md` (página inicial, criada uma vez, nunca sobrescrita). Documentos de trabalho (PRD, FRD, épico, história, tarefa, ARD, RFC, SPEC, discovery) passam a ser publicados em `decisions/` quando ligados a uma entrega consolidada — o que não está ligado continua em `docs/jarvis/`, sem exceção; um documento que cobre mais de uma funcionalidade é quebrado em partes, uma por funcionalidade, com cabeçalho comum (issue, PR/MR, partes irmãs).
+- `jarvis docs publish --manifest <path> [--slug <chave>] [--force]`: publica a consolidação de uma entrega inteira numa chamada só (uma branch e um PR, com `.git`, em vez de um por arquivo); `--force` já finaliza (apaga os originais), sem `archive/`, numa exceção explícita à regra de ouro.
+- `jarvis docs archive --manifest <path>`: copia os originais já publicados para `archive/` da funcionalidade, sem apagar nada; grava o hash de cada original no próprio manifesto, para o `finalize` conferir depois.
+- `jarvis docs finalize --manifest <path>`: apaga os originais já arquivados, só os que não mudaram desde o `archive` (irreversível); reescreve, best effort, os `related_*` de outros documentos que apontavam para o original removido.
+- `jarvis docs migrate [--apply]`: migra um Central docs no layout antigo para a estrutura por funcionalidade (dry-run por padrão); entrega citada por mais de uma funcionalidade não é movida automaticamente (fica para o agente separar, oferecido pelo `/jarvis-init` Upgrade C).
+- `/eng.spec-consolidate`: listagem "o que é publicado e o que fica" antes de escrever qualquer arquivo (vínculo com a entrega, `status`, oferta de marcar `in_production`), e os passos `--archive`/`--finalize`/`--force`.
+- `/eng.work`: ao final de todas as fases, oferece (opcional, fora do `MAX_AI_EXECUTION_PERCENTAGE`) gerar ou atualizar a documentação do projeto a partir da entrega.
+- `/eng.light-arch` passa a gravar sempre `light-arch.md` na sessão, a partir do novo `templates/engineering/light-arch-template.md`.
+
+### Changed
+- `/eng.pre-pr` (Gate 9, documentação): passa a apontar também funcionalidade removida/renomeada que ainda aparece no `docs/` e texto de histórico que pertence ao Central docs, não ao guia de uso.
+- Busca de contexto (`prod.spec.*`, `eng.start`, `eng.create-ard*`, `eng.create-rfc`, `prod.spec.discovery`): com o documento de trabalho ausente em `docs/jarvis/`, passa a buscar em `decisions/` da funcionalidade antes de concluir que não existe.
+- `CENTRAL_DOCS_REVIEWERS` removido (não tinha uso real); quem já tinha a variável no `ENV.md` não é afetado, ela só passa a ser ignorada.
+
 ## [8.5.0] - 2026-11-02
 
 ### Added

@@ -541,6 +541,8 @@ test("cada ponto que envia algo tem a pergunta logo antes", () => {
     ["skills/AGENTS.md", /^\| `jarvis docs publish` \| `jarvis-docs-central` \|$/],
     ["templates/AGENTS.md", /^\| `central-home-template\.md` \|/],
     [SPEC_CONSOLIDATE, /^- `--force`:/],
+    ["AGENTS.md", /^jarvis docs publish --file\|--manifest/],
+    ["skills/jarvis-docs-central/README.md", /^jarvis docs publish --manifest/],
     ["skills/jarvis-init/SKILL.md", /é gerado pelo `jarvis docs publish`/],
     [REPORT_ISSUE, /^Sem host \(`grupo\/repo`\), o vendor não é adivinhado/],
     [INTEGRATIONS, /^\| `(?:TASK_MANAGER|VERSION_CONTROL)` \(\+/],
