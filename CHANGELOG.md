@@ -6,7 +6,7 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), e o
 
 > Versões anteriores a `2.1.1` não foram documentadas retroativamente neste changelog — o histórico detalhado dessas versões continua disponível via `git log`.
 
-## [Unreleased]
+## [8.6.0] - 2026-11-06
 
 ### Added
 - **Central docs por funcionalidade (#220)**: a estrutura passa de `{SQUAD}/{product,engineering}/{produto}/{feature,delivery}-*.md` para `{SQUAD}/{produto}/{funcionalidade}/...`, com `deliveries/`, `decisions/` e `archive/` por funcionalidade, `history/{task_key}/` e `{produto}.md` por produto, e `{SQUAD}/home.md` (página inicial, criada uma vez, nunca sobrescrita). Documentos de trabalho (PRD, FRD, épico, história, tarefa, ARD, RFC, SPEC, discovery) passam a ser publicados em `decisions/` quando ligados a uma entrega consolidada — o que não está ligado continua em `docs/jarvis/`, sem exceção; um documento que cobre mais de uma funcionalidade é quebrado em partes, uma por funcionalidade, com cabeçalho comum (issue, PR/MR, partes irmãs).
