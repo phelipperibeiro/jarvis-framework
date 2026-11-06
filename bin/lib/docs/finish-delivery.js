@@ -29,7 +29,7 @@ import {
 } from "node:fs";
 import { basename, dirname, join, relative, resolve, isAbsolute } from "node:path";
 import { resolveDestPath } from "./publish-file.js";
-import { expandEnv } from "../core/docs-migrate.js";
+import { expandEnv, docsFolders } from "../core/docs-migrate.js";
 import { parseFrontmatter } from "../utils/frontmatter.js";
 
 function sha256(path) {
@@ -63,8 +63,22 @@ function destFor({ tipo, squad, produto, feature, taskKey, e }) {
   }).destPath;
 }
 
-function archiveDestFor(p) {
-  return destFor(p).replace(/\/decisions\//, "/archive/");
+/**
+ * Monta o caminho em `archive/` pelos mesmos componentes validados de `resolveDestPath`
+ * (squad/produto/feature/nome do arquivo), em vez de trocar `/decisions/` por `/archive/`
+ * no `destPath` já pronto (rodada 2, N8): a troca de texto dava errado se squad, produto
+ * ou feature fosse, por coincidência, literalmente "decisions".
+ */
+function archiveDestFor({ tipo, squad, produto, feature, taskKey, e }) {
+  const { fileName } = resolveDestPath({
+    tipo,
+    squad,
+    produto,
+    feature,
+    taskKey,
+    localFile: publishedFileRef(e),
+  });
+  return `${squad}/${produto}/${feature}/archive/${fileName}`;
 }
 
 /**
@@ -86,19 +100,16 @@ function injectFrontmatterFields(path, fields) {
 
 /**
  * Resolve, com `$VAR` expandido (#220 item 2), as três pastas onde um documento de trabalho
- * "original" pode estar.
+ * "original" pode estar. Reaproveita `docsFolders` de `core/docs-migrate.js` (rodada 2, N7):
+ * duas regras para as mesmas pastas (com normalização diferente de `./`/`/` nas pontas)
+ * podiam divergir com o tempo.
  * @param {Record<string, string>} env
  * @returns {string[]} caminhos (relativos ou absolutos, como vierem do ENV.md)
  */
 function resolveDocsFolders(env) {
   const expanded = expandEnv(new Map(Object.entries(env || {})));
-  const docsFolder = expanded.get("DOCS_FOLDER") || "docs";
-  const jarvisDocs = expanded.get("JARVIS_DOCS") || `${docsFolder}/jarvis`;
-  return [
-    expanded.get("PROD_DOCS") || `${jarvisDocs}/product`,
-    expanded.get("ENG_DOCS") || `${jarvisDocs}/engineering`,
-    expanded.get("DISCOVERIES_DOCS") || `${jarvisDocs}/discoveries`,
-  ];
+  const { prod, eng, discoveries } = docsFolders(expanded);
+  return [prod, eng, discoveries];
 }
 
 /**

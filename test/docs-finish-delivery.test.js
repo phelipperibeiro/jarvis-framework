@@ -48,6 +48,28 @@ test("archiveEntries: copia o original para archive/, marca hash e destino; não
   }
 });
 
+test("archiveEntries: funcionalidade chamada 'decisions' não quebra o caminho de archive/ (#220, rodada 2 item 2, N8)", () => {
+  // Antes (N8), archiveDestFor trocava a primeira ocorrência de "/decisions/" no destPath já
+  // pronto — com a funcionalidade chamada "decisions", o destPath é
+  // "CORE/loja/decisions/decisions/prd-x.md" e a troca acertava o segmento errado.
+  const dir = tmp();
+  try {
+    const root = join(dir, "cd");
+    const original = join(dir, "docs-jarvis/product/prd-010.md");
+    write(original, "# PRD\n");
+    const entries = [{ tipo: "prd", feature: "decisions", originalPath: original }];
+
+    const { archived, errors } = archiveEntries({ root, squad: "CORE", produto: "loja", entries });
+
+    assert.equal(errors.length, 0);
+    assert.equal(archived.length, 1);
+    assert.equal(archived[0].archiveDestPath, "CORE/loja/decisions/archive/prd-010.md");
+    assert.ok(existsSync(join(root, "CORE/loja/decisions/archive/prd-010.md")));
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
 test("archiveEntries: original ausente vira erro; destino já arquivado vira 'pulado'", () => {
   const dir = tmp();
   try {
