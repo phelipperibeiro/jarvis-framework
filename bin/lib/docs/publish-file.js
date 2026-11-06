@@ -64,6 +64,32 @@ export const VALID_TYPES = Object.freeze([
   ...DECISION_DOC_TYPES,
 ]);
 
+/**
+ * Tipos de decisão que nascem na sessão de um card (`architecture.md`, `plan.md`, `light-arch.md`).
+ * Vários cards podem tocar a mesma funcionalidade, então o nome publicado leva o card (#229).
+ * @constant {ReadonlyArray<string>}
+ */
+export const SESSION_DECISION_TYPES = Object.freeze(["architecture", "plan", "light-arch"]);
+
+/**
+ * Nome, em `decisions/`, de um documento de decisão da sessão: `{tipo}-{card}{ext}`; quando o
+ * documento é quebrado por funcionalidade (Q1 da #229), cada parte leva também o slug dela:
+ * `{tipo}-{card}-{funcionalidade}{ext}`. O `-vN` (versionamento) vem depois, só para revisões do
+ * **mesmo** card.
+ * @param {Object} p
+ * @param {string} p.tipo
+ * @param {string} p.taskKey
+ * @param {string} p.feature
+ * @param {boolean} p.split - O documento foi quebrado em partes?
+ * @param {string} [p.ext] - Padrão `.md`
+ * @returns {string}
+ */
+export function sessionDecisionFileName({ tipo, taskKey, feature, split, ext = ".md" }) {
+  assertSegment("Task key", taskKey ?? "");
+  assertSegment("Feature", feature ?? "");
+  return split ? `${tipo}-${taskKey}-${feature}${ext}` : `${tipo}-${taskKey}${ext}`;
+}
+
 /** @constant {RegExp} Formato aceito por squad, produto, feature, slug e task key (exportado para `docs-migrate.js`, #220) */
 export const SEGMENT = /^[A-Za-z0-9][A-Za-z0-9_-]*$/;
 
@@ -266,12 +292,14 @@ export async function publishFile({ storage, localFile, tipo, squad, produto, fe
  * @param {string[]} [opts.localOnlyDirs] - Pastas que só existem no disco local (sessão,
  *   `docs/jarvis/`): link para elas vira texto na conversão
  * @param {Object} [opts.deps] - `repoOf` injetável (testes), de `makeRepoResolver`
+ * @param {boolean} [opts.dryRun] - Só simula (`--dry-run`): devolve o `plan` (destino efetivo e
+ *   status de cada arquivo: novo, igual, nova versão, sobrescreve) sem gravar nada
  * @returns {Promise<{ published: Array<{destPath: string, skipped?: boolean, hash?: string}>, indexPath: string, sha?: string, branch?: string, mr?: Object, linkWarnings: Array<{destPath: string, link: string, reason: string}> }>}
  *   `published` segue a ordem de `files`; `destPath` é o destino efetivo (com `-vN` quando a
  *   entrada é de sessão e o conteúdo mudou) e `hash` o sha256 do que foi publicado.
  *   `linkRewrites` lista, por arquivo, os links convertidos e os que viraram texto.
  */
-export async function publishFiles({ storage, squad, produto, slug, files, localOnlyDirs = [], deps = {} }) {
+export async function publishFiles({ storage, squad, produto, slug, files, localOnlyDirs = [], deps = {}, dryRun = false }) {
   if (!storage) {
     throw new Error(
       "Central docs desligado (CENTRAL_DOCS_STORAGE vazio). Configure-o no /jarvis-init."
@@ -298,6 +326,8 @@ export async function publishFiles({ storage, squad, produto, slug, files, local
   });
   logger.info("✅ Frontmatter válido em todos os arquivos");
 
+  nameSessionDecisions(files, resolved);
+
   // Os .md da sessão saem com os links convertidos (o original na sessão não muda).
   const tmpDir = mkdtempSync(join(tmpdir(), "jarvis-publish-"));
   try {
@@ -305,6 +335,14 @@ export async function publishFiles({ storage, squad, produto, slug, files, local
 
     // Links que não resolvem dentro do Central docs (leitura fora do workspace, Confluence): só avisa.
     const linkWarnings = warnUnresolvableLinks(storage, resolved);
+
+    if (dryRun) {
+      const plan = typeof storage.previewBatch === "function" ? storage.previewBatch({ files: resolved }) : [];
+      logger.info("");
+      logger.info("🔎 Simulação (nada foi gravado):");
+      for (const p of plan) logger.info(`  - ${p.status.padEnd(11)} ${p.destPath}`);
+      return { dryRun: true, plan, published: [], linkWarnings, linkRewrites };
+    }
 
     logger.info("");
     logger.info("📋 Resumo da Publicação (lote):");
@@ -333,6 +371,31 @@ export async function publishFiles({ storage, squad, produto, slug, files, local
   } finally {
     rmSync(tmpDir, { recursive: true, force: true });
   }
+}
+
+/**
+ * Dá o nome final, com o card, aos documentos de decisão da sessão (`architecture`, `plan`,
+ * `light-arch` com `fromSession` e `taskKey`): `architecture-229.md`; quando o mesmo tipo do
+ * mesmo card tem mais de uma funcionalidade no lote, o documento foi quebrado em partes e cada
+ * uma vira `architecture-229-checkout.md`. Muda só o nome do destino (`resolved[i].destPath`).
+ * @param {Array<Object>} files - Entradas do manifesto
+ * @param {Array<{destPath: string}>} resolved - Destinos calculados (mutado)
+ */
+function nameSessionDecisions(files, resolved) {
+  const features = new Map(); // "tipo|card" → funcionalidades distintas
+  for (const f of files) {
+    if (!f.fromSession || !f.taskKey || !SESSION_DECISION_TYPES.includes(f.tipo)) continue;
+    const k = `${f.tipo}|${f.taskKey}`;
+    if (!features.has(k)) features.set(k, new Set());
+    features.get(k).add(f.feature);
+  }
+  files.forEach((f, i) => {
+    if (!f.fromSession || !f.taskKey || !SESSION_DECISION_TYPES.includes(f.tipo)) return;
+    const split = features.get(`${f.tipo}|${f.taskKey}`).size > 1;
+    const ext = extname(resolved[i].destPath) || ".md";
+    const name = sessionDecisionFileName({ tipo: f.tipo, taskKey: f.taskKey, feature: f.feature, split, ext });
+    resolved[i].destPath = resolved[i].destPath.replace(/[^/]+$/, name);
+  });
 }
 
 /**

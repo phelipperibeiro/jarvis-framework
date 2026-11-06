@@ -34,6 +34,7 @@ templates/
     ├── central-delivery-template.md  # Central docs: registro da entrega
     ├── central-product-template.md   # Central docs: página do produto (transversal)
     ├── central-home-template.md      # Central docs: página inicial do squad (editável, só uma vez)
+    ├── central-session-template.md   # Central docs: página-índice da sessão de um card (history/{card}/{card}.md)
     └── qa/
         ├── qa.release-signoff-template.md
         ├── qa.sprint-plan-template.md

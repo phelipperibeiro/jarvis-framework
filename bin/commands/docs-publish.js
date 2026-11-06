@@ -125,6 +125,7 @@ function recordPublished(manifestPath, files, published) {
  * @param {string} [flags.manifest] - Caminho de um manifesto JSON com vários arquivos (publicação
  *   em lote: uma branch e um PR só, em vez de um por arquivo)
  * @param {string} [flags.slug] - Nome da branch/commit do lote (ex.: a chave da entrega)
+ * @param {boolean} [flags.dryRun] - Só com --manifest: simula e mostra o que seria publicado (novo, igual, nova versão), sem gravar nada
  * @param {string} [flags.produto] - Pasta do produto (padrão: WORKSPACE do ENV.md)
  * @param {string} [flags.feature] - Slug da funcionalidade. Opcional para `feature` quando o
  *   nome do arquivo segue `feature-{slug}.md`; obrigatório para `delivery` e para os
@@ -197,7 +198,9 @@ async function docsPublishManifest(flags) {
       slug: flags.slug,
       files,
       localOnlyDirs: localOnlyDirs(env, root),
+      dryRun: Boolean(flags.dryRun),
     });
+    if (result.dryRun) return; // simulação: não grava o manifesto nem finaliza
     recordPublished(flags.manifest, files, result.published);
     logger.info("");
     logger.info("✅ Publicação concluída!");

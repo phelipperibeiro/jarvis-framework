@@ -163,6 +163,10 @@ export function buildProgram() {
       "Só com --manifest: publica e já finaliza (apaga os originais), sem --archive — zero reversão (Q15, #220)"
     )
     .option(
+      "--dry-run",
+      "Só com --manifest: simula e mostra o que seria publicado (novo, igual, nova versão, sobrescreve), sem gravar nada nem alterar o manifesto"
+    )
+    .option(
       "--tipo <tipo>",
       "feature|delivery|product|history|prd|frd|feat|epic|story|task|ard|rfc|spec|swagger|qa-report|discovery|architecture|plan|light-arch"
     )

@@ -11,6 +11,8 @@ import {
   resolveDestPath,
   assertRelPath,
   REL_MAX_DEPTH,
+  SESSION_DECISION_TYPES,
+  sessionDecisionFileName,
   VALID_TYPES,
   DECISION_DOC_TYPES,
 } from "../bin/lib/docs/publish-file.js";
@@ -342,7 +344,7 @@ test("publishFiles: converte os links dos .md da sessão no destino e deixa o or
     mkdirSync(consolidation, { recursive: true });
     writeFileSync(join(consolidation, "architecture.md"), archOriginal);
     writeFileSync(join(consolidation, "plan.md"), planOriginal);
-    writeFileSync(join(consolidation, "session-229.md"), "# Sessão 229\n[arquitetura](../../checkout/decisions/architecture.md)\n");
+    writeFileSync(join(consolidation, "session-229.md"), "# Sessão 229\n[arquitetura](../../checkout/decisions/architecture-229.md)\n");
 
     const result = await publishFiles({
       storage,
@@ -364,24 +366,97 @@ test("publishFiles: converte os links dos .md da sessão no destino e deixa o or
       ],
     });
 
-    const arch = readFileSync(join(root, "CORE/loja/checkout/decisions/architecture.md"), "utf-8");
-    assert.match(arch, /\[plan\]\(plan\.md#fase-1\)/, "outro arquivo da entrega: link relativo no Central docs");
+    const arch = readFileSync(join(root, "CORE/loja/checkout/decisions/architecture-229.md"), "utf-8");
+    assert.match(arch, /\[plan\]\(plan-229\.md#fase-1\)/, "outro arquivo da entrega: link relativo no Central docs");
     assert.match(arch, /\(https:\/\/github\.com\/o\/jarvis-framework\/blob\/2d149a1\/bin\/x\.js#L5\)/, "código: URL no commit base");
     assert.match(arch, /PRD: prd\./, "docs/jarvis vira texto");
     assert.match(arch, /\[#229\]\(https:\/\/github\.com\/o\/r\/issues\/229\)/, "URL intacta");
-    const plan = readFileSync(join(root, "CORE/loja/checkout/decisions/plan.md"), "utf-8");
-    assert.match(plan, /\[a arquitetura\]\(architecture\.md\)/);
+    const plan = readFileSync(join(root, "CORE/loja/checkout/decisions/plan-229.md"), "utf-8");
+    assert.match(plan, /\[a arquitetura\]\(architecture-229\.md\)/);
     const indice = readFileSync(join(root, "CORE/loja/history/229/229.md"), "utf-8");
-    assert.match(indice, /\(\.\.\/\.\.\/checkout\/decisions\/architecture\.md\)/, "página-índice não é reescrita");
+    assert.match(indice, /\(\.\.\/\.\.\/checkout\/decisions\/architecture-229\.md\)/, "página-índice não é reescrita");
 
     assert.equal(readFileSync(join(sessao, "architecture.md"), "utf-8"), archOriginal, "o original na sessão não muda");
     assert.equal(readFileSync(join(consolidation, "architecture.md"), "utf-8"), archOriginal, "a cópia em consolidation/ também não");
-    // o plan.md já tinha o link certo (mesma pasta): nada a regravar, então não entra na lista
+    // o plan.md também muda: o destino da arquitetura agora leva o card no nome
     assert.deepEqual(
       result.linkRewrites.map((r) => [r.destPath, r.converted, r.dropped]),
-      [["CORE/loja/checkout/decisions/architecture.md", 2, 1]]
+      [
+        ["CORE/loja/checkout/decisions/architecture-229.md", 2, 1],
+        ["CORE/loja/checkout/decisions/plan-229.md", 1, 0],
+      ]
     );
     assert.deepEqual(result.linkWarnings, [], "depois da conversão, todos os links relativos resolvem no Central docs");
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("sessionDecisionFileName: leva o card; quebrado por funcionalidade leva também o slug (#229)", () => {
+  assert.equal(sessionDecisionFileName({ tipo: "architecture", taskKey: "229", feature: "checkout", split: false }), "architecture-229.md");
+  assert.equal(sessionDecisionFileName({ tipo: "plan", taskKey: "229", feature: "checkout", split: true }), "plan-229-checkout.md");
+  assert.equal(sessionDecisionFileName({ tipo: "light-arch", taskKey: "task-7", feature: "x", split: false, ext: ".md" }), "light-arch-task-7.md");
+  assert.throws(() => sessionDecisionFileName({ tipo: "plan", taskKey: "../x", feature: "x", split: false }), /Task key inválido/);
+  assert.deepEqual([...SESSION_DECISION_TYPES], ["architecture", "plan", "light-arch"]);
+});
+
+test("publishFiles: decisões da sessão levam o card no nome; vários cards na mesma funcionalidade não colidem; quebrado vira uma parte por funcionalidade (#229)", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "jarvis-pf-"));
+  try {
+    const root = join(dir, "cd");
+    mkdirSync(root, { recursive: true });
+    const storage = createFilesystemStorage({ location: root, root: dir });
+    const f = (name, text) => {
+      const p = join(dir, name);
+      writeFileSync(p, text);
+      return p;
+    };
+    const result = await publishFiles({
+      storage,
+      squad: "CORE",
+      produto: "loja",
+      files: [
+        // dois cards diferentes, mesma funcionalidade
+        { localFile: f("a1.md", "arq do 229"), tipo: "architecture", feature: "checkout", taskKey: "229", fromSession: true },
+        { localFile: f("a2.md", "arq do 230"), tipo: "architecture", feature: "checkout", taskKey: "230", fromSession: true },
+        // o plano do 229 cobre duas funcionalidades: quebrado em partes
+        { localFile: f("p1.md", "plano, parte checkout"), tipo: "plan", feature: "checkout", taskKey: "229", fromSession: true },
+        { localFile: f("p2.md", "plano, parte frete"), tipo: "plan", feature: "frete", taskKey: "229", fromSession: true },
+      ],
+    });
+    assert.deepEqual(result.published.map((p) => p.destPath), [
+      "CORE/loja/checkout/decisions/architecture-229.md",
+      "CORE/loja/checkout/decisions/architecture-230.md",
+      "CORE/loja/checkout/decisions/plan-229-checkout.md",
+      "CORE/loja/frete/decisions/plan-229-frete.md",
+    ]);
+    assert.equal(readFileSync(join(root, "CORE/loja/checkout/decisions/architecture-229.md"), "utf-8"), "arq do 229");
+    assert.equal(readFileSync(join(root, "CORE/loja/checkout/decisions/architecture-230.md"), "utf-8"), "arq do 230");
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("publishFiles --dry-run: devolve o plano (com o nome do card e a nova versão) e não grava nada (#229)", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "jarvis-pf-"));
+  try {
+    const root = join(dir, "cd");
+    mkdirSync(root, { recursive: true });
+    const storage = createFilesystemStorage({ location: root, root: dir });
+    const arq = join(dir, "arq.md");
+    writeFileSync(arq, "# v0\n");
+    const base = { storage, squad: "CORE", produto: "loja", slug: "229", files: [{ localFile: arq, tipo: "architecture", feature: "checkout", taskKey: "229", fromSession: true }] };
+
+    let r = await publishFiles({ ...base, dryRun: true });
+    assert.equal(r.dryRun, true);
+    assert.deepEqual(r.plan, [{ destPath: "CORE/loja/checkout/decisions/architecture-229.md", status: "novo" }]);
+    assert.deepEqual(r.published, []);
+    assert.equal(existsSync(join(root, "CORE")), false);
+
+    await publishFiles(base);
+    writeFileSync(arq, "# v1\n");
+    r = await publishFiles({ ...base, dryRun: true });
+    assert.deepEqual(r.plan, [{ destPath: "CORE/loja/checkout/decisions/architecture-229-v1.md", status: "nova versão" }]);
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }

@@ -14,7 +14,8 @@ import {
   writeFileSync,
 } from "node:fs";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { docsPublish } from "../bin/commands/docs-publish.js";
 import { docsArchive } from "../bin/commands/docs-archive.js";
 import { docsFinalize } from "../bin/commands/docs-finalize.js";
@@ -173,7 +174,7 @@ test("docsPublish --manifest: grava publishedAs e publishedHash por entrada, e v
   assert.equal(await publish(), 0);
 
   let saved = JSON.parse(readFileSync(manifest, "utf-8"));
-  assert.equal(saved[0].publishedAs, "CORE/loja/checkout/decisions/architecture.md");
+  assert.equal(saved[0].publishedAs, "CORE/loja/checkout/decisions/architecture-229.md");
   assert.equal(saved[1].publishedAs, "CORE/loja/history/229/ferramentas/saida.txt");
   assert.equal(saved[0].publishedHash.length, 64);
   assert.equal(saved[0].feature, "checkout", "os demais campos do manifesto ficam intactos");
@@ -183,16 +184,16 @@ test("docsPublish --manifest: grava publishedAs e publishedHash por entrada, e v
   write(manifest, JSON.stringify(entries));
   assert.equal(await publish(), 0);
   saved = JSON.parse(readFileSync(manifest, "utf-8"));
-  assert.equal(saved[0].publishedAs, "CORE/loja/checkout/decisions/architecture.md");
-  assert.equal(existsSync(join(centralDocs, "CORE/loja/checkout/decisions/architecture-v1.md")), false);
+  assert.equal(saved[0].publishedAs, "CORE/loja/checkout/decisions/architecture-229.md");
+  assert.equal(existsSync(join(centralDocs, "CORE/loja/checkout/decisions/architecture-229-v1.md")), false);
 
   // a sessão mudou: nova versão, e o manifesto aponta para ela
   write(join(ws, "consolidation/architecture.md"), "# Arquitetura revisada\n");
   write(manifest, JSON.stringify(entries));
   assert.equal(await publish(), 0);
   saved = JSON.parse(readFileSync(manifest, "utf-8"));
-  assert.equal(saved[0].publishedAs, "CORE/loja/checkout/decisions/architecture-v1.md");
-  assert.equal(readFileSync(join(centralDocs, "CORE/loja/checkout/decisions/architecture.md"), "utf-8"), "# Arquitetura\n");
+  assert.equal(saved[0].publishedAs, "CORE/loja/checkout/decisions/architecture-229-v1.md");
+  assert.equal(readFileSync(join(centralDocs, "CORE/loja/checkout/decisions/architecture-229.md"), "utf-8"), "# Arquitetura\n");
 });
 
 test("docsPublish --manifest: link relativo que não resolve no Central docs só avisa, não bloqueia (#229)", async () => {
@@ -206,7 +207,7 @@ test("docsPublish --manifest: link relativo que não resolve no Central docs só
     docsPublish({ manifest: join(ws, "consolidation/manifest.json"), slug: "229", "env-file": envFile })
   );
   assert.equal(code, 0);
-  assert.ok(existsSync(join(centralDocs, "CORE/loja/checkout/decisions/plan.md")));
+  assert.ok(existsSync(join(centralDocs, "CORE/loja/checkout/decisions/plan-229.md")));
 });
 
 test("docsPublish --manifest: converte os links do .md da sessão (originalPath) e deixa o original intacto (#229)", async () => {
@@ -228,8 +229,8 @@ test("docsPublish --manifest: converte os links do .md da sessão (originalPath)
     docsPublish({ manifest: join(ws, "consolidation/manifest.json"), slug: "229", "env-file": envFile })
   );
   assert.equal(code, 0);
-  const published = readFileSync(join(centralDocs, "CORE/loja/checkout/decisions/plan.md"), "utf-8");
-  assert.equal(published, "# Plano\nPRD e [arquitetura](architecture.md) e [card](https://x.dev/1)\n", "docs/jarvis vira texto; o resto fica");
+  const published = readFileSync(join(centralDocs, "CORE/loja/checkout/decisions/plan-229.md"), "utf-8");
+  assert.equal(published, "# Plano\nPRD e [arquitetura](architecture-229.md) e [card](https://x.dev/1)\n", "docs/jarvis vira texto; o resto fica");
   assert.equal(readFileSync(original, "utf-8"), text, "o original na sessão não muda");
 });
 
@@ -265,8 +266,8 @@ test("sessão pelos comandos: publicar → arquivar → finalizar apaga os arqui
   assert.equal(await captureRun(() => docsArchive({ manifest, "env-file": envFile })), 0);
   const saved = JSON.parse(readFileSync(manifest, "utf-8"));
   assert.deepEqual(saved.map((e) => e.archiveDestPath), [
-    "CORE/loja/checkout/archive/architecture.md",
-    "CORE/loja/checkout/archive/plan.md",
+    "CORE/loja/checkout/archive/architecture-229.md",
+    "CORE/loja/checkout/archive/plan-229.md",
     "CORE/loja/checkout/archive/229/ferramentas/saida.txt",
   ]);
   assert.ok(existsSync(join(sessao, "plan.md")), "arquivar não apaga");
@@ -275,7 +276,7 @@ test("sessão pelos comandos: publicar → arquivar → finalizar apaga os arqui
   assert.equal(existsSync(join(sessao, "architecture.md")), false);
   assert.equal(existsSync(join(sessao, "plan.md")), false);
   assert.equal(existsSync(join(sessao, "ferramentas/saida.txt")), false);
-  assert.ok(existsSync(join(centralDocs, "CORE/loja/checkout/decisions/architecture.md")), "a cópia publicada fica");
+  assert.ok(existsSync(join(centralDocs, "CORE/loja/checkout/decisions/architecture-229.md")), "a cópia publicada fica");
   assert.ok(existsSync(join(centralDocs, "CORE/loja/checkout/archive/229/ferramentas/saida.txt")), "e a arquivada também");
 });
 
@@ -285,7 +286,7 @@ test("sessão pelos comandos: --force publica e apaga a sessão conferindo a có
   for (const rel of ["architecture.md", "plan.md", "ferramentas/saida.txt"]) {
     assert.equal(existsSync(join(sessao, rel)), false, rel);
   }
-  assert.ok(existsSync(join(centralDocs, "CORE/loja/checkout/decisions/plan.md")));
+  assert.ok(existsSync(join(centralDocs, "CORE/loja/checkout/decisions/plan-229.md")));
   assert.ok(existsSync(join(centralDocs, "CORE/loja/history/229/ferramentas/saida.txt")));
   assert.equal(existsSync(join(centralDocs, "CORE/loja/checkout/archive")), false, "--force não arquiva");
 });
@@ -303,7 +304,56 @@ test("sessão pelos comandos: --force não apaga a sessão de outro card, mesmo 
   const code = await captureRun(() => docsPublish({ manifest: fx.manifest, slug: "229", force: true, "env-file": fx.envFile }));
   assert.equal(code, 1, "o --force reporta o erro de segurança");
   assert.ok(existsSync(outra), "a sessão do card 230 permanece");
-  assert.ok(existsSync(join(fx.centralDocs, "CORE/loja/checkout/decisions/architecture.md")), "a publicação em si ocorreu");
+  assert.ok(existsSync(join(fx.centralDocs, "CORE/loja/checkout/decisions/architecture-229.md")), "a publicação em si ocorreu");
+});
+
+test("docsPublish --manifest --dry-run: mostra o plano sem gravar, sem alterar o manifesto e sem apagar nada, nem com --force (#229)", async () => {
+  const { envFile, centralDocs, sessao, manifest } = sessionManifestFixture();
+  const antes = readFileSync(manifest, "utf-8");
+  const code = await captureRun(() =>
+    docsPublish({ manifest, slug: "229", force: true, dryRun: true, "env-file": envFile })
+  );
+  assert.equal(code, 0);
+  assert.equal(existsSync(join(centralDocs, "CORE")), false, "nada foi publicado");
+  assert.equal(readFileSync(manifest, "utf-8"), antes, "o manifesto não ganhou publishedAs");
+  for (const rel of ["architecture.md", "plan.md", "ferramentas/saida.txt"]) {
+    assert.ok(existsSync(join(sessao, rel)), `${rel} continua na sessão (o --force não vale na simulação)`);
+  }
+});
+
+test("workflow eng.spec-consolidate: o manifesto de exemplo do Passo 5 é aceito pelo CLI e gera os destinos descritos (#229)", async () => {
+  const wf = readFileSync(
+    join(dirname(fileURLToPath(import.meta.url)), "..", "workflows/engineering/eng.spec-consolidate.md"),
+    "utf-8"
+  );
+  const passo5 = wf.slice(wf.indexOf("## Passo 5"), wf.indexOf("## Passo 6"));
+  const bloco = passo5.match(/```json\n([\s\S]*?)\n```/);
+  assert.ok(bloco, "o Passo 5 traz o manifesto de exemplo num bloco json");
+
+  const { ws, envFile, centralDocs } = workspaceFixture();
+  const exemplo = bloco[1].replaceAll("/ws/", `${ws}/`);
+  const sessao = join(ws, ".jarvis/sessions/eng/229");
+  write(join(sessao, "architecture.md"), "# Arquitetura\n");
+  write(join(sessao, "ferramentas/saidas/E8.txt"), "ok\n");
+  write(join(sessao, "consolidation/manifest.json"), exemplo);
+  write(join(sessao, "consolidation/session-229.md"), "---\nid: SES-229\nname: Sessão 229\n---\n# Sessão 229\n[arquitetura](../../checkout/decisions/architecture-229.md)\n");
+  write(join(sessao, "consolidation/feature-checkout.md"), "---\nid: FEAT-1\nname: Checkout\nstatus: in_production\nproduct: loja\nupdated_at: 2026-11-06\n---\n# Checkout\n");
+  write(join(sessao, "consolidation/delivery-2026-11-06-229.md"), "---\nid: DEL-1\nfeature: feature-checkout.md\ntask_key: 229\npr: \"#230\"\ndate: 2026-11-06\n---\n# Entrega\n");
+
+  const manifest = join(sessao, "consolidation/manifest.json");
+  assert.equal(await captureRun(() => docsPublish({ manifest, slug: "229", dryRun: true, "env-file": envFile })), 0);
+  assert.equal(existsSync(join(centralDocs, "CORE")), false, "o --dry-run não grava");
+
+  assert.equal(await captureRun(() => docsPublish({ manifest, slug: "229", "env-file": envFile })), 0);
+  for (const rel of [
+    "CORE/loja/checkout/decisions/architecture-229.md",
+    "CORE/loja/history/229/ferramentas/saidas/E8.txt",
+    "CORE/loja/history/229/229.md",
+    "CORE/loja/checkout/checkout.md",
+    "CORE/loja/checkout/deliveries/delivery-2026-11-06-229.md",
+  ]) {
+    assert.ok(existsSync(join(centralDocs, rel)), rel);
+  }
 });
 
 test("docsPublish --manifest --force: publica e já apaga o original ligado (zero reversão)", async () => {

@@ -17,10 +17,12 @@ Este comando registra no **Central docs** o que a entrega **de fato implementou*
 
 Os documentos de trabalho (PRD, FRD, ARD, RFC, SPEC, discovery…) continuam em `docs/jarvis/`. Um documento **ligado a uma entrega consolidada** (chave da sessão, `related_*`, ou indicação sua) é **também publicado** em `decisions/`, na pasta da funcionalidade — o Central docs passa a ser, além do registro do implementado, o registro técnico oficial (#220). O que não está ligado **não é tocado**.
 
+**Toda a sessão vai junto (#229).** O Central docs guarda um snapshot de cada funcionalidade seguido das sessões e dos artefatos dela, para uma pessoa ou uma IA consultar sem abrir a sessão, e organizado para migrar ao Confluence. Por isso o comando publica **todos os arquivos da sessão** `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/`: `architecture.md`, `plan.md` e `light-arch.md` em `decisions/`; os demais (inclusive subpastas e arquivos que não são Markdown) em `history/{card}/`; e uma **página-índice da sessão** (`history/{card}/{card}.md`), que liga tudo e as funcionalidades tocadas. Depois de publicar, arquivar e finalizar (cada um com o seu Sim), a pasta da sessão pode ser apagada sem perder nada. Uma sessão pode estar **incompleta**: o comando documenta com o que existir, marca o que faltou e nunca inventa.
+
 > ⚠️ **Três execuções separadas** (Q3/Q15 da #220), cada uma com o seu Sim: publicar (copia; os originais continuam onde estão), `--archive` (guarda os originais em `archive/`, ainda sem apagar nada) e `--finalize` (apaga os originais de `docs/jarvis/`, só os que não mudaram desde o `--archive`; irreversível). Rodar só `/eng.spec-consolidate {chave}` cobre o primeiro Sim; os outros dois são chamadas separadas, de propósito.
 
 > 🤖 **Modelo**: se a IDE informar o modelo desta sessão e ele for de outra família que o `recommended_model` do documento (ou do template, se for novo), avise em uma linha e siga, sem bloquear e sem repetir. Sem essa informação, não avise.
-> 📤 **Templates**: `$IDE/templates/engineering/central-feature-template.md`, `central-delivery-template.md` e `central-product-template.md`
+> 📤 **Templates**: `$IDE/templates/engineering/central-feature-template.md`, `central-delivery-template.md`, `central-session-template.md` (página-índice da sessão) e `central-product-template.md`
 >
 > 🔗 **Links**: antes de escrever a consolidação, leia `$IDE/rules-on-demand/doc-links-rules.md` e siga-a: toda citação com lugar exato (requisito, documento, código, card, PR) vira link. O Central docs pode ser lido fora do workspace: siga a regra 6 (URL absoluta, com o sha do merge; sessão e `docs/jarvis/` em texto).
 
@@ -52,13 +54,13 @@ Os documentos de trabalho (PRD, FRD, ARD, RFC, SPEC, discovery…) continuam em 
 ## Passo 0: Pré-condições
 
 1. **Central docs ligado:** `CENTRAL_DOCS_STORAGE` preenchido no `$IDE/ENV.md`. Se estiver vazio, pare: "O Central docs está desligado. Ligue-o no `/jarvis-init` (Passo 5.2) para registrar o que foi implementado."
-2. **Modo normal:** a sessão `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/` existe com o `architecture.md`. Sem ela, avise que a consolidação perde as decisões e pergunte se segue só com o diff e os documentos de trabalho.
+2. **Modo normal:** a sessão `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/` existe. Ela **pode estar incompleta** (sem `architecture.md`, `plan.md` ou `context.md`): o comando segue com o que existir e registra o que faltou como "ausente" na página-índice, sem perguntar e sem inventar. Sem a pasta da sessão (ou vazia), avise que a consolidação perde as decisões e pergunte se segue só com o diff, os documentos de trabalho e a issue/PR.
 3. **Branch base:** o `Branch base:` do `architecture.md`. Sem ele, pergunte com `AskUserQuestion` (`main`, `dev` ou Outro).
 
 ## Passo 1: Coleta (modo normal)
 
 O agente `eng.docs-consolidator.agent` lê **todas** as fontes, na ordem do agente:
-1. `architecture.md` e `plan.md` da sessão.
+1. `architecture.md` e `plan.md` da sessão, **se existirem**.
 2. Documentos de trabalho ligados à tarefa em `$PROD_DOCS` e `$ENG_DOCS` (PRD, FRD, épicos, histórias, ARD, RFC, SPEC, swagger, QA, discovery).
 3. Commits e arquivos:
    ```bash
@@ -68,6 +70,7 @@ O agente `eng.docs-consolidator.agent` lê **todas** as fontes, na ordem do agen
 4. **PR/MR:** número e URL (`pull-request.md` da sessão, `gh pr view`/equivalente do vendor, ou pergunte).
 5. **Card:** URL no padrão do `TASK_MANAGER` (`eng.integrations-rules.md`); no modo freelance, só o número de controle.
 6. `gate-checklist.md` (a rodada mais recente do `eng.pre-pr`; as anteriores, `gate-checklist-rodada-{N}.md`, são histórico), `pull-request.md`, `daily.md` e os `task-comment-*.md` da sessão, se existirem — são candidatos a `history/` no Passo 4.
+7. **Todos os outros arquivos da sessão**, listados com `jarvis docs sessions --json` (caminho relativo, tamanho e o que falta): `context.md`, `light-arch.md`, `pr-body.md`, `baseline.md`, `roteiro-validacao.md`, `nota-de-release.md`, `checklist-conteudo.md`, `issue-*.md` e as subpastas (`fontes/`, `ferramentas/`, `issues/`…). **Ficam de fora**, por não serem conteúdo: os arquivos que começam com `.` (`.timestamp_start`, `.lead_time_minutes`), a pasta `consolidation/` e os `*.public.md`.
 
 ## Passo 2: Coleta (modo `--inicial`)
 
@@ -91,29 +94,58 @@ A entrega pode tocar **mais de uma** funcionalidade (Q9 da #220: um documento de
 4. Na atualização, `jarvis docs fetch {SQUAD}/{produto}/{slug}/{slug}.md` é o ponto de partida.
 5. **Conteúdo transversal:** se algo do que foi coletado não pertence a nenhuma funcionalidade específica (decisão de arquitetura geral, visão do produto), ele vai para a página do produto (`{produto}.md`) no Passo 5 — não se perde, nem se repete em cada funcionalidade.
 
-## Passo 4: Listagem — o que é publicado e o que fica (Q1, Q10, Q11, Q23)
+## Passo 4: Listagem — o que é publicado e o que fica (Q1, Q10, Q11, Q23 e #229)
 
-Antes de escrever qualquer arquivo, monte a lista de candidatos e mostre ao usuário. Ela cobre os documentos de trabalho lidos no Passo 1/2 e os artefatos da sessão (`gate-checklist*.md`, `task-comment-*.md`, `daily.md`, `pull-request.md`).
+Antes de escrever qualquer arquivo, monte a lista de candidatos e mostre ao usuário. Ela cobre os documentos de trabalho lidos no Passo 1/2 e **todos os arquivos da sessão** (Passo 1, itens 6 e 7).
 
 Para cada candidato, determine:
 
 1. **Vínculo com esta entrega** (Q10), na ordem:
-   - **Pela chave:** artefatos da própria sessão (`$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/`) — vínculo automático.
+   - **Pela chave:** os arquivos da própria sessão (`$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/`) — vínculo automático.
    - **Por `related_*`:** o documento de trabalho tem `related_prd`/`related_frd`/`related_epic`/`related_discovery` apontando para algo já ligado à entrega.
    - **Sem vínculo automático:** pergunte se você quer ligar aquele documento a esta entrega. Se sim, **grave o `related_*`** nele (é a única escrita fora de `consolidation/` que este comando faz, e só com a sua indicação) e ele entra na lista; se não, ele **fica** em `docs/jarvis/`, sem ser tocado.
-2. **Com vínculo, confira o `status`** (Q11): só é elegível para publicar com `status` em `in_production`, `cancelled` ou `deprecated`. Em qualquer outro `status` (ex.: `in_progress`, `backlog`), ofereça: **"Marcar `{documento}` como `in_production` e publicar?"** (Q23) — um Sim por item da lista, nunca em lote. Sem o Sim, o documento **fica** onde está, mesmo tendo vínculo.
-3. **Quebra por funcionalidade (Q9):** um documento ligado e elegível que cobrir mais de uma das funcionalidades do Passo 3 é marcado para ser **quebrado em partes** no Passo 5 (uma por funcionalidade, cabeçalho comum com a issue e o PR/MR — ver "Regra de separação por funcionalidade" em `skills/jarvis-docs-central/SKILL.md`). Documento de uma funcionalidade só não é quebrado.
+2. **Com vínculo, confira o `status`** (Q11) — **só para documentos de `docs/jarvis/`**; os arquivos da sessão não têm `status`: só é elegível para publicar com `status` em `in_production`, `cancelled` ou `deprecated`. Em qualquer outro `status` (ex.: `in_progress`, `backlog`), ofereça: **"Marcar `{documento}` como `in_production` e publicar?"** (Q23) — um Sim por item da lista, nunca em lote. Sem o Sim, o documento **fica** onde está, mesmo tendo vínculo.
+3. **Destino** de cada arquivo da sessão:
 
-Mostre a lista final, uma linha por item: `{documento} — {origem do vínculo} — {status} — publica em {destino} | fica (motivo)`. Só prossiga para o Passo 5 depois de o usuário conferir essa lista (ela não precisa de uma pergunta própria se não houve nenhum item incerto nos passos 1–2 acima; senão, aguarde as respostas pendentes).
+   | Arquivo da sessão | Destino no Central docs | Tipo |
+   |---|---|---|
+   | `architecture.md` | `{funcionalidade}/decisions/architecture-{card}.md` | `architecture` |
+   | `plan.md` | `{funcionalidade}/decisions/plan-{card}.md` | `plan` |
+   | `light-arch.md` | `{funcionalidade}/decisions/light-arch-{card}.md` | `light-arch` |
+   | os demais, inclusive subpastas e arquivos que não são `.md` | `history/{card}/{caminho relativo}` | `history` (com `relPath`) |
+   | a página-índice (gerada no Passo 5) | `history/{card}/{card}.md` | `history` |
+
+   O nome em `decisions/` leva o **card** (o CLI monta; você não precisa nomear): assim cards diferentes da mesma funcionalidade não colidem. Um documento quebrado em partes vira `architecture-{card}-{funcionalidade}.md`. A **funcionalidade principal** (`feature` do manifesto) é a da entrega (a primeira do Passo 3).
+4. **Quebra por funcionalidade (Q9 e Q1 da #229):** `architecture.md`, `plan.md` e `light-arch.md` que cobrirem mais de uma das funcionalidades do Passo 3 são marcados para ser **quebrados em partes** no Passo 5 (uma por funcionalidade, cabeçalho comum com a issue e o PR/MR — ver "Regra de separação por funcionalidade" em `skills/jarvis-docs-central/SKILL.md`), e **o mapa "trecho → funcionalidade" aparece nesta listagem**, antes do Sim. O documento inteiro também vai para `archive/` (Passo 8). Documento de uma funcionalidade só não é quebrado.
+5. **Versão (Q6 da #229):** rode `jarvis docs publish --manifest …/manifest.json --dry-run` (só simula, não grava) e mostre ao lado de cada arquivo o que vai acontecer: **novo**, **igual** (já publicado com o mesmo conteúdo: nada a fazer), **nova versão** (`-v1`, `-v2`…; o conteúdo mudou depois da última publicação e a versão anterior permanece, sem mesclar) ou **sobrescreve** (`feature-*`, `delivery-*`, `product`, que são "estado atual").
+6. **Casos duvidosos (Q4 e Q15 da #229):** o comando **pergunta** (`AskUserQuestion`: publicar, deixar na sessão ou escolher os arquivos) em vez de decidir por você sobre:
+   - **qualquer arquivo que não seja `.md`** (`.txt`, `.json`, `.sh`, `.mjs`, `.estado`, `.md5`, `.sha`…): uma pergunta **por grupo** (mesma pasta e mesma extensão), com a lista dos arquivos e os tamanhos;
+   - **binário** (o arquivo contém byte nulo), **acima de 1 MB** e **`.md` com possível segredo** (`api_key`, `token`, `secret`, `password` ou `senha` seguidos de um valor longo; pode ser só um placeholder): uma pergunta **por arquivo**, mostrando a linha (sem o valor).
+   O que você mandar deixar na sessão **fica** lá e a pasta da sessão não será apagada por completo (Passo 9.1).
+
+Mostre a lista final, uma linha por item: `{arquivo} — {origem do vínculo} — {destino} — {novo | igual | nova versão | sobrescreve} | fica (motivo)`. Só prossiga para o Passo 5 depois de o usuário conferir essa lista (ela não precisa de uma pergunta própria se não houve nenhum item incerto nos passos 1–2 acima; senão, aguarde as respostas pendentes).
 
 ## Passo 5: Escrever na sessão
 
 O agente gera em `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/consolidation/` (no `--inicial`, em `$SESSIONS_DIR/eng/inicial-{AAAA-MM-DD}/consolidation/`):
-- **`feature-{slug}.md`**, por funcionalidade do Passo 3: as 12 seções do template, com o estado atual e a linha nova no Histórico de entregas;
-- **`delivery-{AAAA-MM-DD}-{task_key}[-{slug}].md`**, por funcionalidade (o sufixo `-{slug}` só quando a entrega tocar mais de uma): as 7 seções (não existe no `--inicial`);
+- **`feature-{slug}.md`**, por funcionalidade do Passo 3: as 12 seções do template, com o estado atual e a linha nova no Histórico de entregas, que linka o `delivery-*` e (na seção 4) os documentos de `decisions/`;
+- **`delivery-{AAAA-MM-DD}-{task_key}[-{slug}].md`**, por funcionalidade (o sufixo `-{slug}` só quando a entrega tocar mais de uma): as 7 seções (não existe no `--inicial`); a seção 7 (Referências) linka a página-índice da sessão e os documentos de `decisions/`;
 - **`product-{produto}.md`**, só se o Passo 3.5 identificou conteúdo transversal, no template `central-product-template.md`;
-- **as cópias e as partes** dos documentos marcados "publica" no Passo 4: cópia literal (documento de uma funcionalidade só) ou uma parte por funcionalidade, nomeada `{tipo}-{slug}.md` (documento quebrado, Q9) — nunca inventando nem perdendo conteúdo;
-- **`manifest.json`**: a lista de tudo o que será publicado, no formato `[{"file": "{nome na pasta consolidation/}", "tipo": "...", "feature": "{slug}" (quando a fizer falta), "taskKey": "{chave}" (só para `history`), "originalPath": "{caminho absoluto em docs/jarvis/}" (só para um documento de trabalho marcado "publica" no Passo 4 — é o que o `--archive`/`--finalize` vão arquivar e, depois, apagar)}, …]`.
+- **`session-{card}.md`**, a **página-índice da sessão**, no template `$IDE/templates/engineering/central-session-template.md`: resumo do que foi feito, funcionalidades tocadas (links), tabela de artefatos (arquivo, tipo, onde está, versão, fonte), anexos que não são Markdown e **artefatos ausentes com as fontes consultadas**. Só fontes reais; o que faltou vira "não informado" e entra em `absent` no frontmatter. Os links dela são **relativos ao Central docs** (`../../{slug}/…`), nunca ao workspace;
+- **as partes** dos documentos quebrados (Q1): uma por funcionalidade, cada uma só com o que é dela, com o cabeçalho comum e o campo `sibling_parts`, nunca inventando nem perdendo conteúdo. **Documento inteiro e arquivos de `history/` não são copiados para cá:** o manifesto aponta direto para o arquivo da sessão (campo `file` com o caminho relativo a partir de `consolidation/`, como `../architecture.md`);
+- **`manifest.json`**: a lista de tudo o que será publicado. Campos de cada entrada: `file` (arquivo, relativo a `consolidation/`), `tipo`, `feature`, `taskKey`, `relPath` (só `history`: caminho sob `history/{card}/`, preservando subpastas), `fromSession: true` (marca o arquivo vindo da sessão: o CLI versiona por hash, **converte os links** do `.md` para o Central docs e libera a remoção só dentro da pasta do card) e `originalPath` (o arquivo na sessão, caminho absoluto; é o que o `--archive`/`--finalize` vão arquivar e apagar, e a base para resolver os links). Exemplo:
+
+```json
+[
+  {"file": "../architecture.md", "tipo": "architecture", "feature": "checkout", "taskKey": "229", "fromSession": true, "originalPath": "/ws/.jarvis/sessions/eng/229/architecture.md"},
+  {"file": "../ferramentas/saidas/E8.txt", "tipo": "history", "feature": "checkout", "taskKey": "229", "relPath": "ferramentas/saidas/E8.txt", "fromSession": true, "originalPath": "/ws/.jarvis/sessions/eng/229/ferramentas/saidas/E8.txt"},
+  {"file": "session-229.md", "tipo": "history", "feature": "checkout", "taskKey": "229", "relPath": "229.md", "fromSession": true},
+  {"file": "feature-checkout.md", "tipo": "feature", "feature": "checkout"},
+  {"file": "delivery-2026-11-06-229.md", "tipo": "delivery", "feature": "checkout", "taskKey": "229"}
+]
+```
+
+A página-índice **não tem `originalPath`** (é gerada, não existe na sessão) e `feature-*`/`delivery-*` também não. Para documentos de `docs/jarvis/` (PRD, FRD, ARD…), o manifesto continua como na #220 (`originalPath` do documento, sem `fromSession`).
 
 O frontmatter segue o template, com os comentários `#`. `product` = `WORKSPACE` (ou o produto confirmado).
 
@@ -128,7 +160,9 @@ Confira antes de aprovar:
 - [ ] commits com autor (sem e-mail);
 - [ ] nenhum segredo, e-mail nem valor de variável — inclusive no que vier de `gate-checklist.md`/`task-comment-*.md`;
 - [ ] nenhuma frase depende de um documento de origem;
-- [ ] se houve quebra (Q9), cada parte tem o cabeçalho comum (issue, PR/MR, partes irmãs) e nada ficou de fora.
+- [ ] se houve quebra (Q9), cada parte tem o cabeçalho comum (issue, PR/MR, partes irmãs) e nada ficou de fora;
+- [ ] a página-índice da sessão só tem links relativos ao Central docs (`../../{slug}/…`), lista os artefatos ausentes e as fontes, e cada afirmação tem fonte (o que faltou está como "não informado");
+- [ ] o `--dry-run` do Passo 4 não mostra link que aponte para fora do Central docs (o CLI avisa dos que não resolvem).
 
 ## Passo 7: Publicar
 

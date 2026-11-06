@@ -301,6 +301,46 @@ test("filesystem: publishBatch versiona só as entradas fromSession; as demais s
   }
 });
 
+test("filesystem: previewBatch simula sem gravar — novo, igual, nova versão, sobrescreve e mantido (#229)", async () => {
+  const root = tmp();
+  try {
+    const s = getStorage({ CENTRAL_DOCS_STORAGE: "filesystem", CENTRAL_DOCS_LOCATION: "cd" }, { root });
+    mkdirSync(s.location);
+    const arch = join(root, "architecture.md");
+    const feat = join(root, "feature.md");
+    const home = join(root, "home.md");
+    writeFileSync(arch, "# v0\n");
+    writeFileSync(feat, PRD);
+    writeFileSync(home, "# home\n");
+    const files = () => [
+      { localFile: arch, destPath: "CORE/loja/checkout/decisions/architecture-229.md", tipo: "architecture", fromSession: true },
+      { localFile: feat, destPath: "CORE/loja/checkout/checkout.md", tipo: "feature" },
+      { localFile: home, destPath: "CORE/home.md", tipo: "home" },
+    ];
+    const status = () => s.previewBatch({ files: files() }).map((p) => `${p.status}:${p.destPath}`);
+
+    assert.deepEqual(status(), [
+      "novo:CORE/loja/checkout/decisions/architecture-229.md",
+      "novo:CORE/loja/checkout/checkout.md",
+      "novo:CORE/home.md",
+    ]);
+    assert.equal(existsSync(join(s.location, "CORE")), false, "a simulação não grava nada");
+
+    await s.publishBatch({ squad: "CORE", slug: "229", files: files() });
+    assert.deepEqual(status(), [
+      "igual:CORE/loja/checkout/decisions/architecture-229.md",
+      "sobrescreve:CORE/loja/checkout/checkout.md",
+      "mantido:CORE/home.md",
+    ]);
+
+    writeFileSync(arch, "# v1\n");
+    assert.deepEqual(status()[0], "nova versão:CORE/loja/checkout/decisions/architecture-229-v1.md");
+    assert.equal(existsSync(join(s.location, "CORE/loja/checkout/decisions/architecture-229-v1.md")), false);
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
 test("filesystem: publishBatch sem git — falha num arquivo do meio deixa os anteriores copiados, sem rollback (#220 item 3)", async () => {
   const root = tmp();
   try {

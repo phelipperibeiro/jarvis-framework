@@ -321,6 +321,27 @@ export function createFilesystemStorage({
     },
 
     /**
+     * Simula o `publishBatch` sem gravar nada (`--dry-run`, #229): para cada arquivo, o destino
+     * efetivo e o que aconteceria. A mesma regra do `publishBatch`, inclusive o versionamento por hash.
+     * @param {Object} p
+     * @param {Array<{localFile: string, destPath: string, tipo: string, fromSession?: boolean}>} p.files
+     * @returns {Array<{ destPath: string, status: "novo"|"igual"|"nova versão"|"sobrescreve"|"mantido" }>}
+     *   `igual` = já publicado com o mesmo conteúdo (nada a fazer); `mantido` = página inicial já existente
+     */
+    previewBatch({ files }) {
+      return files.map((f) => {
+        const dest = safePath(location, f.destPath);
+        if (f.tipo === "home" && existsSync(dest)) return { destPath: f.destPath, status: "mantido" };
+        if (f.fromSession) {
+          const picked = pickVersionedDest(location, f.destPath, f.localFile);
+          const status = picked.skipped ? "igual" : picked.destPath === f.destPath ? "novo" : "nova versão";
+          return { destPath: picked.destPath, status };
+        }
+        return { destPath: f.destPath, status: existsSync(dest) ? "sobrescreve" : "novo" };
+      });
+    },
+
+    /**
      * Publica vários arquivos de uma vez (a consolidação de uma entrega, #220): cada um é
      * copiado, o índice é regenerado **uma vez** no fim e, com `.git`, tudo entra numa **branch
      * e um PR só** para a entrega inteira — não um por arquivo.
