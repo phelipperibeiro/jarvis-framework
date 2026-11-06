@@ -110,7 +110,7 @@ test("filesystem: publish copia, regenera o índice, e fetch/list leem do disco"
 
     const r = await s.publish({
       localFile: src,
-      destPath: "CORE/product/loja/feature-checkout.md",
+      destPath: "CORE/loja/checkout/checkout.md",
       squad: "CORE",
       tipo: "feature",
     });
@@ -121,15 +121,14 @@ test("filesystem: publish copia, regenera o índice, e fetch/list leem do disco"
     assert.match(index, /^# CORE/);
     assert.match(
       index,
-      /### loja\n- \[feature-checkout\.md\]\(product\/loja\/feature-checkout\.md\) \| in_production \| Checkout \| 2026-10-15/
+      /## loja\n\n- \[checkout\]\(loja\/checkout\/checkout\.md\) \| in_production \| Checkout \| 2026-10-15/
     );
-    assert.match(index, /## engineering\n\n> Entregas recentes\n\n_Nenhum documento\._/);
 
     assert.deepEqual(await s.list("CORE"), [
       "CORE/index.md",
-      "CORE/product/loja/feature-checkout.md",
+      "CORE/loja/checkout/checkout.md",
     ]);
-    assert.equal(await s.fetch("CORE/product/loja/feature-checkout.md"), PRD);
+    assert.equal(await s.fetch("CORE/loja/checkout/checkout.md"), PRD);
   } finally {
     rmSync(root, { recursive: true, force: true });
   }
@@ -164,46 +163,63 @@ test("filesystem: pasta inexistente dá erro orientando o /jarvis-init", async (
   }
 });
 
-test("renderIndex: ignora a versão humanizada {nome}.public.md", () => {
+test("renderIndex: ignora a versão humanizada {nome}.public.md, decisions/, history/ e archive/", () => {
   const root = tmp();
   try {
-    write(join(root, "CORE/product/loja/feature-a.md"), PRD);
-    write(join(root, "CORE/product/loja/feature-a.public.md"), PRD);
+    write(join(root, "CORE/loja/a/a.md"), PRD);
+    write(join(root, "CORE/loja/a/a.public.md"), PRD);
     write(
-      join(root, "CORE/engineering/loja/delivery-2026-10-16-t-1.md"),
+      join(root, "CORE/loja/a/deliveries/delivery-2026-10-16-t-1.md"),
       "---\ntask_key: T-1\ndate: 2026-10-16\n---\n"
     );
     write(
-      join(root, "CORE/engineering/loja/delivery-2026-10-16-t-1.public.md"),
+      join(root, "CORE/loja/a/deliveries/delivery-2026-10-16-t-1.public.md"),
       "---\ntask_key: T-1\ndate: 2026-10-16\n---\n"
     );
+    write(join(root, "CORE/loja/a/decisions/prd-001-a.md"), PRD);
+    write(join(root, "CORE/loja/a/archive/a.md"), PRD);
+    write(join(root, "CORE/loja/history/t-1/daily.md"), "# Daily\n");
     const idx = renderIndex(root, "CORE");
-    assert.match(idx, /\[feature-a\.md\]/);
+    assert.match(idx, /\[a\]\(loja\/a\/a\.md\)/);
     assert.match(idx, /\[delivery-2026-10-16-t-1\.md\]/);
     assert.doesNotMatch(idx, /\.public\.md/);
+    assert.doesNotMatch(idx, /decisions|archive|history|daily/);
   } finally {
     rmSync(root, { recursive: true, force: true });
   }
 });
 
-test("renderIndex: lista só feature-*/delivery-*, as duas funcionalidades e as entregas recentes", () => {
+test("renderIndex: lista a página do produto, as funcionalidades e as entregas recentes (deduplicadas por task_key)", () => {
   const root = tmp();
   try {
-    write(join(root, "CORE/product/loja/feature-a.md"), PRD);
-    write(join(root, "CORE/product/loja/feature-b.md"), PRD.replace("FEAT-001", "FEAT-002"));
-    write(join(root, "CORE/product/loja/prd-001-legado.md"), PRD); // publicado na 4.0.0: fora do índice
+    write(join(root, "CORE/loja/loja.md"), "---\nid: PROD-loja\nname: Loja\n---\n# Loja\n");
+    write(join(root, "CORE/loja/a/a.md"), PRD);
+    write(join(root, "CORE/loja/b/b.md"), PRD.replace("FEAT-001", "FEAT-002"));
     for (let d = 1; d <= 12; d++) {
       const day = String(d).padStart(2, "0");
       write(
-        join(root, `CORE/engineering/loja/delivery-2026-10-${day}-t-${d}.md`),
+        join(root, `CORE/loja/a/deliveries/delivery-2026-10-${day}-t-${d}.md`),
         `---\ntask_key: T-${d}\ndate: 2026-10-${day}\n---\n`
       );
     }
+    // entrega quebrada por funcionalidade (Q9): mesmo task_key em duas pastas, conta uma vez
+    write(
+      join(root, "CORE/loja/a/deliveries/delivery-2026-10-12-t-12.md"),
+      "---\ntask_key: T-12\ndate: 2026-10-12\n---\n"
+    );
+    write(
+      join(root, "CORE/loja/b/deliveries/delivery-2026-10-12-t-12-b.md"),
+      "---\ntask_key: T-12\ndate: 2026-10-12\n---\n"
+    );
     const idx = renderIndex(root, "CORE");
-    assert.match(idx, /\[feature-a\.md\]/);
-    assert.match(idx, /\[feature-b\.md\]/);
-    assert.doesNotMatch(idx, /prd-001-legado/);
-    assert.match(idx, /delivery-2026-10-12-t-12\.md/);
+    assert.match(idx, /\[Loja\]\(loja\/loja\.md\)/);
+    assert.match(idx, /\[a\]\(loja\/a\/a\.md\)/);
+    assert.match(idx, /\[b\]\(loja\/b\/b\.md\)/);
+    assert.equal(
+      (idx.match(/T-12/g) || []).length,
+      1,
+      "T-12 aparece uma vez só, mesmo quebrada (Q9) em duas funcionalidades"
+    );
     assert.doesNotMatch(idx, /delivery-2026-10-02-t-2\.md/, "só as 10 entregas mais recentes");
   } finally {
     rmSync(root, { recursive: true, force: true });

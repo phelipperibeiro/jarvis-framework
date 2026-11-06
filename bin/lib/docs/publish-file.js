@@ -1,10 +1,16 @@
 /**
- * @fileoverview Publica no Central docs, pelo adaptador configurado
- * (`CENTRAL_DOCS_STORAGE`), a consolidação do que foi implementado, gerada pelo
- * `/eng.spec-consolidate`: o documento da funcionalidade (`feature-*.md`, em
- * `{SQUAD}/product/{produto}/`) e o registro da entrega (`delivery-*.md`, em
- * `{SQUAD}/engineering/{produto}/`). Documentos de trabalho (PRD, FRD, ARD, RFC, SPEC…)
- * não são publicados. O índice do squad é regenerado a cada publicação.
+ * @fileoverview Publica no Central docs, pelo adaptador configurado (`CENTRAL_DOCS_STORAGE`),
+ * na estrutura por funcionalidade (`{squad}/{produto}/{funcionalidade}/…`, seção 7 do
+ * `architecture.md` da #220):
+ * - `feature`: a página da funcionalidade (`{funcionalidade}/{funcionalidade}.md`);
+ * - `delivery`: o registro de uma entrega (`{funcionalidade}/deliveries/delivery-*.md`);
+ * - `product`: a página do produto, o conteúdo transversal a várias funcionalidades (`{produto}.md`);
+ * - `history`: rodadas, comentários e diário de uma entrega (`history/{task_key}/…`);
+ * - os tipos de `DECISION_DOC_TYPES` (prd, frd, feat, epic, story, task, ard, rfc, spec, swagger,
+ *   qa-report, discovery): os documentos de trabalho **ligados a uma entrega consolidada**
+ *   (`{funcionalidade}/decisions/…`) — quem decide o vínculo é o `/eng.spec-consolidate`, não
+ *   este módulo.
+ * O índice do squad é regenerado a cada publicação.
  * @module docs/publish-file
  */
 
@@ -12,14 +18,15 @@ import { basename, extname } from "node:path";
 import { validateFrontmatter } from "./validate-frontmatter.js";
 import { logger } from "../utils/logger.js";
 
-/** @constant {Readonly<Record<string, "product"|"engineering">>} Área de cada tipo */
-export const AREA_BY_TYPE = Object.freeze({
-  feature: "product",
-  delivery: "engineering",
-});
-
-/** @constant {ReadonlyArray<string>} Documentos de trabalho, que não vão mais para o Central docs */
-export const WORKING_DOC_TYPES = Object.freeze([
+/**
+ * Documentos de trabalho (decisões de origem: PRD, FRD, épico, história, tarefa, ARD, RFC,
+ * SPEC, swagger, relatório de QA, discovery). Antes da v4.0.0 todos entravam no Central docs;
+ * de 4.0.0 até aqui, nenhum entrava. Agora voltam a entrar, mas só em `decisions/`, e só o que
+ * já está ligado a uma entrega consolidada (Q1 da #220) — o que não está ligado fica em
+ * `docs/jarvis/`, sem passar por aqui.
+ * @constant {ReadonlyArray<string>}
+ */
+export const DECISION_DOC_TYPES = Object.freeze([
   "prd",
   "frd",
   "feat",
@@ -31,10 +38,17 @@ export const WORKING_DOC_TYPES = Object.freeze([
   "spec",
   "swagger",
   "qa-report",
+  "discovery",
 ]);
 
 /** @constant {ReadonlyArray<string>} Tipos aceitos pelo `jarvis docs publish` */
-export const VALID_TYPES = Object.freeze(Object.keys(AREA_BY_TYPE));
+export const VALID_TYPES = Object.freeze([
+  "feature",
+  "delivery",
+  "product",
+  "history",
+  ...DECISION_DOC_TYPES,
+]);
 
 const SEGMENT = /^[A-Za-z0-9][A-Za-z0-9_-]*$/;
 
@@ -47,27 +61,21 @@ function assertSegment(label, value) {
 }
 
 /**
- * Calcula o destino do documento no Central docs.
- * O nome é o do arquivo local quando ele já segue `{tipo}-…` (ex: `feature-checkout.md`,
- * `delivery-2026-10-15-task-123.md`); senão vem de `--feature` (`{tipo}-{feature}.md`).
+ * Calcula o destino do documento no Central docs, pela estrutura por funcionalidade.
  *
  * @param {Object} p
  * @param {string} p.tipo
  * @param {string} p.squad
  * @param {string} p.produto - Padrão: WORKSPACE (o caller resolve)
  * @param {string} p.localFile
- * @param {string} [p.feature]
- * @returns {{ destPath: string, area: "product"|"engineering", fileName: string }}
+ * @param {string} [p.feature] - Slug da funcionalidade. Para `feature`, só é preciso quando o
+ *   nome do arquivo não segue `feature-{slug}.md`. Para `delivery` e para os tipos de
+ *   `DECISION_DOC_TYPES`, é sempre obrigatório: é a funcionalidade dona da pasta.
+ * @param {string} [p.taskKey] - Obrigatório para o tipo `history` (chave da entrega/sessão).
+ * @returns {{ destPath: string, area: string, fileName: string }}
  */
-export function resolveDestPath({ tipo, squad, produto, localFile, feature }) {
-  const area = AREA_BY_TYPE[tipo];
-  if (!area && WORKING_DOC_TYPES.includes(tipo)) {
-    throw new Error(
-      `O Central docs guarda só o que foi implementado: "${tipo}" é um documento de trabalho e fica em docs/jarvis/.\n` +
-        "Gere a consolidação com /eng.spec-consolidate (tipos: feature, delivery)."
-    );
-  }
-  if (!area) {
+export function resolveDestPath({ tipo, squad, produto, localFile, feature, taskKey }) {
+  if (!VALID_TYPES.includes(tipo)) {
     throw new Error(`Tipo inválido: ${tipo}\nTipos válidos: ${VALID_TYPES.join(", ")}`);
   }
   assertSegment("Squad", squad);
@@ -75,22 +83,65 @@ export function resolveDestPath({ tipo, squad, produto, localFile, feature }) {
 
   const local = basename(localFile);
   const ext = extname(local).toLowerCase() || ".md";
-  const followsPattern = local.toLowerCase().startsWith(`${tipo}-`) && ext === ".md";
 
-  let fileName;
-  if (followsPattern) {
-    fileName = local;
-  } else if (feature) {
-    assertSegment("Feature", feature);
-    fileName = `${tipo}-${feature}${ext}`;
-  } else {
-    throw new Error(
-      `O arquivo "${local}" não segue o padrão ${tipo}-{nome}.md.\n` +
-        `Renomeie o arquivo ou informe --feature <slug>.`
-    );
+  if (tipo === "product") {
+    const fileName = `${produto}.md`;
+    return { destPath: `${squad}/${produto}/${fileName}`, area: "product", fileName };
   }
 
-  return { destPath: `${squad}/${area}/${produto}/${fileName}`, area, fileName };
+  if (tipo === "history") {
+    if (!taskKey) {
+      throw new Error(
+        'O tipo "history" precisa de --task-key <chave> (rodadas, comentários e diário da entrega).'
+      );
+    }
+    assertSegment("Task key", taskKey);
+    return {
+      destPath: `${squad}/${produto}/history/${taskKey}/${local}`,
+      area: "history",
+      fileName: local,
+    };
+  }
+
+  if (tipo === "feature") {
+    const prefix = "feature-";
+    const slug =
+      feature ||
+      (local.toLowerCase().startsWith(prefix) ? local.slice(prefix.length, local.length - extname(local).length) : null);
+    if (!slug) {
+      throw new Error(
+        `O arquivo "${local}" não segue o padrão feature-{slug}.md.\n` +
+          "Renomeie o arquivo ou informe --feature <slug>."
+      );
+    }
+    assertSegment("Feature", slug);
+    const fileName = `${slug}${ext}`;
+    return { destPath: `${squad}/${produto}/${slug}/${fileName}`, area: "feature", fileName };
+  }
+
+  // delivery e os tipos de decisão (DECISION_DOC_TYPES) vivem dentro da funcionalidade dona
+  if (!feature) {
+    throw new Error(
+      tipo === "delivery"
+        ? 'O tipo "delivery" precisa de --feature <slug> (a funcionalidade da entrega).'
+        : `O tipo "${tipo}" precisa de --feature <slug> (a funcionalidade a que este documento está ligado).`
+    );
+  }
+  assertSegment("Feature", feature);
+
+  if (tipo === "delivery") {
+    return {
+      destPath: `${squad}/${produto}/${feature}/deliveries/${local}`,
+      area: "delivery",
+      fileName: local,
+    };
+  }
+
+  return {
+    destPath: `${squad}/${produto}/${feature}/decisions/${local}`,
+    area: "decision",
+    fileName: local,
+  };
 }
 
 /**
@@ -101,16 +152,17 @@ export function resolveDestPath({ tipo, squad, produto, localFile, feature }) {
  * @param {string} opts.squad
  * @param {string} opts.produto
  * @param {string} [opts.feature]
+ * @param {string} [opts.taskKey]
  * @returns {Promise<{ destPath: string, indexPath: string, sha?: string, branch?: string, mr?: Object }>}
  */
-export async function publishFile({ storage, localFile, tipo, squad, produto, feature }) {
+export async function publishFile({ storage, localFile, tipo, squad, produto, feature, taskKey }) {
   if (!storage) {
     throw new Error(
       "Central docs desligado (CENTRAL_DOCS_STORAGE vazio). Configure-o no /jarvis-init."
     );
   }
 
-  const { destPath } = resolveDestPath({ tipo, squad, produto, localFile, feature });
+  const { destPath } = resolveDestPath({ tipo, squad, produto, localFile, feature, taskKey });
 
   logger.info("Validando frontmatter...");
   validateFrontmatter(localFile, tipo);

@@ -1,8 +1,12 @@
 import { openStorageFromEnv } from "../lib/docs/fetch-file.js";
 import { logger, configureFromFlags } from "../lib/utils/logger.js";
 
-const COUNTED_TYPES = ["feature", "delivery"];
-const LABELS = { feature: "funcionalidade(s)", delivery: "entrega(s) recente(s)" };
+// Contagem pelo link que renderIndex gera (build-index.js): a página da funcionalidade
+// termina em `/{slug}/{slug}.md`; a entrega mora em `/{slug}/deliveries/delivery-*.md`.
+const COUNTED = [
+  ["feature", "funcionalidade(s)", /\]\(([a-z0-9_-]+)\/\1\/\1\.md\)/gi],
+  ["delivery", "entrega(s) recente(s)", /\]\([a-z0-9_-]+\/[a-z0-9_-]+\/deliveries\/delivery-[^)]*\.md\)/gi],
+];
 
 /**
  * Sincroniza a documentação do Central docs (lê `{SQUAD}/index.md` pelo adaptador).
@@ -48,15 +52,16 @@ export async function docsSync(flags = {}) {
     logger.debug("\n📄 Conteúdo do index.md:\n");
     logger.debug(content);
 
-    const counts = COUNTED_TYPES.map((tipo) => [
+    const counts = COUNTED.map(([tipo, label, re]) => [
       tipo,
-      (content.match(new RegExp(`\\[${tipo}-[^\\]]*\\]`, "g")) || []).length,
-    ]).filter(([, n]) => n > 0);
-    const total = counts.reduce((sum, [, n]) => sum + n, 0);
+      label,
+      (content.match(re) || []).length,
+    ]).filter(([, , n]) => n > 0);
+    const total = counts.reduce((sum, [, , n]) => sum + n, 0);
 
     if (total > 0) {
       logger.info(`📊 ${total} documentos disponíveis:`);
-      for (const [tipo, n] of counts) logger.info(`   - ${n} ${LABELS[tipo]}`);
+      for (const [, label, n] of counts) logger.info(`   - ${n} ${label}`);
     }
   } catch (error) {
     logger.error("❌ Erro ao sincronizar docs:", error.message);

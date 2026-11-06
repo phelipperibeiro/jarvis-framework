@@ -1,6 +1,6 @@
 import { existsSync } from "node:fs";
 import { openStorageFromEnv } from "../lib/docs/fetch-file.js";
-import { publishFile, VALID_TYPES, WORKING_DOC_TYPES } from "../lib/docs/publish-file.js";
+import { publishFile, VALID_TYPES } from "../lib/docs/publish-file.js";
 import { logger, configureFromFlags } from "../lib/utils/logger.js";
 
 /**
@@ -9,9 +9,13 @@ import { logger, configureFromFlags } from "../lib/utils/logger.js";
  *
  * @param {Object} flags - Flags do comando
  * @param {string} flags.file - Caminho do arquivo local
- * @param {string} flags.tipo - feature | delivery (ver VALID_TYPES)
+ * @param {string} flags.tipo - Ver VALID_TYPES (feature, delivery, product, history e os
+ *   documentos de trabalho ligados a uma entrega consolidada)
  * @param {string} [flags.produto] - Pasta do produto (padrão: WORKSPACE do ENV.md)
- * @param {string} [flags.feature] - Slug, só se o nome do arquivo fugir do padrão {tipo}-{nome}.md
+ * @param {string} [flags.feature] - Slug da funcionalidade. Opcional para `feature` quando o
+ *   nome do arquivo segue `feature-{slug}.md`; obrigatório para `delivery` e para os
+ *   documentos de trabalho (é a funcionalidade dona da pasta `decisions/`)
+ * @param {string} [flags.taskKey] - Obrigatório para `--tipo history`
  * @param {string} [flags.squad] - Override do SQUAD do ENV.md
  * @param {string} [flags.workspace] - Override do WORKSPACE (padrão do --produto)
  * @param {string} flags.envFile - Path customizado do ENV.md
@@ -23,6 +27,7 @@ export async function docsPublish(flags = {}) {
     file,
     tipo,
     feature,
+    taskKey,
     produto,
     squad: squadOverride,
     workspace: workspaceOverride,
@@ -31,25 +36,17 @@ export async function docsPublish(flags = {}) {
   if (!file || !tipo) {
     logger.error("❌ Parâmetros obrigatórios faltando\n");
     logger.error(
-      `Uso: jarvis docs publish --file <path> --tipo <${VALID_TYPES.join("|")}> [--produto <produto>] [--feature <slug>] [--squad <squad>]\n`
+      `Uso: jarvis docs publish --file <path> --tipo <${VALID_TYPES.join("|")}> [--produto <produto>] [--feature <slug>] [--task-key <chave>] [--squad <squad>]\n`
     );
     logger.error(
-      "Normalmente chamado pelo /eng.spec-consolidate, que gera os dois arquivos na sessão:"
+      "Normalmente chamado pelo /eng.spec-consolidate, que gera os arquivos na sessão:"
     );
     logger.error(
-      "  jarvis docs publish --file .jarvis/sessions/eng/task-123/consolidation/delivery-2026-10-15-task-123.md --tipo delivery"
+      "  jarvis docs publish --file .../consolidation/feature-checkout.md --tipo feature"
     );
     logger.error(
-      "  jarvis docs publish --file .jarvis/sessions/eng/task-123/consolidation/feature-checkout.md --tipo feature"
+      "  jarvis docs publish --file .../consolidation/delivery-2026-10-15-task-123.md --tipo delivery --feature checkout"
     );
-    process.exit(1);
-  }
-
-  if (WORKING_DOC_TYPES.includes(tipo)) {
-    logger.error(
-      `❌ O Central docs guarda só o que foi implementado: "${tipo}" é um documento de trabalho.`
-    );
-    logger.error("   Ele fica em docs/jarvis/. Gere a consolidação com /eng.spec-consolidate.");
     process.exit(1);
   }
 
@@ -91,7 +88,7 @@ export async function docsPublish(flags = {}) {
   logger.info(`📤 Publicando ${tipo.toUpperCase()} (${file})...\n`);
 
   try {
-    await publishFile({ storage, localFile: file, tipo, squad, produto: product, feature });
+    await publishFile({ storage, localFile: file, tipo, squad, produto: product, feature, taskKey });
     logger.info("");
     logger.info("✅ Publicação concluída!");
   } catch (error) {
