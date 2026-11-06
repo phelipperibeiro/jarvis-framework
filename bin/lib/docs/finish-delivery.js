@@ -17,6 +17,7 @@
  * @module docs/finish-delivery
  */
 
+import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import {
   existsSync,
@@ -250,6 +251,16 @@ export function verifyPublishedCopy(root, e) {
     return `cópia publicada não encontrada em ${e.publishedAs} (com Central docs em git, mescle o PR e atualize a pasta antes)`;
   }
   if (sha256(copy) !== e.publishedHash) return `cópia publicada em ${e.publishedAs} não bate o hash`;
+  // Com o Central docs em git, estar na pasta não basta: um commit que falhou (hook, identidade do git,
+  // assinatura) deixa a cópia só no índice local, e apagar a sessão perderia a única cópia. Ela tem de
+  // estar no HEAD da branch aberta (o PR da publicação já mesclado e a pasta atualizada).
+  if (existsSync(join(root, ".git"))) {
+    try {
+      execFileSync("git", ["cat-file", "-e", `HEAD:${e.publishedAs}`], { cwd: root, stdio: "ignore" });
+    } catch {
+      return `cópia publicada em ${e.publishedAs} não está commitada na branch atual do Central docs (mescle o PR e atualize a pasta antes)`;
+    }
+  }
   return null;
 }
 

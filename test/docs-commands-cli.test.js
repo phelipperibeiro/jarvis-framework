@@ -6,6 +6,7 @@
 import { test, after } from "node:test";
 import assert from "node:assert/strict";
 import {
+  chmodSync,
   existsSync,
   mkdirSync,
   mkdtempSync,
@@ -429,6 +430,54 @@ test("manifesto que é JSON válido mas não é uma lista de objetos: publish, a
     }
   }
   assert.ok(envFile);
+});
+
+test("docsPublish --force com o Central docs em git e commit que falha: a sessão permanece, mesmo republicando (#229)", async () => {
+  const ws = tmp();
+  const git = (cwd, ...a) => execFileSync("git", a, { cwd, encoding: "utf-8", stdio: ["ignore", "pipe", "pipe"] }).trim();
+  const origin = join(ws, "origin.git");
+  const centralDocs = join(ws, "central-docs");
+  mkdirSync(origin, { recursive: true });
+  git(origin, "init", "--bare", "-q", "-b", "main");
+  git(ws, "clone", "-q", origin, centralDocs);
+  git(centralDocs, "config", "user.email", "t@t");
+  git(centralDocs, "config", "user.name", "t");
+  write(join(centralDocs, "README.md"), "x\n");
+  git(centralDocs, "add", ".");
+  git(centralDocs, "commit", "-qm", "init");
+  git(centralDocs, "push", "-qu", "origin", "main");
+  const hook = join(centralDocs, ".git/hooks/pre-commit");
+  write(hook, "#!/bin/sh\nexit 1\n");
+  chmodSync(hook, 0o755);
+  const env = join(ws, ".claude/ENV.md");
+  write(env, ["CENTRAL_DOCS_STORAGE=filesystem", `CENTRAL_DOCS_LOCATION=${centralDocs}`, "SQUAD=CORE", "WORKSPACE=loja"].join("\n"));
+
+  const sessao = join(ws, ".jarvis/sessions/eng/229");
+  write(join(sessao, "architecture.md"), "# Arquitetura\n");
+  const manifest = join(ws, "m.json");
+  write(
+    manifest,
+    JSON.stringify([
+      { file: ".jarvis/sessions/eng/229/architecture.md", tipo: "architecture", feature: "checkout", taskKey: "229", fromSession: true, originalPath: join(sessao, "architecture.md") },
+    ])
+  );
+  const run = () => captureRun(() => docsPublish({ manifest, slug: "229", force: true, "env-file": env }));
+
+  // 1) o commit falha: a publicação falha e não sobra a cópia só no índice
+  assert.equal(await run(), 1);
+  assert.equal(git(centralDocs, "status", "--porcelain"), "");
+  // 2) de novo, ainda com o commit quebrado: antes da correção a cópia staged era vista como 'igual' e a sessão era apagada
+  assert.equal(await run(), 1);
+  assert.ok(existsSync(join(sessao, "architecture.md")), "a sessão permanece (nada foi para o remote)");
+  assert.equal(git(origin, "branch", "--list").replace(/[\s*]/g, ""), "main", "o remote só tem a main");
+  // 3) o commit volta a funcionar, mas o PR ainda não foi mesclado: o --force segue recusando
+  rmSync(hook);
+  assert.equal(await run(), 1);
+  assert.ok(existsSync(join(sessao, "architecture.md")), "publicado na branch do PR, mas não mesclado: a sessão fica");
+  // 4) PR mesclado: agora a cópia está no HEAD e a sessão pode ser apagada
+  git(centralDocs, "merge", "--ff-only", "docs/core-229");
+  assert.equal(await run(), 0);
+  assert.equal(existsSync(join(sessao, "architecture.md")), false);
 });
 
 test("docsPublish --manifest --force com o Central docs em git: antes do merge do PR a cópia não está na pasta e a sessão permanece (#229)", async () => {

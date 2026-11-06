@@ -5,7 +5,7 @@
 import { test, mock } from "node:test";
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { chmodSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { getStorage, StorageConfigError } from "../bin/lib/docs/storage/index.js";
@@ -701,6 +701,117 @@ test("git: lote todo pulado por home.md existente também não apaga o home.md d
     assert.equal(r2.published[0].skipped, true);
     assert.ok(existsSync(join(clone, "CORE/home.md")), "o home.md publicado continua na pasta");
     assert.equal(git(["status", "--porcelain"], clone), "");
+  } finally {
+    rmSync(base, { recursive: true, force: true });
+  }
+});
+
+/** Hook pre-commit que sempre falha (como identidade do git ausente, assinatura GPG ou um hook do time). */
+function breakCommits(clone) {
+  const hook = join(clone, ".git/hooks/pre-commit");
+  write(hook, "#!/bin/sh\nexit 1\n");
+  chmodSync(hook, 0o755);
+  return () => rmSync(hook, { force: true });
+}
+
+test("git: commit que falha não deixa a cópia só no índice — a limpeza desfaz o git add e a republicação commita de verdade (#229)", async () => {
+  const { base, clone } = gitFixture();
+  try {
+    const { s, mrs } = gitStorage(base, clone);
+    const arq = join(base, "arq.md");
+    writeFileSync(arq, "# arq\n");
+    const files = () => [
+      { localFile: arq, destPath: "CORE/loja/checkout/decisions/architecture-229.md", tipo: "architecture", fromSession: true },
+    ];
+    const fixHook = breakCommits(clone);
+
+    await assert.rejects(s.publishBatch({ squad: "CORE", slug: "a", files: files() }), /commit/);
+    assert.equal(git(["status", "--porcelain"], clone), "", "sem resíduo no índice nem na pasta (antes: 'A  CORE/…/architecture-229.md')");
+    assert.equal(existsSync(join(clone, "CORE/loja/checkout/decisions/architecture-229.md")), false);
+    assert.equal(git(["branch", "--list", "docs/*"], clone), "", "sem branch órfã");
+    assert.equal(mrs.length, 0);
+
+    // a próxima publicação não vê a cópia como 'igual': regrava e, com o commit funcionando, publica de verdade
+    fixHook();
+    const r = await s.publishBatch({ squad: "CORE", slug: "a", files: files() });
+    assert.equal(r.published[0].skipped, false);
+    assert.equal(mrs.length, 1);
+    assert.ok(git(["ls-tree", "-r", "--name-only", r.branch], clone).includes("CORE/loja/checkout/decisions/architecture-229.md"));
+  } finally {
+    rmSync(base, { recursive: true, force: true });
+  }
+});
+
+test("git: falha no meio do lote — o arquivo já mesclado permanece, o novo não deixa resíduo e não sobra branch (#229)", async () => {
+  const { base, clone } = gitFixture();
+  try {
+    const { s } = gitStorage(base, clone);
+    const ok = join(base, "ok.md");
+    writeFileSync(ok, "# ok\n");
+    const r1 = await s.publishBatch({
+      squad: "CORE",
+      slug: "a",
+      files: [{ localFile: ok, destPath: "CORE/loja/history/k/ok.md", tipo: "history", fromSession: true }],
+    });
+    mergeBranch(clone, r1.branch);
+
+    // segundo lote: o mesmo arquivo (igual, já mesclado) + um que não existe mais
+    await assert.rejects(
+      s.publishBatch({
+        squad: "CORE",
+        slug: "b",
+        files: [
+          { localFile: ok, destPath: "CORE/loja/history/k/ok.md", tipo: "history", fromSession: true },
+          { localFile: join(base, "sumiu.md"), destPath: "CORE/loja/history/k/sumiu.md", tipo: "history", fromSession: true },
+        ],
+      })
+    );
+    assert.ok(existsSync(join(clone, "CORE/loja/history/k/ok.md")), "o arquivo já mesclado permanece");
+    assert.equal(existsSync(join(clone, "CORE/loja/history/k/sumiu.md")), false);
+    assert.equal(git(["status", "--porcelain"], clone), "");
+    assert.equal(git(["branch", "--list", "docs/*"], clone).includes("-b"), false, "sem branch órfã");
+  } finally {
+    rmSync(base, { recursive: true, force: true });
+  }
+});
+
+test("git: um arquivo untracked que já estava na pasta antes do lote não é apagado pela limpeza (#229)", async () => {
+  const { base, clone } = gitFixture();
+  try {
+    const { s } = gitStorage(base, clone);
+    const arq = join(base, "arq.md");
+    writeFileSync(arq, "# do lote\n");
+    const meu = join(clone, "CORE/loja/history/k/notas.md");
+    write(meu, "# escrito à mão, fora do git\n");
+    const fixHook = breakCommits(clone);
+    await assert.rejects(
+      s.publishBatch({
+        squad: "CORE",
+        slug: "u",
+        files: [{ localFile: arq, destPath: "CORE/loja/history/k/notas.md", tipo: "history", fromSession: true }],
+      })
+    );
+    fixHook();
+    assert.ok(existsSync(meu), "o arquivo preexistente continua lá");
+    assert.match(readFileSync(meu, "utf-8"), /escrito à mão/);
+  } finally {
+    rmSync(base, { recursive: true, force: true });
+  }
+});
+
+test("git: archive com commit que falha também não deixa a cópia só no índice (#229)", async () => {
+  const { base, clone } = gitFixture();
+  try {
+    const { s } = gitStorage(base, clone);
+    const original = join(base, "ws/docs/jarvis/product/prd-001.md");
+    write(original, "---\nid: PRD-001\n---\n# PRD\n");
+    const entries = [{ tipo: "prd", feature: "checkout", originalPath: original }];
+    const fixHook = breakCommits(clone);
+    await assert.rejects(s.archiveBatch({ squad: "CORE", produto: "loja", entries }));
+    fixHook();
+    assert.equal(git(["status", "--porcelain"], clone), "", "sem resíduo (antes: o arquivo ficava staged)");
+    assert.equal(existsSync(join(clone, "CORE/loja/checkout/archive/prd-001.md")), false);
+    assert.ok(existsSync(original), "o original nunca é tocado");
   } finally {
     rmSync(base, { recursive: true, force: true });
   }

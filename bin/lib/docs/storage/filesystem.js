@@ -112,19 +112,41 @@ function nothingStaged(git, cwd) {
 }
 
 /**
- * O caminho é versionado na branch que está aberta (`git ls-files --error-unmatch`)?
+ * O caminho está no commit atual (`HEAD`) da branch aberta? Staged ou untracked **não** contam:
+ * só o que já foi commitado é conteúdo publicado (`git cat-file -e HEAD:<path>`).
  * @param {(args: string[], cwd: string) => string} git
  * @param {string} cwd
  * @param {string} path - Relativo a `cwd`
  * @returns {boolean}
  */
-function isTracked(git, cwd, path) {
+function inHead(git, cwd, path) {
   try {
-    git(["ls-files", "--error-unmatch", "--", path], cwd);
+    git(["cat-file", "-e", `HEAD:${path}`], cwd);
     return true;
   } catch {
     return false;
   }
+}
+
+/**
+ * O que já estava na pasta antes do lote e não é do `HEAD`: arquivos untracked e arquivos
+ * staged por outro motivo. A limpeza de um lote que falhou não pode tocar neles (#229).
+ * @param {(args: string[], cwd: string) => string} git
+ * @param {string} cwd
+ * @returns {Set<string>} caminhos relativos a `cwd`
+ */
+function snapshotLocalState(git, cwd) {
+  const lines = (args) => {
+    try {
+      return git(args, cwd).split("\n").map((l) => l.trim()).filter(Boolean);
+    } catch {
+      return [];
+    }
+  };
+  return new Set([
+    ...lines(["ls-files", "--others", "--exclude-standard"]),
+    ...lines(["diff", "--cached", "--name-only"]),
+  ]);
 }
 
 /**
@@ -139,21 +161,32 @@ function isTracked(git, cwd, path) {
  * @param {string} cwd
  * @param {string} targetBranch
  * @param {string} branch
- * @param {string[]} candidatePaths - Destinos que o lote tentou copiar, para remover se tiverem
- *   ficado untracked (caminhos relativos a `cwd`)
+ * @param {string[]} candidatePaths - Destinos que o lote tentou copiar (caminhos relativos a `cwd`)
+ * @param {Set<string>} [preExisting] - O que já estava na pasta antes do lote (`snapshotLocalState`)
+ *
+ * Para cada candidato:
+ * - **no `HEAD`** (já commitado na branch alvo, como a sessão republicada igual ou o `home.md`): é
+ *   conteúdo publicado, nunca é apagado nem revertido (#229);
+ * - **fora do `HEAD`** e que o lote criou: se um `git add` ficou no índice (o commit falhou, por
+ *   hook, identidade ou assinatura), o `git reset` o tira de lá, e o arquivo é removido, para a
+ *   próxima publicação regravar e commitar de verdade. Sem isso, a cópia ficava só no índice local,
+ *   a republicação a via como "igual" e o `--force` apagava a sessão sem nada ter ido ao remote;
+ * - que **já estava na pasta antes do lote** (untracked ou staged por outro motivo): não é tocado.
  */
-function cleanupOrphanBranch(git, cwd, targetBranch, branch, candidatePaths) {
+function cleanupOrphanBranch(git, cwd, targetBranch, branch, candidatePaths, preExisting = new Set()) {
   try {
     const ahead = git(["rev-list", "--count", `${targetBranch}..${branch}`], cwd).trim();
     if (ahead !== "0") return; // pode ter commit não empurrado: não apaga
     git(["branch", "-D", branch], cwd);
     for (const p of candidatePaths) {
       try {
-        // Só apaga o que ficou fora do git (untracked): uma cópia já versionada na branch alvo (por
-        // exemplo, o arquivo da sessão republicado igual, ou o home.md existente) é conteúdo
-        // publicado, e apagá-la da pasta deixava a sessão "pendente" e travava o --force (#229).
-        if (!existsSync(join(cwd, p)) || isTracked(git, cwd, p)) continue;
-        unlinkSync(join(cwd, p));
+        if (preExisting.has(p) || inHead(git, cwd, p)) continue;
+        try {
+          git(["reset", "-q", "--", p], cwd);
+        } catch {
+          // sem entrada no índice: nada a desfazer
+        }
+        if (existsSync(join(cwd, p))) unlinkSync(join(cwd, p));
       } catch {
         // melhor esforço; não é o erro original
       }
@@ -425,6 +458,7 @@ export function createFilesystemStorage({
       // `-B` (não `-b`): idempotente — uma segunda tentativa com o mesmo slug (depois de falha
       // no push/PR) reusa a branch, em vez de falhar com "branch já existe" (#220, item 12).
       git(["checkout", "-B", branch, targetBranch], location);
+      const before = snapshotLocalState(git, location);
 
       try {
         const published = copyAll();
@@ -476,10 +510,14 @@ export function createFilesystemStorage({
       } finally {
         try {
           git(["checkout", targetBranch], location);
-          cleanupOrphanBranch(git, location, targetBranch, branch, [
-            ...files.map((f) => f.destPath),
-            ...written,
-          ]);
+          cleanupOrphanBranch(
+            git,
+            location,
+            targetBranch,
+            branch,
+            [...files.map((f) => f.destPath), ...written, `${squad}/index.md`],
+            before
+          );
         } catch {
           // a branch de trabalho fica; o erro original (se houver) é o que importa
         }
@@ -514,6 +552,7 @@ export function createFilesystemStorage({
         logger.warn(`⚠️  git pull falhou (${error.message.split("\n")[0]}); seguindo com a cópia local.`);
       }
       git(["checkout", "-B", branch, targetBranch], location);
+      const before = snapshotLocalState(git, location);
 
       let archivedPaths = [];
       try {
@@ -563,7 +602,7 @@ export function createFilesystemStorage({
       } finally {
         try {
           git(["checkout", targetBranch], location);
-          cleanupOrphanBranch(git, location, targetBranch, branch, archivedPaths);
+          cleanupOrphanBranch(git, location, targetBranch, branch, archivedPaths, before);
         } catch {
           // a branch de trabalho fica; o erro original (se houver) é o que importa
         }
