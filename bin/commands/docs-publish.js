@@ -49,8 +49,10 @@ function reportPublishError(error, storage, tipo) {
 }
 
 /**
- * Lê um manifesto `[{file, tipo, feature?, taskKey?}, …]` (caminhos relativos à pasta do
- * manifesto). Gerado pelo `/eng.spec-consolidate` a partir da listagem "move / fica" (#220).
+ * Lê um manifesto `[{file, tipo, feature?, taskKey?, relPath?, fromSession?}, …]` (caminhos
+ * relativos à pasta do manifesto). Gerado pelo `/eng.spec-consolidate` a partir da listagem
+ * "move / fica" (#220). `relPath` (só `history`) preserva subpastas da sessão; `fromSession`
+ * marca o arquivo vindo de uma sessão (#229).
  */
 function readManifest(path) {
   if (!existsSync(path)) {

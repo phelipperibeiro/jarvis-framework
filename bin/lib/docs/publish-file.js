@@ -5,11 +5,14 @@
  * - `feature`: a página da funcionalidade (`{funcionalidade}/{funcionalidade}.md`);
  * - `delivery`: o registro de uma entrega (`{funcionalidade}/deliveries/delivery-*.md`);
  * - `product`: a página do produto, o conteúdo transversal a várias funcionalidades (`{produto}.md`);
- * - `history`: rodadas, comentários e diário de uma entrega (`history/{task_key}/…`);
+ * - `history`: rodadas, comentários e diário de uma entrega, e os demais arquivos da sessão
+ *   (`history/{task_key}/…`, com subpastas quando a entrada traz `relPath`; a página-índice da
+ *   sessão é `history/{task_key}/{task_key}.md`, #229);
  * - `home`: a página inicial do squad (`{squad}/home.md`), editável — o adaptador cria uma vez
  *   e nunca sobrescreve (Q16 da #220);
  * - os tipos de `DECISION_DOC_TYPES` (prd, frd, feat, epic, story, task, ard, rfc, spec, swagger,
- *   qa-report, discovery): os documentos de trabalho **ligados a uma entrega consolidada**
+ *   qa-report, discovery e, desde a #229, architecture, plan e light-arch da sessão): os
+ *   documentos de trabalho **ligados a uma entrega consolidada**
  *   (`{funcionalidade}/decisions/…`) — quem decide o vínculo é o `/eng.spec-consolidate`, não
  *   este módulo.
  * O índice do squad é regenerado a cada publicação.
@@ -22,7 +25,8 @@ import { logger } from "../utils/logger.js";
 
 /**
  * Documentos de trabalho (decisões de origem: PRD, FRD, épico, história, tarefa, ARD, RFC,
- * SPEC, swagger, relatório de QA, discovery). Antes da v4.0.0 todos entravam no Central docs;
+ * SPEC, swagger, relatório de QA, discovery e, da sessão, architecture, plan e light-arch —
+ * #229: o porquê das decisões). Antes da v4.0.0 todos entravam no Central docs;
  * de 4.0.0 até aqui, nenhum entrava. Agora voltam a entrar, mas só em `decisions/`, e só o que
  * já está ligado a uma entrega consolidada (Q1 da #220) — o que não está ligado fica em
  * `docs/jarvis/`, sem passar por aqui.
@@ -41,6 +45,9 @@ export const DECISION_DOC_TYPES = Object.freeze([
   "swagger",
   "qa-report",
   "discovery",
+  "architecture",
+  "plan",
+  "light-arch",
 ]);
 
 /** @constant {ReadonlyArray<string>} Tipos aceitos pelo `jarvis docs publish` */
@@ -71,6 +78,33 @@ export function assertSegment(label, value) {
   }
 }
 
+/** @constant {RegExp} Segmento de um caminho relativo dentro de `history/{task_key}/` (aceita ponto, nunca no começo) */
+export const REL_SEGMENT = /^[A-Za-z0-9][A-Za-z0-9._-]*$/;
+
+/** @constant {number} Níveis máximos de um `relPath` */
+export const REL_MAX_DEPTH = 8;
+
+/**
+ * Valida o caminho relativo de um arquivo da sessão (`fontes/x/y.md`): sem barra no começo, sem
+ * segmento vazio, sem `..` nem nome oculto, no máximo `REL_MAX_DEPTH` níveis.
+ * @param {string} label - Nome do campo, para a mensagem de erro
+ * @param {string} value
+ * @throws {Error} valor vazio ou fora do formato
+ */
+export function assertRelPath(label, value) {
+  const parts = typeof value === "string" ? value.split("/") : [];
+  if (
+    parts.length === 0 ||
+    parts.length > REL_MAX_DEPTH ||
+    parts.some((part) => !REL_SEGMENT.test(part) || part.includes(".."))
+  ) {
+    throw new Error(
+      `${label} inválido: "${value ?? ""}" (use segmentos com letras, números, ".", "-" ou "_", ` +
+        `sem "..", sem barra no começo, sem nome oculto e até ${REL_MAX_DEPTH} níveis)`
+    );
+  }
+}
+
 /**
  * Calcula o destino do documento no Central docs, pela estrutura por funcionalidade.
  *
@@ -83,9 +117,12 @@ export function assertSegment(label, value) {
  *   nome do arquivo não segue `feature-{slug}.md`. Para `delivery` e para os tipos de
  *   `DECISION_DOC_TYPES`, é sempre obrigatório: é a funcionalidade dona da pasta.
  * @param {string} [p.taskKey] - Obrigatório para o tipo `history` (chave da entrega/sessão).
+ * @param {string} [p.relPath] - Só para `history`: caminho relativo sob `history/{taskKey}/`
+ *   (preserva subpastas da sessão e permite renomear, como a página-índice `{taskKey}.md`, #229).
+ *   Sem ele, vale o nome do arquivo local.
  * @returns {{ destPath: string, area: string, fileName: string }}
  */
-export function resolveDestPath({ tipo, squad, produto, localFile, feature, taskKey }) {
+export function resolveDestPath({ tipo, squad, produto, localFile, feature, taskKey, relPath }) {
   if (!VALID_TYPES.includes(tipo)) {
     throw new Error(`Tipo inválido: ${tipo}\nTipos válidos: ${VALID_TYPES.join(", ")}`);
   }
@@ -112,10 +149,12 @@ export function resolveDestPath({ tipo, squad, produto, localFile, feature, task
       );
     }
     assertSegment("Task key", taskKey);
+    if (relPath) assertRelPath("Caminho relativo", relPath);
+    const rel = relPath || local;
     return {
-      destPath: `${squad}/${produto}/history/${taskKey}/${local}`,
+      destPath: `${squad}/${produto}/history/${taskKey}/${rel}`,
       area: "history",
-      fileName: local,
+      fileName: basename(rel),
     };
   }
 
@@ -215,7 +254,9 @@ export async function publishFile({ storage, localFile, tipo, squad, produto, fe
  * @param {string} opts.squad
  * @param {string} opts.produto
  * @param {string} [opts.slug] - Nome da branch/commit (ex.: a chave da entrega)
- * @param {Array<{localFile: string, tipo: string, feature?: string, taskKey?: string}>} opts.files
+ * @param {Array<{localFile: string, tipo: string, feature?: string, taskKey?: string, relPath?: string, fromSession?: boolean}>} opts.files
+ *   `relPath` só vale para `history`; `fromSession` marca o arquivo vindo de uma sessão (#229):
+ *   as fases seguintes versionam, convertem links e liberam a remoção só para essas entradas.
  * @returns {Promise<{ published: Array<{destPath: string, skipped?: boolean}>, indexPath: string, sha?: string, branch?: string, mr?: Object }>}
  */
 export async function publishFiles({ storage, squad, produto, slug, files }) {
@@ -239,8 +280,9 @@ export async function publishFiles({ storage, squad, produto, slug, files }) {
       localFile: f.localFile,
       feature: f.feature,
       taskKey: f.taskKey,
+      relPath: f.relPath,
     });
-    return { localFile: f.localFile, destPath, tipo: f.tipo };
+    return { localFile: f.localFile, destPath, tipo: f.tipo, fromSession: Boolean(f.fromSession) };
   });
   logger.info("✅ Frontmatter válido em todos os arquivos");
 

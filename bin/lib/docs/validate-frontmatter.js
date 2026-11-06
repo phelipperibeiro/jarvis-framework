@@ -125,8 +125,10 @@ function getRequiredFields(tipo) {
     rfc: ['Status', 'Criado em', 'Proponente'],
     discovery: ['id', 'name', 'status'],
     'qa-report': ['period', 'squad', 'version']
-    // swagger e history: sem campo obrigatório — swagger pode ser um YAML/JSON sem a cerca de
-    // frontmatter; history (gate-checklist.md, daily.md, task-comment-*.md) tem formato próprio.
+    // swagger, history, architecture, plan e light-arch: sem campo obrigatório — swagger pode ser
+    // um YAML/JSON sem a cerca de frontmatter; history (gate-checklist.md, daily.md,
+    // task-comment-*.md, scripts e saídas da sessão) tem formato próprio; architecture.md,
+    // plan.md e light-arch.md da sessão não têm frontmatter (#229).
   }
 
   return fields[tipo] || []

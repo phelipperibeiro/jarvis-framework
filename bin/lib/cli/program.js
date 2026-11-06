@@ -154,7 +154,7 @@ export function buildProgram() {
     .option("--file <path>", "Caminho do arquivo local (um só; alternativa ao --manifest)")
     .option(
       "--manifest <path>",
-      "Manifesto JSON com vários arquivos ([{file, tipo, feature?, taskKey?}]); publica em lote, numa branch e um PR só"
+      "Manifesto JSON com vários arquivos ([{file, tipo, feature?, taskKey?, relPath?, fromSession?}]); publica em lote, numa branch e um PR só"
     )
     .option("--slug <chave>", "Nome da branch/commit do lote (ex.: a chave da entrega); só com --manifest")
     .option(
@@ -163,7 +163,7 @@ export function buildProgram() {
     )
     .option(
       "--tipo <tipo>",
-      "feature|delivery|product|history|prd|frd|feat|epic|story|task|ard|rfc|spec|swagger|qa-report|discovery"
+      "feature|delivery|product|history|prd|frd|feat|epic|story|task|ard|rfc|spec|swagger|qa-report|discovery|architecture|plan|light-arch"
     )
     .option("--produto <produto>", "Pasta do produto no Central docs (padrão: WORKSPACE do ENV.md)")
     .option(

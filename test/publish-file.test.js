@@ -9,9 +9,12 @@ import {
   publishFile,
   publishFiles,
   resolveDestPath,
+  assertRelPath,
+  REL_MAX_DEPTH,
   VALID_TYPES,
   DECISION_DOC_TYPES,
 } from "../bin/lib/docs/publish-file.js";
+import { validateFrontmatter } from "../bin/lib/docs/validate-frontmatter.js";
 import { createFilesystemStorage } from "../bin/lib/docs/storage/filesystem.js";
 import { setTestMode } from "../bin/lib/utils/logger.js";
 
@@ -168,6 +171,123 @@ test("resolveDestPath: history exige --task-key e mora em history/{chave}/", () 
       resolveDestPath({ tipo: "history", squad: "CORE", produto: "loja", localFile: "daily.md" }),
     /--task-key/
   );
+});
+
+test("VALID_TYPES: architecture, plan e light-arch da sessão são tipos de decisão (#229)", () => {
+  for (const tipo of ["architecture", "plan", "light-arch"]) {
+    assert.ok(DECISION_DOC_TYPES.includes(tipo), tipo);
+    assert.ok(VALID_TYPES.includes(tipo), tipo);
+    assert.equal(
+      resolveDestPath({
+        tipo,
+        squad: "CORE",
+        produto: "loja",
+        localFile: `/sessao/${tipo}.md`,
+        feature: "checkout",
+      }).destPath,
+      `CORE/loja/checkout/decisions/${tipo}.md`
+    );
+  }
+  assert.throws(
+    () => resolveDestPath({ tipo: "architecture", squad: "CORE", produto: "loja", localFile: "architecture.md" }),
+    /--feature/
+  );
+});
+
+test("resolveDestPath: history com relPath preserva subpastas e permite renomear (#229)", () => {
+  const base = { tipo: "history", squad: "CORE", produto: "loja", taskKey: "229" };
+  assert.deepEqual(
+    resolveDestPath({ ...base, localFile: "x.md", relPath: "fontes/skill/9-browser-apis.md" }),
+    {
+      destPath: "CORE/loja/history/229/fontes/skill/9-browser-apis.md",
+      area: "history",
+      fileName: "9-browser-apis.md",
+    }
+  );
+  // página-índice da sessão: o arquivo local session-229.md vira 229.md
+  assert.equal(
+    resolveDestPath({ ...base, localFile: "/tmp/consolidation/session-229.md", relPath: "229.md" }).destPath,
+    "CORE/loja/history/229/229.md"
+  );
+  // sem relPath: como antes
+  assert.equal(
+    resolveDestPath({ ...base, localFile: "/tmp/daily.md" }).destPath,
+    "CORE/loja/history/229/daily.md"
+  );
+});
+
+test("assertRelPath: recusa .., oculto, barra no começo, segmento vazio, profundidade e vazio (#229)", () => {
+  for (const ok of ["a.md", "fontes/a/b.txt", "saidas/E8_r2.txt", "v1.2/x-y_z.json"]) {
+    assert.doesNotThrow(() => assertRelPath("Caminho", ok), ok);
+  }
+  for (const bad of ["../x", "a/../b", ".oculto", "a/.oculto", "/x", "a//b", "a/", "", "a\\b", "a b.md", "a..b.md"]) {
+    assert.throws(() => assertRelPath("Caminho", bad), /inválido/, JSON.stringify(bad));
+  }
+  assert.throws(() => assertRelPath("Caminho", Array(REL_MAX_DEPTH + 1).fill("a").join("/")), /inválido/);
+  assert.doesNotThrow(() => assertRelPath("Caminho", Array(REL_MAX_DEPTH).fill("a").join("/")));
+  assert.throws(() => assertRelPath("Caminho", undefined), /inválido/);
+  assert.throws(
+    () =>
+      resolveDestPath({
+        tipo: "history",
+        squad: "CORE",
+        produto: "loja",
+        taskKey: "229",
+        localFile: "x.md",
+        relPath: "../fora.md",
+      }),
+    /Caminho relativo inválido/
+  );
+});
+
+test("validateFrontmatter: architecture, plan e light-arch sem frontmatter passam (#229)", () => {
+  const dir = mkdtempSync(join(tmpdir(), "jarvis-vf-"));
+  try {
+    const file = join(dir, "architecture.md");
+    writeFileSync(file, "# Architecture: 229\n\n> sem frontmatter\n");
+    for (const tipo of ["architecture", "plan", "light-arch", "history"]) {
+      assert.deepEqual(validateFrontmatter(file, tipo), {}, tipo);
+    }
+    // não-Markdown também passa em history (saídas de comando, JSON de medição)
+    const json = join(dir, "tokens.json");
+    writeFileSync(json, '{"a":1}\n');
+    assert.deepEqual(validateFrontmatter(json, "history"), {});
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("publishFiles: repassa relPath e fromSession ao adaptador (#229)", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "jarvis-pf-"));
+  try {
+    const root = join(dir, "cd");
+    mkdirSync(root, { recursive: true });
+    const storage = createFilesystemStorage({ location: root, root: dir });
+    const file = join(dir, "origem.txt");
+    writeFileSync(file, "saída do comando\n");
+    const result = await publishFiles({
+      storage,
+      squad: "CORE",
+      produto: "loja",
+      slug: "229",
+      files: [
+        { localFile: file, tipo: "history", taskKey: "229", relPath: "ferramentas/saidas/E8_r2.txt", fromSession: true },
+      ],
+    });
+    assert.equal(result.published[0].destPath, "CORE/loja/history/229/ferramentas/saidas/E8_r2.txt");
+    assert.equal(readFileSync(join(root, result.published[0].destPath), "utf-8"), "saída do comando\n");
+    await assert.rejects(
+      publishFiles({
+        storage,
+        squad: "CORE",
+        produto: "loja",
+        files: [{ localFile: file, tipo: "history", taskKey: "229", relPath: "../x.txt" }],
+      }),
+      /Caminho relativo inválido/
+    );
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
 });
 
 test("resolveDestPath: tipo home rejeita squad inválido mesmo sem produto (early-return antes da validação de produto) (#220 item 3)", () => {
