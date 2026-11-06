@@ -15,6 +15,10 @@ name: {Nome da funcionalidade}
 # deprecated = esteve em produção e foi descontinuada
 status: {um dos valores acima}
 
+# Labels no padrão Confluence: minúsculas, no singular, sem espaço (ex.: arquitetura, decisao).
+# O status acima já diferencia o ciclo de vida; use labels para assunto/domínio.
+labels: {label1, label2}
+
 # Produto (pasta do Central docs): o WORKSPACE do ENV.md, ou o informado no comando.
 product: {produto}
 
@@ -24,7 +28,8 @@ updated_at: {YYYY-MM-DD}
 # Registro da última entrega consolidada (nome do arquivo delivery-*.md). Vazio na carga inicial.
 last_delivery: {delivery-AAAA-MM-DD-task_key.md}
 
-# Documentos de trabalho de origem, só como referência (basename). O entendimento NÃO depende deles.
+# Documentos de trabalho de origem (basename). Publicados junto, em decisions/ (Q1 da #220),
+# quando ligados a uma entrega consolidada; o entendimento desta página NÃO depende deles.
 related_docs: {prd-001-nome.md, frd-001-nome.md, ARD-001-nome.md, RFC-001-nome.md, SPEC-001-nome.md}
 ---
 
@@ -60,25 +65,29 @@ related_docs: {prd-001-nome.md, frd-001-nome.md, ARD-001-nome.md, RFC-001-nome.m
 
 {Variáveis de ambiente (só nomes, nunca valores), flags, serviços externos, migrações, permissões.}
 
-## 7. O que mudou em relação ao especificado
+## 7. Operação do dia a dia
+
+{Como operar a funcionalidade depois de implementada: como monitorar, o que fazer em caso de erro comum, como reprocessar/reverter quando aplicável, alertas relevantes e para quem escalar. "Não se aplica" se a funcionalidade não tiver operação própria (ex.: puramente de interface, sem job nem integração externa).}
+
+## 8. O que mudou em relação ao especificado
 
 {Diferenças entre o que os documentos de trabalho pediam e o que foi implementado, e por quê. "Nenhuma" se não houver.}
 
-## 8. Fora do escopo e limitações conhecidas
+## 9. Fora do escopo e limitações conhecidas
 
 {O que a funcionalidade não faz (de propósito ou por limitação), com o motivo. Follow-ups abertos, com card.}
 
-## 9. Testes e evidências
+## 10. Testes e evidências
 
 {Como a funcionalidade é verificada: suítes, cenários cobertos, testes manuais. Onde ficam.}
 
-## 10. Histórico de entregas
+## 11. Histórico de entregas
 
 | Data | Card | PR/MR | Autores | Resumo | Registro |
 |---|---|---|---|---|---|
-| {AAAA-MM-DD} | [{TASK_KEY}]({URL do card}) | [#{n}]({URL do PR/MR}) | {nomes} | {1 frase} | [delivery-…](../../engineering/{produto}/delivery-….md) |
+| {AAAA-MM-DD} | [{TASK_KEY}]({URL do card}) | [#{n}]({URL do PR/MR}) | {nomes} | {1 frase} | [delivery-…](deliveries/delivery-….md) |
 
-## 11. Glossário e referências
+## 12. Glossário e referências
 
 - **{Termo}:** {definição}
 - Cards: {TASK_KEY com URL}
