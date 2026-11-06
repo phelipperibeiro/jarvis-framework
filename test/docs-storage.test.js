@@ -606,6 +606,106 @@ test("git: publish cria branch, commita documento + índice, faz push e abre o P
   }
 });
 
+/** Storage git do fixture, com o MR mockado (conta as chamadas). */
+function gitStorage(base, clone) {
+  const mrs = [];
+  const s = getStorage(
+    { CENTRAL_DOCS_STORAGE: "filesystem", CENTRAL_DOCS_LOCATION: clone, CENTRAL_DOCS_TARGET_BRANCH: "main" },
+    {
+      root: base,
+      deps: {
+        createMergeRequest: async (url, opts) => {
+          mrs.push(opts.source);
+          return { vendor: "github", iid: mrs.length, url: `https://example/pr/${mrs.length}` };
+        },
+      },
+    }
+  );
+  return { s, mrs };
+}
+
+/** Simula o merge do PR da branch de trabalho na main e o `git pull` de quem lê. */
+function mergeBranch(clone, branch) {
+  git(["checkout", "main"], clone);
+  git(["merge", "--ff-only", branch], clone);
+  git(["push", "origin", "main"], clone);
+}
+
+test("git: republicar uma sessão igual não apaga a cópia já publicada, não commita nem abre PR (#229)", async () => {
+  const { base, clone } = gitFixture();
+  try {
+    const { s, mrs } = gitStorage(base, clone);
+    const notes = join(base, "notes.md");
+    writeFileSync(notes, "# notas\n");
+    const files = () => [
+      { localFile: notes, destPath: "CORE/loja/history/k/notes.md", tipo: "history", fromSession: true },
+    ];
+
+    const r1 = await s.publishBatch({ squad: "CORE", slug: "k", files: files() });
+    assert.equal(r1.published[0].skipped, false);
+    assert.equal(mrs.length, 1);
+    mergeBranch(clone, r1.branch);
+    const dest = join(clone, "CORE/loja/history/k/notes.md");
+    assert.ok(existsSync(dest), "depois do merge, a cópia está na pasta");
+
+    // mesma sessão, mesmo conteúdo
+    const commitsAntes = git(["rev-list", "--all", "--count"], clone);
+    const r2 = await s.publishBatch({ squad: "CORE", slug: "k2", files: files() });
+    assert.equal(r2.published[0].skipped, true, "igual: nada a publicar");
+    assert.ok(existsSync(dest), "a cópia publicada continua na pasta (antes da correção, sumia)");
+    assert.equal(git(["status", "--porcelain"], clone), "", "a árvore de trabalho continua limpa");
+    assert.equal(mrs.length, 1, "nenhum PR novo");
+    assert.equal(git(["rev-list", "--all", "--count"], clone), commitsAntes, "nenhum commit novo");
+    assert.equal(git(["branch", "--list", "docs/*"], clone).includes("k2"), false, "sem branch órfã");
+  } finally {
+    rmSync(base, { recursive: true, force: true });
+  }
+});
+
+test("git: sessão que mudou depois do merge entra como -v1 no commit e no PR, e a anterior permanece (#229)", async () => {
+  const { base, origin, clone } = gitFixture();
+  try {
+    const { s, mrs } = gitStorage(base, clone);
+    const arq = join(base, "arq.md");
+    const files = () => [
+      { localFile: arq, destPath: "CORE/loja/checkout/decisions/architecture-229.md", tipo: "architecture", fromSession: true },
+    ];
+    writeFileSync(arq, "# v0\n");
+    const r1 = await s.publishBatch({ squad: "CORE", slug: "a", files: files() });
+    mergeBranch(clone, r1.branch);
+
+    writeFileSync(arq, "# v1\n");
+    const prev = await s.previewBatch({ files: files() });
+    assert.deepEqual(prev.map((p) => [p.status, p.destPath]), [["nova versão", "CORE/loja/checkout/decisions/architecture-229-v1.md"]]);
+    const r2 = await s.publishBatch({ squad: "CORE", slug: "b", files: files() });
+    assert.equal(r2.published[0].destPath, "CORE/loja/checkout/decisions/architecture-229-v1.md");
+    assert.equal(mrs.length, 2);
+    const tree = git(["ls-tree", "-r", "--name-only", r2.branch], origin).split("\n");
+    assert.ok(tree.includes("CORE/loja/checkout/decisions/architecture-229-v1.md"), "a versão nova está no PR");
+    assert.ok(tree.includes("CORE/loja/checkout/decisions/architecture-229.md"), "a anterior permanece");
+    assert.equal(git(["branch", "--show-current"], clone), "main");
+  } finally {
+    rmSync(base, { recursive: true, force: true });
+  }
+});
+
+test("git: lote todo pulado por home.md existente também não apaga o home.md da pasta (#220, corrigido na #229)", async () => {
+  const { base, clone } = gitFixture();
+  try {
+    const { s } = gitStorage(base, clone);
+    const home = join(base, "home.md");
+    writeFileSync(home, "# home\n");
+    const r1 = await s.publishBatch({ squad: "CORE", slug: "h", files: [{ localFile: home, destPath: "CORE/home.md", tipo: "home" }] });
+    mergeBranch(clone, r1.branch);
+    const r2 = await s.publishBatch({ squad: "CORE", slug: "h2", files: [{ localFile: home, destPath: "CORE/home.md", tipo: "home" }] });
+    assert.equal(r2.published[0].skipped, true);
+    assert.ok(existsSync(join(clone, "CORE/home.md")), "o home.md publicado continua na pasta");
+    assert.equal(git(["status", "--porcelain"], clone), "");
+  } finally {
+    rmSync(base, { recursive: true, force: true });
+  }
+});
+
 test("git: publishBatch commita a entrega inteira numa branch e um PR só", async () => {
   const { base, origin, clone } = gitFixture();
   try {

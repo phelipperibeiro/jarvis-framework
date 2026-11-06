@@ -112,6 +112,22 @@ function nothingStaged(git, cwd) {
 }
 
 /**
+ * O caminho é versionado na branch que está aberta (`git ls-files --error-unmatch`)?
+ * @param {(args: string[], cwd: string) => string} git
+ * @param {string} cwd
+ * @param {string} path - Relativo a `cwd`
+ * @returns {boolean}
+ */
+function isTracked(git, cwd, path) {
+  try {
+    git(["ls-files", "--error-unmatch", "--", path], cwd);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
  * Limpeza best-effort de uma branch de trabalho (#220, rodada 2 item 3): quando a cópia de um
  * lote falha antes do primeiro commit (ex.: `localFile` que não existe mais no meio do lote),
  * o arquivo já copiado fica untracked na working tree, e a branch criada por `checkout -B`
@@ -133,7 +149,11 @@ function cleanupOrphanBranch(git, cwd, targetBranch, branch, candidatePaths) {
     git(["branch", "-D", branch], cwd);
     for (const p of candidatePaths) {
       try {
-        if (existsSync(join(cwd, p))) unlinkSync(join(cwd, p));
+        // Só apaga o que ficou fora do git (untracked): uma cópia já versionada na branch alvo (por
+        // exemplo, o arquivo da sessão republicado igual, ou o home.md existente) é conteúdo
+        // publicado, e apagá-la da pasta deixava a sessão "pendente" e travava o --force (#229).
+        if (!existsSync(join(cwd, p)) || isTracked(git, cwd, p)) continue;
+        unlinkSync(join(cwd, p));
       } catch {
         // melhor esforço; não é o erro original
       }
