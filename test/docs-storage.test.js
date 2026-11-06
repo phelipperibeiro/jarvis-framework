@@ -9,7 +9,7 @@ import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { getStorage, StorageConfigError } from "../bin/lib/docs/storage/index.js";
-import { safePath } from "../bin/lib/docs/storage/filesystem.js";
+import { safePath, pickVersionedDest, versionedName } from "../bin/lib/docs/storage/filesystem.js";
 import { renderIndex } from "../bin/lib/docs/storage/build-index.js";
 import { setTestMode } from "../bin/lib/utils/logger.js";
 
@@ -189,6 +189,113 @@ test("filesystem: publishBatch copia vários arquivos e regenera o índice uma v
     assert.ok(r.published.every((p) => p.skipped === false));
     assert.equal(await s.fetch("CORE/loja/checkout/checkout.md"), PRD);
     assert.match(await s.fetch("CORE/index.md"), /- \[checkout\]\(loja\/checkout\/checkout\.md\)/);
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("versionedName: -v{n} antes da extensão, preservando subpasta; sem extensão vai no fim (#229)", () => {
+  assert.equal(versionedName("CORE/loja/checkout/decisions/architecture.md", 1), "CORE/loja/checkout/decisions/architecture-v1.md");
+  assert.equal(versionedName("CORE/loja/history/229/saidas/E8.estado", 12), "CORE/loja/history/229/saidas/E8-v12.estado");
+  assert.equal(versionedName("CORE/loja/history/229/Makefile", 2), "CORE/loja/history/229/Makefile-v2");
+  assert.equal(versionedName("a/b.tar.gz", 1), "a/b.tar-v1.gz");
+});
+
+test("pickVersionedDest: novo grava no original; igual não grava; diferente vai para -v1, -v2…; igual a uma versão antiga não grava (#229)", () => {
+  const root = tmp();
+  try {
+    const location = join(root, "cd");
+    const dest = "CORE/loja/checkout/decisions/architecture.md";
+    const put = (rel, text) => write(join(location, rel), text);
+    const local = (name, text) => {
+      const f = join(root, name);
+      writeFileSync(f, text);
+      return f;
+    };
+
+    // 1) nada publicado: nome original
+    const a = local("a.md", "versão A\n");
+    let r = pickVersionedDest(location, dest, a);
+    assert.deepEqual([r.destPath, r.skipped], [dest, false]);
+    assert.equal(r.hash.length, 64);
+    put(dest, "versão A\n");
+
+    // 2) conteúdo igual: não grava, aponta para o que já existe
+    r = pickVersionedDest(location, dest, a);
+    assert.deepEqual([r.destPath, r.skipped], [dest, true]);
+
+    // 3) conteúdo diferente: -v1
+    const b = local("b.md", "versão B\n");
+    r = pickVersionedDest(location, dest, b);
+    assert.deepEqual([r.destPath, r.skipped], ["CORE/loja/checkout/decisions/architecture-v1.md", false]);
+    put("CORE/loja/checkout/decisions/architecture-v1.md", "versão B\n");
+
+    // 4) terceira versão: -v2
+    const c = local("c.md", "versão C\n");
+    r = pickVersionedDest(location, dest, c);
+    assert.deepEqual([r.destPath, r.skipped], ["CORE/loja/checkout/decisions/architecture-v2.md", false]);
+    put("CORE/loja/checkout/decisions/architecture-v2.md", "versão C\n");
+
+    // 5) volta a ser igual à B: reconhece a -v1 e não cria nada
+    r = pickVersionedDest(location, dest, b);
+    assert.deepEqual([r.destPath, r.skipped], ["CORE/loja/checkout/decisions/architecture-v1.md", true]);
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("pickVersionedDest: caminho que sai da pasta é recusado (#229)", () => {
+  const root = tmp();
+  try {
+    const f = join(root, "x.md");
+    writeFileSync(f, "x");
+    assert.throws(() => pickVersionedDest(join(root, "cd"), "../fora.md", f), /fora da pasta/);
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("filesystem: publishBatch versiona só as entradas fromSession; as demais sobrescrevem (#229)", async () => {
+  const root = tmp();
+  try {
+    const s = getStorage({ CENTRAL_DOCS_STORAGE: "filesystem", CENTRAL_DOCS_LOCATION: "cd" }, { root });
+    mkdirSync(s.location);
+    const arch = join(root, "architecture.md");
+    const feat = join(root, "feature-checkout.md");
+    const files = () => [
+      { localFile: arch, destPath: "CORE/loja/checkout/decisions/architecture.md", tipo: "architecture", fromSession: true },
+      { localFile: feat, destPath: "CORE/loja/checkout/checkout.md", tipo: "feature" },
+    ];
+
+    // rodada 1
+    writeFileSync(arch, "# Arquitetura v0\n");
+    writeFileSync(feat, PRD);
+    let r = await s.publishBatch({ squad: "CORE", slug: "229", files: files() });
+    assert.deepEqual(r.published.map((p) => [p.destPath, p.skipped]), [
+      ["CORE/loja/checkout/decisions/architecture.md", false],
+      ["CORE/loja/checkout/checkout.md", false],
+    ]);
+    assert.ok(r.published.every((p) => p.hash && p.hash.length === 64), "todas devolvem o hash publicado");
+
+    // rodada 2, nada mudou: a sessão não duplica; a feature é regravada igual
+    r = await s.publishBatch({ squad: "CORE", slug: "229", files: files() });
+    assert.deepEqual(r.published.map((p) => [p.destPath, p.skipped]), [
+      ["CORE/loja/checkout/decisions/architecture.md", true],
+      ["CORE/loja/checkout/checkout.md", false],
+    ]);
+
+    // rodada 3, a sessão mudou e a feature também
+    writeFileSync(arch, "# Arquitetura v1\n");
+    writeFileSync(feat, PRD.replace("Checkout", "Checkout 2"));
+    r = await s.publishBatch({ squad: "CORE", slug: "229", files: files() });
+    assert.deepEqual(r.published.map((p) => [p.destPath, p.skipped]), [
+      ["CORE/loja/checkout/decisions/architecture-v1.md", false],
+      ["CORE/loja/checkout/checkout.md", false],
+    ]);
+    assert.equal(await s.fetch("CORE/loja/checkout/decisions/architecture.md"), "# Arquitetura v0\n", "a versão anterior permanece");
+    assert.equal(await s.fetch("CORE/loja/checkout/decisions/architecture-v1.md"), "# Arquitetura v1\n");
+    assert.match(await s.fetch("CORE/loja/checkout/checkout.md"), /Checkout 2/, "feature sobrescrita, sem -v1");
+    assert.equal(existsSync(join(s.location, "CORE/loja/checkout/checkout-v1.md")), false);
   } finally {
     rmSync(root, { recursive: true, force: true });
   }

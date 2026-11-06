@@ -290,6 +290,36 @@ test("publishFiles: repassa relPath e fromSession ao adaptador (#229)", async ()
   }
 });
 
+test("publishFiles: devolve linkWarnings dos links que não resolvem no Central docs e publica mesmo assim (#229)", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "jarvis-pf-"));
+  try {
+    const root = join(dir, "cd");
+    mkdirSync(root, { recursive: true });
+    const storage = createFilesystemStorage({ location: root, root: dir });
+    const plan = join(dir, "plan.md");
+    const arch = join(dir, "architecture.md");
+    writeFileSync(plan, "# Plano\n[código](../../../../../jarvis-framework/bin/x.js#L5)\n[arquitetura](architecture.md)\n[url](https://github.com/o/r)\n");
+    writeFileSync(arch, "# Arquitetura\n[plano](plan.md)\n");
+    const result = await publishFiles({
+      storage,
+      squad: "CORE",
+      produto: "loja",
+      slug: "229",
+      files: [
+        { localFile: plan, tipo: "plan", feature: "checkout", fromSession: true },
+        { localFile: arch, tipo: "architecture", feature: "checkout", fromSession: true },
+      ],
+    });
+    assert.equal(result.published.length, 2, "publica mesmo com o aviso");
+    assert.deepEqual(
+      result.linkWarnings.map((w) => [w.destPath, w.link]),
+      [["CORE/loja/checkout/decisions/plan.md", "../../../../../jarvis-framework/bin/x.js"]]
+    );
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
 test("resolveDestPath: tipo home rejeita squad inválido mesmo sem produto (early-return antes da validação de produto) (#220 item 3)", () => {
   assert.throws(
     () => resolveDestPath({ tipo: "home", squad: "../x", localFile: "home.md" }),

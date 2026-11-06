@@ -158,6 +158,57 @@ test("docsPublish --manifest: caminho feliz publica e regenera o índice", async
   assert.ok(existsSync(join(centralDocs, "CORE/index.md")));
 });
 
+test("docsPublish --manifest: grava publishedAs e publishedHash por entrada, e versiona a sessão que mudou (#229)", async () => {
+  const { ws, envFile, centralDocs } = workspaceFixture();
+  const manifest = join(ws, "consolidation/manifest.json");
+  const entries = [
+    { file: "architecture.md", tipo: "architecture", feature: "checkout", taskKey: "229", fromSession: true },
+    { file: "saida.txt", tipo: "history", taskKey: "229", relPath: "ferramentas/saida.txt", fromSession: true },
+  ];
+  const publish = () => captureRun(() => docsPublish({ manifest, slug: "229", "env-file": envFile }));
+
+  write(join(ws, "consolidation/architecture.md"), "# Arquitetura\n");
+  write(join(ws, "consolidation/saida.txt"), "ok\n");
+  write(manifest, JSON.stringify(entries));
+  assert.equal(await publish(), 0);
+
+  let saved = JSON.parse(readFileSync(manifest, "utf-8"));
+  assert.equal(saved[0].publishedAs, "CORE/loja/checkout/decisions/architecture.md");
+  assert.equal(saved[1].publishedAs, "CORE/loja/history/229/ferramentas/saida.txt");
+  assert.equal(saved[0].publishedHash.length, 64);
+  assert.equal(saved[0].feature, "checkout", "os demais campos do manifesto ficam intactos");
+  assert.ok(existsSync(join(centralDocs, "CORE/loja/history/229/ferramentas/saida.txt")));
+
+  // mesma sessão, nada mudou: nada de -v1 e o mesmo publishedAs
+  write(manifest, JSON.stringify(entries));
+  assert.equal(await publish(), 0);
+  saved = JSON.parse(readFileSync(manifest, "utf-8"));
+  assert.equal(saved[0].publishedAs, "CORE/loja/checkout/decisions/architecture.md");
+  assert.equal(existsSync(join(centralDocs, "CORE/loja/checkout/decisions/architecture-v1.md")), false);
+
+  // a sessão mudou: nova versão, e o manifesto aponta para ela
+  write(join(ws, "consolidation/architecture.md"), "# Arquitetura revisada\n");
+  write(manifest, JSON.stringify(entries));
+  assert.equal(await publish(), 0);
+  saved = JSON.parse(readFileSync(manifest, "utf-8"));
+  assert.equal(saved[0].publishedAs, "CORE/loja/checkout/decisions/architecture-v1.md");
+  assert.equal(readFileSync(join(centralDocs, "CORE/loja/checkout/decisions/architecture.md"), "utf-8"), "# Arquitetura\n");
+});
+
+test("docsPublish --manifest: link relativo que não resolve no Central docs só avisa, não bloqueia (#229)", async () => {
+  const { ws, envFile, centralDocs } = workspaceFixture();
+  write(join(ws, "consolidation/plan.md"), "# Plano\n[código](../../../../../jarvis-framework/bin/x.js#L5)\n");
+  write(
+    join(ws, "consolidation/manifest.json"),
+    JSON.stringify([{ file: "plan.md", tipo: "plan", feature: "checkout", taskKey: "229", fromSession: true }])
+  );
+  const code = await captureRun(() =>
+    docsPublish({ manifest: join(ws, "consolidation/manifest.json"), slug: "229", "env-file": envFile })
+  );
+  assert.equal(code, 0);
+  assert.ok(existsSync(join(centralDocs, "CORE/loja/checkout/decisions/plan.md")));
+});
+
 test("docsPublish --manifest --force: publica e já apaga o original ligado (zero reversão)", async () => {
   const { ws, envFile, centralDocs } = workspaceFixture();
   const original = join(ws, "docs/jarvis/product/prd-001-checkout.md");

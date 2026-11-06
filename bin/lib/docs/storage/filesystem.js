@@ -10,6 +10,7 @@
  */
 
 import { execFileSync } from "node:child_process";
+import { createHash } from "node:crypto";
 import { copyFileSync, existsSync, mkdirSync, readFileSync, unlinkSync } from "node:fs";
 import { basename, dirname, extname, isAbsolute, join, relative, resolve, sep } from "node:path";
 import { createMergeRequest as defaultCreateMergeRequest, newMergeRequestUrl } from "../../vcs/api.js";
@@ -49,6 +50,46 @@ export function safePath(root, rel) {
     throw new Error(`Caminho fora da pasta do Central docs: "${rel}"`);
   }
   return full;
+}
+
+/** @param {Buffer} buffer @returns {string} sha256 em hex */
+function sha256(buffer) {
+  return createHash("sha256").update(buffer).digest("hex");
+}
+
+/**
+ * Nome da versão `n` de um destino: `-v{n}` antes da extensão (`architecture.md` →
+ * `architecture-v1.md`; sem extensão, no fim). A subpasta é preservada.
+ * @param {string} destPath
+ * @param {number} n - 1, 2…
+ * @returns {string}
+ */
+export function versionedName(destPath, n) {
+  const ext = extname(destPath);
+  return `${destPath.slice(0, destPath.length - ext.length)}-v${n}${ext}`;
+}
+
+/**
+ * Versionamento por hash dos arquivos que vêm de uma sessão (Q6 e Q10 da #229). Compara o
+ * conteúdo de `localFile` com o destino e com as versões já publicadas:
+ * - destino inexistente: grava no nome original;
+ * - algum candidato (original, `-v1`, `-v2`…) com o mesmo hash: não grava (`skipped`);
+ * - todos os candidatos existentes diferem: grava no primeiro `-v{n}` livre.
+ * Nunca apaga nem mescla: a versão anterior permanece (decisão da Q6).
+ * @param {string} location - Pasta do Central docs
+ * @param {string} destPath - Destino pedido (relativo à pasta)
+ * @param {string} localFile
+ * @returns {{ destPath: string, skipped: boolean, hash: string }} destino efetivo
+ */
+export function pickVersionedDest(location, destPath, localFile) {
+  const hash = sha256(readFileSync(localFile));
+  for (let n = 0; n < 10000; n++) {
+    const candidate = n === 0 ? destPath : versionedName(destPath, n);
+    const full = safePath(location, candidate);
+    if (!existsSync(full)) return { destPath: candidate, skipped: false, hash };
+    if (sha256(readFileSync(full)) === hash) return { destPath: candidate, skipped: true, hash };
+  }
+  throw new Error(`Versões demais de "${destPath}" no Central docs (mais de 10000).`);
 }
 
 /**
@@ -284,14 +325,18 @@ export function createFilesystemStorage({
      * copiado, o índice é regenerado **uma vez** no fim e, com `.git`, tudo entra numa **branch
      * e um PR só** para a entrega inteira — não um por arquivo.
      * @param {Object} p
-     * @param {Array<{localFile: string, destPath: string, tipo: string}>} p.files
+     * @param {Array<{localFile: string, destPath: string, tipo: string, fromSession?: boolean}>} p.files
+     *   `fromSession` liga o versionamento por hash (`-v1`, `-v2`…, #229); sem ele, sobrescreve.
      * @param {string} p.squad
      * @param {string} [p.slug] - Nome da branch/commit (ex.: a chave da entrega); padrão: a hora
-     * @returns {Promise<{ published: Array<{destPath: string, skipped?: boolean}>, indexPath: string, sha?: string, branch?: string, mr?: Object }>}
+     * @returns {Promise<{ published: Array<{destPath: string, skipped?: boolean, hash?: string}>, indexPath: string, sha?: string, branch?: string, mr?: Object }>}
+     *   Na ordem de `files`; `destPath` é o **efetivo** (com `-vN` quando versionado) e `hash` é o
+     *   sha256 do conteúdo publicado.
      */
     async publishBatch({ files, squad, slug }) {
       ensureLocation();
 
+      const written = []; // destinos efetivamente gravados (inclui `-vN`), para a limpeza em caso de falha
       const copyAll = () => {
         const published = [];
         for (const f of files) {
@@ -301,9 +346,24 @@ export function createFilesystemStorage({
             published.push({ destPath: f.destPath, skipped: true });
             continue;
           }
+          if (f.fromSession) {
+            const picked = pickVersionedDest(location, f.destPath, f.localFile);
+            if (!picked.skipped) {
+              const target = safePath(location, picked.destPath);
+              mkdirSync(dirname(target), { recursive: true });
+              copyFileSync(f.localFile, target);
+              written.push(picked.destPath);
+            }
+            published.push(picked);
+            continue;
+          }
           mkdirSync(dirname(dest), { recursive: true });
           copyFileSync(f.localFile, dest);
-          published.push({ destPath: f.destPath, skipped: false });
+          published.push({
+            destPath: f.destPath,
+            skipped: false,
+            hash: sha256(readFileSync(f.localFile)),
+          });
         }
         return published;
       };
@@ -375,7 +435,10 @@ export function createFilesystemStorage({
       } finally {
         try {
           git(["checkout", targetBranch], location);
-          cleanupOrphanBranch(git, location, targetBranch, branch, files.map((f) => f.destPath));
+          cleanupOrphanBranch(git, location, targetBranch, branch, [
+            ...files.map((f) => f.destPath),
+            ...written,
+          ]);
         } catch {
           // a branch de trabalho fica; o erro original (se houver) é o que importa
         }

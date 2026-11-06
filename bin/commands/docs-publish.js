@@ -1,4 +1,4 @@
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { openStorageFromEnv } from "../lib/docs/fetch-file.js";
 import { publishFile, publishFiles, VALID_TYPES } from "../lib/docs/publish-file.js";
@@ -72,6 +72,31 @@ function readManifest(path) {
   }
   const base = dirname(path);
   return entries.map(({ file, ...rest }) => ({ ...rest, localFile: join(base, file) }));
+}
+
+/**
+ * Grava no manifesto, por entrada, onde o arquivo foi de fato publicado (`publishedAs`, que
+ * pode ser um `-vN`, Q6 da #229) e o hash do conteúdo publicado (`publishedHash`): o
+ * `--archive` e o `--finalize` usam o nome certo, e o `--force` confere a cópia antes de apagar a
+ * sessão. As entradas em memória (`files`) recebem os mesmos campos, para o `--force` do mesmo
+ * processo. Só regrava o JSON cru, sem tocar nos outros campos.
+ * @param {string} manifestPath
+ * @param {Array<Object>} files - Entradas lidas por `readManifest`
+ * @param {Array<{destPath: string, hash?: string}>} published - Na ordem das entradas
+ */
+function recordPublished(manifestPath, files, published) {
+  if (!Array.isArray(published) || published.length !== files.length) return;
+  const raw = JSON.parse(readFileSync(manifestPath, "utf-8"));
+  if (!Array.isArray(raw) || raw.length !== files.length) return;
+  published.forEach((p, i) => {
+    raw[i].publishedAs = p.destPath;
+    files[i].publishedAs = p.destPath;
+    if (p.hash) {
+      raw[i].publishedHash = p.hash;
+      files[i].publishedHash = p.hash;
+    }
+  });
+  writeFileSync(manifestPath, JSON.stringify(raw, null, 2));
 }
 
 /**
@@ -150,7 +175,8 @@ async function docsPublishManifest(flags) {
   logger.info(`📤 Publicando a consolidação em lote (${files.length} arquivo(s))...\n`);
 
   try {
-    await publishFiles({ storage, squad, produto, slug: flags.slug, files });
+    const result = await publishFiles({ storage, squad, produto, slug: flags.slug, files });
+    recordPublished(flags.manifest, files, result.published);
     logger.info("");
     logger.info("✅ Publicação concluída!");
   } catch (error) {

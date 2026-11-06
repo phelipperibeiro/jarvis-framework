@@ -19,8 +19,10 @@
  * @module docs/publish-file
  */
 
-import { basename, extname } from "node:path";
+import { existsSync, readFileSync } from "node:fs";
+import { basename, extname, join } from "node:path";
 import { validateFrontmatter } from "./validate-frontmatter.js";
+import { findUnresolvableLinks } from "./check-links.js";
 import { logger } from "../utils/logger.js";
 
 /**
@@ -257,7 +259,9 @@ export async function publishFile({ storage, localFile, tipo, squad, produto, fe
  * @param {Array<{localFile: string, tipo: string, feature?: string, taskKey?: string, relPath?: string, fromSession?: boolean}>} opts.files
  *   `relPath` só vale para `history`; `fromSession` marca o arquivo vindo de uma sessão (#229):
  *   as fases seguintes versionam, convertem links e liberam a remoção só para essas entradas.
- * @returns {Promise<{ published: Array<{destPath: string, skipped?: boolean}>, indexPath: string, sha?: string, branch?: string, mr?: Object }>}
+ * @returns {Promise<{ published: Array<{destPath: string, skipped?: boolean, hash?: string}>, indexPath: string, sha?: string, branch?: string, mr?: Object, linkWarnings: Array<{destPath: string, link: string, reason: string}> }>}
+ *   `published` segue a ordem de `files`; `destPath` é o destino efetivo (com `-vN` quando a
+ *   entrada é de sessão e o conteúdo mudou) e `hash` o sha256 do que foi publicado.
  */
 export async function publishFiles({ storage, squad, produto, slug, files }) {
   if (!storage) {
@@ -286,6 +290,9 @@ export async function publishFiles({ storage, squad, produto, slug, files }) {
   });
   logger.info("✅ Frontmatter válido em todos os arquivos");
 
+  // Links que não resolvem dentro do Central docs (leitura fora do workspace, Confluence): só avisa.
+  const linkWarnings = warnUnresolvableLinks(storage, resolved);
+
   logger.info("");
   logger.info("📋 Resumo da Publicação (lote):");
   logger.info(`  Armazenamento: ${storage.kind}${storage.isGit ? " (git)" : ""}`);
@@ -295,12 +302,49 @@ export async function publishFiles({ storage, squad, produto, slug, files }) {
   const result = await storage.publishBatch({ files: resolved, squad, slug });
 
   for (const p of result.published) {
-    logger.info(p.skipped ? `ℹ️  ${p.destPath} já existe e não foi sobrescrito.` : `✅ Publicado em ${p.destPath}`);
+    if (!p.skipped) {
+      const versioned = resolved.every((r) => r.destPath !== p.destPath);
+      logger.info(`✅ Publicado em ${p.destPath}${versioned ? " (nova versão: o conteúdo mudou)" : ""}`);
+    } else if (p.hash) {
+      logger.info(`ℹ️  ${p.destPath} já está publicado com o mesmo conteúdo; nada a fazer.`);
+    } else {
+      logger.info(`ℹ️  ${p.destPath} já existe e não foi sobrescrito.`);
+    }
   }
   logger.info(`🗂️  Índice regenerado: ${result.indexPath}`);
   if (result.mr) {
     logger.info(`🔀 Pull/Merge Request: ${result.mr.url}`);
   }
 
-  return result;
+  return { ...result, linkWarnings };
+}
+
+/**
+ * Avisa (sem bloquear) dos links relativos dos `.md` do lote que não resolvem dentro do Central
+ * docs: a página fica quebrada fora do workspace e na migração para o Confluence (#229).
+ * @param {Object} storage - Adaptador; sem `location` (adaptador sem pasta local), não confere
+ * @param {Array<{localFile: string, destPath: string}>} resolved
+ * @returns {Array<{ destPath: string, link: string, reason: string }>}
+ */
+function warnUnresolvableLinks(storage, resolved) {
+  const warnings = [];
+  const publishedSet = new Set(resolved.map((r) => r.destPath));
+  const exists = (rel) => (storage.location ? existsSync(join(storage.location, rel)) : true);
+  for (const r of resolved) {
+    if (!r.destPath.toLowerCase().endsWith(".md")) continue;
+    let content;
+    try {
+      content = readFileSync(r.localFile, "utf-8");
+    } catch {
+      continue; // o erro de leitura aparece na publicação
+    }
+    for (const p of findUnresolvableLinks({ destPath: r.destPath, content, publishedSet, exists })) {
+      warnings.push({ destPath: r.destPath, link: p.link, reason: p.reason });
+    }
+  }
+  if (warnings.length > 0) {
+    logger.warn(`⚠️  ${warnings.length} link(s) relativo(s) não resolvem dentro do Central docs:`);
+    for (const w of warnings) logger.warn(`   - ${w.destPath}: ${w.link} (${w.reason})`);
+  }
+  return warnings;
 }
