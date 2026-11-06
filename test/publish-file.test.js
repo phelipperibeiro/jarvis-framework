@@ -273,7 +273,7 @@ test("publishFiles: repassa relPath e fromSession ao adaptador (#229)", async ()
       produto: "loja",
       slug: "229",
       files: [
-        { localFile: file, tipo: "history", taskKey: "229", relPath: "ferramentas/saidas/E8_r2.txt", fromSession: true },
+        { localFile: file, tipo: "history", taskKey: "229", relPath: "ferramentas/saidas/E8_r2.txt", fromSession: true, confirmed: true },
       ],
     });
     assert.equal(result.published[0].destPath, "CORE/loja/history/229/ferramentas/saidas/E8_r2.txt");

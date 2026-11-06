@@ -6,6 +6,25 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), e o
 
 > Versões anteriores a `2.1.1` não foram documentadas retroativamente neste changelog — o histórico detalhado dessas versões continua disponível via `git log`.
 
+## [Não lançado]
+
+### Added
+- **Central docs guarda a sessão inteira (#229)**: o `/eng.spec-consolidate` passa a publicar **todos os arquivos** de `.jarvis/sessions/eng/{card}/`. `architecture.md`, `plan.md` e `light-arch.md` vão para `decisions/` da funcionalidade, nomeados com o card (`architecture-{card}.md`; quebrados por funcionalidade, `architecture-{card}-{funcionalidade}.md`); os demais arquivos (inclusive subpastas e os que não são Markdown) vão para `history/{card}/`, com o caminho relativo preservado; e uma **página-índice da sessão** (`history/{card}/{card}.md`, template novo `central-session-template.md`) liga tudo e as funcionalidades tocadas. Uma sessão incompleta é documentada com o que existir, marcando o que faltou e as fontes, sem inventar. Depois de publicar, arquivar e finalizar (cada um com o seu Sim), o workflow **oferece apagar a pasta da sessão** (Passo 9.1, pergunta própria). O Central docs é um snapshot de cada funcionalidade seguido das suas sessões e artefatos, organizado para migrar ao Confluence.
+- **Sessões antigas, uma por vez (#229)**: `/eng.spec-consolidate --sessao {card}` e `--proxima` consolidam uma sessão que nunca foi consolidada (ou já entregue, só copiando os arquivos), no ritmo da pessoa. Para as sem entrega, consultam a issue e o PR no GitHub/GitLab (só leitura) e documentam com o que existir ("PR não localizado" quando não há); cards de um épico entram no mesmo registro da funcionalidade. O ponto onde parou é a página-índice publicada, sem arquivo de controle.
+- `jarvis docs sessions [--json] [--pendentes] [--proxima]` (só leitura): lista as sessões, seus arquivos, o que falta, se a entrega já está no Central docs e se a página-índice já foi publicada.
+- `jarvis docs publish --manifest --dry-run`: simula e mostra, por arquivo, novo, igual, nova versão ou sobrescreve, sem gravar nada.
+- **Versionamento por hash**: um arquivo de sessão que mudou depois de publicado entra como `-v1`, `-v2`… e a versão anterior permanece (sem mesclar); conteúdo igual não cria nada.
+- **Links convertidos na publicação**: nos `.md` da sessão, link para outro arquivo da entrega vira link dentro do Central docs, código vira `{remote}/blob/{sha do commit base}/…` (GitHub e GitLab), e sessão e `docs/jarvis/` viram texto (regra 6 de `doc-links-rules.md`); o original não muda. Links relativos que ainda não resolvem dentro do Central docs geram aviso.
+- **Trava de confirmação**: o `publish --manifest` recusa publicar um arquivo de sessão que não seja `.md`, seja binário, passe de 1 MB ou tenha possível segredo, a menos que o manifesto traga `confirmed: true` (a aprovação da pessoa no Passo 4). Nada é publicado enquanto houver um sinalizado sem confirmação.
+- Tipos `architecture`, `plan` e `light-arch` no `jarvis docs publish`; campos `fromSession`, `relPath`, `confirmed`, `originalPath`, `publishedAs` e `publishedHash` no manifesto.
+
+### Changed
+- `jarvis docs archive` e `finalize` cobrem os arquivos da sessão (antes `history` ficava de fora): o `archive/` segue o nome publicado (inclusive `-vN`) e o caminho relativo; a remoção só vale dentro da pasta `$SESSIONS_DIR/eng/{card}/` do próprio card (um caminho com `..` ou de outro card é recusado). O `--force` também apaga a sessão, mas só depois de conferir que a cópia publicada existe e bate o hash.
+- O `/eng.spec-consolidate` aceita sessão incompleta (sem `architecture.md`, `plan.md` ou `context.md`) em vez de perguntar se segue só com o diff.
+
+### Fixed
+- `jarvis docs finalize`: um documento quebrado em partes (várias entradas com o mesmo original) era apagado duas vezes e a segunda dava erro; passa a contar todas as partes como finalizadas.
+
 ## [8.6.0] - 2026-11-06
 
 ### Added

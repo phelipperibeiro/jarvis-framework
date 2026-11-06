@@ -165,7 +165,7 @@ test("docsPublish --manifest: grava publishedAs e publishedHash por entrada, e v
   const manifest = join(ws, "consolidation/manifest.json");
   const entries = [
     { file: "architecture.md", tipo: "architecture", feature: "checkout", taskKey: "229", fromSession: true },
-    { file: "saida.txt", tipo: "history", taskKey: "229", relPath: "ferramentas/saida.txt", fromSession: true },
+    { file: "saida.txt", tipo: "history", taskKey: "229", relPath: "ferramentas/saida.txt", fromSession: true, confirmed: true },
   ];
   const publish = () => captureRun(() => docsPublish({ manifest, slug: "229", "env-file": envFile }));
 
@@ -252,7 +252,7 @@ function sessionManifestFixture() {
     JSON.stringify([
       { ...base, file: "architecture.md", tipo: "architecture", originalPath: join(sessao, "architecture.md") },
       { ...base, file: "plan.md", tipo: "plan", originalPath: join(sessao, "plan.md") },
-      { ...base, file: "saida.txt", tipo: "history", relPath: "ferramentas/saida.txt", originalPath: join(sessao, "ferramentas/saida.txt") },
+      { ...base, file: "saida.txt", tipo: "history", relPath: "ferramentas/saida.txt", confirmed: true, originalPath: join(sessao, "ferramentas/saida.txt") },
     ])
   );
   return { ...fx, sessao, manifest };
@@ -396,6 +396,20 @@ test("sessão já entregue: publica só os arquivos e a página-índice, sem toc
   assert.ok(existsSync(join(centralDocs, "CORE/loja/checkout/decisions/architecture-229.md")));
   assert.ok(existsSync(join(centralDocs, "CORE/loja/history/229/229.md")));
   assert.equal(await proxima(), "300", "depois: a próxima pendente é a 300");
+});
+
+test("docsPublish --manifest: arquivo de sessão sinalizado sem confirmed sai com 1 e não publica nem apaga nada, nem com --force (#229)", async () => {
+  const { envFile, centralDocs, sessao, manifest } = sessionManifestFixture();
+  const entries = JSON.parse(readFileSync(manifest, "utf-8")).map((e) => ({ ...e, confirmed: undefined })); // tira o confirmed do .txt
+  writeFileSync(manifest, JSON.stringify(entries));
+  for (const force of [false, true]) {
+    const code = await captureRun(() => docsPublish({ manifest, slug: "229", force, "env-file": envFile }));
+    assert.equal(code, 1, `force=${force}`);
+    assert.equal(existsSync(join(centralDocs, "CORE")), false, "nada foi publicado, nem os arquivos limpos");
+    for (const rel of ["architecture.md", "plan.md", "ferramentas/saida.txt"]) {
+      assert.ok(existsSync(join(sessao, rel)), `${rel} continua na sessão`);
+    }
+  }
 });
 
 test("docsPublish --manifest --force: publica e já apaga o original ligado (zero reversão)", async () => {

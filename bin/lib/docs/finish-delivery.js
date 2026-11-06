@@ -570,6 +570,12 @@ export function finalizeEntries({ entries, env, root, squad, produto, workspaceR
 
   for (const e of eligible) {
     try {
+      // Um documento quebrado em partes (Q9) tem várias entradas com o mesmo original: a primeira
+      // apaga, as outras já o encontram removido e contam como finalizadas (#229).
+      if (!existsSync(e.originalPath)) {
+        finalized.push(e);
+        continue;
+      }
       if (env && !e.fromSession) {
         const destPath = destFor({ tipo: e.tipo, squad, produto, feature: e.feature, taskKey: e.taskKey, e });
         rewritten.push(...rewriteRelatedRefs(env, publishedBasename(e), destPath, workspaceRoot));

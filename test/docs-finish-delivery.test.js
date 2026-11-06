@@ -777,3 +777,25 @@ test("sessão: documento de docs/jarvis continua sem a conferência da cópia no
     rmSync(dir, { recursive: true, force: true });
   }
 });
+
+test("finalize: documento quebrado em partes (várias entradas, mesmo original) é apagado uma vez e todas contam como finalizadas (#229)", () => {
+  const { dir, ws, root, sessao, env, entry } = sessionFixture();
+  try {
+    const entries = [
+      entry("plan", "plan.md", { publishedAs: "CORE/loja/checkout/decisions/plan-229-checkout.md" }),
+      entry("plan", "plan.md", { feature: "frete", publishedAs: "CORE/loja/frete/decisions/plan-229-frete.md" }),
+    ];
+    const arch = archiveEntries({ root, squad: "CORE", produto: "loja", entries });
+    assert.equal(arch.errors.length, 0);
+    assert.deepEqual(entries.map((e) => e.archiveDestPath), [
+      "CORE/loja/checkout/archive/plan-229-checkout.md",
+      "CORE/loja/frete/archive/plan-229-frete.md",
+    ]);
+    const fin = finalizeEntries({ entries, env, root, squad: "CORE", produto: "loja", workspaceRoot: ws });
+    assert.deepEqual(fin.errors, [], "a segunda parte não dá erro por o original já ter sido removido");
+    assert.equal(fin.finalized.length, 2);
+    assert.equal(existsSync(join(sessao, "plan.md")), false);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});

@@ -25,6 +25,7 @@ import { basename, extname, join, resolve } from "node:path";
 import { validateFrontmatter } from "./validate-frontmatter.js";
 import { findUnresolvableLinks } from "./check-links.js";
 import { commitBaseFor, makeRepoResolver, rewriteLinksForCentral } from "./rewrite-links.js";
+import { scanFile } from "./scan-files.js";
 import { logger } from "../utils/logger.js";
 
 /**
@@ -284,11 +285,13 @@ export async function publishFile({ storage, localFile, tipo, squad, produto, fe
  * @param {string} opts.squad
  * @param {string} opts.produto
  * @param {string} [opts.slug] - Nome da branch/commit (ex.: a chave da entrega)
- * @param {Array<{localFile: string, tipo: string, feature?: string, taskKey?: string, relPath?: string, fromSession?: boolean, originalPath?: string}>} opts.files
+ * @param {Array<{localFile: string, tipo: string, feature?: string, taskKey?: string, relPath?: string, fromSession?: boolean, originalPath?: string, confirmed?: boolean}>} opts.files
  *   `relPath` só vale para `history`; `fromSession` marca o arquivo vindo de uma sessão (#229):
  *   versiona por hash, converte os links do `.md` e libera a remoção só para essas entradas.
  *   `originalPath` é o arquivo na sessão: a base para resolver os links do texto (a cópia em
- *   `consolidation/` fica em outra pasta).
+ *   `consolidation/` fica em outra pasta). `confirmed: true` marca o arquivo que a pessoa aprovou
+ *   no Passo 4 do `/eng.spec-consolidate`: sem ele, um arquivo de sessão sinalizado por
+ *   `scanFile` (não Markdown, binário, acima de 1 MB, possível segredo) **não é publicado**.
  * @param {string[]} [opts.localOnlyDirs] - Pastas que só existem no disco local (sessão,
  *   `docs/jarvis/`): link para elas vira texto na conversão
  * @param {Object} [opts.deps] - `repoOf` injetável (testes), de `makeRepoResolver`
@@ -297,7 +300,9 @@ export async function publishFile({ storage, localFile, tipo, squad, produto, fe
  * @returns {Promise<{ published: Array<{destPath: string, skipped?: boolean, hash?: string}>, indexPath: string, sha?: string, branch?: string, mr?: Object, linkWarnings: Array<{destPath: string, link: string, reason: string}> }>}
  *   `published` segue a ordem de `files`; `destPath` é o destino efetivo (com `-vN` quando a
  *   entrada é de sessão e o conteúdo mudou) e `hash` o sha256 do que foi publicado.
- *   `linkRewrites` lista, por arquivo, os links convertidos e os que viraram texto.
+ *   `linkRewrites` lista, por arquivo, os links convertidos e os que viraram texto. `alerts` lista
+ *   os arquivos de sessão sinalizados (`{ destPath, flags, confirmed }`).
+ * @throws {Error} há arquivo de sessão sinalizado sem `confirmed` (fora do `dryRun`, que só devolve `alerts`)
  */
 export async function publishFiles({ storage, squad, produto, slug, files, localOnlyDirs = [], deps = {}, dryRun = false }) {
   if (!storage) {
@@ -328,6 +333,18 @@ export async function publishFiles({ storage, squad, produto, slug, files, local
 
   nameSessionDecisions(files, resolved);
 
+  // Arquivos de sessão que pedem confirmação (não .md, binário, > 1 MB, possível segredo): sem o
+  // `confirmed` da pessoa, nada é publicado (a simulação só devolve a lista).
+  const alerts = scanSessionFiles(files, resolved);
+  const pendentes = alerts.filter((a) => !a.confirmed);
+  if (pendentes.length > 0 && !dryRun) {
+    throw new Error(
+      `${pendentes.length} arquivo(s) da sessão precisam da sua confirmação antes de publicar ` +
+        `("confirmed": true no manifesto, depois do Sim do Passo 4):\n` +
+        pendentes.map((a) => `  - ${a.destPath}: ${a.flags.map((f) => `${f.kind} (${f.detail})`).join("; ")}`).join("\n")
+    );
+  }
+
   // Os .md da sessão saem com os links convertidos (o original na sessão não muda).
   const tmpDir = mkdtempSync(join(tmpdir(), "jarvis-publish-"));
   try {
@@ -341,7 +358,11 @@ export async function publishFiles({ storage, squad, produto, slug, files, local
       logger.info("");
       logger.info("🔎 Simulação (nada foi gravado):");
       for (const p of plan) logger.info(`  - ${p.status.padEnd(11)} ${p.destPath}`);
-      return { dryRun: true, plan, published: [], linkWarnings, linkRewrites };
+      for (const a of alerts) {
+        const motivo = a.flags.map((f) => `${f.kind} (${f.detail})`).join("; ");
+        logger.info(`  ⚠️  ${a.confirmed ? "confirmado" : "PRECISA DE CONFIRMAÇÃO"}: ${a.destPath}: ${motivo}`);
+      }
+      return { dryRun: true, plan, alerts, published: [], linkWarnings, linkRewrites };
     }
 
     logger.info("");
@@ -367,10 +388,26 @@ export async function publishFiles({ storage, squad, produto, slug, files, local
       logger.info(`🔀 Pull/Merge Request: ${result.mr.url}`);
     }
 
-    return { ...result, linkWarnings, linkRewrites };
+    return { ...result, linkWarnings, linkRewrites, alerts };
   } finally {
     rmSync(tmpDir, { recursive: true, force: true });
   }
+}
+
+/**
+ * Varre os arquivos de sessão do lote atrás do que pede confirmação (`scanFile`).
+ * @param {Array<Object>} files - Entradas do manifesto
+ * @param {Array<{localFile: string, destPath: string}>} resolved
+ * @returns {Array<{ destPath: string, flags: Array<{kind: string, detail: string}>, confirmed: boolean }>}
+ */
+function scanSessionFiles(files, resolved) {
+  const alerts = [];
+  files.forEach((f, i) => {
+    if (!f.fromSession) return;
+    const flags = scanFile(resolved[i].localFile);
+    if (flags.length > 0) alerts.push({ destPath: resolved[i].destPath, flags, confirmed: f.confirmed === true });
+  });
+  return alerts;
 }
 
 /**
