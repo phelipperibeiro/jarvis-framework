@@ -8,7 +8,7 @@ Depois do merge do PR (o `/eng.pr` pergunta no fim e oferece chamá-lo), transfo
 
 ## O que é
 
-O Central docs registra o que foi implementado. Antes, os documentos de trabalho (PRD, FRD, ARD, RFC, SPEC, épicos…) nunca chegavam lá; agora, um documento **ligado a esta entrega** também é publicado, na pasta da funcionalidade (`decisions/`) — o que não está ligado continua em `docs/jarvis/`, sem ser tocado. Este comando cruza as fontes com o que aconteceu de verdade:
+O Central docs registra o que foi implementado. Um documento de trabalho (PRD, FRD, ARD, RFC, SPEC, épico…) **ligado a esta entrega** é publicado junto, na pasta da funcionalidade (`decisions/`) — o que não está ligado continua em `docs/jarvis/`, sem ser tocado. Este comando cruza as fontes com o que aconteceu de verdade:
 - as decisões do `architecture.md` e as mudanças de direção do `plan.md`;
 - o diff e os commits (quem fez o quê, quando);
 - o PR/MR e o card;
@@ -22,6 +22,8 @@ Com isso, escreve documentos **autossuficientes**: se os originais se perderem, 
 | Entrega | `{SQUAD}/{produto}/{funcionalidade}/deliveries/delivery-{data}-{card}.md` | O que o PR fez, decisões, commits com autor, arquivos, follow-ups, testes |
 | Produto (se houver conteúdo transversal) | `{SQUAD}/{produto}/{produto}.md` | O que não é de uma funcionalidade só |
 | Documento de trabalho ligado | `{SQUAD}/{produto}/{funcionalidade}/decisions/` | Cópia do original (ou, se cobrir mais de uma funcionalidade, uma parte por funcionalidade) |
+| Artefatos da sessão (checklist, comentários, diário) | `{SQUAD}/{produto}/history/{task_key}/` | Rodadas do `gate-checklist.md`, `task-comment-*.md`, `daily.md` |
+| Página inicial do squad (automática, criada uma vez) | `{SQUAD}/home.md` | Ponto de entrada do squad no Central docs; o adaptador nunca sobrescreve depois de criada |
 
 > ⚠️ Três execuções separadas, cada uma com o seu Sim: **publicar** (copia), **`--archive`** (guarda o original em `archive/`, sem apagar) e **`--finalize`** (apaga o original, só o que não mudou desde o `--archive`; irreversível).
 
