@@ -99,6 +99,21 @@ function injectFrontmatterFields(path, fields) {
 }
 
 /**
+ * Desfaz `injectFrontmatterFields`: tira as linhas `origin:`/`original_status:` logo depois
+ * do `---` de abertura, para hashear a cópia em `archive/` como se nunca tivessem sido
+ * acrescentadas (rodada 2, N5) — sem isso, o hash da cópia nunca bate o do original puro.
+ * @param {string} content
+ * @returns {string}
+ */
+function stripInjectedFields(content) {
+  const lines = content.split("\n");
+  if (lines[0] !== "---") return content;
+  let i = 1;
+  while (i < lines.length && /^(origin|original_status):/.test(lines[i])) i++;
+  return [lines[0], ...lines.slice(i)].join("\n");
+}
+
+/**
  * Resolve, com `$VAR` expandido (#220 item 2), as três pastas onde um documento de trabalho
  * "original" pode estar. Reaproveita `docsFolders` de `core/docs-migrate.js` (rodada 2, N7):
  * duas regras para as mesmas pastas (com normalização diferente de `./`/`/` nas pontas)
@@ -439,13 +454,18 @@ export function finalizeEntries({ entries, env, root, squad, produto, workspaceR
       continue;
     }
     if (root) {
-      // Só a existência: o conteúdo da cópia não é mais idêntico ao buffer hasheado no
-      // --archive (a cópia ganhou origin/original_status no frontmatter, Q14) — comparar o
-      // hash dos dois daria sempre diferente. O hash serve para comparar o ORIGINAL (abaixo),
-      // não a cópia.
       const archivedAbs = join(root, e.archiveDestPath);
       if (!existsSync(archivedAbs)) {
         changed.push({ originalPath: e.originalPath, reason: "cópia em archive/ não encontrada" });
+        continue;
+      }
+      // Tira origin/original_status (injetados no --archive, Q14) antes de hashear, senão o
+      // hash da cópia nunca bateria o do original puro (rodada 2, N5): confere que a cópia
+      // não foi corrompida ou sobrescrita por fora, além da conferência do original abaixo.
+      const archivedContent = stripInjectedFields(readFileSync(archivedAbs, "utf-8"));
+      const archivedCopyHash = createHash("sha256").update(archivedContent).digest("hex");
+      if (archivedCopyHash !== e.archivedHash) {
+        changed.push({ originalPath: e.originalPath, reason: "cópia em archive/ não bate o hash" });
         continue;
       }
     }
