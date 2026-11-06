@@ -26,11 +26,13 @@ bin/
     │   └── comment.js         # Comentário no card (jira/github/gitlab) pelo cli-runner — mesmo padrão
     ├── config/                # ide-config.js (fonte de verdade de IDEs), constants.js
     ├── core/                  # scanner.js, sync-engine.js (inclui o RuleResolver do overlay), profile-filter.js, token-report.js, company-profile.js (COMPANY_PROFILE e o default stark-industries)
-    ├── docs/                  # Central docs: fetch/publish pelo adaptador + validação de frontmatter
-    │   ├── validate-frontmatter.js  # Valida/extrai frontmatter (feature, delivery e documentos de trabalho: PRD, FRD, épico, história, tarefa, ARD, RFC, QA)
-    │   ├── fetch-file.js       # openStorageFromEnv() + fetchFile() — `docs sync`/`docs fetch`/`docs publish`
-    │   ├── publish-file.js     # tipos, resolveDestPath() e publishFile() — `docs publish`
-    │   └── storage/            # adaptadores (CENTRAL_DOCS_STORAGE): index.js (fábrica), filesystem.js (pasta + git), build-index.js
+    ├── docs/                  # Central docs, por funcionalidade (#220): fetch/publish/migrate/archive/finalize + validação
+    │   ├── validate-frontmatter.js  # Valida/extrai frontmatter (feature, delivery, product, home, history e documentos de trabalho: PRD, FRD, épico, história, tarefa, ARD, RFC, QA, discovery)
+    │   ├── fetch-file.js       # openStorageFromEnv() + fetchFile() — `docs sync`/`docs fetch`/`docs publish`/`docs migrate`/`docs archive`/`docs finalize`
+    │   ├── publish-file.js     # tipos, resolveDestPath(), publishFile() e publishFiles() (lote) — `docs publish [--manifest]`
+    │   ├── migrate-central.js # planCentralMigration/applyCentralMigration (layout antigo -> por funcionalidade) — `docs migrate`
+    │   ├── finish-delivery.js # archiveEntries/finalizeEntries/forceFinalize/rewriteRelatedRefs — `docs archive`/`docs finalize`/`--force`
+    │   └── storage/            # adaptadores (CENTRAL_DOCS_STORAGE): index.js (fábrica), filesystem.js (pasta + git, inclui publishBatch), build-index.js
     ├── utils/                 # logger.js, ui.js, paths.js, frontmatter.js (inclui readDescription), git-parser.js
     ├── flow-map/              # `jarvis map` — grafo de chamadas entre workflows/skills/agents
     ├── auth/                  # session.js (auth.json legado, hoje só `jarvis logout` o lê)

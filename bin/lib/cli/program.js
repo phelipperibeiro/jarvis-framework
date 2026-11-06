@@ -22,6 +22,9 @@ import { info } from "../../commands/info.js";
 import { whoami } from "../../commands/whoami.js";
 import { docsSync } from "../../commands/docs-sync.js";
 import { docsPublish } from "../../commands/docs-publish.js";
+import { docsMigrate } from "../../commands/docs-migrate.js";
+import { docsArchive } from "../../commands/docs-archive.js";
+import { docsFinalize } from "../../commands/docs-finalize.js";
 import { installRtk } from "../../commands/install-rtk.js";
 import { tokens } from "../../commands/tokens.js";
 import { rulesSync } from "../../commands/rules.js";
@@ -146,12 +149,28 @@ export function buildProgram() {
 
   const docsPublishCmd = cmd(docs, "publish")
     .description(
-      "Publicar a consolidação (feature/delivery) no Central docs (pasta: copia e regenera o índice; com git: branch + PR)"
+      "Publicar no Central docs, na estrutura por funcionalidade (pasta: copia e regenera o índice; com git: branch + PR)"
     )
-    .option("--file <path>", "Caminho do arquivo local")
-    .option("--tipo <tipo>", "feature|delivery (consolidação do /eng.spec-consolidate)")
+    .option("--file <path>", "Caminho do arquivo local (um só; alternativa ao --manifest)")
+    .option(
+      "--manifest <path>",
+      "Manifesto JSON com vários arquivos ([{file, tipo, feature?, taskKey?}]); publica em lote, numa branch e um PR só"
+    )
+    .option("--slug <chave>", "Nome da branch/commit do lote (ex.: a chave da entrega); só com --manifest")
+    .option(
+      "--force",
+      "Só com --manifest: publica e já finaliza (apaga os originais), sem --archive — zero reversão (Q15, #220)"
+    )
+    .option(
+      "--tipo <tipo>",
+      "feature|delivery|product|history|prd|frd|feat|epic|story|task|ard|rfc|spec|swagger|qa-report|discovery"
+    )
     .option("--produto <produto>", "Pasta do produto no Central docs (padrão: WORKSPACE do ENV.md)")
-    .option("--feature <slug>", "Só se o nome do arquivo fugir do padrão {tipo}-{nome}.md")
+    .option(
+      "--feature <slug>",
+      "Funcionalidade: opcional para feature (se o arquivo seguir feature-{slug}.md); obrigatório para delivery e para os documentos de trabalho"
+    )
+    .option("--task-key <chave>", "Obrigatório para --tipo history (rodadas, comentários, diário)")
     .option("--squad <squad>", "Override do SQUAD do ENV.md")
     .option(
       "--workspace <workspace>",
@@ -159,6 +178,39 @@ export function buildProgram() {
     );
   withEnvOptions(withLogOptions(docsPublishCmd)).action((options) =>
     docsPublish(toLegacyFlags(options))
+  );
+
+  const docsArchiveCmd = cmd(docs, "archive")
+    .description(
+      "Arquivar os originais já publicados (decisions/), sem apagar nada; reescreve o manifesto com o hash e o destino"
+    )
+    .option("--manifest <path>", "O mesmo manifesto do jarvis docs publish")
+    .option("--squad <squad>", "Override do SQUAD do ENV.md")
+    .option("--produto <produto>", "Override do WORKSPACE do ENV.md");
+  withEnvOptions(withLogOptions(docsArchiveCmd)).action((options) =>
+    docsArchive(toLegacyFlags(options))
+  );
+
+  const docsFinalizeCmd = cmd(docs, "finalize")
+    .description(
+      "Apagar os originais já arquivados (--archive antes); irreversível, só os que não mudaram desde então"
+    )
+    .option("--manifest <path>", "O manifesto já arquivado com --archive")
+    .option("--squad <squad>", "Override do SQUAD do ENV.md")
+    .option("--produto <produto>", "Override do WORKSPACE do ENV.md")
+    .option("--workspace <workspace>", "Mesmo efeito de --produto");
+  withEnvOptions(withLogOptions(docsFinalizeCmd)).action((options) =>
+    docsFinalize(toLegacyFlags(options))
+  );
+
+  const docsMigrateCmd = cmd(docs, "migrate")
+    .description(
+      "Migrar o Central docs do layout antigo para a estrutura por funcionalidade (dry-run por padrão)"
+    )
+    .option("--apply", "Aplica o plano (padrão: só mostra, sem alterar nada)")
+    .option("--squad <squad>", "Override do SQUAD do ENV.md");
+  withEnvOptions(withLogOptions(docsMigrateCmd)).action((options) =>
+    docsMigrate(toLegacyFlags(options))
   );
 
   const installRtkCmd = cmd(program, "install-rtk").description(

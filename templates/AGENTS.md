@@ -19,6 +19,7 @@ templates/
 ├── warm-up-template.md             # Aquecimento por apelido ($SESSIONS_DIR/warm-ups/{apelido}/)
 ├── engineering/                    # Templates tecnicos
 │   ├── architecture-template.md    # Template de arquitetura
+│   ├── light-arch-template.md      # Desenho arquitetural leve (eng.light-arch)
 │   ├── advisor-template.md         # Prompts e auditoria do Advisor
 │   ├── ARD-template.md             # Architecture Review Document
 │   ├── RFC-template.md             # Request For Comments
@@ -34,6 +35,10 @@ templates/
 │   ├── AGENTS-template.md          # Template de AGENTS.md
 │   ├── data-pipeline-template.md   # Documentacao de pipeline de dados
 │   ├── data-contract-template.md   # Contrato de dados
+│   ├── central-feature-template.md # Central docs: pagina da funcionalidade
+│   ├── central-delivery-template.md # Central docs: registro da entrega
+│   ├── central-product-template.md # Central docs: pagina do produto (transversal)
+│   ├── central-home-template.md    # Central docs: pagina inicial do squad (editavel, so uma vez)
 │   └── qa/                         # Templates de QA
 │       ├── qa.release-signoff-template.md # Sign-off QA pre-deploy (GO/NO-GO)
 │       ├── qa.sprint-plan-template.md     # Planejamento de capacidade QA da sprint
@@ -115,6 +120,7 @@ Use chaves `{...}` para indicar campos a serem preenchidos:
 | Template | Uso | Comando |
 |----------|-----|---------|
 | `architecture-template.md` | Design arquitetural | `/eng.start` |
+| `light-arch-template.md` | Design arquitetural leve, sem branch nem PR | `/eng.light-arch` |
 | `advisor-template.md` | Prompts do Advisor e modelo de auditoria | `/eng.start` |
 | `ARD-template.md` | Revisao de arquitetura | `/eng.create-ard` |
 | `RFC-template.md` | Proposta de mudanca | `/eng.create-rfc` |
@@ -123,6 +129,10 @@ Use chaves `{...}` para indicar campos a serem preenchidos:
 | `ref-spec-template.md` | Especificação técnica de referência | `/eng.build-tech-spec` (Reference Spec) |
 | `plan-template.md` | Plano de execucao | `/eng.plan` |
 | `PR-template.md` | Pull Request | `/eng.pr` |
+| `central-feature-template.md` | Central docs: página da funcionalidade (estado atual) | `/eng.spec-consolidate` |
+| `central-delivery-template.md` | Central docs: registro de uma entrega | `/eng.spec-consolidate` |
+| `central-product-template.md` | Central docs: página do produto (transversal a funcionalidades) | `/eng.spec-consolidate` |
+| `central-home-template.md` | Central docs: página inicial do squad (editável, criada uma vez) | `jarvis docs publish --tipo home` |
 
 ### Product
 

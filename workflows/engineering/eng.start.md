@@ -164,7 +164,7 @@ Se `CENTRAL_DOCS_STORAGE` estiver configurado no ENV.md, buscar docs relacionado
 - funcionalidades relacionadas (`feature-*`): comportamento atual, decisões, onde está no código;
 - entregas recentes dessas funcionalidades (`delivery-*`), se ajudarem.
 
-Os documentos de trabalho da tarefa (PRD, FRD, ARD, RFC, SPEC) ficam em `$PROD_DOCS`/`$ENG_DOCS` (`docs/jarvis/`): leia-os de lá.
+Os documentos de trabalho da tarefa (PRD, FRD, ARD, RFC, SPEC) ficam em `$PROD_DOCS`/`$ENG_DOCS` (`docs/jarvis/`): leia-os de lá primeiro; não achando, busque em `decisions/` pela skill `jarvis-docs-central` (Modo 1) — pode já ter sido consolidado e removido de `docs/jarvis/` (#220).
 
 **Passo 3:** Incorporar ao contexto antes de prosseguir para análise
 

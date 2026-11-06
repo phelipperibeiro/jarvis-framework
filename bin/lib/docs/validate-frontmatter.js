@@ -14,6 +14,13 @@ export function validateFrontmatter(filePath, tipo) {
   const content = readFileSync(filePath, 'utf-8')
 
   const frontmatter = extractFrontmatterBlock(content)
+  const requiredFields = getRequiredFields(tipo)
+
+  // Tipo sem campo obrigatório (ex.: swagger, um YAML/JSON sem a cerca `---`/`---` de frontmatter):
+  // sem frontmatter para exigir, não há o que validar.
+  if (frontmatter === null && requiredFields.length === 0) {
+    return {}
+  }
 
   if (frontmatter === null) {
     throw new Error(
@@ -29,7 +36,6 @@ export function validateFrontmatter(filePath, tipo) {
   const metadata = parseFrontmatter(content)
 
   // Validar campos obrigatórios por tipo
-  const requiredFields = getRequiredFields(tipo)
   const missingFields = []
 
   for (const field of requiredFields) {
@@ -71,6 +77,25 @@ export function validateFrontmatter(filePath, tipo) {
     )
   }
 
+  // Labels no padrão Confluence (Q2 da #220): minúsculas, letras/números/hífen, sem espaço.
+  // Opcional — documento antigo sem o campo continua válido (Q6: a migração não inventa labels).
+  if (metadata.labels) {
+    // Sintaxe de lista YAML (`{a, b}` ou `[a, b]`, #220 item 13): tira os colchetes/chaves
+    // antes de separar por vírgula, senão o primeiro e o último label ficam presos a eles e
+    // a mensagem de erro aponta "label" inválido mesmo quando todos estão certos.
+    const semColchetes = metadata.labels.replace(/^[{[]/, '').replace(/[}\]]$/, '')
+    const invalidas = semColchetes
+      .split(',')
+      .map((l) => l.trim())
+      .filter((l) => l && !/^[a-z0-9][a-z0-9-]*$/.test(l))
+    if (invalidas.length > 0) {
+      throw new Error(
+        `Labels fora do padrão em ${filePath}: ${invalidas.join(', ')}\n` +
+        'Use minúsculas, números e hífen, sem espaço (ex.: arquitetura, decisao).'
+      )
+    }
+  }
+
   return metadata
 }
 
@@ -85,7 +110,11 @@ function getRequiredFields(tipo) {
     // Consolidação do Central docs (/eng.spec-consolidate)
     feature: ['id', 'name', 'status', 'product', 'updated_at'],
     delivery: ['id', 'feature', 'task_key', 'pr', 'date'],
-    // Documentos de trabalho (validação usada fora do publish)
+    // Central docs: página do produto (transversal, Q22) e página inicial do squad (Q16)
+    product: ['id', 'name', 'updated_at'],
+    home: ['name'],
+    // Documentos de trabalho (validação usada fora do publish; os mesmos tipos, agora também
+    // publicáveis em decisions/ quando ligados a uma entrega consolidada — Q1, Q9, Q10 da #220)
     prd: ['id', 'name', 'version', 'status'],
     frd: ['id', 'name', 'version', 'status', 'related_prd'],
     feat: ['id', 'name', 'version', 'status', 'related_prd'],
@@ -94,7 +123,10 @@ function getRequiredFields(tipo) {
     task: ['id', 'name', 'status'],
     ard: ['id', 'name', 'version', 'status'],
     rfc: ['Status', 'Criado em', 'Proponente'],
+    discovery: ['id', 'name', 'status'],
     'qa-report': ['period', 'squad', 'version']
+    // swagger e history: sem campo obrigatório — swagger pode ser um YAML/JSON sem a cerca de
+    // frontmatter; history (gate-checklist.md, daily.md, task-comment-*.md) tem formato próprio.
   }
 
   return fields[tipo] || []

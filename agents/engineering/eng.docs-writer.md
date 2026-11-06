@@ -21,6 +21,10 @@ Fonte de verdade do processo e do formato de entrega da documentação:
 
 O `/eng.pre-pr` passa a branch base (a `Branch base:` do `architecture.md`) e, da rodada 2 em diante, o diff incremental desde a rodada anterior. Use essa base no lugar de `origin/main` nos comandos de diff e log. Só aponte: não edite nem grave arquivos. Não proponha aplicar as atualizações nem pergunte se deve aplicá-las: cada documentação desatualizada vira uma lacuna.
 
+O `docs/` do projeto (ou pasta equivalente de guia de uso) descreve **só o que existe hoje**. Duas lacunas próprias desse papel, além das da seção "Identificar Lacunas" abaixo:
+- **Funcionalidade removida ou renomeada na branch ainda aparece no `docs/`** como se existisse.
+- **Texto de histórico no `docs/`** ("antes", "passou a", "na versão X mudou para Y"): esse conteúdo pertence ao Central docs (`feature-*.md`/`delivery-*.md`, gerado pelo `/eng.spec-consolidate`), não ao guia de uso.
+
 Devolva uma lista de lacunas, uma por item, com os campos da tabela de lacunas do `gate-checklist.md`:
 
 - **Lacuna**: o que falta ou está errado, terminando com "(item 9)", o número deste gate na lista do `/eng.pre-pr`.
@@ -76,6 +80,8 @@ Com base nas mudanças de código, determine o que precisa ser atualizado:
 - Opções de configuração ausentes
 - Instruções de instalação/setup desatualizadas
 - Ausência de guias de migração para breaking changes
+- Funcionalidade removida ou renomeada que ainda aparece no `docs/` como se existisse
+- Texto de histórico no `docs/` (comparação com versão anterior), que pertence ao Central docs e não ao guia de uso
 
 ---
 

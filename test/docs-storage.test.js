@@ -110,7 +110,7 @@ test("filesystem: publish copia, regenera o índice, e fetch/list leem do disco"
 
     const r = await s.publish({
       localFile: src,
-      destPath: "CORE/product/loja/feature-checkout.md",
+      destPath: "CORE/loja/checkout/checkout.md",
       squad: "CORE",
       tipo: "feature",
     });
@@ -121,17 +121,146 @@ test("filesystem: publish copia, regenera o índice, e fetch/list leem do disco"
     assert.match(index, /^# CORE/);
     assert.match(
       index,
-      /### loja\n- \[feature-checkout\.md\]\(product\/loja\/feature-checkout\.md\) \| in_production \| Checkout \| 2026-10-15/
+      /## loja\n\n- \[checkout\]\(loja\/checkout\/checkout\.md\) \| in_production \| Checkout \| 2026-10-15/
     );
-    assert.match(index, /## engineering\n\n> Entregas recentes\n\n_Nenhum documento\._/);
 
     assert.deepEqual(await s.list("CORE"), [
       "CORE/index.md",
-      "CORE/product/loja/feature-checkout.md",
+      "CORE/loja/checkout/checkout.md",
     ]);
-    assert.equal(await s.fetch("CORE/product/loja/feature-checkout.md"), PRD);
+    assert.equal(await s.fetch("CORE/loja/checkout/checkout.md"), PRD);
   } finally {
     rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("filesystem: home.md é criado uma vez e nunca sobrescrito", async () => {
+  const root = tmp();
+  try {
+    const s = getStorage(
+      { CENTRAL_DOCS_STORAGE: "filesystem", CENTRAL_DOCS_LOCATION: "cd" },
+      { root }
+    );
+    mkdirSync(s.location);
+
+    const src = join(root, "home.md");
+    writeFileSync(src, "# Primeira versão\n");
+    const r1 = await s.publish({ localFile: src, destPath: "CORE/home.md", squad: "CORE", tipo: "home" });
+    assert.equal(r1.skipped, undefined);
+    assert.equal(await s.fetch("CORE/home.md"), "# Primeira versão\n");
+
+    writeFileSync(src, "# Segunda versão (não deveria valer)\n");
+    const r2 = await s.publish({ localFile: src, destPath: "CORE/home.md", squad: "CORE", tipo: "home" });
+    assert.equal(r2.skipped, true);
+    assert.equal(await s.fetch("CORE/home.md"), "# Primeira versão\n");
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("filesystem: publishBatch copia vários arquivos e regenera o índice uma vez só", async () => {
+  const root = tmp();
+  try {
+    const s = getStorage(
+      { CENTRAL_DOCS_STORAGE: "filesystem", CENTRAL_DOCS_LOCATION: "cd" },
+      { root }
+    );
+    mkdirSync(s.location);
+
+    const feature = join(root, "feature-checkout.md");
+    const delivery = join(root, "delivery-2026-10-15-task-123.md");
+    writeFileSync(feature, PRD);
+    writeFileSync(delivery, "---\ntask_key: TASK-123\ndate: 2026-10-15\n---\n");
+
+    const r = await s.publishBatch({
+      squad: "CORE",
+      slug: "task-123",
+      files: [
+        { localFile: feature, destPath: "CORE/loja/checkout/checkout.md", tipo: "feature" },
+        {
+          localFile: delivery,
+          destPath: "CORE/loja/checkout/deliveries/delivery-2026-10-15-task-123.md",
+          tipo: "delivery",
+        },
+      ],
+    });
+
+    assert.equal(r.published.length, 2);
+    assert.ok(r.published.every((p) => p.skipped === false));
+    assert.equal(await s.fetch("CORE/loja/checkout/checkout.md"), PRD);
+    assert.match(await s.fetch("CORE/index.md"), /- \[checkout\]\(loja\/checkout\/checkout\.md\)/);
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("filesystem: publishBatch sem git — falha num arquivo do meio deixa os anteriores copiados, sem rollback (#220 item 3)", async () => {
+  const root = tmp();
+  try {
+    const feature = join(root, "..", "feature-checkout.md");
+    writeFileSync(feature, PRD);
+    const s = getStorage({ CENTRAL_DOCS_STORAGE: "filesystem", CENTRAL_DOCS_LOCATION: root }, { root });
+
+    await assert.rejects(
+      () =>
+        s.publishBatch({
+          squad: "CORE",
+          files: [
+            { localFile: feature, destPath: "CORE/loja/checkout/checkout.md", tipo: "feature" },
+            {
+              localFile: join(root, "nao-existe.md"),
+              destPath: "CORE/loja/checkout/deliveries/delivery-x.md",
+              tipo: "delivery",
+            },
+          ],
+        }),
+      /ENOENT|no such file/
+    );
+
+    // Documentado (não corrigido nesta entrega): sem rollback, o primeiro arquivo fica
+    // publicado mesmo com o lote tendo falhado — quem chama precisa decidir o que fazer
+    // (o `docsPublishManifest` já reporta o erro e sai com 1, sem fingir sucesso).
+    assert.ok(existsSync(join(root, "CORE/loja/checkout/checkout.md")), "o primeiro já tinha sido copiado");
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("git: publishBatch — falha num arquivo do meio não deixa a branch de trabalho travada", async () => {
+  const { base, clone } = gitFixture();
+  try {
+    const feature = join(base, "feature-checkout.md");
+    writeFileSync(feature, PRD);
+    const s = getStorage(
+      { CENTRAL_DOCS_STORAGE: "filesystem", CENTRAL_DOCS_LOCATION: clone, CENTRAL_DOCS_TARGET_BRANCH: "main" },
+      { root: base, deps: { createMergeRequest: async () => assert.fail("não deveria abrir PR") } }
+    );
+
+    await assert.rejects(() =>
+      s.publishBatch({
+        squad: "CORE",
+        slug: "falha-no-meio",
+        files: [
+          { localFile: feature, destPath: "CORE/loja/checkout/checkout.md", tipo: "feature" },
+          {
+            localFile: join(base, "nao-existe.md"),
+            destPath: "CORE/loja/checkout/deliveries/delivery-x.md",
+            tipo: "delivery",
+          },
+        ],
+      })
+    );
+
+    // O `finally` do publishBatch sempre volta para a branch base, mesmo com erro no meio.
+    assert.equal(git(["branch", "--show-current"], clone), "main");
+
+    // #220, rodada 2 item 3: sem commit nenhum na branch de trabalho (falhou antes do commit),
+    // ela é apagada (não fica órfã para sempre) e o arquivo já copiado, ainda untracked, some.
+    const branches = git(["branch", "--list"], clone);
+    assert.doesNotMatch(branches, /docs\/core-falha-no-meio/, "a branch de trabalho não ficou órfã");
+    assert.equal(git(["status", "--porcelain"], clone), "", "sem arquivo untracked sobrando");
+  } finally {
+    rmSync(base, { recursive: true, force: true });
   }
 });
 
@@ -164,46 +293,78 @@ test("filesystem: pasta inexistente dá erro orientando o /jarvis-init", async (
   }
 });
 
-test("renderIndex: ignora a versão humanizada {nome}.public.md", () => {
+test("renderIndex: ignora a versão humanizada {nome}.public.md, decisions/, history/ e archive/", () => {
   const root = tmp();
   try {
-    write(join(root, "CORE/product/loja/feature-a.md"), PRD);
-    write(join(root, "CORE/product/loja/feature-a.public.md"), PRD);
+    write(join(root, "CORE/loja/a/a.md"), PRD);
+    write(join(root, "CORE/loja/a/a.public.md"), PRD);
     write(
-      join(root, "CORE/engineering/loja/delivery-2026-10-16-t-1.md"),
+      join(root, "CORE/loja/a/deliveries/delivery-2026-10-16-t-1.md"),
       "---\ntask_key: T-1\ndate: 2026-10-16\n---\n"
     );
     write(
-      join(root, "CORE/engineering/loja/delivery-2026-10-16-t-1.public.md"),
+      join(root, "CORE/loja/a/deliveries/delivery-2026-10-16-t-1.public.md"),
       "---\ntask_key: T-1\ndate: 2026-10-16\n---\n"
     );
+    write(join(root, "CORE/loja/a/decisions/prd-001-a.md"), PRD);
+    write(join(root, "CORE/loja/a/archive/a.md"), PRD);
+    write(join(root, "CORE/loja/history/t-1/daily.md"), "# Daily\n");
     const idx = renderIndex(root, "CORE");
-    assert.match(idx, /\[feature-a\.md\]/);
+    assert.match(idx, /\[a\]\(loja\/a\/a\.md\)/);
     assert.match(idx, /\[delivery-2026-10-16-t-1\.md\]/);
     assert.doesNotMatch(idx, /\.public\.md/);
+    assert.doesNotMatch(idx, /decisions|archive|history|daily/);
   } finally {
     rmSync(root, { recursive: true, force: true });
   }
 });
 
-test("renderIndex: lista só feature-*/delivery-*, as duas funcionalidades e as entregas recentes", () => {
+test("renderIndex: ignora pastas 'product'/'engineering' que sobraram do layout antigo (#220 item 9)", () => {
   const root = tmp();
   try {
-    write(join(root, "CORE/product/loja/feature-a.md"), PRD);
-    write(join(root, "CORE/product/loja/feature-b.md"), PRD.replace("FEAT-001", "FEAT-002"));
-    write(join(root, "CORE/product/loja/prd-001-legado.md"), PRD); // publicado na 4.0.0: fora do índice
+    write(join(root, "CORE/loja/a/a.md"), PRD);
+    mkdirSync(join(root, "CORE/product"), { recursive: true });
+    mkdirSync(join(root, "CORE/engineering"), { recursive: true });
+    const idx = renderIndex(root, "CORE");
+    assert.match(idx, /## loja/);
+    assert.doesNotMatch(idx, /## product/);
+    assert.doesNotMatch(idx, /## engineering/);
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("renderIndex: lista a página do produto, as funcionalidades e as entregas recentes (deduplicadas por task_key)", () => {
+  const root = tmp();
+  try {
+    write(join(root, "CORE/loja/loja.md"), "---\nid: PROD-loja\nname: Loja\n---\n# Loja\n");
+    write(join(root, "CORE/loja/a/a.md"), PRD);
+    write(join(root, "CORE/loja/b/b.md"), PRD.replace("FEAT-001", "FEAT-002"));
     for (let d = 1; d <= 12; d++) {
       const day = String(d).padStart(2, "0");
       write(
-        join(root, `CORE/engineering/loja/delivery-2026-10-${day}-t-${d}.md`),
+        join(root, `CORE/loja/a/deliveries/delivery-2026-10-${day}-t-${d}.md`),
         `---\ntask_key: T-${d}\ndate: 2026-10-${day}\n---\n`
       );
     }
+    // entrega quebrada por funcionalidade (Q9): mesmo task_key em duas pastas, conta uma vez
+    write(
+      join(root, "CORE/loja/a/deliveries/delivery-2026-10-12-t-12.md"),
+      "---\ntask_key: T-12\ndate: 2026-10-12\n---\n"
+    );
+    write(
+      join(root, "CORE/loja/b/deliveries/delivery-2026-10-12-t-12-b.md"),
+      "---\ntask_key: T-12\ndate: 2026-10-12\n---\n"
+    );
     const idx = renderIndex(root, "CORE");
-    assert.match(idx, /\[feature-a\.md\]/);
-    assert.match(idx, /\[feature-b\.md\]/);
-    assert.doesNotMatch(idx, /prd-001-legado/);
-    assert.match(idx, /delivery-2026-10-12-t-12\.md/);
+    assert.match(idx, /\[Loja\]\(loja\/loja\.md\)/);
+    assert.match(idx, /\[a\]\(loja\/a\/a\.md\)/);
+    assert.match(idx, /\[b\]\(loja\/b\/b\.md\)/);
+    assert.equal(
+      (idx.match(/T-12/g) || []).length,
+      1,
+      "T-12 aparece uma vez só, mesmo quebrada (Q9) em duas funcionalidades"
+    );
     assert.doesNotMatch(idx, /delivery-2026-10-02-t-2\.md/, "só as 10 entregas mais recentes");
   } finally {
     rmSync(root, { recursive: true, force: true });
@@ -263,7 +424,6 @@ test("git: publish cria branch, commita documento + índice, faz push e abre o P
         CENTRAL_DOCS_STORAGE: "filesystem",
         CENTRAL_DOCS_LOCATION: clone,
         CENTRAL_DOCS_TARGET_BRANCH: "main",
-        CENTRAL_DOCS_REVIEWERS: "ana",
       },
       {
         root: base,
@@ -288,12 +448,225 @@ test("git: publish cria branch, commita documento + índice, faz push e abre o P
     assert.equal(calls.length, 1);
     assert.equal(calls[0].url, origin);
     assert.equal(calls[0].opts.target, "main");
-    assert.match(calls[0].opts.description, /Revisores\*\*: ana/);
+    assert.doesNotMatch(calls[0].opts.description, /Revisores/);
 
     const files = git(["ls-tree", "-r", "--name-only", r.branch], origin).split("\n");
     assert.ok(files.includes("CORE/product/loja/feature-checkout.md"));
     assert.ok(files.includes("CORE/index.md"));
     assert.equal(git(["branch", "--show-current"], clone), "main");
+  } finally {
+    rmSync(base, { recursive: true, force: true });
+  }
+});
+
+test("git: publishBatch commita a entrega inteira numa branch e um PR só", async () => {
+  const { base, origin, clone } = gitFixture();
+  try {
+    const feature = join(base, "feature-checkout.md");
+    const delivery = join(base, "delivery-2026-10-15-task-123.md");
+    writeFileSync(feature, PRD);
+    writeFileSync(delivery, "---\ntask_key: TASK-123\ndate: 2026-10-15\n---\n");
+    const calls = [];
+    const s = getStorage(
+      { CENTRAL_DOCS_STORAGE: "filesystem", CENTRAL_DOCS_LOCATION: clone, CENTRAL_DOCS_TARGET_BRANCH: "main" },
+      {
+        root: base,
+        deps: {
+          createMergeRequest: async (url, opts) => {
+            calls.push({ url, opts });
+            return { vendor: "github", iid: 9, url: "https://example/pr/9" };
+          },
+        },
+      }
+    );
+
+    const r = await s.publishBatch({
+      squad: "CORE",
+      slug: "task-123",
+      files: [
+        { localFile: feature, destPath: "CORE/loja/checkout/checkout.md", tipo: "feature" },
+        {
+          localFile: delivery,
+          destPath: "CORE/loja/checkout/deliveries/delivery-2026-10-15-task-123.md",
+          tipo: "delivery",
+        },
+      ],
+    });
+
+    assert.equal(r.branch, "docs/core-task-123");
+    assert.equal(r.mr.iid, 9);
+    assert.equal(calls.length, 1, "um PR só para a entrega inteira");
+
+    const commits = git(["log", "--oneline", `main..${r.branch}`], origin).split("\n");
+    assert.equal(commits.length, 1, "um commit só para a entrega inteira");
+
+    const files = git(["ls-tree", "-r", "--name-only", r.branch], origin).split("\n");
+    assert.ok(files.includes("CORE/loja/checkout/checkout.md"));
+    assert.ok(files.includes("CORE/loja/checkout/deliveries/delivery-2026-10-15-task-123.md"));
+    assert.ok(files.includes("CORE/index.md"));
+    assert.equal(git(["branch", "--show-current"], clone), "main");
+  } finally {
+    rmSync(base, { recursive: true, force: true });
+  }
+});
+
+test("git: publishBatch com uma branch local já existente (retry) reusa em vez de falhar (#220 item 12)", async () => {
+  const { base, clone } = gitFixture();
+  try {
+    // Simula uma tentativa anterior que criou a branch local e não chegou a terminar
+    // (ex.: push falhou): a branch já existe quando `publishBatch` roda de novo.
+    git(["checkout", "-b", "docs/core-retry-1"], clone);
+    git(["checkout", "main"], clone);
+
+    const feature = join(base, "feature-checkout.md");
+    writeFileSync(feature, PRD);
+    const s = getStorage(
+      { CENTRAL_DOCS_STORAGE: "filesystem", CENTRAL_DOCS_LOCATION: clone, CENTRAL_DOCS_TARGET_BRANCH: "main" },
+      { root: base, deps: { createMergeRequest: async () => ({ vendor: "github", iid: 1, url: "x" }) } }
+    );
+
+    const r = await s.publishBatch({
+      squad: "CORE",
+      slug: "retry-1",
+      files: [{ localFile: feature, destPath: "CORE/loja/checkout/checkout.md", tipo: "feature" }],
+    });
+
+    assert.equal(r.branch, "docs/core-retry-1");
+    assert.equal(git(["branch", "--show-current"], clone), "main");
+  } finally {
+    rmSync(base, { recursive: true, force: true });
+  }
+});
+
+test("git: publishBatch com lote todo pulado (home.md já existe) não tenta comitar (#220 item 12)", async () => {
+  const { base, clone } = gitFixture();
+  try {
+    write(join(clone, "CORE/home.md"), "# já existe\n");
+    git(["add", "CORE/home.md"], clone);
+    git(["commit", "-m", "home existente"], clone);
+
+    const home = join(base, "home.md");
+    writeFileSync(home, "# home nova\n");
+    const s = getStorage(
+      { CENTRAL_DOCS_STORAGE: "filesystem", CENTRAL_DOCS_LOCATION: clone, CENTRAL_DOCS_TARGET_BRANCH: "main" },
+      { root: base, deps: { createMergeRequest: async () => assert.fail("não deveria abrir PR") } }
+    );
+
+    const r = await s.publishBatch({
+      squad: "CORE",
+      slug: "so-home",
+      files: [{ localFile: home, destPath: "CORE/home.md", tipo: "home" }],
+    });
+
+    assert.equal(r.published[0].skipped, true);
+    assert.equal(r.mr, undefined);
+    assert.equal(git(["branch", "--show-current"], clone), "main");
+  } finally {
+    rmSync(base, { recursive: true, force: true });
+  }
+});
+
+test("git: archiveBatch copia os originais numa branch e PR próprios (#220 item 2)", async () => {
+  const { base, origin, clone } = gitFixture();
+  try {
+    const original = join(base, "prd-001-checkout.md");
+    writeFileSync(original, "---\nid: PRD-001\nstatus: in_progress\n---\n# PRD\n");
+    const calls = [];
+    const s = getStorage(
+      { CENTRAL_DOCS_STORAGE: "filesystem", CENTRAL_DOCS_LOCATION: clone, CENTRAL_DOCS_TARGET_BRANCH: "main" },
+      {
+        root: base,
+        deps: {
+          createMergeRequest: async (url, opts) => {
+            calls.push({ url, opts });
+            return { vendor: "github", iid: 11, url: "https://example/pr/11" };
+          },
+        },
+      }
+    );
+    const entries = [{ tipo: "prd", feature: "checkout", originalPath: original }];
+
+    const r = await s.archiveBatch({ squad: "CORE", produto: "loja", entries });
+
+    assert.equal(r.archived.length, 1);
+    assert.equal(calls.length, 1, "um PR só para o arquivamento");
+    assert.equal(git(["branch", "--show-current"], clone), "main");
+    assert.ok(existsSync(original), "o original continua onde estava");
+
+    const files = git(["ls-tree", "-r", "--name-only", r.branch], origin).split("\n");
+    assert.ok(files.includes("CORE/loja/checkout/archive/prd-001-checkout.md"));
+    const archived = git(["show", `${r.branch}:CORE/loja/checkout/archive/prd-001-checkout.md`], origin);
+    assert.match(archived, new RegExp(`origin: ${original.replace(/[/\\]/g, "\\$&")}`));
+    assert.match(archived, /original_status: in_progress/);
+  } finally {
+    rmSync(base, { recursive: true, force: true });
+  }
+});
+
+test("git: archiveBatch sem nenhuma entrada arquivável não comita nem abre PR (#220 item 2)", async () => {
+  const { base, clone } = gitFixture();
+  try {
+    const s = getStorage(
+      { CENTRAL_DOCS_STORAGE: "filesystem", CENTRAL_DOCS_LOCATION: clone, CENTRAL_DOCS_TARGET_BRANCH: "main" },
+      { root: base, deps: { createMergeRequest: async () => assert.fail("não deveria abrir PR") } }
+    );
+    // Entradas sem originalPath (feature/delivery/product/home/history): nada a arquivar.
+    const entries = [{ tipo: "feature", feature: "checkout" }];
+
+    const r = await s.archiveBatch({ squad: "CORE", produto: "loja", entries });
+
+    assert.equal(r.archived.length, 0);
+    assert.equal(git(["branch", "--show-current"], clone), "main");
+  } finally {
+    rmSync(base, { recursive: true, force: true });
+  }
+});
+
+test("git: migrateApply move numa branch e PR próprios, sem mexer direto na branch atual (#220 item 7)", async () => {
+  const { base, origin, clone } = gitFixture();
+  try {
+    write(
+      join(clone, "CORE/product/loja/feature-checkout.md"),
+      "---\nid: FEAT-001\nname: Checkout\nstatus: in_production\nproduct: loja\nupdated_at: 2026-10-15\nlast_delivery: delivery-2026-10-15-t-1.md\n---\n# Checkout\n"
+    );
+    write(join(clone, "CORE/engineering/loja/delivery-2026-10-15-t-1.md"), "---\ntask_key: T-1\n---\n");
+    git(["add", "-A"], clone);
+    git(["commit", "-m", "layout antigo"], clone);
+    git(["push", "origin", "main"], clone);
+
+    const { planCentralMigration } = await import("../bin/lib/docs/migrate-central.js");
+    const calls = [];
+    const s = getStorage(
+      { CENTRAL_DOCS_STORAGE: "filesystem", CENTRAL_DOCS_LOCATION: clone, CENTRAL_DOCS_TARGET_BRANCH: "main" },
+      {
+        root: base,
+        deps: {
+          createMergeRequest: async (url, opts) => {
+            calls.push({ url, opts });
+            return { vendor: "github", iid: 21, url: "https://example/pr/21" };
+          },
+        },
+      }
+    );
+    const plan = planCentralMigration(clone, "CORE");
+
+    const r = await s.migrateApply({ plan, squad: "CORE", timestamp: "2026-11-06T00-00-00" });
+
+    assert.equal(r.moved.length, 2);
+    assert.equal(calls.length, 1, "um PR só para a migração");
+    assert.equal(git(["branch", "--show-current"], clone), "main", "volta para a branch base");
+
+    const files = git(["ls-tree", "-r", "--name-only", r.branch], origin).split("\n");
+    assert.ok(files.includes("CORE/loja/checkout/checkout.md"));
+    assert.ok(files.includes("CORE/loja/checkout/deliveries/delivery-2026-10-15-t-1.md"));
+    assert.ok(!files.includes("CORE/product/loja/feature-checkout.md"), "o arquivo antigo saiu da branch");
+    // #220, rodada 2, N4: o índice tem que ir no MESMO commit da migração, não fora dele.
+    assert.ok(files.includes("CORE/index.md"), "o índice entrou no commit da migração");
+    assert.equal(
+      git(["log", "--oneline", `main..${r.branch}`], origin).split("\n").length,
+      1,
+      "um commit só, com a migração e o índice juntos"
+    );
   } finally {
     rmSync(base, { recursive: true, force: true });
   }

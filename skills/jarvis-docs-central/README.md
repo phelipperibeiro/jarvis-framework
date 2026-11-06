@@ -1,6 +1,6 @@
 # jarvis-docs-central
 
-Integração com o **Central docs**: o registro do que **foi implementado** em cada produto do squad (um documento completo por funcionalidade e um registro por entrega), com um índice que os outros comandos consultam. Os documentos de trabalho (PRD, FRD, ARD, RFC, SPEC) ficam em `docs/jarvis/` e não vão para lá.
+Integração com o **Central docs**: o registro do que **foi implementado** em cada produto do squad, por funcionalidade (um documento completo por funcionalidade, um registro por entrega, a página do produto e o histórico), com um índice que os outros comandos consultam. Os documentos de trabalho (PRD, FRD, ARD, RFC, SPEC) ficam em `docs/jarvis/` e só vão para lá quando ligados a uma entrega consolidada.
 
 ## Visão Geral
 
@@ -20,7 +20,6 @@ CENTRAL_DOCS_LOCATION=docs/jarvis/central-docs   # relativo à pasta do workspac
 # Só se a pasta tiver .git:
 CENTRAL_DOCS_REF=main
 CENTRAL_DOCS_TARGET_BRANCH=main
-CENTRAL_DOCS_REVIEWERS=
 SQUAD=CORE
 WORKSPACE=loja                           # vira a pasta do produto
 ```
@@ -38,21 +37,32 @@ jarvis docs sync                                  # resumo: funcionalidades e en
 jarvis docs fetch CORE/index.md                   # conteúdo de um arquivo (exit 2 se não existir)
 jarvis docs publish --file .../consolidation/feature-checkout.md --tipo feature            # pelo /eng.spec-consolidate, depois do Sim (regra de ouro)
 jarvis docs publish --file .../consolidation/delivery-2026-10-15-task-123.md --tipo delivery  # idem
+jarvis docs publish --manifest .../consolidation/manifest.json --slug task-123  # a entrega inteira, numa branch/PR só
+jarvis docs archive --manifest .../consolidation/manifest.json    # guarda os originais em archive/, sem apagar
+jarvis docs finalize --manifest .../consolidation/manifest.json   # apaga os originais já arquivados (irreversível)
+jarvis docs migrate [--apply]                     # layout antigo -> por funcionalidade; dry-run por padrão
 ```
 
-- **Tipos:** só `feature` (vai para `product/`) e `delivery` (vai para `engineering/`). PRD, ARD, SPEC e os outros documentos de trabalho são recusados, com a explicação de que ficam em `docs/jarvis/`.
-- Quem gera e publica é o [`/eng.spec-consolidate`](../../workflows/engineering/eng.spec-consolidate.md), depois do PR e do seu Sim.
+- **Tipos:** `feature`, `delivery`, `product`, `history`, `home`, e os documentos de trabalho (PRD, FRD, épico, história, tarefa, ARD, RFC, SPEC, swagger, relatório de QA, discovery) — estes últimos, só quando ligados a uma entrega consolidada; sem vínculo, ficam em `docs/jarvis/`.
+- Quem gera e publica é o [`/eng.spec-consolidate`](../../workflows/engineering/eng.spec-consolidate.md), depois do PR e do seu Sim, em três passos: publicar, arquivar (`--archive`) e finalizar (`--finalize`), ou `--force` para os três de uma vez sem perguntar.
 
 ## Estrutura e índice
 
 ```
 {SQUAD}/
-├── index.md                                     # gerado; não editar
-├── product/{produto}/feature-{slug}.md          # funcionalidade: estado atual, completo
-└── engineering/{produto}/delivery-{data}-{key}.md   # registro de uma entrega
+├── index.md                              # gerado; não editar
+├── home.md                               # página inicial do squad; criada uma vez, nunca sobrescrita
+└── {produto}/
+    ├── {produto}.md                      # o que é transversal a mais de uma funcionalidade
+    ├── history/{task_key}/               # rodadas, comentários, diário da entrega
+    └── {funcionalidade}/
+        ├── {funcionalidade}.md           # funcionalidade: estado atual, completo
+        ├── deliveries/delivery-{data}-{key}[-{funcionalidade}].md
+        ├── decisions/                    # documentos de trabalho ligados a uma entrega
+        └── archive/                      # originais, fora do índice
 ```
 
-O índice lista as funcionalidades e as 10 entregas mais recentes de cada produto. Com `.git` e `scripts/build-index.sh` no repositório de documentação, o índice vem do script dele.
+O índice lista a página do produto, as funcionalidades e as 10 entregas mais recentes de cada produto (deduplicadas por `task_key`). Com `.git` e `scripts/build-index.sh` no repositório de documentação, o índice vem do script dele.
 
 ## Integração com Workflows
 
@@ -68,10 +78,12 @@ O índice lista as funcionalidades e as 10 entregas mais recentes de cada produt
 bin/
 ├── commands/
 │   ├── docs-sync.js           # jarvis docs sync
-│   └── docs-publish.js        # jarvis docs publish
+│   ├── docs-publish.js        # jarvis docs publish
+│   └── docs-migrate.js        # jarvis docs migrate
 └── lib/docs/
     ├── fetch-file.js          # openStorageFromEnv + fetchFile (jarvis docs fetch)
-    ├── publish-file.js        # tipos (feature, delivery), destino e publicação
+    ├── publish-file.js        # tipos, destino por funcionalidade e publicação
+    ├── migrate-central.js     # plano e aplicação do jarvis docs migrate
     ├── validate-frontmatter.js
     └── storage/
         ├── index.js           # getStorage(env): escolhe o adaptador pelo CENTRAL_DOCS_STORAGE

@@ -80,6 +80,32 @@ test("planEnvUpgrade: CENTRAL_DOCS_REPO sem CENTRAL_DOCS_STORAGE só gera aviso 
   assert.ok(!JSON.stringify(plan).includes("segredo"));
 });
 
+test("planEnvUpgrade: Central docs no layout antigo (product/) gera CENTRAL_DOCS_LAYOUT", () => {
+  const dir = mkdtempSync(join(tmpdir(), "jarvis-env-upgrade-central-"));
+  try {
+    mkdirSync(join(dir, "cd/CORE/product/loja"), { recursive: true });
+    const env =
+      "CENTRAL_DOCS_STORAGE=filesystem\nCENTRAL_DOCS_LOCATION=cd\nSQUAD=CORE\n";
+    const plan = planEnvUpgrade(env, "", { workspaceDir: dir });
+    assert.ok(plan.warnings.includes("CENTRAL_DOCS_LAYOUT"));
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("planEnvUpgrade: Central docs já na estrutura por funcionalidade não gera CENTRAL_DOCS_LAYOUT", () => {
+  const dir = mkdtempSync(join(tmpdir(), "jarvis-env-upgrade-central-"));
+  try {
+    mkdirSync(join(dir, "cd/CORE/loja/checkout"), { recursive: true });
+    const env =
+      "CENTRAL_DOCS_STORAGE=filesystem\nCENTRAL_DOCS_LOCATION=cd\nSQUAD=CORE\n";
+    const plan = planEnvUpgrade(env, "", { workspaceDir: dir });
+    assert.ok(!plan.warnings.includes("CENTRAL_DOCS_LAYOUT"));
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
 test("applyEnvUpgrade: linhas antigas intactas, bloco datado no fim, idempotente", () => {
   const original = "# cabeçalho\nHUB=BACKEND\nTOKEN_X=abc\nVAZIA=\n";
   const tpl = "HUB=[A]\nNOVA=1\nDISCOVERIES_DOCS=$JARVIS_DOCS/discoveries\n";

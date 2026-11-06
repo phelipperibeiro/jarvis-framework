@@ -437,11 +437,10 @@ test("cada ponto que envia algo tem a pergunta logo antes", () => {
     [REPORT_ISSUE, /^jarvis vcs create-issue/, 25, /Sim, abrir a issue/],
     [
       SPEC_CONSOLIDATE,
-      /^\s+jarvis docs publish --file .*delivery/,
+      /^\s+jarvis docs publish --manifest/,
       6,
       /Publicar no Central docs\?/,
     ],
-    [SPEC_CONSOLIDATE, /^\s+jarvis docs publish --file .*feature/, 8, /Publicar no Central docs\?/],
     [TASK_COMMENT, /^jarvis tasks comment/, 15, /Sim, publicar/],
     [TASK_COMMENT, /gh issue comment/, 32, /Sim, publicar/],
     [TASK_COMMENT, /glab issue note/, 33, /Sim, publicar/],
@@ -491,7 +490,7 @@ test("cada ponto que envia algo tem a pergunta logo antes", () => {
     ],
     [ENG_PR, /^\| Fase 4 › 4\.4 Criar MR\/PR pela CLI/, 0, /escolha da Fase 0 for publicar/],
     [ENG_PR, /^Segue a cadeia de/, 30, /exceção da regra de ouro/],
-    [SPEC_CONSOLIDATE, /^\| Passo 3 \(funcionalidade\) e Passo 6/, 0, /depois do Sim/],
+    [SPEC_CONSOLIDATE, /^\| Passo 3 \(funcionalidades\) e Passo 7/, 0, /depois do Sim/],
     [
       GLOBAL_PR,
       /^Criar a branch e o commit, gerar o texto/,
@@ -520,7 +519,7 @@ test("cada ponto que envia algo tem a pergunta logo antes", () => {
       2,
       /pergunte com `AskUserQuestion` antes de criar/,
     ],
-    ["docs/engenharia/eng.spec-consolidate.md", /^6\. Pergunta/, 0, /Pergunta \*\*Sim \/ Não\*\*/],
+    ["docs/engenharia/eng.spec-consolidate.md", /^7\. Pergunta/, 0, /Pergunta \*\*Sim \/ Não\*\*/],
     [
       "workflows/engineering/eng.build-tech-spec.md",
       /`acli jira workitem create`/,
@@ -540,6 +539,10 @@ test("cada ponto que envia algo tem a pergunta logo antes", () => {
     ["workflows/engineering/eng.work.md", /❌ NÃO faça push/],
     ["rules-on-demand/engineering/eng.work-rules.md", /^\| Fazer `git push`/],
     ["skills/AGENTS.md", /^\| `jarvis docs publish` \| `jarvis-docs-central` \|$/],
+    ["templates/AGENTS.md", /^\| `central-home-template\.md` \|/],
+    [SPEC_CONSOLIDATE, /^- `--force`:/],
+    ["AGENTS.md", /^jarvis docs publish --file\|--manifest/],
+    ["skills/jarvis-docs-central/README.md", /^jarvis docs publish --manifest/],
     ["skills/jarvis-init/SKILL.md", /é gerado pelo `jarvis docs publish`/],
     [REPORT_ISSUE, /^Sem host \(`grupo\/repo`\), o vendor não é adivinhado/],
     [INTEGRATIONS, /^\| `(?:TASK_MANAGER|VERSION_CONTROL)` \(\+/],
@@ -721,13 +724,13 @@ test("as perguntas que já existiam continuam no eng.pr, no eng.pre-pr e no eng.
   );
   const consolidate = trecho(
     read(SPEC_CONSOLIDATE),
-    /^## Passo 6: Publicar$/m,
+    /^## Passo 7: Publicar$/m,
     /^Com `ARTIFACT_STYLE=human-generated`/m
   );
   assert.match(
     consolidate,
     /AskUserQuestion/,
-    `${SPEC_CONSOLIDATE}: o Passo 6 sem AskUserQuestion. ${DE_PROPOSITO}`
+    `${SPEC_CONSOLIDATE}: o Passo 7 sem AskUserQuestion. ${DE_PROPOSITO}`
   );
 });
 

@@ -24,11 +24,14 @@ base: {main | dev | outra}
 
 # Data da consolidação (YYYY-MM-DD).
 date: {YYYY-MM-DD}
+
+# Labels no padrão Confluence: minúsculas, no singular, sem espaço (ex.: entrega, hotfix).
+labels: {label1, label2}
 ---
 
 # Entrega {task_key}: {título}
 
-> Registro **autossuficiente** do que esta entrega fez. O estado atual da funcionalidade fica em [{feature-slug.md}](../../product/{produto}/{feature-slug.md}).
+> Registro **autossuficiente** do que esta entrega fez. O estado atual da funcionalidade fica em [{feature-slug.md}](../{feature-slug.md}) (este registro mora em `deliveries/`, dentro da pasta da funcionalidade).
 
 ## 1. O que a entrega fez
 
