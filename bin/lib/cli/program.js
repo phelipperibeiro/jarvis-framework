@@ -23,6 +23,8 @@ import { whoami } from "../../commands/whoami.js";
 import { docsSync } from "../../commands/docs-sync.js";
 import { docsPublish } from "../../commands/docs-publish.js";
 import { docsMigrate } from "../../commands/docs-migrate.js";
+import { docsArchive } from "../../commands/docs-archive.js";
+import { docsFinalize } from "../../commands/docs-finalize.js";
 import { installRtk } from "../../commands/install-rtk.js";
 import { tokens } from "../../commands/tokens.js";
 import { rulesSync } from "../../commands/rules.js";
@@ -172,6 +174,26 @@ export function buildProgram() {
     );
   withEnvOptions(withLogOptions(docsPublishCmd)).action((options) =>
     docsPublish(toLegacyFlags(options))
+  );
+
+  const docsArchiveCmd = cmd(docs, "archive")
+    .description(
+      "Arquivar os originais já publicados (decisions/), sem apagar nada; reescreve o manifesto com o hash e o destino"
+    )
+    .option("--manifest <path>", "O mesmo manifesto do jarvis docs publish")
+    .option("--squad <squad>", "Override do SQUAD do ENV.md")
+    .option("--produto <produto>", "Override do WORKSPACE do ENV.md");
+  withEnvOptions(withLogOptions(docsArchiveCmd)).action((options) =>
+    docsArchive(toLegacyFlags(options))
+  );
+
+  const docsFinalizeCmd = cmd(docs, "finalize")
+    .description(
+      "Apagar os originais já arquivados (--archive antes); irreversível, só os que não mudaram desde então"
+    )
+    .option("--manifest <path>", "O manifesto já arquivado com --archive");
+  withEnvOptions(withLogOptions(docsFinalizeCmd)).action((options) =>
+    docsFinalize(toLegacyFlags(options))
   );
 
   const docsMigrateCmd = cmd(docs, "migrate")

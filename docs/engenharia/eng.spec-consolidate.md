@@ -23,7 +23,7 @@ Com isso, escreve documentos **autossuficientes**: se os originais se perderem, 
 | Produto (se houver conteúdo transversal) | `{SQUAD}/{produto}/{produto}.md` | O que não é de uma funcionalidade só |
 | Documento de trabalho ligado | `{SQUAD}/{produto}/{funcionalidade}/decisions/` | Cópia do original (ou, se cobrir mais de uma funcionalidade, uma parte por funcionalidade) |
 
-> ⚠️ Esta versão só **publica** (copia). Mover ou apagar o original de `docs/jarvis/` e da sessão é dos próximos passos do framework, ainda não disponíveis.
+> ⚠️ Três execuções separadas, cada uma com o seu Sim: **publicar** (copia), **`--archive`** (guarda o original em `archive/`, sem apagar) e **`--finalize`** (apaga o original, só o que não mudou desde o `--archive`; irreversível).
 
 ## Quando usar
 
@@ -44,14 +44,18 @@ Com isso, escreve documentos **autossuficientes**: se os originais se perderem, 
 5. Escreve os documentos na sessão (`consolidation/`), inclusive um manifesto (`manifest.json`) com tudo que será publicado.
 6. Mostra para revisão: `[Aprovar]` ou `[Ajustar]`.
 7. Pergunta **Sim / Não** para publicar (`jarvis docs publish --manifest consolidation/manifest.json`) — uma chamada só, para todos os arquivos.
+8. (`--archive`, outra chamada) Pergunta **Sim / Não** para arquivar: copia cada documento de trabalho publicado para `archive/`, sem apagar nada, e grava no manifesto o hash de cada original.
+9. (`--finalize`, outra chamada) Pergunta **Sim / Não** para finalizar: confere o hash de cada original contra o do `--archive` — se mudou, não apaga e avisa; se não mudou, reescreve as referências (`related_*`) de outros documentos e apaga o original.
 
 ## Regras que importam
 
-- Nada é publicado sem o seu **Sim**
+- Nada é publicado, arquivado ou finalizado sem o **Sim** daquele passo — cada um tem a pergunta dele
 - Um documento de trabalho só é publicado se estiver **ligado** a esta entrega; sem vínculo, continua em `docs/jarvis/`
 - Documento de uma funcionalidade só nunca é quebrado em partes
+- Finalizar sem ter arquivado antes é recusado; documento que mudou desde o `--archive` nunca é apagado
 - Sem e-mails, tokens ou valores de variáveis
 - Com `.git` no Central docs, a entrega inteira vira **uma branch e um PR só** (não um por arquivo)
+- Sem `.git`, o `archive/` é a única cópia do original além dele mesmo
 - A sessão não é apagada: remova à mão quando quiser
 - **Links no Central docs:** o Central docs pode ser lido fora do workspace, então o código vira URL absoluta (`blob/{sha}` do merge), e a sessão e o `docs/jarvis/` ficam em texto (`rules-on-demand/doc-links-rules.md`, regra 6)
 
