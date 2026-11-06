@@ -131,6 +131,7 @@ export function upgradePendencies({ pendingAxes, envPlan, missingProfile = [] })
   if (envPlan.pending?.length) reasons.push(`preencher ${envPlan.pending.join(", ")}`);
   const warnings = envPlan.warnings || [];
   if (warnings.includes("CENTRAL_DOCS_REPO")) reasons.push("migrar o Central docs");
+  if (warnings.includes("CENTRAL_DOCS_LAYOUT")) reasons.push("migrar o Central docs para a estrutura por funcionalidade");
   if (warnings.includes("TOKEN_TASK_MANAGER")) reasons.push("remover o TOKEN_TASK_MANAGER");
   return reasons;
 }
@@ -776,6 +777,11 @@ async function runUpgrade(cwd, flags) {
   if (envPlan.warnings.includes("CENTRAL_DOCS_REPO")) {
     logger.info(
       `${YELLOW}  ⚠️  Central docs no formato antigo (CENTRAL_DOCS_REPO): a migração é feita pelo /jarvis-init upgrade${NC}`
+    );
+  }
+  if (envPlan.warnings.includes("CENTRAL_DOCS_LAYOUT")) {
+    logger.info(
+      `${YELLOW}  ⚠️  Central docs no layout antigo (product/engineering): rode "jarvis docs migrate" para ver o plano, ou o /jarvis-init oferece (Upgrade C)${NC}`
     );
   }
   if (envPlan.warnings.includes("WORKSPACE_MODE")) {

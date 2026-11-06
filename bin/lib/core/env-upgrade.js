@@ -4,9 +4,11 @@
 // as chaves de REMOVED_KEYS (blocos que saíram do template, #209) são apagadas, sem ler o valor.
 // As outras exceções (CENTRAL_DOCS_LOCATION e esvaziar o TOKEN_TASK_MANAGER) pedem confirmação
 // e ficam no Upgrade (C) do skill jarvis-init (item 8). Mesmas regras dos itens 3, 4, 8, 9 e 10.
-import { readFileSync, writeFileSync } from "node:fs";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
 import { detectWorkspaceMode } from "./workspace-mode.js";
 import { getVendor } from "../integrations/cli-runner.js";
+import { resolveLocation } from "../docs/storage/index.js";
 
 const KEY_LINE = /^([A-Z][A-Z0-9_]*)=(.*)$/;
 
@@ -150,6 +152,21 @@ export function planEnvUpgrade(envText, templateText, { workspaceDir } = {}) {
 
   if (env.get("CENTRAL_DOCS_REPO") && !env.has("CENTRAL_DOCS_STORAGE")) {
     warnings.push("CENTRAL_DOCS_REPO");
+  }
+
+  // Central docs ainda no layout por tipo (product/engineering), anterior à estrutura por
+  // funcionalidade (#220): a migração (`jarvis docs migrate`) é oferecida pelo Upgrade (C).
+  if (
+    workspaceDir &&
+    env.get("CENTRAL_DOCS_STORAGE") === "filesystem" &&
+    env.get("CENTRAL_DOCS_LOCATION") &&
+    env.get("SQUAD")
+  ) {
+    const root = resolveLocation(env.get("CENTRAL_DOCS_LOCATION"), workspaceDir);
+    const squadDir = join(root, env.get("SQUAD"));
+    if (existsSync(join(squadDir, "product")) || existsSync(join(squadDir, "engineering"))) {
+      warnings.push("CENTRAL_DOCS_LAYOUT");
+    }
   }
 
   return { added, filled, removed, pending, warnings };

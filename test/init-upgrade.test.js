@@ -703,6 +703,16 @@ test("upgradePendencies: só as quatro pendências da IDE contam", () => {
   );
 });
 
+test("upgradePendencies: CENTRAL_DOCS_LAYOUT (#220) pede migrar para a estrutura por funcionalidade", () => {
+  assert.deepEqual(
+    upgradePendencies({
+      pendingAxes: [],
+      envPlan: { warnings: ["CENTRAL_DOCS_LAYOUT"] },
+    }),
+    ["migrar o Central docs para a estrutura por funcionalidade"]
+  );
+});
+
 test("init --force: com rtk no PATH, RTK_ENABLED=false continua false no ENV.md", () => {
   withWorkspace({ ".claude/ENV.md": ENV_V520, "fake-bin/rtk": "#!/bin/sh\nexit 0\n" }, (ws) => {
     chmodSync(join(ws, "fake-bin/rtk"), 0o755);
