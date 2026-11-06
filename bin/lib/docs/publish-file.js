@@ -19,10 +19,12 @@
  * @module docs/publish-file
  */
 
-import { existsSync, readFileSync } from "node:fs";
-import { basename, extname, join } from "node:path";
+import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { basename, extname, join, resolve } from "node:path";
 import { validateFrontmatter } from "./validate-frontmatter.js";
 import { findUnresolvableLinks } from "./check-links.js";
+import { commitBaseFor, makeRepoResolver, rewriteLinksForCentral } from "./rewrite-links.js";
 import { logger } from "../utils/logger.js";
 
 /**
@@ -256,14 +258,20 @@ export async function publishFile({ storage, localFile, tipo, squad, produto, fe
  * @param {string} opts.squad
  * @param {string} opts.produto
  * @param {string} [opts.slug] - Nome da branch/commit (ex.: a chave da entrega)
- * @param {Array<{localFile: string, tipo: string, feature?: string, taskKey?: string, relPath?: string, fromSession?: boolean}>} opts.files
+ * @param {Array<{localFile: string, tipo: string, feature?: string, taskKey?: string, relPath?: string, fromSession?: boolean, originalPath?: string}>} opts.files
  *   `relPath` só vale para `history`; `fromSession` marca o arquivo vindo de uma sessão (#229):
- *   as fases seguintes versionam, convertem links e liberam a remoção só para essas entradas.
+ *   versiona por hash, converte os links do `.md` e libera a remoção só para essas entradas.
+ *   `originalPath` é o arquivo na sessão: a base para resolver os links do texto (a cópia em
+ *   `consolidation/` fica em outra pasta).
+ * @param {string[]} [opts.localOnlyDirs] - Pastas que só existem no disco local (sessão,
+ *   `docs/jarvis/`): link para elas vira texto na conversão
+ * @param {Object} [opts.deps] - `repoOf` injetável (testes), de `makeRepoResolver`
  * @returns {Promise<{ published: Array<{destPath: string, skipped?: boolean, hash?: string}>, indexPath: string, sha?: string, branch?: string, mr?: Object, linkWarnings: Array<{destPath: string, link: string, reason: string}> }>}
  *   `published` segue a ordem de `files`; `destPath` é o destino efetivo (com `-vN` quando a
  *   entrada é de sessão e o conteúdo mudou) e `hash` o sha256 do que foi publicado.
+ *   `linkRewrites` lista, por arquivo, os links convertidos e os que viraram texto.
  */
-export async function publishFiles({ storage, squad, produto, slug, files }) {
+export async function publishFiles({ storage, squad, produto, slug, files, localOnlyDirs = [], deps = {} }) {
   if (!storage) {
     throw new Error(
       "Central docs desligado (CENTRAL_DOCS_STORAGE vazio). Configure-o no /jarvis-init."
@@ -290,33 +298,92 @@ export async function publishFiles({ storage, squad, produto, slug, files }) {
   });
   logger.info("✅ Frontmatter válido em todos os arquivos");
 
-  // Links que não resolvem dentro do Central docs (leitura fora do workspace, Confluence): só avisa.
-  const linkWarnings = warnUnresolvableLinks(storage, resolved);
+  // Os .md da sessão saem com os links convertidos (o original na sessão não muda).
+  const tmpDir = mkdtempSync(join(tmpdir(), "jarvis-publish-"));
+  try {
+    const linkRewrites = rewriteSessionLinks({ files, resolved, tmpDir, localOnlyDirs, deps });
 
-  logger.info("");
-  logger.info("📋 Resumo da Publicação (lote):");
-  logger.info(`  Armazenamento: ${storage.kind}${storage.isGit ? " (git)" : ""}`);
-  for (const r of resolved) logger.info(`  - ${r.destPath}`);
-  logger.info("");
+    // Links que não resolvem dentro do Central docs (leitura fora do workspace, Confluence): só avisa.
+    const linkWarnings = warnUnresolvableLinks(storage, resolved);
 
-  const result = await storage.publishBatch({ files: resolved, squad, slug });
+    logger.info("");
+    logger.info("📋 Resumo da Publicação (lote):");
+    logger.info(`  Armazenamento: ${storage.kind}${storage.isGit ? " (git)" : ""}`);
+    for (const r of resolved) logger.info(`  - ${r.destPath}`);
+    logger.info("");
 
-  for (const p of result.published) {
-    if (!p.skipped) {
-      const versioned = resolved.every((r) => r.destPath !== p.destPath);
-      logger.info(`✅ Publicado em ${p.destPath}${versioned ? " (nova versão: o conteúdo mudou)" : ""}`);
-    } else if (p.hash) {
-      logger.info(`ℹ️  ${p.destPath} já está publicado com o mesmo conteúdo; nada a fazer.`);
-    } else {
-      logger.info(`ℹ️  ${p.destPath} já existe e não foi sobrescrito.`);
+    const result = await storage.publishBatch({ files: resolved, squad, slug });
+
+    for (const p of result.published) {
+      if (!p.skipped) {
+        const versioned = resolved.every((r) => r.destPath !== p.destPath);
+        logger.info(`✅ Publicado em ${p.destPath}${versioned ? " (nova versão: o conteúdo mudou)" : ""}`);
+      } else if (p.hash) {
+        logger.info(`ℹ️  ${p.destPath} já está publicado com o mesmo conteúdo; nada a fazer.`);
+      } else {
+        logger.info(`ℹ️  ${p.destPath} já existe e não foi sobrescrito.`);
+      }
     }
-  }
-  logger.info(`🗂️  Índice regenerado: ${result.indexPath}`);
-  if (result.mr) {
-    logger.info(`🔀 Pull/Merge Request: ${result.mr.url}`);
-  }
+    logger.info(`🗂️  Índice regenerado: ${result.indexPath}`);
+    if (result.mr) {
+      logger.info(`🔀 Pull/Merge Request: ${result.mr.url}`);
+    }
 
-  return { ...result, linkWarnings };
+    return { ...result, linkWarnings, linkRewrites };
+  } finally {
+    rmSync(tmpDir, { recursive: true, force: true });
+  }
+}
+
+/**
+ * Para cada entrada `.md` de sessão com `originalPath`, converte os links (regra 6 de
+ * `doc-links-rules.md`) e troca o `localFile` publicado por uma cópia convertida em `tmpDir`.
+ * O arquivo original e a cópia de `consolidation/` ficam intactos. Entradas sem `originalPath`
+ * (página-índice gerada, que já nasce com links do Central docs) e arquivos que não são `.md`
+ * seguem como estão.
+ * @param {Object} p
+ * @param {Array<Object>} p.files - Entradas do manifesto
+ * @param {Array<Object>} p.resolved - Destinos calculados (mutado: `localFile`)
+ * @param {string} p.tmpDir
+ * @param {string[]} p.localOnlyDirs
+ * @param {Object} p.deps
+ * @returns {Array<{ destPath: string, converted: number, dropped: number }>}
+ */
+function rewriteSessionLinks({ files, resolved, tmpDir, localOnlyDirs, deps }) {
+  const published = new Map();
+  files.forEach((f, i) => {
+    if (f.fromSession && f.originalPath) {
+      const abs = resolve(f.originalPath);
+      if (!published.has(abs)) published.set(abs, resolved[i].destPath);
+    }
+  });
+  if (published.size === 0) return [];
+
+  const repoOf = deps.repoOf ?? makeRepoResolver();
+  const rewrites = [];
+  files.forEach((f, i) => {
+    const r = resolved[i];
+    if (!f.fromSession || !f.originalPath || !r.destPath.toLowerCase().endsWith(".md")) return;
+    const fileDir = resolve(f.originalPath, "..");
+    const text = readFileSync(r.localFile, "utf-8");
+    const out = rewriteLinksForCentral(text, {
+      fileDir,
+      destPath: r.destPath,
+      published,
+      repoOf,
+      commitBase: commitBaseFor(text, fileDir),
+      localOnlyDirs: localOnlyDirs.map((d) => resolve(d)),
+    });
+    if (!out.changed) return;
+    const tmpFile = join(tmpDir, `${i}-${basename(r.localFile)}`);
+    writeFileSync(tmpFile, out.text);
+    r.localFile = tmpFile;
+    rewrites.push({ destPath: r.destPath, converted: out.converted, dropped: out.dropped });
+    logger.info(
+      `🔗 ${r.destPath}: ${out.converted} link(s) convertido(s), ${out.dropped} virou(aram) texto`
+    );
+  });
+  return rewrites;
 }
 
 /**

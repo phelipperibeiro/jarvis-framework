@@ -1,6 +1,7 @@
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
-import { dirname, join } from "node:path";
+import { dirname, join, resolve } from "node:path";
 import { openStorageFromEnv } from "../lib/docs/fetch-file.js";
+import { docsFolders, expandEnv } from "../lib/core/docs-migrate.js";
 import { publishFile, publishFiles, VALID_TYPES } from "../lib/docs/publish-file.js";
 import { forceFinalize } from "../lib/docs/finish-delivery.js";
 import { logger, configureFromFlags } from "../lib/utils/logger.js";
@@ -72,6 +73,20 @@ function readManifest(path) {
   }
   const base = dirname(path);
   return entries.map(({ file, ...rest }) => ({ ...rest, localFile: join(base, file) }));
+}
+
+/**
+ * Pastas que só existem no disco local de quem escreveu (sessões e `docs/jarvis/`): um link para
+ * elas, num documento da sessão, não pode virar URL do repositório (#229).
+ * @param {Record<string, string>} env - `loadEnv` (variáveis cruas)
+ * @param {string} root - Pasta do workspace
+ * @returns {string[]} caminhos absolutos
+ */
+function localOnlyDirs(env, root) {
+  const expanded = expandEnv(new Map(Object.entries(env || {})));
+  const { jarvis } = docsFolders(expanded);
+  const sessions = expanded.get("SESSIONS_DIR") || ".jarvis/sessions";
+  return [jarvis, ".jarvis", sessions].map((dir) => resolve(root, dir));
 }
 
 /**
@@ -175,7 +190,14 @@ async function docsPublishManifest(flags) {
   logger.info(`📤 Publicando a consolidação em lote (${files.length} arquivo(s))...\n`);
 
   try {
-    const result = await publishFiles({ storage, squad, produto, slug: flags.slug, files });
+    const result = await publishFiles({
+      storage,
+      squad,
+      produto,
+      slug: flags.slug,
+      files,
+      localOnlyDirs: localOnlyDirs(env, root),
+    });
     recordPublished(flags.manifest, files, result.published);
     logger.info("");
     logger.info("✅ Publicação concluída!");

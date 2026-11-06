@@ -209,6 +209,30 @@ test("docsPublish --manifest: link relativo que não resolve no Central docs só
   assert.ok(existsSync(join(centralDocs, "CORE/loja/checkout/decisions/plan.md")));
 });
 
+test("docsPublish --manifest: converte os links do .md da sessão (originalPath) e deixa o original intacto (#229)", async () => {
+  const { ws, envFile, centralDocs } = workspaceFixture();
+  const original = join(ws, ".jarvis/sessions/eng/229/plan.md");
+  const text = "# Plano\n[PRD](../../../../docs/jarvis/product/prd.md) e [arquitetura](architecture.md) e [card](https://x.dev/1)\n";
+  write(original, text);
+  write(join(ws, ".jarvis/sessions/eng/229/architecture.md"), "# Arquitetura\n");
+  write(join(ws, "consolidation/plan.md"), text);
+  write(join(ws, "consolidation/architecture.md"), "# Arquitetura\n");
+  write(
+    join(ws, "consolidation/manifest.json"),
+    JSON.stringify([
+      { file: "plan.md", tipo: "plan", feature: "checkout", taskKey: "229", fromSession: true, originalPath: original },
+      { file: "architecture.md", tipo: "architecture", feature: "checkout", taskKey: "229", fromSession: true, originalPath: join(ws, ".jarvis/sessions/eng/229/architecture.md") },
+    ])
+  );
+  const code = await captureRun(() =>
+    docsPublish({ manifest: join(ws, "consolidation/manifest.json"), slug: "229", "env-file": envFile })
+  );
+  assert.equal(code, 0);
+  const published = readFileSync(join(centralDocs, "CORE/loja/checkout/decisions/plan.md"), "utf-8");
+  assert.equal(published, "# Plano\nPRD e [arquitetura](architecture.md) e [card](https://x.dev/1)\n", "docs/jarvis vira texto; o resto fica");
+  assert.equal(readFileSync(original, "utf-8"), text, "o original na sessão não muda");
+});
+
 test("docsPublish --manifest --force: publica e já apaga o original ligado (zero reversão)", async () => {
   const { ws, envFile, centralDocs } = workspaceFixture();
   const original = join(ws, "docs/jarvis/product/prd-001-checkout.md");

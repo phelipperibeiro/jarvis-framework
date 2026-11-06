@@ -320,6 +320,73 @@ test("publishFiles: devolve linkWarnings dos links que não resolvem no Central 
   }
 });
 
+test("publishFiles: converte os links dos .md da sessão no destino e deixa o original intacto (#229)", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "jarvis-pf-"));
+  try {
+    const root = join(dir, "cd");
+    mkdirSync(root, { recursive: true });
+    const storage = createFilesystemStorage({ location: root, root: dir });
+
+    // sessão real (originalPath) e cópias em consolidation/ (localFile)
+    const sessao = join(dir, ".jarvis/sessions/eng/229");
+    mkdirSync(sessao, { recursive: true });
+    const archOriginal =
+      "> **Commit base:** `jarvis-framework@2d149a1`\n" +
+      "# Arquitetura\n" +
+      "Plano: [plan](plan.md#fase-1). Código: [`x` (`x.js:5`)](../../../../jarvis-framework/bin/x.js#L5).\n" +
+      "PRD: [prd](../../../../docs/jarvis/product/prd.md). Card: [#229](https://github.com/o/r/issues/229).\n";
+    const planOriginal = "# Plano\nVeja [a arquitetura](architecture.md).\n";
+    writeFileSync(join(sessao, "architecture.md"), archOriginal);
+    writeFileSync(join(sessao, "plan.md"), planOriginal);
+    const consolidation = join(sessao, "consolidation");
+    mkdirSync(consolidation, { recursive: true });
+    writeFileSync(join(consolidation, "architecture.md"), archOriginal);
+    writeFileSync(join(consolidation, "plan.md"), planOriginal);
+    writeFileSync(join(consolidation, "session-229.md"), "# Sessão 229\n[arquitetura](../../checkout/decisions/architecture.md)\n");
+
+    const result = await publishFiles({
+      storage,
+      squad: "CORE",
+      produto: "loja",
+      slug: "229",
+      localOnlyDirs: [join(dir, "docs/jarvis"), join(dir, ".jarvis")],
+      deps: {
+        repoOf: (abs) =>
+          abs.includes("/jarvis-framework/")
+            ? { repo: "jarvis-framework", remote: "https://github.com/o/jarvis-framework", relPath: abs.split("/jarvis-framework/")[1] }
+            : null,
+      },
+      files: [
+        { localFile: join(consolidation, "architecture.md"), originalPath: join(sessao, "architecture.md"), tipo: "architecture", feature: "checkout", taskKey: "229", fromSession: true },
+        { localFile: join(consolidation, "plan.md"), originalPath: join(sessao, "plan.md"), tipo: "plan", feature: "checkout", taskKey: "229", fromSession: true },
+        // página-índice gerada: sem originalPath, não é convertida
+        { localFile: join(consolidation, "session-229.md"), tipo: "history", taskKey: "229", relPath: "229.md", fromSession: true },
+      ],
+    });
+
+    const arch = readFileSync(join(root, "CORE/loja/checkout/decisions/architecture.md"), "utf-8");
+    assert.match(arch, /\[plan\]\(plan\.md#fase-1\)/, "outro arquivo da entrega: link relativo no Central docs");
+    assert.match(arch, /\(https:\/\/github\.com\/o\/jarvis-framework\/blob\/2d149a1\/bin\/x\.js#L5\)/, "código: URL no commit base");
+    assert.match(arch, /PRD: prd\./, "docs/jarvis vira texto");
+    assert.match(arch, /\[#229\]\(https:\/\/github\.com\/o\/r\/issues\/229\)/, "URL intacta");
+    const plan = readFileSync(join(root, "CORE/loja/checkout/decisions/plan.md"), "utf-8");
+    assert.match(plan, /\[a arquitetura\]\(architecture\.md\)/);
+    const indice = readFileSync(join(root, "CORE/loja/history/229/229.md"), "utf-8");
+    assert.match(indice, /\(\.\.\/\.\.\/checkout\/decisions\/architecture\.md\)/, "página-índice não é reescrita");
+
+    assert.equal(readFileSync(join(sessao, "architecture.md"), "utf-8"), archOriginal, "o original na sessão não muda");
+    assert.equal(readFileSync(join(consolidation, "architecture.md"), "utf-8"), archOriginal, "a cópia em consolidation/ também não");
+    // o plan.md já tinha o link certo (mesma pasta): nada a regravar, então não entra na lista
+    assert.deepEqual(
+      result.linkRewrites.map((r) => [r.destPath, r.converted, r.dropped]),
+      [["CORE/loja/checkout/decisions/architecture.md", 2, 1]]
+    );
+    assert.deepEqual(result.linkWarnings, [], "depois da conversão, todos os links relativos resolvem no Central docs");
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
 test("resolveDestPath: tipo home rejeita squad inválido mesmo sem produto (early-return antes da validação de produto) (#220 item 3)", () => {
   assert.throws(
     () => resolveDestPath({ tipo: "home", squad: "../x", localFile: "home.md" }),
