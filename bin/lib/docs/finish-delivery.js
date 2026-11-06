@@ -77,13 +77,14 @@ export function archiveDestFor({ tipo, squad, produto, feature, taskKey, e }) {
     assertSegment("Feature", feature ?? "");
     if (tipo === "history") {
       assertSegment("Task key", taskKey ?? "");
-      const prefix = `${squad}/${produto}/history/${taskKey}/`;
+      const card = taskKey.toLowerCase(); // a pasta da sessão e o history/ usam o card em minúsculas
+      const prefix = `${squad}/${produto}/history/${card}/`;
       if (!e.publishedAs.startsWith(prefix)) {
-        throw new Error(`publishedAs fora de history/${taskKey}/: ${e.publishedAs}`);
+        throw new Error(`publishedAs fora de history/${card}/: ${e.publishedAs}`);
       }
       const rel = e.publishedAs.slice(prefix.length);
       assertRelPath("Caminho relativo", rel);
-      return `${squad}/${produto}/${feature}/archive/${taskKey}/${rel}`;
+      return `${squad}/${produto}/${feature}/archive/${card}/${rel}`;
     }
     return `${squad}/${produto}/${feature}/archive/${basename(e.publishedAs)}`;
   }
@@ -106,6 +107,9 @@ export function archiveDestFor({ tipo, squad, produto, feature, taskKey, e }) {
  * @param {Record<string, string>} fields - Omite a chave cujo valor for vazio/undefined
  */
 function injectFrontmatterFields(path, fields) {
+  // Só em Markdown: um anexo binário (ou qualquer arquivo que não seja .md) é copiado byte a byte
+  // e nunca é decodificado, senão o hash da cópia nunca bateria o do original (#229).
+  if (!path.toLowerCase().endsWith(".md")) return;
   const content = readFileSync(path, "utf-8");
   const lines = Object.entries(fields)
     .filter(([, v]) => v)
@@ -128,6 +132,19 @@ function stripInjectedFields(content) {
   let i = 1;
   while (i < lines.length && /^(origin|original_status):/.test(lines[i])) i++;
   return [lines[0], ...lines.slice(i)].join("\n");
+}
+
+/**
+ * Hash da cópia em `archive/` como se nunca tivessem sido acrescentados `origin`/`original_status`.
+ * Só um `.md` ganha esses campos; qualquer outro arquivo (inclusive binário) é hasheado pelos
+ * bytes, sem decodificar (#229).
+ * @param {string} archivedAbs
+ * @returns {string} sha256 em hex
+ */
+function hashArchivedCopy(archivedAbs) {
+  const buffer = readFileSync(archivedAbs);
+  if (!archivedAbs.toLowerCase().endsWith(".md")) return createHash("sha256").update(buffer).digest("hex");
+  return createHash("sha256").update(stripInjectedFields(buffer.toString("utf-8"))).digest("hex");
 }
 
 /**
@@ -176,6 +193,16 @@ export function sessionFolderOf(env, workspaceRoot, taskKey) {
   const expanded = expandEnv(new Map(Object.entries(env || {})));
   const sessions = expanded.get("SESSIONS_DIR") || ".jarvis/sessions";
   return resolve(workspaceRoot || process.cwd(), sessions, "eng", String(taskKey).toLowerCase());
+}
+
+/**
+ * O manifesto é uma lista de objetos? `JSON.parse` aceita `{}`, `null` ou `[null]`, e um comando que
+ * copia e apaga arquivos tem de recusar isso com mensagem clara em vez de estourar `TypeError` (#229).
+ * @param {unknown} entries
+ * @returns {boolean}
+ */
+export function isEntryList(entries) {
+  return Array.isArray(entries) && entries.every((e) => e !== null && typeof e === "object" && !Array.isArray(e));
 }
 
 /**
@@ -553,8 +580,7 @@ export function finalizeEntries({ entries, env, root, squad, produto, workspaceR
       // Tira origin/original_status (injetados no --archive, Q14) antes de hashear, senão o
       // hash da cópia nunca bateria o do original puro (rodada 2, N5): confere que a cópia
       // não foi corrompida ou sobrescrita por fora, além da conferência do original abaixo.
-      const archivedContent = stripInjectedFields(readFileSync(archivedAbs, "utf-8"));
-      const archivedCopyHash = createHash("sha256").update(archivedContent).digest("hex");
+      const archivedCopyHash = hashArchivedCopy(archivedAbs);
       if (archivedCopyHash !== e.archivedHash) {
         changed.push({ originalPath: e.originalPath, reason: "cópia em archive/ não bate o hash" });
         continue;

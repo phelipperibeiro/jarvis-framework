@@ -185,3 +185,12 @@ test("docsSessions (saída em tabela): roda sem lançar, com e sem Central docs 
   assert.equal(data.central, false);
   assert.deepEqual(data.sessoes.map((s) => [s.card, s.delivered, s.pendente]), [["5", null, true]]);
 });
+
+test("inventário: a página-índice publicada como TASK-123.md (card do board em maiúsculas) é reconhecida (#229)", () => {
+  const dir = tmp();
+  write(join(dir, "eng/task-123/architecture.md"));
+  write(join(dir, "central/CORE/loja/history/task-123/TASK-123.md"), "# Sessão\n");
+  const inv = inventorySessions({ sessionsDir: join(dir, "eng"), centralRoot: join(dir, "central"), squad: "CORE", produto: "loja" });
+  assert.equal(inv[0].capituloPublicado, true);
+  assert.equal(inv[0].pendente, false);
+});

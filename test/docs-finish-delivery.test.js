@@ -799,3 +799,43 @@ test("finalize: documento quebrado em partes (várias entradas, mesmo original) 
     rmSync(dir, { recursive: true, force: true });
   }
 });
+
+test("finalize: anexo binário e arquivo que não é .md são arquivados byte a byte e finalizados (#229)", () => {
+  const { dir, ws, root, sessao, env, entry } = sessionFixture();
+  try {
+    const bin = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0xff, 0xfe, 0x00, 0x80, 0xc3, 0x28]); // não é UTF-8 válido
+    writeFileSync(join(sessao, "img.png"), bin);
+    // um .txt que começa com "---" não pode receber os campos origin/original_status
+    write(join(sessao, "ferramentas/saida.txt"), "---\nlinha de saída\n");
+    const entries = [
+      entry("history", "img.png", { publishedAs: "CORE/loja/history/229/img.png" }),
+      entry("history", "ferramentas/saida.txt", { publishedAs: "CORE/loja/history/229/ferramentas/saida.txt" }),
+    ];
+    const arch = archiveEntries({ root, squad: "CORE", produto: "loja", entries });
+    assert.deepEqual(arch.errors, []);
+    assert.deepEqual(readFileSync(join(root, entries[0].archiveDestPath)), bin, "a cópia arquivada é idêntica ao original");
+    assert.equal(readFileSync(join(root, entries[1].archiveDestPath), "utf-8"), "---\nlinha de saída\n", "sem campos injetados fora de .md");
+
+    const fin = finalizeEntries({ entries, env, root, squad: "CORE", produto: "loja", workspaceRoot: ws });
+    assert.deepEqual(fin.changed, [], "antes: 'cópia em archive/ não bate o hash'");
+    assert.deepEqual(fin.errors, []);
+    assert.equal(fin.finalized.length, 2);
+    assert.equal(existsSync(join(sessao, "img.png")), false);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("archiveDestFor: o card em maiúsculas (TASK-123) usa o history/ e o archive/ em minúsculas (#229)", () => {
+  assert.equal(
+    archiveDestFor({
+      tipo: "history",
+      squad: "CORE",
+      produto: "loja",
+      feature: "checkout",
+      taskKey: "TASK-123",
+      e: { publishedAs: "CORE/loja/history/task-123/ferramentas/a.txt" },
+    }),
+    "CORE/loja/checkout/archive/task-123/ferramentas/a.txt"
+  );
+});

@@ -13,6 +13,7 @@ import {
   rmSync,
   writeFileSync,
 } from "node:fs";
+import { execFileSync } from "node:child_process";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -410,6 +411,65 @@ test("docsPublish --manifest: arquivo de sessão sinalizado sem confirmed sai co
       assert.ok(existsSync(join(sessao, rel)), `${rel} continua na sessão`);
     }
   }
+});
+
+test("manifesto que é JSON válido mas não é uma lista de objetos: publish, archive e finalize saem com 1 e mensagem clara (#229)", async () => {
+  const { envFile } = workspaceFixture();
+  for (const conteudo of ["{}", "null", '"texto"', "[null]", "[1,2]", "[[]]"]) {
+    const { ws } = workspaceFixture();
+    const manifest = join(ws, "m.json");
+    write(manifest, conteudo);
+    const env = join(ws, ".claude/ENV.md");
+    for (const [nome, fn] of [
+      ["publish", () => docsPublish({ manifest, "env-file": env })],
+      ["archive", () => docsArchive({ manifest, "env-file": env })],
+      ["finalize", () => docsFinalize({ manifest, "env-file": env })],
+    ]) {
+      assert.equal(await captureRun(fn), 1, `${nome} com ${conteudo} (antes: TypeError)`);
+    }
+  }
+  assert.ok(envFile);
+});
+
+test("docsPublish --manifest --force com o Central docs em git: antes do merge do PR a cópia não está na pasta e a sessão permanece (#229)", async () => {
+  const ws = tmp();
+  const git = (cwd, ...a) => execFileSync("git", a, { cwd, encoding: "utf-8", stdio: ["ignore", "pipe", "pipe"] }).trim();
+  const origin = join(ws, "origin.git");
+  const centralDocs = join(ws, "central-docs");
+  mkdirSync(origin, { recursive: true });
+  git(origin, "init", "--bare", "-q", "-b", "main");
+  git(ws, "clone", "-q", origin, centralDocs);
+  git(centralDocs, "config", "user.email", "t@t");
+  git(centralDocs, "config", "user.name", "t");
+  write(join(centralDocs, "README.md"), "x\n");
+  git(centralDocs, "add", ".");
+  git(centralDocs, "commit", "-qm", "init");
+  git(centralDocs, "push", "-qu", "origin", "main");
+  write(join(ws, ".claude/ENV.md"), ["CENTRAL_DOCS_STORAGE=filesystem", `CENTRAL_DOCS_LOCATION=${centralDocs}`, "SQUAD=CORE", "WORKSPACE=loja"].join("\n"));
+
+  const sessao = join(ws, ".jarvis/sessions/eng/229");
+  write(join(sessao, "architecture.md"), "# Arquitetura\n");
+  write(
+    join(ws, "m.json"),
+    JSON.stringify([
+      { file: ".jarvis/sessions/eng/229/architecture.md", tipo: "architecture", feature: "checkout", taskKey: "229", fromSession: true, originalPath: join(sessao, "architecture.md") },
+    ])
+  );
+  const code = await captureRun(() => docsPublish({ manifest: join(ws, "m.json"), slug: "229", force: true, "env-file": join(ws, ".claude/ENV.md") }));
+  assert.equal(code, 1, "o --force recusa: a cópia publicada não está na pasta antes do merge");
+  assert.ok(existsSync(join(sessao, "architecture.md")), "a sessão permanece (a única cópia)");
+  assert.equal(existsSync(join(centralDocs, "CORE/loja/checkout/decisions/architecture-229.md")), false, "na branch alvo ainda não há a cópia");
+  assert.equal(git(centralDocs, "branch", "--show-current"), "main");
+  const saved = JSON.parse(readFileSync(join(ws, "m.json"), "utf-8"));
+  assert.equal(saved[0].publishedAs, "CORE/loja/checkout/decisions/architecture-229.md", "o manifesto guarda onde foi publicado");
+  assert.ok(git(origin, "branch", "--list", "docs/*").includes("docs/core-229"), "a branch com a publicação foi para o remote");
+
+  // depois do merge do PR e do pull, o mesmo --force passa
+  git(centralDocs, "merge", "--ff-only", "docs/core-229");
+  const code2 = await captureRun(() => docsPublish({ manifest: join(ws, "m.json"), slug: "229", force: true, "env-file": join(ws, ".claude/ENV.md") }));
+  assert.equal(code2, 0);
+  assert.equal(existsSync(join(sessao, "architecture.md")), false, "depois do merge a sessão é apagada");
+  assert.ok(existsSync(join(centralDocs, "CORE/loja/checkout/decisions/architecture-229.md")), "e a cópia publicada permanece na pasta");
 });
 
 test("docsPublish --manifest --force: publica e já apaga o original ligado (zero reversão)", async () => {

@@ -218,6 +218,19 @@ test("resolveDestPath: history com relPath preserva subpastas e permite renomear
   );
 });
 
+test("card em maiúsculas (Jira TASK-123) vira minúsculas em history/ e no nome das decisões da sessão (#229)", () => {
+  assert.equal(
+    resolveDestPath({ tipo: "history", squad: "CORE", produto: "loja", taskKey: "TASK-123", localFile: "daily.md" }).destPath,
+    "CORE/loja/history/task-123/daily.md"
+  );
+  assert.equal(
+    resolveDestPath({ tipo: "history", squad: "CORE", produto: "loja", taskKey: "TASK-123", relPath: "TASK-123.md", localFile: "x.md" }).destPath,
+    "CORE/loja/history/task-123/TASK-123.md",
+    "só a pasta do card vai para minúsculas; o relPath fica como veio"
+  );
+  assert.equal(sessionDecisionFileName({ tipo: "architecture", taskKey: "TASK-123", feature: "checkout", split: false }), "architecture-task-123.md");
+});
+
 test("assertRelPath: recusa .., oculto, barra no começo, segmento vazio, profundidade e vazio (#229)", () => {
   for (const ok of ["a.md", "fontes/a/b.txt", "saidas/E8_r2.txt", "v1.2/x-y_z.json"]) {
     assert.doesNotThrow(() => assertRelPath("Caminho", ok), ok);

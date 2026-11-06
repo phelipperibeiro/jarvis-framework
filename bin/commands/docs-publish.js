@@ -3,7 +3,7 @@ import { dirname, join, resolve } from "node:path";
 import { openStorageFromEnv } from "../lib/docs/fetch-file.js";
 import { docsFolders, expandEnv } from "../lib/core/docs-migrate.js";
 import { publishFile, publishFiles, VALID_TYPES } from "../lib/docs/publish-file.js";
-import { forceFinalize } from "../lib/docs/finish-delivery.js";
+import { forceFinalize, isEntryList } from "../lib/docs/finish-delivery.js";
 import { logger, configureFromFlags } from "../lib/utils/logger.js";
 
 function openEnvAndStorage(flags) {
@@ -67,7 +67,7 @@ function readManifest(path) {
     logger.error(`❌ Manifesto inválido (${path}): ${error.message}`);
     process.exit(1);
   }
-  if (!Array.isArray(entries) || entries.length === 0) {
+  if (!isEntryList(entries) || entries.length === 0) {
     logger.error(`❌ Manifesto vazio ou no formato errado: ${path}`);
     process.exit(1);
   }

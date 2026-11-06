@@ -88,7 +88,8 @@ export const SESSION_DECISION_TYPES = Object.freeze(["architecture", "plan", "li
 export function sessionDecisionFileName({ tipo, taskKey, feature, split, ext = ".md" }) {
   assertSegment("Task key", taskKey ?? "");
   assertSegment("Feature", feature ?? "");
-  return split ? `${tipo}-${taskKey}-${feature}${ext}` : `${tipo}-${taskKey}${ext}`;
+  const card = taskKey.toLowerCase(); // o mesmo card em minúsculas da pasta da sessão e de history/
+  return split ? `${tipo}-${card}-${feature}${ext}` : `${tipo}-${card}${ext}`;
 }
 
 /** @constant {RegExp} Formato aceito por squad, produto, feature, slug e task key (exportado para `docs-migrate.js`, #220) */
@@ -182,8 +183,10 @@ export function resolveDestPath({ tipo, squad, produto, localFile, feature, task
     assertSegment("Task key", taskKey);
     if (relPath) assertRelPath("Caminho relativo", relPath);
     const rel = relPath || local;
+    // O card em minúsculas, como a pasta da sessão (eng.integrations-rules.md): sem isso, um
+    // TASK-123 vai para history/TASK-123/ e o inventário procura history/task-123/ (#229).
     return {
-      destPath: `${squad}/${produto}/history/${taskKey}/${rel}`,
+      destPath: `${squad}/${produto}/history/${taskKey.toLowerCase()}/${rel}`,
       area: "history",
       fileName: basename(rel),
     };

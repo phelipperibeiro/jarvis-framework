@@ -93,6 +93,21 @@ export function deliveredIndex(centralRoot, squad) {
   return index;
 }
 
+/**
+ * A página-índice da sessão (`history/{card}/{card}.md`) está publicada? A pasta do card é sempre em
+ * minúsculas (o publish a normaliza); o nome da página pode ter vindo como o board escreve
+ * (`TASK-123.md`), então a comparação do nome do arquivo ignora maiúsculas (#229).
+ * @param {string} historyDir
+ * @param {string} card - Nome da pasta da sessão
+ * @returns {boolean}
+ */
+function hasChapter(historyDir, card) {
+  const dir = join(historyDir, card.toLowerCase());
+  if (!existsSync(dir)) return false;
+  const alvo = `${card.toLowerCase()}.md`;
+  return readdirSync(dir).some((name) => name.toLowerCase() === alvo);
+}
+
 /** Ordem natural dos cards: numéricos em ordem numérica, depois os demais em ordem alfabética. */
 function compareCards(a, b) {
   const na = /^\d+$/.test(a);
@@ -136,8 +151,7 @@ export function inventorySessions({ sessionsDir, centralRoot = null, squad, prod
     const files = listSessionFiles(join(sessionsDir, card));
     const names = new Set(files.map((f) => f.path));
     const deliveries = delivered ? (delivered.get(normalizeKey(card)) ?? []) : [];
-    const capituloPublicado =
-      central && produto ? existsSync(join(centralRoot, squad, produto, "history", card, `${card}.md`)) : null;
+    const capituloPublicado = central && produto ? hasChapter(join(centralRoot, squad, produto, "history"), card) : null;
     return {
       card,
       files,
