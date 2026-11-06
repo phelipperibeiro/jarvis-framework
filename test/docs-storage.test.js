@@ -263,7 +263,6 @@ test("git: publish cria branch, commita documento + índice, faz push e abre o P
         CENTRAL_DOCS_STORAGE: "filesystem",
         CENTRAL_DOCS_LOCATION: clone,
         CENTRAL_DOCS_TARGET_BRANCH: "main",
-        CENTRAL_DOCS_REVIEWERS: "ana",
       },
       {
         root: base,
@@ -288,7 +287,7 @@ test("git: publish cria branch, commita documento + índice, faz push e abre o P
     assert.equal(calls.length, 1);
     assert.equal(calls[0].url, origin);
     assert.equal(calls[0].opts.target, "main");
-    assert.match(calls[0].opts.description, /Revisores\*\*: ana/);
+    assert.doesNotMatch(calls[0].opts.description, /Revisores/);
 
     const files = git(["ls-tree", "-r", "--name-only", r.branch], origin).split("\n");
     assert.ok(files.includes("CORE/product/loja/feature-checkout.md"));

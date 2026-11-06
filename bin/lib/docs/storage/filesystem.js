@@ -54,7 +54,6 @@ export function safePath(root, rel) {
  * @param {string} cfg.location - Pasta do Central docs (absoluta)
  * @param {string} [cfg.ref] - Branch lida no `pull` (CENTRAL_DOCS_REF)
  * @param {string} [cfg.targetBranch] - Branch base do PR (CENTRAL_DOCS_TARGET_BRANCH)
- * @param {string} [cfg.reviewers] - Revisores (vão na descrição do PR)
  * @param {Object} [cfg.deps] - `runGit` e `createMergeRequest` injetáveis (testes); `fileEnvResult`:
  *   o ENV.md já lido pelo comando, repassado ao gate do `VERSION_CONTROL_ACCESS` no MR
  */
@@ -62,7 +61,6 @@ export function createFilesystemStorage({
   location,
   ref = "main",
   targetBranch = "main",
-  reviewers = "",
   deps = {},
 }) {
   const git = deps.runGit ?? runGit;
@@ -182,8 +180,7 @@ export function createFilesystemStorage({
 
         git(["push", "-u", "origin", branch], location);
         const remoteUrl = git(["remote", "get-url", "origin"], location);
-        let description = `## Documento\n\n- **Tipo**: ${tipo}\n- **Arquivo**: \`${destPath}\``;
-        if (reviewers) description += `\n- **Revisores**: ${reviewers}`;
+        const description = `## Documento\n\n- **Tipo**: ${tipo}\n- **Arquivo**: \`${destPath}\``;
         let mr = null;
         try {
           // O ENV.md que o comando já leu (com --ide/--env-file) vai junto para o gate do acesso.

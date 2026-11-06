@@ -20,7 +20,6 @@ CENTRAL_DOCS_LOCATION=docs/jarvis/central-docs   # relativo à pasta do workspac
 # Só se a pasta tiver .git:
 CENTRAL_DOCS_REF=main
 CENTRAL_DOCS_TARGET_BRANCH=main
-CENTRAL_DOCS_REVIEWERS=
 SQUAD=CORE
 WORKSPACE=loja                           # vira a pasta do produto
 ```

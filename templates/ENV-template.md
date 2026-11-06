@@ -237,5 +237,3 @@ CENTRAL_DOCS_LOCATION=docs/jarvis/central-docs
 # Só quando a pasta tem .git: branch lida no pull e branch base dos PRs.
 CENTRAL_DOCS_REF=main
 CENTRAL_DOCS_TARGET_BRANCH=main
-# Revisores padrão dos PRs (separados por vírgula; vão na descrição).
-CENTRAL_DOCS_REVIEWERS=

@@ -52,7 +52,7 @@ Sem `.git`, grava direto na pasta.
 
 Ler do `$IDE/ENV.md`:
 - `CENTRAL_DOCS_STORAGE` e `CENTRAL_DOCS_LOCATION` (vazio: encerrar em silêncio)
-- `CENTRAL_DOCS_REF`, `CENTRAL_DOCS_TARGET_BRANCH`, `CENTRAL_DOCS_REVIEWERS` (só com `.git`)
+- `CENTRAL_DOCS_REF`, `CENTRAL_DOCS_TARGET_BRANCH` (só com `.git`)
 - `SQUAD` (ALL-CAPS-COM-HIFEN) e `WORKSPACE` (vira a pasta do produto)
 
 O `jarvis docs publish` só roda depois da pergunta do `/eng.spec-consolidate` (regra de ouro, `rules/engineering/eng.integrations-rules.md`).

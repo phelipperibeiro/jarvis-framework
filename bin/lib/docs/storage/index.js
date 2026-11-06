@@ -69,7 +69,6 @@ export function getStorage(env, { root, deps } = {}) {
     location: resolveLocation(env.CENTRAL_DOCS_LOCATION, root),
     ref: env.CENTRAL_DOCS_REF || "main",
     targetBranch: env.CENTRAL_DOCS_TARGET_BRANCH || "main",
-    reviewers: env.CENTRAL_DOCS_REVIEWERS || "",
     deps,
   });
 }
