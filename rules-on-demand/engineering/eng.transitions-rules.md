@@ -42,6 +42,7 @@ Lida pelos workflows `eng.start`, `eng.plan`, `eng.work`, `eng.pre-pr` e `eng.pr
 | `eng.work` | Início | Execução | Fase a fase, com aprovação (como hoje) · Todas de uma vez ("N de M tarefas", pelo limite) |
 | `eng.work` | Início | Commits | Um por fase (como hoje) · Um commit só ao final |
 | `eng.work` | Início | Depois do work | Rodar o `/eng.pre-pr` · Rodar o `/eng.pr` · Fluxo normal (como hoje: o usuário segue os próximos comandos manualmente) |
+| `eng.work` | Fim (Fase 6.2, antes de "Depois do work") | "Quer gerar ou atualizar a documentação do projeto a partir desta entrega?" | Não, seguir sem atualizar (como hoje) · Sim, gerar ou atualizar agora |
 | `eng.pre-pr` | Fim | Teto de rodadas atingido com lacuna pendente (a rodada que atinge o teto e cada uma acima dele): "Teto de {T} rodadas da urgência `{u}` atingido. Como seguir?" (antes das perguntas das lacunas) | Parar e seguir para o PR · Mais uma rodada · Só gerar o relatório (como hoje) |
 | `eng.pre-pr` | Fim | Com lacunas: "Como seguir?" (depois da mensagem com o link do relatório) | Corrigir as lacunas agora · Parar aqui para corrigir à mão (como hoje) · Abrir o PR assim mesmo |
 | `eng.pre-pr` | Fim | Sem lacunas: "Como seguir?" | Abrir o PR agora · Parar aqui (como hoje) |
