@@ -73,6 +73,45 @@ async function captureRun(fn) {
   return code;
 }
 
+// --- docs publish --file (um documento só, o modo típico do /eng.spec-consolidate) --------
+
+test("docsPublish --file: sem --file/--tipo sai com 1 (#220, rodada 2 item 3)", async () => {
+  const { envFile } = workspaceFixture();
+  const code = await captureRun(() => docsPublish({ "env-file": envFile }));
+  assert.equal(code, 1);
+});
+
+test("docsPublish --file: tipo inválido sai com 1 (#220, rodada 2 item 3)", async () => {
+  const { ws, envFile } = workspaceFixture();
+  const file = join(ws, "checkout.md");
+  write(file, "# Checkout\n");
+  const code = await captureRun(() => docsPublish({ file, tipo: "xyz", "env-file": envFile }));
+  assert.equal(code, 1);
+});
+
+test("docsPublish --file: arquivo inexistente sai com 1 (#220, rodada 2 item 3)", async () => {
+  const { envFile } = workspaceFixture();
+  const code = await captureRun(() =>
+    docsPublish({ file: "/tmp/nao-existe-jarvis.md", tipo: "feature", "env-file": envFile })
+  );
+  assert.equal(code, 1);
+});
+
+test("docsPublish --file: caminho feliz publica um documento só e regenera o índice (#220, rodada 2 item 3)", async () => {
+  const { ws, envFile, centralDocs } = workspaceFixture();
+  const file = join(ws, "feature-checkout.md");
+  write(
+    file,
+    "---\nid: FEAT-001\nname: Checkout\nstatus: in_production\nproduct: loja\nupdated_at: 2026-10-15\n---\n# Checkout\n"
+  );
+
+  const code = await captureRun(() => docsPublish({ file, tipo: "feature", "env-file": envFile }));
+
+  assert.equal(code, 0);
+  assert.ok(existsSync(join(centralDocs, "CORE/loja/checkout/checkout.md")));
+  assert.ok(existsSync(join(centralDocs, "CORE/index.md")));
+});
+
 // --- docs publish --manifest ----------------------------------------------
 
 test("docsPublish --manifest: manifesto inexistente sai com 1", async () => {

@@ -10,7 +10,7 @@
  */
 
 import { execFileSync } from "node:child_process";
-import { copyFileSync, existsSync, mkdirSync, readFileSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync, readFileSync, unlinkSync } from "node:fs";
 import { basename, dirname, extname, isAbsolute, join, relative, resolve, sep } from "node:path";
 import { createMergeRequest as defaultCreateMergeRequest, newMergeRequestUrl } from "../../vcs/api.js";
 import { logger } from "../../utils/logger.js";
@@ -49,6 +49,57 @@ export function safePath(root, rel) {
     throw new Error(`Caminho fora da pasta do Central docs: "${rel}"`);
   }
   return full;
+}
+
+/**
+ * `true` se não há nada staged para commitar (#220, rodada 2 item 2, N6): rodar de novo a
+ * publicação/arquivamento/migração de um conteúdo já idêntico ao que está em `targetBranch`
+ * (ex.: depois do PR anterior já ter sido mergeado) copiava os mesmos bytes, `git add` não
+ * marcava nada como alterado, e o `git commit` seguinte quebrava com "nothing to commit" em
+ * vez de ser um no-op.
+ * @param {(args: string[], cwd: string) => string} git
+ * @param {string} cwd
+ * @returns {boolean}
+ */
+function nothingStaged(git, cwd) {
+  try {
+    git(["diff", "--cached", "--quiet"], cwd);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Limpeza best-effort de uma branch de trabalho (#220, rodada 2 item 3): quando a cópia de um
+ * lote falha antes do primeiro commit (ex.: `localFile` que não existe mais no meio do lote),
+ * o arquivo já copiado fica untracked na working tree, e a branch criada por `checkout -B`
+ * nunca mais é referenciada — lixo que se acumula a cada falha, numa cópia persistente do
+ * Central docs. Só age quando a branch está **sem nenhum commit** além de `targetBranch` (0
+ * ahead): com commit, pode não ter sido empurrado ainda, e apagar a branch local perderia o
+ * único lugar onde ele existe — nesse caso, mantém o comportamento de sempre (branch fica).
+ * @param {(args: string[], cwd: string) => string} git
+ * @param {string} cwd
+ * @param {string} targetBranch
+ * @param {string} branch
+ * @param {string[]} candidatePaths - Destinos que o lote tentou copiar, para remover se tiverem
+ *   ficado untracked (caminhos relativos a `cwd`)
+ */
+function cleanupOrphanBranch(git, cwd, targetBranch, branch, candidatePaths) {
+  try {
+    const ahead = git(["rev-list", "--count", `${targetBranch}..${branch}`], cwd).trim();
+    if (ahead !== "0") return; // pode ter commit não empurrado: não apaga
+    git(["branch", "-D", branch], cwd);
+    for (const p of candidatePaths) {
+      try {
+        if (existsSync(join(cwd, p))) unlinkSync(join(cwd, p));
+      } catch {
+        // melhor esforço; não é o erro original
+      }
+    }
+  } catch {
+    // melhor esforço; nunca sobrepõe o erro original
+  }
 }
 
 /**
@@ -283,6 +334,11 @@ export function createFilesystemStorage({
           return { published, indexPath };
         }
         git(["add", "--", ...changed, indexPath], location);
+        if (nothingStaged(git, location)) {
+          // Conteúdo idêntico ao que já está em targetBranch (#220, N6): sem isso, o commit
+          // seguinte quebrava com "nothing to commit" em vez de ser um no-op.
+          return { published, indexPath };
+        }
         git(["commit", "-m", `docs(${squad}): consolidação ${slug || ""}`.trim()], location);
         const sha = git(["rev-parse", "HEAD"], location);
 
@@ -319,6 +375,7 @@ export function createFilesystemStorage({
       } finally {
         try {
           git(["checkout", targetBranch], location);
+          cleanupOrphanBranch(git, location, targetBranch, branch, files.map((f) => f.destPath));
         } catch {
           // a branch de trabalho fica; o erro original (se houver) é o que importa
         }
@@ -354,13 +411,18 @@ export function createFilesystemStorage({
       }
       git(["checkout", "-B", branch, targetBranch], location);
 
+      let archivedPaths = [];
       try {
         const result = archiveEntries({ root: location, squad, produto, entries });
         const changed = result.archived.map((a) => a.archiveDestPath);
+        archivedPaths = changed;
         if (changed.length === 0) {
           return result;
         }
         git(["add", "--", ...changed], location);
+        if (nothingStaged(git, location)) {
+          return result; // conteúdo idêntico ao que já está em targetBranch (#220, N6)
+        }
         git(["commit", "-m", `docs(${squad}): arquiva ${changed.length} documento(s) de trabalho`], location);
         const sha = git(["rev-parse", "HEAD"], location);
 
@@ -397,6 +459,7 @@ export function createFilesystemStorage({
       } finally {
         try {
           git(["checkout", targetBranch], location);
+          cleanupOrphanBranch(git, location, targetBranch, branch, archivedPaths);
         } catch {
           // a branch de trabalho fica; o erro original (se houver) é o que importa
         }
@@ -440,6 +503,9 @@ export function createFilesystemStorage({
         // `-A` com pathspec: cobre a remoção do `from` (já movido pelo `rename`) e a adição do
         // `to`, limitado só a esses caminhos — não é um `git add -A` geral.
         git(["add", "-A", "--", ...paths], location);
+        if (nothingStaged(git, location)) {
+          return result; // conteúdo idêntico ao que já está em targetBranch (#220, N6)
+        }
         git(["commit", "-m", `docs: migra Central docs para a estrutura por funcionalidade (${result.moved.length} documento(s))`], location);
         const sha = git(["rev-parse", "HEAD"], location);
 
@@ -476,6 +542,9 @@ export function createFilesystemStorage({
       } finally {
         try {
           git(["checkout", targetBranch], location);
+          // Só apaga a branch órfã, sem remover arquivo nenhum: aqui são `rename`s, não cópias
+          // novas — tentar "limpar" um arquivo movido arriscaria apagar conteúdo de verdade.
+          cleanupOrphanBranch(git, location, targetBranch, branch, []);
         } catch {
           // a branch de trabalho fica; o erro original (se houver) é o que importa
         }

@@ -174,6 +174,23 @@ test("rewriteRelatedInText: sem casar nenhum item, devolve o texto igual e chang
   assert.equal(next, text);
 });
 
+test("rewriteRelatedInText: lista de um item só, sem espaço após a vírgula, e valor entre aspas (#220, rodada 2 item 2, N2)", () => {
+  // Sem a ordem certa (lista antes de escalar) e sem tirar aspas, o `\S+` de SCALAR_RE casava
+  // "[a.md]"/"\"a.md\"" inteiro e nunca reescrevia — regressão encontrada na própria rodada 2.
+  assert.deepEqual(rewriteRelatedInText("related_prd: [a.md]", "a.md", "novo.md"), {
+    text: "related_prd: [novo.md]",
+    changed: true,
+  });
+  assert.deepEqual(rewriteRelatedInText("related_prd: [a.md,b.md]", "b.md", "novo.md"), {
+    text: "related_prd: [a.md, novo.md]",
+    changed: true,
+  });
+  assert.deepEqual(rewriteRelatedInText('related_prd: "a.md"', "a.md", "novo.md"), {
+    text: "related_prd: novo.md",
+    changed: true,
+  });
+});
+
 test("archiveEntries: grava origin e original_status na cópia; rodar de novo após o original mudar atualiza o hash (#220 item 2)", () => {
   const dir = tmp();
   try {
@@ -369,6 +386,43 @@ test("forceFinalize: unlinkSync falhando (pasta sem permissão de escrita) entra
     } finally {
       chmodSync(protectedDir, 0o755);
     }
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("finalizeEntries: dois originais que se citam por related_* terminam os dois finalizados (#220, rodada 2 item 2, N1)", () => {
+  const dir = tmp();
+  try {
+    const root = join(dir, "cd");
+    const prodDocs = join(dir, "docs-jarvis/product");
+    const prd = join(prodDocs, "prd-009-checkout.md");
+    const frd = join(prodDocs, "frd-009-checkout.md");
+    write(prd, "---\nid: PRD-009\n---\n# PRD\n");
+    write(frd, "---\nid: FRD-009\nrelated_prd: prd-009-checkout.md\n---\n# FRD\n");
+    const env = { PROD_DOCS: prodDocs };
+
+    const entries = [
+      { tipo: "prd", feature: "checkout", originalPath: prd },
+      { tipo: "frd", feature: "checkout", originalPath: frd },
+    ];
+    archiveEntries({ root, squad: "CORE", produto: "loja", entries });
+
+    // Numa passada só, reescrever o related_prd do FRD (porque o PRD foi processado antes)
+    // mudava o hash do próprio FRD antes de o loop chegar nele, e ele saía como "mudou".
+    const { finalized, changed, errors } = finalizeEntries({
+      entries,
+      env,
+      root,
+      squad: "CORE",
+      produto: "loja",
+    });
+
+    assert.equal(errors.length, 0);
+    assert.equal(changed.length, 0, "nenhum dos dois deveria ficar pendente por falso positivo");
+    assert.equal(finalized.length, 2, "os dois, PRD e FRD, foram finalizados");
+    assert.equal(existsSync(prd), false);
+    assert.equal(existsSync(frd), false);
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }

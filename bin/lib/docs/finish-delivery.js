@@ -201,10 +201,25 @@ function listMarkdown(dir) {
   return out;
 }
 
+// INLINE_LIST_RE é testada antes de SCALAR_RE (#220, rodada 2 item 2, N2): o `\S+` de
+// SCALAR_RE casa `[a.md]` inteiro (não tem espaço dentro), inclusive lista de um item só ou
+// sem espaço depois da vírgula — sem a ordem certa, SCALAR_RE "ganha" e a lista nunca é vista.
 const SCALAR_RE = /^(related_\w+:[ \t]*)(\S+)[ \t]*$/;
 const INLINE_LIST_RE = /^(related_\w+:[ \t]*)([{[])([^\]}]*)([}\]])[ \t]*$/;
 const BLOCK_KEY_RE = /^(related_\w+:)[ \t]*$/;
 const BLOCK_ITEM_RE = /^([ \t]*-[ \t]*)(\S+)[ \t]*$/;
+
+/** Tira aspas simples/duplas das pontas, se o valor estiver todo entre elas (#220, N2). */
+function unquote(value) {
+  if (value.length >= 2) {
+    const first = value[0];
+    const last = value[value.length - 1];
+    if ((first === '"' && last === '"') || (first === "'" && last === "'")) {
+      return value.slice(1, -1);
+    }
+  }
+  return value;
+}
 
 /**
  * Troca, no texto de um documento, todo `related_*:` cujo valor seja o **basename** do arquivo
@@ -227,18 +242,6 @@ export function rewriteRelatedInText(text, removedBasename, newRef) {
   while (i < lines.length) {
     const line = lines[i];
 
-    const scalar = line.match(SCALAR_RE);
-    if (scalar) {
-      if (basename(scalar[2]) === removedBasename) {
-        out.push(`${scalar[1]}${newRef}`);
-        changed = true;
-      } else {
-        out.push(line);
-      }
-      i++;
-      continue;
-    }
-
     const inlineList = line.match(INLINE_LIST_RE);
     if (inlineList) {
       const [, prefix, opener, body, closer] = inlineList;
@@ -248,7 +251,7 @@ export function rewriteRelatedInText(text, removedBasename, newRef) {
         .map((s) => s.trim())
         .filter(Boolean)
         .map((item) => {
-          if (basename(item) === removedBasename) {
+          if (basename(unquote(item)) === removedBasename) {
             lineChanged = true;
             return newRef;
           }
@@ -264,13 +267,25 @@ export function rewriteRelatedInText(text, removedBasename, newRef) {
       continue;
     }
 
+    const scalar = line.match(SCALAR_RE);
+    if (scalar) {
+      if (basename(unquote(scalar[2])) === removedBasename) {
+        out.push(`${scalar[1]}${newRef}`);
+        changed = true;
+      } else {
+        out.push(line);
+      }
+      i++;
+      continue;
+    }
+
     const blockKey = line.match(BLOCK_KEY_RE);
     if (blockKey) {
       out.push(line);
       i++;
       while (i < lines.length && BLOCK_ITEM_RE.test(lines[i])) {
         const [, prefix, value] = lines[i].match(BLOCK_ITEM_RE);
-        if (basename(value) === removedBasename) {
+        if (basename(unquote(value)) === removedBasename) {
           out.push(`${prefix}${newRef}`);
           changed = true;
         } else {
@@ -394,6 +409,12 @@ export function finalizeEntries({ entries, env, root, squad, produto, workspaceR
   const errors = [];
   const folders = env ? resolveDocsFolders(env) : null;
 
+  // Duas passadas (#220, rodada 2 item 2, N1): valida o hash de TODAS as entradas antes de
+  // reescrever qualquer `related_*` ou apagar qualquer original. Numa passada só, reescrever o
+  // original de uma entrada (porque outra a cita em `related_*`) mudava o hash dela bem na hora
+  // em que o loop chegava nela, e ela saía como "original mudou desde o --archive" — um
+  // documento comum (PRD citado pelo FRD) nunca terminava de ser finalizado.
+  const eligible = [];
   for (const e of entries) {
     if (!e.originalPath || !e.archiveDestPath) continue;
     if (!existsSync(e.originalPath)) continue; // já finalizado antes; idempotente
@@ -402,27 +423,31 @@ export function finalizeEntries({ entries, env, root, squad, produto, workspaceR
       continue;
     }
 
+    if (!e.archivedHash) {
+      changed.push({ originalPath: e.originalPath, reason: "sem hash do arquivamento" });
+      continue;
+    }
+    if (root) {
+      // Só a existência: o conteúdo da cópia não é mais idêntico ao buffer hasheado no
+      // --archive (a cópia ganhou origin/original_status no frontmatter, Q14) — comparar o
+      // hash dos dois daria sempre diferente. O hash serve para comparar o ORIGINAL (abaixo),
+      // não a cópia.
+      const archivedAbs = join(root, e.archiveDestPath);
+      if (!existsSync(archivedAbs)) {
+        changed.push({ originalPath: e.originalPath, reason: "cópia em archive/ não encontrada" });
+        continue;
+      }
+    }
+    const currentHash = sha256(e.originalPath);
+    if (currentHash !== e.archivedHash) {
+      changed.push({ originalPath: e.originalPath, reason: "original mudou desde o --archive" });
+      continue;
+    }
+    eligible.push(e);
+  }
+
+  for (const e of eligible) {
     try {
-      if (!e.archivedHash) {
-        changed.push({ originalPath: e.originalPath, reason: "sem hash do arquivamento" });
-        continue;
-      }
-      if (root) {
-        // Só a existência: o conteúdo da cópia não é mais idêntico ao buffer hasheado no
-        // --archive (a cópia ganhou origin/original_status no frontmatter, Q14) — comparar o
-        // hash dos dois daria sempre diferente. O hash serve para comparar o ORIGINAL (abaixo),
-        // não a cópia.
-        const archivedAbs = join(root, e.archiveDestPath);
-        if (!existsSync(archivedAbs)) {
-          changed.push({ originalPath: e.originalPath, reason: "cópia em archive/ não encontrada" });
-          continue;
-        }
-      }
-      const currentHash = sha256(e.originalPath);
-      if (currentHash !== e.archivedHash) {
-        changed.push({ originalPath: e.originalPath, reason: "original mudou desde o --archive" });
-        continue;
-      }
       if (env) {
         const destPath = destFor({ tipo: e.tipo, squad, produto, feature: e.feature, taskKey: e.taskKey, e });
         rewritten.push(...rewriteRelatedRefs(env, publishedBasename(e), destPath, workspaceRoot));

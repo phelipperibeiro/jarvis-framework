@@ -253,6 +253,12 @@ test("git: publishBatch — falha num arquivo do meio não deixa a branch de tra
 
     // O `finally` do publishBatch sempre volta para a branch base, mesmo com erro no meio.
     assert.equal(git(["branch", "--show-current"], clone), "main");
+
+    // #220, rodada 2 item 3: sem commit nenhum na branch de trabalho (falhou antes do commit),
+    // ela é apagada (não fica órfã para sempre) e o arquivo já copiado, ainda untracked, some.
+    const branches = git(["branch", "--list"], clone);
+    assert.doesNotMatch(branches, /docs\/core-falha-no-meio/, "a branch de trabalho não ficou órfã");
+    assert.equal(git(["status", "--porcelain"], clone), "", "sem arquivo untracked sobrando");
   } finally {
     rmSync(base, { recursive: true, force: true });
   }

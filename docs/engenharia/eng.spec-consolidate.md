@@ -56,7 +56,7 @@ Com isso, escreve documentos **autossuficientes**: se os originais se perderem, 
 - Documento de uma funcionalidade só nunca é quebrado em partes
 - Finalizar sem ter arquivado antes é recusado; documento que mudou desde o `--archive` nunca é apagado
 - Sem e-mails, tokens ou valores de variáveis
-- Com `.git` no Central docs, a entrega inteira vira **uma branch e um PR só** (não um por arquivo)
+- Com `.git` no Central docs, cada chamada (`publish`, `--archive`) vira **o seu próprio branch e PR** — a entrega inteira dentro de uma chamada é uma branch e um PR só (não um por arquivo), mas `publish` e `--archive` não compartilham o mesmo PR entre si
 - Sem `.git`, o `archive/` é a única cópia do original além dele mesmo
 - A sessão não é apagada: remova à mão quando quiser
 - **Links no Central docs:** o Central docs pode ser lido fora do workspace, então o código vira URL absoluta (`blob/{sha}` do merge), e a sessão e o `docs/jarvis/` ficam em texto (`rules-on-demand/doc-links-rules.md`, regra 6)
