@@ -44,8 +44,9 @@ export async function docsFinalize(flags = {}) {
 
   let env;
   let storage;
+  let workspaceRoot;
   try {
-    ({ env, storage } = openStorageFromEnv(flags));
+    ({ env, storage, root: workspaceRoot } = openStorageFromEnv(flags));
   } catch (error) {
     logger.error("❌ Central docs:", error.message);
     process.exit(1);
@@ -60,6 +61,7 @@ export async function docsFinalize(flags = {}) {
     root: storage?.location,
     squad,
     produto,
+    workspaceRoot,
   });
 
   logger.info(`🧹 Finalização — ${finalized.length} original(is) removido(s)`);

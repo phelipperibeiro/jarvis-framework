@@ -206,7 +206,7 @@ test("archiveEntries: grava origin e original_status na cópia; rodar de novo ap
   }
 });
 
-test("finalizeEntries: não apaga sem archivedHash, sem a cópia em archive/, ou com a cópia divergente (#220 item 2)", () => {
+test("finalizeEntries: não apaga sem archivedHash, sem a cópia em archive/, ou com o original mudado (#220 item 2)", () => {
   const dir = tmp();
   try {
     const root = join(dir, "cd");
@@ -231,17 +231,20 @@ test("finalizeEntries: não apaga sem archivedHash, sem a cópia em archive/, ou
     assert.equal(r2.changed[0].reason, "cópia em archive/ não encontrada");
     assert.equal(existsSync(original), true);
 
-    write(join(root, "CORE/loja/a/archive/divergente.md"), "# outro conteúdo\n");
+    // A cópia em archive/ existe (ganhou origin/original_status no frontmatter — por isso o
+    // hash dela nunca bate o do original puro, #220 item 2), mas o `archivedHash` gravado não
+    // é o hash atual do original: o original mudou (ou o manifesto foi editado à mão).
+    write(join(root, "CORE/loja/a/archive/divergente.md"), "# outro conteúdo (cópia, com metadados)\n");
     const divergente = {
       tipo: "prd",
       feature: "a",
       originalPath: original,
       archiveDestPath: "CORE/loja/a/archive/divergente.md",
-      archivedHash: "abc", // não é o hash real do arquivo em archive/
+      archivedHash: "abc", // não é o hash real de `original`
     };
     const r3 = finalizeEntries({ entries: [divergente], root });
     assert.equal(r3.finalized.length, 0);
-    assert.equal(r3.changed[0].reason, "cópia em archive/ não bate o hash");
+    assert.equal(r3.changed[0].reason, "original mudou desde o --archive");
     assert.equal(existsSync(original), true, "nada foi apagado sem a conferência passar");
   } finally {
     rmSync(dir, { recursive: true, force: true });

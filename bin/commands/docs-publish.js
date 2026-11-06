@@ -8,8 +8,9 @@ import { logger, configureFromFlags } from "../lib/utils/logger.js";
 function openEnvAndStorage(flags) {
   let env;
   let storage;
+  let root;
   try {
-    ({ env, storage } = openStorageFromEnv(flags));
+    ({ env, storage, root } = openStorageFromEnv(flags));
   } catch (error) {
     logger.error("❌ Central docs:", error.message);
     process.exit(1);
@@ -19,7 +20,7 @@ function openEnvAndStorage(flags) {
     logger.error("   Configure-o com o /jarvis-init.");
     process.exit(1);
   }
-  return { env, storage };
+  return { env, storage, root };
 }
 
 function resolveSquadProduto(flags, env) {
@@ -141,7 +142,7 @@ export async function docsPublish(flags = {}) {
 
 async function docsPublishManifest(flags) {
   const files = readManifest(flags.manifest);
-  const { env, storage } = openEnvAndStorage(flags);
+  const { env, storage, root } = openEnvAndStorage(flags);
   const { squad, produto } = resolveSquadProduto(flags, env);
 
   logger.info(`📤 Publicando a consolidação em lote (${files.length} arquivo(s))...\n`);
@@ -159,7 +160,13 @@ async function docsPublishManifest(flags) {
 
   // --force (Q15, #220): publica e já apaga os originais, sem --archive. Zero reversão.
   logger.info("\n⚠️  --force: finalizando sem arquivar (zero reversão)...");
-  const { finalized, rewritten, errors } = forceFinalize({ entries: files, squad, produto, env });
+  const { finalized, rewritten, errors } = forceFinalize({
+    entries: files,
+    squad,
+    produto,
+    env,
+    workspaceRoot: root,
+  });
   logger.info(`🧹 ${finalized.length} original(is) removido(s) (sem cópia em archive/)`);
   for (const f of finalized) logger.info(`   - ${f.originalPath}`);
   if (rewritten.length > 0) {

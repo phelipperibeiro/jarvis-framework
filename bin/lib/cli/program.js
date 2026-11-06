@@ -195,7 +195,10 @@ export function buildProgram() {
     .description(
       "Apagar os originais já arquivados (--archive antes); irreversível, só os que não mudaram desde então"
     )
-    .option("--manifest <path>", "O manifesto já arquivado com --archive");
+    .option("--manifest <path>", "O manifesto já arquivado com --archive")
+    .option("--squad <squad>", "Override do SQUAD do ENV.md")
+    .option("--produto <produto>", "Override do WORKSPACE do ENV.md")
+    .option("--workspace <workspace>", "Mesmo efeito de --produto");
   withEnvOptions(withLogOptions(docsFinalizeCmd)).action((options) =>
     docsFinalize(toLegacyFlags(options))
   );

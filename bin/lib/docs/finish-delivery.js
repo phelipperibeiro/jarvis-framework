@@ -106,13 +106,14 @@ function resolveDocsFolders(env) {
  * gate de código): trava o `unlinkSync` de `finalizeEntries`/`forceFinalize` para não apagar
  * um caminho qualquer que um manifesto editado ou gerado com erro tenha colocado em `originalPath`.
  * @param {string} absPath
- * @param {string[]} folders - De `resolveDocsFolders`; relativas são resolvidas a partir de `cwd`
- * @param {string} [cwd]
+ * @param {string[]} folders - De `resolveDocsFolders`; relativas são resolvidas a partir de `workspaceRoot`
+ * @param {string} [workspaceRoot] - A pasta do workspace (`openStorageFromEnv(...).root`), não o
+ *   cwd do processo: o comando pode ser chamado de uma subpasta do workspace
  * @returns {boolean}
  */
-function isWithinDocsFolders(absPath, folders, cwd = process.cwd()) {
+function isWithinDocsFolders(absPath, folders, workspaceRoot = process.cwd()) {
   return folders.some((folder) => {
-    const folderAbs = isAbsolute(folder) ? folder : resolve(cwd, folder);
+    const folderAbs = isAbsolute(folder) ? folder : resolve(workspaceRoot, folder);
     const rel = relative(folderAbs, absPath);
     return rel !== "" && !rel.startsWith("..") && !isAbsolute(rel);
   });
@@ -302,20 +303,16 @@ export function rewriteRelatedInText(text, removedBasename, newRef) {
  * @param {Record<string, string>} env - `loadEnv` (objeto plano, variáveis cruas)
  * @param {string} removedBasename
  * @param {string} centralDocsDestPath
+ * @param {string} [workspaceRoot] - A pasta do workspace (`openStorageFromEnv(...).root`), para
+ *   resolver as três pastas quando vierem relativas; sem ele, usa o cwd do processo
  * @returns {string[]} arquivos alterados (absolutos)
  */
-export function rewriteRelatedRefs(env, removedBasename, centralDocsDestPath) {
-  const expanded = expandEnv(new Map(Object.entries(env)));
-  const docsFolder = expanded.get("DOCS_FOLDER") || "docs";
-  const jarvisDocs = expanded.get("JARVIS_DOCS") || `${docsFolder}/jarvis`;
-  const folders = [
-    expanded.get("PROD_DOCS") || `${jarvisDocs}/product`,
-    expanded.get("ENG_DOCS") || `${jarvisDocs}/engineering`,
-    expanded.get("DISCOVERIES_DOCS") || `${jarvisDocs}/discoveries`,
-  ];
+export function rewriteRelatedRefs(env, removedBasename, centralDocsDestPath, workspaceRoot) {
+  const folders = resolveDocsFolders(env);
 
   const changed = [];
-  for (const folder of folders) {
+  for (const rawFolder of folders) {
+    const folder = isAbsolute(rawFolder) ? rawFolder : resolve(workspaceRoot || process.cwd(), rawFolder);
     if (!existsSync(folder) || !statSync(folder).isDirectory()) continue;
     for (const fileAbs of listMarkdown(folder)) {
       const text = readFileSync(fileAbs, "utf-8");
@@ -342,7 +339,7 @@ export function rewriteRelatedRefs(env, removedBasename, centralDocsDestPath) {
  * @param {Record<string, string>} [p.env] - Para reescrever `related_*` (omitir = não reescreve); também usado para travar o `unlinkSync` dentro das pastas de documentos de trabalho (#220 item 2)
  * @returns {{ finalized: Array, rewritten: string[], errors: string[] }}
  */
-export function forceFinalize({ entries, squad, produto, env }) {
+export function forceFinalize({ entries, squad, produto, env, workspaceRoot }) {
   const finalized = [];
   const rewritten = [];
   const errors = [];
@@ -351,7 +348,7 @@ export function forceFinalize({ entries, squad, produto, env }) {
   for (const e of entries) {
     if (!e.originalPath) continue; // feature/delivery/product/home/history: nada a apagar
     if (!existsSync(e.originalPath)) continue;
-    if (folders && !isWithinDocsFolders(resolve(e.originalPath), folders)) {
+    if (folders && !isWithinDocsFolders(resolve(e.originalPath), folders, workspaceRoot)) {
       errors.push(`${e.originalPath}: fora das pastas de documentos de trabalho, não apagado`);
       continue;
     }
@@ -362,7 +359,7 @@ export function forceFinalize({ entries, squad, produto, env }) {
       // local, que pode diferir (ex.: documento quebrado por funcionalidade, Q9).
       const destPath = destFor({ tipo: e.tipo, squad, produto, feature: e.feature, taskKey: e.taskKey, e });
       if (env) {
-        rewritten.push(...rewriteRelatedRefs(env, publishedBasename(e), destPath));
+        rewritten.push(...rewriteRelatedRefs(env, publishedBasename(e), destPath, workspaceRoot));
       }
       unlinkSync(e.originalPath);
       finalized.push(e);
@@ -390,7 +387,7 @@ export function forceFinalize({ entries, squad, produto, env }) {
  * @param {string} [p.produto]
  * @returns {{ finalized: Array, changed: Array<{originalPath: string, reason: string}>, rewritten: string[], errors: string[] }}
  */
-export function finalizeEntries({ entries, env, root, squad, produto }) {
+export function finalizeEntries({ entries, env, root, squad, produto, workspaceRoot }) {
   const finalized = [];
   const changed = [];
   const rewritten = [];
@@ -400,7 +397,7 @@ export function finalizeEntries({ entries, env, root, squad, produto }) {
   for (const e of entries) {
     if (!e.originalPath || !e.archiveDestPath) continue;
     if (!existsSync(e.originalPath)) continue; // já finalizado antes; idempotente
-    if (folders && !isWithinDocsFolders(resolve(e.originalPath), folders)) {
+    if (folders && !isWithinDocsFolders(resolve(e.originalPath), folders, workspaceRoot)) {
       errors.push(`${e.originalPath}: fora das pastas de documentos de trabalho, não apagado`);
       continue;
     }
@@ -411,13 +408,13 @@ export function finalizeEntries({ entries, env, root, squad, produto }) {
         continue;
       }
       if (root) {
+        // Só a existência: o conteúdo da cópia não é mais idêntico ao buffer hasheado no
+        // --archive (a cópia ganhou origin/original_status no frontmatter, Q14) — comparar o
+        // hash dos dois daria sempre diferente. O hash serve para comparar o ORIGINAL (abaixo),
+        // não a cópia.
         const archivedAbs = join(root, e.archiveDestPath);
         if (!existsSync(archivedAbs)) {
           changed.push({ originalPath: e.originalPath, reason: "cópia em archive/ não encontrada" });
-          continue;
-        }
-        if (sha256(archivedAbs) !== e.archivedHash) {
-          changed.push({ originalPath: e.originalPath, reason: "cópia em archive/ não bate o hash" });
           continue;
         }
       }
@@ -428,7 +425,7 @@ export function finalizeEntries({ entries, env, root, squad, produto }) {
       }
       if (env) {
         const destPath = destFor({ tipo: e.tipo, squad, produto, feature: e.feature, taskKey: e.taskKey, e });
-        rewritten.push(...rewriteRelatedRefs(env, publishedBasename(e), destPath));
+        rewritten.push(...rewriteRelatedRefs(env, publishedBasename(e), destPath, workspaceRoot));
       }
       unlinkSync(e.originalPath);
       finalized.push(e);
