@@ -20,6 +20,7 @@ import { docsPublish } from "../bin/commands/docs-publish.js";
 import { docsArchive } from "../bin/commands/docs-archive.js";
 import { docsFinalize } from "../bin/commands/docs-finalize.js";
 import { docsMigrate } from "../bin/commands/docs-migrate.js";
+import { docsSessions } from "../bin/commands/docs-sessions.js";
 import { setTestMode } from "../bin/lib/utils/logger.js";
 
 setTestMode(true);
@@ -354,6 +355,47 @@ test("workflow eng.spec-consolidate: o manifesto de exemplo do Passo 5 é aceito
   ]) {
     assert.ok(existsSync(join(centralDocs, rel)), rel);
   }
+});
+
+test("sessão já entregue: publica só os arquivos e a página-índice, sem tocar em feature/delivery; a --proxima avança (#229)", async () => {
+  const { ws, envFile, centralDocs } = workspaceFixture();
+  // Central docs com a funcionalidade e a entrega do card 229 já publicadas
+  const feature = "---\nid: FEAT-1\nname: Checkout\nstatus: in_production\nproduct: loja\nupdated_at: 2026-10-15\n---\n# Checkout (editado à mão)\n";
+  const delivery = "---\nid: DEL-1\nfeature: feature-checkout.md\ntask_key: 229\npr: \"#230\"\ndate: 2026-10-15\n---\n# Entrega (editada à mão)\n";
+  write(join(centralDocs, "CORE/loja/checkout/checkout.md"), feature);
+  write(join(centralDocs, "CORE/loja/checkout/deliveries/delivery-2026-10-15-229.md"), delivery);
+  // sessões 229 (entregue) e 300 (pendente, sem entrega)
+  write(join(ws, ".jarvis/sessions/eng/229/architecture.md"), "# Arquitetura\n");
+  write(join(ws, ".jarvis/sessions/eng/300/architecture.md"), "# Outra\n");
+  write(join(ws, ".jarvis/sessions/eng/229/consolidation/session-229.md"), "---\nid: SES-229\nname: Sessão 229\n---\n# Sessão 229\n[entrega](../../checkout/deliveries/delivery-2026-10-15-229.md)\n");
+  write(
+    join(ws, ".jarvis/sessions/eng/229/consolidation/manifest.json"),
+    JSON.stringify([
+      { file: "../architecture.md", tipo: "architecture", feature: "checkout", taskKey: "229", fromSession: true, originalPath: join(ws, ".jarvis/sessions/eng/229/architecture.md") },
+      { file: "session-229.md", tipo: "history", feature: "checkout", taskKey: "229", relPath: "229.md", fromSession: true },
+    ])
+  );
+  const proxima = async () => {
+    const out = [];
+    const w = process.stdout.write;
+    process.stdout.write = (s) => (out.push(String(s)), true);
+    try {
+      await docsSessions({ proxima: true, "env-file": envFile });
+    } finally {
+      process.stdout.write = w;
+    }
+    return out.join("").trim();
+  };
+  assert.equal(await proxima(), "229", "antes: a 229 é a primeira pendente (entregue, mas sem a página-índice)");
+
+  const manifest = join(ws, ".jarvis/sessions/eng/229/consolidation/manifest.json");
+  assert.equal(await captureRun(() => docsPublish({ manifest, slug: "229", "env-file": envFile })), 0);
+
+  assert.equal(readFileSync(join(centralDocs, "CORE/loja/checkout/checkout.md"), "utf-8"), feature, "a página da funcionalidade não muda");
+  assert.equal(readFileSync(join(centralDocs, "CORE/loja/checkout/deliveries/delivery-2026-10-15-229.md"), "utf-8"), delivery, "o registro da entrega não muda");
+  assert.ok(existsSync(join(centralDocs, "CORE/loja/checkout/decisions/architecture-229.md")));
+  assert.ok(existsSync(join(centralDocs, "CORE/loja/history/229/229.md")));
+  assert.equal(await proxima(), "300", "depois: a próxima pendente é a 300");
 });
 
 test("docsPublish --manifest --force: publica e já apaga o original ligado (zero reversão)", async () => {

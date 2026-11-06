@@ -34,7 +34,8 @@ O Central docs é, portanto, um **snapshot de cada funcionalidade implementada, 
 ## Quando usar
 
 - Logo depois do [`/eng.pr`](./eng.pr.md), com a sessão da tarefa ainda presente
-- `--inicial`: para montar o Central docs a partir dos documentos que já existem (o [`/jarvis-init`](../../skills/jarvis-init/SKILL.md) oferece)
+- `--inicial`: para montar o Central docs a partir dos documentos que já existem (o [`/jarvis-init`](../../skills/jarvis-init/SKILL.md) oferece); no fim, avisa quantas sessões antigas ainda estão pendentes
+- `--sessao {card}` e `--proxima`: para as **sessões antigas** que nunca foram consolidadas, **uma por vez, no seu ritmo** (ver abaixo)
 
 ## Quando **não** usar
 
@@ -53,6 +54,16 @@ O Central docs é, portanto, um **snapshot de cada funcionalidade implementada, 
 8. (`--archive`, outra chamada) Pergunta **Sim / Não** para arquivar: copia cada original publicado (documentos de trabalho e arquivos da sessão) para `archive/`, sem apagar nada, e grava no manifesto o hash de cada um.
 9. (`--finalize`, outra chamada) Pergunta **Sim / Não** para finalizar: confere o hash de cada original contra o do `--archive` — se mudou, não apaga e avisa; se não mudou, reescreve as referências (`related_*`) de outros documentos e apaga o original. Para os arquivos da sessão, só apaga dentro da pasta da sessão **do próprio card**.
 10. Se tudo da sessão foi finalizado, **oferece apagar a pasta da sessão** (pergunta própria, **Sim / Não**), mostrando o que sobrou (`.timestamp_start`, `consolidation/`…).
+
+## Sessões antigas, uma por vez
+
+Quem já tem dezenas de pastas em `.jarvis/sessions/eng/` não precisa fazer tudo de uma vez nem às pressas:
+
+- `jarvis docs sessions` lista as sessões, os arquivos de cada uma, o que falta e quais ainda estão **pendentes** (sem a página-índice no Central docs). `--proxima` imprime só o card da próxima.
+- `/eng.spec-consolidate --proxima` (ou `--sessao {card}`) trata **uma** sessão, do começo ao fim, com os mesmos Sim de sempre, e diz quantas faltam. Pode parar quando quiser; a execução seguinte continua da próxima pendente. O ponto onde você parou é o próprio Central docs (a página-índice publicada), sem arquivo de controle.
+- **Sessão sem entrega:** o comando consulta a issue e o PR no GitHub (só leitura) e documenta com o que existir: arquivos da sessão, issue, PR e commits. Sem PR, escreve "PR não localizado"; sem issue e sem PR, documenta só com os arquivos, marcando a ausência; nunca inventa.
+- **Sessão que já tem entrega no Central docs:** publica só os arquivos e a página-índice, sem regerar a página da funcionalidade nem o registro da entrega.
+- **Épico:** cards do mesmo épico entram no mesmo registro da funcionalidade (com o `task_key` do épico e uma tabela de cards e PRs), que cresce a cada sessão processada.
 
 ## Regras que importam
 

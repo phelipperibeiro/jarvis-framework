@@ -33,6 +33,8 @@ Os documentos de trabalho (PRD, FRD, ARD, RFC, SPEC, discovery…) continuam em 
 | Cabeçalho (agente) | `eng.docs-consolidator.agent` (agente) | Sempre: escreve a consolidação na sessão |
 | Passo 3 (funcionalidades) e Passo 7 (publicação) | `/jarvis-docs-central` (via `jarvis docs fetch` / `jarvis docs publish --manifest`) | Sempre: lê o índice e o documento atual e publica depois do Sim |
 | Passo 8 (`--archive`) e Passo 9 (`--finalize`) | `/jarvis-docs-central` (via `jarvis docs archive` / `jarvis docs finalize`) | Só quando chamado com `--archive` ou `--finalize`, depois do Sim de cada passo |
+| Passo 2B (`--sessao`, `--proxima`) | `/jarvis-docs-central` (via `jarvis docs sessions`) | Só nos modos de sessões antigas: lista as sessões, o que falta e quais estão pendentes (só leitura) |
+| Passo 2B (`--sessao`, `--proxima`) | CLI do vendor (`gh`/`glab`: `issue view`, `pr view`, `pr list`) | Só nos modos de sessões antigas, só leitura: acha a issue, o PR e os commits de uma sessão sem entrega |
 
 ---
 
@@ -45,6 +47,8 @@ Os documentos de trabalho (PRD, FRD, ARD, RFC, SPEC, discovery…) continuam em 
 - `{TASK_MANAGER_KEY}` (obrigatório no modo normal): a mesma chave do `eng.start`/`eng.pr`. Sem ela, pergunte e aguarde (`eng.integrations-rules.md`; no modo freelance, o número de controle).
 - `{slug}` (opcional): slug de uma funcionalidade, se você já souber qual atualizar. Com mais de uma funcionalidade tocada, o Passo 3 pergunta pelas demais.
 - `--inicial`: carga inicial a partir dos documentos de trabalho que já existem (chamado pelo `/jarvis-init`). Não precisa de chave nem de PR.
+- `--sessao {card}`: consolida **uma sessão antiga** (ou já entregue, sem `feature-*`/`delivery-*` novos), a do card informado, **sem pressa**: processa só ela e diz quantas faltam. Não precisa de PR nem de branch (Passo 2B).
+- `--proxima`: igual ao `--sessao`, para a **próxima sessão pendente** (a primeira, em ordem numérica, que ainda não tem a página-índice `history/{card}/{card}.md` no Central docs; vem de `jarvis docs sessions --proxima`). Pode ser repetido no seu ritmo: o ponto onde você parou é o estado do Central docs, sem arquivo de controle.
 - `--archive`: pula os Passos 1–7 (a consolidação já foi publicada numa execução anterior) e vai direto ao Passo 8, com o `manifest.json` já gravado em `consolidation/` nesta sessão.
 - `--finalize`: pula os Passos 1–8 e vai direto ao Passo 9, com o mesmo `manifest.json` já arquivado (`--archive` antes).
 - `--force`: faz os Passos 1–7 e 9 numa execução só, **sem perguntar** e **sem o Passo 8** (zero reversão, Q15 da #220) — a própria flag vale como o Sim dos passos (exceção explícita à regra de ouro, `eng.integrations-rules.md`). Decide a listagem (Passo 4), a quebra (Q9) e o `status` (Q23) por conta própria, mas **sem pular** a trava de segredo da revisão (Passo 6): se algo parecer um segredo, para antes de publicar, mesmo com `--force`. Documento sem vínculo com a entrega continua intocado. Ao fim, `jarvis docs publish --manifest ... --force` publica e já apaga os originais (sem `archive/`); mostre o relatório do que foi feito, do que ficou e por quê. **Vale também para os arquivos da sessão (#229)**, com a trava de sempre: só apaga dentro da pasta da sessão do próprio card e **só depois de conferir que a cópia publicada existe e bate o hash** (se faltar ou diferir, aquele arquivo fica na sessão e entra no relatório; com o Central docs em git, a cópia só passa na conferência depois que o PR da publicação for mesclado e a pasta atualizada). A pergunta do Passo 9.1 (apagar a pasta da sessão) continua valendo, mesmo com `--force`.
@@ -55,7 +59,7 @@ Os documentos de trabalho (PRD, FRD, ARD, RFC, SPEC, discovery…) continuam em 
 
 1. **Central docs ligado:** `CENTRAL_DOCS_STORAGE` preenchido no `$IDE/ENV.md`. Se estiver vazio, pare: "O Central docs está desligado. Ligue-o no `/jarvis-init` (Passo 5.2) para registrar o que foi implementado."
 2. **Modo normal:** a sessão `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/` existe. Ela **pode estar incompleta** (sem `architecture.md`, `plan.md` ou `context.md`): o comando segue com o que existir e registra o que faltou como "ausente" na página-índice, sem perguntar e sem inventar. Sem a pasta da sessão (ou vazia), avise que a consolidação perde as decisões e pergunte se segue só com o diff, os documentos de trabalho e a issue/PR.
-3. **Branch base:** o `Branch base:` do `architecture.md`. Sem ele, pergunte com `AskUserQuestion` (`main`, `dev` ou Outro).
+3. **Branch base:** o `Branch base:` do `architecture.md`. Sem ele, pergunte com `AskUserQuestion` (`main`, `dev` ou Outro). Nos modos `--sessao`/`--proxima` não há branch atual para comparar: os commits vêm do PR (Passo 2B) e esta pergunta não existe.
 
 ## Passo 1: Coleta (modo normal)
 
@@ -77,6 +81,26 @@ O agente `eng.docs-consolidator.agent` lê **todas** as fontes, na ordem do agen
 1. Liste os PRD, FRD, ARD, RFC e SPEC em `$PROD_DOCS` e `$ENG_DOCS/{ARD,RFC,SPEC}` (e nos caminhos antigos, se o `/jarvis-init` não os moveu).
 2. Sugira o agrupamento por funcionalidade (um PRD/FRD e os ARD/RFC/SPEC ligados a ele) e confirme com `AskUserQuestion` (aceitar / ajustar).
 3. Para cada grupo, o agente lê os documentos e o código relacionado (só leitura), para descrever o que **está implementado**. O que estiver só especificado vai para "Fora do escopo", e o status reflete isso.
+4. No fim, rode `jarvis docs sessions --pendentes --json` e diga **quantas sessões ainda estão pendentes** (sem a página-índice no Central docs). Se houver, sugira `/eng.spec-consolidate --proxima`, que as trata uma por vez, no seu ritmo.
+
+## Passo 2B: Coleta (modos `--sessao {card}` e `--proxima`): uma sessão antiga por vez
+
+Para as sessões que nunca foram consolidadas (ou foram, mas não têm os arquivos no Central docs), **sem pressa e uma por vez**. Cada execução trata **uma** sessão, do começo ao fim (Passos 2B a 10), e termina dizendo quantas faltam. Pode parar a qualquer momento: o que já foi publicado fica, e a próxima execução continua da seguinte pendente.
+
+1. **Qual sessão.** `--sessao {card}` usa o card informado. `--proxima` roda `jarvis docs sessions --proxima` e usa o card que ele imprime; sem nenhum, diga "Nenhuma sessão pendente" e encerre. Mostre um resumo da sessão (de `jarvis docs sessions --json`): arquivos e tamanho, o que falta (`architecture.md`, `plan.md`, `context.md`), se há entrega no Central docs e se a página-índice já existe. Se já existe, pergunte (`AskUserQuestion`, **Refazer / Nada a fazer**): refazer só gera uma nova versão (`-vN`) do que mudou, e o padrão é "Nada a fazer".
+2. **Já entregue ou não.**
+   - **Já entregue** (`delivered`; há `delivery-*` desse card no Central docs): **só os arquivos**. Publica os arquivos da sessão e a página-índice, e **não regera** `feature-*` nem `delivery-*` (Q5 da #229). A funcionalidade principal é a do `delivery-*` existente, e a página-índice liga a ele.
+   - **Sem entrega:** documenta a entrega com o que existir, nos passos 3 a 6 abaixo.
+3. **Fontes (somente leitura, sem checkout).** Os arquivos da sessão que existirem e, no GitHub (ou GitLab), pelo CLI do vendor:
+   - a issue: `gh issue view {card} --json number,title,body,state,closedAt,labels,parent,closedByPullRequestsReferences`;
+   - o PR: o que a issue vincula (`closedByPullRequestsReferences`); sem vínculo, `gh pr list --state all --search "{card} in:title,body" --json number,title,state,mergedAt,url`; sem resultado, **"PR não localizado"** (não invente);
+   - do PR achado: `gh pr view {n} --json number,title,url,mergedAt,author,headRefName,baseRefName,commits` (commits com o **nome** do autor e a data, nunca o e-mail).
+4. **Data e campos da entrega.** A data do `delivery-*` é a do merge do PR; sem PR, a do fechamento da issue; sem as duas, a de `.timestamp_start` da sessão, dizendo isso em "Fontes". O `pr` do frontmatter (campo obrigatório) recebe o PR ou o texto **"PR não localizado"**; o `card_url` fica vazio se não houver issue.
+5. **Sessão sem issue e sem PR** (ex.: a 202): documente com os arquivos que existem, marcando "sem issue e sem PR", sem perguntar caso a caso (Q8 da #229). **Sessão sem arquivos** (ex.: a 14): o registro vem só da issue; nenhum arquivo é movido. Em todos os casos a lista do Passo 4 mostra o que será feito antes do seu Sim.
+6. **Épicos (Q7 da #229).** Se a issue tem `parent` (ou o título começa por `[Épico n.m]`), os cards do mesmo épico entram **no mesmo `delivery-*` da funcionalidade**, com o `task_key` do épico, o `pr` do PR do épico e uma tabela com cada card e o seu PR. Como as sessões são processadas uma por vez, a cada execução leia o `delivery-*` do épico que já existe (`jarvis docs fetch`) e **acrescente** esta sessão à tabela, mantendo o nome do arquivo; se ainda não existe, crie-o. Sem épico, vale o card.
+7. **Funcionalidade.** Sugira a funcionalidade pela issue, pelo PR e pelos arquivos (e, na sessão já entregue, pelo `delivery-*`), e confirme como no Passo 3, uma pergunta por funcionalidade.
+
+Depois: Passo 3 (funcionalidades, já respondido acima), Passo 4 (listagem, com o `--dry-run`), Passo 5 (escrever; no lugar do diff da branch, os commits vêm do PR; a pasta `consolidation/` é a da própria sessão, `$SESSIONS_DIR/eng/{card}/consolidation/`), Passos 6 a 9.1 como sempre, cada um com o seu Sim. No fim, diga quantas sessões ainda estão pendentes e sugira `/eng.spec-consolidate --proxima` de novo.
 
 ## Passo 3: Quais funcionalidades
 
@@ -235,6 +259,7 @@ Liste o que sobrou na pasta `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/` (`ls -A`, qu
 {se houve documento que mudou no --finalize:} ⚠️ {N} documento(s) mudaram desde o --archive e não foram apagados: {lista}
 {se a pasta da sessão foi apagada:} 🧹 A sessão $SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/ foi apagada com o seu Sim; tudo está no Central docs.
 {se não:} 🧹 A sessão $SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/ continua no disco ({motivo: ainda não finalizada | você escolheu manter | há arquivo pendente}).
+{nos modos --sessao/--proxima:} ➡️ Faltam {N} sessão(ões) pendente(s). Quando quiser continuar: `/eng.spec-consolidate --proxima`
 ```
 
 ---
