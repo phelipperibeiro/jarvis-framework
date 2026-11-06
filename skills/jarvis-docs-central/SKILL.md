@@ -104,9 +104,9 @@ Um documento de trabalho (`decisions/`) às vezes cobre **mais de uma** funciona
 
 1. **Mapeie primeiro, escreva depois.** O agente propõe, para cada funcionalidade citada, qual trecho é dela; nunca inventa conteúdo nem deixa parte de fora.
 2. **Uma parte por funcionalidade só com o que é dela.** Nome: `{tipo}-{funcionalidade}.md` (ex.: `architecture-checkout.md`). Cada parte vai para `decisions/` da sua própria funcionalidade.
-3. **Cabeçalho comum em cada parte:** a issue, o MR/PR e links para as partes irmãs (mesma entrega, outras funcionalidades) — a mesma issue e o mesmo MR são citados em todas.
+3. **Cabeçalho comum em cada parte:** a issue, o MR/PR e links para as partes irmãs (mesma entrega, outras funcionalidades) — a mesma issue e o mesmo MR são citados em todas. No frontmatter, o campo `sibling_parts` (lista dos caminhos das outras partes em `decisions/`) é reconhecido, mas não exigido — quem publica preenche quando o documento foi de fato quebrado.
 4. **O que é transversal** (não pertence a uma funcionalidade só) vai para `{produto}/{produto}.md`, e cada parte linka essa página em vez de repetir o texto.
-5. **O documento inteiro, sem quebrar, vai para `archive/`** de cada funcionalidade citada — é a rede de segurança até o Sim final de remoção.
+5. **O documento inteiro, sem quebrar, vai para `archive/`** de cada funcionalidade citada — é a rede de segurança até o Sim final de remoção. A cópia em `archive/` ganha, no frontmatter, `origin` (caminho de origem) e `original_status` (o status do documento antes de arquivar) — gravados pelo próprio `jarvis docs archive`, para a restauração manual (Q14).
 6. **Documento de uma funcionalidade só não é quebrado:** o original inteiro é o que vai para `decisions/` (Q12).
 
 ### Índice
