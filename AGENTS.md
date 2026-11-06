@@ -157,9 +157,10 @@ jarvis rules sync [--ide X]                         # Filtra rules/ e rules-on-d
 jarvis map       <nome> [--depth N] [--reverse]      # Mapa de chamadas de um workflow, skill ou agente (lê só as tabelas padronizadas)
 jarvis fork      [nome] [--list] [--update [--diff]] [--delete] [--candidate]   # Overlay de empresa (#199): copia um artefato do core para $IDE/overlays/{COMPANY_PROFILE}/ com carimbo; lista; recarimba; remove
 jarvis daily-report [--days N] [--json]             # Junta os daily.md das sessões por dia (usado pelo /eng.daily-report)
-jarvis docs publish --file|--manifest ... [--force] # Central docs por funcionalidade (#220): publica um arquivo ou, com --manifest, uma entrega inteira numa branch/PR só; --force já finaliza, sem archive/
+jarvis docs publish --file|--manifest ... [--force] [--dry-run] # Central docs por funcionalidade (#220): publica um arquivo ou, com --manifest, uma entrega inteira numa branch/PR só; --force já finaliza, sem archive/; --dry-run só simula (#229)
 jarvis docs archive --manifest <path>               # Guarda em archive/ os originais já publicados (decisions/), sem apagar nada
-jarvis docs finalize --manifest <path>              # Apaga os originais já arquivados (irreversível, só os que não mudaram desde o archive)
+jarvis docs finalize --manifest <path>              # Apaga os originais já arquivados (irreversível, só os que não mudaram desde o archive); inclui os arquivos da sessão, só na pasta do próprio card
+jarvis docs sessions [--json] [--pendentes] [--proxima]   # Lista as sessões de eng/, seus arquivos, a entrega no Central docs e a página-índice publicada (#229, só leitura)
 jarvis docs migrate [--apply]                       # Migra o Central docs do layout antigo (product/engineering) para a estrutura por funcionalidade
 ```
 

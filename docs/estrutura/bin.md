@@ -21,6 +21,7 @@ bin/
 │   ├── docs-publish.js     # jarvis docs publish (--manifest/--force: #220)
 │   ├── docs-archive.js     # jarvis docs archive (#220)
 │   ├── docs-finalize.js    # jarvis docs finalize (#220)
+│   ├── docs-sessions.js    # jarvis docs sessions (#229: inventário das sessões, só leitura)
 │   ├── docs-migrate.js     # jarvis docs migrate (layout antigo → por funcionalidade, #220)
 │   ├── install-rtk.js      # jarvis install-rtk
 │   ├── tokens.js           # jarvis tokens
@@ -46,7 +47,7 @@ bin/
 | `jarvis init --ide cursor` | Copia assets → `.$IDE/`, sessions, lock |
 | `jarvis list` / `info` | Descobre agents/skills/workflows no framework |
 | `jarvis whoami` | Resolve `USER` (ENV → git → SO) |
-| `jarvis docs sync\|publish\|archive\|finalize\|migrate` | Integração com o Central docs, por funcionalidade (#220): `sync`/`publish` já existiam; `archive`/`finalize` são os passos 2 e 3 da consolidação (guardar e depois apagar o original ligado); `migrate` move o layout antigo para a estrutura nova |
+| `jarvis docs sync\|publish\|archive\|finalize\|migrate\|sessions` | Integração com o Central docs, por funcionalidade (#220): `sync`/`publish` já existiam; `archive`/`finalize` são os passos 2 e 3 da consolidação (guardar e depois apagar o original ligado, inclusive os arquivos da sessão, #229); `migrate` move o layout antigo para a estrutura nova; `sessions` lista as sessões, o que falta e quais estão pendentes (`--json`, `--pendentes`, `--proxima`); `publish --manifest --dry-run` simula |
 | `jarvis install-rtk` | rustup (se preciso) + `cargo install rtk` |
 | `jarvis rules sync` | Filtra `.$IDE/rules/` e `.$IDE/rules-on-demand/` pelo perfil do ENV.md e aplica o overlay de `COMPANY_PROFILE` (Passo 8 do `/jarvis-init`); sai com 1, sem gravar, sem ENV.md numa pasta de IDE (sem `--ide`, vale a pasta do ENV.md; com `--ide`, o ENV.md pode vir de fora de uma IDE, e o workspace é a pasta, a atual ou uma acima, que tem a `.{ide}/`; nunca da pasta de outra IDE), com eixo faltando ou com o lock ausente, ilegível ou de outra versão (o da pasta da IDE vale antes do da raiz) |
 | `jarvis tokens` | Estima o que carrega no início da sessão para um perfil (rules, `AGENTS.md`, frontmatter dos skills, `warm-up`) |

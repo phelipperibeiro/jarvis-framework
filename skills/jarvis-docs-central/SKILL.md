@@ -21,6 +21,7 @@ Integrar os comandos do framework com o **Central docs**: o registro do que **de
 | Camada | O que é | Onde fica |
 |---|---|---|
 | Documentos de trabalho | PRD, FRD, épicos, histórias, ARD, RFC, SPEC, QA, swagger, robôs, C4: o que se pretende e se discute, **enquanto não estão ligados a uma entrega consolidada** | `docs/jarvis/` (`$PROD_DOCS`, `$ENG_DOCS`), fora do versionamento |
+| Sessões | `.jarvis/sessions/eng/{card}/`: `architecture.md`, `plan.md`, `context.md`, rodadas do pré-PR, scripts e saídas. **Vão inteiras para o Central docs** depois da entrega (#229), e a pasta pode ser apagada | `.jarvis/sessions/` (rascunho local, fora do versionamento) |
 | **Central docs** | O que foi implementado: um documento **completo e autossuficiente** por funcionalidade (estado atual), um **registro por entrega** (PR, commits, autores), o conteúdo transversal do produto, o histórico de cada entrega e os documentos de trabalho **já ligados** a uma entrega consolidada | Pasta do Central docs (adaptador), por funcionalidade |
 
 Quem escreve no Central docs é o **`/eng.spec-consolidate`** (agente `eng.docs-consolidator.agent`), depois do merge do PR. Um documento de trabalho **só** chega lá quando está ligado a uma entrega consolidada (Q1 da #220); o que não está ligado continua em `docs/jarvis/`, intocado.
@@ -72,16 +73,19 @@ Por **funcionalidade** (Q2 da #220), no padrão do Confluence (uma página por d
 └── {produto}/                            # WORKSPACE do ENV.md (ou --produto)
     ├── {produto}.md                      # Página do produto: o que é transversal a mais de uma funcionalidade
     ├── history/
-    │   └── {task_key}/                   # Rodadas, comentários e diário dessa entrega
+    │   └── {task_key}/                   # A sessão dessa entrega (#229)
+    │       ├── {task_key}.md             # Página-índice da sessão: o que fez, funcionalidades, artefatos, ausentes e fontes
+    │       ├── context.md, gate-checklist*.md, pull-request.md, daily.md, task-comment-*.md…
+    │       └── fontes/, ferramentas/, … # Subpastas da sessão, com o caminho relativo preservado
     └── {funcionalidade}/                 # Slug da funcionalidade (ex.: checkout)
         ├── {funcionalidade}.md           # A página: estado atual, completo
         ├── deliveries/
         │   └── delivery-{AAAA-MM-DD}-{task_key}[-{funcionalidade}].md
-        ├── decisions/                    # Documentos de trabalho ligados a uma entrega consolidada (Q1)
+        ├── decisions/                    # Documentos de trabalho ligados a uma entrega consolidada (Q1) e architecture/plan/light-arch da sessão, com o card no nome (architecture-{card}.md)
         └── archive/                      # Originais, fora do índice — rede de segurança antes do Sim final
 ```
 
-- Templates: `templates/engineering/central-feature-template.md` (12 seções), `central-delivery-template.md`, `central-product-template.md` e `central-home-template.md`.
+- Templates: `templates/engineering/central-feature-template.md` (12 seções), `central-delivery-template.md`, `central-session-template.md` (página-índice da sessão), `central-product-template.md` e `central-home-template.md`.
 - `related_docs`/`feature` citam só o **basename**.
 - **Uma funcionalidade só é quebrada quando o documento de trabalho cobre mais de uma** (ver "Regra de separação por funcionalidade", abaixo).
 
@@ -94,7 +98,7 @@ Por **funcionalidade** (Q2 da #220), no padrão do Confluence (uma página por d
 | `product` | `id`, `name`, `updated_at` |
 | `home` | `name` |
 | `prd`, `frd`, `feat`, `epic`, `story`, `task`, `ard`, `rfc`, `discovery`, `qa-report` | O próprio frontmatter do documento (templates de `docs/jarvis/`) |
-| `swagger`, `history` | Nenhum campo exigido |
+| `swagger`, `history`, `architecture`, `plan`, `light-arch` | Nenhum campo exigido (os arquivos da sessão não têm frontmatter; a página-índice da sessão usa o do `central-session-template.md`, sem campo obrigatório) |
 
 Status da funcionalidade: a lista de produto (`icebox`, `in_review`, `backlog`, `in_progress`, `in_production`, `cancelled`, `deprecated`). `labels` (opcional, em todos os tipos): minúsculas, no singular, sem espaço (ex.: `arquitetura`, `decisao`) — padrão Confluence.
 
@@ -103,7 +107,7 @@ Status da funcionalidade: a lista de produto (`icebox`, `in_review`, `backlog`, 
 Um documento de trabalho (`decisions/`) às vezes cobre **mais de uma** funcionalidade (ex.: o `architecture.md` de uma sessão com várias entregas). Antes de publicar:
 
 1. **Mapeie primeiro, escreva depois.** O agente propõe, para cada funcionalidade citada, qual trecho é dela; nunca inventa conteúdo nem deixa parte de fora.
-2. **Uma parte por funcionalidade só com o que é dela.** Nome: `{tipo}-{funcionalidade}.md` (ex.: `architecture-checkout.md`). Cada parte vai para `decisions/` da sua própria funcionalidade.
+2. **Uma parte por funcionalidade só com o que é dela.** Nome publicado: `{tipo}-{card}-{funcionalidade}.md` para os documentos da sessão (ex.: `architecture-229-checkout.md`; o CLI monta o nome) e `{tipo}-{funcionalidade}.md` para os demais. Cada parte vai para `decisions/` da sua própria funcionalidade.
 3. **Cabeçalho comum em cada parte:** a issue, o MR/PR e links para as partes irmãs (mesma entrega, outras funcionalidades) — a mesma issue e o mesmo MR são citados em todas. No frontmatter, o campo `sibling_parts` (lista dos caminhos das outras partes em `decisions/`) é reconhecido, mas não exigido — quem publica preenche quando o documento foi de fato quebrado.
 4. **O que é transversal** (não pertence a uma funcionalidade só) vai para `{produto}/{produto}.md`, e cada parte linka essa página em vez de repetir o texto.
 5. **O documento inteiro, sem quebrar, vai para `archive/`** de cada funcionalidade citada — é a rede de segurança até o Sim final de remoção. A cópia em `archive/` ganha, no frontmatter, `origin` (caminho de origem) e `original_status` (o status do documento antes de arquivar) — gravados pelo próprio `jarvis docs archive`, para a restauração manual (Q14).
@@ -171,7 +175,11 @@ jarvis docs publish --file .../consolidation/feature-checkout.md --tipo feature
 jarvis docs publish --file .../consolidation/delivery-2026-10-15-task-123.md --tipo delivery --feature checkout
 ```
 
-- **Tipos aceitos:** `feature`, `delivery`, `product`, `history`, `home` e os documentos de trabalho (`prd`, `frd`, `feat`, `epic`, `story`, `task`, `ard`, `rfc`, `spec`, `swagger`, `qa-report`, `discovery`) **quando ligados a uma entrega consolidada** (Q1) — o que não está ligado fica em `docs/jarvis/`, sem passar por aqui.
+- **Tipos aceitos:** `feature`, `delivery`, `product`, `history`, `home` e os documentos de trabalho (`prd`, `frd`, `feat`, `epic`, `story`, `task`, `ard`, `rfc`, `spec`, `swagger`, `qa-report`, `discovery`) **quando ligados a uma entrega consolidada** (Q1) — o que não está ligado fica em `docs/jarvis/`, sem passar por aqui. Da sessão (#229): `architecture`, `plan` e `light-arch` (em `decisions/`, nomeados `{tipo}-{card}.md`) e `history` para o resto, com `relPath` para preservar subpastas.
+- **Campos do manifesto** (`--manifest`): `file` (relativo à pasta do manifesto), `tipo`, `feature`, `taskKey`, `relPath` (só `history`), `fromSession` (arquivo vindo da sessão: versiona por hash, converte os links do `.md` e libera a remoção só dentro da pasta do card), `originalPath` (o arquivo na sessão ou em `docs/jarvis/`, base do `--archive`/`--finalize` e dos links). O `publish` grava de volta `publishedAs` (destino efetivo, com `-vN` se o conteúdo mudou) e `publishedHash`.
+- **`--dry-run`** (com `--manifest`): simula e mostra, por arquivo, **novo**, **igual**, **nova versão** ou **sobrescreve**, sem gravar nada nem mudar o manifesto.
+- **Versionamento (`-v1`, `-v2`…):** só para arquivos da sessão. Conteúdo igual ao já publicado não cria nada; conteúdo diferente entra como a próxima versão livre e a anterior permanece (sem mesclar). `feature-*`, `delivery-*` e `product` são "estado atual" e continuam sendo sobrescritos.
+- **Links:** os `.md` da sessão chegam ao Central docs com os links convertidos (regra 6 de `doc-links-rules.md`): arquivo da mesma entrega vira link relativo dentro do Central docs; código vira `{remote}/blob/{sha do commit base}/…`; sessão e `docs/jarvis/` viram texto. O original não muda. Links relativos que ainda não resolvem dentro do Central docs geram um aviso.
 - **`--feature <slug>`:** opcional para `feature` (se o arquivo seguir `feature-{slug}.md`); obrigatório para `delivery` e para os documentos de trabalho — é a funcionalidade dona da pasta. Um documento que cobre mais de uma funcionalidade segue a "Regra de separação" acima **antes** de publicar, uma chamada por parte.
 - **`--task-key <chave>`:** obrigatório para `--tipo history`.
 - `--produto` troca o `WORKSPACE`.
@@ -179,7 +187,11 @@ jarvis docs publish --file .../consolidation/delivery-2026-10-15-task-123.md --t
 **Fluxo (três passos, reaproveitando o `publish` acima para cada arquivo):**
 1. **Publicar** (este Modo): validar o frontmatter, calcular o destino pela estrutura por funcionalidade. Sem `.git`: copiar e regenerar o índice. Com `.git`: branch, cópia, índice, commit, push e PR (só depois da pergunta, regra de ouro). Só copia; os originais continuam onde estão.
 2. **Arquivar** (`--archive` do `/eng.spec-consolidate`): guarda os originais em `archive/`, sem apagar nada.
-3. **Finalizar** (`--finalize`): apaga os originais das pastas de trabalho, só depois de validado — ou `--force` para fazer os três de uma vez, sem perguntar e sem guardar em `archive/` (zero reversão).
+3. **Finalizar** (`--finalize`): apaga os originais das pastas de trabalho **e os arquivos da sessão**, só depois de validado — ou `--force` para fazer os três de uma vez, sem perguntar e sem guardar em `archive/` (zero reversão). Arquivo de sessão só é apagado dentro da pasta `$SESSIONS_DIR/eng/{card}/` do próprio card, e o `--force` ainda confere que a cópia publicada existe e bate o hash. Depois do finalize completo, o workflow **oferece apagar a pasta da sessão** (pergunta própria).
+
+### Inventário das sessões (só leitura)
+
+`jarvis docs sessions` lista cada sessão de `$SESSIONS_DIR/eng/` com os arquivos, o que falta (`architecture.md`, `plan.md`, `context.md`), se a entrega já está no Central docs (`delivered`) e se a página-índice já foi publicada (`capituloPublicado`; sem ela a sessão está **pendente**). `--json` dá os dados, `--pendentes` filtra e `--proxima` imprime o card da próxima pendente: é o estado do modo "uma sessão por vez". Não escreve nada nem usa a rede.
 
 ### Modo 3: Reparar o índice
 
@@ -202,6 +214,17 @@ Só move e reorganiza, nunca reescreve conteúdo. Entrega citada por mais de uma
 | Passo | Skill | Condição |
 |-------|-------|----------|
 | — | Nenhuma — skill autocontida | — |
+
+## Migração para o Confluence
+
+O Central docs foi organizado para migrar ao Confluence sem refazer o conteúdo:
+
+- **Uma página por documento** (Markdown); a **pasta é a página-pai**: a página da funcionalidade é a pai de `deliveries/` e `decisions/`, e a página-índice da sessão (`history/{card}/{card}.md`) é a pai dos artefatos dela.
+- **Hierarquia rasa**: `{SQUAD}/{produto}/{funcionalidade}/…` (até 4 níveis); a sessão fica em `history/{card}/`, sem duplicar arquivos de cards que tocam várias funcionalidades.
+- **Links relativos que resolvem dentro do Central docs**, nunca para o workspace (o CLI converte na publicação e avisa dos que não resolvem).
+- **Labels** no padrão do Confluence (minúsculas, no singular, sem espaço) e `status` no frontmatter.
+- Arquivos que não são Markdown (`.txt`, `.json`, scripts) viram **anexos** da página-índice da sessão, que os lista.
+- Nada é enviado ao Confluence: esta skill só organiza.
 
 ---
 
