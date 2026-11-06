@@ -26,7 +26,6 @@ import {
   statSync,
   unlinkSync,
   writeFileSync,
-  copyFileSync,
 } from "node:fs";
 import { basename, dirname, join, relative, resolve, isAbsolute } from "node:path";
 import { resolveDestPath } from "./publish-file.js";
@@ -153,7 +152,10 @@ export function archiveEntries({ root, squad, produto, entries }) {
         e,
       });
       const dest = join(root, archiveDestPath);
-      const currentHash = sha256(e.originalPath);
+      // Lido uma vez só: o hash é sempre o do conteúdo de fato copiado (#220 item 13), não de
+      // uma releitura separada do original (que poderia já ter mudado entre as duas leituras).
+      const buffer = readFileSync(e.originalPath);
+      const currentHash = createHash("sha256").update(buffer).digest("hex");
       if (existsSync(dest)) {
         // Sem `archivedHash` registrado nesta entrada, não dá para saber se o arquivo em
         // `dest` é desta mesma entrada ou de outra origem: pula, por segurança (como sempre).
@@ -167,8 +169,8 @@ export function archiveEntries({ root, squad, produto, entries }) {
         }
       }
       mkdirSync(dirname(dest), { recursive: true });
-      copyFileSync(e.originalPath, dest);
-      const originalMeta = parseFrontmatter(readFileSync(e.originalPath, "utf-8"));
+      writeFileSync(dest, buffer);
+      const originalMeta = parseFrontmatter(buffer.toString("utf-8"));
       injectFrontmatterFields(dest, {
         origin: e.originalPath,
         original_status: originalMeta.status,

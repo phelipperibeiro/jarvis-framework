@@ -1,5 +1,6 @@
 import { openStorageFromEnv } from "../lib/docs/fetch-file.js";
-import { planCentralMigration, applyCentralMigration } from "../lib/docs/migrate-central.js";
+import { planCentralMigration } from "../lib/docs/migrate-central.js";
+import { assertSegment } from "../lib/docs/publish-file.js";
 import { logger, configureFromFlags } from "../lib/utils/logger.js";
 
 /**
@@ -42,6 +43,14 @@ export async function docsMigrate(flags = {}) {
     logger.error("❌ SQUAD não definido no ENV.md (ou passe --squad <squad>)");
     process.exit(1);
   }
+  try {
+    // Sem isto, um squad errado (ou `--squad ../x`) chegava direto ao `join(root, squad, ...)`
+    // sem a mesma validação que `publish`/`archive` já fazem (#220 item 8).
+    assertSegment("Squad", squad);
+  } catch (error) {
+    logger.error(`❌ ${error.message}`);
+    process.exit(1);
+  }
 
   const plan = planCentralMigration(storage.location, squad);
 
@@ -73,15 +82,21 @@ export async function docsMigrate(flags = {}) {
     return;
   }
 
-  const result = applyCentralMigration(storage.location, plan);
+  const result = await storage.migrateApply({ plan });
 
   logger.info(`\n✅ ${result.moved.length} arquivo(s) movido(s)`);
   logger.info(`🗄️  Cópia dos originais em: ${result.backupDir}`);
-  if (result.errors.length > 0) {
-    logger.error(`⚠️  ${result.errors.length} erro(s):`);
-    for (const e of result.errors) logger.error(`   - ${e}`);
-  }
+  if (result.branch) logger.info(`🌿 Branch: ${result.branch}`);
+  if (result.mr) logger.info(`🔀 Pull/Merge Request: ${result.mr.url}`);
 
   const indexPath = storage.buildIndex(squad);
   logger.info(`🗂️  Índice regenerado: ${indexPath}`);
+
+  if (result.errors.length > 0) {
+    logger.error(`⚠️  ${result.errors.length} erro(s):`);
+    for (const e of result.errors) logger.error(`   - ${e}`);
+    // #220 item 11: migração parcial não é sucesso — scripts que dependem do código de saída
+    // (ex.: /jarvis-init) não devem tratá-la como se tivesse ido tudo bem.
+    process.exit(1);
+  }
 }

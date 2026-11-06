@@ -158,7 +158,7 @@ export function planEnvUpgrade(envText, templateText, { workspaceDir } = {}) {
   // funcionalidade (#220): a migração (`jarvis docs migrate`) é oferecida pelo Upgrade (C).
   if (
     workspaceDir &&
-    env.get("CENTRAL_DOCS_STORAGE") === "filesystem" &&
+    (env.get("CENTRAL_DOCS_STORAGE") || "").trim().toLowerCase() === "filesystem" &&
     env.get("CENTRAL_DOCS_LOCATION") &&
     env.get("SQUAD")
   ) {

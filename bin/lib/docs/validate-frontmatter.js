@@ -80,7 +80,11 @@ export function validateFrontmatter(filePath, tipo) {
   // Labels no padrão Confluence (Q2 da #220): minúsculas, letras/números/hífen, sem espaço.
   // Opcional — documento antigo sem o campo continua válido (Q6: a migração não inventa labels).
   if (metadata.labels) {
-    const invalidas = metadata.labels
+    // Sintaxe de lista YAML (`{a, b}` ou `[a, b]`, #220 item 13): tira os colchetes/chaves
+    // antes de separar por vírgula, senão o primeiro e o último label ficam presos a eles e
+    // a mensagem de erro aponta "label" inválido mesmo quando todos estão certos.
+    const semColchetes = metadata.labels.replace(/^[{[]/, '').replace(/[}\]]$/, '')
+    const invalidas = semColchetes
       .split(',')
       .map((l) => l.trim())
       .filter((l) => l && !/^[a-z0-9][a-z0-9-]*$/.test(l))

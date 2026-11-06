@@ -18,6 +18,9 @@ import {
   renameSync,
   readFileSync,
   cpSync,
+  rmdirSync,
+  appendFileSync,
+  writeFileSync,
 } from "node:fs";
 import { dirname, join, relative } from "node:path";
 import { parseFrontmatter } from "../utils/frontmatter.js";
@@ -63,7 +66,10 @@ export function planCentralMigration(root, squad) {
   const moves = [];
   const skipped = [];
   const needsSplit = [];
-  const ownersByDelivery = new Map(); // "delivery-x.md" -> Set<slug>
+  // "delivery-x.md" -> Set<"{produto}::{slug}"> — o produto junto do slug (#220 item 10):
+  // sem isso, uma entrega ia para o produto da pasta engineering/, que pode não ser o produto
+  // onde a funcionalidade dona de fato está em product/.
+  const ownersByDelivery = new Map();
 
   for (const produto of listDirs(productDir)) {
     for (const file of listFiles(join(productDir, produto))) {
@@ -88,17 +94,17 @@ export function planCentralMigration(root, squad) {
       for (const m of content.matchAll(/delivery-[\w.-]+\.md/g)) cited.add(m[0]);
       for (const name of cited) {
         if (!ownersByDelivery.has(name)) ownersByDelivery.set(name, new Set());
-        ownersByDelivery.get(name).add(slug);
+        ownersByDelivery.get(name).add(`${produto}::${slug}`);
       }
     }
   }
 
-  for (const produto of listDirs(engineeringDir)) {
-    for (const file of listFiles(join(engineeringDir, produto))) {
+  for (const produtoEngenharia of listDirs(engineeringDir)) {
+    for (const file of listFiles(join(engineeringDir, produtoEngenharia))) {
       if (!file.startsWith("delivery-") || !file.endsWith(".md") || file.endsWith(".public.md")) {
         continue;
       }
-      const from = `${squad}/engineering/${produto}/${file}`;
+      const from = `${squad}/engineering/${produtoEngenharia}/${file}`;
       const owners = [...(ownersByDelivery.get(file) || [])].sort();
 
       if (owners.length === 0) {
@@ -106,15 +112,23 @@ export function planCentralMigration(root, squad) {
         continue;
       }
       if (owners.length > 1) {
-        needsSplit.push({ from, produto, delivery: file, features: owners });
+        needsSplit.push({
+          from,
+          produto: produtoEngenharia,
+          delivery: file,
+          features: owners.map((o) => o.split("::")[1]),
+        });
         continue;
       }
 
-      const to = `${squad}/${produto}/${owners[0]}/deliveries/${file}`;
+      // O produto é o da funcionalidade dona (de product/), não o da pasta engineering/ onde
+      // a entrega estava: os dois podem divergir (#220 item 10).
+      const [produtoDaFeature, slugDaFeature] = owners[0].split("::");
+      const to = `${squad}/${produtoDaFeature}/${slugDaFeature}/deliveries/${file}`;
       if (existsSync(join(root, to))) {
         skipped.push({ from, reason: "conflito" });
       } else {
-        moves.push({ from, to, kind: "delivery", produto, feature: owners[0] });
+        moves.push({ from, to, kind: "delivery", produto: produtoDaFeature, feature: slugDaFeature });
       }
     }
   }
@@ -123,10 +137,54 @@ export function planCentralMigration(root, squad) {
 }
 
 /**
+ * Remove `dir` se estiver vazio, depois o pai, subindo até (sem incluir) `stopAt`. Usado para
+ * não deixar `product/{produto}/` e `engineering/{produto}/` (e as pastas `product`/`engineering`
+ * do squad) vazias depois da migração — senão poluem o índice e o aviso `CENTRAL_DOCS_LAYOUT`
+ * do Upgrade continua disparando mesmo com a migração completa (#220 item 9).
+ * @param {string} dir
+ * @param {string} stopAt - Pasta onde parar (exclusive); nunca removida
+ */
+function removeEmptyDirsUpward(dir, stopAt) {
+  let current = dir;
+  while (true) {
+    const rel = relative(stopAt, current);
+    if (rel === "" || rel.startsWith("..")) break; // chegou em stopAt ou saiu dela
+    if (!existsSync(current)) break;
+    try {
+      if (readdirSync(current).length > 0) break;
+      rmdirSync(current);
+    } catch {
+      break; // não vazia por uma corrida, ou sem permissão: deixa como está
+    }
+    current = dirname(current);
+  }
+}
+
+/**
+ * Garante `.migration-backup/` no `.gitignore` do Central docs (#220 item 7): a cópia de
+ * segurança não é um documento publicado, e com `.git` ela não deveria entrar nos commits da
+ * migração.
+ * @param {string} root
+ */
+function ensureBackupIgnored(root) {
+  const gitignore = join(root, ".gitignore");
+  const line = ".migration-backup/";
+  if (!existsSync(gitignore)) {
+    writeFileSync(gitignore, `${line}\n`);
+    return;
+  }
+  const content = readFileSync(gitignore, "utf-8");
+  if (!content.split("\n").some((l) => l.trim() === line)) {
+    appendFileSync(gitignore, `${content.endsWith("\n") || content === "" ? "" : "\n"}${line}\n`);
+  }
+}
+
+/**
  * Aplica o plano: guarda uma cópia de cada arquivo em `{root}/.migration-backup/{timestamp}/`
  * antes de mover (Q6), e move com `rename` (o Central docs pode não ser um repositório git —
  * Q14). Não sobrescreve: um destino já existente foi marcado `skipped` pelo plano e não chega
- * aqui com `moves`.
+ * aqui com `moves`. Remove as pastas de origem (`product/{produto}`, `engineering/{produto}`,
+ * e `product`/`engineering` do squad) que ficarem vazias (#220 item 9).
  *
  * @param {string} root - Pasta do Central docs
  * @param {{moves: Array<{from: string, to: string}>}} plan - De `planCentralMigration`
@@ -137,6 +195,7 @@ export function applyCentralMigration(root, plan, timestamp = new Date().toISOSt
   const backupDir = join(root, ".migration-backup", timestamp);
   const moved = [];
   const errors = [];
+  const emptiedCandidates = new Set();
 
   for (const m of plan.moves) {
     const fromAbs = join(root, m.from);
@@ -153,9 +212,17 @@ export function applyCentralMigration(root, plan, timestamp = new Date().toISOSt
       mkdirSync(dirname(toAbs), { recursive: true });
       renameSync(fromAbs, toAbs);
       moved.push(m);
+      emptiedCandidates.add(dirname(fromAbs));
     } catch (err) {
       errors.push(`${m.from}: ${err.message.split("\n")[0]}`);
     }
+  }
+
+  if (moved.length > 0) {
+    ensureBackupIgnored(root);
+  }
+  for (const dir of emptiedCandidates) {
+    removeEmptyDirsUpward(dir, root);
   }
 
   return { moved, backupDir: relative(root, backupDir), errors };

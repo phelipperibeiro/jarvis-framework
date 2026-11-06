@@ -16,6 +16,7 @@ import { createMergeRequest as defaultCreateMergeRequest, newMergeRequestUrl } f
 import { logger } from "../../utils/logger.js";
 import { buildIndex, walkFiles } from "./build-index.js";
 import { archiveEntries } from "../finish-delivery.js";
+import { applyCentralMigration } from "../migrate-central.js";
 
 /**
  * Executa `git` na pasta informada, sem shell.
@@ -374,6 +375,85 @@ export function createFilesystemStorage({
               source: branch,
               target: targetBranch,
               title: `docs(${squad}): arquivamento de ${changed.length} documento(s)`,
+              description,
+            },
+            deps.fileEnvResult ? { fileEnvResult: deps.fileEnvResult } : {}
+          );
+        } catch (error) {
+          if (error.sent) throw error;
+          let link = "";
+          try {
+            link = newMergeRequestUrl(remoteUrl, branch, targetBranch);
+          } catch {
+            // remote fora de github/gitlab: sem link
+          }
+          logger.warn(
+            `⚠️  MR não aberto (${error.message.split("\n")[0]}). A branch ${branch} já está no remote` +
+              (link ? `; abra o MR à mão: ${link}` : "; abra o MR à mão no host.")
+          );
+        }
+
+        return { ...result, sha, branch, mr };
+      } finally {
+        try {
+          git(["checkout", targetBranch], location);
+        } catch {
+          // a branch de trabalho fica; o erro original (se houver) é o que importa
+        }
+      }
+    },
+
+    /**
+     * `jarvis docs migrate --apply` (#220, Q2/Q6): move o layout antigo para a estrutura por
+     * funcionalidade. Sem `.git`, aplica direto na cópia local (como sempre). **Com** `.git`,
+     * entra numa branch e PR próprios — sem isso, a migração mexia na cópia local, na branch em
+     * que ela estivesse, sem `pull` antes, podendo misturar a migração com a branch de outro PR
+     * (#220 item 2, gate de código).
+     * @param {Object} p
+     * @param {{moves: Array<{from: string, to: string}>}} p.plan - De `planCentralMigration`
+     * @param {string} [p.timestamp] - Para o nome da pasta de backup (testável)
+     * @returns {Promise<{moved: Array, backupDir: string, errors: string[], sha?: string, branch?: string, mr?: Object}>}
+     */
+    async migrateApply({ plan, timestamp }) {
+      ensureLocation();
+
+      if (!isGit) {
+        return applyCentralMigration(location, plan, timestamp);
+      }
+
+      const branch = `docs/migracao-${timestamp || Date.now()}`;
+      git(["checkout", targetBranch], location);
+      try {
+        git(["pull", "--ff-only", "origin", targetBranch], location);
+      } catch (error) {
+        logger.warn(`⚠️  git pull falhou (${error.message.split("\n")[0]}); seguindo com a cópia local.`);
+      }
+      git(["checkout", "-B", branch, targetBranch], location);
+
+      try {
+        const result = applyCentralMigration(location, plan, timestamp);
+        if (result.moved.length === 0) {
+          return result;
+        }
+        const paths = result.moved.flatMap((m) => [m.from, m.to]);
+        if (existsSync(join(location, ".gitignore"))) paths.push(".gitignore");
+        // `-A` com pathspec: cobre a remoção do `from` (já movido pelo `rename`) e a adição do
+        // `to`, limitado só a esses caminhos — não é um `git add -A` geral.
+        git(["add", "-A", "--", ...paths], location);
+        git(["commit", "-m", `docs: migra Central docs para a estrutura por funcionalidade (${result.moved.length} documento(s))`], location);
+        const sha = git(["rev-parse", "HEAD"], location);
+
+        git(["push", "-u", "origin", branch], location);
+        const remoteUrl = git(["remote", "get-url", "origin"], location);
+        const description = `## Migração\n\n${result.moved.length} documento(s) movido(s) para a estrutura por funcionalidade.\nCópia de segurança: \`${result.backupDir}\`.`;
+        let mr = null;
+        try {
+          mr = await createMergeRequest(
+            remoteUrl,
+            {
+              source: branch,
+              target: targetBranch,
+              title: `docs: migração do Central docs (#220)`,
               description,
             },
             deps.fileEnvResult ? { fileEnvResult: deps.fileEnvResult } : {}

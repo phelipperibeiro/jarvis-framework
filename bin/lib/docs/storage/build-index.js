@@ -54,7 +54,10 @@ export function renderIndex(root, squad) {
   const squadDir = join(root, squad);
   const out = [`# ${squad}`, ""];
 
-  const products = listDirs(squadDir);
+  // `product`/`engineering`: nomes do layout antigo (pré-#220); se a migração não removeu as
+  // pastas vazias (ou ainda não rodou), não tratá-las como produto evita "## product"/
+  // "## engineering" vazios no índice (#220 item 9).
+  const products = listDirs(squadDir).filter((name) => name !== "product" && name !== "engineering");
   if (products.length === 0) {
     out.push("_Nenhum documento._", "");
     return out.join("\n").replace(/\n+$/, "\n");
@@ -100,8 +103,8 @@ export function renderIndex(root, squad) {
     if (deliveries.length > 0) {
       // Mais recente primeiro pela data; empate (mesmo task_key quebrado em partes, Q9) por nome.
       const sorted = [...deliveries].sort((a, b) => {
-        const dateA = a.meta.date || a.meta.updated_at || "";
-        const dateB = b.meta.date || b.meta.updated_at || "";
+        const dateA = a.meta.updated_at || a.meta.date || "";
+        const dateB = b.meta.updated_at || b.meta.date || "";
         if (dateA !== dateB) return dateB.localeCompare(dateA);
         return basename(a.file).localeCompare(basename(b.file));
       });

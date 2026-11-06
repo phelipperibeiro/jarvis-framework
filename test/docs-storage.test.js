@@ -249,6 +249,21 @@ test("renderIndex: ignora a versão humanizada {nome}.public.md, decisions/, his
   }
 });
 
+test("renderIndex: ignora pastas 'product'/'engineering' que sobraram do layout antigo (#220 item 9)", () => {
+  const root = tmp();
+  try {
+    write(join(root, "CORE/loja/a/a.md"), PRD);
+    mkdirSync(join(root, "CORE/product"), { recursive: true });
+    mkdirSync(join(root, "CORE/engineering"), { recursive: true });
+    const idx = renderIndex(root, "CORE");
+    assert.match(idx, /## loja/);
+    assert.doesNotMatch(idx, /## product/);
+    assert.doesNotMatch(idx, /## engineering/);
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
 test("renderIndex: lista a página do produto, as funcionalidades e as entregas recentes (deduplicadas por task_key)", () => {
   const root = tmp();
   try {
@@ -532,6 +547,49 @@ test("git: archiveBatch sem nenhuma entrada arquivável não comita nem abre PR 
 
     assert.equal(r.archived.length, 0);
     assert.equal(git(["branch", "--show-current"], clone), "main");
+  } finally {
+    rmSync(base, { recursive: true, force: true });
+  }
+});
+
+test("git: migrateApply move numa branch e PR próprios, sem mexer direto na branch atual (#220 item 7)", async () => {
+  const { base, origin, clone } = gitFixture();
+  try {
+    write(
+      join(clone, "CORE/product/loja/feature-checkout.md"),
+      "---\nid: FEAT-001\nname: Checkout\nstatus: in_production\nproduct: loja\nupdated_at: 2026-10-15\nlast_delivery: delivery-2026-10-15-t-1.md\n---\n# Checkout\n"
+    );
+    write(join(clone, "CORE/engineering/loja/delivery-2026-10-15-t-1.md"), "---\ntask_key: T-1\n---\n");
+    git(["add", "-A"], clone);
+    git(["commit", "-m", "layout antigo"], clone);
+    git(["push", "origin", "main"], clone);
+
+    const { planCentralMigration } = await import("../bin/lib/docs/migrate-central.js");
+    const calls = [];
+    const s = getStorage(
+      { CENTRAL_DOCS_STORAGE: "filesystem", CENTRAL_DOCS_LOCATION: clone, CENTRAL_DOCS_TARGET_BRANCH: "main" },
+      {
+        root: base,
+        deps: {
+          createMergeRequest: async (url, opts) => {
+            calls.push({ url, opts });
+            return { vendor: "github", iid: 21, url: "https://example/pr/21" };
+          },
+        },
+      }
+    );
+    const plan = planCentralMigration(clone, "CORE");
+
+    const r = await s.migrateApply({ plan, timestamp: "2026-11-06T00-00-00" });
+
+    assert.equal(r.moved.length, 2);
+    assert.equal(calls.length, 1, "um PR só para a migração");
+    assert.equal(git(["branch", "--show-current"], clone), "main", "volta para a branch base");
+
+    const files = git(["ls-tree", "-r", "--name-only", r.branch], origin).split("\n");
+    assert.ok(files.includes("CORE/loja/checkout/checkout.md"));
+    assert.ok(files.includes("CORE/loja/checkout/deliveries/delivery-2026-10-15-t-1.md"));
+    assert.ok(!files.includes("CORE/product/loja/feature-checkout.md"), "o arquivo antigo saiu da branch");
   } finally {
     rmSync(base, { recursive: true, force: true });
   }

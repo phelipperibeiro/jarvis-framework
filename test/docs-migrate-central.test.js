@@ -141,3 +141,67 @@ test("applyCentralMigration: move, guarda cópia do original e nunca sobrescreve
     rmSync(root, { recursive: true, force: true });
   }
 });
+
+test("applyCentralMigration: remove as pastas product/engineering que ficam vazias e ignora .migration-backup/ (#220 item 9)", () => {
+  const root = tmp();
+  try {
+    write(
+      join(root, "CORE/product/loja/feature-checkout.md"),
+      featureFixture({ slug: "checkout", lastDelivery: "delivery-2026-10-15-t-1.md" })
+    );
+    write(join(root, "CORE/engineering/loja/delivery-2026-10-15-t-1.md"), "---\ntask_key: T-1\n---\n");
+
+    const plan = planCentralMigration(root, "CORE");
+    applyCentralMigration(root, plan, "2026-11-06T00-00-00");
+
+    assert.equal(existsSync(join(root, "CORE/product")), false, "CORE/product ficou vazia e foi removida");
+    assert.equal(existsSync(join(root, "CORE/engineering")), false, "CORE/engineering ficou vazia e foi removida");
+    assert.match(readFileSync(join(root, ".gitignore"), "utf-8"), /\.migration-backup\//);
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("applyCentralMigration: não remove product/engineering se ainda sobrar algo não migrado", () => {
+  const root = tmp();
+  try {
+    write(
+      join(root, "CORE/product/loja/feature-checkout.md"),
+      featureFixture({ slug: "checkout", lastDelivery: "delivery-2026-10-15-t-1.md" })
+    );
+    write(join(root, "CORE/engineering/loja/delivery-2026-10-15-t-1.md"), "---\ntask_key: T-1\n---\n");
+    // Um arquivo qualquer que o migrador não entende e não move — a pasta não deve ser removida.
+    write(join(root, "CORE/product/loja/notas.txt"), "não é feature-*.md\n");
+
+    const plan = planCentralMigration(root, "CORE");
+    applyCentralMigration(root, plan, "2026-11-06T00-00-01");
+
+    assert.ok(existsSync(join(root, "CORE/product/loja/notas.txt")), "arquivo não migrado continua");
+    assert.ok(existsSync(join(root, "CORE/product")), "pasta não vazia não é removida");
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("planCentralMigration: entrega move para o produto da funcionalidade dona, não o da pasta engineering/ (#220 item 10)", () => {
+  const root = tmp();
+  try {
+    // A funcionalidade "checkout" está em product/loja-nova/, mas a entrega ficou na pasta
+    // antiga product/loja/engineering/loja (produto diferente) — o destino tem que seguir o
+    // produto de onde a funcionalidade de fato está, não o da pasta engineering/.
+    write(
+      join(root, "CORE/product/loja-nova/feature-checkout.md"),
+      featureFixture({ slug: "checkout", lastDelivery: "delivery-2026-10-15-t-1.md" })
+    );
+    write(join(root, "CORE/engineering/loja-velha/delivery-2026-10-15-t-1.md"), "---\ntask_key: T-1\n---\n");
+
+    const plan = planCentralMigration(root, "CORE");
+
+    const deliveryMove = plan.moves.find((m) => m.kind === "delivery");
+    assert.ok(deliveryMove, "a entrega foi movida");
+    assert.equal(deliveryMove.produto, "loja-nova", "usa o produto da funcionalidade dona");
+    assert.equal(deliveryMove.to, "CORE/loja-nova/checkout/deliveries/delivery-2026-10-15-t-1.md");
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
