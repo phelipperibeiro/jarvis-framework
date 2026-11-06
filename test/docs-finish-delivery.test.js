@@ -5,12 +5,17 @@ import assert from "node:assert/strict";
 import { chmodSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { createHash } from "node:crypto";
 import {
+  archiveDestFor,
   archiveEntries,
   finalizeEntries,
   forceFinalize,
+  isAllowedOriginal,
   rewriteRelatedRefs,
   rewriteRelatedInText,
+  sessionFolderOf,
+  verifyPublishedCopy,
 } from "../bin/lib/docs/finish-delivery.js";
 
 function write(file, content) {
@@ -553,4 +558,222 @@ test("finalizeEntries: entrada sem archiveDestPath (não arquivada) é ignorada"
   assert.deepEqual(finalized, []);
   assert.deepEqual(changed, []);
   assert.deepEqual(errors, []);
+});
+
+// --- arquivos da sessão (#229) -----------------------------------------------------------------
+
+const sha = (text) => createHash("sha256").update(text).digest("hex");
+
+/** Workspace de teste: ENV com SESSIONS_DIR, sessão do card 229 e Central docs em `cd/`. */
+function sessionFixture() {
+  const dir = tmp();
+  const ws = join(dir, "ws");
+  const root = join(dir, "cd");
+  const sessao = join(ws, ".jarvis/sessions/eng/229");
+  const files = {
+    "architecture.md": "# Arquitetura\n",
+    "plan.md": "# Plano\n",
+    "ferramentas/saida.txt": "ok\n",
+  };
+  for (const [rel, text] of Object.entries(files)) write(join(sessao, rel), text);
+  const env = { SESSIONS_DIR: ".jarvis/sessions", DOCS_FOLDER: "docs", JARVIS_DOCS: "$DOCS_FOLDER/jarvis" };
+  /** Entrada como o `publish --manifest` a deixa (publishedAs/publishedHash preenchidos). */
+  const entry = (tipo, rel, extra = {}) => ({
+    tipo,
+    feature: "checkout",
+    taskKey: "229",
+    fromSession: true,
+    originalPath: join(sessao, rel),
+    ...extra,
+  });
+  return { dir, ws, root, sessao, env, entry, files };
+}
+
+test("archiveDestFor: decisions segue o nome publicado (inclui -vN); history preserva o caminho sob archive/{taskKey}/ (#229)", () => {
+  const base = { squad: "CORE", produto: "loja", feature: "checkout", taskKey: "229" };
+  assert.equal(
+    archiveDestFor({ ...base, tipo: "architecture", e: { publishedAs: "CORE/loja/checkout/decisions/architecture-v1.md" } }),
+    "CORE/loja/checkout/archive/architecture-v1.md"
+  );
+  assert.equal(
+    archiveDestFor({ ...base, tipo: "history", e: { publishedAs: "CORE/loja/history/229/ferramentas/saidas/E8.txt" } }),
+    "CORE/loja/checkout/archive/229/ferramentas/saidas/E8.txt"
+  );
+  // sem publishedAs: o cálculo de sempre (documentos de docs/jarvis)
+  assert.equal(
+    archiveDestFor({ ...base, tipo: "prd", e: { file: "prd-001.md" } }),
+    "CORE/loja/checkout/archive/prd-001.md"
+  );
+  // history sem funcionalidade principal: erro claro
+  assert.throws(
+    () => archiveDestFor({ squad: "CORE", produto: "loja", tipo: "history", taskKey: "229", e: { publishedAs: "CORE/loja/history/229/a.md" } }),
+    /Feature inválido/
+  );
+  // publishedAs fora de history/{taskKey}/
+  assert.throws(
+    () => archiveDestFor({ ...base, tipo: "history", e: { publishedAs: "CORE/loja/history/230/a.md" } }),
+    /fora de history\/229\//
+  );
+});
+
+test("sessionFolderOf: resolve $SESSIONS_DIR/eng/{card em minúsculas}; recusa taskKey inválido (#229)", () => {
+  assert.equal(sessionFolderOf({ SESSIONS_DIR: ".jarvis/sessions" }, "/ws", "TASK-123"), "/ws/.jarvis/sessions/eng/task-123");
+  assert.equal(sessionFolderOf({}, "/ws", "229"), "/ws/.jarvis/sessions/eng/229", "padrão sem SESSIONS_DIR");
+  assert.equal(sessionFolderOf({ SESSIONS_DIR: "$DOCS/s", DOCS: "d" }, "/ws", "1"), "/ws/d/s/eng/1", "expande $VAR");
+  for (const bad of ["../230", "a/b", "", "#229"]) {
+    assert.throws(() => sessionFolderOf({}, "/ws", bad), /inválido/, bad);
+  }
+});
+
+test("isAllowedOriginal: aceita a pasta do próprio card; recusa outro card, .., fora de fromSession e o resto do disco (#229)", () => {
+  const env = {};
+  const folders = ["/ws/docs/jarvis/product", "/ws/docs/jarvis/engineering", "/ws/docs/jarvis/discoveries"];
+  const e = { fromSession: true, taskKey: "229" };
+  const ok = (entry, p) => isAllowedOriginal(entry, p, folders, env, "/ws");
+  assert.equal(ok(e, "/ws/.jarvis/sessions/eng/229/architecture.md"), true);
+  assert.equal(ok(e, "/ws/.jarvis/sessions/eng/229/ferramentas/saidas/x.txt"), true);
+  assert.equal(ok(e, "/ws/.jarvis/sessions/eng/230/architecture.md"), false, "sessão de outro card");
+  assert.equal(ok(e, "/ws/.jarvis/sessions/eng/229"), false, "a própria pasta não");
+  assert.equal(ok(e, "/ws/.jarvis/sessions/eng/229/../230/a.md"), false, "com ..");
+  assert.equal(ok(e, "/ws/.jarvis/sessions/eng/229x/a.md"), false, "prefixo parecido");
+  assert.equal(ok(e, "/ws/jarvis-framework/package.json"), false, "código do projeto");
+  assert.equal(ok({ taskKey: "229" }, "/ws/.jarvis/sessions/eng/229/a.md"), false, "sem fromSession");
+  assert.equal(ok({ fromSession: true }, "/ws/.jarvis/sessions/eng/229/a.md"), false, "sem taskKey");
+  assert.equal(ok({ fromSession: true, taskKey: "../x" }, "/ws/.jarvis/x/a.md"), false, "taskKey inválido");
+  // o que já valia: documento de trabalho de docs/jarvis
+  assert.equal(ok({}, "/ws/docs/jarvis/product/prd.md"), true);
+});
+
+test("verifyPublishedCopy: exige a cópia publicada, íntegra (Q11 da #229)", () => {
+  const dir = tmp();
+  try {
+    write(join(dir, "CORE/loja/checkout/decisions/architecture.md"), "# A\n");
+    const e = { publishedAs: "CORE/loja/checkout/decisions/architecture.md", publishedHash: sha("# A\n") };
+    assert.equal(verifyPublishedCopy(dir, e), null);
+    assert.match(verifyPublishedCopy(dir, { ...e, publishedHash: sha("outro") }), /não bate o hash/);
+    assert.match(verifyPublishedCopy(dir, { ...e, publishedAs: "CORE/loja/sumiu.md" }), /não encontrada/);
+    assert.match(verifyPublishedCopy(dir, { tipo: "plan" }), /sem publishedAs/);
+    assert.match(verifyPublishedCopy(undefined, e), /desconhecida/);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("sessão: publicar → arquivar → finalizar apaga só o que está na pasta do card e foi arquivado (#229)", () => {
+  const { dir, ws, root, sessao, env, entry } = sessionFixture();
+  try {
+    const entries = [
+      entry("architecture", "architecture.md", { publishedAs: "CORE/loja/checkout/decisions/architecture.md" }),
+      entry("history", "ferramentas/saida.txt", { publishedAs: "CORE/loja/history/229/ferramentas/saida.txt" }),
+    ];
+    // a publicação já copiou os arquivos para o Central docs
+    write(join(root, entries[0].publishedAs), "# Arquitetura\n");
+    write(join(root, entries[1].publishedAs), "ok\n");
+
+    const arch = archiveEntries({ root, squad: "CORE", produto: "loja", entries });
+    assert.equal(arch.errors.length, 0);
+    assert.deepEqual(
+      entries.map((e) => e.archiveDestPath),
+      ["CORE/loja/checkout/archive/architecture.md", "CORE/loja/checkout/archive/229/ferramentas/saida.txt"]
+    );
+    assert.ok(existsSync(join(sessao, "architecture.md")), "arquivar não apaga");
+
+    const fin = finalizeEntries({ entries, env, root, squad: "CORE", produto: "loja", workspaceRoot: ws });
+    assert.equal(fin.errors.length, 0);
+    assert.equal(fin.finalized.length, 2);
+    assert.equal(existsSync(join(sessao, "architecture.md")), false);
+    assert.equal(existsSync(join(sessao, "ferramentas/saida.txt")), false);
+    assert.ok(existsSync(join(sessao, "plan.md")), "o que não estava no manifesto fica");
+    assert.ok(existsSync(join(root, "CORE/loja/checkout/archive/architecture.md")), "a cópia arquivada permanece");
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("sessão: finalize recusa arquivo de outro card, fora da sessão ou com taskKey de outro (#229)", () => {
+  const { dir, ws, root, env, entry } = sessionFixture();
+  try {
+    const outra = join(ws, ".jarvis/sessions/eng/230/architecture.md");
+    const codigo = join(ws, "jarvis-framework/package.json");
+    write(outra, "# Outra\n");
+    write(codigo, "{}\n");
+    let n = 0;
+    const mk = (originalPath, extra = {}) =>
+      entry("architecture", "architecture.md", { originalPath, publishedAs: `CORE/loja/checkout/decisions/x${++n}.md`, ...extra });
+    const entries = [mk(outra), mk(codigo), mk(join(ws, ".jarvis/sessions/eng/229/../230/architecture.md"))];
+    archiveEntries({ root, squad: "CORE", produto: "loja", entries });
+    const fin = finalizeEntries({ entries, env, root, squad: "CORE", produto: "loja", workspaceRoot: ws });
+    assert.equal(fin.finalized.length, 0);
+    assert.equal(fin.errors.length, 3);
+    assert.ok(fin.errors.every((m) => /fora das pastas de documentos de trabalho/.test(m)));
+    assert.ok(existsSync(outra) && existsSync(codigo), "nada foi apagado");
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("sessão: --force apaga só com a cópia publicada íntegra; ausente ou adulterada, o arquivo fica (#229)", () => {
+  const { dir, ws, root, sessao, env, entry } = sessionFixture();
+  try {
+    const ok = entry("architecture", "architecture.md", {
+      publishedAs: "CORE/loja/checkout/decisions/architecture.md",
+      publishedHash: sha("# Arquitetura\n"),
+    });
+    const adulterada = entry("plan", "plan.md", {
+      publishedAs: "CORE/loja/checkout/decisions/plan.md",
+      publishedHash: sha("# Plano\n"),
+    });
+    const ausente = entry("history", "ferramentas/saida.txt", {
+      publishedAs: "CORE/loja/history/229/ferramentas/saida.txt",
+      publishedHash: sha("ok\n"),
+    });
+    write(join(root, ok.publishedAs), "# Arquitetura\n");
+    write(join(root, adulterada.publishedAs), "# Plano EDITADO\n"); // não bate o hash publicado
+    // `ausente` não foi copiado para o Central docs
+
+    const r = forceFinalize({ entries: [ok, adulterada, ausente], squad: "CORE", produto: "loja", env, workspaceRoot: ws, root });
+    assert.deepEqual(r.finalized.map((e) => e.tipo), ["architecture"]);
+    assert.equal(existsSync(join(sessao, "architecture.md")), false, "íntegra: apagado");
+    assert.ok(existsSync(join(sessao, "plan.md")), "adulterada: fica");
+    assert.ok(existsSync(join(sessao, "ferramentas/saida.txt")), "ausente: fica");
+    assert.equal(r.errors.length, 2);
+    assert.match(r.errors.join("\n"), /não bate o hash/);
+    assert.match(r.errors.join("\n"), /não encontrada/);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("sessão: --force sem a pasta do Central docs (root) não apaga arquivo de sessão (#229)", () => {
+  const { dir, ws, sessao, env, entry } = sessionFixture();
+  try {
+    const e = entry("architecture", "architecture.md", { publishedAs: "CORE/loja/checkout/decisions/architecture.md", publishedHash: sha("x") });
+    const r = forceFinalize({ entries: [e], squad: "CORE", produto: "loja", env, workspaceRoot: ws });
+    assert.equal(r.finalized.length, 0);
+    assert.ok(existsSync(join(sessao, "architecture.md")));
+    assert.match(r.errors[0], /desconhecida/);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("sessão: documento de docs/jarvis continua sem a conferência da cópia no --force (comportamento da #220) (#229)", () => {
+  const dir = tmp();
+  try {
+    const ws = join(dir, "ws");
+    const original = join(ws, "docs/jarvis/product/prd-001.md");
+    write(original, "---\nid: PRD-001\n---\n");
+    const r = forceFinalize({
+      entries: [{ tipo: "prd", feature: "checkout", originalPath: original, file: "prd-001.md" }],
+      squad: "CORE",
+      produto: "loja",
+      env: { DOCS_FOLDER: "docs", JARVIS_DOCS: "$DOCS_FOLDER/jarvis" },
+      workspaceRoot: ws,
+      root: join(dir, "cd"),
+    });
+    assert.equal(r.finalized.length, 1);
+    assert.equal(existsSync(original), false);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
 });

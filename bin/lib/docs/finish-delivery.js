@@ -28,7 +28,7 @@ import {
   writeFileSync,
 } from "node:fs";
 import { basename, dirname, join, relative, resolve, isAbsolute } from "node:path";
-import { resolveDestPath } from "./publish-file.js";
+import { assertRelPath, assertSegment, resolveDestPath } from "./publish-file.js";
 import { expandEnv, docsFolders } from "../core/docs-migrate.js";
 import { parseFrontmatter } from "../utils/frontmatter.js";
 
@@ -69,7 +69,24 @@ function destFor({ tipo, squad, produto, feature, taskKey, e }) {
  * no `destPath` já pronto (rodada 2, N8): a troca de texto dava errado se squad, produto
  * ou feature fosse, por coincidência, literalmente "decisions".
  */
-function archiveDestFor({ tipo, squad, produto, feature, taskKey, e }) {
+export function archiveDestFor({ tipo, squad, produto, feature, taskKey, e }) {
+  // Entrada com o nome efetivo publicado (`publishedAs`, gravado pelo `publish --manifest`, #229):
+  // o arquivo em `archive/` segue esse nome (inclusive um `-vN`). Os arquivos de `history`
+  // preservam o caminho relativo sob `archive/{taskKey}/`, para não colidir nomes de subpastas.
+  if (e.publishedAs) {
+    assertSegment("Feature", feature ?? "");
+    if (tipo === "history") {
+      assertSegment("Task key", taskKey ?? "");
+      const prefix = `${squad}/${produto}/history/${taskKey}/`;
+      if (!e.publishedAs.startsWith(prefix)) {
+        throw new Error(`publishedAs fora de history/${taskKey}/: ${e.publishedAs}`);
+      }
+      const rel = e.publishedAs.slice(prefix.length);
+      assertRelPath("Caminho relativo", rel);
+      return `${squad}/${produto}/${feature}/archive/${taskKey}/${rel}`;
+    }
+    return `${squad}/${produto}/${feature}/archive/${basename(e.publishedAs)}`;
+  }
   const { fileName } = resolveDestPath({
     tipo,
     squad,
@@ -143,6 +160,70 @@ function isWithinDocsFolders(absPath, folders, workspaceRoot = process.cwd()) {
     const rel = relative(folderAbs, absPath);
     return rel !== "" && !rel.startsWith("..") && !isAbsolute(rel);
   });
+}
+
+/**
+ * Pasta da sessão de um card: `$SESSIONS_DIR/eng/{taskKey em minúsculas}` (padrão
+ * `.jarvis/sessions`), resolvida a partir da pasta do workspace (#229, Q2).
+ * @param {Record<string, string>} env - `loadEnv` (variáveis cruas)
+ * @param {string} workspaceRoot
+ * @param {string} taskKey - Validada por `assertSegment`
+ * @returns {string} caminho absoluto
+ * @throws {Error} `taskKey` inválido
+ */
+export function sessionFolderOf(env, workspaceRoot, taskKey) {
+  assertSegment("Task key", String(taskKey ?? ""));
+  const expanded = expandEnv(new Map(Object.entries(env || {})));
+  const sessions = expanded.get("SESSIONS_DIR") || ".jarvis/sessions";
+  return resolve(workspaceRoot || process.cwd(), sessions, "eng", String(taskKey).toLowerCase());
+}
+
+/**
+ * Pode apagar este original? Dentro das pastas de documentos de trabalho (como sempre) **ou**,
+ * para uma entrada de sessão (`fromSession`), dentro da pasta da sessão do **próprio card**
+ * (`taskKey`) e de mais nenhuma outra (#229, Q2). Um caminho com `..` ou da sessão de outro card
+ * é recusado, porque o caminho é resolvido antes da comparação.
+ * @param {Object} e - Entrada do manifesto
+ * @param {string} absPath - `originalPath` já resolvido
+ * @param {string[]} folders - De `resolveDocsFolders`
+ * @param {Record<string, string>} env
+ * @param {string} [workspaceRoot]
+ * @returns {boolean}
+ */
+export function isAllowedOriginal(e, absPath, folders, env, workspaceRoot) {
+  if (isWithinDocsFolders(absPath, folders, workspaceRoot)) return true;
+  if (!e.fromSession || !e.taskKey) return false;
+  try {
+    return isInside(absPath, sessionFolderOf(env, workspaceRoot, e.taskKey));
+  } catch {
+    return false;
+  }
+}
+
+/** `absPath` está dentro de `dir` (e não é o próprio `dir`)? */
+function isInside(absPath, dir) {
+  const rel = relative(dir, absPath);
+  return rel !== "" && !rel.startsWith("..") && !isAbsolute(rel);
+}
+
+/**
+ * Antes de o `--force` apagar um arquivo de sessão (Q11): a cópia publicada existe no Central docs
+ * e bate o hash do que foi publicado? Sem isso, a sessão seria a única cópia e o arquivo não é
+ * apagado. Com o Central docs em git, a cópia só aparece na pasta depois que o PR da publicação é
+ * mesclado e a pasta atualizada: antes disso, o arquivo fica na sessão (é o desejado).
+ * @param {string|undefined} root - Pasta do Central docs
+ * @param {Object} e - Entrada do manifesto (`publishedAs`, `publishedHash`)
+ * @returns {string|null} motivo da recusa, ou `null` se está íntegra
+ */
+export function verifyPublishedCopy(root, e) {
+  if (!root) return "cópia publicada não conferida (pasta do Central docs desconhecida)";
+  if (!e.publishedAs || !e.publishedHash) return "sem publishedAs/publishedHash no manifesto";
+  const copy = join(root, e.publishedAs);
+  if (!existsSync(copy)) {
+    return `cópia publicada não encontrada em ${e.publishedAs} (com Central docs em git, mescle o PR e atualize a pasta antes)`;
+  }
+  if (sha256(copy) !== e.publishedHash) return `cópia publicada em ${e.publishedAs} não bate o hash`;
+  return null;
 }
 
 /**
@@ -377,10 +458,12 @@ export function rewriteRelatedRefs(env, removedBasename, centralDocsDestPath, wo
  * @param {Array<Object>} p.entries - As mesmas do manifesto, já publicadas
  * @param {string} p.squad
  * @param {string} p.produto
- * @param {Record<string, string>} [p.env] - Para reescrever `related_*` (omitir = não reescreve); também usado para travar o `unlinkSync` dentro das pastas de documentos de trabalho (#220 item 2)
+ * @param {Record<string, string>} [p.env] - Para reescrever `related_*` (omitir = não reescreve); também usado para travar o `unlinkSync` dentro das pastas de documentos de trabalho (#220 item 2) e, para entradas de sessão, da pasta do próprio card (#229)
+ * @param {string} [p.root] - Pasta do Central docs: para entradas de sessão, o `--force` só apaga
+ *   depois de conferir a cópia publicada (existe e bate o hash, Q11 da #229)
  * @returns {{ finalized: Array, rewritten: string[], errors: string[] }}
  */
-export function forceFinalize({ entries, squad, produto, env, workspaceRoot }) {
+export function forceFinalize({ entries, squad, produto, env, workspaceRoot, root }) {
   const finalized = [];
   const rewritten = [];
   const errors = [];
@@ -389,17 +472,25 @@ export function forceFinalize({ entries, squad, produto, env, workspaceRoot }) {
   for (const e of entries) {
     if (!e.originalPath) continue; // feature/delivery/product/home/history: nada a apagar
     if (!existsSync(e.originalPath)) continue;
-    if (folders && !isWithinDocsFolders(resolve(e.originalPath), folders, workspaceRoot)) {
+    if (folders && !isAllowedOriginal(e, resolve(e.originalPath), folders, env, workspaceRoot)) {
       errors.push(`${e.originalPath}: fora das pastas de documentos de trabalho, não apagado`);
       continue;
+    }
+    if (e.fromSession) {
+      const motivo = verifyPublishedCopy(root, e);
+      if (motivo) {
+        errors.push(`${e.originalPath}: ${motivo}, não apagado`);
+        continue;
+      }
     }
 
     try {
       // O nome vem do arquivo publicado (`e.file`), não do original: #220 item 2 — no
       // `--force`, o destino em `decisions/` segue o que de fato foi copiado, não o nome
       // local, que pode diferir (ex.: documento quebrado por funcionalidade, Q9).
-      const destPath = destFor({ tipo: e.tipo, squad, produto, feature: e.feature, taskKey: e.taskKey, e });
-      if (env) {
+      // Arquivo de sessão não tem `related_*` a reescrever.
+      if (env && !e.fromSession) {
+        const destPath = destFor({ tipo: e.tipo, squad, produto, feature: e.feature, taskKey: e.taskKey, e });
         rewritten.push(...rewriteRelatedRefs(env, publishedBasename(e), destPath, workspaceRoot));
       }
       unlinkSync(e.originalPath);
@@ -444,7 +535,7 @@ export function finalizeEntries({ entries, env, root, squad, produto, workspaceR
   for (const e of entries) {
     if (!e.originalPath || !e.archiveDestPath) continue;
     if (!existsSync(e.originalPath)) continue; // já finalizado antes; idempotente
-    if (folders && !isWithinDocsFolders(resolve(e.originalPath), folders, workspaceRoot)) {
+    if (folders && !isAllowedOriginal(e, resolve(e.originalPath), folders, env, workspaceRoot)) {
       errors.push(`${e.originalPath}: fora das pastas de documentos de trabalho, não apagado`);
       continue;
     }
@@ -479,7 +570,7 @@ export function finalizeEntries({ entries, env, root, squad, produto, workspaceR
 
   for (const e of eligible) {
     try {
-      if (env) {
+      if (env && !e.fromSession) {
         const destPath = destFor({ tipo: e.tipo, squad, produto, feature: e.feature, taskKey: e.taskKey, e });
         rewritten.push(...rewriteRelatedRefs(env, publishedBasename(e), destPath, workspaceRoot));
       }

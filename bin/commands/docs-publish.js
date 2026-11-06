@@ -216,6 +216,7 @@ async function docsPublishManifest(flags) {
     produto,
     env,
     workspaceRoot: root,
+    root: storage.location,
   });
   logger.info(`🧹 ${finalized.length} original(is) removido(s) (sem cópia em archive/)`);
   for (const f of finalized) logger.info(`   - ${f.originalPath}`);

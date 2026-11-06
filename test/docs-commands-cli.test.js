@@ -233,6 +233,79 @@ test("docsPublish --manifest: converte os links do .md da sessão (originalPath)
   assert.equal(readFileSync(original, "utf-8"), text, "o original na sessão não muda");
 });
 
+/** Sessão do card 229 no workspace de teste, com os arquivos e o manifesto (`fromSession`). */
+function sessionManifestFixture() {
+  const fx = workspaceFixture();
+  const sessao = join(fx.ws, ".jarvis/sessions/eng/229");
+  write(join(sessao, "architecture.md"), "# Arquitetura\n");
+  write(join(sessao, "plan.md"), "# Plano\n");
+  write(join(sessao, "ferramentas/saida.txt"), "ok\n");
+  write(join(fx.ws, "consolidation/architecture.md"), "# Arquitetura\n");
+  write(join(fx.ws, "consolidation/plan.md"), "# Plano\n");
+  write(join(fx.ws, "consolidation/saida.txt"), "ok\n");
+  const base = { feature: "checkout", taskKey: "229", fromSession: true };
+  const manifest = join(fx.ws, "consolidation/manifest.json");
+  write(
+    manifest,
+    JSON.stringify([
+      { ...base, file: "architecture.md", tipo: "architecture", originalPath: join(sessao, "architecture.md") },
+      { ...base, file: "plan.md", tipo: "plan", originalPath: join(sessao, "plan.md") },
+      { ...base, file: "saida.txt", tipo: "history", relPath: "ferramentas/saida.txt", originalPath: join(sessao, "ferramentas/saida.txt") },
+    ])
+  );
+  return { ...fx, sessao, manifest };
+}
+
+test("sessão pelos comandos: publicar → arquivar → finalizar apaga os arquivos da sessão e mantém as cópias (#229)", async () => {
+  const { envFile, centralDocs, sessao, manifest } = sessionManifestFixture();
+  assert.equal(await captureRun(() => docsPublish({ manifest, slug: "229", "env-file": envFile })), 0);
+  assert.ok(existsSync(join(centralDocs, "CORE/loja/history/229/ferramentas/saida.txt")));
+  assert.ok(existsSync(join(sessao, "architecture.md")), "publicar só copia");
+
+  assert.equal(await captureRun(() => docsArchive({ manifest, "env-file": envFile })), 0);
+  const saved = JSON.parse(readFileSync(manifest, "utf-8"));
+  assert.deepEqual(saved.map((e) => e.archiveDestPath), [
+    "CORE/loja/checkout/archive/architecture.md",
+    "CORE/loja/checkout/archive/plan.md",
+    "CORE/loja/checkout/archive/229/ferramentas/saida.txt",
+  ]);
+  assert.ok(existsSync(join(sessao, "plan.md")), "arquivar não apaga");
+
+  assert.equal(await captureRun(() => docsFinalize({ manifest, "env-file": envFile })), 0);
+  assert.equal(existsSync(join(sessao, "architecture.md")), false);
+  assert.equal(existsSync(join(sessao, "plan.md")), false);
+  assert.equal(existsSync(join(sessao, "ferramentas/saida.txt")), false);
+  assert.ok(existsSync(join(centralDocs, "CORE/loja/checkout/decisions/architecture.md")), "a cópia publicada fica");
+  assert.ok(existsSync(join(centralDocs, "CORE/loja/checkout/archive/229/ferramentas/saida.txt")), "e a arquivada também");
+});
+
+test("sessão pelos comandos: --force publica e apaga a sessão conferindo a cópia publicada (#229)", async () => {
+  const { envFile, centralDocs, sessao, manifest } = sessionManifestFixture();
+  assert.equal(await captureRun(() => docsPublish({ manifest, slug: "229", force: true, "env-file": envFile })), 0);
+  for (const rel of ["architecture.md", "plan.md", "ferramentas/saida.txt"]) {
+    assert.equal(existsSync(join(sessao, rel)), false, rel);
+  }
+  assert.ok(existsSync(join(centralDocs, "CORE/loja/checkout/decisions/plan.md")));
+  assert.ok(existsSync(join(centralDocs, "CORE/loja/history/229/ferramentas/saida.txt")));
+  assert.equal(existsSync(join(centralDocs, "CORE/loja/checkout/archive")), false, "--force não arquiva");
+});
+
+test("sessão pelos comandos: --force não apaga a sessão de outro card, mesmo com taskKey errado no manifesto (#229)", async () => {
+  const fx = sessionManifestFixture();
+  const outra = join(fx.ws, ".jarvis/sessions/eng/230/architecture.md");
+  write(outra, "# Outra sessão\n");
+  write(
+    fx.manifest,
+    JSON.stringify([
+      { file: "architecture.md", tipo: "architecture", feature: "checkout", taskKey: "229", fromSession: true, originalPath: outra },
+    ])
+  );
+  const code = await captureRun(() => docsPublish({ manifest: fx.manifest, slug: "229", force: true, "env-file": fx.envFile }));
+  assert.equal(code, 1, "o --force reporta o erro de segurança");
+  assert.ok(existsSync(outra), "a sessão do card 230 permanece");
+  assert.ok(existsSync(join(fx.centralDocs, "CORE/loja/checkout/decisions/architecture.md")), "a publicação em si ocorreu");
+});
+
 test("docsPublish --manifest --force: publica e já apaga o original ligado (zero reversão)", async () => {
   const { ws, envFile, centralDocs } = workspaceFixture();
   const original = join(ws, "docs/jarvis/product/prd-001-checkout.md");
