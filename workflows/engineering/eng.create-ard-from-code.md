@@ -73,17 +73,18 @@ priorizando a **arquitetura observada no código do repositório**, usando o tem
    jarvis docs sync --silent
    ```
 
-2. Buscar o PRD relacionado em `$PROD_DOCS` (sempre, com ou sem Central docs; é documento de trabalho e o Central docs não o guarda) usando:
+2. Buscar o PRD relacionado em `$PROD_DOCS` (sempre, com ou sem Central docs) usando:
    - Título/objetivo do ARD
    - Jira ID (se disponível)
    - Tags semânticas
 
-3. Se o PRD for encontrado em `$PROD_DOCS`:
+3. **Não achou em `$PROD_DOCS`?** Pode já ter sido consolidado e removido de lá (`/eng.spec-consolidate --finalize`/`--force`, #220): busque em `decisions/` da funcionalidade pela skill `jarvis-docs-central` (Modo 1), pelo mesmo basename.
+4. Se o PRD for encontrado em `$PROD_DOCS` (ou em `decisions/`):
    - Carregar automaticamente como contexto
    - Pular para item 2 (extração de requisitos)
    - Informar ao usuário: "✅ PRD encontrado: [caminho]"
 
-4. Se PRD não encontrado:
+5. Se PRD não encontrado:
    - Continuar com pergunta manual (item 1.2)
 
 ### 1.2 – Verificar PRD manualmente

@@ -38,7 +38,7 @@ Sem ideia: pergunte qual é, antes de tudo. Caminho, nome ou id de um discovery 
 
 ## Passo 1 — Ler em silêncio
 
-Antes de perguntar qualquer coisa, leia: o `$ARGUMENTS`; em `$PROD_DOCS`, os PRD/FRD que já cobrem a ideia; em `$DISCOVERIES_DOCS`, os discoveries parecidos (só título e Entendimento/Ideia); o código e os commits, se ajudarem a viabilidade; o Central docs, se configurado. Não repita perguntas cuja resposta já está em algum desses.
+Antes de perguntar qualquer coisa, leia: o `$ARGUMENTS`; em `$PROD_DOCS`, os PRD/FRD que já cobrem a ideia (não achando um citado no `$ARGUMENTS`, ele pode já ter sido consolidado — busque em `decisions/` da funcionalidade pela skill `jarvis-docs-central`, Modo 1, #220); em `$DISCOVERIES_DOCS`, os discoveries parecidos (só título e Entendimento/Ideia); o código e os commits, se ajudarem a viabilidade; o Central docs, se configurado. Não repita perguntas cuja resposta já está em algum desses.
 
 ## Passo 2 — Entendimento (uma confirmação)
 

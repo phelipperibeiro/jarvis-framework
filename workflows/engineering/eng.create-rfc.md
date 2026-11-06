@@ -105,7 +105,7 @@ A busca em `docs/jarvis/` (PRD, ARD, RFCs) é sempre feita; a consulta ao Centra
 
 3. Documentos a buscar:
    - **Funcionalidades já implementadas** relacionadas (Central docs, se configurado: `feature-*`)
-   - **PRD relacionado** (em `$PROD_DOCS`, para rastreabilidade e contexto de negócio)
+   - **PRD relacionado** (em `$PROD_DOCS`, para rastreabilidade e contexto de negócio; não achando, pode já ter sido consolidado — busque em `decisions/` da funcionalidade pela skill `jarvis-docs-central`, Modo 1, #220)
    - **ARD existente** e **RFCs anteriores** relacionados ao tema (em `$ENG_DOCS/ARD` e `$ENG_DOCS/RFC`)
 
 4. Se documentos encontrados:

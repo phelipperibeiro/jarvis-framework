@@ -160,7 +160,7 @@ jarvis docs fetch {SQUAD}/{produto}/checkout/checkout.md
 3. Buscar cada `feature-*` com `jarvis docs fetch` (e um `delivery-*`, se o detalhe de uma entrega importar).
 4. Devolver o resumo: funcionalidades, status e o que cada uma faz hoje.
 
-Os documentos de trabalho da tarefa (PRD, FRD, ARD, RFC, SPEC) **não** estão aqui: leia-os em `$PROD_DOCS`/`$ENG_DOCS`.
+Os documentos de trabalho da tarefa (PRD, FRD, ARD, RFC, SPEC) moram em `$PROD_DOCS`/`$ENG_DOCS`: leia-os primeiro de lá. **Não achou?** Desde a #220, um documento ligado a uma entrega consolidada pode ter sido removido de `docs/jarvis/` (`--finalize`/`--force`) depois de publicado em `decisions/`. Busque pelo mesmo basename em `jarvis docs fetch {SQUAD}/{produto}/{funcionalidade}/decisions/{basename}`, na funcionalidade já identificada no passo 2. Enquanto o documento ainda existir em `docs/jarvis/`, é essa versão que vale, não a cópia publicada (Q13 da #220).
 
 ### Modo 2: Publicar a consolidação
 
