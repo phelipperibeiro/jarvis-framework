@@ -23,6 +23,11 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), e o
 - O `/eng.spec-consolidate` aceita sessão incompleta (sem `architecture.md`, `plan.md` ou `context.md`) em vez de perguntar se segue só com o diff.
 
 ### Fixed
+- **Central docs em git (#229)**: republicar uma sessão sem mudanças (e também o `home.md` já existente) apagava da pasta de trabalho a cópia já publicada, porque a limpeza de branch órfã removia todo destino existente; agora só remove o que está fora do git. Antes disso, a sessão ficava "pendente" para sempre e o `--force` recusava apagá-la.
+- `jarvis docs finalize`: um anexo binário (ou qualquer arquivo que não seja `.md`) nunca era finalizado, porque o hash da cópia arquivada era calculado depois de decodificar os bytes como texto; passa a hashear os bytes e a injetar `origin`/`original_status` só em `.md`.
+- `jarvis docs archive`/`finalize`/`publish`: um manifesto que é JSON válido mas não uma lista de objetos (`{}`, `null`) estourava `TypeError`; agora sai com 1 e mensagem clara.
+- O card em maiúsculas do board (`TASK-123`) passa a usar `history/task-123/` e o nome `architecture-task-123.md`, como a pasta da sessão, e o inventário reconhece a página-índice publicada como `TASK-123.md`.
+- Varredura de segredo: passa a pegar chave com prefixo (`GITHUB_TOKEN=`, `OPENAI_API_KEY=`, `DB_PASSWORD=`), chave privada PEM, credencial em URL, `Bearer …` e tokens de prefixo conhecido (`ghp_`, `glpat-`, `AKIA…`, `sk-`), em tempo linear.
 - `jarvis docs finalize`: um documento quebrado em partes (várias entradas com o mesmo original) era apagado duas vezes e a segunda dava erro; passa a contar todas as partes como finalizadas.
 
 ## [8.6.0] - 2026-11-06

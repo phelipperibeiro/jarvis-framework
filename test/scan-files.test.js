@@ -5,7 +5,7 @@ import assert from "node:assert/strict";
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { MAX_BYTES, SECRET_RE, scanFile } from "../bin/lib/docs/scan-files.js";
+import { MAX_BYTES, SECRET_RE, scanFile, secretKind } from "../bin/lib/docs/scan-files.js";
 import { publishFiles } from "../bin/lib/docs/publish-file.js";
 import { createFilesystemStorage } from "../bin/lib/docs/storage/filesystem.js";
 import { setTestMode } from "../bin/lib/utils/logger.js";
@@ -157,4 +157,58 @@ test("publishFiles --dry-run: lista os alertas sem lançar e sem gravar; documen
   assert.deepEqual(result.alerts.map((a) => [a.destPath, a.confirmed]), [["CORE/loja/history/229/saida.txt", false]]);
   const { existsSync } = await import("node:fs");
   assert.equal(existsSync(join(root, "CORE")), false);
+});
+
+test("secretKind: pega chave com prefixo (GITHUB_TOKEN, OPENAI_API_KEY, DB_PASSWORD) e os outros formatos, sem devolver o valor (#229)", () => {
+  const casos = [
+    ["GITHUB_TOKEN=ghp_abcdefghijklmnopqrstuvwx", 'chave "token"'],
+    ["OPENAI_API_KEY=sk-abcdefghijklmnopqrstuvwx", 'chave "api_key"'],
+    ["export DB_PASSWORD=abcdefghijklmnopqrstuvwx", 'chave "password"'],
+    ["client-secret: 'abcdefghijklmnopqrstuvwx'", 'chave "secret"'],
+    ["token: abcdefghijklmnopqrstuvwx", 'chave "token"'],
+    ["-----BEGIN RSA PRIVATE KEY-----", "chave privada (PEM)"],
+    ["-----BEGIN PRIVATE KEY-----", "chave privada (PEM)"],
+    ["postgres://usuario:senhaSecreta@host:5432/db", "credencial dentro de uma URL"],
+    ["Authorization: Bearer abcdefghijklmnopqrstuvwxyz", "token Bearer"],
+    ["use ghp_abcdefghijklmnopqrstuvwxyz0123 aqui", "token com prefixo conhecido"],
+    ["glpat-abcdefghijklmnopqrstu", "token com prefixo conhecido"],
+    ["AKIAABCDEFGHIJKLMNOP", "token com prefixo conhecido"],
+  ];
+  for (const [linha, esperado] of casos) {
+    const kind = secretKind(linha);
+    assert.equal(kind, esperado, linha);
+    assert.ok(!kind.includes("abcdefghijklmnop") && !kind.includes("senhaSecreta"), "o valor não vaza");
+  }
+});
+
+test("secretKind: placeholders, valores curtos e URLs comuns não geram falso positivo", () => {
+  for (const ok of [
+    "API_KEY=",
+    "token: <seu-token>",
+    "tokens: 42",
+    "password: 1234",
+    "git@github.com:o/r.git",
+    "https://github.com/o/r/issues/229",
+    "ssh://git@github.com/o/r.git",
+    "O token de acesso fica no .npmrc.",
+    "senha: valor-curto",
+  ]) {
+    assert.equal(secretKind(ok), null, ok);
+  }
+});
+
+test("secretKind: linha enorme não trava (busca linear)", () => {
+  const t0 = Date.now();
+  secretKind("a-".repeat(500000));
+  secretKind("a".repeat(1000000));
+  secretKind("token=".repeat(100000));
+  assert.ok(Date.now() - t0 < 2000, `levou ${Date.now() - t0} ms`);
+});
+
+test("scanFile: marca GITHUB_TOKEN= num .md e mostra só a linha e a chave", () => {
+  const dir = tmp();
+  const md = file(dir, "env.md", "# Env\nGITHUB_TOKEN=ghp_abcdefghijklmnopqrstuvwx\n");
+  const flags = scanFile(md);
+  assert.deepEqual(flags.map((f) => f.detail), ['linha 2, chave "token"']);
+  assert.ok(!JSON.stringify(flags).includes("ghp_"));
 });

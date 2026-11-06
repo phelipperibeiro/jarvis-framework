@@ -21,11 +21,37 @@ const SNIFF_BYTES = 8000;
 const MAX_SCAN_BYTES = 5 * MAX_BYTES;
 
 /**
- * Nome de chave sensível seguido de `:` ou `=` e de um valor longo (16+ caracteres sem espaço).
- * `API_KEY=` vazio e `token: <seu-token>` não casam.
+ * Nome de chave sensível (com ou sem prefixo, como `GITHUB_TOKEN`, `OPENAI_API_KEY`, `DB_PASSWORD`,
+ * `client-secret`) seguido de `:` ou `=` e de um valor longo (16+ caracteres sem espaço).
+ * `API_KEY=` vazio e `token: <seu-token>` não casam. O grupo 1 é só a palavra-chave (sem prefixo). O
+ * lookbehind aceita o prefixo (`GITHUB_` termina em `_`, que não é letra nem número) e mantém a busca
+ * linear: um prefixo repetido no regex ficaria quadrático numa linha enorme.
  * @constant {RegExp}
  */
-export const SECRET_RE = /\b(api[_-]?key|access[_-]?key|secret|token|password|passwd|senha)\b["']?\s*[:=]\s*["']?[A-Za-z0-9_\-/+=.]{16,}/i;
+export const SECRET_RE = /(?<![A-Za-z0-9])(api[_-]?key|access[_-]?key|secret|token|password|passwd|senha)(?![A-Za-z0-9])["']?\s*[:=]\s*["']?[A-Za-z0-9_\-/+=.]{16,}/i;
+
+/**
+ * Outros formatos que denunciam um segredo mesmo sem uma chave nomeada ao lado.
+ * @constant {ReadonlyArray<{ re: RegExp, label: string }>}
+ */
+const OTHER_SECRETS = Object.freeze([
+  { re: /-----BEGIN [A-Z ]*PRIVATE KEY-----/, label: "chave privada (PEM)" },
+  { re: /:\/\/[^\s:@/]+:[^\s@/]+@/, label: "credencial dentro de uma URL" },
+  { re: /\bBearer\s+[A-Za-z0-9_\-.=]{16,}/, label: "token Bearer" },
+  { re: /\b(?:ghp|gho|ghs|ghu)_[A-Za-z0-9]{20,}|\bgithub_pat_[A-Za-z0-9_]{20,}|\bglpat-[A-Za-z0-9_-]{16,}|\bAKIA[0-9A-Z]{16}\b|\bsk-[A-Za-z0-9]{20,}/, label: "token com prefixo conhecido" },
+]);
+
+/**
+ * Diz o que parece segredo numa linha, sem nunca devolver o valor.
+ * @param {string} line
+ * @returns {string|null} descrição curta (`chave "token"`, `chave privada (PEM)`…) ou `null`
+ */
+export function secretKind(line) {
+  const keyed = line.match(SECRET_RE);
+  if (keyed) return `chave "${keyed[1].toLowerCase()}"`;
+  for (const { re, label } of OTHER_SECRETS) if (re.test(line)) return label;
+  return null;
+}
 
 /**
  * @typedef {Object} ScanFlag
@@ -76,8 +102,8 @@ export function scanFile(path) {
   if (bytes <= MAX_SCAN_BYTES) {
     const lines = readFileSync(path, "utf-8").split("\n");
     for (let i = 0; i < lines.length; i++) {
-      const m = lines[i].match(SECRET_RE);
-      if (m) flags.push({ kind: "possível segredo", detail: `linha ${i + 1}, chave "${m[1].toLowerCase()}"` });
+      const kind = secretKind(lines[i]);
+      if (kind) flags.push({ kind: "possível segredo", detail: `linha ${i + 1}, ${kind}` });
     }
   }
   return flags;
