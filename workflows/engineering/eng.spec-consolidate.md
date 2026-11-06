@@ -47,7 +47,7 @@ Os documentos de trabalho (PRD, FRD, ARD, RFC, SPEC, discovery…) continuam em 
 - `--inicial`: carga inicial a partir dos documentos de trabalho que já existem (chamado pelo `/jarvis-init`). Não precisa de chave nem de PR.
 - `--archive`: pula os Passos 1–7 (a consolidação já foi publicada numa execução anterior) e vai direto ao Passo 8, com o `manifest.json` já gravado em `consolidation/` nesta sessão.
 - `--finalize`: pula os Passos 1–8 e vai direto ao Passo 9, com o mesmo `manifest.json` já arquivado (`--archive` antes).
-- `--force`: faz os Passos 1–7 e 9 numa execução só, **sem perguntar** e **sem o Passo 8** (zero reversão, Q15 da #220) — a própria flag vale como o Sim dos passos (exceção explícita à regra de ouro, `eng.integrations-rules.md`). Decide a listagem (Passo 4), a quebra (Q9) e o `status` (Q23) por conta própria, mas **sem pular** a trava de segredo da revisão (Passo 6): se algo parecer um segredo, para antes de publicar, mesmo com `--force`. Documento sem vínculo com a entrega continua intocado. Ao fim, `jarvis docs publish --manifest ... --force` publica e já apaga os originais (sem `archive/`); mostre o relatório do que foi feito, do que ficou e por quê.
+- `--force`: faz os Passos 1–7 e 9 numa execução só, **sem perguntar** e **sem o Passo 8** (zero reversão, Q15 da #220) — a própria flag vale como o Sim dos passos (exceção explícita à regra de ouro, `eng.integrations-rules.md`). Decide a listagem (Passo 4), a quebra (Q9) e o `status` (Q23) por conta própria, mas **sem pular** a trava de segredo da revisão (Passo 6): se algo parecer um segredo, para antes de publicar, mesmo com `--force`. Documento sem vínculo com a entrega continua intocado. Ao fim, `jarvis docs publish --manifest ... --force` publica e já apaga os originais (sem `archive/`); mostre o relatório do que foi feito, do que ficou e por quê. **Vale também para os arquivos da sessão (#229)**, com a trava de sempre: só apaga dentro da pasta da sessão do próprio card e **só depois de conferir que a cópia publicada existe e bate o hash** (se faltar ou diferir, aquele arquivo fica na sessão e entra no relatório; com o Central docs em git, a cópia só passa na conferência depois que o PR da publicação for mesclado e a pasta atualizada). A pergunta do Passo 9.1 (apagar a pasta da sessão) continua valendo, mesmo com `--force`.
 
 ---
 
@@ -172,18 +172,18 @@ Pergunte com `AskUserQuestion` (**Sim / Não**): **"Publicar no Central docs?"**
   ```bash
   jarvis docs publish --manifest .../consolidation/manifest.json --slug {task_key}
   ```
-  Uma chamada só, para todos os arquivos. Com o Central docs num repositório git, publica numa **única branch e um único PR** para a entrega inteira (não um por arquivo): informe a URL.
+  Uma chamada só, para todos os arquivos. Com o Central docs num repositório git, publica numa **única branch e um único PR** para a entrega inteira (não um por arquivo): informe a URL. O CLI converte os links dos `.md` da sessão para resolverem dentro do Central docs (o original na sessão não muda), grava no manifesto o destino de cada arquivo (`publishedAs`, que pode ser um `-v1`/`-v2` se o conteúdo mudou desde a última publicação) e o hash publicado (`publishedHash`), e **avisa** dos links que ainda não resolvem. Mostre ao usuário o relatório: quantos links foram convertidos e quantos viraram texto, as novas versões e os avisos.
 - **Não:** os arquivos ficam na sessão. Para publicar depois, use o mesmo comando.
 
 Com `ARTIFACT_STYLE=human-generated`, a versão humanizada (`{nome}.public.md`) fica ao lado da consolidação, na sessão, e **não** entra no manifesto.
 
 Os originais em `docs/jarvis/` e na sessão (inclusive os que acabaram de ser publicados aqui) **continuam onde estão** depois deste passo: só o Passo 9 os apaga.
 
-Informe que o próximo passo, **arquivar**, pode ser feito agora ou mais tarde (nova chamada: `/eng.spec-consolidate {TASK_MANAGER_KEY} --archive`), e não é obrigatório — quem não quiser mover os originais da entrega para o Central docs pode parar aqui.
+Informe que o próximo passo, **arquivar**, pode ser feito agora ou mais tarde (nova chamada: `/eng.spec-consolidate {TASK_MANAGER_KEY} --archive`), e não é obrigatório — quem não quiser mover os originais da entrega para o Central docs pode parar aqui. Para poder **apagar a sessão** sem perder nada, são necessários os Passos 8 e 9.
 
 ## Passo 8: Arquivar (`--archive`)
 
-Só os documentos de trabalho marcados "publica" no Passo 4 (os que têm `originalPath` no manifesto) são arquivados; `feature`, `delivery`, `product`, `home` e `history` não têm "original" fora do Central docs e não passam por aqui.
+São arquivadas todas as entradas do manifesto com `originalPath`: os documentos de trabalho de `docs/jarvis/` marcados "publica" no Passo 4 **e os arquivos da sessão** (`decisions/` e `history/`). `feature`, `delivery`, `product` e `home`, e a página-índice da sessão, não têm "original" fora do Central docs e não passam por aqui.
 
 Pergunte com `AskUserQuestion` (**Sim / Não**): **"Arquivar os originais (sem apagar nada)?"**, mostrando a lista de `originalPath` que serão copiados.
 
@@ -191,8 +191,8 @@ Pergunte com `AskUserQuestion` (**Sim / Não**): **"Arquivar os originais (sem a
   ```bash
   jarvis docs archive --manifest .../consolidation/manifest.json
   ```
-  Copia cada original para `archive/` da sua funcionalidade e **reescreve o próprio `manifest.json`**, acrescentando `archiveDestPath` e `archivedHash` em cada entrada arquivada (o `--finalize` precisa dos dois). Sem `.git` no Central docs, o comando avisa que `archive/` é a única cópia além do próprio original (Q14). **Com `.git`**, o arquivamento vai para o seu próprio PR (separado do PR do Passo 7) — espere esse PR ser aceito antes do Passo 9: até lá, a cópia local não vê a pasta `archive/` e o `--finalize` recusa por não achá-la.
-- **Não:** nada muda; os originais continuam só em `docs/jarvis/`.
+  Copia cada original para `archive/` da sua funcionalidade e **reescreve o próprio `manifest.json`**, acrescentando `archiveDestPath` e `archivedHash` em cada entrada arquivada (o `--finalize` precisa dos dois). Os documentos de decisão da sessão vão para `{funcionalidade}/archive/{nome publicado}` e os arquivos de `history/` para `{funcionalidade}/archive/{card}/{caminho relativo}`. A cópia arquivada é o **original, byte a byte** (os links ainda são os da sessão). Sem `.git` no Central docs, o comando avisa que `archive/` é a única cópia além do próprio original (Q14). **Com `.git`**, o arquivamento vai para o seu próprio PR (separado do PR do Passo 7) — espere esse PR ser aceito antes do Passo 9: até lá, a cópia local não vê a pasta `archive/` e o `--finalize` recusa por não achá-la.
+- **Não:** nada muda; os originais continuam onde estão.
 
 ## Passo 9: Finalizar (`--finalize`)
 
@@ -204,24 +204,37 @@ Pergunte com `AskUserQuestion` (**Sim / Não**): **"Apagar os originais já arqu
   ```bash
   jarvis docs finalize --manifest .../consolidation/manifest.json
   ```
-  Para cada original: confere se o conteúdo mudou desde o `--archive` (hash); se mudou, **avisa e não apaga** aquele item (Q13) — ele continua em `docs/jarvis/` e em `archive/`, e você decide depois (rodar `--archive` de novo para atualizar o hash, ou apagar à mão). Se não mudou, reescreve os `related_*` de outros documentos de trabalho que apontavam para ele (best effort: o que não resolver, relate) e **apaga o original**.
+  Para cada original: confere se o conteúdo mudou desde o `--archive` (hash); se mudou, **avisa e não apaga** aquele item (Q13) — ele continua onde estava e em `archive/`, e você decide depois (rodar `--archive` de novo para atualizar o hash, ou apagar à mão). Se não mudou, reescreve os `related_*` de outros documentos de trabalho que apontavam para ele (best effort: o que não resolver, relate; arquivos da sessão não têm `related_*`) e **apaga o original**. A trava recusa qualquer caminho fora das pastas de documentos de trabalho e, para os arquivos da sessão, fora da pasta `$SESSIONS_DIR/eng/{card}/` **do próprio card** (um caminho com `..` ou da sessão de outro card é recusado e relatado).
 - **Não:** nada muda.
+
+### Passo 9.1: Apagar a pasta da sessão (oferta, com pergunta própria)
+
+Só depois do Passo 9 (ou do `--force`) e só se **todas** as entradas da sessão foram finalizadas: nenhuma em "mudou desde o `--archive`" nem recusada pela trava, e nada ficou na sessão por escolha sua no Passo 4 (item 6). Caso contrário, **não ofereça**: diga o que impede e deixe a pasta como está.
+
+Liste o que sobrou na pasta `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/` (`ls -A`, que inclui `.timestamp_start`, `.lead_time_minutes` e `consolidation/` com o `manifest.json`: nada disso é publicado) e pergunte com `AskUserQuestion` (**Sim / Não**): **"Apagar a pasta da sessão {card}? Esta ação não pode ser desfeita; tudo o que importa está no Central docs."**
+
+- **Sim:** apague a pasta (confirme antes que o caminho resolvido é exatamente `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}` dentro do workspace). Faça isso por último: o `manifest.json` de `consolidation/` precisa existir até aqui para o `--archive`/`--finalize` de execuções separadas.
+- **Não:** a pasta fica; a pessoa remove à mão quando quiser.
 
 ## Passo 10: Mensagem final
 
 ```
-✅ Consolidação {publicada | salva na sessão} {· arquivada} {· finalizada}
+✅ Consolidação {publicada | salva na sessão} {· arquivada} {· finalizada} {· sessão apagada}
 
-📄 Arquivos da sessão (consolidado acumulado, regra 5 de `eng.transitions-rules.md`): links de `context.md`, `architecture.md`, `plan.md`, das rodadas anteriores `gate-checklist-rodada-{N}.md`, `gate-checklist.md`, `pull-request.md`, `daily.md` e dos arquivos de `consolidation/` (novos), só os que existem
+📄 Sessão: página-índice {SQUAD}/{produto}/history/{TASK_MANAGER_KEY}/{TASK_MANAGER_KEY}.md; cópias em {SQUAD}/{produto}/{slug}/decisions/ (architecture-{card}.md, plan-{card}.md…) e em history/{TASK_MANAGER_KEY}/
+📄 Arquivos da sessão (consolidado acumulado, regra 5 de `eng.transitions-rules.md`): links de `context.md`, `architecture.md`, `plan.md`, das rodadas anteriores `gate-checklist-rodada-{N}.md`, `gate-checklist.md`, `pull-request.md`, `daily.md` e dos arquivos de `consolidation/` (novos), só os que ainda existem (depois do Passo 9.1, nenhum)
 
 📄 Funcionalidade(s): {SQUAD}/{produto}/{slug}/{slug}.md (uma linha por funcionalidade)
 🧾 Entrega(s):        {SQUAD}/{produto}/{slug}/deliveries/delivery-{AAAA-MM-DD}-{task_key}[-{slug}].md
 🔗 PR/MR: {URL} · Card: {URL ou número}
+🔗 Links: {N} convertido(s), {M} viraram texto, {K} aviso(s) de link que não resolve
+🆕 Versões: {lista dos arquivos que ganharam -v1, -v2…, ou "nenhuma"}
 
-{se publicou sem --archive/--finalize:} ℹ️ Os originais em docs/jarvis/ continuam lá. Para arquivar: `/eng.spec-consolidate {TASK_MANAGER_KEY} --archive`
+{se publicou sem --archive/--finalize:} ℹ️ Os originais continuam onde estão. Para arquivar: `/eng.spec-consolidate {TASK_MANAGER_KEY} --archive`
 {se arquivou sem --finalize:} ℹ️ Os originais estão arquivados em archive/, mas ainda não foram apagados. Para finalizar: `/eng.spec-consolidate {TASK_MANAGER_KEY} --finalize`
 {se houve documento que mudou no --finalize:} ⚠️ {N} documento(s) mudaram desde o --archive e não foram apagados: {lista}
-🧹 A sessão $SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/ não é apagada automaticamente: remova à mão quando quiser.
+{se a pasta da sessão foi apagada:} 🧹 A sessão $SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/ foi apagada com o seu Sim; tudo está no Central docs.
+{se não:} 🧹 A sessão $SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/ continua no disco ({motivo: ainda não finalizada | você escolheu manter | há arquivo pendente}).
 ```
 
 ---
@@ -229,13 +242,15 @@ Pergunte com `AskUserQuestion` (**Sim / Não**): **"Apagar os originais já arqu
 ## Regras
 
 ### ⛔ Nunca
-- Publicar sem o **Sim** do Passo 7, arquivar sem o do Passo 8, ou finalizar sem o do Passo 9 — cada passo tem a sua pergunta, nunca uma cobre a seguinte
+- Publicar sem o **Sim** do Passo 7, arquivar sem o do Passo 8, finalizar sem o do Passo 9, ou apagar a pasta da sessão sem o do Passo 9.1 — cada passo tem a sua pergunta, nunca uma cobre a seguinte
 - Publicar um documento de trabalho **sem vínculo** com esta entrega (Q1) — sem o vínculo (chave, `related_*` ou a sua indicação no Passo 4), ele fica em `docs/jarvis/`, sem exceção
 - Quebrar (Q9) um documento de uma funcionalidade só, ou perder/inventar conteúdo ao separar as partes de um documento quebrado
 - Finalizar (apagar o original) sem ter arquivado antes, ou apagar um original cujo conteúdo mudou desde o `--archive` (Q13)
 - Incluir e-mails, tokens, senhas, valores de variáveis ou dados pessoais de clientes
 - Inventar informação: sem fonte, pergunte ou registre "não informado"
 - Alterar o código ou os documentos de trabalho, fora da gravação de `related_*` do Passo 4 (com a sua indicação), da reescrita de `related_*` do Passo 9 e dos arquivos em `consolidation/`
+- Apagar um arquivo de sessão fora da pasta do card, ou apagar a pasta da sessão com arquivo recusado, pendente ou deixado na sessão por escolha sua
+- Escrever, na página-índice ou nos registros, algo que não tenha fonte: sessão incompleta é documentada com o que existe e o que falta vira "não informado"
 
 ### ✅ Sempre
 - Ler todas as fontes antes de escrever
