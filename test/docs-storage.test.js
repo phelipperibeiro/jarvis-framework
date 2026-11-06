@@ -158,6 +158,42 @@ test("filesystem: home.md é criado uma vez e nunca sobrescrito", async () => {
   }
 });
 
+test("filesystem: publishBatch copia vários arquivos e regenera o índice uma vez só", async () => {
+  const root = tmp();
+  try {
+    const s = getStorage(
+      { CENTRAL_DOCS_STORAGE: "filesystem", CENTRAL_DOCS_LOCATION: "cd" },
+      { root }
+    );
+    mkdirSync(s.location);
+
+    const feature = join(root, "feature-checkout.md");
+    const delivery = join(root, "delivery-2026-10-15-task-123.md");
+    writeFileSync(feature, PRD);
+    writeFileSync(delivery, "---\ntask_key: TASK-123\ndate: 2026-10-15\n---\n");
+
+    const r = await s.publishBatch({
+      squad: "CORE",
+      slug: "task-123",
+      files: [
+        { localFile: feature, destPath: "CORE/loja/checkout/checkout.md", tipo: "feature" },
+        {
+          localFile: delivery,
+          destPath: "CORE/loja/checkout/deliveries/delivery-2026-10-15-task-123.md",
+          tipo: "delivery",
+        },
+      ],
+    });
+
+    assert.equal(r.published.length, 2);
+    assert.ok(r.published.every((p) => p.skipped === false));
+    assert.equal(await s.fetch("CORE/loja/checkout/checkout.md"), PRD);
+    assert.match(await s.fetch("CORE/index.md"), /- \[checkout\]\(loja\/checkout\/checkout\.md\)/);
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
 test("filesystem: fetch de arquivo inexistente lança erro com code 404", async () => {
   const root = tmp();
   try {
@@ -331,6 +367,57 @@ test("git: publish cria branch, commita documento + índice, faz push e abre o P
 
     const files = git(["ls-tree", "-r", "--name-only", r.branch], origin).split("\n");
     assert.ok(files.includes("CORE/product/loja/feature-checkout.md"));
+    assert.ok(files.includes("CORE/index.md"));
+    assert.equal(git(["branch", "--show-current"], clone), "main");
+  } finally {
+    rmSync(base, { recursive: true, force: true });
+  }
+});
+
+test("git: publishBatch commita a entrega inteira numa branch e um PR só", async () => {
+  const { base, origin, clone } = gitFixture();
+  try {
+    const feature = join(base, "feature-checkout.md");
+    const delivery = join(base, "delivery-2026-10-15-task-123.md");
+    writeFileSync(feature, PRD);
+    writeFileSync(delivery, "---\ntask_key: TASK-123\ndate: 2026-10-15\n---\n");
+    const calls = [];
+    const s = getStorage(
+      { CENTRAL_DOCS_STORAGE: "filesystem", CENTRAL_DOCS_LOCATION: clone, CENTRAL_DOCS_TARGET_BRANCH: "main" },
+      {
+        root: base,
+        deps: {
+          createMergeRequest: async (url, opts) => {
+            calls.push({ url, opts });
+            return { vendor: "github", iid: 9, url: "https://example/pr/9" };
+          },
+        },
+      }
+    );
+
+    const r = await s.publishBatch({
+      squad: "CORE",
+      slug: "task-123",
+      files: [
+        { localFile: feature, destPath: "CORE/loja/checkout/checkout.md", tipo: "feature" },
+        {
+          localFile: delivery,
+          destPath: "CORE/loja/checkout/deliveries/delivery-2026-10-15-task-123.md",
+          tipo: "delivery",
+        },
+      ],
+    });
+
+    assert.equal(r.branch, "docs/core-task-123");
+    assert.equal(r.mr.iid, 9);
+    assert.equal(calls.length, 1, "um PR só para a entrega inteira");
+
+    const commits = git(["log", "--oneline", `main..${r.branch}`], origin).split("\n");
+    assert.equal(commits.length, 1, "um commit só para a entrega inteira");
+
+    const files = git(["ls-tree", "-r", "--name-only", r.branch], origin).split("\n");
+    assert.ok(files.includes("CORE/loja/checkout/checkout.md"));
+    assert.ok(files.includes("CORE/loja/checkout/deliveries/delivery-2026-10-15-task-123.md"));
     assert.ok(files.includes("CORE/index.md"));
     assert.equal(git(["branch", "--show-current"], clone), "main");
   } finally {

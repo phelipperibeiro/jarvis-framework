@@ -7,6 +7,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import {
   publishFile,
+  publishFiles,
   resolveDestPath,
   VALID_TYPES,
   DECISION_DOC_TYPES,
@@ -283,4 +284,44 @@ test("publishFile: entrega + funcionalidade + PRD ligado publicados entram no í
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }
+});
+
+test("publishFiles: resolve o destino de cada arquivo e publica tudo numa operação só", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "jarvis-pub-"));
+  try {
+    const location = join(dir, "cd");
+    mkdirSync(location);
+    const storage = createFilesystemStorage({ location });
+    const feature = join(dir, "feature-checkout.md");
+    const delivery = join(dir, "delivery-2026-10-15-task-123.md");
+    writeFileSync(feature, FEATURE);
+    writeFileSync(delivery, DELIVERY);
+
+    const r = await publishFiles({
+      storage,
+      squad: "CORE",
+      produto: "loja",
+      slug: "task-123",
+      files: [
+        { localFile: feature, tipo: "feature" },
+        { localFile: delivery, tipo: "delivery", feature: "checkout" },
+      ],
+    });
+
+    assert.equal(r.published.length, 2);
+    assert.ok(existsSync(join(location, "CORE/loja/checkout/checkout.md")));
+    assert.ok(
+      existsSync(join(location, "CORE/loja/checkout/deliveries/delivery-2026-10-15-task-123.md"))
+    );
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("publishFiles: sem storage ou sem arquivos lança erro antes de tocar no disco", async () => {
+  await assert.rejects(() => publishFiles({ storage: null, files: [{}] }), /desligado/);
+  await assert.rejects(
+    () => publishFiles({ storage: {}, files: [] }),
+    /Nenhum arquivo/
+  );
 });

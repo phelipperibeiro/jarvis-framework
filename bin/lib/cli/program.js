@@ -149,7 +149,12 @@ export function buildProgram() {
     .description(
       "Publicar no Central docs, na estrutura por funcionalidade (pasta: copia e regenera o índice; com git: branch + PR)"
     )
-    .option("--file <path>", "Caminho do arquivo local")
+    .option("--file <path>", "Caminho do arquivo local (um só; alternativa ao --manifest)")
+    .option(
+      "--manifest <path>",
+      "Manifesto JSON com vários arquivos ([{file, tipo, feature?, taskKey?}]); publica em lote, numa branch e um PR só"
+    )
+    .option("--slug <chave>", "Nome da branch/commit do lote (ex.: a chave da entrega); só com --manifest")
     .option(
       "--tipo <tipo>",
       "feature|delivery|product|history|prd|frd|feat|epic|story|task|ard|rfc|spec|swagger|qa-report|discovery"

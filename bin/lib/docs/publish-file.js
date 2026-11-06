@@ -196,3 +196,60 @@ export async function publishFile({ storage, localFile, tipo, squad, produto, fe
 
   return result;
 }
+
+/**
+ * Publica vários arquivos de uma entrega numa operação só (a listagem "move / fica" do
+ * `/eng.spec-consolidate`, #220): uma cópia cada, um índice regenerado no fim e, com `.git`,
+ * uma branch e um PR para a entrega inteira — não um por arquivo.
+ *
+ * @param {Object} opts
+ * @param {Object} opts.storage - Adaptador (`getStorage`)
+ * @param {string} opts.squad
+ * @param {string} opts.produto
+ * @param {string} [opts.slug] - Nome da branch/commit (ex.: a chave da entrega)
+ * @param {Array<{localFile: string, tipo: string, feature?: string, taskKey?: string}>} opts.files
+ * @returns {Promise<{ published: Array<{destPath: string, skipped?: boolean}>, indexPath: string, sha?: string, branch?: string, mr?: Object }>}
+ */
+export async function publishFiles({ storage, squad, produto, slug, files }) {
+  if (!storage) {
+    throw new Error(
+      "Central docs desligado (CENTRAL_DOCS_STORAGE vazio). Configure-o no /jarvis-init."
+    );
+  }
+  if (!files || files.length === 0) {
+    throw new Error("Nenhum arquivo para publicar (manifesto vazio).");
+  }
+
+  const resolved = files.map((f) => {
+    logger.info(`Validando frontmatter de ${f.localFile}...`);
+    validateFrontmatter(f.localFile, f.tipo);
+    const { destPath } = resolveDestPath({
+      tipo: f.tipo,
+      squad,
+      produto,
+      localFile: f.localFile,
+      feature: f.feature,
+      taskKey: f.taskKey,
+    });
+    return { localFile: f.localFile, destPath, tipo: f.tipo };
+  });
+  logger.info("✅ Frontmatter válido em todos os arquivos");
+
+  logger.info("");
+  logger.info("📋 Resumo da Publicação (lote):");
+  logger.info(`  Armazenamento: ${storage.kind}${storage.isGit ? " (git)" : ""}`);
+  for (const r of resolved) logger.info(`  - ${r.destPath}`);
+  logger.info("");
+
+  const result = await storage.publishBatch({ files: resolved, squad, slug });
+
+  for (const p of result.published) {
+    logger.info(p.skipped ? `ℹ️  ${p.destPath} já existe e não foi sobrescrito.` : `✅ Publicado em ${p.destPath}`);
+  }
+  logger.info(`🗂️  Índice regenerado: ${result.indexPath}`);
+  if (result.mr) {
+    logger.info(`🔀 Pull/Merge Request: ${result.mr.url}`);
+  }
+
+  return result;
+}

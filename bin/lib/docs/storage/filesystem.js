@@ -225,5 +225,96 @@ export function createFilesystemStorage({
         }
       }
     },
+
+    /**
+     * Publica vários arquivos de uma vez (a consolidação de uma entrega, #220): cada um é
+     * copiado, o índice é regenerado **uma vez** no fim e, com `.git`, tudo entra numa **branch
+     * e um PR só** para a entrega inteira — não um por arquivo.
+     * @param {Object} p
+     * @param {Array<{localFile: string, destPath: string, tipo: string}>} p.files
+     * @param {string} p.squad
+     * @param {string} [p.slug] - Nome da branch/commit (ex.: a chave da entrega); padrão: a hora
+     * @returns {Promise<{ published: Array<{destPath: string, skipped?: boolean}>, indexPath: string, sha?: string, branch?: string, mr?: Object }>}
+     */
+    async publishBatch({ files, squad, slug }) {
+      ensureLocation();
+
+      const copyAll = () => {
+        const published = [];
+        for (const f of files) {
+          const dest = safePath(location, f.destPath);
+          // home.md é editado por pessoas: criado uma vez, nunca sobrescrito (Q16, #220).
+          if (f.tipo === "home" && existsSync(dest)) {
+            published.push({ destPath: f.destPath, skipped: true });
+            continue;
+          }
+          mkdirSync(dirname(dest), { recursive: true });
+          copyFileSync(f.localFile, dest);
+          published.push({ destPath: f.destPath, skipped: false });
+        }
+        return published;
+      };
+
+      if (!isGit) {
+        const published = copyAll();
+        const indexPath = this.buildIndex(squad);
+        return { published, indexPath };
+      }
+
+      const branch = `docs/${squad.toLowerCase()}-${slug || Date.now()}`;
+      git(["checkout", targetBranch], location);
+      try {
+        git(["pull", "--ff-only", "origin", targetBranch], location);
+      } catch (error) {
+        logger.warn(`⚠️  git pull falhou (${error.message.split("\n")[0]}); seguindo com a cópia local.`);
+      }
+      git(["checkout", "-b", branch], location);
+
+      try {
+        const published = copyAll();
+        const indexPath = this.buildIndex(squad);
+        const changed = published.filter((p) => !p.skipped).map((p) => p.destPath);
+        git(["add", "--", ...changed, indexPath], location);
+        git(["commit", "-m", `docs(${squad}): consolidação ${slug || ""}`.trim()], location);
+        const sha = git(["rev-parse", "HEAD"], location);
+
+        git(["push", "-u", "origin", branch], location);
+        const remoteUrl = git(["remote", "get-url", "origin"], location);
+        const description = `## Documentos\n\n${changed.map((d) => `- \`${d}\``).join("\n")}`;
+        let mr = null;
+        try {
+          mr = await createMergeRequest(
+            remoteUrl,
+            {
+              source: branch,
+              target: targetBranch,
+              title: `docs(${squad}): consolidação ${slug || ""}`.trim(),
+              description,
+            },
+            deps.fileEnvResult ? { fileEnvResult: deps.fileEnvResult } : {}
+          );
+        } catch (error) {
+          if (error.sent) throw error;
+          let link = "";
+          try {
+            link = newMergeRequestUrl(remoteUrl, branch, targetBranch);
+          } catch {
+            // remote fora de github/gitlab: sem link
+          }
+          logger.warn(
+            `⚠️  MR não aberto (${error.message.split("\n")[0]}). A branch ${branch} já está no remote` +
+              (link ? `; abra o MR à mão: ${link}` : "; abra o MR à mão no host.")
+          );
+        }
+
+        return { published, indexPath, sha, branch, mr };
+      } finally {
+        try {
+          git(["checkout", targetBranch], location);
+        } catch {
+          // a branch de trabalho fica; o erro original (se houver) é o que importa
+        }
+      }
+    },
   };
 }
