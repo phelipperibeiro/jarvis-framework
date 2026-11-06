@@ -682,6 +682,26 @@ test("verifyPublishedCopy: com core.autocrlf o conteúdo do HEAD é comparado na
   }
 });
 
+test("verifyPublishedCopy: com core.autocrlf aceita também a cópia da pasta em LF (forma do blob) (#229, rodada 5)", () => {
+  const dir = tmp();
+  const g = (...a) => execFileSync("git", ["-c", "user.email=t@t", "-c", "user.name=t", ...a], { cwd: dir, stdio: "ignore" });
+  try {
+    g("init", "-q");
+    g("config", "core.autocrlf", "true");
+    const rel = "CORE/loja/checkout/decisions/architecture.md";
+    write(join(dir, rel), "# A\ntexto\n");
+    g("add", "-A");
+    g("commit", "-qm", "v1");
+    // a pasta continua em LF (como o publish a gravou); o blob do HEAD também é LF
+    write(join(dir, rel), "# A\ntexto\n");
+    assert.equal(verifyPublishedCopy(dir, { publishedAs: rel, publishedHash: sha("# A\ntexto\n") }), null);
+    // conteúdo diferente no HEAD continua recusado
+    assert.match(verifyPublishedCopy(dir, { publishedAs: rel, publishedHash: sha("# B\n") }), /não bate o hash|difere da publicada/);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
 test("verifyPublishedCopy: exige a cópia publicada, íntegra (Q11 da #229)", () => {
   const dir = tmp();
   try {
