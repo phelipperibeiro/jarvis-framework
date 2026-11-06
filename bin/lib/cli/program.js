@@ -22,6 +22,7 @@ import { info } from "../../commands/info.js";
 import { whoami } from "../../commands/whoami.js";
 import { docsSync } from "../../commands/docs-sync.js";
 import { docsPublish } from "../../commands/docs-publish.js";
+import { docsMigrate } from "../../commands/docs-migrate.js";
 import { installRtk } from "../../commands/install-rtk.js";
 import { tokens } from "../../commands/tokens.js";
 import { rulesSync } from "../../commands/rules.js";
@@ -166,6 +167,16 @@ export function buildProgram() {
     );
   withEnvOptions(withLogOptions(docsPublishCmd)).action((options) =>
     docsPublish(toLegacyFlags(options))
+  );
+
+  const docsMigrateCmd = cmd(docs, "migrate")
+    .description(
+      "Migrar o Central docs do layout antigo para a estrutura por funcionalidade (dry-run por padrão)"
+    )
+    .option("--apply", "Aplica o plano (padrão: só mostra, sem alterar nada)")
+    .option("--squad <squad>", "Override do SQUAD do ENV.md");
+  withEnvOptions(withLogOptions(docsMigrateCmd)).action((options) =>
+    docsMigrate(toLegacyFlags(options))
   );
 
   const installRtkCmd = cmd(program, "install-rtk").description(
