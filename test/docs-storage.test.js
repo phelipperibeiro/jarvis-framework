@@ -840,6 +840,29 @@ test("git: arquivo staged à mão antes do lote não é desfeito pela limpeza (#
   }
 });
 
+test("git: arquivo untracked com acento que já estava na pasta antes do lote não é apagado pela limpeza (#229, rodada 4)", async () => {
+  const { base, clone } = gitFixture();
+  try {
+    const { s } = gitStorage(base, clone);
+    const arq = join(base, "arq.md");
+    writeFileSync(arq, "# do lote\n");
+    const meu = join(clone, "CORE/produção/checkout/history/ação.md");
+    write(meu, "# escrito à mão\n");
+    const fixHook = breakCommits(clone);
+    await assert.rejects(
+      s.publishBatch({
+        squad: "CORE",
+        slug: "u",
+        files: [{ localFile: arq, destPath: "CORE/produção/checkout/history/ação.md", tipo: "history", fromSession: true }],
+      })
+    );
+    fixHook();
+    assert.ok(existsSync(meu), "antes: apagado (o git devolvia o nome em octal e ele não casava com o snapshot)");
+  } finally {
+    rmSync(base, { recursive: true, force: true });
+  }
+});
+
 test("git: archive com commit que falha também não deixa a cópia só no índice (#229)", async () => {
   const { base, clone } = gitFixture();
   try {

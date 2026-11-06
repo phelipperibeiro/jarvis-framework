@@ -665,6 +665,23 @@ test("verifyPublishedCopy: com .git exige a cópia no HEAD e igual à publicada 
   }
 });
 
+test("verifyPublishedCopy: com core.autocrlf o conteúdo do HEAD é comparado na forma da pasta de trabalho (#229, rodada 4)", () => {
+  const dir = tmp();
+  const g = (...a) => execFileSync("git", ["-c", "user.email=t@t", "-c", "user.name=t", ...a], { cwd: dir, stdio: "ignore" });
+  try {
+    g("init", "-q");
+    g("config", "core.autocrlf", "true");
+    const rel = "CORE/loja/checkout/decisions/architecture.md";
+    write(join(dir, rel), "# A\r\ntexto\r\n");
+    g("add", "-A");
+    g("commit", "-qm", "v1");
+    const e = { publishedAs: rel, publishedHash: sha("# A\r\ntexto\r\n") };
+    assert.equal(verifyPublishedCopy(dir, e), null, "antes: 'difere da publicada' para sempre (o blob do HEAD está em LF)");
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
 test("verifyPublishedCopy: exige a cópia publicada, íntegra (Q11 da #229)", () => {
   const dir = tmp();
   try {

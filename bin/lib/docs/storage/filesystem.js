@@ -136,17 +136,18 @@ function inHead(git, cwd, path) {
  * @returns {Set<string>} caminhos relativos a `cwd`
  */
 function snapshotLocalState(git, cwd) {
+  // `-z`: o git devolve nomes com acento entre aspas e em octal sem ele, e o nome real nunca casaria.
   const lines = (args) => {
     try {
-      return git(args, cwd).split("\n").map((l) => l.trim()).filter(Boolean);
+      return git(args, cwd).split("\0").filter(Boolean);
     } catch {
       return [];
     }
   };
   return new Set([
-    ...lines(["ls-files", "--others", "--exclude-standard"]),
-    ...lines(["diff", "--cached", "--name-only"]),
-    ...lines(["diff", "--name-only"]),
+    ...lines(["ls-files", "-z", "--others", "--exclude-standard"]),
+    ...lines(["diff", "-z", "--cached", "--name-only"]),
+    ...lines(["diff", "-z", "--name-only"]),
   ]);
 }
 
