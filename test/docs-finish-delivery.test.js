@@ -6,6 +6,7 @@ import { chmodSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, wr
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { createHash } from "node:crypto";
+import { execFileSync } from "node:child_process";
 import {
   archiveDestFor,
   archiveEntries,
@@ -642,6 +643,26 @@ test("isAllowedOriginal: aceita a pasta do próprio card; recusa outro card, ..,
   assert.equal(ok({ fromSession: true, taskKey: "../x" }, "/ws/.jarvis/x/a.md"), false, "taskKey inválido");
   // o que já valia: documento de trabalho de docs/jarvis
   assert.equal(ok({}, "/ws/docs/jarvis/product/prd.md"), true);
+});
+
+test("verifyPublishedCopy: com .git exige a cópia no HEAD e igual à publicada (#229, rodada 3)", () => {
+  const dir = tmp();
+  const g = (...a) => execFileSync("git", ["-c", "user.email=t@t", "-c", "user.name=t", ...a], { cwd: dir, stdio: "ignore" });
+  try {
+    g("init", "-q");
+    const rel = "CORE/loja com espaço/checkout/decisions/architecture.md";
+    write(join(dir, rel), "# A\n");
+    const e = { publishedAs: rel, publishedHash: sha("# A\n") };
+    g("add", "-A");
+    assert.match(verifyPublishedCopy(dir, e), /não está commitada/, "staged mas sem commit");
+    g("commit", "-qm", "v1");
+    assert.equal(verifyPublishedCopy(dir, e), null, "commitada e igual");
+    write(join(dir, rel), "# B\n");
+    g("add", "-A");
+    assert.match(verifyPublishedCopy(dir, { ...e, publishedHash: sha("# B\n") }), /difere da publicada/, "HEAD tem o conteúdo antigo");
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
 });
 
 test("verifyPublishedCopy: exige a cópia publicada, íntegra (Q11 da #229)", () => {

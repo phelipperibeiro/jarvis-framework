@@ -129,8 +129,8 @@ function inHead(git, cwd, path) {
 }
 
 /**
- * O que já estava na pasta antes do lote e não é do `HEAD`: arquivos untracked e arquivos
- * staged por outro motivo. A limpeza de um lote que falhou não pode tocar neles (#229).
+ * O que já estava na pasta antes do lote e não é do `HEAD`: arquivos untracked, staged por
+ * outro motivo e modificados à mão. A limpeza de um lote que falhou não pode tocar neles (#229).
  * @param {(args: string[], cwd: string) => string} git
  * @param {string} cwd
  * @returns {Set<string>} caminhos relativos a `cwd`
@@ -146,6 +146,7 @@ function snapshotLocalState(git, cwd) {
   return new Set([
     ...lines(["ls-files", "--others", "--exclude-standard"]),
     ...lines(["diff", "--cached", "--name-only"]),
+    ...lines(["diff", "--name-only"]),
   ]);
 }
 
@@ -166,7 +167,7 @@ function snapshotLocalState(git, cwd) {
  *
  * Para cada candidato:
  * - **no `HEAD`** (já commitado na branch alvo, como a sessão republicada igual ou o `home.md`): é
- *   conteúdo publicado, nunca é apagado nem revertido (#229);
+ *   conteúdo publicado, nunca é apagado; se o lote o sobrescreveu com outro conteúdo, volta ao do `HEAD` (#229);
  * - **fora do `HEAD`** e que o lote criou: se um `git add` ficou no índice (o commit falhou, por
  *   hook, identidade ou assinatura), o `git reset` o tira de lá, e o arquivo é removido, para a
  *   próxima publicação regravar e commitar de verdade. Sem isso, a cópia ficava só no índice local,
@@ -180,7 +181,17 @@ function cleanupOrphanBranch(git, cwd, targetBranch, branch, candidatePaths, pre
     git(["branch", "-D", branch], cwd);
     for (const p of candidatePaths) {
       try {
-        if (preExisting.has(p) || inHead(git, cwd, p)) continue;
+        if (preExisting.has(p)) continue;
+        if (inHead(git, cwd, p)) {
+          // Já commitado: nunca é apagado. Se o lote o sobrescreveu com outro conteúdo (e o commit falhou),
+          // volta ao que está no HEAD, para a republicação não ver o conteúdo novo como "igual".
+          try {
+            git(["checkout", "-q", "HEAD", "--", p], cwd);
+          } catch {
+            // melhor esforço
+          }
+          continue;
+        }
         try {
           git(["reset", "-q", "--", p], cwd);
         } catch {

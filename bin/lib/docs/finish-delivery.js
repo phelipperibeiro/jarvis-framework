@@ -255,8 +255,13 @@ export function verifyPublishedCopy(root, e) {
   // assinatura) deixa a cópia só no índice local, e apagar a sessão perderia a única cópia. Ela tem de
   // estar no HEAD da branch aberta (o PR da publicação já mesclado e a pasta atualizada).
   if (existsSync(join(root, ".git"))) {
+    // E o que está no HEAD tem de ser esta cópia: um arquivo republicado com conteúdo novo, cujo commit
+    // falhou, existe no HEAD com o conteúdo antigo e só a pasta/o índice têm o novo.
     try {
-      execFileSync("git", ["cat-file", "-e", `HEAD:${e.publishedAs}`], { cwd: root, stdio: "ignore" });
+      const committed = execFileSync("git", ["show", `HEAD:${e.publishedAs}`], { cwd: root, stdio: ["ignore", "pipe", "ignore"], maxBuffer: 64 * 1024 * 1024 });
+      if (createHash("sha256").update(committed).digest("hex") !== e.publishedHash) {
+        return `a versão commitada de ${e.publishedAs} difere da publicada (mescle o PR e atualize a pasta antes)`;
+      }
     } catch {
       return `cópia publicada em ${e.publishedAs} não está commitada na branch atual do Central docs (mescle o PR e atualize a pasta antes)`;
     }

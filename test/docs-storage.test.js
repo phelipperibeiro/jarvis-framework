@@ -799,6 +799,47 @@ test("git: um arquivo untracked que já estava na pasta antes do lote não é ap
   }
 });
 
+test("git: arquivo já no HEAD, sobrescrito pelo lote com outro conteúdo, volta ao do HEAD quando o commit falha (#229, rodada 3)", async () => {
+  const { base, clone } = gitFixture();
+  try {
+    const { s } = gitStorage(base, clone);
+    const f = join(base, "d.md");
+    writeFileSync(f, "# v1\n");
+    const dest = "CORE/loja/checkout/decisions/prd-1-x.md";
+    const r1 = await s.publishBatch({ squad: "CORE", slug: "a", files: [{ localFile: f, destPath: dest, tipo: "prd" }] });
+    mergeBranch(clone, r1.branch);
+    writeFileSync(f, "# v2\n");
+    const fixHook = breakCommits(clone);
+    await assert.rejects(s.publishBatch({ squad: "CORE", slug: "b", files: [{ localFile: f, destPath: dest, tipo: "prd" }] }), /commit/);
+    assert.equal(git(["status", "--porcelain"], clone), "", "antes: 'M  …' (v2 só no índice, vista como igual na próxima publicação)");
+    assert.equal(readFileSync(join(clone, dest), "utf-8"), "# v1\n");
+    fixHook();
+  } finally {
+    rmSync(base, { recursive: true, force: true });
+  }
+});
+
+test("git: arquivo staged à mão antes do lote não é desfeito pela limpeza (#229, rodada 3)", async () => {
+  const { base, clone } = gitFixture();
+  try {
+    const { s } = gitStorage(base, clone);
+    const arq = join(base, "arq.md");
+    writeFileSync(arq, "# do lote\n");
+    const meu = join(clone, "CORE/loja/history/k/notas.md");
+    write(meu, "# staged à mão\n");
+    git(["add", "CORE/loja/history/k/notas.md"], clone);
+    const fixHook = breakCommits(clone);
+    await assert.rejects(
+      s.publishBatch({ squad: "CORE", slug: "u", files: [{ localFile: arq, destPath: "CORE/loja/history/k/notas.md", tipo: "history", fromSession: true }] })
+    );
+    fixHook();
+    assert.match(readFileSync(meu, "utf-8"), /staged à mão/);
+    assert.match(git(["status", "--porcelain"], clone), /^A\s+CORE\/loja\/history\/k\/notas\.md/m);
+  } finally {
+    rmSync(base, { recursive: true, force: true });
+  }
+});
+
 test("git: archive com commit que falha também não deixa a cópia só no índice (#229)", async () => {
   const { base, clone } = gitFixture();
   try {
