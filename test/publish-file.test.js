@@ -170,6 +170,32 @@ test("resolveDestPath: history exige --task-key e mora em history/{chave}/", () 
   );
 });
 
+test("resolveDestPath: tipo home rejeita squad inválido mesmo sem produto (early-return antes da validação de produto) (#220 item 3)", () => {
+  assert.throws(
+    () => resolveDestPath({ tipo: "home", squad: "../x", localFile: "home.md" }),
+    /Squad inválido/
+  );
+  // Squad válido, sem produto: o tipo "home" não exige produto (early-return antes dessa validação).
+  assert.deepEqual(resolveDestPath({ tipo: "home", squad: "CORE", localFile: "home.md" }), {
+    destPath: "CORE/home.md",
+    area: "home",
+    fileName: "home.md",
+  });
+});
+
+test("resolveDestPath: tipo product rejeita produto inválido", () => {
+  assert.throws(
+    () =>
+      resolveDestPath({ tipo: "product", squad: "CORE", produto: "../x", localFile: "produto.md" }),
+    /Produto inválido/
+  );
+  assert.throws(
+    () =>
+      resolveDestPath({ tipo: "product", squad: "CORE", produto: "a/b", localFile: "produto.md" }),
+    /Produto inválido/
+  );
+});
+
 test("resolveDestPath: rejeita tipo desconhecido e segmentos com / ou ..", () => {
   assert.throws(
     () => resolveDestPath({ tipo: "xyz", squad: "CORE", produto: "p", localFile: "xyz-1.md" }),

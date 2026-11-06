@@ -2,7 +2,7 @@
 // Rode com: npm run test:filtro
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { chmodSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import {
@@ -311,6 +311,64 @@ test("finalizeEntries: reescreve related_* para decisions/ (mesmo destino do for
       readFileSync(join(prodDocs, "frd-005-checkout.md"), "utf-8"),
       /related_prd:\s*CORE\/loja\/checkout\/decisions\/prd-005-checkout\.md/
     );
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("finalizeEntries: unlinkSync falhando (pasta sem permissão de escrita) entra em errors, sem travar o loop (#220 item 3)", () => {
+  const dir = tmp();
+  try {
+    const root = join(dir, "cd");
+    const protectedDir = join(dir, "docs-jarvis-protegida");
+    const original = join(protectedDir, "prd-006.md");
+    const outro = join(dir, "docs-jarvis/prd-007.md");
+    write(original, "# PRD protegido\n");
+    write(outro, "# PRD normal\n");
+    const entries = [
+      { tipo: "prd", feature: "a", originalPath: original },
+      { tipo: "prd", feature: "b", originalPath: outro },
+    ];
+    archiveEntries({ root, squad: "CORE", produto: "loja", entries });
+
+    chmodSync(protectedDir, 0o555); // sem permissão de escrita: unlinkSync falha (EACCES/EPERM)
+    try {
+      const { finalized, errors } = finalizeEntries({ entries, root });
+
+      assert.equal(finalized.length, 1, "o outro item, sem bloqueio, foi finalizado normalmente");
+      assert.equal(finalized[0].originalPath, outro);
+      assert.equal(errors.length, 1);
+      assert.match(errors[0], new RegExp(original.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+      assert.equal(existsSync(original), true, "o bloqueado continua existindo, não foi apagado");
+    } finally {
+      chmodSync(protectedDir, 0o755);
+    }
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("forceFinalize: unlinkSync falhando (pasta sem permissão de escrita) entra em errors, sem travar o loop (#220 item 3)", () => {
+  const dir = tmp();
+  try {
+    const protectedDir = join(dir, "docs-jarvis-protegida");
+    const original = join(protectedDir, "prd-008.md");
+    write(original, "# PRD protegido\n");
+
+    chmodSync(protectedDir, 0o555);
+    try {
+      const { finalized, errors } = forceFinalize({
+        entries: [{ tipo: "prd", feature: "a", originalPath: original }],
+        squad: "CORE",
+        produto: "loja",
+      });
+
+      assert.equal(finalized.length, 0);
+      assert.equal(errors.length, 1);
+      assert.equal(existsSync(original), true);
+    } finally {
+      chmodSync(protectedDir, 0o755);
+    }
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }

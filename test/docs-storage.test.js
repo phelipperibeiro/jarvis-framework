@@ -194,6 +194,70 @@ test("filesystem: publishBatch copia vários arquivos e regenera o índice uma v
   }
 });
 
+test("filesystem: publishBatch sem git — falha num arquivo do meio deixa os anteriores copiados, sem rollback (#220 item 3)", async () => {
+  const root = tmp();
+  try {
+    const feature = join(root, "..", "feature-checkout.md");
+    writeFileSync(feature, PRD);
+    const s = getStorage({ CENTRAL_DOCS_STORAGE: "filesystem", CENTRAL_DOCS_LOCATION: root }, { root });
+
+    await assert.rejects(
+      () =>
+        s.publishBatch({
+          squad: "CORE",
+          files: [
+            { localFile: feature, destPath: "CORE/loja/checkout/checkout.md", tipo: "feature" },
+            {
+              localFile: join(root, "nao-existe.md"),
+              destPath: "CORE/loja/checkout/deliveries/delivery-x.md",
+              tipo: "delivery",
+            },
+          ],
+        }),
+      /ENOENT|no such file/
+    );
+
+    // Documentado (não corrigido nesta entrega): sem rollback, o primeiro arquivo fica
+    // publicado mesmo com o lote tendo falhado — quem chama precisa decidir o que fazer
+    // (o `docsPublishManifest` já reporta o erro e sai com 1, sem fingir sucesso).
+    assert.ok(existsSync(join(root, "CORE/loja/checkout/checkout.md")), "o primeiro já tinha sido copiado");
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("git: publishBatch — falha num arquivo do meio não deixa a branch de trabalho travada", async () => {
+  const { base, clone } = gitFixture();
+  try {
+    const feature = join(base, "feature-checkout.md");
+    writeFileSync(feature, PRD);
+    const s = getStorage(
+      { CENTRAL_DOCS_STORAGE: "filesystem", CENTRAL_DOCS_LOCATION: clone, CENTRAL_DOCS_TARGET_BRANCH: "main" },
+      { root: base, deps: { createMergeRequest: async () => assert.fail("não deveria abrir PR") } }
+    );
+
+    await assert.rejects(() =>
+      s.publishBatch({
+        squad: "CORE",
+        slug: "falha-no-meio",
+        files: [
+          { localFile: feature, destPath: "CORE/loja/checkout/checkout.md", tipo: "feature" },
+          {
+            localFile: join(base, "nao-existe.md"),
+            destPath: "CORE/loja/checkout/deliveries/delivery-x.md",
+            tipo: "delivery",
+          },
+        ],
+      })
+    );
+
+    // O `finally` do publishBatch sempre volta para a branch base, mesmo com erro no meio.
+    assert.equal(git(["branch", "--show-current"], clone), "main");
+  } finally {
+    rmSync(base, { recursive: true, force: true });
+  }
+});
+
 test("filesystem: fetch de arquivo inexistente lança erro com code 404", async () => {
   const root = tmp();
   try {
