@@ -45,6 +45,7 @@ Os documentos de trabalho (PRD, FRD, ARD, RFC, SPEC, discovery…) continuam em 
 - `--inicial`: carga inicial a partir dos documentos de trabalho que já existem (chamado pelo `/jarvis-init`). Não precisa de chave nem de PR.
 - `--archive`: pula os Passos 1–7 (a consolidação já foi publicada numa execução anterior) e vai direto ao Passo 8, com o `manifest.json` já gravado em `consolidation/` nesta sessão.
 - `--finalize`: pula os Passos 1–8 e vai direto ao Passo 9, com o mesmo `manifest.json` já arquivado (`--archive` antes).
+- `--force`: faz os Passos 1–7 e 9 numa execução só, **sem perguntar** e **sem o Passo 8** (zero reversão, Q15 da #220) — a própria flag vale como o Sim dos passos (exceção explícita à regra de ouro, `eng.integrations-rules.md`). Decide a listagem (Passo 4), a quebra (Q9) e o `status` (Q23) por conta própria, mas **sem pular** a trava de segredo da revisão (Passo 6): se algo parecer um segredo, para antes de publicar, mesmo com `--force`. Documento sem vínculo com a entrega continua intocado. Ao fim, `jarvis docs publish --manifest ... --force` publica e já apaga os originais (sem `archive/`); mostre o relatório do que foi feito, do que ficou e por quê.
 
 ---
 

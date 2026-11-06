@@ -5,7 +5,12 @@ import assert from "node:assert/strict";
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { archiveEntries, finalizeEntries, rewriteRelatedRefs } from "../bin/lib/docs/finish-delivery.js";
+import {
+  archiveEntries,
+  finalizeEntries,
+  forceFinalize,
+  rewriteRelatedRefs,
+} from "../bin/lib/docs/finish-delivery.js";
 
 function write(file, content) {
   mkdirSync(join(file, ".."), { recursive: true });
@@ -148,6 +153,48 @@ test("finalizeEntries: idempotente — rodar duas vezes não falha nem apaga de 
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }
+});
+
+test("forceFinalize: apaga o original direto, sem archive/, e reescreve related_*", () => {
+  const dir = tmp();
+  try {
+    const prodDocs = join(dir, "docs-jarvis/product");
+    const original = join(prodDocs, "prd-001-checkout.md");
+    write(original, "# PRD\n");
+    write(
+      join(prodDocs, "frd-001-checkout.md"),
+      "---\nrelated_prd: prd-001-checkout.md\n---\n# FRD\n"
+    );
+    const env = { PROD_DOCS: prodDocs };
+
+    const { finalized, rewritten, errors } = forceFinalize({
+      entries: [{ tipo: "prd", feature: "checkout", originalPath: original }],
+      squad: "CORE",
+      produto: "loja",
+      env,
+    });
+
+    assert.equal(errors.length, 0);
+    assert.equal(finalized.length, 1);
+    assert.equal(existsSync(original), false);
+    assert.equal(rewritten.length, 1);
+    assert.match(
+      readFileSync(join(prodDocs, "frd-001-checkout.md"), "utf-8"),
+      /related_prd:\s*CORE\/loja\/checkout\/decisions\/prd-001-checkout\.md/
+    );
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("forceFinalize: entrada sem originalPath (feature/delivery/...) é ignorada", () => {
+  const { finalized, errors } = forceFinalize({
+    entries: [{ tipo: "feature", feature: "checkout" }],
+    squad: "CORE",
+    produto: "loja",
+  });
+  assert.deepEqual(finalized, []);
+  assert.deepEqual(errors, []);
 });
 
 test("finalizeEntries: entrada sem archiveDestPath (não arquivada) é ignorada", () => {

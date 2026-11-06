@@ -257,16 +257,18 @@ test("listRulesForProfile: rtk é opt-in, sem bloco é universal, recursivo em s
 // Issue #83 (lacunas do pré-PR, 2026-11-02): as 3 seções do #105/#139 saem de prod.spec-rules.md
 // (AREA: PRODUCT) para rules-on-demand/product/prod.spec-common-rules.md (AREA: all), lida pelos 4
 // workflows, e a rule ganha a linha que aponta para ela. Só FULLCYCLE/GENERALIST muda: −1.360 B.
+// Issue #220 (2026-11-06): eng.integrations-rules.md (AREA: all) ganha a exceção do --force do
+// /eng.spec-consolidate à regra de ouro. +466 B nos 4 perfis; nenhum arquivo a mais.
 const BASE = [
   [
     "FULLCYCLE/GENERALIST/ENGINEERING/CORE",
     profile("FULLCYCLE", "GENERALIST", "ENGINEERING"),
     10,
-    66429,
+    66895,
   ],
-  ["BACKEND/SENIOR/ENGINEERING/CORE", profile("BACKEND", "SENIOR", "ENGINEERING"), 7, 46945],
-  ["FRONTEND/PLENO/ENGINEERING/CORE", profile("FRONTEND", "PLENO", "ENGINEERING"), 8, 55244],
-  ["QA/QA-ENGINEER/ENGINEERING/CORE", profile("QA", "QA-ENGINEER", "ENGINEERING"), 8, 47408],
+  ["BACKEND/SENIOR/ENGINEERING/CORE", profile("BACKEND", "SENIOR", "ENGINEERING"), 7, 47411],
+  ["FRONTEND/PLENO/ENGINEERING/CORE", profile("FRONTEND", "PLENO", "ENGINEERING"), 8, 55710],
+  ["QA/QA-ENGINEER/ENGINEERING/CORE", profile("QA", "QA-ENGINEER", "ENGINEERING"), 8, 47874],
 ];
 
 for (const [nome, p, arquivos, bytes] of BASE) {

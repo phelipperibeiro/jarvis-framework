@@ -158,6 +158,10 @@ export function buildProgram() {
     )
     .option("--slug <chave>", "Nome da branch/commit do lote (ex.: a chave da entrega); só com --manifest")
     .option(
+      "--force",
+      "Só com --manifest: publica e já finaliza (apaga os originais), sem --archive — zero reversão (Q15, #220)"
+    )
+    .option(
       "--tipo <tipo>",
       "feature|delivery|product|history|prd|frd|feat|epic|story|task|ard|rfc|spec|swagger|qa-report|discovery"
     )

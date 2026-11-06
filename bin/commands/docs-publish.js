@@ -2,6 +2,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { openStorageFromEnv } from "../lib/docs/fetch-file.js";
 import { publishFile, publishFiles, VALID_TYPES } from "../lib/docs/publish-file.js";
+import { forceFinalize } from "../lib/docs/finish-delivery.js";
 import { logger, configureFromFlags } from "../lib/utils/logger.js";
 
 function openEnvAndStorage(flags) {
@@ -151,6 +152,23 @@ async function docsPublishManifest(flags) {
     logger.info("✅ Publicação concluída!");
   } catch (error) {
     reportPublishError(error, storage, "lote");
+    process.exit(1);
+  }
+
+  if (!flags.force) return;
+
+  // --force (Q15, #220): publica e já apaga os originais, sem --archive. Zero reversão.
+  logger.info("\n⚠️  --force: finalizando sem arquivar (zero reversão)...");
+  const { finalized, rewritten, errors } = forceFinalize({ entries: files, squad, produto, env });
+  logger.info(`🧹 ${finalized.length} original(is) removido(s) (sem cópia em archive/)`);
+  for (const f of finalized) logger.info(`   - ${f.originalPath}`);
+  if (rewritten.length > 0) {
+    logger.info(`🔗 ${rewritten.length} referência(s) (related_*) reescrita(s):`);
+    for (const r of rewritten) logger.info(`   - ${r}`);
+  }
+  if (errors.length > 0) {
+    logger.error(`⚠️  ${errors.length} erro(s) ao finalizar:`);
+    for (const e of errors) logger.error(`   - ${e}`);
     process.exit(1);
   }
 }

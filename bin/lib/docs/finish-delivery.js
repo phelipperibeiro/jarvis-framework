@@ -143,6 +143,49 @@ export function rewriteRelatedRefs(env, removedBasename, centralDocsDestPath) {
 }
 
 /**
+ * `--force` (#220, Q15): publica e já apaga os originais, numa execução só, **sem** o passo
+ * `--archive` — zero reversão. Mesmas travas que não dependem de pergunta (documento sem
+ * vínculo não chega a ter `originalPath`; falha ao publicar nunca chama esta função); a única
+ * coisa que falta, de propósito, é a cópia de segurança do `archive/`.
+ *
+ * @param {Object} p
+ * @param {Array<Object>} p.entries - As mesmas do manifesto, já publicadas
+ * @param {string} p.squad
+ * @param {string} p.produto
+ * @param {Record<string, string>} [p.env] - Para reescrever `related_*` (omitir = não reescreve)
+ * @returns {{ finalized: Array, rewritten: string[], errors: string[] }}
+ */
+export function forceFinalize({ entries, squad, produto, env }) {
+  const finalized = [];
+  const rewritten = [];
+  const errors = [];
+
+  for (const e of entries) {
+    if (!e.originalPath) continue; // feature/delivery/product/home/history: nada a apagar
+    if (!existsSync(e.originalPath)) continue;
+
+    try {
+      const { destPath } = resolveDestPath({
+        tipo: e.tipo,
+        squad,
+        produto,
+        localFile: e.originalPath,
+        feature: e.feature,
+        taskKey: e.taskKey,
+      });
+      if (env) {
+        rewritten.push(...rewriteRelatedRefs(env, basename(e.originalPath), destPath));
+      }
+      unlinkSync(e.originalPath);
+      finalized.push(e);
+    } catch (err) {
+      errors.push(`${e.originalPath}: ${err.message.split("\n")[0]}`);
+    }
+  }
+  return { finalized, rewritten, errors };
+}
+
+/**
  * Passo `--finalize`: para cada entrada já arquivada (`archiveDestPath` presente), confere se
  * o original mudou desde o `--archive` (hash); se mudou, **não apaga** (Q13). Reescreve as
  * referências e apaga o original.
