@@ -30,6 +30,10 @@ templates/
     ├── data-pipeline-template.md
     ├── data-contract-template.md
     ├── work-progress-template.md
+    ├── central-feature-template.md   # Central docs: página da funcionalidade
+    ├── central-delivery-template.md  # Central docs: registro da entrega
+    ├── central-product-template.md   # Central docs: página do produto (transversal)
+    ├── central-home-template.md      # Central docs: página inicial do squad (editável, só uma vez)
     └── qa/
         ├── qa.release-signoff-template.md
         ├── qa.sprint-plan-template.md

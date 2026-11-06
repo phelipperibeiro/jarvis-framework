@@ -45,12 +45,21 @@ status: in_production
 # PRD
 `;
 
-test("VALID_TYPES: feature, delivery, product, history e os tipos de decisão", () => {
+test("VALID_TYPES: feature, delivery, product, history, home e os tipos de decisão", () => {
   assert.ok(VALID_TYPES.includes("feature"));
   assert.ok(VALID_TYPES.includes("delivery"));
   assert.ok(VALID_TYPES.includes("product"));
   assert.ok(VALID_TYPES.includes("history"));
+  assert.ok(VALID_TYPES.includes("home"));
   for (const tipo of DECISION_DOC_TYPES) assert.ok(VALID_TYPES.includes(tipo), tipo);
+});
+
+test("resolveDestPath: home vai para {squad}/home.md, sem precisar de produto", () => {
+  assert.deepEqual(resolveDestPath({ tipo: "home", squad: "CORE", localFile: "home.md" }), {
+    destPath: "CORE/home.md",
+    area: "home",
+    fileName: "home.md",
+  });
 });
 
 test("resolveDestPath: feature vira a página da funcionalidade, sem o prefixo 'feature-'", () => {

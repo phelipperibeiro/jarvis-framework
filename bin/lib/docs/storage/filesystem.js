@@ -154,6 +154,12 @@ export function createFilesystemStorage({
       ensureLocation();
       const dest = safePath(location, destPath);
 
+      // home.md é editado por pessoas: o adaptador cria uma vez e nunca sobrescreve (Q16, #220).
+      if (tipo === "home" && existsSync(dest)) {
+        logger.info(`ℹ️  ${destPath} já existe; a página inicial não é sobrescrita.`);
+        return { destPath, indexPath: `${squad}/index.md`, skipped: true };
+      }
+
       if (!isGit) {
         mkdirSync(dirname(dest), { recursive: true });
         copyFileSync(localFile, dest);

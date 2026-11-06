@@ -6,6 +6,8 @@
  * - `delivery`: o registro de uma entrega (`{funcionalidade}/deliveries/delivery-*.md`);
  * - `product`: a página do produto, o conteúdo transversal a várias funcionalidades (`{produto}.md`);
  * - `history`: rodadas, comentários e diário de uma entrega (`history/{task_key}/…`);
+ * - `home`: a página inicial do squad (`{squad}/home.md`), editável — o adaptador cria uma vez
+ *   e nunca sobrescreve (Q16 da #220);
  * - os tipos de `DECISION_DOC_TYPES` (prd, frd, feat, epic, story, task, ard, rfc, spec, swagger,
  *   qa-report, discovery): os documentos de trabalho **ligados a uma entrega consolidada**
  *   (`{funcionalidade}/decisions/…`) — quem decide o vínculo é o `/eng.spec-consolidate`, não
@@ -47,6 +49,7 @@ export const VALID_TYPES = Object.freeze([
   "delivery",
   "product",
   "history",
+  "home",
   ...DECISION_DOC_TYPES,
 ]);
 
@@ -79,6 +82,11 @@ export function resolveDestPath({ tipo, squad, produto, localFile, feature, task
     throw new Error(`Tipo inválido: ${tipo}\nTipos válidos: ${VALID_TYPES.join(", ")}`);
   }
   assertSegment("Squad", squad);
+
+  if (tipo === "home") {
+    return { destPath: `${squad}/home.md`, area: "home", fileName: "home.md" };
+  }
+
   assertSegment("Produto", produto);
 
   const local = basename(localFile);
@@ -176,7 +184,11 @@ export async function publishFile({ storage, localFile, tipo, squad, produto, fe
 
   const result = await storage.publish({ localFile, destPath, squad, tipo });
 
-  logger.info(`✅ Publicado em ${destPath}`);
+  if (result.skipped) {
+    logger.info(`ℹ️  ${destPath} já existe e não foi sobrescrito.`);
+  } else {
+    logger.info(`✅ Publicado em ${destPath}`);
+  }
   logger.info(`🗂️  Índice regenerado: ${result.indexPath}`);
   if (result.mr) {
     logger.info(`🔀 Pull/Merge Request: ${result.mr.url}`);

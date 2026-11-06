@@ -540,6 +540,7 @@ test("cada ponto que envia algo tem a pergunta logo antes", () => {
     ["workflows/engineering/eng.work.md", /❌ NÃO faça push/],
     ["rules-on-demand/engineering/eng.work-rules.md", /^\| Fazer `git push`/],
     ["skills/AGENTS.md", /^\| `jarvis docs publish` \| `jarvis-docs-central` \|$/],
+    ["templates/AGENTS.md", /^\| `central-home-template\.md` \|/],
     ["skills/jarvis-init/SKILL.md", /é gerado pelo `jarvis docs publish`/],
     [REPORT_ISSUE, /^Sem host \(`grupo\/repo`\), o vendor não é adivinhado/],
     [INTEGRATIONS, /^\| `(?:TASK_MANAGER|VERSION_CONTROL)` \(\+/],

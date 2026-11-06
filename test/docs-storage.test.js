@@ -134,6 +134,30 @@ test("filesystem: publish copia, regenera o índice, e fetch/list leem do disco"
   }
 });
 
+test("filesystem: home.md é criado uma vez e nunca sobrescrito", async () => {
+  const root = tmp();
+  try {
+    const s = getStorage(
+      { CENTRAL_DOCS_STORAGE: "filesystem", CENTRAL_DOCS_LOCATION: "cd" },
+      { root }
+    );
+    mkdirSync(s.location);
+
+    const src = join(root, "home.md");
+    writeFileSync(src, "# Primeira versão\n");
+    const r1 = await s.publish({ localFile: src, destPath: "CORE/home.md", squad: "CORE", tipo: "home" });
+    assert.equal(r1.skipped, undefined);
+    assert.equal(await s.fetch("CORE/home.md"), "# Primeira versão\n");
+
+    writeFileSync(src, "# Segunda versão (não deveria valer)\n");
+    const r2 = await s.publish({ localFile: src, destPath: "CORE/home.md", squad: "CORE", tipo: "home" });
+    assert.equal(r2.skipped, true);
+    assert.equal(await s.fetch("CORE/home.md"), "# Primeira versão\n");
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
 test("filesystem: fetch de arquivo inexistente lança erro com code 404", async () => {
   const root = tmp();
   try {
