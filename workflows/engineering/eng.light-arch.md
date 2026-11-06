@@ -6,9 +6,12 @@ recommended_model: claude-sonnet-5
 
 # light-arch
 
+> 📤 **Template**: `$IDE/templates/engineering/light-arch-template.md`
 > 🔗 **Links**: antes de escrever a arquitetura, leia `$IDE/rules-on-demand/doc-links-rules.md` e siga-a: toda citação com lugar exato (requisito, documento, código, card, PR) vira link.
 
 Este é o comando para disparar o início do desenho de estrutura arquitetural para uma feature.
+
+Diferente do `eng.start`, não cria branch nem PR: o entendimento e a estrutura arquitetural são sempre gravados em `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/light-arch.md`, a partir do template acima, e esse arquivo (não um texto só no chat) é o que você revisa e aprova.
 
 ### Skills invocados durante o workflow
 
@@ -34,7 +37,7 @@ Este é o comando para disparar o início do desenho de estrutura arquitetural p
 
 4. Depois de obter as respostas do humano, considere se precisa fazer mais perguntas. Se sim, faça mais perguntas ao humano. PAUSE para aguardar as respostas do humano.
 
-5. Uma vez que tenha um bom entendimento do que está sendo construído, declare-o claramente de volta ao humano para revisão. Faça isso na forma de um artefato para que seja mais fácil de revisar.
+5. Uma vez que tenha um bom entendimento do que está sendo construído, crie (ou atualize) `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/light-arch.md` a partir do template, preenchendo ao menos a seção 1 (Visão Geral) com esse entendimento, e aponte o arquivo ao humano para revisão: é mais fácil de revisar do que um texto só no chat, e fica registrado para quem continuar a partir daqui (`eng.start`, `eng.plan` ou a própria implementação).
 
 6. Se o humano concordar com seu entendimento, você pode proceder para o próximo passo. Caso contrário, continue iterando juntos até obter aprovação explícita para prosseguir.
 
@@ -74,9 +77,9 @@ Se ajudar a construir um diagrama MERMAID, sinta-se livre para fazê-lo.
 
 4. Se, em algum ponto, você tiver perguntas ou se encontrar algo que contradiz o que entendeu anteriormente, peça esclarecimento ao humano.
 
-5. Uma vez que tenha um bom entendimento do que está sendo construído, mostre ao usuário na forma de um artefato e aguarde sua aprovação. Iterate juntos até estar pronto. PAUSE para aguardar a aprovação do humano.
+5. Uma vez que tenha um bom entendimento do que está sendo construído, preencha as seções 2 a 8 do `light-arch.md` (análise técnica, decisões, dependências, riscos, diagrama e questões em aberto, com a marcação ✅/❌ da seção 8) e aponte o arquivo ao usuário. Itere nele até estar pronto — cada rodada de ajuste soma 1 em "Ajustes antes da aprovação" no cabeçalho. PAUSE para aguardar a aprovação do humano.
 
-6. Quando o humano concordar com seu entendimento, você pode proceder ao próximo passo, salvando os detalhes da estrutura arquitetural no card do $TASK_MANAGER como um comentário ao card original, pelo `/eng-global-task-comment`, que mostra o texto e pergunta antes de enviar (regra de ouro, `eng.integrations-rules.md`); sem o Sim, o texto fica só na sessão.
+6. Quando o humano concordar com o `light-arch.md` (`Status: ✅ Aprovado` no cabeçalho), você pode proceder ao próximo passo, salvando os detalhes da estrutura arquitetural no card do $TASK_MANAGER como um comentário ao card original, a partir do conteúdo do `light-arch.md`, pelo `/eng-global-task-comment`, que mostra o texto e pergunta antes de enviar (regra de ouro, `eng.integrations-rules.md`); sem o Sim, o texto fica só na sessão.
 
 ## Pesquisa
 

@@ -19,6 +19,7 @@ templates/
 ├── warm-up-template.md             # Aquecimento por apelido ($SESSIONS_DIR/warm-ups/{apelido}/)
 ├── engineering/                    # Templates tecnicos
 │   ├── architecture-template.md    # Template de arquitetura
+│   ├── light-arch-template.md      # Desenho arquitetural leve (eng.light-arch)
 │   ├── advisor-template.md         # Prompts e auditoria do Advisor
 │   ├── ARD-template.md             # Architecture Review Document
 │   ├── RFC-template.md             # Request For Comments
@@ -115,6 +116,7 @@ Use chaves `{...}` para indicar campos a serem preenchidos:
 | Template | Uso | Comando |
 |----------|-----|---------|
 | `architecture-template.md` | Design arquitetural | `/eng.start` |
+| `light-arch-template.md` | Design arquitetural leve, sem branch nem PR | `/eng.light-arch` |
 | `advisor-template.md` | Prompts do Advisor e modelo de auditoria | `/eng.start` |
 | `ARD-template.md` | Revisao de arquitetura | `/eng.create-ard` |
 | `RFC-template.md` | Proposta de mudanca | `/eng.create-rfc` |

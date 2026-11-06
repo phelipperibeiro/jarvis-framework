@@ -8,7 +8,7 @@ Entende o que precisa ser construído, tira as dúvidas com você e propõe uma 
 
 ## O que é
 
-É a forma rápida de desenhar a arquitetura de uma feature. Em vez de produzir um documento longo, o comando conduz uma conversa em duas etapas (entender, depois desenhar) e salva o resultado como **comentário no card** da tarefa, só depois da pergunta (regra de ouro).
+É a forma rápida de desenhar a arquitetura de uma feature. Em vez de produzir um documento longo, o comando conduz uma conversa em duas etapas (entender, depois desenhar), grava sempre o resultado em `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/light-arch.md` (template `light-arch-template.md`) e, depois de aprovado, salva o resultado como **comentário no card** da tarefa, a partir desse arquivo, só depois da pergunta (regra de ouro).
 
 ## Quando usar
 
@@ -28,13 +28,13 @@ Entende o que precisa ser construído, tira as dúvidas com você e propõe uma 
 
 - Lê o card, os pais e os filhos, e monta o entendimento inicial: por quê, resultado esperado, abordagem direcional, APIs ou ferramentas novas, como testar, dependências e restrições
 - Levanta os **3 a 5 esclarecimentos** mais importantes e pergunta a você, junto com o entendimento e sugestões. Pausa e espera
-- Repete se precisar e depois devolve o entendimento para você revisar. Só avança com aprovação explícita
+- Repete se precisar e grava o entendimento na seção 1 do `light-arch.md`, para você revisar o arquivo (não só um texto no chat). Só avança com aprovação explícita
 
 **2. Arquitetura** (desenhar)
 
 - Lê o código relevante e os docs técnicos do projeto
-- Monta a proposta: visão geral antes e depois, componentes afetados e dependências, padrões mantidos ou introduzidos, dependências externas, restrições e suposições, trade-offs e alternativas, consequências negativas e lista dos principais arquivos a editar ou criar. Pode incluir um diagrama Mermaid
-- Mostra como artefato, itera até você aprovar e salva o resultado como comentário no card, só depois de mostrar o texto e você dizer Sim (regra de ouro)
+- Preenche o resto do `light-arch.md`: componentes afetados e dependências, padrões mantidos ou introduzidos, decisões (com opções consideradas), riscos, considerações técnicas, questões em aberto (cada uma com a sugestão e a decisão, marcadas ✅/❌) e lista dos principais arquivos a editar ou criar. Pode incluir um diagrama Mermaid
+- Aponta o arquivo, itera até você aprovar (`Status: ✅ Aprovado` no cabeçalho) e, só então, salva o resultado como comentário no card a partir do arquivo, só depois de mostrar o texto e você dizer Sim (regra de ouro)
 
 ## Regras que importam
 

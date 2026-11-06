@@ -20,6 +20,7 @@ templates/
     ├── tech-spec-delivery-template.md
     ├── ref-spec-template.md     # Reference Spec do eng.build-tech-spec
     ├── architecture-template.md
+    ├── light-arch-template.md   # desenho leve do eng.light-arch (sem branch nem PR)
     ├── c4-model-template.md
     ├── plan-template.md
     ├── PR-template.md
