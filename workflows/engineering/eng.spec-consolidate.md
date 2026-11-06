@@ -157,7 +157,7 @@ Pergunte com `AskUserQuestion` (**Sim / Não**): **"Arquivar os originais (sem a
   ```bash
   jarvis docs archive --manifest .../consolidation/manifest.json
   ```
-  Copia cada original para `archive/` da sua funcionalidade e **reescreve o próprio `manifest.json`**, acrescentando `archiveDestPath` e `archivedHash` em cada entrada arquivada (o `--finalize` precisa dos dois). Sem `.git` no Central docs, o comando avisa que `archive/` é a única cópia além do próprio original (Q14).
+  Copia cada original para `archive/` da sua funcionalidade e **reescreve o próprio `manifest.json`**, acrescentando `archiveDestPath` e `archivedHash` em cada entrada arquivada (o `--finalize` precisa dos dois). Sem `.git` no Central docs, o comando avisa que `archive/` é a única cópia além do próprio original (Q14). **Com `.git`**, o arquivamento vai para o seu próprio PR (separado do PR do Passo 7) — espere esse PR ser aceito antes do Passo 9: até lá, a cópia local não vê a pasta `archive/` e o `--finalize` recusa por não achá-la.
 - **Não:** nada muda; os originais continuam só em `docs/jarvis/`.
 
 ## Passo 9: Finalizar (`--finalize`)
