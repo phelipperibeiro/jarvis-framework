@@ -146,12 +146,16 @@ export function logProjectGitSetup(result) {
  * no ENV.md), vendor não suportado (vira freelance) nem as chaves novas acrescentadas (Q15: o
  * `/jarvis-init` as põe no assunto delas na próxima vez que rodar). Nunca inclui valores do ENV.
  * Eixo do perfil vazio (HUB, POSITION, AREA, SQUAD) também conta: sem ele, o upgrade não filtra
- * as rules (#83).
- * @param {{ pendingAxes: string[], envPlan: { pending?: string[], warnings?: string[] }, missingProfile?: string[] }} input
+ * as rules (#83). `trackedGenerated` (#227): AGENTS.md/CLAUDE.md já versionados no modo projeto; sair do git
+ * é decisão da pessoa, tomada no `/jarvis-init upgrade` (nunca no terminal).
+ * @param {{ pendingAxes: string[], envPlan: { pending?: string[], warnings?: string[] }, missingProfile?: string[], trackedGenerated?: string[] }} input
  * @returns {string[]} um motivo por pendência; vazio = nada pendente
  */
-export function upgradePendencies({ pendingAxes, envPlan, missingProfile = [] }) {
+export function upgradePendencies({ pendingAxes, envPlan, missingProfile = [], trackedGenerated = [] }) {
   const reasons = [];
+  if (trackedGenerated.length) {
+    reasons.push(`decidir se ${trackedGenerated.join(" e ")} ${trackedGenerated.length > 1 ? "saem" : "sai"} do git`);
+  }
   if (pendingAxes.length) reasons.push(`confirmar o acesso de ${pendingAxes.join(" e ")}`);
   if (missingProfile.length) {
     reasons.push(`preencher ${missingProfile.join(", ")} (as rules ficam sem o filtro do perfil)`);
@@ -781,6 +785,20 @@ async function runUpgrade(cwd, flags) {
   // 3.4 Rules do perfil (#83): o mesmo filtro do `jarvis rules sync`, com o ENV.md já gravado.
   const { rulesSync, missingProfile, profileLabel } = filterRulesByEnv(workspaceDir, ide, envPath);
 
+  // 3.5 Git no modo projeto (#227): o mesmo da instalação (exclude local e pasta da IDE no .gitignore).
+  // AGENTS.md/CLAUDE.md versionados viram pendência do /jarvis-init upgrade: aqui nada sai do índice,
+  // nem com --yes. Raiz sem .git (modo workspace): nada.
+  const gitSetup = applyProjectGitSetup({ dir: workspaceDir, ide });
+  if (
+    gitSetup.exclude.added.length ||
+    gitSetup.ideIgnoreAdded ||
+    gitSetup.tracked.length ||
+    gitSetup.ideFolderTracked
+  ) {
+    logger.info(`${BLUE}🔒 Git (modo projeto):${NC}`);
+    logProjectGitSetup(gitSetup);
+  }
+
   // 4. Resumo (só nomes de chave e caminhos)
   const pkg = getPackageInfo();
   logger.info("");
@@ -857,7 +875,7 @@ async function runUpgrade(cwd, flags) {
     const access = (futureEntries.get(`${key}_ACCESS`) || "").trim();
     return getVendor(futureEntries.get(key)) && (!access || /^\[.*\]$/.test(access));
   });
-  const pending = upgradePendencies({ pendingAxes, envPlan, missingProfile });
+  const pending = upgradePendencies({ pendingAxes, envPlan, missingProfile, trackedGenerated: gitSetup.tracked });
   logger.info("");
   logger.info(
     pending.length

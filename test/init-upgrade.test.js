@@ -1224,3 +1224,66 @@ test("init (instalação) no modo workspace: nenhum arquivo de git é criado e n
     assert.doesNotMatch(r.stdout, /info\/exclude/);
   });
 });
+
+// ---- #227: --upgrade no modo projeto --------------------------------------------------------------
+
+test("upgradePendencies: AGENTS.md/CLAUDE.md versionados pedem a decisão no /jarvis-init upgrade", () => {
+  const base = { pendingAxes: [], envPlan: {}, missingProfile: [] };
+  assert.deepEqual(upgradePendencies({ ...base, trackedGenerated: [] }), []);
+  assert.deepEqual(upgradePendencies({ ...base, trackedGenerated: ["AGENTS.md"] }), [
+    "decidir se AGENTS.md sai do git",
+  ]);
+  assert.deepEqual(upgradePendencies({ ...base, trackedGenerated: ["AGENTS.md", "CLAUDE.md"] }), [
+    "decidir se AGENTS.md e CLAUDE.md saem do git",
+  ]);
+});
+
+test("init --upgrade no modo projeto: grava o exclude e a pasta da IDE no .gitignore", () => {
+  withRealRepo({ ".claude/ENV.md": ENV_V520 }, (ws) => {
+    const r = run(ws, "--upgrade", "--ide", "claude", "--yes");
+    assert.equal(r.status, 0, r.stderr);
+    for (const f of GENERATED) assert.ok(excludeOf(ws).includes(f), `${f} no exclude`);
+    assert.match(gitignoreOf(ws), /^\.claude\/$/m);
+    assert.match(r.stdout, /Git \(modo projeto\)/);
+    assert.match(r.stdout, /Nada pendente na IDE|Agora rode/);
+  });
+});
+
+test("init --upgrade: segunda execução não repete a mensagem nem duplica linha", () => {
+  withRealRepo({ ".claude/ENV.md": ENV_V520 }, (ws) => {
+    assert.equal(run(ws, "--upgrade", "--ide", "claude", "--yes").status, 0);
+    const exclude = readFileSync(join(ws, ".git/info/exclude"), "utf-8");
+    const ignore = gitignoreOf(ws);
+    const again = run(ws, "--upgrade", "--ide", "claude", "--yes");
+    assert.equal(again.status, 0, again.stderr);
+    assert.equal(readFileSync(join(ws, ".git/info/exclude"), "utf-8"), exclude);
+    assert.equal(gitignoreOf(ws), ignore);
+    assert.doesNotMatch(again.stdout, /Git \(modo projeto\)/, "sem novidade, sem bloco");
+  });
+});
+
+test("init --upgrade --yes: AGENTS.md versionado vira pendência e NÃO sai do índice", () => {
+  withRealRepo({ ".claude/ENV.md": ENV_V520, "AGENTS.md": "# do time\n" }, (ws) => {
+    commitAll(ws);
+    const commits = gitIn(ws, "rev-list", "--count", "HEAD").trim();
+    const r = run(ws, "--upgrade", "--ide", "claude", "--yes");
+    assert.equal(r.status, 0, r.stderr);
+    assert.match(r.stdout, /AGENTS\.md está versionado: nada foi removido/);
+    assert.match(r.stdout, /decidir se AGENTS\.md sai do git/);
+    assert.equal(gitIn(ws, "ls-files", "AGENTS.md").trim(), "AGENTS.md");
+    assert.equal(gitIn(ws, "diff", "--cached", "--name-only").trim(), "", "nada staged pelo upgrade");
+    assert.equal(gitIn(ws, "rev-list", "--count", "HEAD").trim(), commits);
+    assert.ok(!excludeOf(ws).includes("AGENTS.md"));
+    assert.equal(readFileSync(join(ws, "AGENTS.md"), "utf-8"), "# do time\n");
+  });
+});
+
+test("init --upgrade no modo workspace: nenhum arquivo de git é criado e nada fala em exclude", () => {
+  withWorkspace({ ".claude/ENV.md": ENV_V520, "app/.git/HEAD": "" }, (ws) => {
+    const r = run(ws, "--upgrade", "--ide", "claude", "--yes");
+    assert.equal(r.status, 0, r.stderr);
+    assert.ok(!existsSync(join(ws, ".git")));
+    assert.ok(!existsSync(join(ws, ".gitignore")));
+    assert.doesNotMatch(r.stdout, /Git \(modo projeto\)|info\/exclude/);
+  });
+});
