@@ -39,4 +39,4 @@ docs/
 
 ## Relação com `jarvis docs sync`
 
-O CLI `jarvis docs sync|fetch|publish` fala com o **Central docs**, o registro do que foi implementado (funcionalidades e entregas, geradas pelo `/eng.spec-consolidate`; configurado no ENV: `CENTRAL_DOCS_STORAGE` + `CENTRAL_DOCS_LOCATION`; hoje uma pasta, com git opcional). Os documentos de trabalho gerados pelos comandos ficam em `docs/jarvis/` no projeto do usuário. Isso é outra coisa: docs de produto/arquitetura da org, não esta pasta `docs/` do framework.
+O CLI `jarvis docs sync|fetch|publish` fala com o **Central docs**, o registro do que foi implementado (funcionalidades e entregas, geradas pelo `/eng.spec-consolidate`; configurado no ENV: `CENTRAL_DOCS_STORAGE` + `CENTRAL_DOCS_LOCATION`, que aceita `$VAR` e por padrão é `$JARVIS_DOCS/central-docs`; hoje uma pasta, com git opcional). Os documentos de trabalho gerados pelos comandos ficam em `$JARVIS_DOCS` (com os valores padrão, `docs/jarvis/`) no projeto do usuário. Isso é outra coisa: docs de produto/arquitetura da org, não esta pasta `docs/` do framework.

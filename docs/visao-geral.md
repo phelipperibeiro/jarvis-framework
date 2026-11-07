@@ -98,14 +98,14 @@ jarvis/
            │ npm install -g | npm link
            ▼
 ┌──────────────────────┐
-│  CLI jarvis no PATH │  which jarvis · jarvis --version
+│  CLI jarvis no PATH  │  which jarvis · jarvis --version
 └──────────┬───────────┘
            │ no workspace do produto: jarvis init --ide cursor
            ▼
 ┌──────────────────────┐
 │  .cursor/ (ou IDE)   │  cópia de agents, skills, workflows, rules, templates
-│  jarvis-lock.json   │  versão + origem do framework
-│  .jarvis/sessions/  │  estado local eng/prod/qa
+│  jarvis-lock.json    │  versão + origem do framework
+│  $SESSIONS_DIR/      │  estado local eng/prod/qa
 └──────────┬───────────┘
            │ no chat: /jarvis-init
            ▼
@@ -126,7 +126,7 @@ O que o **npm publica** (`package.json` → `files`): CLI + agents + skills + wo
 
 Pasta que contém `.$IDE/`. Não é “um repo git” necessariamente — pode ser multi-repo com `WORKSPACE_REPOS`.
 
-Sessões: `{workspace}/.jarvis/sessions/{eng,prod,qa}/` (`SESSIONS_DIR=.jarvis/sessions`).  
+Sessões: `{workspace}/$SESSIONS_DIR/{eng,prod,qa}/` (`SESSIONS_DIR`, padrão `.jarvis/sessions`; o `jarvis init` cria as pastas nesse caminho).  
 Estado do framework **não** fica em `~/.jarvis/` neste fork (exceto restos legados de login, ignorados).
 
 ### ENV.md
@@ -245,7 +245,7 @@ Detalhe da rule: `rules/rtk-rules.md`. Comentários: `templates/ENV-template.md`
 4. No workspace: `jarvis init` (espelha `.$IDE/`)  
 5. `/jarvis-init` → **Upgrade (C)** só se houver chaves novas no template (obrigatório ao vir de uma versão anterior à 2.0: acrescenta as listas de especializações)  
 
-`ENV.md` e `.jarvis/sessions/` **não** são sobrescritos pelo sync de assets.
+`ENV.md` e `$SESSIONS_DIR/` **não** são sobrescritos pelo sync de assets.
 
 ---
 

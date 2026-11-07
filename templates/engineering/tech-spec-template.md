@@ -139,9 +139,10 @@ sequenceDiagram
 **Subtarefas:**
 
 #### SUBTASK-001: {Nome da Subtarefa}
+<!-- `{RAIZ}` nos links: a sequência de `../` até a pasta do workspace, contada para este arquivo (`rules-on-demand/doc-links-rules.md`, regra 1); troque ao gravar. -->
 - **Descrição**: {Descrição técnica detalhada do que precisa ser feito}
 - **Arquivos a Modificar/Criar**:
-  - [`{arquivo}:{n}`](../../../../{repo}/{caminho/do/arquivo}#L{n}) - Modificação - {Descrição}
+  - [`{arquivo}:{n}`]({RAIZ}{repo}/{caminho/do/arquivo}#L{n}) - Modificação - {Descrição}
   - `{caminho/do/arquivo-novo}` - Criação (arquivo novo fica em texto) - {Descrição}
 - **Critérios de Aceitação Técnicos**:
   - [ ] {Critério técnico 1 - como validar}
@@ -463,10 +464,10 @@ TIMEOUT_MS=5000
 ## 12. Referências
 
 ### 12.1 Documentos Relacionados
-- [PRD: {nome}](../../../../docs/jarvis/product/prd-{id}-{nome}/prd-{id}-{nome}.md)
-- [FRD: {nome}](../../../../docs/jarvis/product/prd-{id}-{nome}/frd-{id}-{nome}.md)
-- [Epic: {nome}](../../../../docs/jarvis/product/prd-{id}-{nome}/issues/epic-{id}-{nome}.md)
-- [ADR: {nome}](../../../../docs/jarvis/engineering/ARD/ARD-{id}-{nome}.md)
+- [PRD: {nome}]({RAIZ}$PROD_DOCS/prd-{id}-{nome}/prd-{id}-{nome}.md)
+- [FRD: {nome}]({RAIZ}$PROD_DOCS/prd-{id}-{nome}/frd-{id}-{nome}.md)
+- [Epic: {nome}]({RAIZ}$PROD_DOCS/prd-{id}-{nome}/issues/epic-{id}-{nome}.md)
+- [ADR: {nome}]({RAIZ}$ENG_DOCS/ARD/ARD-{id}-{nome}.md)
 
 ### 12.2 Issues Relacionadas
 - {STORY-XXX}: {descrição}

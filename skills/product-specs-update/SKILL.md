@@ -51,7 +51,7 @@ cat "$IDE/ENV.md"
 ```
 
 Resolver `$PROD_DOCS` até o caminho real, expandindo as variáveis do próprio
-`ENV.md` (ex.: `PROD_DOCS=$JARVIS_DOCS/$PROD_FOLDER_NAME` → `docs/jarvis/product`,
+`ENV.md` (ex.: `PROD_DOCS=$JARVIS_DOCS/$PROD_FOLDER_NAME` → `docs/jarvis/product` com os valores padrão,
 relativo à pasta do workspace). Os comandos abaixo usam esse caminho, entre
 aspas. Se `$PROD_DOCS` ficar vazio, pare e avise: um `grep -r` sem caminho lê
 a entrada padrão e fica parado.

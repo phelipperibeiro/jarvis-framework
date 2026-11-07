@@ -11,11 +11,11 @@ Como o Jarvis está **montado** no disco: o que cada peça é, o que entra no pa
 │  agents/ skills/ workflows/ rules/ templates/  + taxonomy   │
 │  rules-on-demand/                                           │
 │            │                                                │
-│            │  jarvis init --ide cursor                     │
+│            │  jarvis init --ide cursor                      │
 │            ▼                                                │
 │  workspace-squad/.cursor/{agents,skills,workflows,...}      │
-│  workspace-squad/.cursor/ENV.md   ← /jarvis-init           │
-│  workspace-squad/.jarvis/sessions/{eng,prod,qa}/           │
+│  workspace-squad/.cursor/ENV.md   ← /jarvis-init            │
+│  workspace-squad/$SESSIONS_DIR/{eng,prod,qa}/               │
 └─────────────────────────────────────────────────────────────┘
 ```
 

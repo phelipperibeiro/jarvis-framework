@@ -89,9 +89,9 @@ Regras:
 
 ---
 
-## Passo 0.6 – Buscar Documentação Relacionada (`docs/jarvis/` sempre; Central docs se configurado)
+## Passo 0.6 – Buscar Documentação Relacionada (`$JARVIS_DOCS` sempre; Central docs se configurado)
 
-A busca em `docs/jarvis/` (PRD, ARD, RFCs) é sempre feita; a consulta ao Central docs só se `CENTRAL_DOCS_STORAGE` estiver definido no ENV.md (vazio: pule só o item 1).
+A busca em `$JARVIS_DOCS` (PRD, ARD, RFCs) é sempre feita; a consulta ao Central docs só se `CENTRAL_DOCS_STORAGE` estiver definido no ENV.md (vazio: pule só o item 1).
 
 1. Se `CENTRAL_DOCS_STORAGE` estiver definido, consultar no Central docs as funcionalidades já implementadas relacionadas (o que existe hoje):
    ```bash
@@ -110,7 +110,7 @@ A busca em `docs/jarvis/` (PRD, ARD, RFCs) é sempre feita; a consulta ao Centra
 
 4. Se documentos encontrados:
    - Carregar automaticamente como contexto
-   - Informar ao usuário: "✅ Documentos encontrados (`docs/jarvis/` e, se configurado, Central docs): [lista]"
+   - Informar ao usuário: "✅ Documentos encontrados (`$JARVIS_DOCS` e, se configurado, Central docs): [lista]"
    - Incorporar ao contexto antes do Passo 1
 
 5. Se não encontrado:
@@ -222,5 +222,5 @@ Entregar:
 
 ## Central docs
 
-Este documento é um **documento de trabalho**: fica em `$PROD_DOCS`/`$ENG_DOCS` (`docs/jarvis/`) e **não** é publicado no Central docs. O Central docs registra só o que foi implementado, e quem o atualiza é o `/eng.spec-consolidate`, depois do PR da entrega.
+Este documento é um **documento de trabalho**: fica em `$PROD_DOCS`/`$ENG_DOCS` e **não** é publicado no Central docs. O Central docs registra só o que foi implementado, e quem o atualiza é o `/eng.spec-consolidate`, depois do PR da entrega.
 

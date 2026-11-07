@@ -43,4 +43,4 @@ Pergunta 9: Estilo dos artefatos?
 Pergunta 10 (opcional): Usa board de cards? jira/github/gitlab ou Nenhum (freelance) → descoberta da CLI e variáveis (Passo 4)
 ```
 
-**Agente**: *(cria ENV.md + `.jarvis/sessions/{eng,prod,qa}`, valida Context7, cria AGENTS.md e confirma)*
+**Agente**: *(cria ENV.md + `$SESSIONS_DIR/{eng,prod,qa}` (padrão `.jarvis/sessions`), valida Context7, cria AGENTS.md e confirma)*

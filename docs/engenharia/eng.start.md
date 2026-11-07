@@ -8,7 +8,7 @@ Investiga a tarefa, tira as dúvidas com você e escreve o `architecture.md`: o 
 
 ## O que é
 
-É a primeira etapa do ciclo de engenharia. O comando **só planeja**. O único documento que produz é o `architecture.md`, guardado na pasta de sessão da tarefa (`.jarvis/sessions/eng/{TASK_MANAGER_KEY}/`).
+É a primeira etapa do ciclo de engenharia. O comando **só planeja**. O único documento que produz é o `architecture.md`, guardado na pasta de sessão da tarefa (`$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/`).
 
 Além do documento, ele prepara o ambiente: pergunta **de qual branch partir** (`main`, `dev`, a atual ou outra), cria a **branch de feature** a partir dela (nome montado pela skill `eng-global-branch`: `{prefixo}/{chave}-{titulo}` quando o projeto tem convenção de nome, como `feature/199-company-overlay-fork`, ou `{chave}-{titulo}` sem; com convenção, ela mostra o nome e confirma; reaproveita a branch se você já estiver nela) e a pasta da sessão, com o `TASK_MANAGER_KEY` em minúsculas.
 

@@ -71,13 +71,13 @@ Novo fluxo:
 
 ### 2.3 Componentes Impactados
 
-> Caminhos como link relativo a este arquivo (`rules-on-demand/doc-links-rules.md`); arquivo ainda não criado fica em texto.
+> Caminhos como link relativo a este arquivo (`rules-on-demand/doc-links-rules.md`); arquivo ainda não criado fica em texto. `{RAIZ}` é a sequência de `../` até a pasta do workspace, contada para este arquivo (`doc-links-rules.md`, regra 1); troque ao gravar.
 
 | Componente | Caminho | Tipo de Mudança | Descrição da Mudança |
 | ---------- | ------- | --------------- | -------------------- |
 | {Nome}     | `{path}` | 🆕 Criação      | {descrição}          |
-| {Nome}     | [`{path}`](../../../../{repo}/{path}#L{n}) | ✏️ Modificação  | {descrição}          |
-| {Nome}     | [`{path}`](../../../../{repo}/{path}) | 🗑️ Remoção      | {descrição}          |
+| {Nome}     | [`{path}`]({RAIZ}{repo}/{path}#L{n}) | ✏️ Modificação  | {descrição}          |
+| {Nome}     | [`{path}`]({RAIZ}{repo}/{path}) | 🗑️ Remoção      | {descrição}          |
 
 ### 2.4 Padrões e Convenções a Seguir
 
@@ -93,7 +93,7 @@ Novo fluxo:
 
 | Premissa | Fonte | O que a derrubaria | Como conferir |
 | -------- | ----- | ------------------ | ------------- |
-| {afirmação em que o documento se apoia} | {lida: [`{arquivo}:{n}`](../../../../{repo}/{caminho}#L{n}) \| presumida} | {fato que, se verdadeiro, invalida a premissa} | {leitura, comando ou pergunta} |
+| {afirmação em que o documento se apoia} | {lida: [`{arquivo}:{n}`]({RAIZ}{repo}/{caminho}#L{n}) \| presumida} | {fato que, se verdadeiro, invalida a premissa} | {leitura, comando ou pergunta} |
 
 **O que derrubaria este documento:** {a premissa mais frágil, em uma frase}
 
@@ -280,8 +280,8 @@ graph TD
 {Explicação detalhada do problema e por que a decisão é necessária.}
 
 **Arquivos/componentes envolvidos:**
-* [`{símbolo}` (`{arquivo}:{n}`)](../../../../{repo}/{caminho}#L{n}) — {relação com a questão}
-* [{RQT-n}](../../../../docs/jarvis/product/{prd}/{frd}.md#{âncora-do-título}) — {o que o requisito diz sobre a questão}
+* [`{símbolo}` (`{arquivo}:{n}`)]({RAIZ}{repo}/{caminho}#L{n}) — {relação com a questão}
+* [{RQT-n}]({RAIZ}$PROD_DOCS/{prd}/{frd}.md#{âncora-do-título}) — {o que o requisito diz sobre a questão}
 
 **Dúvida:**
 {Descrição clara e inequívoca do que precisa ser decidido.}
@@ -322,9 +322,9 @@ graph TD
 
 ## 9. Referências
 
-- [PRD/Requisitos](../../../../docs/jarvis/product/{prd}/{prd}.md)
+- [PRD/Requisitos]({RAIZ}$PROD_DOCS/{prd}/{prd}.md)
 - [Documentação relacionada]({caminho relativo a este arquivo ou URL})
-- [Código de referência](../../../../{repo}/{caminho}#L{n})
+- [Código de referência]({RAIZ}{repo}/{caminho}#L{n})
 - [Card]({URL do card}) · [PR/MR]({URL do PR/MR})
 - [Documentação externa]({URL})
 

@@ -20,11 +20,11 @@ Integrar os comandos do framework com o **Central docs**: o registro do que **de
 
 | Camada | O que é | Onde fica |
 |---|---|---|
-| Documentos de trabalho | PRD, FRD, épicos, histórias, ARD, RFC, SPEC, QA, swagger, robôs, C4: o que se pretende e se discute, **enquanto não estão ligados a uma entrega consolidada** | `docs/jarvis/` (`$PROD_DOCS`, `$ENG_DOCS`), fora do versionamento |
-| Sessões | `.jarvis/sessions/eng/{card}/`: `architecture.md`, `plan.md`, `context.md`, rodadas do pré-PR, scripts e saídas. **Vão inteiras para o Central docs** depois da entrega (#229), e a pasta pode ser apagada | `.jarvis/sessions/` (rascunho local, fora do versionamento) |
+| Documentos de trabalho | PRD, FRD, épicos, histórias, ARD, RFC, SPEC, QA, swagger, robôs, C4: o que se pretende e se discute, **enquanto não estão ligados a uma entrega consolidada** | `$JARVIS_DOCS` (`$PROD_DOCS`, `$ENG_DOCS`), fora do versionamento |
+| Sessões | `$SESSIONS_DIR/eng/{card}/`: `architecture.md`, `plan.md`, `context.md`, rodadas do pré-PR, scripts e saídas. **Vão inteiras para o Central docs** depois da entrega (#229), e a pasta pode ser apagada | `$SESSIONS_DIR` (rascunho local, fora do versionamento) |
 | **Central docs** | O que foi implementado: um documento **completo e autossuficiente** por funcionalidade (estado atual), um **registro por entrega** (PR, commits, autores), o conteúdo transversal do produto, o histórico de cada entrega e os documentos de trabalho **já ligados** a uma entrega consolidada | Pasta do Central docs (adaptador), por funcionalidade |
 
-Quem escreve no Central docs é o **`/eng.spec-consolidate`** (agente `eng.docs-consolidator.agent`), depois do merge do PR. Um documento de trabalho **só** chega lá quando está ligado a uma entrega consolidada (Q1 da #220); o que não está ligado continua em `docs/jarvis/`, intocado.
+Quem escreve no Central docs é o **`/eng.spec-consolidate`** (agente `eng.docs-consolidator.agent`), depois do merge do PR. Um documento de trabalho **só** chega lá quando está ligado a uma entrega consolidada (Q1 da #220); o que não está ligado continua em `$JARVIS_DOCS`, intocado.
 
 **Modos deste skill:**
 - buscar o que já foi implementado (Modo 1);
@@ -47,7 +47,7 @@ Quem escreve no Central docs é o **`/eng.spec-consolidate`** (agente `eng.docs-
 
 Sem `.git`, grava direto na pasta.
 
-**Onde fica a pasta** (o `/jarvis-init` configura no Passo 5.2): `docs/jarvis/central-docs`, nos dois modos de trabalho, junto dos documentos de trabalho (no projeto único, coberto por `docs/jarvis/` no `.gitignore`; no modo workspace a raiz não é versionada). Nunca no versionamento de um repositório de código.
+**Onde fica a pasta** (o `/jarvis-init` configura no Passo 5.2): `$JARVIS_DOCS/central-docs` (padrão do template; hoje `docs/jarvis/central-docs`; o valor escrito por extenso em um `ENV.md` antigo continua valendo), nos dois modos de trabalho, junto dos documentos de trabalho (no projeto único, coberto por `$JARVIS_DOCS/` no `.gitignore`; no modo workspace a raiz não é versionada). Nunca no versionamento de um repositório de código.
 
 ## Pré-condição
 
@@ -97,7 +97,7 @@ Por **funcionalidade** (Q2 da #220), no padrão do Confluence (uma página por d
 | `delivery` | `id`, `feature`, `task_key`, `pr`, `date` |
 | `product` | `id`, `name`, `updated_at` |
 | `home` | `name` |
-| `prd`, `frd`, `feat`, `epic`, `story`, `task`, `ard`, `rfc`, `discovery`, `qa-report` | O próprio frontmatter do documento (templates de `docs/jarvis/`) |
+| `prd`, `frd`, `feat`, `epic`, `story`, `task`, `ard`, `rfc`, `discovery`, `qa-report` | O próprio frontmatter do documento (templates de `$JARVIS_DOCS`) |
 | `swagger`, `history`, `architecture`, `plan`, `light-arch` | Nenhum campo exigido (os arquivos da sessão não têm frontmatter; a página-índice da sessão usa o do `central-session-template.md`, sem campo obrigatório) |
 
 Status da funcionalidade: a lista de produto (`icebox`, `in_review`, `backlog`, `in_progress`, `in_production`, `cancelled`, `deprecated`). `labels` (opcional, em todos os tipos): minúsculas, no singular, sem espaço (ex.: `arquitetura`, `decisao`) — padrão Confluence.
@@ -164,7 +164,7 @@ jarvis docs fetch {SQUAD}/{produto}/checkout/checkout.md
 3. Buscar cada `feature-*` com `jarvis docs fetch` (e um `delivery-*`, se o detalhe de uma entrega importar).
 4. Devolver o resumo: funcionalidades, status e o que cada uma faz hoje.
 
-Os documentos de trabalho da tarefa (PRD, FRD, ARD, RFC, SPEC) moram em `$PROD_DOCS`/`$ENG_DOCS`: leia-os primeiro de lá. **Não achou?** Desde a #220, um documento ligado a uma entrega consolidada pode ter sido removido de `docs/jarvis/` (`--finalize`/`--force`) depois de publicado em `decisions/`. Busque pelo mesmo basename em `jarvis docs fetch {SQUAD}/{produto}/{funcionalidade}/decisions/{basename}`, na funcionalidade já identificada no passo 2. Enquanto o documento ainda existir em `docs/jarvis/`, é essa versão que vale, não a cópia publicada (Q13 da #220).
+Os documentos de trabalho da tarefa (PRD, FRD, ARD, RFC, SPEC) moram em `$PROD_DOCS`/`$ENG_DOCS`: leia-os primeiro de lá. **Não achou?** Desde a #220, um documento ligado a uma entrega consolidada pode ter sido removido de `$JARVIS_DOCS` (`--finalize`/`--force`) depois de publicado em `decisions/`. Busque pelo mesmo basename em `jarvis docs fetch {SQUAD}/{produto}/{funcionalidade}/decisions/{basename}`, na funcionalidade já identificada no passo 2. Enquanto o documento ainda existir em `$JARVIS_DOCS`, é essa versão que vale, não a cópia publicada (Q13 da #220).
 
 ### Modo 2: Publicar a consolidação
 
@@ -175,11 +175,11 @@ jarvis docs publish --file .../consolidation/feature-checkout.md --tipo feature
 jarvis docs publish --file .../consolidation/delivery-2026-10-15-task-123.md --tipo delivery --feature checkout
 ```
 
-- **Tipos aceitos:** `feature`, `delivery`, `product`, `history`, `home` e os documentos de trabalho (`prd`, `frd`, `feat`, `epic`, `story`, `task`, `ard`, `rfc`, `spec`, `swagger`, `qa-report`, `discovery`) **quando ligados a uma entrega consolidada** (Q1) — o que não está ligado fica em `docs/jarvis/`, sem passar por aqui. Da sessão (#229): `architecture`, `plan` e `light-arch` (em `decisions/`, nomeados `{tipo}-{card}.md`) e `history` para o resto, com `relPath` para preservar subpastas.
-- **Campos do manifesto** (`--manifest`): `file` (relativo à pasta do manifesto), `tipo`, `feature`, `taskKey`, `relPath` (só `history`), `fromSession` (arquivo vindo da sessão: versiona por hash, converte os links do `.md` e libera a remoção só dentro da pasta do card), `confirmed` (a pessoa aprovou o arquivo sinalizado: não é `.md`, binário, acima de 1 MB ou com possível segredo; sem isso o CLI recusa publicá-lo), `originalPath` (o arquivo na sessão ou em `docs/jarvis/`, base do `--archive`/`--finalize` e dos links). O `publish` grava de volta `publishedAs` (destino efetivo, com `-vN` se o conteúdo mudou) e `publishedHash`.
+- **Tipos aceitos:** `feature`, `delivery`, `product`, `history`, `home` e os documentos de trabalho (`prd`, `frd`, `feat`, `epic`, `story`, `task`, `ard`, `rfc`, `spec`, `swagger`, `qa-report`, `discovery`) **quando ligados a uma entrega consolidada** (Q1) — o que não está ligado fica em `$JARVIS_DOCS`, sem passar por aqui. Da sessão (#229): `architecture`, `plan` e `light-arch` (em `decisions/`, nomeados `{tipo}-{card}.md`) e `history` para o resto, com `relPath` para preservar subpastas.
+- **Campos do manifesto** (`--manifest`): `file` (relativo à pasta do manifesto), `tipo`, `feature`, `taskKey`, `relPath` (só `history`), `fromSession` (arquivo vindo da sessão: versiona por hash, converte os links do `.md` e libera a remoção só dentro da pasta do card), `confirmed` (a pessoa aprovou o arquivo sinalizado: não é `.md`, binário, acima de 1 MB ou com possível segredo; sem isso o CLI recusa publicá-lo), `originalPath` (o arquivo na sessão ou em `$JARVIS_DOCS`, base do `--archive`/`--finalize` e dos links). O `publish` grava de volta `publishedAs` (destino efetivo, com `-vN` se o conteúdo mudou) e `publishedHash`.
 - **`--dry-run`** (com `--manifest`): simula e mostra, por arquivo, **novo**, **igual**, **nova versão** ou **sobrescreve**, sem gravar nada nem mudar o manifesto.
 - **Versionamento (`-v1`, `-v2`…):** só para arquivos da sessão. Conteúdo igual ao já publicado não cria nada; conteúdo diferente entra como a próxima versão livre e a anterior permanece (sem mesclar). `feature-*`, `delivery-*` e `product` são "estado atual" e continuam sendo sobrescritos.
-- **Links:** os `.md` da sessão chegam ao Central docs com os links convertidos (regra 6 de `doc-links-rules.md`): arquivo da mesma entrega vira link relativo dentro do Central docs; código vira `{remote}/blob/{sha do commit base}/…`; sessão e `docs/jarvis/` viram texto. O original não muda. Links relativos que ainda não resolvem dentro do Central docs geram um aviso.
+- **Links:** os `.md` da sessão chegam ao Central docs com os links convertidos (regra 6 de `doc-links-rules.md`): arquivo da mesma entrega vira link relativo dentro do Central docs; código vira `{remote}/blob/{sha do commit base}/…`; sessão e `$JARVIS_DOCS` viram texto. O original não muda. Links relativos que ainda não resolvem dentro do Central docs geram um aviso.
 - **`--feature <slug>`:** opcional para `feature` (se o arquivo seguir `feature-{slug}.md`); obrigatório para `delivery` e para os documentos de trabalho — é a funcionalidade dona da pasta. Um documento que cobre mais de uma funcionalidade segue a "Regra de separação" acima **antes** de publicar, uma chamada por parte.
 - **`--task-key <chave>`:** obrigatório para `--tipo history`.
 - `--produto` troca o `WORKSPACE`.
@@ -232,7 +232,7 @@ O Central docs foi organizado para migrar ao Confluence sem refazer o conteúdo:
 
 ### Nunca
 
-- Publicar documento de trabalho **sem** vínculo com uma entrega consolidada (Q1) — ele fica em `docs/jarvis/`
+- Publicar documento de trabalho **sem** vínculo com uma entrega consolidada (Q1) — ele fica em `$JARVIS_DOCS`
 - Quebrar (Q9) um documento de uma funcionalidade só, ou inventar/perder conteúdo ao separar as partes
 - Publicar sem o Sim do usuário (Modo 2 é sempre pelo `/eng.spec-consolidate`); `--finalize`/`--force` sem o Sim do passo correspondente
 - Editar `{SQUAD}/index.md` à mão, ou sobrescrever `home.md` depois que ele já existe

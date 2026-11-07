@@ -20,7 +20,7 @@ Regras que **substituem** qualquer trecho legado deste skill ou dos assets:
 
 1. **Sem login/OAuth** — identidade = `USER=` (ENV.md → git email → SO). Nunca pedir `jarvis login` nem `~/.jarvis/auth.json`.
 2. **Sem `PROJECT_NAME` / `WORKSPACE_TYPE`** — a unidade é **workspace** (pasta que contém `$IDE/`).
-3. **Sessões no workspace** — `SESSIONS_DIR=.jarvis/sessions` com `{eng,prod,qa}/`. Estado local em `{workspace}/.jarvis/` (não em `~/.jarvis/`).
+3. **Sessões no workspace** — `$SESSIONS_DIR` (padrão `.jarvis/sessions`, configurável) com `{eng,prod,qa}/`. Estado local em `{workspace}/.jarvis/` (não em `~/.jarvis/`).
 4. **`TASK_MANAGER` vazio = freelance** — sem board. Workflows pedem `TASK_MANAGER_KEY` (controle próprio) e as ações viram `.md`.
 5. **Context7 obrigatório**; demais MCPs (Redis, Sentry, TestSprite) **não bloqueiam**. Board e git não usam MCP: usam a CLI oficial (contrato 7).
 6. **Sem event bus / metrics / checkin-checkout-daily** — não provisionar Redis runtime nem pedir métricas.
@@ -34,7 +34,7 @@ Regras que **substituem** qualquer trecho legado deste skill ou dos assets:
 
 - Configurar ambiente de desenvolvimento
 - Validar MCP obrigatório (Context7) e descobrir a CLI do board e do git (instalada e logada; não bloqueante)
-- Criar arquivos de configuração (ENV.md, AGENTS.md) e pastas `.jarvis/sessions/{eng,prod,qa}`
+- Criar arquivos de configuração (ENV.md, AGENTS.md) e pastas `$SESSIONS_DIR/{eng,prod,qa}`
 - Orientar nos processos do framework (sem ritual diário / login)
 
 ## Entrada
@@ -54,7 +54,7 @@ Regras que **substituem** qualquer trecho legado deste skill ou dos assets:
 - **Upgrade (C)**: `$IDE/skills/jarvis-init/assets/upgrade.md`
 - **Opções padrão e exemplos de validação**: `$IDE/skills/jarvis-init/assets/validacoes.md`
 - **Exemplo de execução**: `$IDE/skills/jarvis-init/assets/exemplo-execucao.md`
-- **Saída**: `$IDE/ENV.md`, `AGENTS.md`, `{workspace}/.jarvis/sessions/{eng,prod,qa}/`
+- **Saída**: `$IDE/ENV.md`, `AGENTS.md`, `{workspace}/$SESSIONS_DIR/{eng,prod,qa}/`
 
 ---
 
@@ -73,7 +73,7 @@ Regras que **substituem** qualquer trecho legado deste skill ou dos assets:
 │        ↓                                                    │
 │  4. PERGUNTAR → Variáveis opcionais                         │
 │        ↓                                                    │
-│  5. CRIAR → Arquivo ENV.md + pastas .jarvis/sessions       │
+│  5. CRIAR → Arquivo ENV.md + pastas $SESSIONS_DIR          │
 │        ↓                                                    │
 │  5.1 FLATTEN → Workflows para raiz (se IDE ≠ claude)        │
 │        ↓                                                    │
@@ -228,7 +228,7 @@ O ENV.md DEVE ser criado usando como base **TODO O CONTEÚDO** de:
 Fluxo correto:
 1. Ler o conteúdo completo de `templates/ENV-template.md`
 2. Substituir os valores das variáveis conforme coletado do usuário
-3. Garantir `SESSIONS_DIR=.jarvis/sessions` e `JARVIS_PROJECT=https://github.com/phelipperibeiro/jarvis-framework` (ou URL que o usuário informar)
+3. Garantir `SESSIONS_DIR` (padrão `.jarvis/sessions`) e `JARVIS_PROJECT=https://github.com/phelipperibeiro/jarvis-framework` (ou URL que o usuário informar)
 4. Escrever `$IDE/ENV.md` com o restante do template (incluindo variáveis vazias)
 5. As 6 chaves de especialização ficam **vazias**, exceto `QA_SPECIALIZATIONS`, que vem com `eng-qa-planner` (único hoje, pré-registrado por padrão — ver `templates/ENV-template.md`): não são perguntadas aqui. O registro/ajuste é feito no **passo 9 (adicionar as stacks)**, ou depois, a qualquer momento: consulta com `jarvis-list-specializations` e criação com `jarvis-create-specialization` (só backend/frontend).
 
@@ -580,10 +580,10 @@ Se **A** ou **B**, perguntar sobre cada variável opcional conforme seleção �
 | `TEST_FOLDER` | *(vazio)* | Pasta de testes |
 | `JARVIS_PROJECT` | `https://github.com/phelipperibeiro/jarvis-framework` | URL completa do repo do framework (`/jarvis-report-issue`); trocar só para um fork |
 | `CENTRAL_DOCS_STORAGE` / `_LOCATION` | `filesystem` / pasta padrão do modo de trabalho | Central docs (o que foi implementado), configurado no Passo 5.2; vazio = desligado |
-| `JARVIS_DOCS` / `ENG_DOCS` | `$DOCS_FOLDER/jarvis` / `$JARVIS_DOCS/engineering` | Documentos de trabalho (não perguntar; `docs/jarvis/` no `.gitignore` só se a raiz tiver `.git`) |
+| `JARVIS_DOCS` / `ENG_DOCS` | `$DOCS_FOLDER/jarvis` / `$JARVIS_DOCS/engineering` | Documentos de trabalho (não perguntar; `$JARVIS_DOCS/` no `.gitignore` só se a raiz tiver `.git`) |
 | `DISCOVERIES_FOLDER_NAME` / `DISCOVERIES_DOCS` | `discoveries` / `$JARVIS_DOCS/$DISCOVERIES_FOLDER_NAME` | Discoveries, fora de `product/` (não perguntar) |
 | `CENTRAL_DOCS_REF` / `_TARGET_BRANCH` / `_REVIEWERS` | `main` / `main` / *(vazio)* | Só quando a pasta do Central docs tem `.git` |
-| `SESSIONS_DIR` | `.jarvis/sessions` | Não perguntar — gravar fixo |
+| `SESSIONS_DIR` | `.jarvis/sessions` | Não perguntar — gravar o padrão. A pessoa pode trocar depois no `ENV.md`: o `jarvis init` cria as pastas e o `.gitignore` a partir da chave |
 | `RTK_ENABLED` | `false` (ou true se detectar `rtk`) | Token Killer |
 | `ADVISOR_MODELS` | `"Sonnet 5.5,Opus 5.5,Opus 5,Fable 5.1"` | Advisor do `eng.start` — não perguntar, gravar o padrão |
 
@@ -639,9 +639,9 @@ cat templates/ENV-template.md
 #    NÃO incluir: TOKEN_VERSION_CONTROL, PROJECT_NAME, EVENT_BUS*, metrics*
 
 # 6. Criar pastas de sessão no workspace (pasta que contém $IDE/):
-mkdir -p .jarvis/sessions/eng .jarvis/sessions/prod .jarvis/sessions/qa
+mkdir -p "$SESSIONS_DIR/eng" "$SESSIONS_DIR/prod" "$SESSIONS_DIR/qa"   # SESSIONS_DIR expandido (padrão .jarvis/sessions)
 
-# 7. Documentos de trabalho em docs/jarvis/ — nos DOIS modos de trabalho:
+# 7. Documentos de trabalho em $JARVIS_DOCS — nos DOIS modos de trabalho:
 #    JARVIS_DOCS=$DOCS_FOLDER/jarvis, PROD_DOCS=$JARVIS_DOCS/product, ENG_DOCS=$JARVIS_DOCS/engineering
 #    (valores do template). Uma docs/ já existente não é tocada.
 
@@ -649,7 +649,8 @@ mkdir -p .jarvis/sessions/eng .jarvis/sessions/prod .jarvis/sessions/qa
 #    Raiz sem .git (modo workspace, ou pasta sem nenhum repositório) não é versionada:
 #    NÃO crie nem altere o .gitignore da raiz.
 if [ -e .git ]; then
-  for line in '.jarvis/' 'docs/jarvis/' 'CDD-MIND-MAP.md'; do
+  # $SESSIONS_DIR/ entra só se for relativo, dentro da raiz e fora de .jarvis/
+  for line in '.jarvis/' "$JARVIS_DOCS/" 'CDD-MIND-MAP.md'; do
     grep -qxF "$line" .gitignore 2>/dev/null || echo "$line" >> .gitignore
   done
 fi
@@ -662,7 +663,7 @@ O Central docs é **ligado por padrão**: é onde fica o registro do que **foi i
 ```
 📚 Central docs: o registro do que foi implementado (um documento completo por funcionalidade
 e um por entrega), consultado pela IA e por outros squads. Os rascunhos (PRD, FRD, ARD, RFC, SPEC)
-ficam em docs/jarvis/ e não vão para lá.
+ficam em $JARVIS_DOCS e não vão para lá.
 ```
 
 Pergunte com `AskUserQuestion`:
@@ -673,7 +674,7 @@ Pergunte com `AskUserQuestion`:
 
 **A ou B:**
 - `CENTRAL_DOCS_STORAGE=filesystem`.
-- `CENTRAL_DOCS_LOCATION=docs/jarvis/central-docs` nos dois modos de trabalho, junto dos documentos de trabalho (a pessoa pode digitar outro caminho). Com `.git` na raiz, `docs/jarvis/` no `.gitignore` já cobre a pasta; sem `.git` na raiz (como no modo workspace) ela não é versionada, e nenhum `.gitignore` é necessário.
+- `CENTRAL_DOCS_LOCATION=$JARVIS_DOCS/central-docs` (padrão do template; hoje `docs/jarvis/central-docs`) nos dois modos de trabalho, junto dos documentos de trabalho (a pessoa pode digitar outro caminho). Com `.git` na raiz, `$JARVIS_DOCS/` no `.gitignore` já cobre a pasta; sem `.git` na raiz (como no modo workspace) ela não é versionada, e nenhum `.gitignore` é necessário.
 - **A:** `mkdir -p {LOCATION}` e criar `{LOCATION}/AGENTS.md` mínimo, explicando:
   - a estrutura `{SQUAD}/product/{produto}/feature-*.md` e `{SQUAD}/engineering/{produto}/delivery-*.md`;
   - que o `{SQUAD}/index.md` é gerado pelo `jarvis docs publish`.
@@ -1086,7 +1087,7 @@ Apresentar checklist de onboarding por período (Dia 1, Semana 1, Mês 1).
 - ✅ Só perguntar USER se o usuário quiser outro identificador
 - ✅ Validar range do MAX_AI_EXECUTION_PERCENTAGE (60-100)
 - ✅ WORKSPACE detectado (basename da pasta do `$IDE/`) ou override
-- ✅ Criar `.jarvis/sessions/{eng,prod,qa}` e, só com `.git` na raiz, garantir `.jarvis/` no `.gitignore`
+- ✅ Criar `$SESSIONS_DIR/{eng,prod,qa}` e, só com `.git` na raiz, garantir `.jarvis/` (e o `$SESSIONS_DIR/` relativo fora de `.jarvis/`) no `.gitignore`
 - ✅ Explicar freelance se `TASK_MANAGER` vazio (`TASK_MANAGER_KEY` próprio)
 - ✅ Garantir o Context7 no arquivo de MCP que a IDE lê, no formato dela, e validá-lo (obrigatório; pendente de ativação não bloqueia)
 - ✅ Descobrir a CLI do board e do git em best-effort (1 tentativa, nunca bloquear)
@@ -1123,7 +1124,7 @@ Apresentar checklist de onboarding por período (Dia 1, Semana 1, Mês 1).
 📁 Arquivos criados:
 - ENV.md: $IDE/ENV.md
 - AGENTS.md: ./AGENTS.md
-- Sessões: .jarvis/sessions/{eng,prod,qa}/
+- Sessões: $SESSIONS_DIR/{eng,prod,qa}/
 
 🔧 Configuração:
 - IDE: {ide}
@@ -1170,8 +1171,8 @@ Bem-vindo! 🎉
 - [ ] USER gravado no ENV.md a partir da identidade local
 - [ ] Validou MAX_AI_EXECUTION_PERCENTAGE (60-100) - para campos livres
 - [ ] Confirmou WORKSPACE (nome da pasta do `$IDE/` ou override)
-- [ ] ENABLE_CDD=true e SESSIONS_DIR=.jarvis/sessions
-- [ ] Criou `.jarvis/sessions/{eng,prod,qa}` e, só com `.git` na raiz, `.jarvis/` no `.gitignore` (raiz sem `.git`: nenhum `.gitignore`)
+- [ ] ENABLE_CDD=true e SESSIONS_DIR preenchido (padrão .jarvis/sessions)
+- [ ] Criou `$SESSIONS_DIR/{eng,prod,qa}` e, só com `.git` na raiz, `.jarvis/` no `.gitignore` (raiz sem `.git`: nenhum `.gitignore`)
 - [ ] TASK_MANAGER: valor ou vazio (freelance) explicado
 - [ ] Não gravou TOKEN_VERSION_CONTROL / PROJECT_NAME / EVENT_BUS*
 - [ ] Perguntou sobre variáveis opcionais

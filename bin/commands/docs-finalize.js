@@ -1,6 +1,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { openStorageFromEnv } from "../lib/docs/fetch-file.js";
 import { finalizeEntries, isEntryList } from "../lib/docs/finish-delivery.js";
+import { EnvPathError, checkEnvPaths } from "../lib/core/env-paths.js";
 import { logger, configureFromFlags } from "../lib/utils/logger.js";
 
 /**
@@ -53,6 +54,14 @@ export async function docsFinalize(flags = {}) {
     ({ env, storage, root: workspaceRoot } = openStorageFromEnv(flags));
   } catch (error) {
     logger.error("❌ Central docs:", error.message);
+    process.exit(1);
+  }
+
+  try {
+    checkEnvPaths(env);
+  } catch (error) {
+    if (!(error instanceof EnvPathError)) throw error;
+    logger.error("❌ ENV.md:", error.message);
     process.exit(1);
   }
 

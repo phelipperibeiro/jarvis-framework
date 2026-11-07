@@ -32,6 +32,7 @@ import { DEFAULT_COMPANY_PROFILE, isValidCompanyProfile } from "../lib/core/comp
 import { checkCli, getVendor } from "../lib/integrations/cli-runner.js";
 import {
   expandEnv,
+  docsFolders,
   planDocsMigration,
   applyDocsMigration,
   rewriteRelatedDiscovery,
@@ -39,6 +40,7 @@ import {
   ensureGitignore,
 } from "../lib/core/docs-migrate.js";
 import { rootIsRepo } from "../lib/core/workspace-mode.js";
+import { EnvPathError, checkEnvPaths, planSessionsSetup } from "../lib/core/env-paths.js";
 import { ensureContext7 } from "../lib/core/mcp-config.js";
 
 function ask(rl, question) {
@@ -403,13 +405,19 @@ export async function init(flags) {
     if (rulesSync?.errors.length) process.exitCode = 1;
   }
 
-  const jarvisRoot = join(cwd, ".jarvis");
-  for (const area of ["eng", "prod", "qa"]) {
-    mkdirSync(join(jarvisRoot, "sessions", area), { recursive: true });
-  }
+  // Sessões: pasta e .gitignore seguem o SESSIONS_DIR do ENV.md (reinstalação); sem ENV.md vale o padrão (#228).
   // .gitignore só numa raiz versionada (com .git): no modo workspace a raiz não é um repositório.
-  if (rootIsRepo(cwd)) {
-    ensureGitignore(cwd, ".jarvis/");
+  try {
+    const sessionsEnv = existsSync(envOnDisk) ? parseEnvEntries(readFileSync(envOnDisk, "utf-8")) : new Map();
+    const sessions = planSessionsSetup({ workspaceDir: cwd, env: sessionsEnv, isRepo: rootIsRepo(cwd) });
+    for (const dir of sessions.areaDirs) mkdirSync(dir, { recursive: true });
+    for (const line of sessions.gitignore) ensureGitignore(cwd, line);
+    for (const warning of sessions.warnings) logger.info(`${YELLOW}  ⚠ ${warning}${NC}`);
+  } catch (error) {
+    if (!(error instanceof EnvPathError)) throw error;
+    logger.error(`${RED}  ✗ ${error.message}${NC}`);
+    logger.error(`${RED}  ✗ As pastas de sessão não foram criadas. Corrija o ENV.md e rode o init de novo.${NC}`);
+    process.exitCode = 1;
   }
 
   logger.info("");
@@ -593,6 +601,16 @@ async function runUpgrade(cwd, flags) {
   }
   const workspaceDir = resolved.root;
   const envPath = resolved.path;
+  // 0. Caminhos do ENV.md com `$` sem valor: o upgrade para antes de mexer em qualquer coisa (#228).
+  try {
+    checkEnvPaths(parseEnvEntries(readFileSync(envPath, "utf-8")));
+  } catch (error) {
+    if (!(error instanceof EnvPathError)) throw error;
+    logger.error(`${RED}  ✗ ${error.message}${NC}`);
+    logger.error(`${RED}  ✗ Upgrade interrompido: nada foi alterado. Corrija o ENV.md e rode de novo.${NC}\n`);
+    return 1;
+  }
+
   const previousVersion = readLockVersion(workspaceDir);
   // Vindo do menu do `init`, o aviso já saiu antes da escolha (Q8): só reaproveita o resultado.
   const { downgrade, running } =
@@ -651,7 +669,7 @@ async function runUpgrade(cwd, flags) {
     if (flags.yes) accepted = true;
     else if (process.stdin.isTTY) {
       const rl = createInterface({ input: process.stdin, output: process.stdout });
-      const answer = await ask(rl, `Mover para docs/jarvis/…? (s/N): `);
+      const answer = await ask(rl, `Mover para ${docsFolders(env).jarvis}/…? (s/N): `);
       rl.close();
       accepted = answer.trim().toLowerCase() === "s";
     } else {

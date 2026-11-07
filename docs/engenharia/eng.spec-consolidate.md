@@ -4,11 +4,11 @@ Workflow: `workflows/engineering/eng.spec-consolidate.md` · Agente: `agents/eng
 
 ## Em uma frase
 
-Depois do merge do PR (o `/eng.pr` pergunta no fim e oferece chamá-lo), transforma tudo o que a entrega envolveu num registro completo para o **Central docs**, por funcionalidade: a página de cada funcionalidade tocada, o registro da entrega e, se houver, a página do produto. **Guarda também todos os arquivos da sessão**, com uma página-índice, para você poder apagar `.jarvis/sessions/eng/{card}/` sem perder nada.
+Depois do merge do PR (o `/eng.pr` pergunta no fim e oferece chamá-lo), transforma tudo o que a entrega envolveu num registro completo para o **Central docs**, por funcionalidade: a página de cada funcionalidade tocada, o registro da entrega e, se houver, a página do produto. **Guarda também todos os arquivos da sessão**, com uma página-índice, para você poder apagar `$SESSIONS_DIR/eng/{card}/` sem perder nada.
 
 ## O que é
 
-O Central docs registra o que foi implementado. Um documento de trabalho (PRD, FRD, ARD, RFC, SPEC, épico…) **ligado a esta entrega** é publicado junto, na pasta da funcionalidade (`decisions/`) — o que não está ligado continua em `docs/jarvis/`, sem ser tocado. Este comando cruza as fontes com o que aconteceu de verdade:
+O Central docs registra o que foi implementado. Um documento de trabalho (PRD, FRD, ARD, RFC, SPEC, épico…) **ligado a esta entrega** é publicado junto, na pasta da funcionalidade (`decisions/`) — o que não está ligado continua em `$JARVIS_DOCS`, sem ser tocado. Este comando cruza as fontes com o que aconteceu de verdade:
 - as decisões do `architecture.md` e as mudanças de direção do `plan.md`;
 - o diff e os commits (quem fez o quê, quando);
 - o PR/MR e o card;
@@ -57,7 +57,7 @@ O Central docs é, portanto, um **snapshot de cada funcionalidade implementada, 
 
 ## Sessões antigas, uma por vez
 
-Quem já tem dezenas de pastas em `.jarvis/sessions/eng/` não precisa fazer tudo de uma vez nem às pressas:
+Quem já tem dezenas de pastas em `$SESSIONS_DIR/eng/` não precisa fazer tudo de uma vez nem às pressas:
 
 - `jarvis docs sessions` lista as sessões, os arquivos de cada uma, o que falta e quais ainda estão **pendentes** (sem a página-índice no Central docs). `--proxima` imprime só o card da próxima.
 - `/eng.spec-consolidate --proxima` (ou `--sessao {card}`) trata **uma** sessão, do começo ao fim, com os mesmos Sim de sempre, e diz quantas faltam. Pode parar quando quiser; a execução seguinte continua da próxima pendente. O ponto onde você parou é o próprio Central docs (a página-índice publicada), sem arquivo de controle.
@@ -68,7 +68,7 @@ Quem já tem dezenas de pastas em `.jarvis/sessions/eng/` não precisa fazer tud
 ## Regras que importam
 
 - Nada é publicado, arquivado ou finalizado sem o **Sim** daquele passo — cada um tem a pergunta dele
-- Um documento de trabalho só é publicado se estiver **ligado** a esta entrega; sem vínculo, continua em `docs/jarvis/`
+- Um documento de trabalho só é publicado se estiver **ligado** a esta entrega; sem vínculo, continua em `$JARVIS_DOCS`
 - Documento de uma funcionalidade só nunca é quebrado em partes
 - Finalizar sem ter arquivado antes é recusado; documento que mudou desde o `--archive` nunca é apagado
 - Sem e-mails, tokens ou valores de variáveis
@@ -76,7 +76,7 @@ Quem já tem dezenas de pastas em `.jarvis/sessions/eng/` não precisa fazer tud
 - Sem `.git`, o `archive/` é a única cópia do original além dele mesmo
 - A pasta da sessão só é apagada com o seu **Sim** (passo 10), depois de tudo finalizado, e nunca se algum arquivo ficou pendente ou foi recusado
 - Com `--force`, os arquivos da sessão também são apagados, mas só depois de conferir que a cópia publicada existe e bate o hash
-- **Links no Central docs:** o Central docs pode ser lido fora do workspace, então o código vira URL absoluta (`blob/{sha}` do commit base), e a sessão e o `docs/jarvis/` ficam em texto (`rules-on-demand/doc-links-rules.md`, regra 6); um link para outro arquivo da mesma entrega vira link dentro do Central docs
+- **Links no Central docs:** o Central docs pode ser lido fora do workspace, então o código vira URL absoluta (`blob/{sha}` do commit base), e a sessão e o `$JARVIS_DOCS` ficam em texto (`rules-on-demand/doc-links-rules.md`, regra 6); um link para outro arquivo da mesma entrega vira link dentro do Central docs
 
 ## Próximo passo típico
 

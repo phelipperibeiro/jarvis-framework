@@ -15,7 +15,7 @@ Este comando **gera o `pull-request.md` na sessão e, com a escolha de publicar 
 > 📤 **Template**: `$IDE/templates/engineering/PR-template.md`
 > 🔀 **Transições**: `$IDE/rules-on-demand/engineering/eng.transitions-rules.md` — perguntas de início e de fim deste comando (a opção padrão mantém o fluxo de sempre).
 >
-> 🔗 **Links**: antes de escrever o `pull-request.md`, leia `$IDE/rules-on-demand/doc-links-rules.md` e siga-a: toda citação com lugar exato (requisito, documento, código, card, PR) vira link. O PR sai do workspace: siga a regra 6 (URL absoluta para issue, PR, card e código no `blob/{sha}`; sessão e `docs/jarvis/` em texto).
+> 🔗 **Links**: antes de escrever o `pull-request.md`, leia `$IDE/rules-on-demand/doc-links-rules.md` e siga-a: toda citação com lugar exato (requisito, documento, código, card, PR) vira link. O PR sai do workspace: siga a regra 6 (URL absoluta para issue, PR, card e código no `blob/{sha}`; sessão e `$JARVIS_DOCS` em texto).
 
 ## Skills recomendados
 

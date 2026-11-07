@@ -9,6 +9,7 @@ import { join } from "node:path";
 import { detectWorkspaceMode } from "./workspace-mode.js";
 import { getVendor } from "../integrations/cli-runner.js";
 import { resolveLocation } from "../docs/storage/index.js";
+import { EnvPathError, expandEnvPath } from "./env-paths.js";
 
 const KEY_LINE = /^([A-Z][A-Z0-9_]*)=(.*)$/;
 
@@ -162,10 +163,19 @@ export function planEnvUpgrade(envText, templateText, { workspaceDir } = {}) {
     env.get("CENTRAL_DOCS_LOCATION") &&
     env.get("SQUAD")
   ) {
-    const root = resolveLocation(env.get("CENTRAL_DOCS_LOCATION"), workspaceDir);
-    const squadDir = join(root, env.get("SQUAD"));
-    if (existsSync(join(squadDir, "product")) || existsSync(join(squadDir, "engineering"))) {
-      warnings.push("CENTRAL_DOCS_LAYOUT");
+    let location = null;
+    try {
+      location = expandEnvPath(env, "CENTRAL_DOCS_LOCATION");
+    } catch (error) {
+      // `$` sem valor no caminho: não dá para conferir o layout; o erro aparece no comando que usa o Central docs
+      if (!(error instanceof EnvPathError)) throw error;
+    }
+    if (location) {
+      const root = resolveLocation(location, workspaceDir);
+      const squadDir = join(root, env.get("SQUAD"));
+      if (existsSync(join(squadDir, "product")) || existsSync(join(squadDir, "engineering"))) {
+        warnings.push("CENTRAL_DOCS_LAYOUT");
+      }
     }
   }
 

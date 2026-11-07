@@ -16,39 +16,22 @@ import {
 import { join, resolve, relative, dirname, basename, isAbsolute, sep } from "node:path";
 import { execFileSync } from "node:child_process";
 import { rootIsRepo } from "./workspace-mode.js";
+import { assertPathsResolved, envWithDefaults, expandEnv } from "./env-paths.js";
 
 const ENG_SUBDIRS = ["ARD", "RFC", "qa", "swagger", "openapi", "robots", "c4"];
 const LEGACY_ENG_SUBDIRS = ["robots", "swagger", "openapi", "c4"];
 
-/**
- * Resolve `$NOME` com as outras chaves do ENV, **em qualquer ordem**: upgrades antigos
- * acrescentaram `JARVIS_DOCS` no fim do arquivo, depois do `PROD_DOCS` que a usa.
- * Desconhecida (ex.: `$IDE`) ou ciclo fica literal.
- * @param {Map<string, string>} entries
- * @returns {Map<string, string>}
- */
-export function expandEnv(entries) {
-  const out = new Map();
-  const resolving = new Set();
-  const resolveKey = (key) => {
-    if (out.has(key)) return out.get(key);
-    if (!entries.has(key) || resolving.has(key)) return null;
-    resolving.add(key);
-    const value = entries
-      .get(key)
-      .replace(/\$([A-Z][A-Z0-9_]*)/g, (m, name) => resolveKey(name) ?? m);
-    resolving.delete(key);
-    out.set(key, value);
-    return value;
-  };
-  for (const key of entries.keys()) resolveKey(key);
-  return out;
-}
+// A expansão de `$VAR` mora em `env-paths.js` (#228); re-exportada aqui para os imports existentes.
+export { expandEnv };
 
-const clean = (p) => p.replace(/^\.\//, "").replace(/\/+$/, "");
+// Junta as barras duplicadas (menos um `//` inicial), tira o `./` do começo e a barra do fim (`.//docs/` → `docs`).
+const clean = (p) => p.replace(/([^/])\/{2,}/g, "$1/").replace(/^\.\//, "").replace(/\/+$/, "");
 
 /** Pastas de documentos resolvidas, com os padrões do template quando faltam. */
-export function docsFolders(env) {
+export function docsFolders(expanded) {
+  // O ENV já expandido pode ter `$JARVIS_DOCS` solto (a chave faltava no ENV.md): os padrões do template resolvem.
+  const env = expandEnv(envWithDefaults(expanded));
+  assertPathsResolved(env, ["DOCS_FOLDER", "JARVIS_DOCS", "PROD_DOCS", "ENG_DOCS", "DISCOVERIES_DOCS"]);
   const docs = clean(env.get("DOCS_FOLDER") || "docs");
   const jarvis = clean(env.get("JARVIS_DOCS") || `${docs}/jarvis`);
   const prod = clean(env.get("PROD_DOCS") || `${jarvis}/product`);

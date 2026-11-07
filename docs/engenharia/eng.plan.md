@@ -8,7 +8,7 @@ Transforma o `architecture.md` em um `plan.md`: fases de cerca de 1 hora, cada u
 
 ## O que é
 
-Depois de decidir **o que** fazer no [`eng.start`](./eng.start.md), este comando decide **em que ordem**. O plano fica em `.jarvis/sessions/eng/{TASK_MANAGER_KEY}/plan.md` e é o roteiro que o [`eng.work`](./eng.work.md) segue.
+Depois de decidir **o que** fazer no [`eng.start`](./eng.start.md), este comando decide **em que ordem**. O plano fica em `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/plan.md` e é o roteiro que o [`eng.work`](./eng.work.md) segue.
 
 Cada fase:
 

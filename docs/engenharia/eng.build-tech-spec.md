@@ -8,8 +8,8 @@ Tem dois modos: transforma um épico ou uma história do board em uma **Tech Spe
 
 ## O que é
 
-- **Delivery Spec:** a Tech Spec é o documento técnico auto-contido de um card: um desenvolvedor deve conseguir executá-la sem precisar perguntar. Ela **é salva na sessão** (`.jarvis/sessions/eng/{card}/tech-spec.md`); anexá-la ao card é opcional e só acontece depois de mostrar o que vai e perguntar (regra de ouro); sem o Sim, ela fica só na sessão.
-- **Reference Spec:** um documento normativo (contrato entre serviços, convenção de nomes, topologia, perfil de adaptação de uma spec, fases de adoção) que **não** deriva de card, **não** decide trade-off (isso é do RFC) e **não** desenha a arquitetura (isso é do ARD). Não tem subtarefas. Fica em `docs/jarvis/engineering/SPEC/SPEC-###-{nome}.md`, numerado como RFC e ARD, e é versionado com SemVer.
+- **Delivery Spec:** a Tech Spec é o documento técnico auto-contido de um card: um desenvolvedor deve conseguir executá-la sem precisar perguntar. Ela **é salva na sessão** (`$SESSIONS_DIR/eng/{card}/tech-spec.md`); anexá-la ao card é opcional e só acontece depois de mostrar o que vai e perguntar (regra de ouro); sem o Sim, ela fica só na sessão.
+- **Reference Spec:** um documento normativo (contrato entre serviços, convenção de nomes, topologia, perfil de adaptação de uma spec, fases de adoção) que **não** deriva de card, **não** decide trade-off (isso é do RFC) e **não** desenha a arquitetura (isso é do ARD). Não tem subtarefas. Fica em `$ENG_DOCS/SPEC/SPEC-###-{nome}.md`, numerado como RFC e ARD, e é versionado com SemVer.
 
 > **Quem pode rodar:** `POSITION` igual a `TECH LEAD`, `HEAD`, `CTO`, `SPECIALIST` ou `SENIOR`. O `GENERALIST` sempre passa: em time pequeno ele acumula todos os papéis (ver `taxonomy.md`). Com outro cargo no `ENV.md`, o comando responde "Acesso Negado", lista os cargos aceitos e para.
 
@@ -43,7 +43,7 @@ Entendimento do card, validação de RFC, investigação do codebase, **avaliaç
 
 **Reference Spec**
 
-Triagem (escopo, áreas e se há RFC ou ARD de origem), checagem de RFC (sem origem, 7 dos 8 critérios: "padrão reutilizável" sai porque é a natureza do documento), investigação só de leitura, conteúdo pelo template (escopo normativo, decisões resolvidas com a origem de cada uma, contratos e convenções, critérios de aderência, fases e versionamento), aprovação e gravação em `docs/jarvis/engineering/SPEC/`. É documento de trabalho: não vai para o Central docs.
+Triagem (escopo, áreas e se há RFC ou ARD de origem), checagem de RFC (sem origem, 7 dos 8 critérios: "padrão reutilizável" sai porque é a natureza do documento), investigação só de leitura, conteúdo pelo template (escopo normativo, decisões resolvidas com a origem de cada uma, contratos e convenções, critérios de aderência, fases e versionamento), aprovação e gravação em `$ENG_DOCS/SPEC/`. É documento de trabalho: não vai para o Central docs.
 
 ## Regras que importam
 

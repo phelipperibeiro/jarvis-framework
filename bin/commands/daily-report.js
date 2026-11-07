@@ -1,24 +1,15 @@
 import { isAbsolute, join, relative } from "node:path";
 import { scanSessions, parseDays } from "../lib/core/session-scan.js";
 import { resolveEnvPath, loadEnv } from "../lib/env-loader.js";
+import { EnvPathError, expandEnvPath, expandEnvValue } from "../lib/core/env-paths.js";
 import { logger } from "../lib/utils/logger.js";
 import { GREEN, YELLOW, CYAN, DIM, NC } from "../lib/utils/ui.js";
 
 const USAGE = "Uso: jarvis daily-report [--days 1|3|7|15|30|60] [--json]";
-const DEFAULTS = {
-  DOCS_FOLDER: "docs",
-  JARVIS_DOCS: "$DOCS_FOLDER/jarvis",
-  ENG_DOCS: "$JARVIS_DOCS/engineering",
-  SESSIONS_DIR: ".jarvis/sessions",
-};
 
-/** Expande `$VAR` com os valores do ENV (e os padrões acima), em até 5 passadas. */
+/** Expande `$VAR` com os valores do ENV e os padrões do template (variável desconhecida fica literal). */
 export function expandVars(value, env) {
-  let out = value;
-  for (let i = 0; i < 5 && /\$[A-Z_]+/.test(out); i++) {
-    out = out.replace(/\$([A-Z_][A-Z0-9_]*)/g, (m, name) => env[name] ?? DEFAULTS[name] ?? m);
-  }
-  return out;
+  return expandEnvValue(value, env);
 }
 
 function resolveDir(root, value) {
@@ -44,10 +35,17 @@ export function runDailyReport(flags = {}, cwd = process.cwd(), now = new Date()
     return { code: 1, lines: [`❌ ${err.message}`, USAGE] };
   }
   root = root || cwd;
-  const env = { ...DEFAULTS, ...loadEnv(cwd, envPath) };
+  const env = loadEnv(cwd, envPath);
 
-  const sessionsDir = join(resolveDir(root, expandVars(env.SESSIONS_DIR, env)), "eng");
-  const reportsDir = join(resolveDir(root, expandVars(env.ENG_DOCS, env)), "daily-reports");
+  let sessionsDir;
+  let reportsDir;
+  try {
+    sessionsDir = join(resolveDir(root, expandEnvPath(env, "SESSIONS_DIR")), "eng");
+    reportsDir = join(resolveDir(root, expandEnvPath(env, "ENG_DOCS")), "daily-reports");
+  } catch (err) {
+    if (err instanceof EnvPathError) return { code: 1, lines: [`❌ ${err.message}`] };
+    throw err;
+  }
 
   const result = scanSessions(sessionsDir, { days: parsed.days, now });
   const reportPathAbs = join(reportsDir, result.fileName);

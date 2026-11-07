@@ -1,7 +1,7 @@
 // Testes do upgrade do ENV.md (env-upgrade.js). Rode com: npm run test:filtro
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, rmSync } from "node:fs";
+import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, readdirSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -101,6 +101,33 @@ test("planEnvUpgrade: Central docs já na estrutura por funcionalidade não gera
       "CENTRAL_DOCS_STORAGE=filesystem\nCENTRAL_DOCS_LOCATION=cd\nSQUAD=CORE\n";
     const plan = planEnvUpgrade(env, "", { workspaceDir: dir });
     assert.ok(!plan.warnings.includes("CENTRAL_DOCS_LAYOUT"));
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("planEnvUpgrade: CENTRAL_DOCS_LOCATION com $VAR (JARVIS_DOCS depois) gera CENTRAL_DOCS_LAYOUT no layout antigo (#228)", () => {
+  const dir = mkdtempSync(join(tmpdir(), "jarvis-env-upgrade-central-"));
+  try {
+    mkdirSync(join(dir, ".jarvis/docs/jarvis/central-docs/CORE/product/loja"), { recursive: true });
+    const env =
+      "CENTRAL_DOCS_STORAGE=filesystem\nCENTRAL_DOCS_LOCATION=$JARVIS_DOCS/central-docs\nSQUAD=CORE\n" +
+      "JARVIS_DOCS=.jarvis/$DOCS_FOLDER/jarvis\nDOCS_FOLDER=docs\n";
+    const plan = planEnvUpgrade(env, "", { workspaceDir: dir });
+    assert.ok(plan.warnings.includes("CENTRAL_DOCS_LAYOUT"));
+    assert.deepEqual(readdirSync(dir).filter((n) => n.includes("$")), []);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("planEnvUpgrade: CENTRAL_DOCS_LOCATION com variável sem valor não quebra o Upgrade nem cria pasta (#228)", () => {
+  const dir = mkdtempSync(join(tmpdir(), "jarvis-env-upgrade-central-"));
+  try {
+    const env = "CENTRAL_DOCS_STORAGE=filesystem\nCENTRAL_DOCS_LOCATION=$NAO_EXISTE/x\nSQUAD=CORE\n";
+    const plan = planEnvUpgrade(env, "", { workspaceDir: dir });
+    assert.ok(!plan.warnings.includes("CENTRAL_DOCS_LAYOUT"));
+    assert.deepEqual(readdirSync(dir), []);
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }

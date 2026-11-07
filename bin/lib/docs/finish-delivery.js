@@ -31,6 +31,7 @@ import {
 import { basename, dirname, join, relative, resolve, isAbsolute } from "node:path";
 import { assertRelPath, assertSegment, resolveDestPath } from "./publish-file.js";
 import { expandEnv, docsFolders } from "../core/docs-migrate.js";
+import { expandEnvPath } from "../core/env-paths.js";
 import { parseFrontmatter } from "../utils/frontmatter.js";
 
 function sha256(path) {
@@ -191,8 +192,7 @@ function isWithinDocsFolders(absPath, folders, workspaceRoot = process.cwd()) {
  */
 export function sessionFolderOf(env, workspaceRoot, taskKey) {
   assertSegment("Task key", String(taskKey ?? ""));
-  const expanded = expandEnv(new Map(Object.entries(env || {})));
-  const sessions = expanded.get("SESSIONS_DIR") || ".jarvis/sessions";
+  const sessions = expandEnvPath(env, "SESSIONS_DIR");
   return resolve(workspaceRoot || process.cwd(), sessions, "eng", String(taskKey).toLowerCase());
 }
 
