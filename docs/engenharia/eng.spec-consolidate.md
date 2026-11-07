@@ -34,7 +34,7 @@ O Central docs é, portanto, um **snapshot de cada funcionalidade implementada, 
 ## Quando usar
 
 - Logo depois do [`/eng.pr`](./eng.pr.md), com a sessão da tarefa ainda presente
-- `--inicial`: para montar o Central docs a partir dos documentos que já existem (o [`/jarvis-init`](../../skills/jarvis-init/SKILL.md) oferece); no fim, avisa quantas sessões antigas ainda estão pendentes
+- `--inicial`: para montar o Central docs a partir dos documentos que já existem (o [`/jarvis-init`](../../skills/jarvis-init/SKILL.md) oferece na instalação e, no Upgrade, só quando ele move documentos para as pastas novas); no fim, avisa quantas sessões antigas ainda estão pendentes
 - `--sessao {card}` e `--proxima`: para as **sessões antigas** que nunca foram consolidadas, **uma por vez, no seu ritmo** (ver abaixo)
 
 ## Quando **não** usar
