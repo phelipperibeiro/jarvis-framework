@@ -53,15 +53,20 @@ POSITION=[JUNIOR, PLENO, SENIOR, TECH LEAD, SPECIALIST, PM, TPM, GPM, CTO, GENER
 # IDE e pastas
 # =============================================================================
 # Qual IDE este ENV.md alimenta. FLOWS_FOLDER: workflows (maioria) ou commands (Claude).
+# FLOWS_FOLDER, TEMPLATES_FOLDER, RULES_FOLDER e as chaves PROD_RULES, PROD_FLOWS e PROD_TEMPLATES
+# (mais adiante) descrevem as pastas que o instalador grava na pasta da IDE: a pasta vem da IDE
+# (ide-config), não destas chaves. São derivadas da instalação e não devem ser alteradas.
 IDE=[windsurf, claude, cursor, codex, opencode, gemini, antigravity]
 DOCS_FOLDER=docs
 FLOWS_FOLDER=[workflows se IDE != claude | commands se IDE = claude]
 TEMPLATES_FOLDER=templates
 RULES_FOLDER=.$IDE/rules
 
-# Sessões de trabalho — relativo à pasta do workspace (a que contém $IDE/), não ao cwd.
-# jarvis init cria .jarvis/sessions/{eng,prod,qa} e, se a raiz tiver .git, adiciona .jarvis/ ao
-# .gitignore (raiz sem .git, como no modo workspace, não é versionada: o .gitignore não é criado).
+# Sessões de trabalho — relativo à pasta do workspace (a que contém $IDE/), não ao cwd, ou absoluto.
+# Aceita $VAR (ex.: $DOCS_FOLDER/sessoes). jarvis init cria $SESSIONS_DIR/{eng,prod,qa} (o padrão é
+# .jarvis/sessions; sem ENV.md vale o padrão) e, se a raiz tiver .git, adiciona .jarvis/ ao
+# .gitignore, mais o $SESSIONS_DIR quando ele é relativo e fica fora de .jarvis/ (raiz sem .git,
+# como no modo workspace, não é versionada: o .gitignore não é criado).
 #   $SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/
 #   $SESSIONS_DIR/prod/{TASK_MANAGER_KEY}/
 #   $SESSIONS_DIR/qa/
@@ -227,13 +232,15 @@ JARVIS_PROJECT=https://github.com/phelipperibeiro/jarvis-framework
 # por entrega, gerados pelo /eng.spec-consolidate depois de cada PR. Ligado por padrão.
 # Nunca dentro do versionamento de um repositório de código.
 #   CENTRAL_DOCS_STORAGE: filesystem (s3 e gdrive virão nas issues #144 e #145); vazio = desligado
-#   CENTRAL_DOCS_LOCATION: pasta do Central docs, relativa à pasta do workspace ou absoluta.
-#     Padrão do /jarvis-init: docs/jarvis/central-docs, nos dois modos de trabalho, junto dos
-#     documentos de trabalho (com .git na raiz, coberto por docs/jarvis/ no .gitignore).
+#   CENTRAL_DOCS_LOCATION: pasta do Central docs, relativa à pasta do workspace ou absoluta. Aceita
+#     $VAR e acompanha o JARVIS_DOCS. Padrão do /jarvis-init: $JARVIS_DOCS/central-docs (hoje
+#     docs/jarvis/central-docs), nos dois modos de trabalho, junto dos documentos de trabalho (com
+#     .git na raiz, coberto por $JARVIS_DOCS/ no .gitignore). O valor escrito por extenso em um
+#     ENV.md antigo continua valendo.
 #   Se a pasta for um clone de um repositório de documentação (tem .git): git pull antes
 #   de ler e branch + commit + push + PR ao publicar. Sem .git: grava direto na pasta.
 CENTRAL_DOCS_STORAGE=filesystem
-CENTRAL_DOCS_LOCATION=docs/jarvis/central-docs
+CENTRAL_DOCS_LOCATION=$JARVIS_DOCS/central-docs
 # Só quando a pasta tem .git: branch lida no pull e branch base dos PRs.
 CENTRAL_DOCS_REF=main
 CENTRAL_DOCS_TARGET_BRANCH=main
