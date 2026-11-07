@@ -48,6 +48,11 @@ export function untrack(files, flags = {}) {
     if (result.excludeAdded.length) {
       logger.info(`${DIM}   • .git/info/exclude: ${result.excludeAdded.join(", ")}${NC}`);
     }
+    if (result.excludeError) {
+      logger.error(
+        `${YELLOW}   ⚠ O exclude não foi gravado (${result.excludeError}): o arquivo local pode voltar a aparecer como novo no git.${NC}`
+      );
+    }
   }
   if (removed > 0) {
     logger.info(

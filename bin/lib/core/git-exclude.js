@@ -6,6 +6,7 @@
 //   - `.jarvis/`, `docs/jarvis/` e a pasta da IDE continuam no `.gitignore` (decisão Q1/Q3 da #227);
 //   - `AGENTS.md`/`CLAUDE.md` já commitados só saem do índice (`git rm --cached`) com a confirmação da
 //     pessoa, dada no Upgrade pelo skill (`jarvis untrack`). Nada aqui faz commit ou push.
+// Falha do git ou da gravação nunca é silenciosa: vira `error`/`errors` no resultado, para o init avisar.
 import { execFileSync } from "node:child_process";
 import { appendFileSync, existsSync, mkdirSync, readFileSync } from "node:fs";
 import { dirname, isAbsolute, join, resolve } from "node:path";
@@ -19,9 +20,43 @@ export const LOCAL_EXCLUDE_ENTRIES = Object.freeze(["AGENTS.md", "CLAUDE.md", "C
 /** Só estes dois podem sair do índice pelo `jarvis untrack`. */
 export const UNTRACKABLE_FILES = Object.freeze(["AGENTS.md", "CLAUDE.md"]);
 
-/** Roda o git em `dir` sem shell; devolve a saída ou lança. */
+/** Variáveis que desviam o git para outro repositório (hooks, scripts): nunca herdadas do ambiente. */
+const GIT_REDIRECT_VARS = Object.freeze(["GIT_DIR", "GIT_WORK_TREE", "GIT_INDEX_FILE"]);
+
+function gitEnv() {
+  const env = { ...process.env };
+  for (const name of GIT_REDIRECT_VARS) delete env[name];
+  return env;
+}
+
+/** Roda o git em `dir` sem shell, com o ambiente isolado e o stderr capturado; devolve a saída ou lança. */
 function git(dir, args) {
-  return execFileSync("git", args, { cwd: dir, encoding: "utf-8", stdio: ["ignore", "pipe", "ignore"] });
+  return execFileSync("git", args, {
+    cwd: dir,
+    encoding: "utf-8",
+    stdio: ["ignore", "pipe", "pipe"],
+    env: gitEnv(),
+  });
+}
+
+/** Primeira linha útil do stderr do git (senão, a da mensagem do erro). Nunca inclui a saída normal. */
+function gitError(error) {
+  const fromStderr = String(error?.stderr ?? "")
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .find(Boolean);
+  return fromStderr || String(error?.message ?? error).split("\n")[0];
+}
+
+/** Caminho do exclude e, se o git falhar, o motivo. */
+function resolveExclude(dir) {
+  try {
+    const out = git(dir, ["rev-parse", "--git-path", "info/exclude"]).trim();
+    if (!out) return { path: null, error: "o git não devolveu o caminho do exclude" };
+    return { path: isAbsolute(out) ? out : resolve(dir, out), error: null };
+  } catch (error) {
+    return { path: null, error: gitError(error) };
+  }
 }
 
 /**
@@ -31,45 +66,51 @@ function git(dir, args) {
  * @returns {string | null} `null` se o git falhar (sem git, sem repositório)
  */
 export function gitExcludePath(dir) {
-  try {
-    const out = git(dir, ["rev-parse", "--git-path", "info/exclude"]).trim();
-    if (!out) return null;
-    return isAbsolute(out) ? out : resolve(dir, out);
-  } catch {
-    return null;
-  }
+  return resolveExclude(dir).path;
 }
 
 /**
  * Garante `lines` no `.git/info/exclude` de `dir`, sem duplicar (reconhece a linha com e sem `/`
- * inicial), cria a pasta `info/` se faltar e mantém a quebra de linha do arquivo. Só age numa raiz
- * versionada (com `.git`): no modo workspace não cria nem altera nada.
+ * inicial; espaço no início é outro padrão para o git), cria a pasta `info/` se faltar e mantém a
+ * quebra de linha do arquivo. Só age numa raiz versionada (com `.git`): no modo workspace não cria nem
+ * altera nada. Falha do git ou da gravação não lança: vem em `error` (e `gitUnavailable` quando foi o git que
+ * não respondeu, diferente de uma falha ao gravar o arquivo).
  * @param {string} dir
  * @param {readonly string[]} lines
- * @returns {{ path: string | null, added: string[], existing: string[] }}
+ * @returns {{ path: string | null, added: string[], existing: string[], error: string | null, gitUnavailable: boolean }}
  */
 export function ensureLocalExclude(dir, lines) {
-  const result = { path: null, added: [], existing: [] };
+  const result = { path: null, added: [], existing: [], error: null, gitUnavailable: false };
   if (!rootIsRepo(dir)) return result;
-  const path = gitExcludePath(dir);
-  if (!path) return result;
+  const resolved = resolveExclude(dir);
+  if (!resolved.path) {
+    result.error = `o git não respondeu (${resolved.error})`;
+    result.gitUnavailable = true;
+    return result;
+  }
+  const path = resolved.path;
   result.path = path;
 
-  const text = existsSync(path) ? readFileSync(path, "utf-8") : "";
-  const present = new Set(text.split(/\r?\n/).map((l) => l.trim()));
-  const missing = [];
-  for (const line of lines) {
-    const bare = line.replace(/^\//, "");
-    if (present.has(bare) || present.has(`/${bare}`)) result.existing.push(line);
-    else missing.push(line);
-  }
-  if (missing.length === 0) return result;
+  try {
+    const text = existsSync(path) ? readFileSync(path, "utf-8") : "";
+    const present = new Set(text.split(/\r?\n/).map((l) => l.trimEnd()));
+    const missing = [];
+    for (const line of lines) {
+      const bare = line.replace(/^\//, "");
+      if (present.has(bare) || present.has(`/${bare}`)) result.existing.push(line);
+      else missing.push(line);
+    }
+    if (missing.length === 0) return result;
 
-  mkdirSync(dirname(path), { recursive: true });
-  const eol = text.includes("\r\n") ? "\r\n" : "\n";
-  const prefix = text && !text.endsWith("\n") ? eol : "";
-  appendFileSync(path, `${prefix}${missing.join(eol)}${eol}`);
-  result.added = missing;
+    mkdirSync(dirname(path), { recursive: true });
+    const eol = text.includes("\r\n") ? "\r\n" : "\n";
+    const prefix = text && !text.endsWith("\n") ? eol : "";
+    appendFileSync(path, `${prefix}${missing.join(eol)}${eol}`);
+    result.added = missing;
+  } catch (error) {
+    result.existing = [];
+    result.error = `não foi possível gravar ${path}: ${error.code || String(error.message).split("\n")[0]}`;
+  }
   return result;
 }
 
@@ -93,10 +134,10 @@ export function trackedFiles(dir, names = UNTRACKABLE_FILES) {
 /**
  * Tira `name` do índice (`git rm --cached`, o arquivo local fica) e o põe no exclude. Nunca faz commit
  * nem push: a remoção fica staged para a pessoa revisar. Recusa nome fora de `UNTRACKABLE_FILES`, raiz
- * sem `.git` e arquivo que não está rastreado.
+ * sem `.git` e arquivo que não está rastreado. Se o git recusar, o `reason` traz o motivo dele.
  * @param {string} dir
  * @param {string} name
- * @returns {{ ok: true, excludeAdded: string[] } | { ok: false, reason: string }}
+ * @returns {{ ok: true, excludeAdded: string[], excludeError: string | null } | { ok: false, reason: string }}
  */
 export function untrackFromIndex(dir, name) {
   if (!UNTRACKABLE_FILES.includes(name)) {
@@ -111,9 +152,10 @@ export function untrackFromIndex(dir, name) {
   try {
     git(dir, ["rm", "--cached", "--quiet", "--", name]);
   } catch (error) {
-    return { ok: false, reason: `git rm --cached falhou: ${String(error.message).split("\n")[0]}` };
+    return { ok: false, reason: `git rm --cached falhou: ${gitError(error)}` };
   }
-  return { ok: true, excludeAdded: ensureLocalExclude(dir, [name]).added };
+  const exclude = ensureLocalExclude(dir, [name]);
+  return { ok: true, excludeAdded: exclude.added, excludeError: exclude.error };
 }
 
 /** Entrada do `.gitignore` para a pasta da IDE (ex.: `.claude/`, `.windsurf/`). */
@@ -131,49 +173,81 @@ export function isIdeFolderTracked(dir, ide) {
   }
 }
 
+/** Grava `line` no `.gitignore` e diz se o arquivo mudou. Lança se o arquivo não puder ser lido/gravado. */
+function addGitignoreLine(dir, line) {
+  const path = join(dir, ".gitignore");
+  const before = existsSync(path) ? readFileSync(path, "utf-8") : null;
+  ensureGitignore(dir, line);
+  const after = existsSync(path) ? readFileSync(path, "utf-8") : null;
+  return before !== after;
+}
+
 /**
  * Tudo o que o modo projeto precisa no git (instalação e Upgrade usam a mesma função): as entradas
- * locais no exclude (menos as geradas que já estão rastreadas, cuja saída é decisão do Upgrade) e a
- * pasta da IDE no `.gitignore`. Raiz sem `.git` (modo workspace): não altera nada.
- * @param {{ dir: string, ide: string }} input
+ * locais no exclude (menos as já rastreadas: `AGENTS.md`/`CLAUDE.md` são decisão do Upgrade e o mapa só
+ * recebe aviso), a pasta da IDE e as `gitignoreLines` no `.gitignore`. Raiz sem `.git` (modo workspace):
+ * não altera nada. Nunca lança por falha do git ou de gravação: git que não responde vira `warnings` (ambiente;
+ * o init segue com saída 0) e falha ao gravar vira `errors` (setup incompleto; saída 1).
+ * @param {{ dir: string, ide: string, gitignoreLines?: readonly string[] }} input
  * @returns {{
  *   isRepo: boolean,
- *   exclude: { path: string | null, added: string[], existing: string[] },
+ *   exclude: { path: string | null, added: string[], existing: string[], error: string | null, gitUnavailable: boolean },
  *   tracked: string[],
+ *   trackedMap: boolean,
  *   ideEntry: string,
+ *   ignoreAdded: string[],
  *   ideIgnoreAdded: boolean,
  *   ideFolderTracked: boolean,
+ *   warnings: string[],
+ *   errors: string[],
  * }}
  */
-export function applyProjectGitSetup({ dir, ide }) {
+export function applyProjectGitSetup({ dir, ide, gitignoreLines = [] }) {
   const ideEntry = ideFolderEntry(ide);
-  const empty = {
+  const base = {
     isRepo: false,
-    exclude: { path: null, added: [], existing: [] },
+    exclude: { path: null, added: [], existing: [], error: null, gitUnavailable: false },
     tracked: [],
+    trackedMap: false,
     ideEntry,
+    ignoreAdded: [],
     ideIgnoreAdded: false,
     ideFolderTracked: false,
+    warnings: [],
+    errors: [],
   };
-  if (!rootIsRepo(dir)) return empty;
+  if (!rootIsRepo(dir)) return base;
 
-  const tracked = trackedFiles(dir);
+  const trackedLocal = trackedFiles(dir, LOCAL_EXCLUDE_ENTRIES);
   const exclude = ensureLocalExclude(
     dir,
-    LOCAL_EXCLUDE_ENTRIES.filter((entry) => !tracked.includes(entry))
+    LOCAL_EXCLUDE_ENTRIES.filter((entry) => !trackedLocal.includes(entry))
   );
+  const warnings = exclude.gitUnavailable ? [exclude.error] : [];
+  const errors = exclude.error && !exclude.gitUnavailable ? [exclude.error] : [];
 
-  const gitignorePath = join(dir, ".gitignore");
-  const before = existsSync(gitignorePath) ? readFileSync(gitignorePath, "utf-8") : null;
-  ensureGitignore(dir, ideEntry);
-  const after = existsSync(gitignorePath) ? readFileSync(gitignorePath, "utf-8") : null;
+  const ignoreAdded = [];
+  for (const line of [ideEntry, ...gitignoreLines]) {
+    try {
+      if (addGitignoreLine(dir, line)) ignoreAdded.push(line);
+    } catch (error) {
+      errors.push(
+        `não foi possível gravar ${join(dir, ".gitignore")}: ${error.code || String(error.message).split("\n")[0]}`
+      );
+      break;
+    }
+  }
 
   return {
+    ...base,
     isRepo: true,
     exclude,
-    tracked,
-    ideEntry,
-    ideIgnoreAdded: before !== after,
+    tracked: trackedLocal.filter((name) => UNTRACKABLE_FILES.includes(name)),
+    trackedMap: trackedLocal.includes("CDD-MIND-MAP.md"),
+    ignoreAdded,
+    ideIgnoreAdded: ignoreAdded.includes(ideEntry),
     ideFolderTracked: isIdeFolderTracked(dir, ide),
+    warnings,
+    errors,
   };
 }

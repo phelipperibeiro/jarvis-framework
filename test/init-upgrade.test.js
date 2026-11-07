@@ -330,11 +330,11 @@ test("init (instalação): pasta sem nenhum .git não recebe .gitignore", () => 
   });
 });
 
-test("init (instalação): .gitignore existente sem \\n final recebe as linhas .jarvis/ e a pasta da IDE (#227)", () => {
+test("init (instalação): .gitignore existente sem \\n final recebe as linhas .jarvis/, a pasta da IDE e docs/jarvis/ (#227)", () => {
   withWorkspace({ ".git/HEAD": "", ".gitignore": "node_modules" }, (ws) => {
     const r = run(ws, "--ide", "claude");
     assert.equal(r.status, 0, r.stderr);
-    assert.equal(readFileSync(join(ws, ".gitignore"), "utf-8"), "node_modules\n.jarvis/\n.claude/\n");
+    assert.equal(readFileSync(join(ws, ".gitignore"), "utf-8"), "node_modules\n.jarvis/\n.claude/\ndocs/jarvis/\n");
   });
 });
 
@@ -361,7 +361,7 @@ test("init (instalação): .gitignore com /.jarvis/ não recebe a linha de novo"
     const r = run(ws, "--ide", "claude");
     assert.equal(r.status, 0, r.stderr);
     // .jarvis/ já estava (como /.jarvis/) e não repete; só a pasta da IDE entra (#227)
-    assert.equal(readFileSync(join(ws, ".gitignore"), "utf-8"), "/.jarvis/\n.claude/\n");
+    assert.equal(readFileSync(join(ws, ".gitignore"), "utf-8"), "/.jarvis/\n.claude/\ndocs/jarvis/\n");
   });
 });
 
@@ -1285,5 +1285,92 @@ test("init --upgrade no modo workspace: nenhum arquivo de git é criado e nada f
     assert.ok(!existsSync(join(ws, ".git")));
     assert.ok(!existsSync(join(ws, ".gitignore")));
     assert.doesNotMatch(r.stdout, /Git \(modo projeto\)|info\/exclude/);
+  });
+});
+
+// ---- Fase 6 (pre-pr rodada 1): docs/jarvis/, falhas do git e mapa versionado -----------------------
+
+const RUNNING_AS_ROOT = typeof process.getuid === "function" && process.getuid() === 0;
+const output = (r) => `${r.stdout}\n${r.stderr}`;
+
+test("init (instalação) no modo projeto: docs/jarvis/ volta ao .gitignore (regressão da #227)", () => {
+  withRealRepo({}, (ws) => {
+    const r = run(ws, "--ide", "claude");
+    assert.equal(r.status, 0, r.stderr);
+    assert.match(gitignoreOf(ws), /^docs\/jarvis\/$/m);
+    assert.match(r.stdout, /\.gitignore: .*docs\/jarvis\//);
+    assert.equal(run(ws, "--ide", "claude", "--force").status, 0);
+    assert.equal(gitignoreOf(ws).split("\n").filter((l) => l === "docs/jarvis/").length, 1, "sem duplicar");
+  });
+});
+
+test("init (instalação): a pasta de documentos segue o JARVIS_DOCS do ENV.md", () => {
+  withRealRepo({ ".claude/ENV.md": "DOCS_FOLDER=meusdocs\nJARVIS_DOCS=$DOCS_FOLDER/jarvis\n" }, (ws) => {
+    const r = run(ws, "--ide", "claude", "--force");
+    assert.equal(r.status, 0, r.stderr);
+    assert.match(gitignoreOf(ws), /^meusdocs\/jarvis\/$/m);
+    assert.doesNotMatch(gitignoreOf(ws), /^docs\/jarvis\/$/m);
+  });
+});
+
+test("init (instalação) no modo workspace: docs/jarvis/ não cria .gitignore", () => {
+  withWorkspace({ "app/.git/HEAD": "" }, (ws) => {
+    assert.equal(run(ws, "--ide", "claude").status, 0);
+    assert.ok(!existsSync(join(ws, ".gitignore")));
+  });
+});
+
+test("init --upgrade no modo projeto: docs/jarvis/ também entra no .gitignore", () => {
+  withRealRepo({ ".claude/ENV.md": ENV_V520 }, (ws) => {
+    const r = run(ws, "--upgrade", "--ide", "claude", "--yes");
+    assert.equal(r.status, 0, r.stderr);
+    assert.match(gitignoreOf(ws), /^docs\/jarvis\/$/m);
+  });
+});
+
+test("init: git que não responde (.git inválido) avisa que o exclude não foi gravado e sai com 0", () => {
+  withWorkspace({ ".git/HEAD": "" }, (ws) => {
+    const r = run(ws, "--ide", "claude");
+    assert.equal(r.status, 0, r.stderr);
+    assert.match(output(r), /Git \(modo projeto\): o git não respondeu/);
+    assert.match(output(r), /O exclude não foi gravado: AGENTS\.md, CLAUDE\.md e CDD-MIND-MAP\.md podem entrar no PR/);
+    assert.match(gitignoreOf(ws), /^\.jarvis\/$/m, "o .gitignore é gravado mesmo assim");
+  });
+});
+
+test("init: exclude sem permissão de escrita vira erro claro e saída 1, sem stack trace", { skip: RUNNING_AS_ROOT }, () => {
+  withRealRepo({}, (ws) => {
+    const alvo = join(ws, ".git", "info", "exclude");
+    chmodSync(alvo, 0o444);
+    try {
+      const r = run(ws, "--ide", "claude");
+      assert.equal(r.status, 1);
+      assert.match(output(r), /Git \(modo projeto\): não foi possível gravar .*exclude: EACCES/);
+      assert.doesNotMatch(output(r), /at .*\.js:\d+/, "sem stack trace");
+    } finally {
+      chmodSync(alvo, 0o644);
+    }
+  });
+});
+
+test("init --upgrade: .gitignore que é diretório vira erro, o resumo continua e a saída é 1", () => {
+  withRealRepo({ ".claude/ENV.md": ENV_V520 }, (ws) => {
+    mkdirSync(join(ws, ".gitignore"));
+    const r = run(ws, "--upgrade", "--ide", "claude", "--yes");
+    assert.equal(r.status, 1);
+    assert.match(output(r), /Git \(modo projeto\): não foi possível gravar .*\.gitignore: EISDIR/);
+    assert.match(r.stdout, /Upgrade concluído/, "o resumo não é derrubado");
+    assert.match(r.stdout, /Nada pendente na IDE|Agora rode/);
+  });
+});
+
+test("init (instalação): CDD-MIND-MAP.md já versionado não vai para o exclude e gera aviso", () => {
+  withRealRepo({ "CDD-MIND-MAP.md": "# mapa\n" }, (ws) => {
+    commitAll(ws);
+    const r = run(ws, "--ide", "claude");
+    assert.equal(r.status, 0, r.stderr);
+    assert.match(r.stdout, /CDD-MIND-MAP\.md está versionado: o exclude não vale para arquivo rastreado/);
+    assert.ok(!excludeOf(ws).includes("CDD-MIND-MAP.md"));
+    assert.ok(excludeOf(ws).includes("AGENTS.md"));
   });
 });

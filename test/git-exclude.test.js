@@ -3,7 +3,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
-import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, existsSync, rmSync, realpathSync } from "node:fs";
+import { chmodSync, mkdtempSync, mkdirSync, writeFileSync, readFileSync, existsSync, rmSync, realpathSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import {
@@ -100,7 +100,7 @@ test("ensureLocalExclude: mantém o CRLF e acrescenta a quebra que faltava", () 
 test("ensureLocalExclude: raiz sem .git (modo workspace) não cria nada", () => {
   withTmp((dir) => {
     const r = ensureLocalExclude(dir, ["AGENTS.md"]);
-    assert.deepEqual(r, { path: null, added: [], existing: [] });
+    assert.deepEqual(r, { path: null, added: [], existing: [], error: null, gitUnavailable: false });
     assert.ok(!existsSync(join(dir, ".git")));
   });
 });
@@ -299,5 +299,115 @@ test("applyProjectGitSetup: modo workspace (raiz sem .git) não cria nem altera 
     assert.deepEqual(r.exclude.added, []);
     assert.ok(!existsSync(join(dir, ".gitignore")));
     assert.ok(!existsSync(join(dir, ".git")));
+  });
+});
+
+// ---- Fase 6 (pre-pr rodada 1): docs/jarvis/, falhas do git e mapa versionado ------------------------
+
+const isRoot = typeof process.getuid === "function" && process.getuid() === 0;
+
+test("applyProjectGitSetup: gitignoreLines (docs/jarvis/) entram no .gitignore junto da pasta da IDE, sem duplicar", () => {
+  withRepo((dir) => {
+    const r = applyProjectGitSetup({ dir, ide: "claude", gitignoreLines: ["docs/jarvis/"] });
+    assert.deepEqual(r.ignoreAdded, [".claude/", "docs/jarvis/"]);
+    assert.equal(r.ideIgnoreAdded, true);
+    assert.deepEqual(r.errors, []);
+    const again = applyProjectGitSetup({ dir, ide: "claude", gitignoreLines: ["docs/jarvis/"] });
+    assert.deepEqual(again.ignoreAdded, []);
+    assert.equal(readFileSync(join(dir, ".gitignore"), "utf-8"), ".claude/\ndocs/jarvis/\n");
+  });
+});
+
+test("applyProjectGitSetup: modo workspace ignora gitignoreLines e não cria nada", () => {
+  withTmp((dir) => {
+    const r = applyProjectGitSetup({ dir, ide: "claude", gitignoreLines: ["docs/jarvis/"] });
+    assert.equal(r.isRepo, false);
+    assert.deepEqual(r.ignoreAdded, []);
+    assert.ok(!existsSync(join(dir, ".gitignore")));
+  });
+});
+
+test("applyProjectGitSetup: git que não responde (.git inválido) vira aviso, não silêncio nem exceção", () => {
+  withTmp((dir) => {
+    mkdirSync(join(dir, ".git"));
+    writeFileSync(join(dir, ".git", "HEAD"), "");
+    const r = applyProjectGitSetup({ dir, ide: "claude" });
+    assert.equal(r.isRepo, true);
+    assert.equal(r.exclude.path, null);
+    assert.equal(r.exclude.gitUnavailable, true);
+    assert.equal(r.warnings.length, 1);
+    assert.match(r.warnings[0], /o git não respondeu/);
+    assert.deepEqual(r.errors, [], "git indisponível é aviso (saída 0), não erro");
+    assert.match(readFileSync(join(dir, ".gitignore"), "utf-8"), /^\.claude\/$/m, "o .gitignore é gravado mesmo assim");
+  });
+});
+
+test("applyProjectGitSetup: git fora do PATH também vira aviso, com o motivo", () => {
+  withRepo((dir) => {
+    const antes = process.env.PATH;
+    process.env.PATH = "/caminho/que/nao/existe";
+    try {
+      const r = applyProjectGitSetup({ dir, ide: "claude" });
+      assert.equal(r.exclude.gitUnavailable, true);
+      assert.equal(r.warnings.length, 1);
+      assert.match(r.warnings[0], /o git não respondeu \(.*ENOENT/);
+    } finally {
+      process.env.PATH = antes;
+    }
+  });
+});
+
+test("ensureLocalExclude: exclude sem permissão de escrita devolve error (não lança) e não marca git indisponível", { skip: isRoot }, () => {
+  withRepo((dir) => {
+    const alvo = gitExcludePath(dir);
+    chmodSync(alvo, 0o444);
+    try {
+      const r = ensureLocalExclude(dir, ["AGENTS.md"]);
+      assert.deepEqual(r.added, []);
+      assert.equal(r.gitUnavailable, false);
+      assert.match(r.error, /não foi possível gravar .*exclude: EACCES/);
+    } finally {
+      chmodSync(alvo, 0o644);
+    }
+  });
+});
+
+test("applyProjectGitSetup: exclude sem permissão vira erro (saída 1 no init), sem exceção", { skip: isRoot }, () => {
+  withRepo((dir) => {
+    const alvo = gitExcludePath(dir);
+    chmodSync(alvo, 0o444);
+    try {
+      const r = applyProjectGitSetup({ dir, ide: "claude" });
+      assert.equal(r.errors.length, 1);
+      assert.match(r.errors[0], /EACCES/);
+      assert.deepEqual(r.warnings, []);
+    } finally {
+      chmodSync(alvo, 0o644);
+    }
+  });
+});
+
+test("applyProjectGitSetup: .gitignore que é um diretório vira erro, sem exceção", () => {
+  withRepo((dir) => {
+    mkdirSync(join(dir, ".gitignore"));
+    const r = applyProjectGitSetup({ dir, ide: "claude" });
+    assert.equal(r.errors.length, 1);
+    assert.match(r.errors[0], /não foi possível gravar .*\.gitignore: EISDIR/);
+    assert.deepEqual(r.ignoreAdded, []);
+    assert.ok(r.exclude.added.includes("AGENTS.md"), "o exclude foi gravado antes da falha do .gitignore");
+  });
+});
+
+test("applyProjectGitSetup: CDD-MIND-MAP.md já versionado fica fora do exclude e vira aviso (trackedMap)", () => {
+  withRepo((dir) => {
+    writeFileSync(join(dir, "CDD-MIND-MAP.md"), "# mapa\n");
+    git(dir, "add", "CDD-MIND-MAP.md");
+    commit(dir, "versiona o mapa");
+    const r = applyProjectGitSetup({ dir, ide: "claude" });
+    assert.equal(r.trackedMap, true);
+    assert.ok(!r.exclude.added.includes("CDD-MIND-MAP.md"));
+    assert.deepEqual(r.tracked, [], "o mapa não entra na lista do untrack");
+    assert.ok(r.exclude.added.includes("AGENTS.md") && r.exclude.added.includes("CLAUDE.md"));
+    assert.ok(!excludeLines(dir).includes("CDD-MIND-MAP.md"));
   });
 });

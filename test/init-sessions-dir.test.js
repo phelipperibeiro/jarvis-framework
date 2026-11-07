@@ -134,7 +134,7 @@ test("init com SESSIONS_DIR=$DOCS_FOLDER/sessoes: expande a variável e não cri
   });
 });
 
-test("init com SESSIONS_DIR absoluto: cria lá, avisa e deixa só .jarvis/ (e a pasta da IDE, #227) no .gitignore", () => {
+test("init com SESSIONS_DIR absoluto: cria lá, avisa e deixa só .jarvis/ (e a pasta da IDE e docs/jarvis/, #227) no .gitignore", () => {
   const abs = mkdtempSync(join(tmpdir(), "jarvis-init-sessions-abs-"));
   try {
     withWorkspace({ env: `SESSIONS_DIR=${abs}` }, (ws) => {
@@ -142,7 +142,7 @@ test("init com SESSIONS_DIR absoluto: cria lá, avisa e deixa só .jarvis/ (e a 
       assert.equal(r.status, 0, r.stderr);
       assert.deepEqual(areas(abs), ["eng", "prod", "qa"]);
       assert.match(r.stdout, /fora da raiz do repositório/);
-      assert.equal(gitignore(ws).trim(), ".jarvis/\n.claude/");
+      assert.equal(gitignore(ws).trim(), ".jarvis/\n.claude/\ndocs/jarvis/");
     });
   } finally {
     rmSync(abs, { recursive: true, force: true });

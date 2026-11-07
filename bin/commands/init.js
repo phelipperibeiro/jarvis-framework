@@ -1,5 +1,5 @@
 import { existsSync, mkdirSync, readFileSync, realpathSync } from "node:fs";
-import { join, dirname, basename, resolve, sep } from "node:path";
+import { join, dirname, basename, resolve, sep, isAbsolute } from "node:path";
 import { createInterface } from "node:readline";
 import {
   syncAssets,
@@ -126,16 +126,59 @@ export function logProjectGitSetup(result) {
     logger.info(`  • .git/info/exclude (local, fora do PR): ${result.exclude.added.join(", ")}`);
     logger.info(`${DIM}    Para versionar algum deles de propósito, remova a linha do .git/info/exclude.${NC}`);
   }
-  if (result.ideIgnoreAdded) logger.info(`  • .gitignore: ${result.ideEntry}`);
+  if (result.ignoreAdded.length) logger.info(`  • .gitignore: ${result.ignoreAdded.join(", ")}`);
   for (const file of result.tracked) {
     logger.info(
       `${YELLOW}  ⚠ ${file} está versionado: nada foi removido. Rode /jarvis-init upgrade na IDE para decidir se ele sai do git.${NC}`
+    );
+  }
+  if (result.trackedMap) {
+    logger.info(
+      `${YELLOW}  ⚠ CDD-MIND-MAP.md está versionado: o exclude não vale para arquivo rastreado, então as edições dele continuam no PR.${NC}`
     );
   }
   if (result.ideFolderTracked) {
     logger.info(
       `${YELLOW}  ⚠ ${result.ideEntry} já está versionada: ignorar não a tira do git e o init não a remove.${NC}`
     );
+  }
+  for (const message of result.warnings) logger.info(`${YELLOW}  ⚠ Git (modo projeto): ${message}${NC}`);
+  for (const message of result.errors) logger.error(`${RED}  ✗ Git (modo projeto): ${message}${NC}`);
+  if (result.exclude.error) {
+    logger.info(
+      `${YELLOW}  ⚠ O exclude não foi gravado: AGENTS.md, CLAUDE.md e CDD-MIND-MAP.md podem entrar no PR. Corrija e rode o init de novo.${NC}`
+    );
+  }
+}
+
+/** Há algo a dizer sobre o git do modo projeto (gravou, avisa ou falhou)? Evita um bloco vazio no resumo. */
+function gitSetupHasNews(result) {
+  return Boolean(
+    result.exclude.added.length ||
+      result.ignoreAdded.length ||
+      result.tracked.length ||
+      result.trackedMap ||
+      result.ideFolderTracked ||
+      result.warnings.length ||
+      result.errors.length
+  );
+}
+
+/**
+ * Linha do `.gitignore` para a pasta dos documentos de trabalho (`docs/jarvis/` por padrão), como o texto do
+ * init fazia antes da #227 (a pasta não deve ir para o git do time). Sem linha se a pasta é absoluta, sai da
+ * raiz ou o caminho do ENV não resolve (esse erro é do `checkEnvPaths`).
+ * @param {Map<string, string>} entries
+ * @returns {string[]}
+ */
+export function docsIgnoreLines(entries) {
+  try {
+    const jarvis = docsFolders(expandEnv(entries)).jarvis;
+    if (!jarvis || isAbsolute(jarvis) || jarvis.startsWith("..")) return [];
+    return [`${jarvis}/`];
+  } catch (error) {
+    if (error instanceof EnvPathError) return [];
+    throw error;
   }
 }
 
@@ -445,7 +488,9 @@ export async function init(flags) {
     for (const warning of sessions.warnings) logger.info(`${YELLOW}  ⚠ ${warning}${NC}`);
     // Modo projeto (#227): AGENTS.md, CLAUDE.md e CDD-MIND-MAP.md no .git/info/exclude (local) e a pasta
     // da IDE no .gitignore. Nada sai do índice aqui: tirar AGENTS.md/CLAUDE.md do git é decisão do Upgrade.
-    logProjectGitSetup(applyProjectGitSetup({ dir: cwd, ide }));
+    const gitSetup = applyProjectGitSetup({ dir: cwd, ide, gitignoreLines: docsIgnoreLines(sessionsEnv) });
+    logProjectGitSetup(gitSetup);
+    if (gitSetup.errors.length) process.exitCode = 1;
   } catch (error) {
     if (!(error instanceof EnvPathError)) throw error;
     logger.error(`${RED}  ✗ ${error.message}${NC}`);
@@ -788,13 +833,8 @@ async function runUpgrade(cwd, flags) {
   // 3.5 Git no modo projeto (#227): o mesmo da instalação (exclude local e pasta da IDE no .gitignore).
   // AGENTS.md/CLAUDE.md versionados viram pendência do /jarvis-init upgrade: aqui nada sai do índice,
   // nem com --yes. Raiz sem .git (modo workspace): nada.
-  const gitSetup = applyProjectGitSetup({ dir: workspaceDir, ide });
-  if (
-    gitSetup.exclude.added.length ||
-    gitSetup.ideIgnoreAdded ||
-    gitSetup.tracked.length ||
-    gitSetup.ideFolderTracked
-  ) {
+  const gitSetup = applyProjectGitSetup({ dir: workspaceDir, ide, gitignoreLines: docsIgnoreLines(futureEntries) });
+  if (gitSetupHasNews(gitSetup)) {
     logger.info(`${BLUE}🔒 Git (modo projeto):${NC}`);
     logProjectGitSetup(gitSetup);
   }
@@ -882,7 +922,11 @@ async function runUpgrade(cwd, flags) {
       ? `${CYAN}➡️  Agora rode ${BOLD}/jarvis-init upgrade${NC}${CYAN} na IDE: ${pending.join("; ")}.${NC}\n`
       : `${GREEN}✓ Nada pendente na IDE.${NC}\n`
   );
-  return sync.errors.length || moveErrors.length || staleErrors.length || rulesSync?.errors.length
+  return sync.errors.length ||
+    moveErrors.length ||
+    staleErrors.length ||
+    rulesSync?.errors.length ||
+    gitSetup.errors.length
     ? 1
     : 0;
 }

@@ -650,7 +650,7 @@ mkdir -p "$SESSIONS_DIR/eng" "$SESSIONS_DIR/prod" "$SESSIONS_DIR/qa"   # SESSION
 #    NÃO crie nem altere o .gitignore nem o .git/info/exclude.
 #    Quem grava é o CLI (`jarvis init` e `jarvis init --upgrade`), não este texto, e não há lista para repetir aqui:
 #      - .git/info/exclude (local, fora do PR): AGENTS.md, CLAUDE.md e CDD-MIND-MAP.md
-#      - .gitignore: .jarvis/ (e o $SESSIONS_DIR/ relativo fora dela), $JARVIS_DOCS/ (na migração) e a pasta da IDE
+#      - .gitignore: .jarvis/ (e o $SESSIONS_DIR/ relativo fora dela), $JARVIS_DOCS/ e a pasta da IDE
 #    Arquivo gerado já versionado (AGENTS.md/CLAUDE.md) só vira aviso; sair do git é decisão do Upgrade.
 ```
 
