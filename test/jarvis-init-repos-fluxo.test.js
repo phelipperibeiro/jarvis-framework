@@ -86,3 +86,118 @@ test("SKILL.md: o sub-passo do mapa e os Recursos apontam para o sub-passo 9.8 e
   assert.match(item6, /sub-passo 9\.8 do `passo-adicionar-stacks\.md`, que segue `assets\/mapa-de-tecnologias\.md`/);
   assert.match(skill, /\*\*Mapa de tecnologias \(parte comum\)\*\*: `\$IDE\/skills\/jarvis-init\/assets\/mapa-de-tecnologias\.md`/);
 });
+
+// ---- Fase 3: o modo `repos` (Q1 a Q6) -------------------------------------------------------------------
+
+const repos = assets("repos.md");
+const preCond = trecho(repos, "## Pré-condições", "## Fluxo (modo workspace)");
+const fluxo = trecho(repos, "## Fluxo (modo workspace)", "## Regras");
+const passo = (n, prox) => trecho(fluxo, `${n}. **`, prox ? `${prox}. **` : null);
+
+test("SKILL.md: `repos` no argument-hint, na Entrada (reservada) e roteado para o asset sem continuar o onboarding", () => {
+  assert.match(skill, /^argument-hint: "\[upgrade \| repos \| nome-do-membro-opcional\]"/m);
+  const entrada = trecho(skill, "## Entrada", "## Recursos");
+  assert.match(entrada, /`repos` \(sem diferenciar maiúsculas\)/);
+  assert.match(entrada, /segue `assets\/repos\.md`/);
+  assert.match(entrada, /\*\*não continua o onboarding\*\*/);
+  assert.match(skill, /\*\*Modo `repos`\*\*: `\$IDE\/skills\/jarvis-init\/assets\/repos\.md`/);
+  const modo = trecho(skill, "### Modo `repos` (`$ARGUMENTS` = `repos`)", "### 2. Verificar Existência do ENV.md");
+  assert.match(modo, /só o passo 0 \(versão\) e siga `assets\/repos\.md` do começo ao fim/);
+});
+
+test("SKILL.md: tabela de skills invocados traz o modo `repos` chamando /jarvis-create-specialization", () => {
+  const linha = skill.split("\n").find((l) => l.startsWith("| Modo `repos` — especializações dos repositórios novos |"));
+  assert.ok(linha, "a linha do modo repos existe na tabela");
+  assert.match(linha, /`\/jarvis-create-specialization \{área\} \{stack\}`/);
+  assert.match(linha, /só backend e frontend/);
+});
+
+test("SKILL.md: `_REVIEWERS` saiu da tabela de variáveis opcionais (a chave não está mais no template)", () => {
+  assert.doesNotMatch(skill, /_REVIEWERS/);
+  assert.match(skill, /\| `CENTRAL_DOCS_REF` \/ `_TARGET_BRANCH` \| `main` \/ `main` \|/);
+});
+
+test("repos.md (Q4): modo projeto responde 'não se aplica', indica o /warm-up e não escreve arquivo", () => {
+  assert.match(preCond, /Não se aplica ao modo projeto: o mapa tem só a raiz\. Para revisá-la, rode `\/warm-up`\./);
+  assert.match(preCond, /repita o aviso do `\/warm-up` \(sugira `jarvis init --upgrade`, sem alterar o ENV\)/);
+  assert.match(preCond, /\*\*Termine sem escrever arquivo\.\*\*/);
+  assert.match(preCond, /Sem ele, avise "O framework não foi inicializado: rode `\/jarvis-init`" e termine/);
+});
+
+test("repos.md (Q2): compara TODAS as subpastas com .git, sem filtrar por WORKSPACE_REPOS", () => {
+  const p1 = passo(1, 2);
+  assert.match(p1, /\*\*todas\*\* as subpastas com `\.git\/`/);
+  assert.match(p1, /\*\*sem filtrar por `WORKSPACE_REPOS`\*\*/);
+  assert.match(p1, /\*\*novos:\*\*/);
+  assert.match(p1, /\*\*só no mapa:\*\*/);
+  assert.match(p1, /\*\*ausentes:\*\*/);
+});
+
+test("repos.md: sem repositório novo, 'Nada a atualizar.' e nenhum arquivo muda", () => {
+  const p1 = passo(1, 2);
+  assert.match(p1, /responda "Nada a atualizar\." e \*\*termine sem escrever nenhum arquivo\*\*/);
+});
+
+test("repos.md (Q6): tabela com 'O que será gravado' por repositório; tirar a linha deixa o repositório fora de todos os documentos", () => {
+  const p2 = passo(2, 3);
+  assert.match(p2, /coluna \*\*O que será gravado\*\* por repositório/);
+  assert.match(p2, /acrescentar à `WORKSPACE_REPOS`/);
+  assert.match(p2, /\*\*Confirmar\*\* \| \*\*Corrigir\*\* \| \*\*Incluir informação\*\*/);
+  assert.match(p2, /\*\*Tirar a linha\*\* de um repositório o deixa fora de todos os documentos/);
+  assert.match(p2, /volta a ser oferecido na próxima execução e na pendência do `jarvis init --upgrade`/);
+});
+
+test("repos.md: o mapa recebe só linhas novas, sem reprocessar as existentes", () => {
+  const p3 = passo(3, 4);
+  assert.match(p3, /\*\*Mapa:\*\* acrescente só as linhas novas, sem reprocessar as existentes/);
+});
+
+test("repos.md: bloco do AGENTS.md entre marcadores, uma linha por repositório, texto fora do bloco idêntico", () => {
+  const p3 = passo(3, 4);
+  assert.match(p3, /entre `<!-- jarvis:repos:start -->` e `<!-- jarvis:repos:end -->`/);
+  assert.match(p3, /`- \*\*\{repo\}\*\* — \{papel\}; \{linguagem\}\/\{framework\} \(\{área\}\)`/);
+  assert.match(p3, /o texto \*\*fora do bloco permanece idêntico\*\*/);
+});
+
+test("repos.md (Q5): AGENTS.md ausente não é criado; sem marcadores o bloco entra depois da linha do mapa (ou no fim), na mesma confirmação", () => {
+  const p3 = passo(3, 4);
+  assert.match(p3, /\*\*`AGENTS\.md` não existe:\*\* \*\*não o crie\*\* \(o Passo 7 do `\/jarvis-init` é o dono da criação\)/);
+  assert.match(p3, /\*\*Existe com os marcadores:\*\* só acrescente as linhas novas entre eles/);
+  assert.match(p3, /\*\*Existe sem os marcadores:\*\* insira o bloco inteiro logo depois da linha `> Mapa de tecnologias do projeto:`; sem essa linha, no fim do arquivo/);
+  assert.match(p3, /\*\*na mesma confirmação da tabela\*\* do item 2 \(não é uma pergunta a mais\)/);
+});
+
+test("repos.md (Q5): CLAUDE.md cópia do AGENTS.md recebe o mesmo bloco", () => {
+  const p3 = passo(3, 4);
+  assert.match(p3, /\*\*`CLAUDE\.md`:\*\* se existir e for cópia do `AGENTS\.md` \(conteúdo igual antes da mudança\), aplique o mesmo bloco nele/);
+});
+
+test("repos.md (Q6): WORKSPACE_REPOS só é gravada se preenchida, só acrescenta os nomes confirmados e nenhuma outra chave muda", () => {
+  const p3 = passo(3, 4);
+  assert.match(p3, /\*\*`WORKSPACE_REPOS`:\*\* só se estiver preenchida, acrescente os nomes confirmados na tabela/);
+  assert.match(p3, /nenhuma outra chave do `ENV\.md` muda\. Vazia: não mexa\./);
+});
+
+test("repos.md: especializações só dos novos, depois da confirmação, criação só para backend e frontend", () => {
+  const p4 = passo(4, 5);
+  assert.match(p4, /\*\*Especializações, só dos repositórios novos\*\*, depois da confirmação da tabela/);
+  assert.match(p4, /\*\*registrada\*\* em `\{ÁREA\}_SPECIALIZATIONS`: nada/);
+  assert.match(p4, /\*\*instalada e não registrada\*\*: ofereça registrar/);
+  assert.match(p4, /\*\*inexistente\*\*: ofereça `\/jarvis-create-specialization \{área\} \{stack\}` \(a criação vale só para backend e frontend\)/);
+});
+
+test("repos.md: repositório ausente tem pergunta própria (Remover | Manter) e nunca é apagado sem o Sim", () => {
+  const p5 = passo(5, 6);
+  assert.match(p5, /pergunte \*\*um por vez\*\* com `AskUserQuestion`: \*\*Remover\*\* \| \*\*Manter\*\*/);
+  assert.match(p5, /apaga a linha do mapa, a linha do bloco do `AGENTS\.md` \(e do `CLAUDE\.md` cópia\) e o nome da `WORKSPACE_REPOS`/);
+  assert.match(p5, /\*\*nunca apague sem o Sim\*\*/);
+});
+
+test("repos.md: regras — nunca lê .env*, nunca reprocessa linhas validadas, nunca faz commit, e termina sem arquivo quando nada muda", () => {
+  const regras = trecho(repos, "## Regras", null);
+  assert.match(regras, /Ler `\.env\*`, chaves, certificados ou credenciais/);
+  assert.match(regras, /Reprocessar as linhas já validadas do mapa/);
+  assert.match(regras, /Fazer commit ou push/);
+  assert.match(regras, /Terminar sem escrever arquivo quando não há nada a atualizar/);
+  assert.match(repos, /um por vez dá o mesmo resultado que todos juntos, e as linhas já validadas não mudam/);
+});

@@ -1,7 +1,7 @@
 ---
 name: jarvis-init
 description: Inicializa o framework JARVIS e guia novos membros no processo de onboarding. Use quando precisar configurar o ambiente, criar ENV.md, validar MCPs ou orientar um novo desenvolvedor.
-argument-hint: "[upgrade | nome-do-membro-opcional]"
+argument-hint: "[upgrade | repos | nome-do-membro-opcional]"
 disable-model-invocation: false
 allowed-tools: Read Write Edit Grep Glob Bash
 metadata:
@@ -39,7 +39,7 @@ Regras que **substituem** qualquer trecho legado deste skill ou dos assets:
 
 ## Entrada
 
-- `$ARGUMENTS` - (Opcional) `upgrade` (sem diferenciar maiúsculas): com `$IDE/ENV.md` existente, vai direto ao **Upgrade (C)** do passo "2. Verificar Existência do ENV.md", sem o menu A/B/C/D; sem `ENV.md`, avisa e segue a criação normal. Qualquer outro valor é o nome do novo membro, para personalizar o onboarding.
+- `$ARGUMENTS` - (Opcional) `upgrade` (sem diferenciar maiúsculas): com `$IDE/ENV.md` existente, vai direto ao **Upgrade (C)** do passo "2. Verificar Existência do ENV.md", sem o menu A/B/C/D; sem `ENV.md`, avisa e segue a criação normal. `repos` (sem diferenciar maiúsculas): modo para depois de clonar repositórios no workspace; segue `assets/repos.md` (mapa, `AGENTS.md` e especializações só do que ainda não está nos documentos) e **não continua o onboarding**. Qualquer outro valor é o nome do novo membro, para personalizar o onboarding.
 
 ## Recursos
 
@@ -53,6 +53,7 @@ Regras que **substituem** qualquer trecho legado deste skill ou dos assets:
 - **Mapa de tecnologias (parte comum)**: `$IDE/skills/jarvis-init/assets/mapa-de-tecnologias.md` (usado pelo `/warm-up`, pelo passo das stacks e pelo modo `repos`)
 - **Passo 8 sem o CLI**: `$IDE/skills/jarvis-init/assets/rules-sync-manual.md` (fallback do `jarvis rules sync`)
 - **Upgrade (C)**: `$IDE/skills/jarvis-init/assets/upgrade.md`
+- **Modo `repos`**: `$IDE/skills/jarvis-init/assets/repos.md`
 - **Opções padrão e exemplos de validação**: `$IDE/skills/jarvis-init/assets/validacoes.md`
 - **Exemplo de execução**: `$IDE/skills/jarvis-init/assets/exemplo-execucao.md`
 - **Saída**: `$IDE/ENV.md`, `AGENTS.md`, `{workspace}/$SESSIONS_DIR/{eng,prod,qa}/`
@@ -199,6 +200,10 @@ Identificar qual IDE o usuário está utilizando:
 | Kiro | `.kiro/` | `.kiro/settings/mcp.json` |
 
 > Formatos e como ativar cada um: tabela "Caminhos de Configuração" em `assets/mcp-configs.md`.
+
+### Modo `repos` (`$ARGUMENTS` = `repos`)
+
+Faça só o passo 0 (versão) e siga `assets/repos.md` do começo ao fim: ele exige o `ENV.md` existente, não faz as perguntas do onboarding e termina sem continuar o fluxo (passos 1 a 13).
 
 ### 2. Verificar Existência do ENV.md
 
@@ -583,7 +588,7 @@ Se **A** ou **B**, perguntar sobre cada variável opcional conforme seleção �
 | `CENTRAL_DOCS_STORAGE` / `_LOCATION` | `filesystem` / pasta padrão do modo de trabalho | Central docs (o que foi implementado), configurado no Passo 5.2; vazio = desligado |
 | `JARVIS_DOCS` / `ENG_DOCS` | `$DOCS_FOLDER/jarvis` / `$JARVIS_DOCS/engineering` | Documentos de trabalho (não perguntar; `$JARVIS_DOCS/` no `.gitignore` só se a raiz tiver `.git`) |
 | `DISCOVERIES_FOLDER_NAME` / `DISCOVERIES_DOCS` | `discoveries` / `$JARVIS_DOCS/$DISCOVERIES_FOLDER_NAME` | Discoveries, fora de `product/` (não perguntar) |
-| `CENTRAL_DOCS_REF` / `_TARGET_BRANCH` / `_REVIEWERS` | `main` / `main` / *(vazio)* | Só quando a pasta do Central docs tem `.git` |
+| `CENTRAL_DOCS_REF` / `_TARGET_BRANCH` | `main` / `main` | Só quando a pasta do Central docs tem `.git` |
 | `SESSIONS_DIR` | `.jarvis/sessions` | Não perguntar — gravar o padrão. A pessoa pode trocar depois no `ENV.md`: o `jarvis init` cria as pastas e o `.gitignore` a partir da chave |
 | `RTK_ENABLED` | `false` (ou true se detectar `rtk`) | Token Killer |
 | `ADVISOR_MODELS` | `"Sonnet 5.5,Opus 5.5,Opus 5,Fable 5.1"` | Advisor do `eng.start` — não perguntar, gravar o padrão |
@@ -1041,6 +1046,7 @@ Apresentar checklist de onboarding por período (Dia 1, Semana 1, Mês 1).
 | Passo | Skill | Condição |
 |-------|-------|----------|
 | Passo 5.3 — Carga inicial do Central docs | `/eng.spec-consolidate --inicial` | Se o Central docs estiver ligado, houver PRD/FRD/ARD/RFC/SPEC e o usuário responder Sim (também no Upgrade, só se documentos foram movidos nesta atualização) |
+| Modo `repos` — especializações dos repositórios novos | `/jarvis-create-specialization {área} {stack}` | Se a pessoa aceitar criar um skill novo (só backend e frontend) para a stack de um repositório novo que ainda não tem especialização instalada, depois da confirmação da tabela |
 | Passo 9 — Adicionar as stacks (opcional) | `/jarvis-create-specialization {área} {stack}` | Se a pessoa escolher criar um skill novo para uma stack que ainda não tem especialização instalada (uma stack por vez; pular o passo não chama nada) |
 
 ---
