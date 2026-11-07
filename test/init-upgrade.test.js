@@ -18,6 +18,7 @@ import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { execFileSync, spawnSync } from "node:child_process";
 import {
+  logProjectGitSetup,
   parseMenuChoice,
   upgradePendencies,
   promptCompanyProfile,
@@ -1146,9 +1147,14 @@ function withRealRepo(files, fn) {
   });
 }
 
+// Isola dos ajustes globais do git de quem roda (gpgsign, hooks, excludesFile, templates); o CLI herda o ambiente.
+process.env.GIT_CONFIG_GLOBAL = "/dev/null";
+process.env.GIT_CONFIG_NOSYSTEM = "1";
+const GIT_ID = ["-c", "user.email=t@t", "-c", "user.name=t", "-c", "commit.gpgsign=false", "-c", "core.hooksPath=/dev/null"];
+
 const commitAll = (ws) => {
   gitIn(ws, "add", "-A");
-  gitIn(ws, "-c", "user.email=t@t", "-c", "user.name=t", "commit", "-q", "-m", "x");
+  gitIn(ws, ...GIT_ID, "commit", "-q", "-m", "x");
 };
 const excludeOf = (ws) => readFileSync(join(ws, ".git", "info", "exclude"), "utf-8").split(/\r?\n/);
 const gitignoreOf = (ws) => (existsSync(join(ws, ".gitignore")) ? readFileSync(join(ws, ".gitignore"), "utf-8") : "");
@@ -1245,7 +1251,7 @@ test("init --upgrade no modo projeto: grava o exclude e a pasta da IDE no .gitig
     for (const f of GENERATED) assert.ok(excludeOf(ws).includes(f), `${f} no exclude`);
     assert.match(gitignoreOf(ws), /^\.claude\/$/m);
     assert.match(r.stdout, /Git \(modo projeto\)/);
-    assert.match(r.stdout, /Nada pendente na IDE|Agora rode/);
+    assert.match(r.stdout, /Agora rode .*\/jarvis-init upgrade.* na IDE: confirmar o acesso de TASK_MANAGER/);
   });
 });
 
@@ -1360,7 +1366,7 @@ test("init --upgrade: .gitignore que é diretório vira erro, o resumo continua 
     assert.equal(r.status, 1);
     assert.match(output(r), /Git \(modo projeto\): não foi possível gravar .*\.gitignore: EISDIR/);
     assert.match(r.stdout, /Upgrade concluído/, "o resumo não é derrubado");
-    assert.match(r.stdout, /Nada pendente na IDE|Agora rode/);
+    assert.match(r.stdout, /Agora rode .*\/jarvis-init upgrade.* na IDE: confirmar o acesso de TASK_MANAGER/, "as pendências aparecem");
   });
 });
 
@@ -1374,3 +1380,89 @@ test("init (instalação): CDD-MIND-MAP.md já versionado não vai para o exclud
     assert.ok(excludeOf(ws).includes("AGENTS.md"));
   });
 });
+
+test("init (instalação) numa raiz que é worktree (.git em arquivo): o exclude vai para o repositório comum", () => {
+  withRealRepo({}, (ws) => {
+    gitIn(ws, ...GIT_ID, "commit", "-q", "--allow-empty", "-m", "base");
+    const wt = `${ws}-wt`;
+    try {
+      gitIn(ws, "worktree", "add", "-q", "-b", "wt", wt);
+      assert.ok(existsSync(join(wt, ".git")));
+      const r = run(wt, "--ide", "claude");
+      assert.equal(r.status, 0, r.stderr);
+      for (const f of GENERATED) assert.ok(excludeOf(ws).includes(f), `${f} no exclude do repositório comum`);
+      writeFileSync(join(wt, "AGENTS.md"), "# gerado\n");
+      gitIn(wt, "check-ignore", "-q", "AGENTS.md"); // lança se o git não ignora
+      assert.match(gitignoreOf(wt), /^\.claude\/$/m);
+    } finally {
+      rmSync(wt, { recursive: true, force: true });
+    }
+  });
+});
+
+// logProjectGitSetup escreve no logger (console); aqui o console é capturado.
+function capturar(fn) {
+  const saidas = [];
+  const { log, error } = console;
+  console.log = (...a) => saidas.push(a.join(" "));
+  console.error = (...a) => saidas.push(a.join(" "));
+  try {
+    fn();
+  } finally {
+    console.log = log;
+    console.error = error;
+  }
+  return saidas.join("\n");
+}
+
+const gitSetupBase = () => ({
+  isRepo: true,
+  exclude: { path: "/x/.git/info/exclude", added: [], existing: [], error: null, gitUnavailable: false },
+  tracked: [],
+  trackedMap: false,
+  ideEntry: ".claude/",
+  ignoreAdded: [],
+  ideIgnoreAdded: false,
+  ideFolderTracked: false,
+  warnings: [],
+  errors: [],
+});
+
+test("logProjectGitSetup: nada novo, ou raiz sem .git, não imprime nada", () => {
+  assert.equal(capturar(() => logProjectGitSetup(gitSetupBase())), "");
+  assert.equal(capturar(() => logProjectGitSetup({ ...gitSetupBase(), isRepo: false })), "");
+});
+
+test("logProjectGitSetup: lista o que gravou e como reverter", () => {
+  const out = capturar(() =>
+    logProjectGitSetup({
+      ...gitSetupBase(),
+      exclude: { ...gitSetupBase().exclude, added: ["AGENTS.md", "CLAUDE.md"] },
+      ignoreAdded: [".claude/", "docs/jarvis/"],
+    })
+  );
+  assert.match(out, /\.git\/info\/exclude \(local, fora do PR\): AGENTS\.md, CLAUDE\.md/);
+  assert.match(out, /remova a linha do \.git\/info\/exclude/);
+  assert.match(out, /\.gitignore: \.claude\/, docs\/jarvis\//);
+});
+
+test("logProjectGitSetup: avisos de versionado, de git indisponível e erros de gravação", () => {
+  const out = capturar(() =>
+    logProjectGitSetup({
+      ...gitSetupBase(),
+      tracked: ["AGENTS.md"],
+      trackedMap: true,
+      ideFolderTracked: true,
+      exclude: { ...gitSetupBase().exclude, error: "o git não respondeu (fatal)", gitUnavailable: true },
+      warnings: ["o git não respondeu (fatal)"],
+      errors: ["não foi possível gravar /x/.gitignore: EISDIR"],
+    })
+  );
+  assert.match(out, /AGENTS\.md está versionado: nada foi removido/);
+  assert.match(out, /CDD-MIND-MAP\.md está versionado: o exclude não vale para arquivo rastreado/);
+  assert.match(out, /\.claude\/ já está versionada: ignorar não a tira do git/);
+  assert.match(out, /Git \(modo projeto\): o git não respondeu \(fatal\)/);
+  assert.match(out, /Git \(modo projeto\): não foi possível gravar \/x\/\.gitignore: EISDIR/);
+  assert.match(out, /O exclude não foi gravado: AGENTS\.md, CLAUDE\.md e CDD-MIND-MAP\.md podem entrar no PR/);
+});
+

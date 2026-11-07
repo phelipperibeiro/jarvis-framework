@@ -142,7 +142,7 @@ test("init com SESSIONS_DIR absoluto: cria lá, avisa e deixa só .jarvis/ (e a 
       assert.equal(r.status, 0, r.stderr);
       assert.deepEqual(areas(abs), ["eng", "prod", "qa"]);
       assert.match(r.stdout, /fora da raiz do repositório/);
-      assert.equal(gitignore(ws).trim(), ".jarvis/\n.claude/\ndocs/jarvis/");
+      assert.deepEqual(new Set(gitignore(ws).trim().split("\n")), new Set([".jarvis/", ".claude/", "docs/jarvis/"]));
     });
   } finally {
     rmSync(abs, { recursive: true, force: true });

@@ -11,6 +11,13 @@ import { fileURLToPath } from "node:url";
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const cli = join(root, "bin", "jarvis.js");
 
+// Isola os testes da configuração global do git de quem roda (gpgsign, hooks, excludesFile, templates).
+process.env.GIT_CONFIG_GLOBAL = "/dev/null";
+process.env.GIT_CONFIG_NOSYSTEM = "1";
+const IDENTITY = [
+  "-c", "user.email=t@t", "-c", "user.name=t", "-c", "commit.gpgsign=false", "-c", "core.hooksPath=/dev/null",
+];
+
 const git = (cwd, ...args) =>
   execFileSync("git", args, { cwd, encoding: "utf-8", stdio: ["ignore", "pipe", "pipe"] });
 
@@ -36,7 +43,7 @@ function withRepo(files, fn, { env = true } = {}) {
       writeFileSync(join(dir, rel), content);
     }
     git(dir, "add", "-A");
-    git(dir, "-c", "user.email=t@t", "-c", "user.name=t", "commit", "-q", "-m", "base");
+    git(dir, ...IDENTITY, "commit", "-q", "-m", "base");
     return fn(dir);
   } finally {
     rmSync(dir, { recursive: true, force: true });
@@ -73,7 +80,7 @@ test("untrack: AGENTS.md e CLAUDE.md juntos, cada um com a sua remoção", () =>
 test("untrack: depois do commit da pessoa, o arquivo não aparece como novo no status", () => {
   withRepo({ "AGENTS.md": "# do time\n" }, (dir) => {
     assert.equal(run(dir, "AGENTS.md").status, 0);
-    git(dir, "-c", "user.email=t@t", "-c", "user.name=t", "commit", "-q", "-m", "tira AGENTS.md do git");
+    git(dir, ...IDENTITY, "commit", "-q", "-m", "tira AGENTS.md do git");
     assert.equal(git(dir, "ls-files", "AGENTS.md").trim(), "");
     assert.equal(git(dir, "status", "--porcelain").trim(), "");
   });

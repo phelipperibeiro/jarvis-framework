@@ -18,7 +18,12 @@ import {
   untrackFromIndex,
 } from "../bin/lib/core/git-exclude.js";
 
-const IDENTITY = ["-c", "user.email=t@t", "-c", "user.name=t"];
+// Isola os testes da configuração global do git de quem roda (gpgsign, hooks, excludesFile, templates).
+process.env.GIT_CONFIG_GLOBAL = "/dev/null";
+process.env.GIT_CONFIG_NOSYSTEM = "1";
+const IDENTITY = [
+  "-c", "user.email=t@t", "-c", "user.name=t", "-c", "commit.gpgsign=false", "-c", "core.hooksPath=/dev/null",
+];
 
 function git(cwd, ...args) {
   return execFileSync("git", args, { cwd, encoding: "utf-8", stdio: ["ignore", "pipe", "pipe"] });

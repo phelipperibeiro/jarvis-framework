@@ -149,3 +149,15 @@ test("jarvis untrack está na lista de comandos do AGENTS.md e no guia da pasta 
   assert.match(bin, /`jarvis untrack /);
   assert.match(bin, /git-exclude/);
 });
+
+test("upgrade.md 9.1: jarvis untrack só na opção Tirar do git; Manter versionado não muda nada", () => {
+  assert.match(item91, /- \*\*Tirar do git:\*\* rode `jarvis untrack \{arquivo\}`/);
+  assert.match(item91, /- \*\*Manter versionado\*\*, ou sem resposta: nada muda no índice nem no exclude/);
+  assert.equal((item91.match(/jarvis untrack \{arquivo\}/g) || []).length, 1, "a chamada aparece uma vez, ligada à opção");
+  assert.ok(
+    item91.indexOf("**Tirar do git:**") < item91.indexOf("jarvis untrack {arquivo}") &&
+      item91.indexOf("jarvis untrack {arquivo}") < item91.indexOf("**Manter versionado**, ou sem resposta"),
+    "a chamada fica dentro da opção Tirar do git, antes da opção Manter"
+  );
+});
+
