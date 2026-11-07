@@ -58,10 +58,13 @@ test("item 8.5: a carga inicial do Central docs, depois do item 8, tem uma condi
   // fica depois do Central docs antigo (itens 8 a 8.4): quem o migra no mesmo Upgrade também recebe a oferta
   assert.ok(upgrade.indexOf("8.4. **Exceção") < upgrade.indexOf("8.5. **Exceção"), "a oferta vem depois do item 8.4");
   assert.doesNotMatch(item7, /carga inicial/, "o item 7 não oferece mais a carga inicial");
-  assert.equal((upgrade.match(/carga inicial do Central docs/g) || []).length, 2, "o título e o texto do 8.5, e nenhum outro lugar");
+  // a oferta só é descrita no 8.5: fora dele nenhum texto manda oferecer a carga inicial
+  assert.doesNotMatch(upgrade.replace(item85, ""), /ofereça a carga inicial/, "só o 8.5 manda oferecer a carga inicial");
   // uma asserção por condição (sem regex com `.*` solto no meio)
   assert.match(item85, /\*\*só se\*\*/, "a oferta tem condição");
   assert.match(item85, /o Central docs estiver ligado/, "condição 1: Central docs ligado");
+  assert.match(item85, /considere também `CENTRAL_DOCS_STORAGE` entre as chaves novas, ainda não gravadas/, "'ligado' considera a chave nova, ainda não gravada (o item 10 grava depois)");
+  assert.match(item85, /não estiver no layout antigo \(o item 8\.4 adiado\)/, "não oferece com o layout antigo do Central docs");
   assert.match(item85, /houver PRD, FRD, ARD, RFC ou SPEC em `\$PROD_DOCS`\/`\$ENG_DOCS`/, "condição 2: há documentos de trabalho");
   assert.match(item85, /documentos foram movidos nesta atualização/, "condição 3: documentos movidos");
   assert.match(item85, /pelo item 7 ou pelo `jarvis init --upgrade` rodado logo antes deste comando/, "o que o terminal moveu antes também conta");
@@ -75,6 +78,10 @@ test("item 8.5: a carga inicial do Central docs, depois do item 8, tem uma condi
   assert.match(readFileSync(join(root, "bin", "commands", "init.js"), "utf8"), /Documentos movidos: \$\{/, "o CLI ainda imprime a frase citada");
   const skillMd = readFileSync(join(root, "skills", "jarvis-init", "SKILL.md"), "utf8");
   assert.match(skillMd, /\| Passo 5\.3 — Carga inicial do Central docs \|.*só se documentos foram movidos nesta atualização/, "a tabela do SKILL.md traz a mesma condição");
+  assert.match(skillMd, /\| Passo 5\.3 — Carga inicial do Central docs \|.*Se o Central docs estiver ligado, houver PRD\/FRD\/ARD\/RFC\/SPEC/, "a tabela do SKILL.md também traz as condições de Central docs ligado e de haver documentos");
+  // a nota do terminal diz que a oferta é feita aqui e que depende da saída do terminal
+  const nota = upgrade.split("\n").find((l) => l.startsWith("> No terminal, rode antes"));
+  assert.match(nota, /a carga inicial do Central docs \(item 8\.5; anote o "Documentos movidos: N" da saída do terminal\)/, "a nota do terminal cita o item 8.5");
 });
 
 test("item 12 e SKILL.md definem o resumo (item 5 do passo 9.5) e a única etapa pulável (as stacks)", () => {
