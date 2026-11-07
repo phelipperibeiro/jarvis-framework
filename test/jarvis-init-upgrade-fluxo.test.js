@@ -34,7 +34,7 @@ test("item 5 pula os itens que só existem para variável nova", () => {
   assert.match(item5, /6, 10 e 11|itens 6, 10 e 11/, "o item 5 deve pular 6, 10 e 11");
 });
 
-test("item 12 deixa explícito que pular etapa é permitido e encerrar antes do 9.5 não é", { todo: "Fase 2 (#226)" }, () => {
+test("item 12 deixa explícito que pular etapa é permitido e encerrar antes do 9.5 não é", () => {
   assert.match(item12, /9\.5/, "o item 12 deve citar o passo 9.5");
   assert.match(item12, /resumo/i, "o item 12 deve citar o resumo");
   assert.match(item12, /pul/i, "o item 12 deve dizer que pular é permitido");
@@ -42,7 +42,7 @@ test("item 12 deixa explícito que pular etapa é permitido e encerrar antes do 
     "o item 12 deve proibir encerrar antes do 9.5 e do resumo");
 });
 
-test("passo-adicionar-stacks não manda para o passo 10 (é do onboarding completo)", { todo: "Fase 2 (#226)" }, () => {
+test("passo-adicionar-stacks não manda para o passo 10 (é do onboarding completo)", () => {
   assert.doesNotMatch(stacks, /passo 10/, "nenhuma referência ao passo 10 nos assets das stacks");
   const refs9_5 = stacks.match(/passo 9\.5/g) || [];
   assert.equal(refs9_5.length, 3, "as três referências (pular, fim, tabela) devem apontar para o passo 9.5");

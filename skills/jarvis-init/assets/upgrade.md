@@ -48,4 +48,4 @@ Lido pelo passo 2 do `SKILL.md` quando o `ENV.md` existe e a opção é C (ou o 
    ✅ ENV.md atualizado! N variável(is) nova(s) adicionada(s).
    ⚠️ Preencha os valores em branco antes de usar os novos recursos.
    ```
-12. Oferecer o **passo 9 (adicionar as stacks)**, que a pessoa pode pular, rodar o **passo 9.5 (validar o ENV.md)** e então encerrar (não continuar para o fluxo de onboarding completo).
+12. Oferecer o **passo 9 (adicionar as stacks)**, que a pessoa pode pular, rodar o **passo 9.5 (validar o ENV.md)** e então mostrar o resumo. Pular uma etapa é permitido; o Upgrade **nunca encerra** antes do passo 9.5 e do resumo, em nenhum caminho. Não continua para o fluxo de onboarding completo.
