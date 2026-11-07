@@ -104,8 +104,8 @@ jarvis/
            ▼
 ┌──────────────────────┐
 │  .cursor/ (ou IDE)   │  cópia de agents, skills, workflows, rules, templates
-│  jarvis-lock.json   │  versão + origem do framework
-│  $SESSIONS_DIR/     │  estado local eng/prod/qa
+│  jarvis-lock.json    │  versão + origem do framework
+│  $SESSIONS_DIR/      │  estado local eng/prod/qa
 └──────────┬───────────┘
            │ no chat: /jarvis-init
            ▼

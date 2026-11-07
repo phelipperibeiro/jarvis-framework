@@ -149,7 +149,7 @@ Comandos disponíveis:
 jarvis whoami   [--logout]                          # Exibir identidade (ENV.md / git / SO)
 jarvis logout                                       # Remover auth.json legado (opcional)
 jarvis init                                         # Bootstrap do framework no projeto
-jarvis init --upgrade [--ide X] [--yes] [--remove-stale]   # Atualizar projeto existente: assets + variáveis novas do ENV (inclui WORKSPACE_MODE) + documentos nas pastas novas + lista/remove skills antigos + rules filtradas pelo perfil do ENV
+jarvis init --upgrade [--ide X] [--yes] [--remove-stale]   # Atualizar projeto existente: confere os caminhos do ENV (para sem alterar nada se sobrar $ sem valor) + assets + variáveis novas do ENV (inclui WORKSPACE_MODE) + documentos nas pastas novas + lista/remove skills antigos + rules filtradas pelo perfil do ENV
 jarvis list                                         # Listar agents, skills e workflows
 jarvis install-rtk                                  # Instalar RTK (token killer — economia 60-90% em tokens de shell)
 jarvis tokens    [--hub X --position Y --area Z --squad W] [--rtk] [--json]   # Estimar o que carrega no início da sessão (perfil do ENV.md se sem flags)
