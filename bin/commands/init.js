@@ -163,9 +163,12 @@ export function logProjectGitSetup(result, { upgrade = false } = {}) {
       `${color}  ${result.exclude.gitUnavailable ? "⚠" : "✗"} Git (modo projeto): ${result.exclude.error}. O exclude não foi gravado e ${faltaram.join(", ")} ${faltaram.length > 1 ? "podem" : "pode"} entrar no PR; corrija e ${upgrade ? "rode jarvis init --upgrade" : "rode o init"} de novo.${NC}`
     );
   }
-  for (const message of [...result.warnings, ...result.errors]) {
-    if (message === result.exclude.error) continue;
-    logger.error(`${RED}  ✗ Git (modo projeto): ${message}${NC}`);
+  // O erro do exclude já saiu na linha única acima; aqui só o que sobra, cada tipo com a sua cor e o seu nível.
+  for (const message of result.warnings) {
+    if (message !== result.exclude.error) logger.info(`${YELLOW}  ⚠ Git (modo projeto): ${message}${NC}`);
+  }
+  for (const message of result.errors) {
+    if (message !== result.exclude.error) logger.error(`${RED}  ✗ Git (modo projeto): ${message}${NC}`);
   }
 }
 
@@ -195,10 +198,10 @@ export function docsIgnoreLines(entries) {
     const raw = docsFolders(expandEnv(entries)).jarvis;
     if (!raw) return [];
     // Só uma pasta dentro da raiz: nada de caminho absoluto, que sobe (`..`), é `.` ou vira padrão especial do
-    // git (`!` desfaz um ignore, `#` é comentário, `:` é pathspec mágico).
+    // git (`!` desfaz um ignore, `#` é comentário, `:` é pathspec mágico, `* ? [` são curingas e `\` é escape).
     const jarvis = posix.normalize(raw).replace(/\/+$/, "");
     if (!jarvis || jarvis === "." || isAbsolute(jarvis) || jarvis === ".." || jarvis.startsWith("../")) return [];
-    if (/^[!#:]/.test(jarvis)) return [];
+    if (/^[!#:]/.test(jarvis) || /[*?[\\]/.test(jarvis)) return [];
     return [`${jarvis}/`];
   } catch (error) {
     if (error instanceof EnvPathError) return [];

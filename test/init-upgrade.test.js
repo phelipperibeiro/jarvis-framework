@@ -1357,6 +1357,7 @@ test("init: exclude sem permissão de escrita vira erro claro e saída 1, sem st
       const r = run(ws, "--ide", "claude");
       assert.equal(r.status, 1);
       assert.match(output(r), /Git \(modo projeto\): não foi possível gravar .*exclude: EACCES/);
+      assert.equal((output(r).match(/EACCES/g) || []).length, 1, "a falha do exclude aparece uma vez só");
       assert.doesNotMatch(output(r), /at .*\.js:\d+/, "sem stack trace");
     } finally {
       chmodSync(alvo, 0o644);
@@ -1498,7 +1499,7 @@ test("docsIgnoreLines: só pasta dentro da raiz; recusa o que vira lixo ou padr�
   assert.deepEqual(com("meusdocs/jarvis"), ["meusdocs/jarvis/"]);
   assert.deepEqual(com("docs//jarvis/"), ["docs/jarvis/"], "normaliza barras duplicadas e a final");
   assert.deepEqual(com("docs/./jarvis"), ["docs/jarvis/"]);
-  for (const ruim of ["/tmp/fora", "../fora", "docs/../../x", ".", "!docs", "#docs", ":(glob)x"]) {
+  for (const ruim of ["/tmp/fora", "../fora", "docs/../../x", ".", "!docs", "#docs", ":(glob)x", "docs/*", "docs/?", "docs/[a]", "docs\\jarvis"]) {
     assert.deepEqual(com(ruim), [], `${ruim} não vira linha do .gitignore`);
   }
 });
@@ -1537,6 +1538,7 @@ test("init --upgrade: exclude sem permissão de escrita vira erro com saída 1 e
       const r = run(ws, "--upgrade", "--ide", "claude", "--yes");
       assert.equal(r.status, 1);
       assert.match(output(r), /Git \(modo projeto\): não foi possível gravar .*exclude: EACCES/);
+      assert.equal((output(r).match(/EACCES/g) || []).length, 1, "a falha do exclude aparece uma vez só");
       assert.match(r.stdout, /Upgrade concluído/, "o resumo não é derrubado");
       assert.match(gitignoreOf(ws), /^docs\/jarvis\/$/m, "o .gitignore foi gravado antes da falha do exclude");
     } finally {
@@ -1553,6 +1555,58 @@ test("init (instalação): .gitignore que é diretório vira erro claro e saída
     assert.match(output(r), /não foi possível gravar .*\.gitignore: EISDIR/);
     assert.equal((output(r).match(/EISDIR/g) || []).length, 1, "a mesma falha aparece uma vez só");
     assert.doesNotMatch(output(r), /at .*\.js:\d+/, "sem stack trace");
+  });
+});
+
+// ---- Fase 11 (pre-pr rodada 3) --------------------------------------------------------------------------
+
+// Como `capturar`, mas separa stdout (logger.info) de stderr (logger.error).
+function capturarSeparado(fn) {
+  const out = [];
+  const err = [];
+  const { log, error } = console;
+  console.log = (...a) => out.push(a.join(" "));
+  console.error = (...a) => err.push(a.join(" "));
+  try {
+    fn();
+  } finally {
+    console.log = log;
+    console.error = error;
+  }
+  return { out: out.join("\n"), err: err.join("\n") };
+}
+
+test("logProjectGitSetup: aviso sai amarelo com ⚠ no stdout e erro sai vermelho com ✗ no stderr, cada um uma vez", () => {
+  const { out, err } = capturarSeparado(() =>
+    logProjectGitSetup({
+      ...gitSetupBase(),
+      warnings: ["aviso qualquer do git"],
+      errors: ["erro qualquer de gravação"],
+    })
+  );
+  assert.match(out, /⚠ Git \(modo projeto\): aviso qualquer do git/);
+  assert.doesNotMatch(out, /erro qualquer/, "o erro não vai para o stdout");
+  assert.match(err, /✗ Git \(modo projeto\): erro qualquer de gravação/);
+  assert.doesNotMatch(err, /aviso qualquer/, "o aviso não vai para o stderr");
+  assert.equal((out + err).match(/aviso qualquer/g).length, 1);
+});
+
+test("init --upgrade: docs/jarvis/ já versionado avisa dentro do bloco do upgrade (também numa 2ª execução, sem mais nada novo) e não sai do índice", () => {
+  // só os documentos são versionados: a pasta da IDE não (senão o bloco apareceria por outra causa)
+  withRealRepo({ ".claude/ENV.md": ENV_V520, "docs/jarvis/product/prd.md": "# prd\n" }, (ws) => {
+    gitIn(ws, "add", "docs/jarvis/product/prd.md");
+    gitIn(ws, ...GIT_ID, "commit", "-q", "-m", "versiona os documentos");
+    const primeira = run(ws, "--upgrade", "--ide", "claude", "--yes");
+    assert.equal(primeira.status, 0, primeira.stderr);
+    assert.match(primeira.stdout, /🔒 Git \(modo projeto\):/);
+    assert.match(primeira.stdout, /docs\/jarvis\/ já está versionada: ignorar não a tira do git/);
+    // 2ª execução: o exclude e o .gitignore já têm tudo; só o aviso da pasta versionada sobra
+    const segunda = run(ws, "--upgrade", "--ide", "claude", "--yes");
+    assert.equal(segunda.status, 0, segunda.stderr);
+    assert.match(segunda.stdout, /🔒 Git \(modo projeto\):/, "o bloco aparece só por causa do aviso");
+    assert.match(segunda.stdout, /docs\/jarvis\/ já está versionada/);
+    assert.doesNotMatch(segunda.stdout, /\.git\/info\/exclude \(local, fora do PR\)/, "nada novo no exclude");
+    assert.equal(gitIn(ws, "ls-files", "docs/jarvis/product/prd.md").trim(), "docs/jarvis/product/prd.md");
   });
 });
 

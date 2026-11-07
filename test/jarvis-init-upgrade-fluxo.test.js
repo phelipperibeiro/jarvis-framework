@@ -168,3 +168,21 @@ test("README: o parágrafo do .gitignore lista tudo o que o init grava (inclusiv
   assert.match(linha, /`\.git\/info\/exclude`/);
 });
 
+test("upgrade.md 9.1: a falha parcial do untrack (índice já alterado) não manda repetir o git rm --cached", () => {
+  assert.match(item91, /se ele falhar \*\*sem\*\* ter alterado o índice/);
+  assert.match(item91, /Saída 1 com a mensagem \*\*"O índice JÁ foi alterado"\*\*/);
+  assert.match(item91, /\*\*não repita\*\* o `git rm --cached`/);
+  assert.match(item91, /falta gravar `\{arquivo\}` no `\.git\/info\/exclude`/);
+  // o git rm --cached manual só é oferecido no caso em que o índice NÃO foi alterado
+  const falhaTotal = item91.indexOf("se ele falhar **sem** ter alterado o índice");
+  const falhaParcial = item91.indexOf("Saída 1 com a mensagem");
+  assert.ok(falhaTotal !== -1 && falhaTotal < falhaParcial);
+  assert.ok(item91.indexOf("mostre `git rm --cached -- {arquivo}`") > falhaTotal);
+  assert.ok(item91.indexOf("mostre `git rm --cached -- {arquivo}`") < falhaParcial, "o comando manual fica no caso da falha total");
+});
+
+test("upgrade.md: a nota do terminal lista a pasta da IDE e a pasta dos documentos ($JARVIS_DOCS/) entre o que o --upgrade grava no .gitignore", () => {
+  assert.match(upgrade, /a pasta da IDE e a pasta dos documentos \(`\$JARVIS_DOCS\/`\) no `\.gitignore`, mas \*\*nunca tira arquivo do índice\*\*/);
+  // convenção do projeto: o asset usa a variável, não o caminho padrão por extenso (paths-no-fixed-text)
+});
+
