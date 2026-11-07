@@ -9,6 +9,12 @@ export const MAP_FILE = "CDD-MIND-MAP.md";
 
 const norm = (s) => String(s).trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
+/** Tira negrito/crase das pontas (cabeçalho e nome) de uma célula da tabela. */
+const unmark = (s) => String(s).replace(/^[`*\s]+|[`*\s]+$/g, "");
+
+/** Nome do repositório: sem link (`[api](api/)` vira `api`), sem negrito/crase e sem barra no fim. */
+const cleanName = (raw) => unmark(String(raw).replace(/\[([^\]]*)\]\([^)]*\)/g, "$1")).replace(/\/+$/, "");
+
 /**
  * Nomes dos repositórios do mapa: a 1ª coluna da tabela cujo cabeçalho é `Repositório`.
  * Ignora a linha separadora, a linha-modelo `{pasta}`, comentários HTML e linhas tortas (nunca lança).
@@ -27,11 +33,11 @@ export function readMapRepos(text) {
     }
     const cells = line.replace(/^\|/, "").replace(/\|$/, "").split("|").map((c) => c.trim());
     if (!inTable) {
-      if (norm(cells[0]) === "repositorio") inTable = true;
+      if (norm(unmark(cells[0])) === "repositorio") inTable = true;
       continue;
     }
     if (cells.every((c) => /^:?-{1,}:?$/.test(c))) continue; // separador
-    const name = (cells[0] || "").replace(/^[`*]+|[`*]+$/g, "").trim();
+    const name = cleanName(cells[0] || "");
     if (!name || /^\{.*\}$/.test(name)) continue; // vazio ou linha-modelo
     names.push(name);
   }

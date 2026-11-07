@@ -34,7 +34,7 @@ Ao rodar `/jarvis-init` (criação, atualização ou **Upgrade (C)**), o passo o
 3. para cada stack, sugere **registrar o skill que já existe** ou **criar um novo**; o que você não aceitar não muda;
 4. mostra um resumo das listas.
 
-Você pode pular o passo e acrescentar stacks depois. O tempo de referência é de uns 10 minutos, sem ser um limite.
+Você pode pular o passo e acrescentar stacks depois. O tempo de referência é de uns 10 minutos, sem ser um limite. Depois de clonar repositórios novos no workspace, `/jarvis-init repos` registra (ou oferece criar) as especializações só dos repositórios novos.
 
 A detecção usa a tabela de sinais (`skills/jarvis-init/assets/sinais-de-stack.md`): `go.mod`, `composer.json`, `pom.xml`, `build.gradle`, `pyproject.toml`, `requirements.txt`, `Cargo.toml` e as dependências do `package.json` (`@nestjs/*`, `express`, `vue`, `quasar`, `react`, `next`). Uma stack fora da tabela não é detectada: escolha da listagem ou crie com o criador.
 

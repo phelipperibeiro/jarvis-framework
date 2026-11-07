@@ -53,7 +53,7 @@ test("warm-up: os passos 1 a 9 continuam na mesma ordem (a extração só mexeu 
 test("asset do mapa: entrada pela lista de quem chama, as 3 respostas e o acréscimo incremental", () => {
   assert.match(mapa, /lista de repositórios a processar\*\*, definida por quem chama/);
   assert.match(mapa, /`WORKSPACE_REPOS`/);
-  assert.match(mapa, /o `\/jarvis-init repos` usa todas as subpastas com `\.git\/`/);
+  assert.match(mapa, /o `\/jarvis-init repos` usa todas as subpastas com `\.git`, pasta ou arquivo/);
   assert.match(mapa, /\*\*Confirmar\*\* \| \*\*Corrigir\*\* \| \*\*Incluir informação\*\*/);
   assert.match(mapa, /\*\*Não reprocesse as linhas existentes\*\*/);
   assert.match(mapa, /acrescente \*\*só ele\*\*/);
@@ -126,16 +126,17 @@ test("repos.md (Q4): modo projeto responde 'não se aplica', indica o /warm-up e
 
 test("repos.md (Q2): compara TODAS as subpastas com .git, sem filtrar por WORKSPACE_REPOS", () => {
   const p1 = passo(1, 2);
-  assert.match(p1, /\*\*todas\*\* as subpastas com `\.git\/`/);
+  assert.match(p1, /\*\*todas\*\* as subpastas com `\.git` \(pasta ou arquivo, como num worktree\)/);
   assert.match(p1, /\*\*sem filtrar por `WORKSPACE_REPOS`\*\*/);
   assert.match(p1, /\*\*novos:\*\*/);
-  assert.match(p1, /\*\*só no mapa:\*\*/);
   assert.match(p1, /\*\*ausentes:\*\*/);
+  assert.doesNotMatch(repos, /só no mapa/, "o caso 'só no mapa' saiu do modo repos (pedido do usuário no pre-pr)");
 });
 
 test("repos.md: sem repositório novo, 'Nada a atualizar.' e nenhum arquivo muda", () => {
   const p1 = passo(1, 2);
-  assert.match(p1, /responda "Nada a atualizar\." e \*\*termine sem escrever nenhum arquivo\*\*/);
+  assert.match(p1, /Nada novo, nada ausente e o `AGENTS\.md` existe: responda "Nada a atualizar\." e \*\*termine sem escrever nenhum arquivo\*\*/);
+  assert.match(p1, /Sem o `AGENTS\.md`, siga o fluxo: ele é criado no item 3/);
 });
 
 test("repos.md (Q6): tabela com 'O que será gravado' por repositório; tirar a linha deixa o repositório fora de todos os documentos", () => {
@@ -159,9 +160,11 @@ test("repos.md: bloco do AGENTS.md entre marcadores, uma linha por repositório,
   assert.match(p3, /o texto \*\*fora do bloco permanece idêntico\*\*/);
 });
 
-test("repos.md (Q5): AGENTS.md ausente não é criado; sem marcadores o bloco entra depois da linha do mapa (ou no fim), na mesma confirmação", () => {
+test("repos.md (Q5 ajustada): AGENTS.md ausente é criado pelo Passo 7; sem marcadores o bloco entra depois da linha do mapa (ou no fim), na mesma confirmação", () => {
   const p3 = passo(3, 4);
-  assert.match(p3, /\*\*`AGENTS\.md` não existe:\*\* \*\*não o crie\*\* \(o Passo 7 do `\/jarvis-init` é o dono da criação\)/);
+  assert.match(p3, /\*\*`AGENTS\.md` não existe:\*\* \*\*crie-o pelo Passo 7 do `SKILL\.md`\*\*/);
+  assert.match(p3, /com o bloco preenchido por todos os repositórios do mapa já confirmado, e o `CLAUDE\.md` cópia/);
+  assert.match(passo(2, 3), /Se o `AGENTS\.md` não existe, a tabela avisa que ele será criado/);
   assert.match(p3, /\*\*Existe com os marcadores:\*\* só acrescente as linhas novas entre eles/);
   assert.match(p3, /\*\*Existe sem os marcadores:\*\* insira o bloco inteiro logo depois da linha `> Mapa de tecnologias do projeto:`; sem essa linha, no fim do arquivo/);
   assert.match(p3, /\*\*na mesma confirmação da tabela\*\* do item 2 \(não é uma pergunta a mais\)/);
@@ -195,6 +198,7 @@ test("repos.md: repositório ausente tem pergunta própria (Remover | Manter) e 
 
 test("repos.md: regras — nunca lê .env*, nunca reprocessa linhas validadas, nunca faz commit, e termina sem arquivo quando nada muda", () => {
   const regras = trecho(repos, "## Regras", null);
+  assert.match(regras, /Tocar no texto do `AGENTS\.md` fora do bloco \(o `AGENTS\.md` só é criado quando não existe\)/);
   assert.match(regras, /Ler `\.env\*`, chaves, certificados ou credenciais/);
   assert.match(regras, /Reprocessar as linhas já validadas do mapa/);
   assert.match(regras, /Fazer commit ou push/);
@@ -249,8 +253,39 @@ test("passo-adicionar-stacks 9.8: depois de gravar o mapa, preenche o bloco do A
   assert.match(s98, /o texto fora do bloco não muda/);
 });
 
-test("o formato da linha do bloco é o mesmo no template, no Passo 7 e no repos.md", () => {
+test("o formato da linha do bloco é o mesmo no Passo 7 e no repos.md", () => {
   const formato = "- **{repo}** — {papel}; {linguagem}/{framework} ({área})";
   assert.ok(passo7.includes(formato), "Passo 7");
   assert.ok(repos.includes(formato), "repos.md");
+});
+
+// ---- Fase 6: lacunas da rodada 1 do pre-pr -----------------------------------------------------------------
+
+test("repos.md: chamado pelo Upgrade (9.2), faz os itens 1 a 5 e volta ao item 10 do upgrade.md", () => {
+  assert.match(repos, /\*\*Chamado pelo Upgrade\*\* \(item 9\.2 do \[upgrade\.md\]\(upgrade\.md\)\), faça os itens 1 a 5 e volte ao item 10 do `upgrade\.md`: o resumo e o fim são os do Upgrade/);
+});
+
+test("passo-adicionar-stacks 9.8: o bloco jarvis:repos só é preenchido no modo workspace", () => {
+  const s98 = trecho(stacks, "## 9.8 Montar o mapa de tecnologias", "## Tratamento de situações");
+  assert.match(s98, /No modo workspace, depois de gravar o mapa, se o `AGENTS\.md` existir, preencha o bloco `jarvis:repos`/);
+});
+
+test("mapa-de-tecnologias e repos.md: repositório é subpasta com .git, pasta ou arquivo (worktree)", () => {
+  assert.doesNotMatch(mapa, /subpastas com `\.git\/`/);
+  assert.doesNotMatch(repos, /subpastas com `\.git\/`/);
+});
+
+test("template do mapa: o /warm-up respeita WORKSPACE_REPOS e o /jarvis-init repos e o Upgrade usam todas as subpastas com .git", () => {
+  const t = read("templates", "cdd-mind-map-template.md");
+  assert.match(t, /o \/warm-up respeita WORKSPACE_REPOS, se preenchida; o \/jarvis-init repos e o Upgrade usam todas as subpastas com \.git/);
+});
+
+test("guias: README, bin.md, templates.md, visao-geral.md e especializacoes-de-stack.md descrevem o repos e a pendência do --upgrade", () => {
+  assert.match(read("README.md"), /manda rodar o `\/jarvis-init upgrade` quando há pendência da IDE e o `\/jarvis-init repos` quando há repositório \(subpasta com `\.git`\) fora do mapa/);
+  const bin = read("docs", "estrutura", "bin.md");
+  assert.match(bin, /repos-map \(repositórios com `\.git` fora do `CDD-MIND-MAP\.md`, só lê, #225\)/);
+  assert.match(bin, /lista numa linha própria os repositórios \(todas as subpastas com `\.git`, sem filtrar por `WORKSPACE_REPOS`\) que não estão no mapa e orienta `\/jarvis-init repos`/);
+  assert.match(read("docs", "estrutura", "templates.md"), /AGENTS-template\.md +# gera AGENTS\.md do projeto alvo \(com a linha do mapa e, no modo workspace, o bloco de repositórios mantido pelo \/jarvis-init repos\)/);
+  assert.match(read("docs", "visao-geral.md"), /Depois de clonar repositórios no workspace, `\/jarvis-init repos` atualiza o mapa, o bloco de repositórios do `AGENTS\.md` e as especializações/);
+  assert.match(read("docs", "especializacoes-de-stack.md"), /Depois de clonar repositórios novos no workspace, `\/jarvis-init repos` registra \(ou oferece criar\) as especializações só dos repositórios novos/);
 });

@@ -6,7 +6,7 @@ O mapa é o mapa de tecnologias do projeto: stack e papel de cada repositório. 
 
 ## Entrada
 
-- A **lista de repositórios a processar**, definida por quem chama (o `warm-up` e as stacks usam `WORKSPACE_REPOS` ou, se vazia, as subpastas com `.git/`; o `/jarvis-init repos` usa todas as subpastas com `.git/`). No modo projeto, a raiz, uma linha.
+- A **lista de repositórios a processar**, definida por quem chama (o `warm-up` e as stacks usam `WORKSPACE_REPOS` ou, se vazia, as subpastas com `.git`; o `/jarvis-init repos` usa todas as subpastas com `.git`, pasta ou arquivo). No modo projeto, a raiz, uma linha.
 
 ## Fluxo
 

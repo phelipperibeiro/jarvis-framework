@@ -268,7 +268,7 @@ test("upgrade.md: a nota do terminal lista a pasta da IDE e a pasta dos document
 
 const item92 = item(upgrade, "9.2. **Exceção — `AGENTS.md` e `CDD-MIND-MAP.md` no padrão", "10. Acrescentar");
 
-test("upgrade.md 9.2: vem depois do 9.1 e antes do item 10, e o item 17 cita 7 a 9.2", () => {
+test("upgrade.md 9.2: vem depois do 9.1 e antes do item 10, e o item 5 cita 7 a 9.2", () => {
   const i91 = upgrade.indexOf("9.1. **Exceção");
   const i92 = upgrade.indexOf("9.2. **Exceção");
   const i10 = upgrade.indexOf("10. Acrescentar");
@@ -306,8 +306,10 @@ test("upgrade.md 9.2: no padrão não pergunta; fora do padrão avisa cada mudan
 
 test("upgrade.md 9.2: repositório novo segue o repos.md; AGENTS.md e mapa inexistentes não são criados aqui", () => {
   assert.match(item92, /pela regra do item 3 do \[repos\.md\]\(repos\.md\)/);
-  assert.match(item92, /para repositório novo, siga o `assets\/repos\.md` \(tabela de papel e stack para a pessoa validar\)/);
-  assert.match(item92, /O `AGENTS\.md` que não existe não é criado aqui \(é o Passo 7\), e o mapa que não existe não é criado aqui/);
+  assert.match(item92, /para repositório novo, siga os itens 1 a 5 do \[repos\.md\]\(repos\.md\) \(tabela de papel e stack para a pessoa validar\) e \*\*volte ao item 10 deste arquivo\*\*: o resumo e o fim são os do Upgrade/);
+  assert.match(item92, /`AGENTS\.md` que não existe conta como fora do padrão: com \*\*Ajustar agora\*\*, é criado pelo Passo 7 do `SKILL\.md`; o mapa que não existe não é criado aqui/);
+  assert.match(item92, /com uma linha por repositório do mapa/, "o bloco confere uma linha por repositório do mapa");
+  assert.match(item92, /\(num `AGENTS\.md` já gerado, a forma resolvida, como `\.claude\/sessions\/`\)/, "o caminho antigo é conferido também na forma resolvida");
 });
 
 test("upgrade.md: a nota do terminal cita o item 9.2 e o /jarvis-init repos para repositório fora do mapa", () => {

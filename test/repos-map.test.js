@@ -56,6 +56,25 @@ test("readMapRepos: só a tabela do cabeçalho Repositório conta (outra tabela 
   assert.deepEqual(readMapRepos(texto), ["api"]);
 });
 
+test("readMapRepos: cabeçalho com negrito ou crase também é reconhecido", () => {
+  assert.deepEqual(readMapRepos("| **Repositório** | Papel |\n|---|---|\n| api | x |\n"), ["api"]);
+  assert.deepEqual(readMapRepos("| `Repositório` | Papel |\n|---|---|\n| web | x |\n"), ["web"]);
+});
+
+test("readMapRepos: nome com link ou barra no fim vira só o nome da pasta", () => {
+  assert.deepEqual(readMapRepos("| Repositório | Papel |\n|---|---|\n| [api](api/) | x |\n| web/ | y |\n| `lib/` | z |\n"), ["api", "web", "lib"]);
+});
+
+test("readMapRepos: fim de linha CRLF dá o mesmo resultado que LF", () => {
+  const lf = TABELA(["| api | a | | | | | |", "| web | w | | | | | |"]);
+  assert.deepEqual(readMapRepos(lf.replace(/\n/g, "\r\n")), readMapRepos(lf));
+  assert.deepEqual(readMapRepos(lf.replace(/\n/g, "\r\n")), ["api", "web"]);
+});
+
+test("readMapRepos: nome com espaço é aceito e a caixa é respeitada (API e api são nomes diferentes)", () => {
+  assert.deepEqual(readMapRepos(TABELA(["| Meu App | a | | | | | |", "| API | b | | | | | |"])), ["Meu App", "API"]);
+});
+
 // --- reposOutsideMap ----------------------------------------------------------------------------
 
 test("reposOutsideMap: repositório novo (com .git) fora do mapa é listado, em ordem", () => {
@@ -85,6 +104,26 @@ test("reposOutsideMap: modo projeto (ou sem modo) não tem pendência", () => {
 
 test("reposOutsideMap: pasta sem .git, oculta e node_modules não contam", () => {
   withWorkspace(["docs", ".claude/.git", "node_modules/pkg/.git", "api/.git"], TABELA([]), (root) => {
+    assert.deepEqual(reposOutsideMap({ workspaceDir: root, mode: "workspace" }), ["api"]);
+  });
+});
+
+test("reposOutsideMap: .git como ARQUIVO (worktree, submódulo) também conta como repositório", () => {
+  withWorkspace(["api/.git"], TABELA(["| api | a | | | | | |"]), (root) => {
+    mkdirSync(join(root, "web"), { recursive: true });
+    writeFileSync(join(root, "web", ".git"), "gitdir: ../.git/worktrees/web\n");
+    assert.deepEqual(reposOutsideMap({ workspaceDir: root, mode: "workspace" }), ["web"]);
+  });
+});
+
+test("reposOutsideMap: node_modules com .git na própria pasta não conta", () => {
+  withWorkspace(["node_modules/.git", "api/.git"], TABELA(["| api | a | | | | | |"]), (root) => {
+    assert.deepEqual(reposOutsideMap({ workspaceDir: root, mode: "workspace" }), []);
+  });
+});
+
+test("reposOutsideMap: nome com espaço casa com a linha do mapa; a caixa diferente conta como outro repositório", () => {
+  withWorkspace(["Meu App/.git", "api/.git"], TABELA(["| Meu App | a | | | | | |", "| API | b | | | | | |"]), (root) => {
     assert.deepEqual(reposOutsideMap({ workspaceDir: root, mode: "workspace" }), ["api"]);
   });
 });
