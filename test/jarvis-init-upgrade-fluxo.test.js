@@ -53,23 +53,28 @@ test("item 5 não afirma que o ENV.md está atualizado (os itens 7 a 9.1 ainda p
   assert.match(item5, /ainda podem alterá-lo/, "o item 5 explica por que não diz 'atualizado'");
 });
 
-test("item 7: a carga inicial do Central docs só é oferecida se documentos foram movidos nesta atualização (inclusive pelo terminal)", () => {
-  const linha = item7.split("\n").find((l) => l.includes("carga inicial do Central docs"));
-  assert.ok(linha, "o item 7 ainda trata da carga inicial");
-  assert.match(linha, /\*\*só se\*\* o Central docs estiver ligado.*documentos foram movidos nesta atualização/, "a oferta tem as três condições");
-  assert.match(linha, /pelo `jarvis init --upgrade` rodado logo antes/, "o que o terminal moveu antes também conta");
-  assert.match(linha, /Documentos movidos: N/, "o texto diz a frase que o terminal imprime");
-  assert.match(linha, /não ofereça/i, "sem mover nada, não oferece");
-  // #233 (rodada 2): a pergunta sobre o terminal só vem depois das condições do Passo 5.3, senão ela se repete
-  // em quase todo Upgrade (o skill não lê a saída do terminal).
-  const iCondicoes = linha.indexOf("Central docs estiver ligado");
-  const iPergunta = linha.indexOf("Só pergunte");
-  assert.ok(iCondicoes !== -1 && iPergunta !== -1 && iCondicoes < iPergunta, "as condições do 5.3 vêm antes da pergunta");
-  assert.match(linha, /rodado logo antes deste comando/, "nesta atualização = o init --upgrade rodado logo antes");
+test("item 8.5: a carga inicial do Central docs, depois do item 8, tem uma condição por assert e só vale com documentos movidos nesta atualização", () => {
+  const item85 = item(upgrade, "8.5. **Exceção — carga inicial do Central docs", "9. **Exceção — `PROD_MODE`");
+  // fica depois do Central docs antigo (itens 8 a 8.4): quem o migra no mesmo Upgrade também recebe a oferta
+  assert.ok(upgrade.indexOf("8.4. **Exceção") < upgrade.indexOf("8.5. **Exceção"), "a oferta vem depois do item 8.4");
+  assert.doesNotMatch(item7, /carga inicial/, "o item 7 não oferece mais a carga inicial");
+  assert.equal((upgrade.match(/carga inicial do Central docs/g) || []).length, 2, "o título e o texto do 8.5, e nenhum outro lugar");
+  // uma asserção por condição (sem regex com `.*` solto no meio)
+  assert.match(item85, /\*\*só se\*\*/, "a oferta tem condição");
+  assert.match(item85, /o Central docs estiver ligado/, "condição 1: Central docs ligado");
+  assert.match(item85, /houver PRD, FRD, ARD, RFC ou SPEC em `\$PROD_DOCS`\/`\$ENG_DOCS`/, "condição 2: há documentos de trabalho");
+  assert.match(item85, /documentos foram movidos nesta atualização/, "condição 3: documentos movidos");
+  assert.match(item85, /pelo item 7 ou pelo `jarvis init --upgrade` rodado logo antes deste comando/, "o que o terminal moveu antes também conta");
+  assert.match(item85, /Documentos movidos: N/, "o texto diz a frase que o terminal imprime");
+  assert.match(item85, /Sem nada movido, não ofereça/, "sem mover nada, não oferece");
+  // a pergunta sobre o terminal só vem depois das condições do Passo 5.3 (o skill não lê a saída do terminal)
+  const iLigado = item85.indexOf("o Central docs estiver ligado");
+  const iDocs = item85.indexOf("houver PRD, FRD, ARD, RFC ou SPEC");
+  const iPergunta = item85.indexOf("Só pergunte");
+  assert.ok(iLigado !== -1 && iDocs !== -1 && iPergunta !== -1 && iLigado < iPergunta && iDocs < iPergunta, "as duas primeiras condições vêm antes da pergunta");
   assert.match(readFileSync(join(root, "bin", "commands", "init.js"), "utf8"), /Documentos movidos: \$\{/, "o CLI ainda imprime a frase citada");
   const skillMd = readFileSync(join(root, "skills", "jarvis-init", "SKILL.md"), "utf8");
   assert.match(skillMd, /\| Passo 5\.3 — Carga inicial do Central docs \|.*só se documentos foram movidos nesta atualização/, "a tabela do SKILL.md traz a mesma condição");
-  assert.equal((upgrade.match(/carga inicial do Central docs/g) || []).length, 1, "a oferta aparece uma vez no Upgrade");
 });
 
 test("item 12 e SKILL.md definem o resumo (item 5 do passo 9.5) e a única etapa pulável (as stacks)", () => {
