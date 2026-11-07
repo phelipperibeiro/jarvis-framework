@@ -4,6 +4,7 @@
 // Rode com: npm run test:filtro
 import { test } from "node:test";
 import assert from "node:assert/strict";
+import { spawnSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -105,4 +106,46 @@ test("upgrade.md: o item 9.1 roda entre as exceções (antes do item 10, que o c
 
 test("upgrade.md: a nota do terminal diz que o CLI nunca tira arquivo do índice", () => {
   assert.match(upgrade, /\*\*nunca tira arquivo do índice\*\*/);
+});
+
+// ---- #227: o mapa de tecnologias vale nos dois modos; comando novo documentado ---------------------
+
+const read = (...parts) => readFileSync(join(root, ...parts), "utf8");
+
+test("warm-up: o mapa vale nos dois modos e o /warm-up não escreve mais no .gitignore", () => {
+  const warm = read("workflows", "warm-up.md");
+  assert.doesNotMatch(warm, /Contexto de workspace/i);
+  assert.match(warm, /Vale nos \*\*dois modos\*\*/);
+  assert.doesNotMatch(warm, />> \.gitignore/, "o bash que gravava o mapa no .gitignore saiu");
+  assert.match(warm, /git check-ignore -q CDD-MIND-MAP\.md/);
+  assert.match(warm, /Mapa de tecnologias do projeto: \[CDD-MIND-MAP\.md\]/);
+});
+
+test("template do mapa: descrição dos dois modos e do exclude, sem 'contexto de workspace'", () => {
+  const template = read("templates", "cdd-mind-map-template.md");
+  assert.doesNotMatch(template, /Contexto de workspace/i);
+  assert.match(template, /Mapa de tecnologias do projeto/);
+  assert.match(template, /modo workspace/);
+  assert.match(template, /modo projeto/);
+  assert.match(template, /\.git\/info\/exclude/);
+});
+
+test("prod-rules: a cópia do AGENTS.md para o CLAUDE.md respeita o exclude no modo projeto", () => {
+  assert.match(read("rules", "product", "prod-rules.md"), /respeita o `\.git\/info\/exclude`/);
+});
+
+test("nenhum texto do framework chama o mapa de 'contexto de workspace'", () => {
+  for (const dir of ["workflows", "templates", "rules", "rules-on-demand", "skills", "agents"]) {
+    // grep sai com 1 quando não acha nada (o esperado) e com 0 quando acha
+    const r = spawnSync("grep", ["-rIil", "contexto de workspace", join(root, dir)], { encoding: "utf8" });
+    assert.equal(r.status, 1, `${dir}/ ainda cita "contexto de workspace": ${r.stdout.trim()}`);
+  }
+});
+
+test("jarvis untrack está na lista de comandos do AGENTS.md e no guia da pasta bin", () => {
+  assert.match(read("AGENTS.md"), /jarvis untrack\s+<AGENTS\.md\|CLAUDE\.md>/);
+  const bin = read("docs", "estrutura", "bin.md");
+  assert.match(bin, /untrack\.js/);
+  assert.match(bin, /`jarvis untrack /);
+  assert.match(bin, /git-exclude/);
 });

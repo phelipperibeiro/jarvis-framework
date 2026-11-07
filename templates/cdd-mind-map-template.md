@@ -8,7 +8,7 @@ workspace: {nome}
 
 # CDD-MIND-MAP — {workspace}
 
-> **Contexto de workspace:** o mapa de tecnologias e o papel de cada repositório deste workspace. Fica na raiz, ao lado do `AGENTS.md`, **fora do versionamento** (no `.gitignore` quando a raiz tem `.git`; sem `.git`, a raiz não é versionada), e é lido sob demanda pelo `/warm-up`. É definido uma vez e reaproveitado; não guarda decisões nem contexto de tarefa (isso vai para o `context.md` da sessão).
+> **Mapa de tecnologias do projeto:** a stack e o papel de cada repositório. No modo workspace, cobre o conjunto de repositórios do workspace; no modo projeto, é o resumo estruturado do repositório (uma linha, a raiz). Fica na raiz, ao lado do `AGENTS.md`, **fora do versionamento** (no modo projeto, no `.git/info/exclude`, gravado pelo `jarvis init`; no modo workspace, a raiz não é versionada), e é lido sob demanda pelo `/warm-up`. Guarda os dados estruturados (linguagem, framework, área, ferramentas); prosa e comandos (setup, estilo, testes) ficam no `AGENTS.md`. É definido uma vez e reaproveitado; não guarda decisões nem contexto de tarefa (isso vai para o `context.md` da sessão).
 
 | Repositório | Papel | Linguagem | Framework | Área | Ferramentas principais | Observações |
 |-------------|-------|-----------|-----------|------|------------------------|-------------|

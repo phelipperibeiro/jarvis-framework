@@ -26,11 +26,12 @@ bin/
 │   ├── install-rtk.js      # jarvis install-rtk
 │   ├── tokens.js           # jarvis tokens
 │   ├── rules.js            # jarvis rules sync (Passo 8 do /jarvis-init)
+│   ├── untrack.js          # jarvis untrack AGENTS.md|CLAUDE.md (git rm --cached, sem commit; chamado pelo /jarvis-init upgrade depois do Sim, #227)
 │   ├── map.js              # jarvis map
 │   ├── fork.js             # jarvis fork (overlay de empresa, #199)
 │   └── daily-report.js     # jarvis daily-report
 └── lib/
-    ├── core/               # sync-engine (com o RuleResolver do overlay), scanner, profile-filter, token-report, env-upgrade, docs-migrate, workspace-mode, mcp-config, stale-skills, session-scan, env-paths (`expandEnvPath`, `checkEnvPaths`, `EnvPathError`: caminhos do ENV.md com `$VAR`), company-profile (COMPANY_PROFILE e o default stark-industries)
+    ├── core/               # sync-engine (com o RuleResolver do overlay), scanner, profile-filter, token-report, env-upgrade, docs-migrate, git-exclude (exclude local do modo projeto e untrack, #227), workspace-mode, mcp-config, stale-skills, session-scan, env-paths (`expandEnvPath`, `checkEnvPaths`, `EnvPathError`: caminhos do ENV.md com `$VAR`), company-profile (COMPANY_PROFILE e o default stark-industries)
     ├── flow-map/           # índice, leitor das tabelas de chamadas, árvore e saída do jarvis map
     ├── config/             # IDEs, constants (SYNC_DIRS, LOCK_FILE)
     ├── vcs/                # GitHub/GitLab pela CLI (gh, glab)
@@ -49,6 +50,7 @@ bin/
 | `jarvis whoami` | Resolve `USER` (ENV → git → SO) |
 | `jarvis docs sync\|publish\|archive\|finalize\|migrate\|sessions` | Integração com o Central docs, por funcionalidade (#220): `sync`/`publish` já existiam; `archive`/`finalize` são os passos 2 e 3 da consolidação (guardar e depois apagar o original ligado, inclusive os arquivos da sessão, #229); `migrate` move o layout antigo para a estrutura nova; `sessions` lista as sessões, o que falta e quais estão pendentes (`--json`, `--pendentes`, `--proxima`); `publish --manifest --dry-run` simula; `publish --manifest`, `finalize`, `sessions` e `daily-report` conferem as chaves de caminho do `ENV.md` e param com `$` sem valor (status 1, sem stack trace) |
 | `jarvis install-rtk` | rustup (se preciso) + `cargo install rtk` |
+| `jarvis untrack <AGENTS.md\|CLAUDE.md>…` | Modo projeto (#227): tira do índice (`git rm --cached`) o arquivo gerado já versionado, mantém o arquivo local, deixa a remoção staged e grava o `.git/info/exclude`; nunca faz commit. Só o `/jarvis-init upgrade` o chama, depois do Sim da pessoa; recusa nome fora da lista, arquivo não versionado e raiz sem `.git` (saída 1) |
 | `jarvis rules sync` | Filtra `.$IDE/rules/` e `.$IDE/rules-on-demand/` pelo perfil do ENV.md e aplica o overlay de `COMPANY_PROFILE` (Passo 8 do `/jarvis-init`); sai com 1, sem gravar, sem ENV.md numa pasta de IDE (sem `--ide`, vale a pasta do ENV.md; com `--ide`, o ENV.md pode vir de fora de uma IDE, e o workspace é a pasta, a atual ou uma acima, que tem a `.{ide}/`; nunca da pasta de outra IDE), com eixo faltando ou com o lock ausente, ilegível ou de outra versão (o da pasta da IDE vale antes do da raiz) |
 | `jarvis tokens` | Estima o que carrega no início da sessão para um perfil (rules, `AGENTS.md`, frontmatter dos skills, `warm-up`) |
 | `jarvis map <nome>` | Árvore em texto do que um workflow, skill ou agente chama (`--reverse`: quem o chama; `--depth N`) |

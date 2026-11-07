@@ -164,7 +164,7 @@ Escolha **Upgrade (C)** — adiciona chaves novas do template sem apagar os valo
 | `jarvis init` | Arquivos em `.$IDE/` (skills, agents, workflows…) e o Context7 no arquivo de MCP da IDE (ex.: `.mcp.json` no Claude Code; só acrescenta, sem apagar outros servidores) |
 | `/jarvis-init` Upgrade | Só `$IDE/ENV.md` (variáveis faltantes) e, se você aceitar o passo opcional "adicionar as stacks", as listas de especializações |
 
-`ENV.md`, `$SESSIONS_DIR/` (padrão `.jarvis/sessions/`) e o `.gitignore` do workspace **não** são sobrescritos pelo sync de assets. O `jarvis init` cria `$SESSIONS_DIR/{eng,prod,qa}` e, com `.git` na raiz, põe no `.gitignore` o `.jarvis/` e o `$SESSIONS_DIR/` (quando relativo e fora de `.jarvis/`). O `.gitignore` só é criado ou alterado quando a raiz tem `.git`; sem `.git` (como no modo workspace) a raiz não é versionada e o init não o toca.
+`ENV.md`, `$SESSIONS_DIR/` (padrão `.jarvis/sessions/`) e o `.gitignore` do workspace **não** são sobrescritos pelo sync de assets. O `jarvis init` cria `$SESSIONS_DIR/{eng,prod,qa}` e, com `.git` na raiz (modo projeto), põe no `.gitignore` o `.jarvis/`, o `$SESSIONS_DIR/` (quando relativo e fora de `.jarvis/`) e a pasta da IDE, e mantém `AGENTS.md`, `CLAUDE.md` e `CDD-MIND-MAP.md` no `.git/info/exclude` (local, fora do PR; para versionar de propósito, remova a linha). Se `AGENTS.md` ou `CLAUDE.md` já estiver versionado, o `/jarvis-init upgrade` pergunta se ele sai do git (`jarvis untrack`, sem commit). Sem `.git` (como no modo workspace) a raiz não é versionada e o init não toca em nenhum dos dois.
 
 | Papel | Descricao | Link |
 |-------|-----------|------|
