@@ -339,7 +339,7 @@ Escanear `.git/` na raiz e nas subpastas e gravar `WORKSPACE_MODE` (o que define
 - Raiz sem `.git` e 1 ou mais subpastas com `.git` → `WORKSPACE_MODE=workspace`; com 2 ou mais, listar e perguntar se filtra (`WORKSPACE_REPOS`); senão vazio (todas)
 - Raiz sem `.git` e nenhuma subpasta com `.git` → `WORKSPACE_MODE=project`
 
-> O `WORKSPACE_MODE` não decide o `.gitignore`: ele só é criado ou alterado quando a raiz tem `.git` (Passo 5). Uma pasta sem nenhum `.git` é `project` e mesmo assim não recebe `.gitignore`.
+> O `WORKSPACE_MODE` não decide o `.gitignore` nem o `.git/info/exclude`: eles só são criados ou alterados quando a raiz tem `.git` (Passo 5). Uma pasta sem nenhum `.git` é `project` e mesmo assim não recebe nenhum dos dois.
 
 Pergunta 6: Qual o limite de execução da AI? (número entre 60 e 100)
 [aguardar resposta e validar range 60-100]
@@ -645,15 +645,13 @@ mkdir -p "$SESSIONS_DIR/eng" "$SESSIONS_DIR/prod" "$SESSIONS_DIR/qa"   # SESSION
 #    JARVIS_DOCS=$DOCS_FOLDER/jarvis, PROD_DOCS=$JARVIS_DOCS/product, ENG_DOCS=$JARVIS_DOCS/engineering
 #    (valores do template). Uma docs/ já existente não é tocada.
 
-# 8. .gitignore — SÓ se a raiz do workspace for um repositório (tem .git).
+# 8. Git — SÓ se a raiz do workspace for um repositório (tem .git: modo projeto).
 #    Raiz sem .git (modo workspace, ou pasta sem nenhum repositório) não é versionada:
-#    NÃO crie nem altere o .gitignore da raiz.
-if [ -e .git ]; then
-  # $SESSIONS_DIR/ entra só se for relativo, dentro da raiz e fora de .jarvis/
-  for line in '.jarvis/' "$JARVIS_DOCS/" 'CDD-MIND-MAP.md'; do
-    grep -qxF "$line" .gitignore 2>/dev/null || echo "$line" >> .gitignore
-  done
-fi
+#    NÃO crie nem altere o .gitignore nem o .git/info/exclude.
+#    Quem grava é o CLI (`jarvis init` e `jarvis init --upgrade`), não este texto, e não há lista para repetir aqui:
+#      - .git/info/exclude (local, fora do PR): AGENTS.md, CLAUDE.md e CDD-MIND-MAP.md
+#      - .gitignore: .jarvis/ (e o $SESSIONS_DIR/ relativo fora dela), $JARVIS_DOCS/ (na migração) e a pasta da IDE
+#    Arquivo gerado já versionado (AGENTS.md/CLAUDE.md) só vira aviso; sair do git é decisão do Upgrade.
 ```
 
 ### 5.2 Central docs (sempre)
@@ -913,8 +911,9 @@ Se não existir na raiz do projeto:
 2. Extrair informações do projeto
 3. Criar a partir do template com substituições
 4. Se não detectar, perguntar ao usuário
-5. Incluir (ou acrescentar, se o `AGENTS.md` já existir e não citar) a linha que identifica o mapa como contexto de workspace:
-   `> Contexto de workspace: [CDD-MIND-MAP.md](CDD-MIND-MAP.md) (tecnologias e papel de cada repositório; lido pelo /warm-up).`
+5. Incluir (ou acrescentar, se o `AGENTS.md` já existir e não citar) a linha que identifica o mapa de tecnologias do projeto:
+   `> Mapa de tecnologias do projeto: [CDD-MIND-MAP.md](CDD-MIND-MAP.md) (tecnologias e papel de cada repositório, ou da raiz no modo projeto; lido pelo /warm-up).`
+6. No modo projeto (raiz com `.git`), o `AGENTS.md` (e o `CLAUDE.md`, que é cópia dele) já está no `.git/info/exclude`, gravado pelo CLI antes de o arquivo existir: **não escreva no `.gitignore`**. Avise a pessoa: "para versionar de propósito, remova a linha do `.git/info/exclude`". Se o CLI avisou que o arquivo já está versionado, **não o tire do índice aqui**: a decisão é do Upgrade (`assets/upgrade.md`).
 
 ### 8. Profile-Aware Rules Sync
 
@@ -935,7 +934,7 @@ A **detecção de stack por código e a criação de skill novo** (sub-passos 9.
 3. **Lê** o workspace (a análise **só lê**: não altera arquivos do projeto nem as listas), identifica as stacks de backend e de frontend, inclusive de vários projetos, e **mostra o que encontrou antes de sugerir** (só essas 2 áreas)
 4. Para cada stack de backend/frontend, sugere **registrar o skill que já existe** (mesmo `area` e `stack`) ou **criar um novo** com `/jarvis-create-specialization {área} {stack}`; a pessoa escolhe, e o que não aceita não muda
 5. Mostra um resumo das 6 listas e do que foi registrado ou criado
-6. **Monta o `CDD-MIND-MAP.md`** (o mapa de tecnologias do workspace, lido pelo `/warm-up`): com a mesma leitura do sub-passo 3, agora para **todas as áreas**, preenche uma linha por repositório (papel, linguagem, framework, área, até 5 ferramentas principais) pelo `$IDE/templates/cdd-mind-map-template.md`, mostra a tabela e pede a validação com `AskUserQuestion` (**Confirmar** | **Corrigir** | **Incluir informação**). Grava na raiz do workspace (com `.git` na raiz, já no `.gitignore`, Passo 5). Se o mapa já existe, só acrescenta os repositórios que faltam. Pular é permitido: o primeiro `/warm-up` cria o mapa.
+6. **Monta o `CDD-MIND-MAP.md`** (o mapa de tecnologias, lido pelo `/warm-up`: do workspace ou, no modo projeto, do repositório): com a mesma leitura do sub-passo 3, agora para **todas as áreas**, preenche uma linha por repositório (papel, linguagem, framework, área, até 5 ferramentas principais) pelo `$IDE/templates/cdd-mind-map-template.md`, mostra a tabela e pede a validação com `AskUserQuestion` (**Confirmar** | **Corrigir** | **Incluir informação**). Grava na raiz do workspace (com `.git` na raiz, já no `.git/info/exclude`, Passo 5). Se o mapa já existe, só acrescenta os repositórios que faltam. Pular é permitido: o primeiro `/warm-up` cria o mapa.
 
 O tempo de ~10 minutos é referência, não limite. Nunca leia `.env*`, chaves ou credenciais.
 
@@ -1009,8 +1008,8 @@ Não pergunte de novo o que as exceções 8 a 8.3 do Upgrade já resolveram nest
 
 ⚠️ Lembre-se de:
 1. Não commitar tokens ou senhas no repositório
-2. Se o ENV.md tiver dados sensíveis e estiver num repositório (raiz com `.git`), adicioná-lo ao `.gitignore`
-3. Com `.git` na raiz, garantir `.jarvis/` no `.gitignore` (sem `.git`, como no modo workspace, a raiz não é versionada)
+2. No modo projeto (raiz com `.git`), o `jarvis init` já põe a pasta da IDE (onde fica o ENV.md) no `.gitignore`; se ela já estava versionada, ele só avisa e não a remove
+3. No modo projeto, o `jarvis init` mantém `.jarvis/` no `.gitignore` e `AGENTS.md`, `CLAUDE.md` e `CDD-MIND-MAP.md` no `.git/info/exclude` (local). Sem `.git` (modo workspace), a raiz não é versionada e nada é gravado
 4. Nenhum token no ENV: board e git usam o login da CLI (`gh auth login`, `glab auth login`, `acli jira auth login`)
 ```
 
@@ -1087,7 +1086,7 @@ Apresentar checklist de onboarding por período (Dia 1, Semana 1, Mês 1).
 - ✅ Só perguntar USER se o usuário quiser outro identificador
 - ✅ Validar range do MAX_AI_EXECUTION_PERCENTAGE (60-100)
 - ✅ WORKSPACE detectado (basename da pasta do `$IDE/`) ou override
-- ✅ Criar `$SESSIONS_DIR/{eng,prod,qa}` e, só com `.git` na raiz, garantir `.jarvis/` (e o `$SESSIONS_DIR/` relativo fora de `.jarvis/`) no `.gitignore`
+- ✅ Criar `$SESSIONS_DIR/{eng,prod,qa}` e, só com `.git` na raiz, garantir `.jarvis/` (e o `$SESSIONS_DIR/` relativo fora de `.jarvis/`) e a pasta da IDE no `.gitignore`, e `AGENTS.md`, `CLAUDE.md` e `CDD-MIND-MAP.md` no `.git/info/exclude`
 - ✅ Explicar freelance se `TASK_MANAGER` vazio (`TASK_MANAGER_KEY` próprio)
 - ✅ Garantir o Context7 no arquivo de MCP que a IDE lê, no formato dela, e validá-lo (obrigatório; pendente de ativação não bloqueia)
 - ✅ Descobrir a CLI do board e do git em best-effort (1 tentativa, nunca bloquear)
@@ -1172,7 +1171,7 @@ Bem-vindo! 🎉
 - [ ] Validou MAX_AI_EXECUTION_PERCENTAGE (60-100) - para campos livres
 - [ ] Confirmou WORKSPACE (nome da pasta do `$IDE/` ou override)
 - [ ] ENABLE_CDD=true e SESSIONS_DIR preenchido (padrão .jarvis/sessions)
-- [ ] Criou `$SESSIONS_DIR/{eng,prod,qa}` e, só com `.git` na raiz, `.jarvis/` no `.gitignore` (raiz sem `.git`: nenhum `.gitignore`)
+- [ ] Criou `$SESSIONS_DIR/{eng,prod,qa}` e, só com `.git` na raiz, `.jarvis/` e a pasta da IDE no `.gitignore` e as três entradas locais no `.git/info/exclude` (raiz sem `.git`: nenhum dos dois)
 - [ ] TASK_MANAGER: valor ou vazio (freelance) explicado
 - [ ] Não gravou TOKEN_VERSION_CONTROL / PROJECT_NAME / EVENT_BUS*
 - [ ] Perguntou sobre variáveis opcionais

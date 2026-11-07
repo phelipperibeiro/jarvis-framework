@@ -60,3 +60,49 @@ test("SKILL.md continua com o passo 10 no onboarding completo (regressão)", () 
   const skill = readFileSync(join(root, "skills", "jarvis-init", "SKILL.md"), "utf8");
   assert.match(skill, /### 10\. Confirmar Criação/, "o passo 10 do onboarding completo não pode sumir");
 });
+
+// ---- #227: AGENTS.md/CLAUDE.md fora do git no modo projeto ----------------------------------------
+
+const skill = readFileSync(join(root, "skills", "jarvis-init", "SKILL.md"), "utf8");
+const item91 = item(upgrade, "9.1. **Exceção", "10. Acrescentar");
+
+test("SKILL.md: o CLI grava o git do modo projeto; o texto não repete a lista nem escreve no .gitignore", () => {
+  assert.match(skill, /\.git\/info\/exclude/, "o Passo 5 deve citar o exclude local");
+  assert.doesNotMatch(skill, /echo "\$line" >> \.gitignore/, "o bash que escrevia no .gitignore saiu");
+  assert.doesNotMatch(skill, /for line in '\.jarvis\/'/, "a lista de entradas não é mais repetida no texto");
+});
+
+test("SKILL.md: o mapa de tecnologias vale nos dois modos (sem 'contexto de workspace')", () => {
+  assert.doesNotMatch(skill, /Contexto de workspace/i);
+  assert.match(skill, /Mapa de tecnologias do projeto: \[CDD-MIND-MAP\.md\]/);
+  assert.match(skill, /ou, no modo projeto, do repositório/);
+});
+
+test("SKILL.md: o Passo 7 avisa como versionar de propósito e deixa a saída do git para o Upgrade", () => {
+  assert.match(skill, /para versionar de propósito, remova a linha do `\.git\/info\/exclude`/);
+  assert.match(skill, /não o tire do índice aqui/i);
+});
+
+test("upgrade.md: o item 9.1 pergunta por arquivo, com Manter versionado primeiro, e chama jarvis untrack", () => {
+  assert.match(item91, /jarvis untrack \{arquivo\}/);
+  assert.ok(
+    item91.indexOf("**Manter versionado**") < item91.indexOf("**Tirar do git**"),
+    "Manter versionado deve vir antes de Tirar do git"
+  );
+  assert.match(item91, /AskUserQuestion/);
+  assert.match(item91, /nunca faz commit nem push/);
+  assert.match(item91, /apaga o `\{arquivo\}` para o resto do time/, "o aviso explica o efeito para o time");
+});
+
+test("upgrade.md: o item 9.1 roda entre as exceções (antes do item 10, que o caminho sem diff pula)", () => {
+  const i7 = upgrade.indexOf("7. **Exceção");
+  const i91 = upgrade.indexOf("9.1. **Exceção");
+  const i10 = upgrade.indexOf("10. Acrescentar");
+  const i12 = upgrade.indexOf("12. Oferecer");
+  assert.ok(i7 !== -1 && i91 !== -1 && i10 !== -1 && i12 !== -1);
+  assert.ok(i7 < i91 && i91 < i10 && i10 < i12, "a ordem deve ser 7 → 9.1 → 10 → 12");
+});
+
+test("upgrade.md: a nota do terminal diz que o CLI nunca tira arquivo do índice", () => {
+  assert.match(upgrade, /\*\*nunca tira arquivo do índice\*\*/);
+});
