@@ -29,7 +29,7 @@ O [`/eng.pr`](./eng.pr.md) grava, em cada sessão, um `daily.md` com a descriç�
 1. `/eng.daily-report {N}`, com `N` = 1, 3, 7, 15, 30 ou 60 (padrão 7). A janela é do calendário local e inclui hoje (`1` = só hoje). Outro valor é recusado, sem gerar arquivo.
 2. O CLI (`jarvis daily-report`) lê `$SESSIONS_DIR/eng/` e devolve a janela, os registros por dia e os alertas. O horário de início das sessões (`.timestamp_start`) é gravado em UTC e convertido para o dia local.
 3. O comando completa os alertas pelo vendor (título e data do PR) e escreve o relatório.
-4. O arquivo fica em `docs/jarvis/engineering/daily-reports/daily-report-AAAA-MM-DD-{N}d.md` (`$ENG_DOCS/daily-reports/`). A mesma janela no mesmo dia sobrescreve; janelas diferentes convivem.
+4. O arquivo fica em `$ENG_DOCS/daily-reports/daily-report-AAAA-MM-DD-{N}d.md`. A mesma janela no mesmo dia sobrescreve; janelas diferentes convivem.
 
 ### Quais sessões viram alerta
 

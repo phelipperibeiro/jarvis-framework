@@ -54,7 +54,7 @@ Existem níveis (macro → micro). Este comando é o **roteador**: ele não subs
 ## Como o framework te favorece
 
 - Lê `rules/product/` antes de inventar estrutura
-- Usa sessões em `.jarvis/sessions/prod/…` para rascunho sem sujar a pasta canônica cedo demais
+- Usa sessões em `$SESSIONS_DIR/prod/…` para rascunho sem sujar a pasta canônica cedo demais
 - Encaminha para o workflow certo em `$PROD_FLOWS`
 - **Links clicáveis:** o documento que sair do comando escolhido cita requisitos, documentos e código como links que abrem o ponto exato no VS Code (`rules-on-demand/doc-links-rules.md`)
 

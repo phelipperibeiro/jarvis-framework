@@ -16,7 +16,7 @@ Em discovery, Product Manager e Product Owner caçam buracos:
 
 Esclarecer cedo é barato. Esclarecer no meio do `/eng.work` é retrabalho.
 
-Este comando **grava as respostas de volta no arquivo** da especificação (e pode logar sessão na spec canônica). Rascunhos WIP: `.jarvis/sessions/prod/{TASK_MANAGER_KEY}/`.
+Este comando **grava as respostas de volta no arquivo** da especificação (e pode logar sessão na spec canônica). Rascunhos WIP: `$SESSIONS_DIR/prod/{TASK_MANAGER_KEY}/`.
 
 ## Quando usar
 
