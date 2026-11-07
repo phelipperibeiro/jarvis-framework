@@ -32,15 +32,14 @@ test("item 5 (sem diff) não encerra o Upgrade", () => {
 });
 
 test("item 5 pula os itens que só existem para variável nova", () => {
-  assert.match(item5, /6, 10 e 11|itens 6, 10 e 11/, "o item 5 deve pular 6, 10 e 11");
+  assert.match(item5, /itens 6, 10 e 11/, "o item 5 deve pular 6, 10 e 11");
 });
 
 test("item 12 deixa explícito que pular etapa é permitido e encerrar antes do 9.5 não é", () => {
   assert.match(item12, /9\.5/, "o item 12 deve citar o passo 9.5");
   assert.match(item12, /resumo/i, "o item 12 deve citar o resumo");
   assert.match(item12, /pul/i, "o item 12 deve dizer que pular é permitido");
-  assert.match(item12, /nunca encerra|não encerra|antes do 9\.5/i,
-    "o item 12 deve proibir encerrar antes do 9.5 e do resumo");
+  assert.match(item12, /nunca encerra/, "o item 12 deve proibir encerrar antes do 9.5 e do resumo");
 });
 
 // ---- #233: apontamentos pós-merge do PR #232 --------------------------------------------------
@@ -80,6 +79,11 @@ test("ordem do Upgrade: item 5, exceções (7 a 9) e item 12, nesta ordem", () =
   const i12 = upgrade.indexOf("12. Oferecer");
   assert.ok(i5 !== -1 && i7 !== -1 && i12 !== -1, "os itens 5, 7 e 12 devem existir");
   assert.ok(i5 < i7 && i7 < i12, "a ordem deve ser 5 → 7 → 12: as exceções rodam antes do fim");
+  // #233: a ordem no arquivo já valia antes da correção da #226; o que a correção mudou foi o próprio
+  // item 5, que mandava encerrar. Ele precisa mandar seguir para o item 7 e deixar o fim para o item 12.
+  assert.match(item5, /siga para o item 7/, "o item 5 manda seguir para o item 7");
+  assert.match(item5, /único fim do Upgrade/, "o item 5 deixa o fim para o item 12");
+  assert.doesNotMatch(item5, /encerrar/i, "o item 5 não manda encerrar");
 });
 
 test("passo-adicionar-stacks não manda para o passo 10 (é do onboarding completo)", () => {
