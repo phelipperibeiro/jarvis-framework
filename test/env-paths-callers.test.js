@@ -142,6 +142,9 @@ test("init --upgrade: caminho inválido interrompe antes de sincronizar, com sta
 });
 
 test("docsFolders: barra final, ./ e barras duplicadas não geram // nos caminhos", () => {
+  for (const v of ["./docs/", ".//docs", ".//docs//", "./docs//"]) {
+    assert.equal(docsFolders(expandEnv(new Map([["DOCS_FOLDER", v]]))).docs, "docs", v);
+  }
   const f = docsFolders(expandEnv(new Map([["DOCS_FOLDER", "./docs/"]])));
   assert.equal(f.docs, "docs");
   assert.equal(f.jarvis, "docs/jarvis");
