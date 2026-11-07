@@ -42,6 +42,14 @@ test("item 12 deixa explícito que pular etapa é permitido e encerrar antes do 
     "o item 12 deve proibir encerrar antes do 9.5 e do resumo");
 });
 
+test("ordem do Upgrade: item 5, exceções (7 a 9) e item 12, nesta ordem", () => {
+  const i5 = upgrade.indexOf("5. Se não houver diff");
+  const i7 = upgrade.indexOf("7. **Exceção");
+  const i12 = upgrade.indexOf("12. Oferecer");
+  assert.ok(i5 !== -1 && i7 !== -1 && i12 !== -1, "os itens 5, 7 e 12 devem existir");
+  assert.ok(i5 < i7 && i7 < i12, "a ordem deve ser 5 → 7 → 12: as exceções rodam antes do fim");
+});
+
 test("passo-adicionar-stacks não manda para o passo 10 (é do onboarding completo)", () => {
   assert.doesNotMatch(stacks, /passo 10/, "nenhuma referência ao passo 10 nos assets das stacks");
   const refs9_5 = stacks.match(/passo 9\.5/g) || [];
