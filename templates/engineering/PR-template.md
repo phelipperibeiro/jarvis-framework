@@ -14,7 +14,7 @@ Descreva de forma sucinta o objetivo do MR
 - Mudança 2
 - Mudança n
 
-<!-- O PR sai do workspace (`rules-on-demand/doc-links-rules.md`, regra 6): código como URL absoluta com o sha enviado (GitLab: {remote}/-/blob/{sha}/…); arquivos da sessão e de docs/jarvis/ em texto. -->
+<!-- O PR sai do workspace (`rules-on-demand/doc-links-rules.md`, regra 6): código como URL absoluta com o sha enviado (GitLab: {remote}/-/blob/{sha}/…); arquivos da sessão e de $JARVIS_DOCS em texto. -->
 
 ## Testes Realizados
 

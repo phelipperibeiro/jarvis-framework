@@ -4,7 +4,7 @@
 >
 > Se você está trabalhando nesta feature, **atualize este arquivo** conforme progride.
 >
-> Links (inclusive nos comentários de fase): `rules-on-demand/doc-links-rules.md`; os arquivos de "Onde fazer" que já existem viram link (`../../../../{repo}/{arquivo}#L{n}`), e os novos ficam em texto.
+> Links (inclusive nos comentários de fase): `rules-on-demand/doc-links-rules.md`; os arquivos de "Onde fazer" que já existem viram link (`{RAIZ}{repo}/{arquivo}#L{n}`), e os novos ficam em texto. `{RAIZ}` é a sequência de `../` até a pasta do workspace, contada para este arquivo (regra 1).
 >
 > **Execução:** {fase a fase | todas de uma vez} · **Commits:** {um por fase | um só ao final} · **Depois do work:** {sugerir /eng.pre-pr | rodar /eng.pre-pr | direto para /eng.pr | parar} _(preenchido pelo `eng.work`, Fase 1.3)_
 >
@@ -39,7 +39,7 @@
 {Descrição clara da ação a ser realizada}
 
 **Onde fazer:**
-- [`{símbolo}` (`{arquivo}:{n}`)](../../../../{repo}/{caminho/do/arquivo.ts}#L{n}) (arquivo novo: `{caminho/do/arquivo.ts}`, em texto)
+- [`{símbolo}` (`{arquivo}:{n}`)]({RAIZ}{repo}/{caminho/do/arquivo.ts}#L{n}) (arquivo novo: `{caminho/do/arquivo.ts}`, em texto)
 
 **Como fazer:**
 1. {Passo 1}
