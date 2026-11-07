@@ -98,7 +98,7 @@ jarvis/
            │ npm install -g | npm link
            ▼
 ┌──────────────────────┐
-│  CLI jarvis no PATH │  which jarvis · jarvis --version
+│  CLI jarvis no PATH  │  which jarvis · jarvis --version
 └──────────┬───────────┘
            │ no workspace do produto: jarvis init --ide cursor
            ▼
