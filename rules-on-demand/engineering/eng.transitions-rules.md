@@ -30,7 +30,7 @@ Lida pelos workflows `eng.start`, `eng.plan`, `eng.work`, `eng.pre-pr` e `eng.pr
 
 - Pergunta nova sem a opção que mantém o fluxo atual.
 - Avançar para o próximo comando sem a resposta do usuário.
-- **Terminar a mensagem final com uma pergunta solta** ("Quer que eu rode…?", "Sigo?", "Prefere A ou B?"). Todo próximo passo a decidir (rodar outra rodada, seguir para o próximo comando, aceitar um risco) sai por `AskUserQuestion`, com a opção recomendada primeiro, antes de o comando encerrar. Antes de enviar a mensagem final, confira se ela contém uma pergunta dirigida à pessoa: se sim, troque por `AskUserQuestion` (ou, sem a ferramenta, pela tabela de `prod-rules.md`).
+- **Terminar a mensagem final com uma pergunta em texto livre**, fora do `AskUserQuestion` ou da tabela de `prod-rules.md` ("Quer que eu rode…?", "Sigo?", "Prefere A ou B?"). Vale para a pergunta cuja resposta decide o próximo passo (rodar outra rodada, seguir para o próximo comando, aceitar um risco): ela sai por `AskUserQuestion`, com a opção recomendada primeiro, antes de o comando encerrar. Sem decisão pendente, não pergunte. Antes de enviar a mensagem final, confira se ela termina em uma pergunta desse tipo: se sim, troque por `AskUserQuestion` (ou, sem a ferramenta, pela tabela de `prod-rules.md`).
 - Usar a escolha de um comando para contornar o `MAX_AI_EXECUTION_PERCENTAGE`.
 
 ### Transições
