@@ -40,6 +40,7 @@ import {
   ensureGitignore,
 } from "../lib/core/docs-migrate.js";
 import { rootIsRepo } from "../lib/core/workspace-mode.js";
+import { EnvPathError, planSessionsSetup } from "../lib/core/env-paths.js";
 import { ensureContext7 } from "../lib/core/mcp-config.js";
 
 function ask(rl, question) {
@@ -404,13 +405,19 @@ export async function init(flags) {
     if (rulesSync?.errors.length) process.exitCode = 1;
   }
 
-  const jarvisRoot = join(cwd, ".jarvis");
-  for (const area of ["eng", "prod", "qa"]) {
-    mkdirSync(join(jarvisRoot, "sessions", area), { recursive: true });
-  }
+  // Sessões: pasta e .gitignore seguem o SESSIONS_DIR do ENV.md (reinstalação); sem ENV.md vale o padrão (#228).
   // .gitignore só numa raiz versionada (com .git): no modo workspace a raiz não é um repositório.
-  if (rootIsRepo(cwd)) {
-    ensureGitignore(cwd, ".jarvis/");
+  try {
+    const sessionsEnv = existsSync(envOnDisk) ? parseEnvEntries(readFileSync(envOnDisk, "utf-8")) : new Map();
+    const sessions = planSessionsSetup({ workspaceDir: cwd, env: sessionsEnv, isRepo: rootIsRepo(cwd) });
+    for (const dir of sessions.areaDirs) mkdirSync(dir, { recursive: true });
+    for (const line of sessions.gitignore) ensureGitignore(cwd, line);
+    for (const warning of sessions.warnings) logger.info(`${YELLOW}  ⚠ ${warning}${NC}`);
+  } catch (error) {
+    if (!(error instanceof EnvPathError)) throw error;
+    logger.error(`${RED}  ✗ ${error.message}${NC}`);
+    logger.error(`${RED}  ✗ As pastas de sessão não foram criadas. Corrija o ENV.md e rode o init de novo.${NC}`);
+    process.exitCode = 1;
   }
 
   logger.info("");

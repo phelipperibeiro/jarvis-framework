@@ -8,6 +8,8 @@
  * @module core/env-paths
  */
 
+import { isAbsolute, relative, resolve } from "node:path";
+
 /**
  * Resolve `$NOME` com as outras chaves, **em qualquer ordem**: upgrades antigos acrescentaram
  * `JARVIS_DOCS` no fim do arquivo, depois do `PROD_DOCS` que a usa. A variável pode estar no
@@ -142,4 +144,37 @@ export function assertPathsResolved(expanded, keys = PATH_KEYS) {
     const leftover = value.match(LEFTOVER_RE);
     if (leftover) throw new EnvPathError(key, value, [...new Set(leftover)]);
   }
+}
+
+/** Subpasta de cada área dentro do `SESSIONS_DIR`. */
+export const SESSION_AREAS = Object.freeze(["eng", "prod", "qa"]);
+
+/**
+ * O que o `jarvis init` cria para as sessões (#228): a pasta (de `SESSIONS_DIR`, com o padrão
+ * `.jarvis/sessions`), as subpastas por área e as linhas do `.gitignore`. Sem efeito colateral.
+ * `.jarvis/` fica sempre no `.gitignore` (estado local do framework); o caminho de sessões entra
+ * também quando é relativo, dentro da raiz e fora de `.jarvis/`.
+ * @param {Object} p
+ * @param {string} p.workspaceDir - Pasta do workspace (a que contém `$IDE/`)
+ * @param {Record<string, string> | Map<string, string>} [p.env] - ENV cru; ausente = só os padrões
+ * @param {boolean} p.isRepo - A raiz tem `.git`
+ * @returns {{ sessionsDir: string, areaDirs: string[], gitignore: string[], warnings: string[] }}
+ * @throws {EnvPathError}
+ */
+export function planSessionsSetup({ workspaceDir, env = {}, isRepo }) {
+  const value = expandEnvPath(env, "SESSIONS_DIR");
+  const sessionsDir = isAbsolute(value) ? value : resolve(workspaceDir, value);
+  const rel = relative(workspaceDir, sessionsDir);
+  const inside = rel !== "" && !rel.startsWith("..") && !isAbsolute(rel);
+  const gitignore = [];
+  const warnings = [];
+  if (isRepo) {
+    gitignore.push(".jarvis/");
+    const underJarvis = inside && (rel === ".jarvis" || rel.startsWith(".jarvis/") || rel.startsWith(".jarvis\\"));
+    if (inside && !underJarvis) gitignore.push(`${rel.split("\\").join("/")}/`);
+    else if (!inside) {
+      warnings.push(`SESSIONS_DIR (${value}) fora da raiz do repositório: sem entrada no .gitignore para ele.`);
+    }
+  }
+  return { sessionsDir, areaDirs: SESSION_AREAS.map((area) => resolve(sessionsDir, area)), gitignore, warnings };
 }
