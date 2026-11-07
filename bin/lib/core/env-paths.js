@@ -1,0 +1,127 @@
+/**
+ * @fileoverview Expansão de `$VAR` nos caminhos do `ENV.md` (#228): uma função única para todo ponto
+ * do CLI que lê um caminho, em vez de cada comando expandir (ou esquecer de expandir) do seu jeito.
+ *
+ * O `loadEnv` devolve os valores crus e continua assim: expandir tudo mudaria tokens e textos com
+ * `$` e variáveis que o CLI não resolve de propósito (`RULES_FOLDER=.$IDE/rules`). A expansão vale
+ * para as chaves de caminho (`PATH_KEYS`), e só nelas um `$` que sobra é erro.
+ * @module core/env-paths
+ */
+
+/**
+ * Resolve `$NOME` com as outras chaves, **em qualquer ordem**: upgrades antigos acrescentaram
+ * `JARVIS_DOCS` no fim do arquivo, depois do `PROD_DOCS` que a usa. A variável pode estar no
+ * meio do valor (`.jarvis/$DOCS_FOLDER/jarvis`). Desconhecida (ex.: `$IDE`) ou ciclo fica literal;
+ * `${NOME}` (com chaves) não é suportada.
+ * @param {Map<string, string>} entries
+ * @returns {Map<string, string>}
+ */
+export function expandEnv(entries) {
+  const out = new Map();
+  const resolving = new Set();
+  const resolveKey = (key) => {
+    if (out.has(key)) return out.get(key);
+    if (!entries.has(key) || resolving.has(key)) return null;
+    resolving.add(key);
+    const value = entries
+      .get(key)
+      .replace(/\$([A-Z][A-Z0-9_]*)/g, (m, name) => resolveKey(name) ?? m);
+    resolving.delete(key);
+    out.set(key, value);
+    return value;
+  };
+  for (const key of entries.keys()) resolveKey(key);
+  return out;
+}
+
+/**
+ * Chaves do `ENV.md` que o CLI lê como caminho. Um `$` que sobra em uma delas é erro de
+ * configuração: sem o erro, o comando criaria (ou procuraria) uma pasta chamada `$NOME`.
+ * @constant {ReadonlyArray<string>}
+ */
+export const PATH_KEYS = Object.freeze([
+  "CENTRAL_DOCS_LOCATION",
+  "SESSIONS_DIR",
+  "DOCS_FOLDER",
+  "JARVIS_DOCS",
+  "ENG_DOCS",
+  "PROD_DOCS",
+  "DISCOVERIES_DOCS",
+]);
+
+/**
+ * Valores do template do `ENV.md`, aplicados quando a chave falta ou está vazia.
+ * @constant {Readonly<Record<string, string>>}
+ */
+export const ENV_PATH_DEFAULTS = Object.freeze({
+  DOCS_FOLDER: "docs",
+  JARVIS_DOCS: "$DOCS_FOLDER/jarvis",
+  ENG_DOCS: "$JARVIS_DOCS/engineering",
+  PROD_FOLDER_NAME: "product",
+  PROD_DOCS: "$JARVIS_DOCS/$PROD_FOLDER_NAME",
+  DISCOVERIES_FOLDER_NAME: "discoveries",
+  DISCOVERIES_DOCS: "$JARVIS_DOCS/$DISCOVERIES_FOLDER_NAME",
+  SESSIONS_DIR: ".jarvis/sessions",
+});
+
+/** Caminho do `ENV.md` com variável sem valor (ver `expandEnvPath`). */
+export class EnvPathError extends Error {
+  /**
+   * @param {string} key
+   * @param {string} value - Valor original da chave, antes da expansão
+   * @param {string[]} leftover - O que ficou sem expandir (`$NOME`)
+   */
+  constructor(key, value, leftover) {
+    super(
+      `Caminho "${key}" do ENV.md com variável sem valor: "${value}" (sobrou: ${leftover.join(", ")}). ` +
+        `Defina a variável no ENV.md ou corrija o caminho.`
+    );
+    this.name = "EnvPathError";
+    this.key = key;
+    this.value = value;
+    this.leftover = leftover;
+  }
+}
+
+const toEntries = (env) => (env instanceof Map ? env : new Map(Object.entries(env || {})));
+
+/** Padrões do template + as chaves do ENV (que vencem os padrões, exceto vazias). */
+function withDefaults(env) {
+  const entries = new Map(Object.entries(ENV_PATH_DEFAULTS));
+  for (const [key, value] of toEntries(env)) {
+    if (value !== undefined && value !== null && String(value) !== "") entries.set(key, String(value));
+  }
+  return entries;
+}
+
+/**
+ * Expande o valor de uma chave do `ENV.md` com as outras chaves e os padrões do template.
+ * Se a chave é de caminho (`PATH_KEYS`) e ainda sobra `$NOME`, lança `EnvPathError`.
+ * @param {Record<string, string> | Map<string, string>} env - ENV cru (`loadEnv`) ou `Map`
+ * @param {string} key
+ * @returns {string | undefined} valor expandido; `undefined` se a chave não existe nem tem padrão
+ * @throws {EnvPathError}
+ */
+export function expandEnvPath(env, key) {
+  const entries = withDefaults(env);
+  const value = expandEnv(entries).get(key);
+  if (value === undefined) return undefined;
+  if (PATH_KEYS.includes(key)) {
+    const leftover = value.match(/\$\{?[A-Za-z0-9_]*\}?/g);
+    if (leftover) throw new EnvPathError(key, entries.get(key), [...new Set(leftover)]);
+  }
+  return value;
+}
+
+/**
+ * Expande `$VAR` em um texto avulso com o ENV e os padrões do template. Variável desconhecida
+ * fica literal, sem erro.
+ * @param {string} value
+ * @param {Record<string, string> | Map<string, string>} env
+ * @returns {string}
+ */
+export function expandEnvValue(value, env) {
+  const entries = withDefaults(env);
+  entries.set("\0VALUE", String(value));
+  return expandEnv(entries).get("\0VALUE");
+}

@@ -16,34 +16,13 @@ import {
 import { join, resolve, relative, dirname, basename, isAbsolute, sep } from "node:path";
 import { execFileSync } from "node:child_process";
 import { rootIsRepo } from "./workspace-mode.js";
+import { expandEnv } from "./env-paths.js";
 
 const ENG_SUBDIRS = ["ARD", "RFC", "qa", "swagger", "openapi", "robots", "c4"];
 const LEGACY_ENG_SUBDIRS = ["robots", "swagger", "openapi", "c4"];
 
-/**
- * Resolve `$NOME` com as outras chaves do ENV, **em qualquer ordem**: upgrades antigos
- * acrescentaram `JARVIS_DOCS` no fim do arquivo, depois do `PROD_DOCS` que a usa.
- * Desconhecida (ex.: `$IDE`) ou ciclo fica literal.
- * @param {Map<string, string>} entries
- * @returns {Map<string, string>}
- */
-export function expandEnv(entries) {
-  const out = new Map();
-  const resolving = new Set();
-  const resolveKey = (key) => {
-    if (out.has(key)) return out.get(key);
-    if (!entries.has(key) || resolving.has(key)) return null;
-    resolving.add(key);
-    const value = entries
-      .get(key)
-      .replace(/\$([A-Z][A-Z0-9_]*)/g, (m, name) => resolveKey(name) ?? m);
-    resolving.delete(key);
-    out.set(key, value);
-    return value;
-  };
-  for (const key of entries.keys()) resolveKey(key);
-  return out;
-}
+// A expansão de `$VAR` mora em `env-paths.js` (#228); re-exportada aqui para os imports existentes.
+export { expandEnv };
 
 const clean = (p) => p.replace(/^\.\//, "").replace(/\/+$/, "");
 
