@@ -47,6 +47,8 @@ const TARGETS = [
   "skills/AGENTS.md",
   "skills/product-specs-update/SKILL.md",
   "skills/eng-global-tech-spec/references/reference-spec.md",
+  "docs/visao-geral.md",
+  "docs/estrutura/docs.md",
 ];
 
 /** Linhas permitidas: arquivo + condição + motivo. Curta e explícita. */
@@ -65,6 +67,8 @@ const EXEMPT = [
   { file: "skills/jarvis-init/assets/exemplo-execucao.md", when: (l) => l.includes("(padrão `.jarvis/sessions`)"), why: "exemplo de execução com o padrão" },
   { file: "skills/jarvis-docs-central/SKILL.md", when: (l) => l.includes("hoje `docs/jarvis/central-docs`"), why: "Central docs: o padrão hoje" },
   { file: "skills/jarvis-docs-central/README.md", when: (l) => l.includes("com os valores padrão, `docs/jarvis/central-docs`"), why: "Central docs: o padrão" },
+  { file: "docs/visao-geral.md", when: (l) => l.includes("padrão `.jarvis/sessions`"), why: "guia: SESSIONS_DIR com o padrão descrito como padrão" },
+  { file: "docs/estrutura/docs.md", when: (l) => l.includes("(com os valores padrão, `docs/jarvis/`)"), why: "guia: o padrão de JARVIS_DOCS descrito como padrão" },
   { file: "rules/product/prod-rules.md", when: (l) => /`\$(JARVIS_DOCS\/product|JARVIS_DOCS\/discoveries|ENG_DOCS)` \(`docs\/jarvis\//.test(l), why: "o padrão ao lado da variável (rule carregada no início da sessão: o tamanho é fixado em teste, #83)" },
   { file: "rules/engineering/eng-rules.md", when: (l) => l.includes("`$SESSIONS_DIR` → `.jarvis/sessions`"), why: "mapeamento da variável para o seu valor padrão (rule carregada no início da sessão)" },
   { file: "rules-on-demand/engineering/eng.transitions-rules.md", when: (l) => l.includes("com o `SESSIONS_DIR` padrão"), why: "exemplo de link com o padrão" },
@@ -190,9 +194,9 @@ function markdownFiles(dir) {
   return out;
 }
 
-test("completude: todo .md de workflows, skills, rules, templates e agents com caminho fixo está em TARGETS ou em IGNORED", () => {
+test("completude: todo .md de workflows, skills, rules, templates, agents e docs com caminho fixo está em TARGETS ou em IGNORED", () => {
   const faltam = [];
-  for (const dir of ["workflows", "skills", "rules", "rules-on-demand", "templates", "agents"]) {
+  for (const dir of ["workflows", "skills", "rules", "rules-on-demand", "templates", "agents", "docs"]) {
     for (const file of markdownFiles(dir)) {
       if (TARGETS.includes(file) || file in IGNORED) continue;
       const text = readFileSync(join(repoRoot, file), "utf-8");
