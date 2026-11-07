@@ -39,7 +39,8 @@ import {
   declineEnvValues,
   ensureGitignore,
 } from "../lib/core/docs-migrate.js";
-import { rootIsRepo } from "../lib/core/workspace-mode.js";
+import { rootIsRepo, detectWorkspaceMode, normalizeWorkspaceMode } from "../lib/core/workspace-mode.js";
+import { reposOutsideMap, reposPendencyLine } from "../lib/core/repos-map.js";
 import { LOCAL_EXCLUDE_ENTRIES, applyProjectGitSetup } from "../lib/core/git-exclude.js";
 import { EnvPathError, checkEnvPaths, planSessionsSetup } from "../lib/core/env-paths.js";
 import { ensureContext7 } from "../lib/core/mcp-config.js";
@@ -958,12 +959,19 @@ async function runUpgrade(cwd, flags) {
     return getVendor(futureEntries.get(key)) && (!access || /^\[.*\]$/.test(access));
   });
   const pending = upgradePendencies({ pendingAxes, envPlan, missingProfile, trackedGenerated: gitSetup.tracked });
+  // #225: repositório (subpasta com .git) fora do mapa. Só lê; quem atualiza os documentos é o /jarvis-init repos.
+  const reposFora = reposOutsideMap({
+    workspaceDir,
+    mode: normalizeWorkspaceMode(futureEntries.get("WORKSPACE_MODE")) || detectWorkspaceMode(workspaceDir).mode,
+  });
   logger.info("");
-  logger.info(
-    pending.length
-      ? `${CYAN}➡️  Agora rode ${BOLD}/jarvis-init upgrade${NC}${CYAN} na IDE: ${pending.join("; ")}.${NC}\n`
-      : `${GREEN}✓ Nada pendente na IDE.${NC}\n`
-  );
+  if (pending.length) {
+    logger.info(`${CYAN}➡️  Agora rode ${BOLD}/jarvis-init upgrade${NC}${CYAN} na IDE: ${pending.join("; ")}.${NC}\n`);
+  }
+  if (reposFora.length) {
+    logger.info(`${CYAN}➡️  ${reposPendencyLine(reposFora)}.${NC}\n`);
+  }
+  if (!pending.length && !reposFora.length) logger.info(`${GREEN}✓ Nada pendente na IDE.${NC}\n`);
   return sync.errors.length ||
     moveErrors.length ||
     staleErrors.length ||
