@@ -3,7 +3,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { execFileSync, spawnSync } from "node:child_process";
-import { mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from "node:fs";
+import { chmodSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -195,3 +195,24 @@ test("untrack: versão staged diferente do HEAD e do disco é recusada com o mot
     assert.equal(readFileSync(join(dir, "AGENTS.md"), "utf-8"), "v3\n", "o arquivo local fica como estava");
   });
 });
+
+const RUNNING_AS_ROOT = typeof process.getuid === "function" && process.getuid() === 0;
+
+test("untrack: exclude sem permissão de escrita sai com 1, diz que o índice JÁ foi alterado e deixa a remoção staged", { skip: RUNNING_AS_ROOT }, () => {
+  withRepo({ "AGENTS.md": "# a\n" }, (dir) => {
+    const alvo = join(dir, ".git", "info", "exclude");
+    chmodSync(alvo, 0o444);
+    try {
+      const r = run(dir, "AGENTS.md");
+      assert.equal(r.status, 1);
+      assert.match(r.stderr + r.stdout, /O exclude não foi gravado .*EACCES/);
+      assert.match(r.stderr + r.stdout, /O índice JÁ foi alterado \(staged\)/);
+      assert.ok(!tracked(dir, "AGENTS.md"), "o arquivo saiu do índice");
+      assert.match(git(dir, "status", "--porcelain"), /^D {2}AGENTS\.md$/m);
+      assert.equal(readFileSync(join(dir, "AGENTS.md"), "utf-8"), "# a\n");
+    } finally {
+      chmodSync(alvo, 0o644);
+    }
+  });
+});
+

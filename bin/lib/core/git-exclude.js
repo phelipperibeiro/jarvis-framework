@@ -146,7 +146,13 @@ export function untrackFromIndex(dir, name) {
   if (!rootIsRepo(dir)) {
     return { ok: false, reason: "a raiz não é um repositório (modo workspace): não há índice para alterar" };
   }
-  if (trackedFiles(dir, [name]).length === 0) {
+  let listed;
+  try {
+    listed = git(dir, ["ls-files", "--", name]).trim();
+  } catch (error) {
+    return { ok: false, reason: `git não respondeu (${gitError(error)})` };
+  }
+  if (listed === "") {
     return { ok: false, reason: `${name} não está versionado` };
   }
   try {
@@ -163,14 +169,19 @@ export function ideFolderEntry(ide) {
   return `.${getIDEFolder(ide)}/`;
 }
 
-/** A pasta da IDE já está rastreada? Ignorar não a tira do git; só avisamos. */
-export function isIdeFolderTracked(dir, ide) {
+/** Há arquivo rastreado sob `pathspec`? Raiz sem `.git` ou erro do git: não. */
+function hasTrackedUnder(dir, pathspec) {
   if (!rootIsRepo(dir)) return false;
   try {
-    return git(dir, ["ls-files", "--", `.${getIDEFolder(ide)}`]).trim() !== "";
+    return git(dir, ["ls-files", "--", pathspec]).trim() !== "";
   } catch {
     return false;
   }
+}
+
+/** A pasta da IDE já está rastreada? Ignorar não a tira do git; só avisamos. */
+export function isIdeFolderTracked(dir, ide) {
+  return hasTrackedUnder(dir, `.${getIDEFolder(ide)}`);
 }
 
 /** Grava `line` no `.gitignore` e diz se o arquivo mudou. Lança se o arquivo não puder ser lido/gravado. */
@@ -198,6 +209,7 @@ function addGitignoreLine(dir, line) {
  *   ignoreAdded: string[],
  *   ideIgnoreAdded: boolean,
  *   ideFolderTracked: boolean,
+ *   ignoredButTracked: string[],
  *   warnings: string[],
  *   errors: string[],
  * }}
@@ -213,6 +225,7 @@ export function applyProjectGitSetup({ dir, ide, gitignoreLines = [] }) {
     ignoreAdded: [],
     ideIgnoreAdded: false,
     ideFolderTracked: false,
+    ignoredButTracked: [],
     warnings: [],
     errors: [],
   };
@@ -247,6 +260,7 @@ export function applyProjectGitSetup({ dir, ide, gitignoreLines = [] }) {
     ignoreAdded,
     ideIgnoreAdded: ignoreAdded.includes(ideEntry),
     ideFolderTracked: isIdeFolderTracked(dir, ide),
+    ignoredButTracked: gitignoreLines.filter((line) => hasTrackedUnder(dir, line)),
     warnings,
     errors,
   };

@@ -18,6 +18,7 @@ import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { execFileSync, spawnSync } from "node:child_process";
 import {
+  docsIgnoreLines,
   logProjectGitSetup,
   parseMenuChoice,
   upgradePendencies,
@@ -1338,8 +1339,12 @@ test("init: git que não responde (.git inválido) avisa que o exclude não foi 
   withWorkspace({ ".git/HEAD": "" }, (ws) => {
     const r = run(ws, "--ide", "claude");
     assert.equal(r.status, 0, r.stderr);
-    assert.match(output(r), /Git \(modo projeto\): o git não respondeu/);
-    assert.match(output(r), /O exclude não foi gravado: AGENTS\.md, CLAUDE\.md e CDD-MIND-MAP\.md podem entrar no PR/);
+    // uma linha só: a causa, o que ficou sem proteção e o que fazer
+    assert.match(
+      output(r),
+      /Git \(modo projeto\): o git não respondeu .*\. O exclude não foi gravado e AGENTS\.md, CLAUDE\.md, CDD-MIND-MAP\.md podem entrar no PR; corrija e rode o init de novo/
+    );
+    assert.equal((output(r).match(/o git não respondeu/g) || []).length, 1, "a causa aparece uma vez só");
     assert.match(gitignoreOf(ws), /^\.jarvis\/$/m, "o .gitignore é gravado mesmo assim");
   });
 });
@@ -1424,6 +1429,7 @@ const gitSetupBase = () => ({
   ignoreAdded: [],
   ideIgnoreAdded: false,
   ideFolderTracked: false,
+  ignoredButTracked: [],
   warnings: [],
   errors: [],
 });
@@ -1461,8 +1467,49 @@ test("logProjectGitSetup: avisos de versionado, de git indisponível e erros de 
   assert.match(out, /AGENTS\.md está versionado: nada foi removido/);
   assert.match(out, /CDD-MIND-MAP\.md está versionado: o exclude não vale para arquivo rastreado/);
   assert.match(out, /\.claude\/ já está versionada: ignorar não a tira do git/);
-  assert.match(out, /Git \(modo projeto\): o git não respondeu \(fatal\)/);
+  // AGENTS.md e o mapa já estão versionados: só o CLAUDE.md fica sem proteção, no singular
+  assert.match(out, /Git \(modo projeto\): o git não respondeu \(fatal\)\. O exclude não foi gravado e CLAUDE\.md pode entrar no PR/);
+  assert.doesNotMatch(out, /CDD-MIND-MAP\.md podem entrar/, "o mapa versionado não é listado como sem proteção");
   assert.match(out, /Git \(modo projeto\): não foi possível gravar \/x\/\.gitignore: EISDIR/);
-  assert.match(out, /O exclude não foi gravado: AGENTS\.md, CLAUDE\.md e CDD-MIND-MAP\.md podem entrar no PR/);
+  assert.equal((out.match(/o git não respondeu/g) || []).length, 1, "a causa não se repete");
+});
+
+test("logProjectGitSetup: a instrução final muda no upgrade e só lista o que de fato faltou no exclude", () => {
+  const base = {
+    ...gitSetupBase(),
+    exclude: { path: null, added: [], existing: ["CLAUDE.md"], error: "o git não respondeu (fatal)", gitUnavailable: true },
+    warnings: ["o git não respondeu (fatal)"],
+  };
+  const instalacao = capturar(() => logProjectGitSetup(base));
+  const upgrade = capturar(() => logProjectGitSetup(base, { upgrade: true }));
+  assert.match(instalacao, /AGENTS\.md, CDD-MIND-MAP\.md podem entrar no PR; corrija e rode o init de novo/);
+  assert.doesNotMatch(instalacao, /CLAUDE\.md[,]? .*entrar no PR/, "CLAUDE.md já estava no exclude");
+  assert.match(upgrade, /corrija e rode jarvis init --upgrade de novo/);
+});
+
+test("logProjectGitSetup: pasta de documentos já versionada vira aviso", () => {
+  const out = capturar(() => logProjectGitSetup({ ...gitSetupBase(), ignoredButTracked: ["docs/jarvis/"] }));
+  assert.match(out, /docs\/jarvis\/ já está versionada: ignorar não a tira do git e os arquivos novos dela deixam de aparecer/);
+});
+
+test("docsIgnoreLines: só pasta dentro da raiz; recusa o que vira lixo ou padrão especial no .gitignore", () => {
+  const com = (jarvis) => docsIgnoreLines(new Map(jarvis === undefined ? [] : [["JARVIS_DOCS", jarvis]]));
+  assert.deepEqual(com(undefined), ["docs/jarvis/"], "sem a chave vale o padrão");
+  assert.deepEqual(com("meusdocs/jarvis"), ["meusdocs/jarvis/"]);
+  assert.deepEqual(com("docs//jarvis/"), ["docs/jarvis/"], "normaliza barras duplicadas e a final");
+  assert.deepEqual(com("docs/./jarvis"), ["docs/jarvis/"]);
+  for (const ruim of ["/tmp/fora", "../fora", "docs/../../x", ".", "!docs", "#docs", ":(glob)x"]) {
+    assert.deepEqual(com(ruim), [], `${ruim} não vira linha do .gitignore`);
+  }
+});
+
+test("init (instalação): docs/jarvis/ já versionado avisa que ignorar não o tira do git", () => {
+  withRealRepo({ "docs/jarvis/product/prd.md": "# prd\n" }, (ws) => {
+    commitAll(ws);
+    const r = run(ws, "--ide", "claude");
+    assert.equal(r.status, 0, r.stderr);
+    assert.match(r.stdout, /docs\/jarvis\/ já está versionada: ignorar não a tira do git/);
+    assert.equal(gitIn(ws, "ls-files", "docs/jarvis/product/prd.md").trim(), "docs/jarvis/product/prd.md");
+  });
 });
 

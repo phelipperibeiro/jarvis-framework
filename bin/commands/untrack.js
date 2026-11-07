@@ -59,8 +59,9 @@ export function untrack(files, flags = {}) {
     }
     if (result.excludeError) {
       logger.error(
-        `${YELLOW}   ⚠ O exclude não foi gravado (${result.excludeError}): o arquivo local pode voltar a aparecer como novo no git.${NC}`
+        `${RED}   ✗ O exclude não foi gravado (${result.excludeError}). O índice JÁ foi alterado (staged), mas o arquivo local pode voltar a aparecer como novo no git.${NC}`
       );
+      process.exitCode = 1;
     }
   }
   if (removed > 0) {

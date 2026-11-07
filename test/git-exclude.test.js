@@ -461,3 +461,47 @@ test("ensureLocalExclude: espaço no início é outro padrão do git (não conta
     assert.deepEqual(r.existing, ["CLAUDE.md"], "CLAUDE.md com espaço no fim conta como presente");
   });
 });
+
+// ---- Fase 9 (pre-pr rodada 2) ---------------------------------------------------------------------
+
+test("untrackFromIndex: sem git diz que o git não respondeu, não que o arquivo não está versionado", () => {
+  withRepo((dir) => {
+    trackAgents(dir);
+    const antes = process.env.PATH; // teste síncrono, um processo por arquivo: seguro mexer no PATH
+    process.env.PATH = "/caminho/que/nao/existe";
+    try {
+      const r = untrackFromIndex(dir, "AGENTS.md");
+      assert.equal(r.ok, false);
+      assert.match(r.reason, /^git não respondeu \(.*ENOENT/);
+      assert.doesNotMatch(r.reason, /não está versionado/);
+    } finally {
+      process.env.PATH = antes;
+    }
+    assert.deepEqual(trackedFiles(dir), ["AGENTS.md"], "o arquivo continua versionado");
+  });
+});
+
+test("untrackFromIndex: com git e arquivo não versionado segue dizendo que não está versionado", () => {
+  withRepo((dir) => {
+    const r = untrackFromIndex(dir, "AGENTS.md");
+    assert.equal(r.ok, false);
+    assert.match(r.reason, /AGENTS\.md não está versionado/);
+  });
+});
+
+test("applyProjectGitSetup: gitignoreLines já versionadas viram ignoredButTracked (ignorar não as tira do git)", () => {
+  withRepo((dir) => {
+    mkdirSync(join(dir, "docs", "jarvis"), { recursive: true });
+    writeFileSync(join(dir, "docs", "jarvis", "prd.md"), "# prd\n");
+    git(dir, "add", "docs/jarvis/prd.md");
+    commit(dir, "versiona os documentos");
+    const r = applyProjectGitSetup({ dir, ide: "claude", gitignoreLines: ["docs/jarvis/", "outra/"] });
+    assert.deepEqual(r.ignoredButTracked, ["docs/jarvis/"]);
+    assert.ok(r.ignoreAdded.includes("docs/jarvis/"), "a linha entra no .gitignore mesmo assim");
+    assert.equal(git(dir, "ls-files", "docs/jarvis/prd.md").trim(), "docs/jarvis/prd.md");
+  });
+  withRepo((dir) => {
+    assert.deepEqual(applyProjectGitSetup({ dir, ide: "claude", gitignoreLines: ["docs/jarvis/"] }).ignoredButTracked, []);
+  });
+});
+

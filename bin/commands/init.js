@@ -1,5 +1,5 @@
 import { existsSync, mkdirSync, readFileSync, realpathSync } from "node:fs";
-import { join, dirname, basename, resolve, sep, isAbsolute } from "node:path";
+import { join, dirname, basename, resolve, sep, isAbsolute, posix } from "node:path";
 import { createInterface } from "node:readline";
 import {
   syncAssets,
@@ -40,7 +40,7 @@ import {
   ensureGitignore,
 } from "../lib/core/docs-migrate.js";
 import { rootIsRepo } from "../lib/core/workspace-mode.js";
-import { applyProjectGitSetup } from "../lib/core/git-exclude.js";
+import { LOCAL_EXCLUDE_ENTRIES, applyProjectGitSetup } from "../lib/core/git-exclude.js";
 import { EnvPathError, checkEnvPaths, planSessionsSetup } from "../lib/core/env-paths.js";
 import { ensureContext7 } from "../lib/core/mcp-config.js";
 
@@ -117,10 +117,11 @@ function logRulesFilter(rulesSync, profileLabel) {
 /**
  * Mensagens do que o modo projeto gravou no git (#227): o que entrou no exclude e no `.gitignore`, a
  * frase de como reverter e os avisos de arquivo gerado ou pasta da IDE já versionados. Raiz sem `.git`
- * (modo workspace): nada. Nunca mostra conteúdo de arquivo.
+ * (modo workspace): nada. Nunca mostra conteúdo de arquivo. `upgrade` só muda a instrução final.
  * @param {ReturnType<typeof applyProjectGitSetup>} result
+ * @param {{ upgrade?: boolean }} [options]
  */
-export function logProjectGitSetup(result) {
+export function logProjectGitSetup(result, { upgrade = false } = {}) {
   if (!result.isRepo) return;
   if (result.exclude.added.length) {
     logger.info(`  • .git/info/exclude (local, fora do PR): ${result.exclude.added.join(", ")}`);
@@ -142,12 +143,29 @@ export function logProjectGitSetup(result) {
       `${YELLOW}  ⚠ ${result.ideEntry} já está versionada: ignorar não a tira do git e o init não a remove.${NC}`
     );
   }
-  for (const message of result.warnings) logger.info(`${YELLOW}  ⚠ Git (modo projeto): ${message}${NC}`);
-  for (const message of result.errors) logger.error(`${RED}  ✗ Git (modo projeto): ${message}${NC}`);
-  if (result.exclude.error) {
+  for (const line of result.ignoredButTracked) {
     logger.info(
-      `${YELLOW}  ⚠ O exclude não foi gravado: AGENTS.md, CLAUDE.md e CDD-MIND-MAP.md podem entrar no PR. Corrija e rode o init de novo.${NC}`
+      `${YELLOW}  ⚠ ${line} já está versionada: ignorar não a tira do git e os arquivos novos dela deixam de aparecer no git status.${NC}`
     );
+  }
+  // Uma linha só para a falha do exclude: a causa, o que ficou sem proteção e o que fazer.
+  if (result.exclude.error) {
+    const faltaram = LOCAL_EXCLUDE_ENTRIES.filter(
+      (entry) =>
+        !result.exclude.existing.includes(entry) &&
+        !result.tracked.includes(entry) &&
+        !(entry === "CDD-MIND-MAP.md" && result.trackedMap)
+    );
+    const color = result.exclude.gitUnavailable ? YELLOW : RED;
+    const log = result.exclude.gitUnavailable ? logger.info : logger.error;
+    log.call(
+      logger,
+      `${color}  ${result.exclude.gitUnavailable ? "⚠" : "✗"} Git (modo projeto): ${result.exclude.error}. O exclude não foi gravado e ${faltaram.join(", ")} ${faltaram.length > 1 ? "podem" : "pode"} entrar no PR; corrija e ${upgrade ? "rode jarvis init --upgrade" : "rode o init"} de novo.${NC}`
+    );
+  }
+  for (const message of [...result.warnings, ...result.errors]) {
+    if (message === result.exclude.error) continue;
+    logger.error(`${RED}  ✗ Git (modo projeto): ${message}${NC}`);
   }
 }
 
@@ -159,6 +177,7 @@ function gitSetupHasNews(result) {
       result.tracked.length ||
       result.trackedMap ||
       result.ideFolderTracked ||
+      result.ignoredButTracked.length ||
       result.warnings.length ||
       result.errors.length
   );
@@ -173,8 +192,13 @@ function gitSetupHasNews(result) {
  */
 export function docsIgnoreLines(entries) {
   try {
-    const jarvis = docsFolders(expandEnv(entries)).jarvis;
-    if (!jarvis || isAbsolute(jarvis) || jarvis.startsWith("..")) return [];
+    const raw = docsFolders(expandEnv(entries)).jarvis;
+    if (!raw) return [];
+    // Só uma pasta dentro da raiz: nada de caminho absoluto, que sobe (`..`), é `.` ou vira padrão especial do
+    // git (`!` desfaz um ignore, `#` é comentário, `:` é pathspec mágico).
+    const jarvis = posix.normalize(raw).replace(/\/+$/, "");
+    if (!jarvis || jarvis === "." || isAbsolute(jarvis) || jarvis === ".." || jarvis.startsWith("../")) return [];
+    if (/^[!#:]/.test(jarvis)) return [];
     return [`${jarvis}/`];
   } catch (error) {
     if (error instanceof EnvPathError) return [];
@@ -836,7 +860,7 @@ async function runUpgrade(cwd, flags) {
   const gitSetup = applyProjectGitSetup({ dir: workspaceDir, ide, gitignoreLines: docsIgnoreLines(futureEntries) });
   if (gitSetupHasNews(gitSetup)) {
     logger.info(`${BLUE}🔒 Git (modo projeto):${NC}`);
-    logProjectGitSetup(gitSetup);
+    logProjectGitSetup(gitSetup, { upgrade: true });
   }
 
   // 4. Resumo (só nomes de chave e caminhos)
