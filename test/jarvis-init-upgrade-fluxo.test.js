@@ -43,6 +43,37 @@ test("item 12 deixa explícito que pular etapa é permitido e encerrar antes do 
     "o item 12 deve proibir encerrar antes do 9.5 e do resumo");
 });
 
+// ---- #233: apontamentos pós-merge do PR #232 --------------------------------------------------
+
+const item7 = item(upgrade, "7. **Exceção — documentos nos caminhos antigos", "8. **Exceção — Central docs antigo");
+
+test("item 5 não afirma que o ENV.md está atualizado (os itens 7 a 9.1 ainda podem alterá-lo)", () => {
+  assert.match(item5, /Nenhuma variável nova encontrada/);
+  assert.doesNotMatch(item5, /já está atualizado/i, "a frase de 'já atualizado' saiu do item 5");
+  assert.doesNotMatch(item5, /ENV\.md atualizado/i);
+  assert.match(item5, /ainda podem alterá-lo/, "o item 5 explica por que não diz 'atualizado'");
+});
+
+test("item 7: a carga inicial do Central docs só é oferecida se moveu documentos nesta execução", () => {
+  const linha = item7.split("\n").find((l) => l.includes("carga inicial do Central docs"));
+  assert.ok(linha, "o item 7 ainda trata da carga inicial");
+  assert.match(linha, /só se moveu documentos nesta execução/, "a oferta tem condição");
+  assert.match(linha, /não ofereça/i, "sem mover nada, não oferece");
+  assert.equal((upgrade.match(/carga inicial do Central docs/g) || []).length, 1, "a oferta aparece uma vez no Upgrade");
+});
+
+test("item 12 e SKILL.md definem o resumo (item 5 do passo 9.5) e a única etapa pulável (as stacks)", () => {
+  assert.match(item12, /passo 9\.5 do `SKILL\.md`/, "o item 12 cita o 9.5 do SKILL.md");
+  assert.match(item12, /item 5 \(Resumo\)/, "o resumo do Upgrade é o item 5 do 9.5");
+  assert.match(item12, /Só a etapa das stacks pode ser pulada/, "só as stacks podem ser puladas");
+  const skillMd = readFileSync(join(root, "skills", "jarvis-init", "SKILL.md"), "utf8");
+  const linhaC = skillMd.split("\n").find((l) => l.startsWith("Siga `assets/upgrade.md` do começo ao fim"));
+  assert.ok(linhaC, "o SKILL.md descreve o fim do Upgrade");
+  assert.match(linhaC, /item 5 \(Resumo\)/, "o SKILL.md usa a mesma definição de resumo");
+  assert.match(linhaC, /única etapa que a pessoa pode pular/);
+  assert.doesNotMatch(linhaC, /rodando o 9\.5 e encerrando/, "a frase ambígua saiu");
+});
+
 test("ordem do Upgrade: item 5, exceções (7 a 9) e item 12, nesta ordem", () => {
   const i5 = upgrade.indexOf("5. Se não houver diff");
   const i7 = upgrade.indexOf("7. **Exceção");

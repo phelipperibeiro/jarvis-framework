@@ -12,9 +12,9 @@ Lido pelo passo 2 do `SKILL.md` quando o `ENV.md` existe e a opção é C (ou o 
 4. **Exceção — chaves removidas do template (#209):** apague, sem perguntar, as linhas das chaves de mensageria, banco, observabilidade, SMTP, code quality e Data Engineering (`MESSAGE_BROKER*`, `DATABASE`, `*_DATABASE`, `OBSERVABILITY*`, `TOKEN_OBSERVABILITY`, `SMTP`, `CODE_QUALITY_*` e as `DATA_*`, **menos** `DATA_SPECIALIZATIONS`; lista em `REMOVED_KEYS`, `bin/lib/core/env-upgrade.js`) e a moldura de comentário do bloco que ficar vazio. Nunca leia, mostre ou copie o valor; avise só com os nomes (`ENV.md: removidas (não são mais usadas): …`). O `jarvis init --upgrade` já faz isso no terminal
 5. Se não houver diff:
    ```
-   ✅ ENV.md já está atualizado. Nenhuma variável nova encontrada.
+   ℹ️ Nenhuma variável nova encontrada.
    ```
-   Não há variável nova: pule os itens 6, 10 e 11 e siga para o item 7. A oferta do **passo 9 (adicionar as stacks)** e o **passo 9.5 (validar o ENV.md)** ficam no item 12, que é o único fim do Upgrade.
+   Não há variável nova: pule os itens 6, 10 e 11 e siga para o item 7. Não diga que o `ENV.md` "está atualizado": os itens 7 a 9.1 ainda podem alterá-lo. A oferta do **passo 9 (adicionar as stacks)** e o **passo 9.5 do `SKILL.md` (validar o ENV.md)** ficam no item 12, que é o único fim do Upgrade.
 6. Se houver diff, exibir prévia:
    ```
    🔍 Variáveis novas encontradas no template:
@@ -28,7 +28,7 @@ Lido pelo passo 2 do `SKILL.md` quando o `ENV.md` existe e a opção é C (ou o 
    - **Conflito** (arquivo com o mesmo nome no destino): não sobrescreva; liste e pule esse arquivo. A pasta antiga só é removida se ficar vazia.
    - **`related_discovery`:** depois de mover discoveries, nos `.md` de `$PROD_DOCS`, troque todo `related_discovery:` cujo **nome de arquivo** seja o de um discovery movido pelo caminho novo (relativo ao workspace). Isso também conserta valores que já estavam quebrados.
    - **Sem confirmação, não mova nada:** as chaves **novas** recebem o caminho antigo (`DISCOVERIES_DOCS=$PROD_DOCS/discoveries`; `PROD_DOCS`/`ENG_DOCS` só se também forem novas). Chave que já existe não muda: avise que os documentos ficaram no caminho antigo.
-   - Depois, ofereça a carga inicial do Central docs (Passo 5.3).
+   - Depois, **só se moveu documentos nesta execução**, ofereça a carga inicial do Central docs (Passo 5.3). Sem confirmação, ou sem nada movido, não ofereça: o Upgrade não repete a oferta a cada execução.
 8. **Exceção — Central docs antigo:** se o `ENV.md` tiver `CENTRAL_DOCS_REPO` preenchido e não tiver `CENTRAL_DOCS_STORAGE`, propor a migração (só com confirmação): `CENTRAL_DOCS_STORAGE=filesystem`, `CENTRAL_DOCS_LOCATION=$JARVIS_DOCS/central-docs` (Passo 5.2) e `git clone {CENTRAL_DOCS_REPO} {LOCATION}`. Depois, comentar a linha antiga (`# CENTRAL_DOCS_REPO=… (migrado em YYYY-MM-DD)`) e `CENTRAL_DOCS_CACHE_TTL`. Sem confirmação, não mexe e avisa que os comandos de docs vão pedir o Upgrade.
    - **Central docs no padrão antigo do modo workspace:** se `CENTRAL_DOCS_LOCATION` for `./central-docs` (ou `central-docs`) e essa pasta existir, ofereça com `AskUserQuestion` (**Mover** | **Manter**) mover para `$JARVIS_DOCS/central-docs`, o padrão atual (`docs/jarvis/central-docs` com os valores padrão). O valor escrito por extenso em um `ENV.md` existente continua válido. Com **Mover**: se o destino já existir, não sobrescreva (avise e mantenha); senão, `mv ./central-docs "$JARVIS_DOCS/central-docs"` (com `$JARVIS_DOCS` expandido) e troque o valor de `CENTRAL_DOCS_LOCATION` no `ENV.md` por `$JARVIS_DOCS/central-docs`. Esta é a única alteração de uma chave existente no Upgrade e só acontece com a confirmação. Com **Manter**, nada muda.
 8.1. **Exceção — `TOKEN_TASK_MANAGER` com valor:** o token não é mais usado (o board passa pela CLI do vendor). Nunca leia, mostre ou copie o valor: confira só se a linha tem algo depois do `=`. Explique e oriente o login da CLI do `TASK_MANAGER` (ex.: `acli jira auth login`). Pergunte com `AskUserQuestion` (**Esvaziar a linha** | **Manter**). Com **Esvaziar**, troque a linha por `TOKEN_TASK_MANAGER=`; com **Manter**, nada muda e avise que o valor fica sem uso no ENV. É a segunda exceção declarada à regra "o upgrade só acrescenta" (a primeira é a `CENTRAL_DOCS_LOCATION`).
@@ -54,4 +54,4 @@ Lido pelo passo 2 do `SKILL.md` quando o `ENV.md` existe e a opção é C (ou o 
    ✅ ENV.md atualizado! N variável(is) nova(s) adicionada(s).
    ⚠️ Preencha os valores em branco antes de usar os novos recursos.
    ```
-12. Oferecer o **passo 9 (adicionar as stacks)**, que a pessoa pode pular, rodar o **passo 9.5 (validar o ENV.md)** e então mostrar o resumo. Pular uma etapa é permitido; o Upgrade **nunca encerra** antes do passo 9.5 e do resumo, em nenhum caminho. Não continua para o fluxo de onboarding completo.
+12. Oferecer o **passo 9 (adicionar as stacks)**, que a pessoa pode pular; depois rodar o **passo 9.5 do `SKILL.md` (validar o ENV.md)**, cujo **item 5 (Resumo)** é o resumo do Upgrade. **Só a etapa das stacks pode ser pulada**; o Upgrade **nunca encerra** antes do passo 9.5 e do resumo, em nenhum caminho. Não continua para o fluxo de onboarding completo.

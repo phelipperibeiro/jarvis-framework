@@ -216,7 +216,7 @@ Identificar qual IDE o usuário está utilizando:
 
 **Se opção C (Upgrade):**
 
-Siga `assets/upgrade.md` do começo ao fim (nota do terminal e itens 1-12). Ele termina oferecendo o passo 9, rodando o 9.5 e encerrando, sem continuar o onboarding.
+Siga `assets/upgrade.md` do começo ao fim (nota do terminal e itens 1-12). Ele termina oferecendo o passo 9 (a única etapa que a pessoa pode pular) e rodando o passo 9.5, cujo item 5 (Resumo) é o resumo do Upgrade, e então encerra, sem continuar o onboarding.
 
 **⚠️ OBRIGATÓRIO - Criação do ENV.md**:
 
