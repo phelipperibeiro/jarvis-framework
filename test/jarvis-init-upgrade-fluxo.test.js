@@ -32,15 +32,68 @@ test("item 5 (sem diff) não encerra o Upgrade", () => {
 });
 
 test("item 5 pula os itens que só existem para variável nova", () => {
-  assert.match(item5, /6, 10 e 11|itens 6, 10 e 11/, "o item 5 deve pular 6, 10 e 11");
+  assert.match(item5, /itens 6, 10 e 11/, "o item 5 deve pular 6, 10 e 11");
 });
 
 test("item 12 deixa explícito que pular etapa é permitido e encerrar antes do 9.5 não é", () => {
   assert.match(item12, /9\.5/, "o item 12 deve citar o passo 9.5");
   assert.match(item12, /resumo/i, "o item 12 deve citar o resumo");
   assert.match(item12, /pul/i, "o item 12 deve dizer que pular é permitido");
-  assert.match(item12, /nunca encerra|não encerra|antes do 9\.5/i,
-    "o item 12 deve proibir encerrar antes do 9.5 e do resumo");
+  assert.match(item12, /nunca encerra/, "o item 12 deve proibir encerrar antes do 9.5 e do resumo");
+});
+
+// ---- #233: apontamentos pós-merge do PR #232 --------------------------------------------------
+
+const item7 = item(upgrade, "7. **Exceção — documentos nos caminhos antigos", "8. **Exceção — Central docs antigo");
+
+test("item 5 não afirma que o ENV.md está atualizado (os itens 7 a 9.1 ainda podem alterá-lo)", () => {
+  assert.match(item5, /Nenhuma variável nova encontrada/);
+  assert.doesNotMatch(item5, /já está atualizado/i, "a frase de 'já atualizado' saiu do item 5");
+  assert.doesNotMatch(item5, /ENV\.md atualizado/i);
+  assert.match(item5, /ainda podem alterá-lo/, "o item 5 explica por que não diz 'atualizado'");
+});
+
+test("item 8.5: a carga inicial do Central docs, depois do item 8, tem uma condição por assert e só vale com documentos movidos nesta atualização", () => {
+  const item85 = item(upgrade, "8.5. **Exceção — carga inicial do Central docs", "9. **Exceção — `PROD_MODE`");
+  // fica depois do Central docs antigo (itens 8 a 8.4): quem o migra no mesmo Upgrade também recebe a oferta
+  assert.ok(upgrade.indexOf("8.4. **Exceção") < upgrade.indexOf("8.5. **Exceção"), "a oferta vem depois do item 8.4");
+  assert.doesNotMatch(item7, /carga inicial/, "o item 7 não oferece mais a carga inicial");
+  // a oferta só é descrita no 8.5: fora dele nenhum texto manda oferecer a carga inicial
+  assert.doesNotMatch(upgrade.replace(item85, ""), /ofereça a carga inicial/, "só o 8.5 manda oferecer a carga inicial");
+  // uma asserção por condição (sem regex com `.*` solto no meio)
+  assert.match(item85, /\*\*só se\*\*/, "a oferta tem condição");
+  assert.match(item85, /o Central docs estiver ligado/, "condição 1: Central docs ligado");
+  assert.match(item85, /considere também `CENTRAL_DOCS_STORAGE` entre as chaves novas, ainda não gravadas/, "'ligado' considera a chave nova, ainda não gravada (o item 10 grava depois)");
+  assert.match(item85, /não estiver no layout antigo \(o item 8\.4 adiado\)/, "não oferece com o layout antigo do Central docs");
+  assert.match(item85, /houver PRD, FRD, ARD, RFC ou SPEC em `\$PROD_DOCS`\/`\$ENG_DOCS`/, "condição 2: há documentos de trabalho");
+  assert.match(item85, /documentos foram movidos nesta atualização/, "condição 3: documentos movidos");
+  assert.match(item85, /pelo item 7 ou pelo `jarvis init --upgrade` rodado logo antes deste comando/, "o que o terminal moveu antes também conta");
+  assert.match(item85, /Documentos movidos: N/, "o texto diz a frase que o terminal imprime");
+  assert.match(item85, /Sem nada movido, não ofereça/, "sem mover nada, não oferece");
+  // a pergunta sobre o terminal só vem depois das condições do Passo 5.3 (o skill não lê a saída do terminal)
+  const iLigado = item85.indexOf("o Central docs estiver ligado");
+  const iDocs = item85.indexOf("houver PRD, FRD, ARD, RFC ou SPEC");
+  const iPergunta = item85.indexOf("Só pergunte");
+  assert.ok(iLigado !== -1 && iDocs !== -1 && iPergunta !== -1 && iLigado < iPergunta && iDocs < iPergunta, "as duas primeiras condições vêm antes da pergunta");
+  assert.match(readFileSync(join(root, "bin", "commands", "init.js"), "utf8"), /Documentos movidos: \$\{/, "o CLI ainda imprime a frase citada");
+  const skillMd = readFileSync(join(root, "skills", "jarvis-init", "SKILL.md"), "utf8");
+  assert.match(skillMd, /\| Passo 5\.3 — Carga inicial do Central docs \|.*só se documentos foram movidos nesta atualização/, "a tabela do SKILL.md traz a mesma condição");
+  assert.match(skillMd, /\| Passo 5\.3 — Carga inicial do Central docs \|.*Se o Central docs estiver ligado, houver PRD\/FRD\/ARD\/RFC\/SPEC/, "a tabela do SKILL.md também traz as condições de Central docs ligado e de haver documentos");
+  // a nota do terminal diz que a oferta é feita aqui e que depende da saída do terminal
+  const nota = upgrade.split("\n").find((l) => l.startsWith("> No terminal, rode antes"));
+  assert.match(nota, /a carga inicial do Central docs \(item 8\.5; anote o "Documentos movidos: N" da saída do terminal\)/, "a nota do terminal cita o item 8.5");
+});
+
+test("item 12 e SKILL.md definem o resumo (item 5 do passo 9.5) e a única etapa pulável (as stacks)", () => {
+  assert.match(item12, /passo 9\.5 do `SKILL\.md`/, "o item 12 cita o 9.5 do SKILL.md");
+  assert.match(item12, /item 5 \(Resumo\)/, "o resumo do Upgrade é o item 5 do 9.5");
+  assert.match(item12, /Só a etapa das stacks pode ser pulada/, "só as stacks podem ser puladas");
+  const skillMd = readFileSync(join(root, "skills", "jarvis-init", "SKILL.md"), "utf8");
+  const linhaC = skillMd.split("\n").find((l) => l.startsWith("Siga `assets/upgrade.md` do começo ao fim"));
+  assert.ok(linhaC, "o SKILL.md descreve o fim do Upgrade");
+  assert.match(linhaC, /item 5 \(Resumo\)/, "o SKILL.md usa a mesma definição de resumo");
+  assert.match(linhaC, /única etapa que a pessoa pode pular/);
+  assert.doesNotMatch(linhaC, /rodando o 9\.5 e encerrando/, "a frase ambígua saiu");
 });
 
 test("ordem do Upgrade: item 5, exceções (7 a 9) e item 12, nesta ordem", () => {
@@ -49,12 +102,24 @@ test("ordem do Upgrade: item 5, exceções (7 a 9) e item 12, nesta ordem", () =
   const i12 = upgrade.indexOf("12. Oferecer");
   assert.ok(i5 !== -1 && i7 !== -1 && i12 !== -1, "os itens 5, 7 e 12 devem existir");
   assert.ok(i5 < i7 && i7 < i12, "a ordem deve ser 5 → 7 → 12: as exceções rodam antes do fim");
+  // #233: a ordem no arquivo já valia antes da correção da #226; o que a correção mudou foi o próprio
+  // item 5, que mandava encerrar. Ele precisa mandar seguir para o item 7 e deixar o fim para o item 12.
+  assert.match(item5, /siga para o item 7/, "o item 5 manda seguir para o item 7");
+  assert.match(item5, /único fim do Upgrade/, "o item 5 deixa o fim para o item 12");
+  assert.doesNotMatch(item5, /encerrar/i, "o item 5 não manda encerrar");
 });
 
 test("passo-adicionar-stacks não manda para o passo 10 (é do onboarding completo)", () => {
   assert.doesNotMatch(stacks, /passo 10/, "nenhuma referência ao passo 10 nos assets das stacks");
-  const refs9_5 = stacks.match(/passo 9\.5/g) || [];
-  assert.equal(refs9_5.length, 3, "as três referências (pular, fim, tabela) devem apontar para o passo 9.5");
+  // #233: o asset tem o sub-passo local "9.5 Sugerir uma ação por stack"; toda menção a "passo 9.5"
+  // (o de validar o ENV.md) precisa dizer que é o do SKILL.md, sem contar quantas menções existem.
+  assert.match(stacks, /^## 9\.5 Sugerir uma ação por stack/m, "o sub-passo local 9.5 continua existindo (a regra é qualificar)");
+  const refs9_5 = [...stacks.matchAll(/(?<!sub-)passo 9\.5/g)];
+  assert.ok(refs9_5.length > 0, "o asset ainda manda seguir para o passo 9.5");
+  for (const m of refs9_5) {
+    const depois = stacks.slice(m.index, m.index + 80);
+    assert.match(depois, /^passo 9\.5\*{0,2} do `SKILL\.md`/, `referência ao 9.5 sem citar o SKILL.md: "${depois.replace(/\n/g, " ")}"`);
+  }
 });
 
 test("SKILL.md continua com o passo 10 no onboarding completo (regressão)", () => {

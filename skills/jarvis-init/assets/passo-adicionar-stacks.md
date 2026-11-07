@@ -53,7 +53,7 @@ B: Pular (o projeto usa só as skills base; dá para adicionar depois com
    /jarvis-list-specializations e /jarvis-create-specialization)
 ```
 
-- **B (pular):** informe que as listas **ficam como estão** e siga para o passo 9.5. Nada é alterado.
+- **B (pular):** informe que as listas **ficam como estão** e siga para o **passo 9.5 do `SKILL.md` (validar o ENV.md)**, e não para o sub-passo 9.5 deste arquivo. Nada é alterado.
 - **A:** siga para o 9.3.
 
 ## 9.3 Listar as especializações instaladas (6 áreas)
@@ -171,7 +171,7 @@ Para acrescentar outra especialização a qualquer momento: /jarvis-create-speci
 Para ver o que está instalado e registrado: /jarvis-list-specializations
 ```
 
-Siga para o passo 9.5 (validar o ENV.md).
+Siga para o **passo 9.5 do `SKILL.md` (validar o ENV.md)**, e não para o sub-passo 9.5 deste arquivo.
 
 ---
 
@@ -180,7 +180,7 @@ Siga para o passo 9.5 (validar o ENV.md).
 | Situação | O que fazer |
 |----------|-------------|
 | Variável da lista ausente | Acrescentar vazia no 9.1; não alterar outra linha |
-| A pessoa pulou o passo | Listas como estão; só a skill base; seguir para o passo 9.5 |
+| A pessoa pulou o passo | Listas como estão; só a skill base; seguir para o passo 9.5 do `SKILL.md` (validar o ENV.md) |
 | Sem stack ou sem código | Informar; só a skill base; oferecer a listagem ou o criador |
 | Manifesto ambíguo | Perguntar a área |
 | Backend e frontend no mesmo projeto | Mostrar as duas possibilidades; a pessoa escolhe |

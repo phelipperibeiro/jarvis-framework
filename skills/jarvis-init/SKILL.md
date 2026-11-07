@@ -216,7 +216,7 @@ Identificar qual IDE o usuário está utilizando:
 
 **Se opção C (Upgrade):**
 
-Siga `assets/upgrade.md` do começo ao fim (nota do terminal e itens 1-12). Ele termina oferecendo o passo 9, rodando o 9.5 e encerrando, sem continuar o onboarding.
+Siga `assets/upgrade.md` do começo ao fim (nota do terminal e itens 1-12). Ele termina oferecendo o passo 9 (a única etapa que a pessoa pode pular) e rodando o passo 9.5, cujo item 5 (Resumo) é o resumo do Upgrade, e então encerra, sem continuar o onboarding.
 
 **⚠️ OBRIGATÓRIO - Criação do ENV.md**:
 
@@ -927,7 +927,7 @@ Sem o `jarvis` no PATH, ou se o comando sair com erro (ENV incompleto, versão d
 
 Oferecido sempre que o `ENV.md` fica pronto: criação, atualização, **Upgrade (C)** e o caso "já atualizado". **Não** é oferecido ao cancelar (D). A pessoa pode **pular**; ao pular, as listas ficam como estão e o projeto usa só a skill base.
 
-A **detecção de stack por código e a criação de skill novo** (sub-passos 9.4-9.6) tratam **somente backend e frontend** — são as únicas áreas com universo de stack aberto (qualquer linguagem/framework novo). **Listar o que já está instalado e registrar direto** (sub-passo 9.3) vale para as **6 áreas** com especialização (backend, frontend, qa, data, automation, platform): essas 4 últimas têm um conjunto fixo de skills pré-construídos, sem detecção por código nem criação — só listar e registrar (ver `architecture.md` da #63, Decisão 3.5). O passo:
+A **detecção de stack por código e a criação de skill novo** (sub-passos 9.4-9.6 do `passo-adicionar-stacks.md`, que não são o passo 9.5 de validação do ENV.md) tratam **somente backend e frontend** — são as únicas áreas com universo de stack aberto (qualquer linguagem/framework novo). **Listar o que já está instalado e registrar direto** (sub-passo 9.3 do mesmo arquivo) vale para as **6 áreas** com especialização (backend, frontend, qa, data, automation, platform): essas 4 últimas têm um conjunto fixo de skills pré-construídos, sem detecção por código nem criação — só listar e registrar (ver `architecture.md` da #63, Decisão 3.5). O passo:
 
 1. Confere que as 6 variáveis de especialização existem (acrescenta vazias as que faltarem)
 2. Lista as especializações instaladas de todas as 6 áreas, registradas ou não, e deixa registrar qualquer uma direto
@@ -1039,7 +1039,7 @@ Apresentar checklist de onboarding por período (Dia 1, Semana 1, Mês 1).
 
 | Passo | Skill | Condição |
 |-------|-------|----------|
-| Passo 5.3 — Carga inicial do Central docs | `/eng.spec-consolidate --inicial` | Se o Central docs estiver ligado, houver PRD/FRD/ARD/RFC/SPEC e o usuário responder Sim (também no Upgrade, depois da migração) |
+| Passo 5.3 — Carga inicial do Central docs | `/eng.spec-consolidate --inicial` | Se o Central docs estiver ligado, houver PRD/FRD/ARD/RFC/SPEC e o usuário responder Sim (também no Upgrade, só se documentos foram movidos nesta atualização) |
 | Passo 9 — Adicionar as stacks (opcional) | `/jarvis-create-specialization {área} {stack}` | Se a pessoa escolher criar um skill novo para uma stack que ainda não tem especialização instalada (uma stack por vez; pular o passo não chama nada) |
 
 ---
