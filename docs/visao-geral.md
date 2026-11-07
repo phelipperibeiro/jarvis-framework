@@ -243,7 +243,7 @@ Detalhe da rule: `rules/rtk-rules.md`. Comentários: `templates/ENV-template.md`
 2. Reinstall do pacote (`npm install -g` ou link)  
 3. `which jarvis` + `jarvis --version`  
 4. No workspace: `jarvis init` (espelha `.$IDE/`)  
-5. `/jarvis-init` → **Upgrade (C)** só se houver chaves novas no template (obrigatório ao vir de uma versão anterior à 2.0: acrescenta as listas de especializações)  
+5. `/jarvis-init` → **Upgrade (C)** só se houver chaves novas no template (obrigatório ao vir de uma versão anterior à 2.0: acrescenta as listas de especializações) ou, no modo projeto, se o `AGENTS.md`/`CLAUDE.md` do projeto estiverem versionados (o Upgrade pergunta se saem do git)  
 
 `ENV.md` e `$SESSIONS_DIR/` **não** são sobrescritos pelo sync de assets.
 
