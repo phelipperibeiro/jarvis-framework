@@ -14,7 +14,7 @@ Lido pelo passo 2 do `SKILL.md` quando o `ENV.md` existe e a opção é C (ou o 
    ```
    ✅ ENV.md já está atualizado. Nenhuma variável nova encontrada.
    ```
-   Oferecer o **passo 9 (adicionar as stacks)**, que a pessoa pode pular, rodar o **passo 9.5 (validar o ENV.md)** e então encerrar.
+   Não há variável nova: pule os itens 6, 10 e 11 e siga para o item 7. A oferta do **passo 9 (adicionar as stacks)** e o **passo 9.5 (validar o ENV.md)** ficam no item 12, que é o único fim do Upgrade.
 6. Se houver diff, exibir prévia:
    ```
    🔍 Variáveis novas encontradas no template:
