@@ -53,8 +53,15 @@ test("ordem do Upgrade: item 5, exceções (7 a 9) e item 12, nesta ordem", () =
 
 test("passo-adicionar-stacks não manda para o passo 10 (é do onboarding completo)", () => {
   assert.doesNotMatch(stacks, /passo 10/, "nenhuma referência ao passo 10 nos assets das stacks");
-  const refs9_5 = stacks.match(/passo 9\.5/g) || [];
-  assert.equal(refs9_5.length, 3, "as três referências (pular, fim, tabela) devem apontar para o passo 9.5");
+  // #233: o asset tem o sub-passo local "9.5 Sugerir uma ação por stack"; toda menção a "passo 9.5"
+  // (o de validar o ENV.md) precisa dizer que é o do SKILL.md, sem contar quantas menções existem.
+  assert.match(stacks, /^## 9\.5 Sugerir uma ação por stack/m, "o sub-passo local 9.5 continua existindo (a regra é qualificar)");
+  const refs9_5 = [...stacks.matchAll(/(?<!sub-)passo 9\.5/g)];
+  assert.ok(refs9_5.length > 0, "o asset ainda manda seguir para o passo 9.5");
+  for (const m of refs9_5) {
+    const depois = stacks.slice(m.index, m.index + 80);
+    assert.match(depois, /^passo 9\.5\*{0,2} do `SKILL\.md`/, `referência ao 9.5 sem citar o SKILL.md: "${depois.replace(/\n/g, " ")}"`);
+  }
 });
 
 test("SKILL.md continua com o passo 10 no onboarding completo (regressão)", () => {
