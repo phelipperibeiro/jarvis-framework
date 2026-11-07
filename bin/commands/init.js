@@ -32,6 +32,7 @@ import { DEFAULT_COMPANY_PROFILE, isValidCompanyProfile } from "../lib/core/comp
 import { checkCli, getVendor } from "../lib/integrations/cli-runner.js";
 import {
   expandEnv,
+  docsFolders,
   planDocsMigration,
   applyDocsMigration,
   rewriteRelatedDiscovery,
@@ -651,7 +652,7 @@ async function runUpgrade(cwd, flags) {
     if (flags.yes) accepted = true;
     else if (process.stdin.isTTY) {
       const rl = createInterface({ input: process.stdin, output: process.stdout });
-      const answer = await ask(rl, `Mover para docs/jarvis/…? (s/N): `);
+      const answer = await ask(rl, `Mover para ${docsFolders(env).jarvis}/…? (s/N): `);
       rl.close();
       accepted = answer.trim().toLowerCase() === "s";
     } else {

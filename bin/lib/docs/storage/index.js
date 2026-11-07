@@ -8,6 +8,7 @@
 
 import { isAbsolute, resolve } from "node:path";
 import { createFilesystemStorage } from "./filesystem.js";
+import { EnvPathError, expandEnvPath } from "../../core/env-paths.js";
 
 /** @constant {ReadonlyArray<string>} Adaptadores disponíveis */
 export const SUPPORTED_STORAGES = Object.freeze(["filesystem"]);
@@ -65,8 +66,17 @@ export function getStorage(env, { root, deps } = {}) {
     throw new StorageConfigError("getStorage: pasta do workspace (root) não informada.");
   }
 
+  // `$VAR` no caminho (ex.: `$JARVIS_DOCS/central-docs`) é expandido aqui: o `loadEnv` devolve o valor cru (#228).
+  let location;
+  try {
+    location = expandEnvPath(env, "CENTRAL_DOCS_LOCATION");
+  } catch (error) {
+    if (error instanceof EnvPathError) throw new StorageConfigError(error.message);
+    throw error;
+  }
+
   return createFilesystemStorage({
-    location: resolveLocation(env.CENTRAL_DOCS_LOCATION, root),
+    location: resolveLocation(location, root),
     ref: env.CENTRAL_DOCS_REF || "main",
     targetBranch: env.CENTRAL_DOCS_TARGET_BRANCH || "main",
     deps,

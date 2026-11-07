@@ -2,6 +2,7 @@ import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { openStorageFromEnv } from "../lib/docs/fetch-file.js";
 import { docsFolders, expandEnv } from "../lib/core/docs-migrate.js";
+import { expandEnvPath } from "../lib/core/env-paths.js";
 import { publishFile, publishFiles, VALID_TYPES } from "../lib/docs/publish-file.js";
 import { forceFinalize, isEntryList } from "../lib/docs/finish-delivery.js";
 import { logger, configureFromFlags } from "../lib/utils/logger.js";
@@ -85,7 +86,7 @@ function readManifest(path) {
 function localOnlyDirs(env, root) {
   const expanded = expandEnv(new Map(Object.entries(env || {})));
   const { jarvis } = docsFolders(expanded);
-  const sessions = expanded.get("SESSIONS_DIR") || ".jarvis/sessions";
+  const sessions = expandEnvPath(env, "SESSIONS_DIR");
   return [jarvis, ".jarvis", sessions].map((dir) => resolve(root, dir));
 }
 

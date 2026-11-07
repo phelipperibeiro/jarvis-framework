@@ -1264,3 +1264,49 @@ test("git: com scripts/build-index.sh no repositório, o índice vem do script",
     rmSync(base, { recursive: true, force: true });
   }
 });
+
+// --- getStorage com $VAR (#228) -------------------------------------------
+
+test("getStorage: LOCATION com $VAR é expandido a partir do workspace; sem pasta com $ no nome", () => {
+  const root = tmp();
+  try {
+    const env = {
+      CENTRAL_DOCS_STORAGE: "filesystem",
+      CENTRAL_DOCS_LOCATION: "$JARVIS_DOCS/central-docs",
+      JARVIS_DOCS: ".jarvis/$DOCS_FOLDER/jarvis",
+      DOCS_FOLDER: "docs",
+    };
+    const s = getStorage(env, { root });
+    assert.equal(s.location, join(root, ".jarvis/docs/jarvis/central-docs"));
+    assert.ok(!s.location.includes("$"));
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("getStorage: LOCATION com $VAR usa os padrões do template quando JARVIS_DOCS e DOCS_FOLDER faltam", () => {
+  const root = tmp();
+  try {
+    const s = getStorage({ CENTRAL_DOCS_STORAGE: "filesystem", CENTRAL_DOCS_LOCATION: "$JARVIS_DOCS/central-docs" }, { root });
+    assert.equal(s.location, join(root, "docs/jarvis/central-docs"));
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("getStorage: LOCATION absoluto não muda", () => {
+  const root = tmp();
+  try {
+    const s = getStorage({ CENTRAL_DOCS_STORAGE: "filesystem", CENTRAL_DOCS_LOCATION: "/srv/central" }, { root });
+    assert.equal(s.location, "/srv/central");
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("getStorage: variável sem valor vira StorageConfigError com o valor original", () => {
+  assert.throws(
+    () => getStorage({ CENTRAL_DOCS_STORAGE: "filesystem", CENTRAL_DOCS_LOCATION: "$NAO_EXISTE/x" }, { root: "/tmp" }),
+    (err) => err instanceof StorageConfigError && /\$NAO_EXISTE\/x/.test(err.message) && /sobrou: \$NAO_EXISTE/.test(err.message)
+  );
+});

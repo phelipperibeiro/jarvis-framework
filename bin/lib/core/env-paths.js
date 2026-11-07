@@ -83,6 +83,8 @@ export class EnvPathError extends Error {
   }
 }
 
+const LEFTOVER_RE = /\$\{?[A-Za-z0-9_]*\}?/g;
+
 const toEntries = (env) => (env instanceof Map ? env : new Map(Object.entries(env || {})));
 
 /** Padrões do template + as chaves do ENV (que vencem os padrões, exceto vazias). */
@@ -107,7 +109,7 @@ export function expandEnvPath(env, key) {
   const value = expandEnv(entries).get(key);
   if (value === undefined) return undefined;
   if (PATH_KEYS.includes(key)) {
-    const leftover = value.match(/\$\{?[A-Za-z0-9_]*\}?/g);
+    const leftover = value.match(LEFTOVER_RE);
     if (leftover) throw new EnvPathError(key, entries.get(key), [...new Set(leftover)]);
   }
   return value;
@@ -124,4 +126,20 @@ export function expandEnvValue(value, env) {
   const entries = withDefaults(env);
   entries.set("\0VALUE", String(value));
   return expandEnv(entries).get("\0VALUE");
+}
+
+/**
+ * Confere um ENV **já expandido** (`expandEnv`): nenhuma das chaves de caminho pedidas pode ter
+ * `$` sobrando. Para quem recebe o `Map` expandido em vez do ENV cru (ex.: `docsFolders`).
+ * @param {Map<string, string>} expanded
+ * @param {ReadonlyArray<string>} [keys]
+ * @throws {EnvPathError}
+ */
+export function assertPathsResolved(expanded, keys = PATH_KEYS) {
+  for (const key of keys) {
+    const value = expanded.get(key);
+    if (value == null) continue;
+    const leftover = value.match(LEFTOVER_RE);
+    if (leftover) throw new EnvPathError(key, value, [...new Set(leftover)]);
+  }
 }

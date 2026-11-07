@@ -1,7 +1,7 @@
 import { resolve } from "node:path";
 import { openStorageFromEnv } from "../lib/docs/fetch-file.js";
 import { inventorySessions } from "../lib/docs/session-inventory.js";
-import { expandEnv } from "../lib/core/docs-migrate.js";
+import { EnvPathError, expandEnvPath } from "../lib/core/env-paths.js";
 import { logger, configureFromFlags } from "../lib/utils/logger.js";
 
 const sim = (v) => (v === null ? "?" : v ? "sim" : "não");
@@ -32,8 +32,14 @@ export async function docsSessions(flags = {}) {
     process.exit(1);
   }
 
-  const expanded = expandEnv(new Map(Object.entries(env || {})));
-  const sessionsDir = resolve(root, expanded.get("SESSIONS_DIR") || ".jarvis/sessions", "eng");
+  let sessionsDir;
+  try {
+    sessionsDir = resolve(root, expandEnvPath(env, "SESSIONS_DIR"), "eng");
+  } catch (error) {
+    if (!(error instanceof EnvPathError)) throw error;
+    logger.error("❌ Central docs:", error.message);
+    process.exit(1);
+  }
   const squad = flags.squad || env.SQUAD;
   const produto = flags.produto || flags.workspace || env.WORKSPACE;
   const centralRoot = storage?.location ?? null;

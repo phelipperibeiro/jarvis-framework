@@ -5,11 +5,12 @@ import {
   ENV_PATH_DEFAULTS,
   EnvPathError,
   PATH_KEYS,
+  assertPathsResolved,
   expandEnv,
   expandEnvPath,
   expandEnvValue,
 } from "../bin/lib/core/env-paths.js";
-import { expandEnv as expandEnvReexport } from "../bin/lib/core/docs-migrate.js";
+import { docsFolders, expandEnv as expandEnvReexport } from "../bin/lib/core/docs-migrate.js";
 
 const base = {
   DOCS_FOLDER: "docs",
@@ -124,4 +125,14 @@ test("PATH_KEYS e padrões: toda chave de caminho com padrão está coberta", ()
     if (key === "CENTRAL_DOCS_LOCATION") continue; // sem padrão: desligado quando falta
     assert.ok(key in ENV_PATH_DEFAULTS, `${key} sem padrão`);
   }
+});
+
+test("assertPathsResolved e docsFolders: $ sobrando numa chave de documentos vira erro", () => {
+  const ok = expandEnv(new Map([["DOCS_FOLDER", "docs"], ["JARVIS_DOCS", "$DOCS_FOLDER/jarvis"]]));
+  assert.doesNotThrow(() => assertPathsResolved(ok));
+  assert.equal(docsFolders(ok).jarvis, "docs/jarvis");
+  const bad = expandEnv(new Map([["JARVIS_DOCS", "$NAO_EXISTE/jarvis"]]));
+  assert.throws(() => docsFolders(bad), (err) => err instanceof EnvPathError && err.key === "JARVIS_DOCS");
+  // chave que não é de caminho não conta
+  assert.doesNotThrow(() => assertPathsResolved(new Map([["RULES_FOLDER", ".$IDE/rules"]])));
 });
