@@ -508,13 +508,28 @@ export async function init(flags) {
     const sessionsEnv = existsSync(envOnDisk) ? parseEnvEntries(readFileSync(envOnDisk, "utf-8")) : new Map();
     const sessions = planSessionsSetup({ workspaceDir: cwd, env: sessionsEnv, isRepo: rootIsRepo(cwd) });
     for (const dir of sessions.areaDirs) mkdirSync(dir, { recursive: true });
-    for (const line of sessions.gitignore) ensureGitignore(cwd, line);
+    // Falha ao gravar o .gitignore (ex.: ele é um diretório) vira erro claro e saída 1, não stack trace.
+    const sessionIgnoreErrors = [];
+    for (const line of sessions.gitignore) {
+      try {
+        ensureGitignore(cwd, line);
+      } catch (error) {
+        sessionIgnoreErrors.push(
+          `não foi possível gravar ${join(cwd, ".gitignore")}: ${error.code || String(error.message).split("\n")[0]}`
+        );
+        break;
+      }
+    }
     for (const warning of sessions.warnings) logger.info(`${YELLOW}  ⚠ ${warning}${NC}`);
     // Modo projeto (#227): AGENTS.md, CLAUDE.md e CDD-MIND-MAP.md no .git/info/exclude (local) e a pasta
     // da IDE no .gitignore. Nada sai do índice aqui: tirar AGENTS.md/CLAUDE.md do git é decisão do Upgrade.
     const gitSetup = applyProjectGitSetup({ dir: cwd, ide, gitignoreLines: docsIgnoreLines(sessionsEnv) });
     logProjectGitSetup(gitSetup);
-    if (gitSetup.errors.length) process.exitCode = 1;
+    // A mesma falha do .gitignore costuma aparecer nos dois lugares; mostra uma vez.
+    for (const message of sessionIgnoreErrors) {
+      if (!gitSetup.errors.includes(message)) logger.error(`${RED}  ✗ Git (modo projeto): ${message}${NC}`);
+    }
+    if (gitSetup.errors.length || sessionIgnoreErrors.length) process.exitCode = 1;
   } catch (error) {
     if (!(error instanceof EnvPathError)) throw error;
     logger.error(`${RED}  ✗ ${error.message}${NC}`);

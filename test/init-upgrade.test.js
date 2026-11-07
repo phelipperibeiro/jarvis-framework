@@ -1513,3 +1513,46 @@ test("init (instalação): docs/jarvis/ já versionado avisa que ignorar não o 
   });
 });
 
+// ---- Fase 10 (pre-pr rodada 2): --upgrade e instalação com o git falhando ------------------------------
+
+test("init --upgrade: git que não responde (.git inválido) avisa dentro do bloco do upgrade e sai com 0", () => {
+  withWorkspace({ ".claude/ENV.md": ENV_V520, ".git/HEAD": "" }, (ws) => {
+    const r = run(ws, "--upgrade", "--ide", "claude", "--yes");
+    assert.equal(r.status, 0, r.stderr);
+    assert.match(r.stdout, /🔒 Git \(modo projeto\):/);
+    assert.match(
+      output(r),
+      /Git \(modo projeto\): o git não respondeu .*\. O exclude não foi gravado e AGENTS\.md, CLAUDE\.md, CDD-MIND-MAP\.md podem entrar no PR; corrija e rode jarvis init --upgrade de novo/
+    );
+    assert.match(r.stdout, /Upgrade concluído/, "o resumo continua");
+    assert.match(gitignoreOf(ws), /^\.claude\/$/m, "o .gitignore é gravado mesmo assim");
+  });
+});
+
+test("init --upgrade: exclude sem permissão de escrita vira erro com saída 1 e o resumo continua", { skip: RUNNING_AS_ROOT }, () => {
+  withRealRepo({ ".claude/ENV.md": ENV_V520 }, (ws) => {
+    const alvo = join(ws, ".git", "info", "exclude");
+    chmodSync(alvo, 0o444);
+    try {
+      const r = run(ws, "--upgrade", "--ide", "claude", "--yes");
+      assert.equal(r.status, 1);
+      assert.match(output(r), /Git \(modo projeto\): não foi possível gravar .*exclude: EACCES/);
+      assert.match(r.stdout, /Upgrade concluído/, "o resumo não é derrubado");
+      assert.match(gitignoreOf(ws), /^docs\/jarvis\/$/m, "o .gitignore foi gravado antes da falha do exclude");
+    } finally {
+      chmodSync(alvo, 0o644);
+    }
+  });
+});
+
+test("init (instalação): .gitignore que é diretório vira erro claro e saída 1, sem stack trace", () => {
+  withRealRepo({}, (ws) => {
+    mkdirSync(join(ws, ".gitignore"));
+    const r = run(ws, "--ide", "claude");
+    assert.equal(r.status, 1);
+    assert.match(output(r), /não foi possível gravar .*\.gitignore: EISDIR/);
+    assert.equal((output(r).match(/EISDIR/g) || []).length, 1, "a mesma falha aparece uma vez só");
+    assert.doesNotMatch(output(r), /at .*\.js:\d+/, "sem stack trace");
+  });
+});
+

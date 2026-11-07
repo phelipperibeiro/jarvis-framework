@@ -349,6 +349,8 @@ test("applyProjectGitSetup: git que não responde (.git inválido) vira aviso, n
 
 test("applyProjectGitSetup: git fora do PATH também vira aviso, com o motivo", () => {
   withRepo((dir) => {
+    // O teste é síncrono e o node:test roda cada arquivo em um processo próprio, então mudar o PATH global é
+    // seguro. Se virar assíncrono ou paralelo, passe o PATH por injeção (ou rode o CLI com env próprio).
     const antes = process.env.PATH;
     process.env.PATH = "/caminho/que/nao/existe";
     try {

@@ -161,3 +161,10 @@ test("upgrade.md 9.1: jarvis untrack só na opção Tirar do git; Manter version
   );
 });
 
+test("README: o parágrafo do .gitignore lista tudo o que o init grava (inclusive docs/jarvis/ e a pasta da IDE)", () => {
+  const linha = read("README.md").split("\n").find((l) => l.includes("põe no `.gitignore`"));
+  assert.ok(linha, "o parágrafo do .gitignore existe");
+  assert.match(linha, /`\.jarvis\/`.*`\$SESSIONS_DIR\/`.*`docs\/jarvis\/`.*pasta da IDE/);
+  assert.match(linha, /`\.git\/info\/exclude`/);
+});
+
