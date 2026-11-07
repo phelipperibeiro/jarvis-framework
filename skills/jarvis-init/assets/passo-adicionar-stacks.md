@@ -171,6 +171,12 @@ Para acrescentar outra especialização a qualquer momento: /jarvis-create-speci
 Para ver o que está instalado e registrado: /jarvis-list-specializations
 ```
 
+Siga para o sub-passo 9.8 (mapa de tecnologias).
+
+## 9.8 Montar o mapa de tecnologias
+
+Com a mesma leitura do sub-passo 9.4, agora para **todas as áreas**, monte ou complete o `CDD-MIND-MAP.md` (o mapa de tecnologias, lido pelo `/warm-up`: do workspace ou, no modo projeto, do repositório) seguindo [mapa-de-tecnologias.md](mapa-de-tecnologias.md), com a lista de repositórios do workspace (ou a raiz, no modo projeto). Com `.git` na raiz, o mapa já está no `.git/info/exclude` (Passo 5 do `SKILL.md`). Pular é permitido: o primeiro `/warm-up` cria o mapa. Quem escolheu **pular** o passo das stacks (9.2) também não monta o mapa aqui.
+
 Siga para o **passo 9.5 do `SKILL.md` (validar o ENV.md)**, e não para o sub-passo 9.5 deste arquivo.
 
 ---

@@ -50,6 +50,7 @@ Regras que **substituem** qualquer trecho legado deste skill ou dos assets:
 - **Checklist Onboarding**: `$IDE/skills/jarvis-init/assets/onboarding-checklist.md`
 - **Guia de Setup**: `$IDE/skills/jarvis-init/assets/setup-guide.md`
 - **Passo "adicionar as stacks"**: `$IDE/skills/jarvis-init/assets/passo-adicionar-stacks.md` e `$IDE/skills/jarvis-init/assets/sinais-de-stack.md`
+- **Mapa de tecnologias (parte comum)**: `$IDE/skills/jarvis-init/assets/mapa-de-tecnologias.md` (usado pelo `/warm-up`, pelo passo das stacks e pelo modo `repos`)
 - **Passo 8 sem o CLI**: `$IDE/skills/jarvis-init/assets/rules-sync-manual.md` (fallback do `jarvis rules sync`)
 - **Upgrade (C)**: `$IDE/skills/jarvis-init/assets/upgrade.md`
 - **Opções padrão e exemplos de validação**: `$IDE/skills/jarvis-init/assets/validacoes.md`
@@ -934,7 +935,7 @@ A **detecção de stack por código e a criação de skill novo** (sub-passos 9.
 3. **Lê** o workspace (a análise **só lê**: não altera arquivos do projeto nem as listas), identifica as stacks de backend e de frontend, inclusive de vários projetos, e **mostra o que encontrou antes de sugerir** (só essas 2 áreas)
 4. Para cada stack de backend/frontend, sugere **registrar o skill que já existe** (mesmo `area` e `stack`) ou **criar um novo** com `/jarvis-create-specialization {área} {stack}`; a pessoa escolhe, e o que não aceita não muda
 5. Mostra um resumo das 6 listas e do que foi registrado ou criado
-6. **Monta o `CDD-MIND-MAP.md`** (o mapa de tecnologias, lido pelo `/warm-up`: do workspace ou, no modo projeto, do repositório): com a mesma leitura do sub-passo 3, agora para **todas as áreas**, preenche uma linha por repositório (papel, linguagem, framework, área, até 5 ferramentas principais) pelo `$IDE/templates/cdd-mind-map-template.md`, mostra a tabela e pede a validação com `AskUserQuestion` (**Confirmar** | **Corrigir** | **Incluir informação**). Grava na raiz do workspace (com `.git` na raiz, já no `.git/info/exclude`, Passo 5). Se o mapa já existe, só acrescenta os repositórios que faltam. Pular é permitido: o primeiro `/warm-up` cria o mapa.
+6. **Monta o `CDD-MIND-MAP.md`** (o mapa de tecnologias, lido pelo `/warm-up`: do workspace ou, no modo projeto, do repositório), no sub-passo 9.8 do `passo-adicionar-stacks.md`, que segue `assets/mapa-de-tecnologias.md`: com a mesma leitura do sub-passo 3, agora para **todas as áreas**, preenche uma linha por repositório (papel, linguagem, framework, área, até 5 ferramentas principais) pelo `$IDE/templates/cdd-mind-map-template.md`, mostra a tabela e pede a validação com `AskUserQuestion` (**Confirmar** | **Corrigir** | **Incluir informação**). Grava na raiz do workspace (com `.git` na raiz, já no `.git/info/exclude`, Passo 5). Se o mapa já existe, só acrescenta os repositórios que faltam. Pular é permitido: o primeiro `/warm-up` cria o mapa.
 
 O tempo de ~10 minutos é referência, não limite. Nunca leia `.env*`, chaves ou credenciais.
 
