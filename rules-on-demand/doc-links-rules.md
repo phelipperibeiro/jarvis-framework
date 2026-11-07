@@ -21,18 +21,18 @@ Lida pelo comando antes de escrever o documento. A tabela mostra quem lê:
 
 ### Obrigatório
 
-1. **Caminho relativo ao próprio arquivo gravado**, e não à raiz nem à sessão. Conte as pastas do arquivo até a pasta do workspace (a que contém `$IDE/`):
+1. **Caminho relativo ao próprio arquivo gravado**, e não à raiz nem à sessão. Os templates trazem `{RAIZ}` onde o link sobe até a pasta do workspace (a que contém `$IDE/`): ao gravar, troque `{RAIZ}` por **um `../` para cada pasta do caminho do arquivo gravado**, contado a partir do workspace, com as variáveis do `ENV.md` já expandidas (`$SESSIONS_DIR`, `$JARVIS_DOCS`, `$PROD_DOCS`, `$ENG_DOCS`, `$DISCOVERIES_DOCS`). Não copie a profundidade de um exemplo: conte de novo para o arquivo que está gravando.
 
-   | Arquivo gravado em | Até o workspace |
-   |---|---|
-   | `$SESSIONS_DIR/eng/{KEY}/` | `../../../../` |
-   | `docs/jarvis/product/prd-{id}-{nome}/` | `../../../../` |
-   | `docs/jarvis/product/prd-{id}-{nome}/issues/` | `../../../../../` |
-   | `docs/jarvis/engineering/{ARD,RFC,SPEC}/` | `../../../../` |
-   | `docs/jarvis/discoveries/` | `../../../` |
-   | `$SESSIONS_DIR/prod/{KEY}/` | `../../../../` |
+   | Arquivo gravado em (valores padrão do `ENV.md`) | Pastas até o workspace | `{RAIZ}` |
+   |---|---|---|
+   | `$SESSIONS_DIR/eng/{KEY}/` = `.jarvis/sessions/eng/{KEY}/` | 4 | `../../../../` |
+   | `$PROD_DOCS/prd-{id}-{nome}/` = `docs/jarvis/product/prd-{id}-{nome}/` | 4 | `../../../../` |
+   | `$PROD_DOCS/prd-{id}-{nome}/issues/` | 5 | `../../../../../` |
+   | `$ENG_DOCS/{ARD,RFC,SPEC}/` = `docs/jarvis/engineering/{ARD,RFC,SPEC}/` | 4 | `../../../../` |
+   | `$DISCOVERIES_DOCS/` = `docs/jarvis/discoveries/` | 3 | `../../../` |
+   | `$SESSIONS_DIR/prod/{KEY}/` = `.jarvis/sessions/prod/{KEY}/` | 4 | `../../../../` |
 
-   A tabela supõe `DOCS_FOLDER=docs` e `SESSIONS_DIR=.jarvis/sessions`. Com outros valores, ou com o documento em outra pasta, conte de novo a partir do arquivo.
+   A tabela é só o exemplo com os valores padrão. Com outros valores, o número muda: com `JARVIS_DOCS=.jarvis/docs/jarvis`, o arquivo em `$PROD_DOCS/prd-{id}-{nome}/` fica em `.jarvis/docs/jarvis/product/prd-{id}-{nome}/` (5 pastas), e o `{RAIZ}` é `../../../../../`. O destino do link vem do mesmo cálculo: `{RAIZ}$JARVIS_DOCS/product/…` com o valor expandido. Se `SESSIONS_DIR` ou o destino for um caminho absoluto fora do workspace, use o caminho relativo entre os dois arquivos, e não `{RAIZ}`.
 
    Com `WORKSPACE_MODE=workspace`, o código fica dentro da pasta do repositório (`{repo}/…`). Com `project`, a pasta do workspace já é a raiz do repositório, e o caminho do código não leva o prefixo `{repo}/`.
 2. **Código:** `` [`{símbolo}` (`{arquivo}:{n}`)]({caminho}#L{n}) ``, ou `#L{a}-L{b}` para um trecho.
@@ -51,11 +51,11 @@ Lida pelo comando antes de escrever o documento. A tabela mostra quem lê:
 6. **Documentos que saem do workspace:** o `pull-request.md` (vira o PR), o `{nome}.public.md` (versão humanizada, `rules/artifact-style-rules.md`), os documentos do Central docs (`feature-*`/`delivery-*`, que podem ser lidos em outro workspace) e o texto publicado no card ou no board (comentário pelo `/eng-global-task-comment`, como o `gate-checklist.md` ou a auditoria do Advisor, e as subtarefas copiadas para o board). Antes de publicar, converta os links relativos do documento de origem.
    - Issue, PR e card como URL.
    - Código como `{remote}/blob/{sha}/{caminho}#L{n}` (GitLab: `{remote}/-/blob/{sha}/…`). O trecho é `#L{a}-L{b}` no GitHub e `#L{a}-{b}` no GitLab.
-   - Sessão e `docs/jarvis/` em texto, sem link: quem lê fora do workspace não abre esses arquivos.
+   - Sessão e `$JARVIS_DOCS` (os documentos de trabalho) em texto, sem link: quem lê fora do workspace não abre esses arquivos.
    - O `{sha}` é o `HEAD` no momento em que o `eng.pr` escreve o `pull-request.md` (Fase 4.1). Se a conferência de marcas (Fase 3.0) reescrever commits, atualize o sha dos links. Com "Só gerar os arquivos" (na Fase 0 ou na revisão da 4.2), os links valem quando o push for feito sem rebase.
    - No Central docs, o `{sha}` é o do merge na branch base (a consolidação roda depois do merge).
    - No `.public.md` (gerado no fim do próprio comando, muitas vezes sem push), o `{sha}` é o último commit já enviado ao remoto (`git rev-parse @{u}`), ou o sha do cabeçalho se ele já estiver no remoto. Sem nenhum dos dois, o código fica em texto.
-7. **Documento versionado no repositório** (`README.md`, `docs/` do projeto, gravados por exemplo pelo `eng.docs`): o caminho é relativo dentro do próprio repositório (nada de subir até o workspace com `../../{repo}/…`), porque ele é lido no GitHub/GitLab. A sessão e o `docs/jarvis/` ficam em texto, sem link.
+7. **Documento versionado no repositório** (`README.md`, a pasta `$DOCS_FOLDER` do projeto, gravados por exemplo pelo `eng.docs`): o caminho é relativo dentro do próprio repositório (nada de subir até o workspace com `../../{repo}/…`), porque ele é lido no GitHub/GitLab. A sessão e o `$JARVIS_DOCS` ficam em texto, sem link.
 8. **Texto que vem do Advisor:** quem registra no documento converte as citações dele (caminho absoluto e linha) no formato desta rule.
 
 ### Proibido
@@ -72,7 +72,7 @@ Lida pelo comando antes de escrever o documento. A tabela mostra quem lê:
 
 ## Exemplos
 
-Num `architecture.md` em `$SESSIONS_DIR/eng/{KEY}/`, modo workspace:
+Num `architecture.md` em `$SESSIONS_DIR/eng/{KEY}/`, modo workspace (exemplo com os valores padrão: o `{RAIZ}` dos templates vira `../../../../`):
 
 ```markdown
 - Requisito: [RQT-5](../../../../docs/jarvis/product/prd-{id}-{nome}/frd-{id}-{nome}.md#rqt-5-upgrade-de-env-antigo-feat-007)
