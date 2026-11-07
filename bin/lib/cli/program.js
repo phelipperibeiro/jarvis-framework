@@ -25,6 +25,7 @@ import { docsPublish } from "../../commands/docs-publish.js";
 import { docsMigrate } from "../../commands/docs-migrate.js";
 import { docsArchive } from "../../commands/docs-archive.js";
 import { docsFinalize } from "../../commands/docs-finalize.js";
+import { docsSessions } from "../../commands/docs-sessions.js";
 import { installRtk } from "../../commands/install-rtk.js";
 import { tokens } from "../../commands/tokens.js";
 import { rulesSync } from "../../commands/rules.js";
@@ -154,7 +155,7 @@ export function buildProgram() {
     .option("--file <path>", "Caminho do arquivo local (um só; alternativa ao --manifest)")
     .option(
       "--manifest <path>",
-      "Manifesto JSON com vários arquivos ([{file, tipo, feature?, taskKey?}]); publica em lote, numa branch e um PR só"
+      "Manifesto JSON com vários arquivos ([{file, tipo, feature?, taskKey?, relPath?, fromSession?}]); publica em lote, numa branch e um PR só"
     )
     .option("--slug <chave>", "Nome da branch/commit do lote (ex.: a chave da entrega); só com --manifest")
     .option(
@@ -162,8 +163,12 @@ export function buildProgram() {
       "Só com --manifest: publica e já finaliza (apaga os originais), sem --archive — zero reversão (Q15, #220)"
     )
     .option(
+      "--dry-run",
+      "Só com --manifest: simula e mostra o que seria publicado (novo, igual, nova versão, sobrescreve), sem gravar nada nem alterar o manifesto"
+    )
+    .option(
       "--tipo <tipo>",
-      "feature|delivery|product|history|prd|frd|feat|epic|story|task|ard|rfc|spec|swagger|qa-report|discovery"
+      "feature|delivery|product|history|prd|frd|feat|epic|story|task|ard|rfc|spec|swagger|qa-report|discovery|architecture|plan|light-arch"
     )
     .option("--produto <produto>", "Pasta do produto no Central docs (padrão: WORKSPACE do ENV.md)")
     .option(
@@ -189,6 +194,20 @@ export function buildProgram() {
     .option("--produto <produto>", "Override do WORKSPACE do ENV.md");
   withEnvOptions(withLogOptions(docsArchiveCmd)).action((options) =>
     docsArchive(toLegacyFlags(options))
+  );
+
+  const docsSessionsCmd = cmd(docs, "sessions")
+    .description(
+      "Listar as sessões de engenharia, seus arquivos e se a entrega já está no Central docs (só leitura)"
+    )
+    .option("--json", "Saída em JSON")
+    .option("--pendentes", "Só as sessões sem a página-índice publicada no Central docs")
+    .option("--proxima", "Imprime só o card da próxima sessão pendente")
+    .option("--squad <squad>", "Override do SQUAD do ENV.md")
+    .option("--produto <produto>", "Override do WORKSPACE do ENV.md")
+    .option("--workspace <workspace>", "Mesmo efeito de --produto");
+  withEnvOptions(withLogOptions(docsSessionsCmd)).action((options) =>
+    docsSessions(toLegacyFlags(options))
   );
 
   const docsFinalizeCmd = cmd(docs, "finalize")

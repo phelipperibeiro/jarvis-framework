@@ -5,24 +5,33 @@
  * - `feature`: a página da funcionalidade (`{funcionalidade}/{funcionalidade}.md`);
  * - `delivery`: o registro de uma entrega (`{funcionalidade}/deliveries/delivery-*.md`);
  * - `product`: a página do produto, o conteúdo transversal a várias funcionalidades (`{produto}.md`);
- * - `history`: rodadas, comentários e diário de uma entrega (`history/{task_key}/…`);
+ * - `history`: rodadas, comentários e diário de uma entrega, e os demais arquivos da sessão
+ *   (`history/{task_key}/…`, com subpastas quando a entrada traz `relPath`; a página-índice da
+ *   sessão é `history/{task_key}/{task_key}.md`, #229);
  * - `home`: a página inicial do squad (`{squad}/home.md`), editável — o adaptador cria uma vez
  *   e nunca sobrescreve (Q16 da #220);
  * - os tipos de `DECISION_DOC_TYPES` (prd, frd, feat, epic, story, task, ard, rfc, spec, swagger,
- *   qa-report, discovery): os documentos de trabalho **ligados a uma entrega consolidada**
+ *   qa-report, discovery e, desde a #229, architecture, plan e light-arch da sessão): os
+ *   documentos de trabalho **ligados a uma entrega consolidada**
  *   (`{funcionalidade}/decisions/…`) — quem decide o vínculo é o `/eng.spec-consolidate`, não
  *   este módulo.
  * O índice do squad é regenerado a cada publicação.
  * @module docs/publish-file
  */
 
-import { basename, extname } from "node:path";
+import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { basename, extname, join, resolve } from "node:path";
 import { validateFrontmatter } from "./validate-frontmatter.js";
+import { findUnresolvableLinks } from "./check-links.js";
+import { commitBaseFor, makeRepoResolver, rewriteLinksForCentral } from "./rewrite-links.js";
+import { scanFile } from "./scan-files.js";
 import { logger } from "../utils/logger.js";
 
 /**
  * Documentos de trabalho (decisões de origem: PRD, FRD, épico, história, tarefa, ARD, RFC,
- * SPEC, swagger, relatório de QA, discovery). Antes da v4.0.0 todos entravam no Central docs;
+ * SPEC, swagger, relatório de QA, discovery e, da sessão, architecture, plan e light-arch —
+ * #229: o porquê das decisões). Antes da v4.0.0 todos entravam no Central docs;
  * de 4.0.0 até aqui, nenhum entrava. Agora voltam a entrar, mas só em `decisions/`, e só o que
  * já está ligado a uma entrega consolidada (Q1 da #220) — o que não está ligado fica em
  * `docs/jarvis/`, sem passar por aqui.
@@ -41,6 +50,9 @@ export const DECISION_DOC_TYPES = Object.freeze([
   "swagger",
   "qa-report",
   "discovery",
+  "architecture",
+  "plan",
+  "light-arch",
 ]);
 
 /** @constant {ReadonlyArray<string>} Tipos aceitos pelo `jarvis docs publish` */
@@ -52,6 +64,33 @@ export const VALID_TYPES = Object.freeze([
   "home",
   ...DECISION_DOC_TYPES,
 ]);
+
+/**
+ * Tipos de decisão que nascem na sessão de um card (`architecture.md`, `plan.md`, `light-arch.md`).
+ * Vários cards podem tocar a mesma funcionalidade, então o nome publicado leva o card (#229).
+ * @constant {ReadonlyArray<string>}
+ */
+export const SESSION_DECISION_TYPES = Object.freeze(["architecture", "plan", "light-arch"]);
+
+/**
+ * Nome, em `decisions/`, de um documento de decisão da sessão: `{tipo}-{card}{ext}`; quando o
+ * documento é quebrado por funcionalidade (Q1 da #229), cada parte leva também o slug dela:
+ * `{tipo}-{card}-{funcionalidade}{ext}`. O `-vN` (versionamento) vem depois, só para revisões do
+ * **mesmo** card.
+ * @param {Object} p
+ * @param {string} p.tipo
+ * @param {string} p.taskKey
+ * @param {string} p.feature
+ * @param {boolean} p.split - O documento foi quebrado em partes?
+ * @param {string} [p.ext] - Padrão `.md`
+ * @returns {string}
+ */
+export function sessionDecisionFileName({ tipo, taskKey, feature, split, ext = ".md" }) {
+  assertSegment("Task key", taskKey ?? "");
+  assertSegment("Feature", feature ?? "");
+  const card = taskKey.toLowerCase(); // o mesmo card em minúsculas da pasta da sessão e de history/
+  return split ? `${tipo}-${card}-${feature}${ext}` : `${tipo}-${card}${ext}`;
+}
 
 /** @constant {RegExp} Formato aceito por squad, produto, feature, slug e task key (exportado para `docs-migrate.js`, #220) */
 export const SEGMENT = /^[A-Za-z0-9][A-Za-z0-9_-]*$/;
@@ -71,6 +110,33 @@ export function assertSegment(label, value) {
   }
 }
 
+/** @constant {RegExp} Segmento de um caminho relativo dentro de `history/{task_key}/` (aceita ponto, nunca no começo) */
+export const REL_SEGMENT = /^[A-Za-z0-9][A-Za-z0-9._-]*$/;
+
+/** @constant {number} Níveis máximos de um `relPath` */
+export const REL_MAX_DEPTH = 8;
+
+/**
+ * Valida o caminho relativo de um arquivo da sessão (`fontes/x/y.md`): sem barra no começo, sem
+ * segmento vazio, sem `..` nem nome oculto, no máximo `REL_MAX_DEPTH` níveis.
+ * @param {string} label - Nome do campo, para a mensagem de erro
+ * @param {string} value
+ * @throws {Error} valor vazio ou fora do formato
+ */
+export function assertRelPath(label, value) {
+  const parts = typeof value === "string" ? value.split("/") : [];
+  if (
+    parts.length === 0 ||
+    parts.length > REL_MAX_DEPTH ||
+    parts.some((part) => !REL_SEGMENT.test(part) || part.includes(".."))
+  ) {
+    throw new Error(
+      `${label} inválido: "${value ?? ""}" (use segmentos com letras, números, ".", "-" ou "_", ` +
+        `sem "..", sem barra no começo, sem nome oculto e até ${REL_MAX_DEPTH} níveis)`
+    );
+  }
+}
+
 /**
  * Calcula o destino do documento no Central docs, pela estrutura por funcionalidade.
  *
@@ -83,9 +149,12 @@ export function assertSegment(label, value) {
  *   nome do arquivo não segue `feature-{slug}.md`. Para `delivery` e para os tipos de
  *   `DECISION_DOC_TYPES`, é sempre obrigatório: é a funcionalidade dona da pasta.
  * @param {string} [p.taskKey] - Obrigatório para o tipo `history` (chave da entrega/sessão).
+ * @param {string} [p.relPath] - Só para `history`: caminho relativo sob `history/{taskKey}/`
+ *   (preserva subpastas da sessão e permite renomear, como a página-índice `{taskKey}.md`, #229).
+ *   Sem ele, vale o nome do arquivo local.
  * @returns {{ destPath: string, area: string, fileName: string }}
  */
-export function resolveDestPath({ tipo, squad, produto, localFile, feature, taskKey }) {
+export function resolveDestPath({ tipo, squad, produto, localFile, feature, taskKey, relPath }) {
   if (!VALID_TYPES.includes(tipo)) {
     throw new Error(`Tipo inválido: ${tipo}\nTipos válidos: ${VALID_TYPES.join(", ")}`);
   }
@@ -112,10 +181,14 @@ export function resolveDestPath({ tipo, squad, produto, localFile, feature, task
       );
     }
     assertSegment("Task key", taskKey);
+    if (relPath) assertRelPath("Caminho relativo", relPath);
+    const rel = relPath || local;
+    // O card em minúsculas, como a pasta da sessão (eng.integrations-rules.md): sem isso, um
+    // TASK-123 vai para history/TASK-123/ e o inventário procura history/task-123/ (#229).
     return {
-      destPath: `${squad}/${produto}/history/${taskKey}/${local}`,
+      destPath: `${squad}/${produto}/history/${taskKey.toLowerCase()}/${rel}`,
       area: "history",
-      fileName: local,
+      fileName: basename(rel),
     };
   }
 
@@ -215,10 +288,26 @@ export async function publishFile({ storage, localFile, tipo, squad, produto, fe
  * @param {string} opts.squad
  * @param {string} opts.produto
  * @param {string} [opts.slug] - Nome da branch/commit (ex.: a chave da entrega)
- * @param {Array<{localFile: string, tipo: string, feature?: string, taskKey?: string}>} opts.files
- * @returns {Promise<{ published: Array<{destPath: string, skipped?: boolean}>, indexPath: string, sha?: string, branch?: string, mr?: Object }>}
+ * @param {Array<{localFile: string, tipo: string, feature?: string, taskKey?: string, relPath?: string, fromSession?: boolean, originalPath?: string, confirmed?: boolean}>} opts.files
+ *   `relPath` só vale para `history`; `fromSession` marca o arquivo vindo de uma sessão (#229):
+ *   versiona por hash, converte os links do `.md` e libera a remoção só para essas entradas.
+ *   `originalPath` é o arquivo na sessão: a base para resolver os links do texto (a cópia em
+ *   `consolidation/` fica em outra pasta). `confirmed: true` marca o arquivo que a pessoa aprovou
+ *   no Passo 4 do `/eng.spec-consolidate`: sem ele, um arquivo de sessão sinalizado por
+ *   `scanFile` (não Markdown, binário, acima de 1 MB, possível segredo) **não é publicado**.
+ * @param {string[]} [opts.localOnlyDirs] - Pastas que só existem no disco local (sessão,
+ *   `docs/jarvis/`): link para elas vira texto na conversão
+ * @param {Object} [opts.deps] - `repoOf` injetável (testes), de `makeRepoResolver`
+ * @param {boolean} [opts.dryRun] - Só simula (`--dry-run`): devolve o `plan` (destino efetivo e
+ *   status de cada arquivo: novo, igual, nova versão, sobrescreve) sem gravar nada
+ * @returns {Promise<{ published: Array<{destPath: string, skipped?: boolean, hash?: string}>, indexPath: string, sha?: string, branch?: string, mr?: Object, linkWarnings: Array<{destPath: string, link: string, reason: string}> }>}
+ *   `published` segue a ordem de `files`; `destPath` é o destino efetivo (com `-vN` quando a
+ *   entrada é de sessão e o conteúdo mudou) e `hash` o sha256 do que foi publicado.
+ *   `linkRewrites` lista, por arquivo, os links convertidos e os que viraram texto. `alerts` lista
+ *   os arquivos de sessão sinalizados (`{ destPath, flags, confirmed }`).
+ * @throws {Error} há arquivo de sessão sinalizado sem `confirmed` (fora do `dryRun`, que só devolve `alerts`)
  */
-export async function publishFiles({ storage, squad, produto, slug, files }) {
+export async function publishFiles({ storage, squad, produto, slug, files, localOnlyDirs = [], deps = {}, dryRun = false }) {
   if (!storage) {
     throw new Error(
       "Central docs desligado (CENTRAL_DOCS_STORAGE vazio). Configure-o no /jarvis-init."
@@ -239,26 +328,193 @@ export async function publishFiles({ storage, squad, produto, slug, files }) {
       localFile: f.localFile,
       feature: f.feature,
       taskKey: f.taskKey,
+      relPath: f.relPath,
     });
-    return { localFile: f.localFile, destPath, tipo: f.tipo };
+    return { localFile: f.localFile, destPath, tipo: f.tipo, fromSession: Boolean(f.fromSession) };
   });
   logger.info("✅ Frontmatter válido em todos os arquivos");
 
-  logger.info("");
-  logger.info("📋 Resumo da Publicação (lote):");
-  logger.info(`  Armazenamento: ${storage.kind}${storage.isGit ? " (git)" : ""}`);
-  for (const r of resolved) logger.info(`  - ${r.destPath}`);
-  logger.info("");
+  nameSessionDecisions(files, resolved);
 
-  const result = await storage.publishBatch({ files: resolved, squad, slug });
-
-  for (const p of result.published) {
-    logger.info(p.skipped ? `ℹ️  ${p.destPath} já existe e não foi sobrescrito.` : `✅ Publicado em ${p.destPath}`);
-  }
-  logger.info(`🗂️  Índice regenerado: ${result.indexPath}`);
-  if (result.mr) {
-    logger.info(`🔀 Pull/Merge Request: ${result.mr.url}`);
+  // Arquivos de sessão que pedem confirmação (não .md, binário, > 1 MB, possível segredo): sem o
+  // `confirmed` da pessoa, nada é publicado (a simulação só devolve a lista).
+  const alerts = scanSessionFiles(files, resolved);
+  const pendentes = alerts.filter((a) => !a.confirmed);
+  if (pendentes.length > 0 && !dryRun) {
+    throw new Error(
+      `${pendentes.length} arquivo(s) da sessão precisam da sua confirmação antes de publicar ` +
+        `("confirmed": true no manifesto, depois do Sim do Passo 4):\n` +
+        pendentes.map((a) => `  - ${a.destPath}: ${a.flags.map((f) => `${f.kind} (${f.detail})`).join("; ")}`).join("\n")
+    );
   }
 
-  return result;
+  // Os .md da sessão saem com os links convertidos (o original na sessão não muda).
+  const tmpDir = mkdtempSync(join(tmpdir(), "jarvis-publish-"));
+  try {
+    const linkRewrites = rewriteSessionLinks({ files, resolved, tmpDir, localOnlyDirs, deps });
+
+    // Links que não resolvem dentro do Central docs (leitura fora do workspace, Confluence): só avisa.
+    const linkWarnings = warnUnresolvableLinks(storage, resolved);
+
+    if (dryRun) {
+      const plan = typeof storage.previewBatch === "function" ? storage.previewBatch({ files: resolved }) : [];
+      logger.info("");
+      logger.info("🔎 Simulação (nada foi gravado):");
+      for (const p of plan) logger.info(`  - ${p.status.padEnd(11)} ${p.destPath}`);
+      for (const a of alerts) {
+        const motivo = a.flags.map((f) => `${f.kind} (${f.detail})`).join("; ");
+        logger.info(`  ⚠️  ${a.confirmed ? "confirmado" : "PRECISA DE CONFIRMAÇÃO"}: ${a.destPath}: ${motivo}`);
+      }
+      return { dryRun: true, plan, alerts, published: [], linkWarnings, linkRewrites };
+    }
+
+    logger.info("");
+    logger.info("📋 Resumo da Publicação (lote):");
+    logger.info(`  Armazenamento: ${storage.kind}${storage.isGit ? " (git)" : ""}`);
+    for (const r of resolved) logger.info(`  - ${r.destPath}`);
+    logger.info("");
+
+    const result = await storage.publishBatch({ files: resolved, squad, slug });
+
+    for (const p of result.published) {
+      if (!p.skipped) {
+        const versioned = resolved.every((r) => r.destPath !== p.destPath);
+        logger.info(`✅ Publicado em ${p.destPath}${versioned ? " (nova versão: o conteúdo mudou)" : ""}`);
+      } else if (p.hash) {
+        logger.info(`ℹ️  ${p.destPath} já está publicado com o mesmo conteúdo; nada a fazer.`);
+      } else {
+        logger.info(`ℹ️  ${p.destPath} já existe e não foi sobrescrito.`);
+      }
+    }
+    logger.info(`🗂️  Índice regenerado: ${result.indexPath}`);
+    if (result.mr) {
+      logger.info(`🔀 Pull/Merge Request: ${result.mr.url}`);
+    }
+
+    return { ...result, linkWarnings, linkRewrites, alerts };
+  } finally {
+    rmSync(tmpDir, { recursive: true, force: true });
+  }
+}
+
+/**
+ * Varre os arquivos de sessão do lote atrás do que pede confirmação (`scanFile`).
+ * @param {Array<Object>} files - Entradas do manifesto
+ * @param {Array<{localFile: string, destPath: string}>} resolved
+ * @returns {Array<{ destPath: string, flags: Array<{kind: string, detail: string}>, confirmed: boolean }>}
+ */
+function scanSessionFiles(files, resolved) {
+  const alerts = [];
+  files.forEach((f, i) => {
+    if (!f.fromSession) return;
+    const flags = scanFile(resolved[i].localFile);
+    if (flags.length > 0) alerts.push({ destPath: resolved[i].destPath, flags, confirmed: f.confirmed === true });
+  });
+  return alerts;
+}
+
+/**
+ * Dá o nome final, com o card, aos documentos de decisão da sessão (`architecture`, `plan`,
+ * `light-arch` com `fromSession` e `taskKey`): `architecture-229.md`; quando o mesmo tipo do
+ * mesmo card tem mais de uma funcionalidade no lote, o documento foi quebrado em partes e cada
+ * uma vira `architecture-229-checkout.md`. Muda só o nome do destino (`resolved[i].destPath`).
+ * @param {Array<Object>} files - Entradas do manifesto
+ * @param {Array<{destPath: string}>} resolved - Destinos calculados (mutado)
+ */
+function nameSessionDecisions(files, resolved) {
+  const features = new Map(); // "tipo|card" → funcionalidades distintas
+  for (const f of files) {
+    if (!f.fromSession || !f.taskKey || !SESSION_DECISION_TYPES.includes(f.tipo)) continue;
+    const k = `${f.tipo}|${f.taskKey}`;
+    if (!features.has(k)) features.set(k, new Set());
+    features.get(k).add(f.feature);
+  }
+  files.forEach((f, i) => {
+    if (!f.fromSession || !f.taskKey || !SESSION_DECISION_TYPES.includes(f.tipo)) return;
+    const split = features.get(`${f.tipo}|${f.taskKey}`).size > 1;
+    const ext = extname(resolved[i].destPath) || ".md";
+    const name = sessionDecisionFileName({ tipo: f.tipo, taskKey: f.taskKey, feature: f.feature, split, ext });
+    resolved[i].destPath = resolved[i].destPath.replace(/[^/]+$/, name);
+  });
+}
+
+/**
+ * Para cada entrada `.md` de sessão com `originalPath`, converte os links (regra 6 de
+ * `doc-links-rules.md`) e troca o `localFile` publicado por uma cópia convertida em `tmpDir`.
+ * O arquivo original e a cópia de `consolidation/` ficam intactos. Entradas sem `originalPath`
+ * (página-índice gerada, que já nasce com links do Central docs) e arquivos que não são `.md`
+ * seguem como estão.
+ * @param {Object} p
+ * @param {Array<Object>} p.files - Entradas do manifesto
+ * @param {Array<Object>} p.resolved - Destinos calculados (mutado: `localFile`)
+ * @param {string} p.tmpDir
+ * @param {string[]} p.localOnlyDirs
+ * @param {Object} p.deps
+ * @returns {Array<{ destPath: string, converted: number, dropped: number }>}
+ */
+function rewriteSessionLinks({ files, resolved, tmpDir, localOnlyDirs, deps }) {
+  const published = new Map();
+  files.forEach((f, i) => {
+    if (f.fromSession && f.originalPath) {
+      const abs = resolve(f.originalPath);
+      if (!published.has(abs)) published.set(abs, resolved[i].destPath);
+    }
+  });
+  if (published.size === 0) return [];
+
+  const repoOf = deps.repoOf ?? makeRepoResolver();
+  const rewrites = [];
+  files.forEach((f, i) => {
+    const r = resolved[i];
+    if (!f.fromSession || !f.originalPath || !r.destPath.toLowerCase().endsWith(".md")) return;
+    const fileDir = resolve(f.originalPath, "..");
+    const text = readFileSync(r.localFile, "utf-8");
+    const out = rewriteLinksForCentral(text, {
+      fileDir,
+      destPath: r.destPath,
+      published,
+      repoOf,
+      commitBase: commitBaseFor(text, fileDir),
+      localOnlyDirs: localOnlyDirs.map((d) => resolve(d)),
+    });
+    if (!out.changed) return;
+    const tmpFile = join(tmpDir, `${i}-${basename(r.localFile)}`);
+    writeFileSync(tmpFile, out.text);
+    r.localFile = tmpFile;
+    rewrites.push({ destPath: r.destPath, converted: out.converted, dropped: out.dropped });
+    logger.info(
+      `🔗 ${r.destPath}: ${out.converted} link(s) convertido(s), ${out.dropped} virou(aram) texto`
+    );
+  });
+  return rewrites;
+}
+
+/**
+ * Avisa (sem bloquear) dos links relativos dos `.md` do lote que não resolvem dentro do Central
+ * docs: a página fica quebrada fora do workspace e na migração para o Confluence (#229).
+ * @param {Object} storage - Adaptador; sem `location` (adaptador sem pasta local), não confere
+ * @param {Array<{localFile: string, destPath: string}>} resolved
+ * @returns {Array<{ destPath: string, link: string, reason: string }>}
+ */
+function warnUnresolvableLinks(storage, resolved) {
+  const warnings = [];
+  const publishedSet = new Set(resolved.map((r) => r.destPath));
+  const exists = (rel) => (storage.location ? existsSync(join(storage.location, rel)) : true);
+  for (const r of resolved) {
+    if (!r.destPath.toLowerCase().endsWith(".md")) continue;
+    let content;
+    try {
+      content = readFileSync(r.localFile, "utf-8");
+    } catch {
+      continue; // o erro de leitura aparece na publicação
+    }
+    for (const p of findUnresolvableLinks({ destPath: r.destPath, content, publishedSet, exists })) {
+      warnings.push({ destPath: r.destPath, link: p.link, reason: p.reason });
+    }
+  }
+  if (warnings.length > 0) {
+    logger.warn(`⚠️  ${warnings.length} link(s) relativo(s) não resolvem dentro do Central docs:`);
+    for (const w of warnings) logger.warn(`   - ${w.destPath}: ${w.link} (${w.reason})`);
+  }
+  return warnings;
 }

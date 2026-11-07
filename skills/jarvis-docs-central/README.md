@@ -1,12 +1,13 @@
 # jarvis-docs-central
 
-Integração com o **Central docs**: o registro do que **foi implementado** em cada produto do squad, por funcionalidade (um documento completo por funcionalidade, um registro por entrega, a página do produto e o histórico), com um índice que os outros comandos consultam. Os documentos de trabalho (PRD, FRD, ARD, RFC, SPEC) ficam em `docs/jarvis/` e só vão para lá quando ligados a uma entrega consolidada.
+Integração com o **Central docs**: o registro do que **foi implementado** em cada produto do squad, por funcionalidade (um documento completo por funcionalidade, um registro por entrega, a página do produto e o histórico), com um índice que os outros comandos consultam. Os documentos de trabalho (PRD, FRD, ARD, RFC, SPEC) ficam em `docs/jarvis/` e só vão para lá quando ligados a uma entrega consolidada. **Depois da entrega, a sessão inteira (`architecture.md`, `plan.md`, `context.md`, rodadas do pré-PR, scripts e saídas) também vai**, com uma página-índice, de modo que a pasta da sessão possa ser apagada sem perder nada, e a estrutura é organizada para migrar ao Confluence.
 
 ## Visão Geral
 
 - **Buscar** o que já foi implementado (`jarvis docs sync`, `jarvis docs fetch`)
 - **Publicar** a consolidação de cada entrega (`jarvis docs publish`, pelo `/eng.spec-consolidate`, depois da pergunta)
 - **Índice** regenerado a cada publicação (`{SQUAD}/index.md`)
+- **Sessões**: `jarvis docs sessions` lista as sessões, o que falta e quais ainda estão pendentes (sem página-índice publicada)
 
 O Central docs funciona por **adaptador de armazenamento**: hoje uma pasta do disco (`filesystem`). Se essa pasta for um clone de um repositório de documentação (tem `.git`), a publicação vira branch + commit + push + Pull/Merge Request. S3 e Google Drive são as issues #144 e #145.
 
@@ -41,9 +42,11 @@ jarvis docs publish --manifest .../consolidation/manifest.json --slug task-123  
 jarvis docs archive --manifest .../consolidation/manifest.json    # guarda os originais em archive/, sem apagar
 jarvis docs finalize --manifest .../consolidation/manifest.json   # apaga os originais já arquivados (irreversível)
 jarvis docs migrate [--apply]                     # layout antigo -> por funcionalidade; dry-run por padrão
+jarvis docs sessions [--json] [--pendentes] [--proxima]   # sessões, arquivos, entrega e página-índice (só leitura)
 ```
 
-- **Tipos:** `feature`, `delivery`, `product`, `history`, `home`, e os documentos de trabalho (PRD, FRD, épico, história, tarefa, ARD, RFC, SPEC, swagger, relatório de QA, discovery) — estes últimos, só quando ligados a uma entrega consolidada; sem vínculo, ficam em `docs/jarvis/`.
+- **Tipos:** `feature`, `delivery`, `product`, `history`, `home`, e os documentos de trabalho (PRD, FRD, épico, história, tarefa, ARD, RFC, SPEC, swagger, relatório de QA, discovery) — estes últimos, só quando ligados a uma entrega consolidada; sem vínculo, ficam em `docs/jarvis/`. Da sessão: `architecture`, `plan` e `light-arch` (em `decisions/`, com o card no nome) e `history` para o resto (subpastas preservadas por `relPath`).
+- **`--dry-run`** no `--manifest` simula (novo, igual, nova versão, sobrescreve). Arquivos da sessão ganham `-v1`, `-v2`… quando o conteúdo mudou, e os links dos `.md` são convertidos para resolverem dentro do Central docs.
 - Quem gera e publica é o [`/eng.spec-consolidate`](../../workflows/engineering/eng.spec-consolidate.md), depois do PR e do seu Sim, em três passos: publicar, arquivar (`--archive`) e finalizar (`--finalize`), ou `--force` para os três de uma vez sem perguntar.
 
 ## Estrutura e índice
@@ -54,11 +57,11 @@ jarvis docs migrate [--apply]                     # layout antigo -> por funcion
 ├── home.md                               # página inicial do squad; criada uma vez, nunca sobrescrita
 └── {produto}/
     ├── {produto}.md                      # o que é transversal a mais de uma funcionalidade
-    ├── history/{task_key}/               # rodadas, comentários, diário da entrega
+    ├── history/{task_key}/               # a sessão da entrega: página-índice {task_key}.md, context, rodadas, comentários, diário, scripts e saídas
     └── {funcionalidade}/
         ├── {funcionalidade}.md           # funcionalidade: estado atual, completo
         ├── deliveries/delivery-{data}-{key}[-{funcionalidade}].md
-        ├── decisions/                    # documentos de trabalho ligados a uma entrega
+        ├── decisions/                    # documentos de trabalho ligados a uma entrega e architecture/plan/light-arch da sessão
         └── archive/                      # originais, fora do índice
 ```
 
@@ -79,11 +82,15 @@ bin/
 ├── commands/
 │   ├── docs-sync.js           # jarvis docs sync
 │   ├── docs-publish.js        # jarvis docs publish
+│   ├── docs-sessions.js       # jarvis docs sessions
 │   └── docs-migrate.js        # jarvis docs migrate
 └── lib/docs/
     ├── fetch-file.js          # openStorageFromEnv + fetchFile (jarvis docs fetch)
     ├── publish-file.js        # tipos, destino por funcionalidade e publicação
     ├── migrate-central.js     # plano e aplicação do jarvis docs migrate
+    ├── session-inventory.js   # sessões, arquivos, entrega e página-índice (jarvis docs sessions)
+    ├── rewrite-links.js       # conversão dos links dos .md da sessão para o Central docs
+    ├── check-links.js         # aviso de links que não resolvem dentro do Central docs
     ├── validate-frontmatter.js
     └── storage/
         ├── index.js           # getStorage(env): escolhe o adaptador pelo CENTRAL_DOCS_STORAGE

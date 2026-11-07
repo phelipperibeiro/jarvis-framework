@@ -10,6 +10,7 @@
  */
 
 import { execFileSync } from "node:child_process";
+import { createHash } from "node:crypto";
 import { copyFileSync, existsSync, mkdirSync, readFileSync, unlinkSync } from "node:fs";
 import { basename, dirname, extname, isAbsolute, join, relative, resolve, sep } from "node:path";
 import { createMergeRequest as defaultCreateMergeRequest, newMergeRequestUrl } from "../../vcs/api.js";
@@ -51,6 +52,46 @@ export function safePath(root, rel) {
   return full;
 }
 
+/** @param {Buffer} buffer @returns {string} sha256 em hex */
+function sha256(buffer) {
+  return createHash("sha256").update(buffer).digest("hex");
+}
+
+/**
+ * Nome da versão `n` de um destino: `-v{n}` antes da extensão (`architecture.md` →
+ * `architecture-v1.md`; sem extensão, no fim). A subpasta é preservada.
+ * @param {string} destPath
+ * @param {number} n - 1, 2…
+ * @returns {string}
+ */
+export function versionedName(destPath, n) {
+  const ext = extname(destPath);
+  return `${destPath.slice(0, destPath.length - ext.length)}-v${n}${ext}`;
+}
+
+/**
+ * Versionamento por hash dos arquivos que vêm de uma sessão (Q6 e Q10 da #229). Compara o
+ * conteúdo de `localFile` com o destino e com as versões já publicadas:
+ * - destino inexistente: grava no nome original;
+ * - algum candidato (original, `-v1`, `-v2`…) com o mesmo hash: não grava (`skipped`);
+ * - todos os candidatos existentes diferem: grava no primeiro `-v{n}` livre.
+ * Nunca apaga nem mescla: a versão anterior permanece (decisão da Q6).
+ * @param {string} location - Pasta do Central docs
+ * @param {string} destPath - Destino pedido (relativo à pasta)
+ * @param {string} localFile
+ * @returns {{ destPath: string, skipped: boolean, hash: string }} destino efetivo
+ */
+export function pickVersionedDest(location, destPath, localFile) {
+  const hash = sha256(readFileSync(localFile));
+  for (let n = 0; n < 10000; n++) {
+    const candidate = n === 0 ? destPath : versionedName(destPath, n);
+    const full = safePath(location, candidate);
+    if (!existsSync(full)) return { destPath: candidate, skipped: false, hash };
+    if (sha256(readFileSync(full)) === hash) return { destPath: candidate, skipped: true, hash };
+  }
+  throw new Error(`Versões demais de "${destPath}" no Central docs (mais de 10000).`);
+}
+
 /**
  * `true` se não há nada staged para commitar (#220, rodada 2 item 2, N6): rodar de novo a
  * publicação/arquivamento/migração de um conteúdo já idêntico ao que está em `targetBranch`
@@ -71,6 +112,46 @@ function nothingStaged(git, cwd) {
 }
 
 /**
+ * O caminho está no commit atual (`HEAD`) da branch aberta? Staged ou untracked **não** contam:
+ * só o que já foi commitado é conteúdo publicado (`git cat-file -e HEAD:<path>`).
+ * @param {(args: string[], cwd: string) => string} git
+ * @param {string} cwd
+ * @param {string} path - Relativo a `cwd`
+ * @returns {boolean}
+ */
+function inHead(git, cwd, path) {
+  try {
+    git(["cat-file", "-e", `HEAD:${path}`], cwd);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * O que já estava na pasta antes do lote e não é do `HEAD`: arquivos untracked, staged por
+ * outro motivo e modificados à mão. A limpeza de um lote que falhou não pode tocar neles (#229).
+ * @param {(args: string[], cwd: string) => string} git
+ * @param {string} cwd
+ * @returns {Set<string>} caminhos relativos a `cwd`
+ */
+function snapshotLocalState(git, cwd) {
+  // `-z`: o git devolve nomes com acento entre aspas e em octal sem ele, e o nome real nunca casaria.
+  const lines = (args) => {
+    try {
+      return git(args, cwd).split("\0").filter(Boolean);
+    } catch {
+      return [];
+    }
+  };
+  return new Set([
+    ...lines(["ls-files", "-z", "--others", "--exclude-standard"]),
+    ...lines(["diff", "-z", "--cached", "--name-only"]),
+    ...lines(["diff", "-z", "--name-only"]),
+  ]);
+}
+
+/**
  * Limpeza best-effort de uma branch de trabalho (#220, rodada 2 item 3): quando a cópia de um
  * lote falha antes do primeiro commit (ex.: `localFile` que não existe mais no meio do lote),
  * o arquivo já copiado fica untracked na working tree, e a branch criada por `checkout -B`
@@ -82,16 +163,41 @@ function nothingStaged(git, cwd) {
  * @param {string} cwd
  * @param {string} targetBranch
  * @param {string} branch
- * @param {string[]} candidatePaths - Destinos que o lote tentou copiar, para remover se tiverem
- *   ficado untracked (caminhos relativos a `cwd`)
+ * @param {string[]} candidatePaths - Destinos que o lote tentou copiar (caminhos relativos a `cwd`)
+ * @param {Set<string>} [preExisting] - O que já estava na pasta antes do lote (`snapshotLocalState`)
+ *
+ * Para cada candidato:
+ * - **no `HEAD`** (já commitado na branch alvo, como a sessão republicada igual ou o `home.md`): é
+ *   conteúdo publicado, nunca é apagado; se o lote o sobrescreveu com outro conteúdo, volta ao do `HEAD` (#229);
+ * - **fora do `HEAD`** e que o lote criou: se um `git add` ficou no índice (o commit falhou, por
+ *   hook, identidade ou assinatura), o `git reset` o tira de lá, e o arquivo é removido, para a
+ *   próxima publicação regravar e commitar de verdade. Sem isso, a cópia ficava só no índice local,
+ *   a republicação a via como "igual" e o `--force` apagava a sessão sem nada ter ido ao remote;
+ * - que **já estava na pasta antes do lote** (untracked ou staged por outro motivo): não é tocado.
  */
-function cleanupOrphanBranch(git, cwd, targetBranch, branch, candidatePaths) {
+function cleanupOrphanBranch(git, cwd, targetBranch, branch, candidatePaths, preExisting = new Set()) {
   try {
     const ahead = git(["rev-list", "--count", `${targetBranch}..${branch}`], cwd).trim();
     if (ahead !== "0") return; // pode ter commit não empurrado: não apaga
     git(["branch", "-D", branch], cwd);
     for (const p of candidatePaths) {
       try {
+        if (preExisting.has(p)) continue;
+        if (inHead(git, cwd, p)) {
+          // Já commitado: nunca é apagado. Se o lote o sobrescreveu com outro conteúdo (e o commit falhou),
+          // volta ao que está no HEAD, para a republicação não ver o conteúdo novo como "igual".
+          try {
+            git(["checkout", "-q", "HEAD", "--", p], cwd);
+          } catch {
+            // melhor esforço
+          }
+          continue;
+        }
+        try {
+          git(["reset", "-q", "--", p], cwd);
+        } catch {
+          // sem entrada no índice: nada a desfazer
+        }
         if (existsSync(join(cwd, p))) unlinkSync(join(cwd, p));
       } catch {
         // melhor esforço; não é o erro original
@@ -280,18 +386,43 @@ export function createFilesystemStorage({
     },
 
     /**
+     * Simula o `publishBatch` sem gravar nada (`--dry-run`, #229): para cada arquivo, o destino
+     * efetivo e o que aconteceria. A mesma regra do `publishBatch`, inclusive o versionamento por hash.
+     * @param {Object} p
+     * @param {Array<{localFile: string, destPath: string, tipo: string, fromSession?: boolean}>} p.files
+     * @returns {Array<{ destPath: string, status: "novo"|"igual"|"nova versão"|"sobrescreve"|"mantido" }>}
+     *   `igual` = já publicado com o mesmo conteúdo (nada a fazer); `mantido` = página inicial já existente
+     */
+    previewBatch({ files }) {
+      return files.map((f) => {
+        const dest = safePath(location, f.destPath);
+        if (f.tipo === "home" && existsSync(dest)) return { destPath: f.destPath, status: "mantido" };
+        if (f.fromSession) {
+          const picked = pickVersionedDest(location, f.destPath, f.localFile);
+          const status = picked.skipped ? "igual" : picked.destPath === f.destPath ? "novo" : "nova versão";
+          return { destPath: picked.destPath, status };
+        }
+        return { destPath: f.destPath, status: existsSync(dest) ? "sobrescreve" : "novo" };
+      });
+    },
+
+    /**
      * Publica vários arquivos de uma vez (a consolidação de uma entrega, #220): cada um é
      * copiado, o índice é regenerado **uma vez** no fim e, com `.git`, tudo entra numa **branch
      * e um PR só** para a entrega inteira — não um por arquivo.
      * @param {Object} p
-     * @param {Array<{localFile: string, destPath: string, tipo: string}>} p.files
+     * @param {Array<{localFile: string, destPath: string, tipo: string, fromSession?: boolean}>} p.files
+     *   `fromSession` liga o versionamento por hash (`-v1`, `-v2`…, #229); sem ele, sobrescreve.
      * @param {string} p.squad
      * @param {string} [p.slug] - Nome da branch/commit (ex.: a chave da entrega); padrão: a hora
-     * @returns {Promise<{ published: Array<{destPath: string, skipped?: boolean}>, indexPath: string, sha?: string, branch?: string, mr?: Object }>}
+     * @returns {Promise<{ published: Array<{destPath: string, skipped?: boolean, hash?: string}>, indexPath: string, sha?: string, branch?: string, mr?: Object }>}
+     *   Na ordem de `files`; `destPath` é o **efetivo** (com `-vN` quando versionado) e `hash` é o
+     *   sha256 do conteúdo publicado.
      */
     async publishBatch({ files, squad, slug }) {
       ensureLocation();
 
+      const written = []; // destinos efetivamente gravados (inclui `-vN`), para a limpeza em caso de falha
       const copyAll = () => {
         const published = [];
         for (const f of files) {
@@ -301,9 +432,24 @@ export function createFilesystemStorage({
             published.push({ destPath: f.destPath, skipped: true });
             continue;
           }
+          if (f.fromSession) {
+            const picked = pickVersionedDest(location, f.destPath, f.localFile);
+            if (!picked.skipped) {
+              const target = safePath(location, picked.destPath);
+              mkdirSync(dirname(target), { recursive: true });
+              copyFileSync(f.localFile, target);
+              written.push(picked.destPath);
+            }
+            published.push(picked);
+            continue;
+          }
           mkdirSync(dirname(dest), { recursive: true });
           copyFileSync(f.localFile, dest);
-          published.push({ destPath: f.destPath, skipped: false });
+          published.push({
+            destPath: f.destPath,
+            skipped: false,
+            hash: sha256(readFileSync(f.localFile)),
+          });
         }
         return published;
       };
@@ -324,6 +470,7 @@ export function createFilesystemStorage({
       // `-B` (não `-b`): idempotente — uma segunda tentativa com o mesmo slug (depois de falha
       // no push/PR) reusa a branch, em vez de falhar com "branch já existe" (#220, item 12).
       git(["checkout", "-B", branch, targetBranch], location);
+      const before = snapshotLocalState(git, location);
 
       try {
         const published = copyAll();
@@ -375,7 +522,14 @@ export function createFilesystemStorage({
       } finally {
         try {
           git(["checkout", targetBranch], location);
-          cleanupOrphanBranch(git, location, targetBranch, branch, files.map((f) => f.destPath));
+          cleanupOrphanBranch(
+            git,
+            location,
+            targetBranch,
+            branch,
+            [...files.map((f) => f.destPath), ...written, `${squad}/index.md`],
+            before
+          );
         } catch {
           // a branch de trabalho fica; o erro original (se houver) é o que importa
         }
@@ -410,6 +564,7 @@ export function createFilesystemStorage({
         logger.warn(`⚠️  git pull falhou (${error.message.split("\n")[0]}); seguindo com a cópia local.`);
       }
       git(["checkout", "-B", branch, targetBranch], location);
+      const before = snapshotLocalState(git, location);
 
       let archivedPaths = [];
       try {
@@ -459,7 +614,7 @@ export function createFilesystemStorage({
       } finally {
         try {
           git(["checkout", targetBranch], location);
-          cleanupOrphanBranch(git, location, targetBranch, branch, archivedPaths);
+          cleanupOrphanBranch(git, location, targetBranch, branch, archivedPaths, before);
         } catch {
           // a branch de trabalho fica; o erro original (se houver) é o que importa
         }

@@ -5,11 +5,11 @@
 import { test, mock } from "node:test";
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { chmodSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { getStorage, StorageConfigError } from "../bin/lib/docs/storage/index.js";
-import { safePath } from "../bin/lib/docs/storage/filesystem.js";
+import { safePath, pickVersionedDest, versionedName } from "../bin/lib/docs/storage/filesystem.js";
 import { renderIndex } from "../bin/lib/docs/storage/build-index.js";
 import { setTestMode } from "../bin/lib/utils/logger.js";
 
@@ -189,6 +189,153 @@ test("filesystem: publishBatch copia vários arquivos e regenera o índice uma v
     assert.ok(r.published.every((p) => p.skipped === false));
     assert.equal(await s.fetch("CORE/loja/checkout/checkout.md"), PRD);
     assert.match(await s.fetch("CORE/index.md"), /- \[checkout\]\(loja\/checkout\/checkout\.md\)/);
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("versionedName: -v{n} antes da extensão, preservando subpasta; sem extensão vai no fim (#229)", () => {
+  assert.equal(versionedName("CORE/loja/checkout/decisions/architecture.md", 1), "CORE/loja/checkout/decisions/architecture-v1.md");
+  assert.equal(versionedName("CORE/loja/history/229/saidas/E8.estado", 12), "CORE/loja/history/229/saidas/E8-v12.estado");
+  assert.equal(versionedName("CORE/loja/history/229/Makefile", 2), "CORE/loja/history/229/Makefile-v2");
+  assert.equal(versionedName("a/b.tar.gz", 1), "a/b.tar-v1.gz");
+});
+
+test("pickVersionedDest: novo grava no original; igual não grava; diferente vai para -v1, -v2…; igual a uma versão antiga não grava (#229)", () => {
+  const root = tmp();
+  try {
+    const location = join(root, "cd");
+    const dest = "CORE/loja/checkout/decisions/architecture.md";
+    const put = (rel, text) => write(join(location, rel), text);
+    const local = (name, text) => {
+      const f = join(root, name);
+      writeFileSync(f, text);
+      return f;
+    };
+
+    // 1) nada publicado: nome original
+    const a = local("a.md", "versão A\n");
+    let r = pickVersionedDest(location, dest, a);
+    assert.deepEqual([r.destPath, r.skipped], [dest, false]);
+    assert.equal(r.hash.length, 64);
+    put(dest, "versão A\n");
+
+    // 2) conteúdo igual: não grava, aponta para o que já existe
+    r = pickVersionedDest(location, dest, a);
+    assert.deepEqual([r.destPath, r.skipped], [dest, true]);
+
+    // 3) conteúdo diferente: -v1
+    const b = local("b.md", "versão B\n");
+    r = pickVersionedDest(location, dest, b);
+    assert.deepEqual([r.destPath, r.skipped], ["CORE/loja/checkout/decisions/architecture-v1.md", false]);
+    put("CORE/loja/checkout/decisions/architecture-v1.md", "versão B\n");
+
+    // 4) terceira versão: -v2
+    const c = local("c.md", "versão C\n");
+    r = pickVersionedDest(location, dest, c);
+    assert.deepEqual([r.destPath, r.skipped], ["CORE/loja/checkout/decisions/architecture-v2.md", false]);
+    put("CORE/loja/checkout/decisions/architecture-v2.md", "versão C\n");
+
+    // 5) volta a ser igual à B: reconhece a -v1 e não cria nada
+    r = pickVersionedDest(location, dest, b);
+    assert.deepEqual([r.destPath, r.skipped], ["CORE/loja/checkout/decisions/architecture-v1.md", true]);
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("pickVersionedDest: caminho que sai da pasta é recusado (#229)", () => {
+  const root = tmp();
+  try {
+    const f = join(root, "x.md");
+    writeFileSync(f, "x");
+    assert.throws(() => pickVersionedDest(join(root, "cd"), "../fora.md", f), /fora da pasta/);
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("filesystem: publishBatch versiona só as entradas fromSession; as demais sobrescrevem (#229)", async () => {
+  const root = tmp();
+  try {
+    const s = getStorage({ CENTRAL_DOCS_STORAGE: "filesystem", CENTRAL_DOCS_LOCATION: "cd" }, { root });
+    mkdirSync(s.location);
+    const arch = join(root, "architecture.md");
+    const feat = join(root, "feature-checkout.md");
+    const files = () => [
+      { localFile: arch, destPath: "CORE/loja/checkout/decisions/architecture.md", tipo: "architecture", fromSession: true },
+      { localFile: feat, destPath: "CORE/loja/checkout/checkout.md", tipo: "feature" },
+    ];
+
+    // rodada 1
+    writeFileSync(arch, "# Arquitetura v0\n");
+    writeFileSync(feat, PRD);
+    let r = await s.publishBatch({ squad: "CORE", slug: "229", files: files() });
+    assert.deepEqual(r.published.map((p) => [p.destPath, p.skipped]), [
+      ["CORE/loja/checkout/decisions/architecture.md", false],
+      ["CORE/loja/checkout/checkout.md", false],
+    ]);
+    assert.ok(r.published.every((p) => p.hash && p.hash.length === 64), "todas devolvem o hash publicado");
+
+    // rodada 2, nada mudou: a sessão não duplica; a feature é regravada igual
+    r = await s.publishBatch({ squad: "CORE", slug: "229", files: files() });
+    assert.deepEqual(r.published.map((p) => [p.destPath, p.skipped]), [
+      ["CORE/loja/checkout/decisions/architecture.md", true],
+      ["CORE/loja/checkout/checkout.md", false],
+    ]);
+
+    // rodada 3, a sessão mudou e a feature também
+    writeFileSync(arch, "# Arquitetura v1\n");
+    writeFileSync(feat, PRD.replace("Checkout", "Checkout 2"));
+    r = await s.publishBatch({ squad: "CORE", slug: "229", files: files() });
+    assert.deepEqual(r.published.map((p) => [p.destPath, p.skipped]), [
+      ["CORE/loja/checkout/decisions/architecture-v1.md", false],
+      ["CORE/loja/checkout/checkout.md", false],
+    ]);
+    assert.equal(await s.fetch("CORE/loja/checkout/decisions/architecture.md"), "# Arquitetura v0\n", "a versão anterior permanece");
+    assert.equal(await s.fetch("CORE/loja/checkout/decisions/architecture-v1.md"), "# Arquitetura v1\n");
+    assert.match(await s.fetch("CORE/loja/checkout/checkout.md"), /Checkout 2/, "feature sobrescrita, sem -v1");
+    assert.equal(existsSync(join(s.location, "CORE/loja/checkout/checkout-v1.md")), false);
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("filesystem: previewBatch simula sem gravar — novo, igual, nova versão, sobrescreve e mantido (#229)", async () => {
+  const root = tmp();
+  try {
+    const s = getStorage({ CENTRAL_DOCS_STORAGE: "filesystem", CENTRAL_DOCS_LOCATION: "cd" }, { root });
+    mkdirSync(s.location);
+    const arch = join(root, "architecture.md");
+    const feat = join(root, "feature.md");
+    const home = join(root, "home.md");
+    writeFileSync(arch, "# v0\n");
+    writeFileSync(feat, PRD);
+    writeFileSync(home, "# home\n");
+    const files = () => [
+      { localFile: arch, destPath: "CORE/loja/checkout/decisions/architecture-229.md", tipo: "architecture", fromSession: true },
+      { localFile: feat, destPath: "CORE/loja/checkout/checkout.md", tipo: "feature" },
+      { localFile: home, destPath: "CORE/home.md", tipo: "home" },
+    ];
+    const status = () => s.previewBatch({ files: files() }).map((p) => `${p.status}:${p.destPath}`);
+
+    assert.deepEqual(status(), [
+      "novo:CORE/loja/checkout/decisions/architecture-229.md",
+      "novo:CORE/loja/checkout/checkout.md",
+      "novo:CORE/home.md",
+    ]);
+    assert.equal(existsSync(join(s.location, "CORE")), false, "a simulação não grava nada");
+
+    await s.publishBatch({ squad: "CORE", slug: "229", files: files() });
+    assert.deepEqual(status(), [
+      "igual:CORE/loja/checkout/decisions/architecture-229.md",
+      "sobrescreve:CORE/loja/checkout/checkout.md",
+      "mantido:CORE/home.md",
+    ]);
+
+    writeFileSync(arch, "# v1\n");
+    assert.deepEqual(status()[0], "nova versão:CORE/loja/checkout/decisions/architecture-229-v1.md");
+    assert.equal(existsSync(join(s.location, "CORE/loja/checkout/decisions/architecture-229-v1.md")), false);
   } finally {
     rmSync(root, { recursive: true, force: true });
   }
@@ -454,6 +601,281 @@ test("git: publish cria branch, commita documento + índice, faz push e abre o P
     assert.ok(files.includes("CORE/product/loja/feature-checkout.md"));
     assert.ok(files.includes("CORE/index.md"));
     assert.equal(git(["branch", "--show-current"], clone), "main");
+  } finally {
+    rmSync(base, { recursive: true, force: true });
+  }
+});
+
+/** Storage git do fixture, com o MR mockado (conta as chamadas). */
+function gitStorage(base, clone) {
+  const mrs = [];
+  const s = getStorage(
+    { CENTRAL_DOCS_STORAGE: "filesystem", CENTRAL_DOCS_LOCATION: clone, CENTRAL_DOCS_TARGET_BRANCH: "main" },
+    {
+      root: base,
+      deps: {
+        createMergeRequest: async (url, opts) => {
+          mrs.push(opts.source);
+          return { vendor: "github", iid: mrs.length, url: `https://example/pr/${mrs.length}` };
+        },
+      },
+    }
+  );
+  return { s, mrs };
+}
+
+/** Simula o merge do PR da branch de trabalho na main e o `git pull` de quem lê. */
+function mergeBranch(clone, branch) {
+  git(["checkout", "main"], clone);
+  git(["merge", "--ff-only", branch], clone);
+  git(["push", "origin", "main"], clone);
+}
+
+test("git: republicar uma sessão igual não apaga a cópia já publicada, não commita nem abre PR (#229)", async () => {
+  const { base, clone } = gitFixture();
+  try {
+    const { s, mrs } = gitStorage(base, clone);
+    const notes = join(base, "notes.md");
+    writeFileSync(notes, "# notas\n");
+    const files = () => [
+      { localFile: notes, destPath: "CORE/loja/history/k/notes.md", tipo: "history", fromSession: true },
+    ];
+
+    const r1 = await s.publishBatch({ squad: "CORE", slug: "k", files: files() });
+    assert.equal(r1.published[0].skipped, false);
+    assert.equal(mrs.length, 1);
+    mergeBranch(clone, r1.branch);
+    const dest = join(clone, "CORE/loja/history/k/notes.md");
+    assert.ok(existsSync(dest), "depois do merge, a cópia está na pasta");
+
+    // mesma sessão, mesmo conteúdo
+    const commitsAntes = git(["rev-list", "--all", "--count"], clone);
+    const r2 = await s.publishBatch({ squad: "CORE", slug: "k2", files: files() });
+    assert.equal(r2.published[0].skipped, true, "igual: nada a publicar");
+    assert.ok(existsSync(dest), "a cópia publicada continua na pasta (antes da correção, sumia)");
+    assert.equal(git(["status", "--porcelain"], clone), "", "a árvore de trabalho continua limpa");
+    assert.equal(mrs.length, 1, "nenhum PR novo");
+    assert.equal(git(["rev-list", "--all", "--count"], clone), commitsAntes, "nenhum commit novo");
+    assert.equal(git(["branch", "--list", "docs/*"], clone).includes("k2"), false, "sem branch órfã");
+  } finally {
+    rmSync(base, { recursive: true, force: true });
+  }
+});
+
+test("git: sessão que mudou depois do merge entra como -v1 no commit e no PR, e a anterior permanece (#229)", async () => {
+  const { base, origin, clone } = gitFixture();
+  try {
+    const { s, mrs } = gitStorage(base, clone);
+    const arq = join(base, "arq.md");
+    const files = () => [
+      { localFile: arq, destPath: "CORE/loja/checkout/decisions/architecture-229.md", tipo: "architecture", fromSession: true },
+    ];
+    writeFileSync(arq, "# v0\n");
+    const r1 = await s.publishBatch({ squad: "CORE", slug: "a", files: files() });
+    mergeBranch(clone, r1.branch);
+
+    writeFileSync(arq, "# v1\n");
+    const prev = await s.previewBatch({ files: files() });
+    assert.deepEqual(prev.map((p) => [p.status, p.destPath]), [["nova versão", "CORE/loja/checkout/decisions/architecture-229-v1.md"]]);
+    const r2 = await s.publishBatch({ squad: "CORE", slug: "b", files: files() });
+    assert.equal(r2.published[0].destPath, "CORE/loja/checkout/decisions/architecture-229-v1.md");
+    assert.equal(mrs.length, 2);
+    const tree = git(["ls-tree", "-r", "--name-only", r2.branch], origin).split("\n");
+    assert.ok(tree.includes("CORE/loja/checkout/decisions/architecture-229-v1.md"), "a versão nova está no PR");
+    assert.ok(tree.includes("CORE/loja/checkout/decisions/architecture-229.md"), "a anterior permanece");
+    assert.equal(git(["branch", "--show-current"], clone), "main");
+  } finally {
+    rmSync(base, { recursive: true, force: true });
+  }
+});
+
+test("git: lote todo pulado por home.md existente também não apaga o home.md da pasta (#220, corrigido na #229)", async () => {
+  const { base, clone } = gitFixture();
+  try {
+    const { s } = gitStorage(base, clone);
+    const home = join(base, "home.md");
+    writeFileSync(home, "# home\n");
+    const r1 = await s.publishBatch({ squad: "CORE", slug: "h", files: [{ localFile: home, destPath: "CORE/home.md", tipo: "home" }] });
+    mergeBranch(clone, r1.branch);
+    const r2 = await s.publishBatch({ squad: "CORE", slug: "h2", files: [{ localFile: home, destPath: "CORE/home.md", tipo: "home" }] });
+    assert.equal(r2.published[0].skipped, true);
+    assert.ok(existsSync(join(clone, "CORE/home.md")), "o home.md publicado continua na pasta");
+    assert.equal(git(["status", "--porcelain"], clone), "");
+  } finally {
+    rmSync(base, { recursive: true, force: true });
+  }
+});
+
+/** Hook pre-commit que sempre falha (como identidade do git ausente, assinatura GPG ou um hook do time). */
+function breakCommits(clone) {
+  const hook = join(clone, ".git/hooks/pre-commit");
+  write(hook, "#!/bin/sh\nexit 1\n");
+  chmodSync(hook, 0o755);
+  return () => rmSync(hook, { force: true });
+}
+
+test("git: commit que falha não deixa a cópia só no índice — a limpeza desfaz o git add e a republicação commita de verdade (#229)", async () => {
+  const { base, clone } = gitFixture();
+  try {
+    const { s, mrs } = gitStorage(base, clone);
+    const arq = join(base, "arq.md");
+    writeFileSync(arq, "# arq\n");
+    const files = () => [
+      { localFile: arq, destPath: "CORE/loja/checkout/decisions/architecture-229.md", tipo: "architecture", fromSession: true },
+    ];
+    const fixHook = breakCommits(clone);
+
+    await assert.rejects(s.publishBatch({ squad: "CORE", slug: "a", files: files() }), /commit/);
+    assert.equal(git(["status", "--porcelain"], clone), "", "sem resíduo no índice nem na pasta (antes: 'A  CORE/…/architecture-229.md')");
+    assert.equal(existsSync(join(clone, "CORE/loja/checkout/decisions/architecture-229.md")), false);
+    assert.equal(git(["branch", "--list", "docs/*"], clone), "", "sem branch órfã");
+    assert.equal(mrs.length, 0);
+
+    // a próxima publicação não vê a cópia como 'igual': regrava e, com o commit funcionando, publica de verdade
+    fixHook();
+    const r = await s.publishBatch({ squad: "CORE", slug: "a", files: files() });
+    assert.equal(r.published[0].skipped, false);
+    assert.equal(mrs.length, 1);
+    assert.ok(git(["ls-tree", "-r", "--name-only", r.branch], clone).includes("CORE/loja/checkout/decisions/architecture-229.md"));
+  } finally {
+    rmSync(base, { recursive: true, force: true });
+  }
+});
+
+test("git: falha no meio do lote — o arquivo já mesclado permanece, o novo não deixa resíduo e não sobra branch (#229)", async () => {
+  const { base, clone } = gitFixture();
+  try {
+    const { s } = gitStorage(base, clone);
+    const ok = join(base, "ok.md");
+    writeFileSync(ok, "# ok\n");
+    const r1 = await s.publishBatch({
+      squad: "CORE",
+      slug: "a",
+      files: [{ localFile: ok, destPath: "CORE/loja/history/k/ok.md", tipo: "history", fromSession: true }],
+    });
+    mergeBranch(clone, r1.branch);
+
+    // segundo lote: o mesmo arquivo (igual, já mesclado) + um que não existe mais
+    await assert.rejects(
+      s.publishBatch({
+        squad: "CORE",
+        slug: "b",
+        files: [
+          { localFile: ok, destPath: "CORE/loja/history/k/ok.md", tipo: "history", fromSession: true },
+          { localFile: join(base, "sumiu.md"), destPath: "CORE/loja/history/k/sumiu.md", tipo: "history", fromSession: true },
+        ],
+      })
+    );
+    assert.ok(existsSync(join(clone, "CORE/loja/history/k/ok.md")), "o arquivo já mesclado permanece");
+    assert.equal(existsSync(join(clone, "CORE/loja/history/k/sumiu.md")), false);
+    assert.equal(git(["status", "--porcelain"], clone), "");
+    assert.equal(git(["branch", "--list", "docs/*"], clone).includes("-b"), false, "sem branch órfã");
+  } finally {
+    rmSync(base, { recursive: true, force: true });
+  }
+});
+
+test("git: um arquivo untracked que já estava na pasta antes do lote não é apagado pela limpeza (#229)", async () => {
+  const { base, clone } = gitFixture();
+  try {
+    const { s } = gitStorage(base, clone);
+    const arq = join(base, "arq.md");
+    writeFileSync(arq, "# do lote\n");
+    const meu = join(clone, "CORE/loja/history/k/notas.md");
+    write(meu, "# escrito à mão, fora do git\n");
+    const fixHook = breakCommits(clone);
+    await assert.rejects(
+      s.publishBatch({
+        squad: "CORE",
+        slug: "u",
+        files: [{ localFile: arq, destPath: "CORE/loja/history/k/notas.md", tipo: "history", fromSession: true }],
+      })
+    );
+    fixHook();
+    assert.ok(existsSync(meu), "o arquivo preexistente continua lá");
+    assert.match(readFileSync(meu, "utf-8"), /escrito à mão/);
+  } finally {
+    rmSync(base, { recursive: true, force: true });
+  }
+});
+
+test("git: arquivo já no HEAD, sobrescrito pelo lote com outro conteúdo, volta ao do HEAD quando o commit falha (#229, rodada 3)", async () => {
+  const { base, clone } = gitFixture();
+  try {
+    const { s } = gitStorage(base, clone);
+    const f = join(base, "d.md");
+    writeFileSync(f, "# v1\n");
+    const dest = "CORE/loja/checkout/decisions/prd-1-x.md";
+    const r1 = await s.publishBatch({ squad: "CORE", slug: "a", files: [{ localFile: f, destPath: dest, tipo: "prd" }] });
+    mergeBranch(clone, r1.branch);
+    writeFileSync(f, "# v2\n");
+    const fixHook = breakCommits(clone);
+    await assert.rejects(s.publishBatch({ squad: "CORE", slug: "b", files: [{ localFile: f, destPath: dest, tipo: "prd" }] }), /commit/);
+    assert.equal(git(["status", "--porcelain"], clone), "", "antes: 'M  …' (v2 só no índice, vista como igual na próxima publicação)");
+    assert.equal(readFileSync(join(clone, dest), "utf-8"), "# v1\n");
+    fixHook();
+  } finally {
+    rmSync(base, { recursive: true, force: true });
+  }
+});
+
+test("git: arquivo staged à mão antes do lote não é desfeito pela limpeza (#229, rodada 3)", async () => {
+  const { base, clone } = gitFixture();
+  try {
+    const { s } = gitStorage(base, clone);
+    const arq = join(base, "arq.md");
+    writeFileSync(arq, "# do lote\n");
+    const meu = join(clone, "CORE/loja/history/k/notas.md");
+    write(meu, "# staged à mão\n");
+    git(["add", "CORE/loja/history/k/notas.md"], clone);
+    const fixHook = breakCommits(clone);
+    await assert.rejects(
+      s.publishBatch({ squad: "CORE", slug: "u", files: [{ localFile: arq, destPath: "CORE/loja/history/k/notas.md", tipo: "history", fromSession: true }] })
+    );
+    fixHook();
+    assert.match(readFileSync(meu, "utf-8"), /staged à mão/);
+    assert.match(git(["status", "--porcelain"], clone), /^A\s+CORE\/loja\/history\/k\/notas\.md/m);
+  } finally {
+    rmSync(base, { recursive: true, force: true });
+  }
+});
+
+test("git: arquivo untracked com acento que já estava na pasta antes do lote não é apagado pela limpeza (#229, rodada 4)", async () => {
+  const { base, clone } = gitFixture();
+  try {
+    const { s } = gitStorage(base, clone);
+    const arq = join(base, "arq.md");
+    writeFileSync(arq, "# do lote\n");
+    const meu = join(clone, "CORE/produção/checkout/history/ação.md");
+    write(meu, "# escrito à mão\n");
+    const fixHook = breakCommits(clone);
+    await assert.rejects(
+      s.publishBatch({
+        squad: "CORE",
+        slug: "u",
+        files: [{ localFile: arq, destPath: "CORE/produção/checkout/history/ação.md", tipo: "history", fromSession: true }],
+      })
+    );
+    fixHook();
+    assert.ok(existsSync(meu), "antes: apagado (o git devolvia o nome em octal e ele não casava com o snapshot)");
+  } finally {
+    rmSync(base, { recursive: true, force: true });
+  }
+});
+
+test("git: archive com commit que falha também não deixa a cópia só no índice (#229)", async () => {
+  const { base, clone } = gitFixture();
+  try {
+    const { s } = gitStorage(base, clone);
+    const original = join(base, "ws/docs/jarvis/product/prd-001.md");
+    write(original, "---\nid: PRD-001\n---\n# PRD\n");
+    const entries = [{ tipo: "prd", feature: "checkout", originalPath: original }];
+    const fixHook = breakCommits(clone);
+    await assert.rejects(s.archiveBatch({ squad: "CORE", produto: "loja", entries }));
+    fixHook();
+    assert.equal(git(["status", "--porcelain"], clone), "", "sem resíduo (antes: o arquivo ficava staged)");
+    assert.equal(existsSync(join(clone, "CORE/loja/checkout/archive/prd-001.md")), false);
+    assert.ok(existsSync(original), "o original nunca é tocado");
   } finally {
     rmSync(base, { recursive: true, force: true });
   }

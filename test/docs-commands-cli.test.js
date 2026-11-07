@@ -6,6 +6,7 @@
 import { test, after } from "node:test";
 import assert from "node:assert/strict";
 import {
+  chmodSync,
   existsSync,
   mkdirSync,
   mkdtempSync,
@@ -13,12 +14,15 @@ import {
   rmSync,
   writeFileSync,
 } from "node:fs";
+import { execFileSync } from "node:child_process";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { docsPublish } from "../bin/commands/docs-publish.js";
 import { docsArchive } from "../bin/commands/docs-archive.js";
 import { docsFinalize } from "../bin/commands/docs-finalize.js";
 import { docsMigrate } from "../bin/commands/docs-migrate.js";
+import { docsSessions } from "../bin/commands/docs-sessions.js";
 import { setTestMode } from "../bin/lib/utils/logger.js";
 
 setTestMode(true);
@@ -156,6 +160,365 @@ test("docsPublish --manifest: caminho feliz publica e regenera o índice", async
   assert.ok(existsSync(join(centralDocs, "CORE/loja/checkout/checkout.md")));
   assert.ok(existsSync(join(centralDocs, "CORE/loja/checkout/deliveries/delivery-2026-10-15-task-1.md")));
   assert.ok(existsSync(join(centralDocs, "CORE/index.md")));
+});
+
+test("docsPublish --manifest: grava publishedAs e publishedHash por entrada, e versiona a sessão que mudou (#229)", async () => {
+  const { ws, envFile, centralDocs } = workspaceFixture();
+  const manifest = join(ws, "consolidation/manifest.json");
+  const entries = [
+    { file: "architecture.md", tipo: "architecture", feature: "checkout", taskKey: "229", fromSession: true },
+    { file: "saida.txt", tipo: "history", taskKey: "229", relPath: "ferramentas/saida.txt", fromSession: true, confirmed: true },
+  ];
+  const publish = () => captureRun(() => docsPublish({ manifest, slug: "229", "env-file": envFile }));
+
+  write(join(ws, "consolidation/architecture.md"), "# Arquitetura\n");
+  write(join(ws, "consolidation/saida.txt"), "ok\n");
+  write(manifest, JSON.stringify(entries));
+  assert.equal(await publish(), 0);
+
+  let saved = JSON.parse(readFileSync(manifest, "utf-8"));
+  assert.equal(saved[0].publishedAs, "CORE/loja/checkout/decisions/architecture-229.md");
+  assert.equal(saved[1].publishedAs, "CORE/loja/history/229/ferramentas/saida.txt");
+  assert.equal(saved[0].publishedHash.length, 64);
+  assert.equal(saved[0].feature, "checkout", "os demais campos do manifesto ficam intactos");
+  assert.ok(existsSync(join(centralDocs, "CORE/loja/history/229/ferramentas/saida.txt")));
+
+  // mesma sessão, nada mudou: nada de -v1 e o mesmo publishedAs
+  write(manifest, JSON.stringify(entries));
+  assert.equal(await publish(), 0);
+  saved = JSON.parse(readFileSync(manifest, "utf-8"));
+  assert.equal(saved[0].publishedAs, "CORE/loja/checkout/decisions/architecture-229.md");
+  assert.equal(existsSync(join(centralDocs, "CORE/loja/checkout/decisions/architecture-229-v1.md")), false);
+
+  // a sessão mudou: nova versão, e o manifesto aponta para ela
+  write(join(ws, "consolidation/architecture.md"), "# Arquitetura revisada\n");
+  write(manifest, JSON.stringify(entries));
+  assert.equal(await publish(), 0);
+  saved = JSON.parse(readFileSync(manifest, "utf-8"));
+  assert.equal(saved[0].publishedAs, "CORE/loja/checkout/decisions/architecture-229-v1.md");
+  assert.equal(readFileSync(join(centralDocs, "CORE/loja/checkout/decisions/architecture-229.md"), "utf-8"), "# Arquitetura\n");
+});
+
+test("docsPublish --manifest: link relativo que não resolve no Central docs só avisa, não bloqueia (#229)", async () => {
+  const { ws, envFile, centralDocs } = workspaceFixture();
+  write(join(ws, "consolidation/plan.md"), "# Plano\n[código](../../../../../jarvis-framework/bin/x.js#L5)\n");
+  write(
+    join(ws, "consolidation/manifest.json"),
+    JSON.stringify([{ file: "plan.md", tipo: "plan", feature: "checkout", taskKey: "229", fromSession: true }])
+  );
+  const code = await captureRun(() =>
+    docsPublish({ manifest: join(ws, "consolidation/manifest.json"), slug: "229", "env-file": envFile })
+  );
+  assert.equal(code, 0);
+  assert.ok(existsSync(join(centralDocs, "CORE/loja/checkout/decisions/plan-229.md")));
+});
+
+test("docsPublish --manifest: converte os links do .md da sessão (originalPath) e deixa o original intacto (#229)", async () => {
+  const { ws, envFile, centralDocs } = workspaceFixture();
+  const original = join(ws, ".jarvis/sessions/eng/229/plan.md");
+  const text = "# Plano\n[PRD](../../../../docs/jarvis/product/prd.md) e [arquitetura](architecture.md) e [card](https://x.dev/1)\n";
+  write(original, text);
+  write(join(ws, ".jarvis/sessions/eng/229/architecture.md"), "# Arquitetura\n");
+  write(join(ws, "consolidation/plan.md"), text);
+  write(join(ws, "consolidation/architecture.md"), "# Arquitetura\n");
+  write(
+    join(ws, "consolidation/manifest.json"),
+    JSON.stringify([
+      { file: "plan.md", tipo: "plan", feature: "checkout", taskKey: "229", fromSession: true, originalPath: original },
+      { file: "architecture.md", tipo: "architecture", feature: "checkout", taskKey: "229", fromSession: true, originalPath: join(ws, ".jarvis/sessions/eng/229/architecture.md") },
+    ])
+  );
+  const code = await captureRun(() =>
+    docsPublish({ manifest: join(ws, "consolidation/manifest.json"), slug: "229", "env-file": envFile })
+  );
+  assert.equal(code, 0);
+  const published = readFileSync(join(centralDocs, "CORE/loja/checkout/decisions/plan-229.md"), "utf-8");
+  assert.equal(published, "# Plano\nPRD e [arquitetura](architecture-229.md) e [card](https://x.dev/1)\n", "docs/jarvis vira texto; o resto fica");
+  assert.equal(readFileSync(original, "utf-8"), text, "o original na sessão não muda");
+});
+
+/** Sessão do card 229 no workspace de teste, com os arquivos e o manifesto (`fromSession`). */
+function sessionManifestFixture() {
+  const fx = workspaceFixture();
+  const sessao = join(fx.ws, ".jarvis/sessions/eng/229");
+  write(join(sessao, "architecture.md"), "# Arquitetura\n");
+  write(join(sessao, "plan.md"), "# Plano\n");
+  write(join(sessao, "ferramentas/saida.txt"), "ok\n");
+  write(join(fx.ws, "consolidation/architecture.md"), "# Arquitetura\n");
+  write(join(fx.ws, "consolidation/plan.md"), "# Plano\n");
+  write(join(fx.ws, "consolidation/saida.txt"), "ok\n");
+  const base = { feature: "checkout", taskKey: "229", fromSession: true };
+  const manifest = join(fx.ws, "consolidation/manifest.json");
+  write(
+    manifest,
+    JSON.stringify([
+      { ...base, file: "architecture.md", tipo: "architecture", originalPath: join(sessao, "architecture.md") },
+      { ...base, file: "plan.md", tipo: "plan", originalPath: join(sessao, "plan.md") },
+      { ...base, file: "saida.txt", tipo: "history", relPath: "ferramentas/saida.txt", confirmed: true, originalPath: join(sessao, "ferramentas/saida.txt") },
+    ])
+  );
+  return { ...fx, sessao, manifest };
+}
+
+test("sessão pelos comandos: publicar → arquivar → finalizar apaga os arquivos da sessão e mantém as cópias (#229)", async () => {
+  const { envFile, centralDocs, sessao, manifest } = sessionManifestFixture();
+  assert.equal(await captureRun(() => docsPublish({ manifest, slug: "229", "env-file": envFile })), 0);
+  assert.ok(existsSync(join(centralDocs, "CORE/loja/history/229/ferramentas/saida.txt")));
+  assert.ok(existsSync(join(sessao, "architecture.md")), "publicar só copia");
+
+  assert.equal(await captureRun(() => docsArchive({ manifest, "env-file": envFile })), 0);
+  const saved = JSON.parse(readFileSync(manifest, "utf-8"));
+  assert.deepEqual(saved.map((e) => e.archiveDestPath), [
+    "CORE/loja/checkout/archive/architecture-229.md",
+    "CORE/loja/checkout/archive/plan-229.md",
+    "CORE/loja/checkout/archive/229/ferramentas/saida.txt",
+  ]);
+  assert.ok(existsSync(join(sessao, "plan.md")), "arquivar não apaga");
+
+  assert.equal(await captureRun(() => docsFinalize({ manifest, "env-file": envFile })), 0);
+  assert.equal(existsSync(join(sessao, "architecture.md")), false);
+  assert.equal(existsSync(join(sessao, "plan.md")), false);
+  assert.equal(existsSync(join(sessao, "ferramentas/saida.txt")), false);
+  assert.ok(existsSync(join(centralDocs, "CORE/loja/checkout/decisions/architecture-229.md")), "a cópia publicada fica");
+  assert.ok(existsSync(join(centralDocs, "CORE/loja/checkout/archive/229/ferramentas/saida.txt")), "e a arquivada também");
+});
+
+test("sessão pelos comandos: --force publica e apaga a sessão conferindo a cópia publicada (#229)", async () => {
+  const { envFile, centralDocs, sessao, manifest } = sessionManifestFixture();
+  assert.equal(await captureRun(() => docsPublish({ manifest, slug: "229", force: true, "env-file": envFile })), 0);
+  for (const rel of ["architecture.md", "plan.md", "ferramentas/saida.txt"]) {
+    assert.equal(existsSync(join(sessao, rel)), false, rel);
+  }
+  assert.ok(existsSync(join(centralDocs, "CORE/loja/checkout/decisions/plan-229.md")));
+  assert.ok(existsSync(join(centralDocs, "CORE/loja/history/229/ferramentas/saida.txt")));
+  assert.equal(existsSync(join(centralDocs, "CORE/loja/checkout/archive")), false, "--force não arquiva");
+});
+
+test("sessão pelos comandos: --force não apaga a sessão de outro card, mesmo com taskKey errado no manifesto (#229)", async () => {
+  const fx = sessionManifestFixture();
+  const outra = join(fx.ws, ".jarvis/sessions/eng/230/architecture.md");
+  write(outra, "# Outra sessão\n");
+  write(
+    fx.manifest,
+    JSON.stringify([
+      { file: "architecture.md", tipo: "architecture", feature: "checkout", taskKey: "229", fromSession: true, originalPath: outra },
+    ])
+  );
+  const code = await captureRun(() => docsPublish({ manifest: fx.manifest, slug: "229", force: true, "env-file": fx.envFile }));
+  assert.equal(code, 1, "o --force reporta o erro de segurança");
+  assert.ok(existsSync(outra), "a sessão do card 230 permanece");
+  assert.ok(existsSync(join(fx.centralDocs, "CORE/loja/checkout/decisions/architecture-229.md")), "a publicação em si ocorreu");
+});
+
+test("docsPublish --manifest --dry-run: mostra o plano sem gravar, sem alterar o manifesto e sem apagar nada, nem com --force (#229)", async () => {
+  const { envFile, centralDocs, sessao, manifest } = sessionManifestFixture();
+  const antes = readFileSync(manifest, "utf-8");
+  const code = await captureRun(() =>
+    docsPublish({ manifest, slug: "229", force: true, dryRun: true, "env-file": envFile })
+  );
+  assert.equal(code, 0);
+  assert.equal(existsSync(join(centralDocs, "CORE")), false, "nada foi publicado");
+  assert.equal(readFileSync(manifest, "utf-8"), antes, "o manifesto não ganhou publishedAs");
+  for (const rel of ["architecture.md", "plan.md", "ferramentas/saida.txt"]) {
+    assert.ok(existsSync(join(sessao, rel)), `${rel} continua na sessão (o --force não vale na simulação)`);
+  }
+});
+
+test("workflow eng.spec-consolidate: o manifesto de exemplo do Passo 5 é aceito pelo CLI e gera os destinos descritos (#229)", async () => {
+  const wf = readFileSync(
+    join(dirname(fileURLToPath(import.meta.url)), "..", "workflows/engineering/eng.spec-consolidate.md"),
+    "utf-8"
+  );
+  const passo5 = wf.slice(wf.indexOf("## Passo 5"), wf.indexOf("## Passo 6"));
+  const bloco = passo5.match(/```json\n([\s\S]*?)\n```/);
+  assert.ok(bloco, "o Passo 5 traz o manifesto de exemplo num bloco json");
+
+  const { ws, envFile, centralDocs } = workspaceFixture();
+  const exemplo = bloco[1].replaceAll("/ws/", `${ws}/`);
+  const sessao = join(ws, ".jarvis/sessions/eng/229");
+  write(join(sessao, "architecture.md"), "# Arquitetura\n");
+  write(join(sessao, "ferramentas/saidas/E8.txt"), "ok\n");
+  write(join(sessao, "consolidation/manifest.json"), exemplo);
+  write(join(sessao, "consolidation/session-229.md"), "---\nid: SES-229\nname: Sessão 229\n---\n# Sessão 229\n[arquitetura](../../checkout/decisions/architecture-229.md)\n");
+  write(join(sessao, "consolidation/feature-checkout.md"), "---\nid: FEAT-1\nname: Checkout\nstatus: in_production\nproduct: loja\nupdated_at: 2026-11-06\n---\n# Checkout\n");
+  write(join(sessao, "consolidation/delivery-2026-11-06-229.md"), "---\nid: DEL-1\nfeature: feature-checkout.md\ntask_key: 229\npr: \"#230\"\ndate: 2026-11-06\n---\n# Entrega\n");
+
+  const manifest = join(sessao, "consolidation/manifest.json");
+  assert.equal(await captureRun(() => docsPublish({ manifest, slug: "229", dryRun: true, "env-file": envFile })), 0);
+  assert.equal(existsSync(join(centralDocs, "CORE")), false, "o --dry-run não grava");
+
+  assert.equal(await captureRun(() => docsPublish({ manifest, slug: "229", "env-file": envFile })), 0);
+  for (const rel of [
+    "CORE/loja/checkout/decisions/architecture-229.md",
+    "CORE/loja/history/229/ferramentas/saidas/E8.txt",
+    "CORE/loja/history/229/229.md",
+    "CORE/loja/checkout/checkout.md",
+    "CORE/loja/checkout/deliveries/delivery-2026-11-06-229.md",
+  ]) {
+    assert.ok(existsSync(join(centralDocs, rel)), rel);
+  }
+});
+
+test("sessão já entregue: publica só os arquivos e a página-índice, sem tocar em feature/delivery; a --proxima avança (#229)", async () => {
+  const { ws, envFile, centralDocs } = workspaceFixture();
+  // Central docs com a funcionalidade e a entrega do card 229 já publicadas
+  const feature = "---\nid: FEAT-1\nname: Checkout\nstatus: in_production\nproduct: loja\nupdated_at: 2026-10-15\n---\n# Checkout (editado à mão)\n";
+  const delivery = "---\nid: DEL-1\nfeature: feature-checkout.md\ntask_key: 229\npr: \"#230\"\ndate: 2026-10-15\n---\n# Entrega (editada à mão)\n";
+  write(join(centralDocs, "CORE/loja/checkout/checkout.md"), feature);
+  write(join(centralDocs, "CORE/loja/checkout/deliveries/delivery-2026-10-15-229.md"), delivery);
+  // sessões 229 (entregue) e 300 (pendente, sem entrega)
+  write(join(ws, ".jarvis/sessions/eng/229/architecture.md"), "# Arquitetura\n");
+  write(join(ws, ".jarvis/sessions/eng/300/architecture.md"), "# Outra\n");
+  write(join(ws, ".jarvis/sessions/eng/229/consolidation/session-229.md"), "---\nid: SES-229\nname: Sessão 229\n---\n# Sessão 229\n[entrega](../../checkout/deliveries/delivery-2026-10-15-229.md)\n");
+  write(
+    join(ws, ".jarvis/sessions/eng/229/consolidation/manifest.json"),
+    JSON.stringify([
+      { file: "../architecture.md", tipo: "architecture", feature: "checkout", taskKey: "229", fromSession: true, originalPath: join(ws, ".jarvis/sessions/eng/229/architecture.md") },
+      { file: "session-229.md", tipo: "history", feature: "checkout", taskKey: "229", relPath: "229.md", fromSession: true },
+    ])
+  );
+  const proxima = async () => {
+    const out = [];
+    const w = process.stdout.write;
+    process.stdout.write = (s) => (out.push(String(s)), true);
+    try {
+      await docsSessions({ proxima: true, "env-file": envFile });
+    } finally {
+      process.stdout.write = w;
+    }
+    return out.join("").trim();
+  };
+  assert.equal(await proxima(), "229", "antes: a 229 é a primeira pendente (entregue, mas sem a página-índice)");
+
+  const manifest = join(ws, ".jarvis/sessions/eng/229/consolidation/manifest.json");
+  assert.equal(await captureRun(() => docsPublish({ manifest, slug: "229", "env-file": envFile })), 0);
+
+  assert.equal(readFileSync(join(centralDocs, "CORE/loja/checkout/checkout.md"), "utf-8"), feature, "a página da funcionalidade não muda");
+  assert.equal(readFileSync(join(centralDocs, "CORE/loja/checkout/deliveries/delivery-2026-10-15-229.md"), "utf-8"), delivery, "o registro da entrega não muda");
+  assert.ok(existsSync(join(centralDocs, "CORE/loja/checkout/decisions/architecture-229.md")));
+  assert.ok(existsSync(join(centralDocs, "CORE/loja/history/229/229.md")));
+  assert.equal(await proxima(), "300", "depois: a próxima pendente é a 300");
+});
+
+test("docsPublish --manifest: arquivo de sessão sinalizado sem confirmed sai com 1 e não publica nem apaga nada, nem com --force (#229)", async () => {
+  const { envFile, centralDocs, sessao, manifest } = sessionManifestFixture();
+  const entries = JSON.parse(readFileSync(manifest, "utf-8")).map((e) => ({ ...e, confirmed: undefined })); // tira o confirmed do .txt
+  writeFileSync(manifest, JSON.stringify(entries));
+  for (const force of [false, true]) {
+    const code = await captureRun(() => docsPublish({ manifest, slug: "229", force, "env-file": envFile }));
+    assert.equal(code, 1, `force=${force}`);
+    assert.equal(existsSync(join(centralDocs, "CORE")), false, "nada foi publicado, nem os arquivos limpos");
+    for (const rel of ["architecture.md", "plan.md", "ferramentas/saida.txt"]) {
+      assert.ok(existsSync(join(sessao, rel)), `${rel} continua na sessão`);
+    }
+  }
+});
+
+test("manifesto que é JSON válido mas não é uma lista de objetos: publish, archive e finalize saem com 1 e mensagem clara (#229)", async () => {
+  const { envFile } = workspaceFixture();
+  for (const conteudo of ["{}", "null", '"texto"', "[null]", "[1,2]", "[[]]"]) {
+    const { ws } = workspaceFixture();
+    const manifest = join(ws, "m.json");
+    write(manifest, conteudo);
+    const env = join(ws, ".claude/ENV.md");
+    for (const [nome, fn] of [
+      ["publish", () => docsPublish({ manifest, "env-file": env })],
+      ["archive", () => docsArchive({ manifest, "env-file": env })],
+      ["finalize", () => docsFinalize({ manifest, "env-file": env })],
+    ]) {
+      assert.equal(await captureRun(fn), 1, `${nome} com ${conteudo} (antes: TypeError)`);
+    }
+  }
+  assert.ok(envFile);
+});
+
+test("docsPublish --force com o Central docs em git e commit que falha: a sessão permanece, mesmo republicando (#229)", async () => {
+  const ws = tmp();
+  const git = (cwd, ...a) => execFileSync("git", a, { cwd, encoding: "utf-8", stdio: ["ignore", "pipe", "pipe"] }).trim();
+  const origin = join(ws, "origin.git");
+  const centralDocs = join(ws, "central-docs");
+  mkdirSync(origin, { recursive: true });
+  git(origin, "init", "--bare", "-q", "-b", "main");
+  git(ws, "clone", "-q", origin, centralDocs);
+  git(centralDocs, "config", "user.email", "t@t");
+  git(centralDocs, "config", "user.name", "t");
+  write(join(centralDocs, "README.md"), "x\n");
+  git(centralDocs, "add", ".");
+  git(centralDocs, "commit", "-qm", "init");
+  git(centralDocs, "push", "-qu", "origin", "main");
+  const hook = join(centralDocs, ".git/hooks/pre-commit");
+  write(hook, "#!/bin/sh\nexit 1\n");
+  chmodSync(hook, 0o755);
+  const env = join(ws, ".claude/ENV.md");
+  write(env, ["CENTRAL_DOCS_STORAGE=filesystem", `CENTRAL_DOCS_LOCATION=${centralDocs}`, "SQUAD=CORE", "WORKSPACE=loja"].join("\n"));
+
+  const sessao = join(ws, ".jarvis/sessions/eng/229");
+  write(join(sessao, "architecture.md"), "# Arquitetura\n");
+  const manifest = join(ws, "m.json");
+  write(
+    manifest,
+    JSON.stringify([
+      { file: ".jarvis/sessions/eng/229/architecture.md", tipo: "architecture", feature: "checkout", taskKey: "229", fromSession: true, originalPath: join(sessao, "architecture.md") },
+    ])
+  );
+  const run = () => captureRun(() => docsPublish({ manifest, slug: "229", force: true, "env-file": env }));
+
+  // 1) o commit falha: a publicação falha e não sobra a cópia só no índice
+  assert.equal(await run(), 1);
+  assert.equal(git(centralDocs, "status", "--porcelain"), "");
+  // 2) de novo, ainda com o commit quebrado: antes da correção a cópia staged era vista como 'igual' e a sessão era apagada
+  assert.equal(await run(), 1);
+  assert.ok(existsSync(join(sessao, "architecture.md")), "a sessão permanece (nada foi para o remote)");
+  assert.equal(git(origin, "branch", "--list").replace(/[\s*]/g, ""), "main", "o remote só tem a main");
+  // 3) o commit volta a funcionar, mas o PR ainda não foi mesclado: o --force segue recusando
+  rmSync(hook);
+  assert.equal(await run(), 1);
+  assert.ok(existsSync(join(sessao, "architecture.md")), "publicado na branch do PR, mas não mesclado: a sessão fica");
+  // 4) PR mesclado: agora a cópia está no HEAD e a sessão pode ser apagada
+  git(centralDocs, "merge", "--ff-only", "docs/core-229");
+  assert.equal(await run(), 0);
+  assert.equal(existsSync(join(sessao, "architecture.md")), false);
+});
+
+test("docsPublish --manifest --force com o Central docs em git: antes do merge do PR a cópia não está na pasta e a sessão permanece (#229)", async () => {
+  const ws = tmp();
+  const git = (cwd, ...a) => execFileSync("git", a, { cwd, encoding: "utf-8", stdio: ["ignore", "pipe", "pipe"] }).trim();
+  const origin = join(ws, "origin.git");
+  const centralDocs = join(ws, "central-docs");
+  mkdirSync(origin, { recursive: true });
+  git(origin, "init", "--bare", "-q", "-b", "main");
+  git(ws, "clone", "-q", origin, centralDocs);
+  git(centralDocs, "config", "user.email", "t@t");
+  git(centralDocs, "config", "user.name", "t");
+  write(join(centralDocs, "README.md"), "x\n");
+  git(centralDocs, "add", ".");
+  git(centralDocs, "commit", "-qm", "init");
+  git(centralDocs, "push", "-qu", "origin", "main");
+  write(join(ws, ".claude/ENV.md"), ["CENTRAL_DOCS_STORAGE=filesystem", `CENTRAL_DOCS_LOCATION=${centralDocs}`, "SQUAD=CORE", "WORKSPACE=loja"].join("\n"));
+
+  const sessao = join(ws, ".jarvis/sessions/eng/229");
+  write(join(sessao, "architecture.md"), "# Arquitetura\n");
+  write(
+    join(ws, "m.json"),
+    JSON.stringify([
+      { file: ".jarvis/sessions/eng/229/architecture.md", tipo: "architecture", feature: "checkout", taskKey: "229", fromSession: true, originalPath: join(sessao, "architecture.md") },
+    ])
+  );
+  const code = await captureRun(() => docsPublish({ manifest: join(ws, "m.json"), slug: "229", force: true, "env-file": join(ws, ".claude/ENV.md") }));
+  assert.equal(code, 1, "o --force recusa: a cópia publicada não está na pasta antes do merge");
+  assert.ok(existsSync(join(sessao, "architecture.md")), "a sessão permanece (a única cópia)");
+  assert.equal(existsSync(join(centralDocs, "CORE/loja/checkout/decisions/architecture-229.md")), false, "na branch alvo ainda não há a cópia");
+  assert.equal(git(centralDocs, "branch", "--show-current"), "main");
+  const saved = JSON.parse(readFileSync(join(ws, "m.json"), "utf-8"));
+  assert.equal(saved[0].publishedAs, "CORE/loja/checkout/decisions/architecture-229.md", "o manifesto guarda onde foi publicado");
+  assert.ok(git(origin, "branch", "--list", "docs/*").includes("docs/core-229"), "a branch com a publicação foi para o remote");
+
+  // depois do merge do PR e do pull, o mesmo --force passa
+  git(centralDocs, "merge", "--ff-only", "docs/core-229");
+  const code2 = await captureRun(() => docsPublish({ manifest: join(ws, "m.json"), slug: "229", force: true, "env-file": join(ws, ".claude/ENV.md") }));
+  assert.equal(code2, 0);
+  assert.equal(existsSync(join(sessao, "architecture.md")), false, "depois do merge a sessão é apagada");
+  assert.ok(existsSync(join(centralDocs, "CORE/loja/checkout/decisions/architecture-229.md")), "e a cópia publicada permanece na pasta");
 });
 
 test("docsPublish --manifest --force: publica e já apaga o original ligado (zero reversão)", async () => {

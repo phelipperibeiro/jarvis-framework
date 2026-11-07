@@ -541,6 +541,8 @@ test("cada ponto que envia algo tem a pergunta logo antes", () => {
     ["skills/AGENTS.md", /^\| `jarvis docs publish` \| `jarvis-docs-central` \|$/],
     ["templates/AGENTS.md", /^\| `central-home-template\.md` \|/],
     [SPEC_CONSOLIDATE, /^- `--force`:/],
+    // `--dry-run` só simula (não grava, não envia): mostra novo, igual, nova versão antes do Sim (#229)
+    [SPEC_CONSOLIDATE, /--dry-run` \(só simula, não grava\)/],
     ["AGENTS.md", /^jarvis docs publish --file\|--manifest/],
     ["skills/jarvis-docs-central/README.md", /^jarvis docs publish --manifest/],
     ["skills/jarvis-init/SKILL.md", /é gerado pelo `jarvis docs publish`/],

@@ -1,5 +1,6 @@
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { openStorageFromEnv } from "../lib/docs/fetch-file.js";
+import { isEntryList } from "../lib/docs/finish-delivery.js";
 import { logger, configureFromFlags } from "../lib/utils/logger.js";
 
 /**
@@ -31,6 +32,10 @@ export async function docsArchive(flags = {}) {
     entries = JSON.parse(readFileSync(flags.manifest, "utf-8"));
   } catch (error) {
     logger.error(`❌ Manifesto inválido (${flags.manifest}): ${error.message}`);
+    process.exit(1);
+  }
+  if (!isEntryList(entries)) {
+    logger.error(`❌ Manifesto no formato errado (${flags.manifest}): esperada uma lista de entradas (objetos).`);
     process.exit(1);
   }
 

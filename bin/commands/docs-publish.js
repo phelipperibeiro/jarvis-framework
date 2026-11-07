@@ -1,8 +1,9 @@
-import { existsSync, readFileSync } from "node:fs";
-import { dirname, join } from "node:path";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { dirname, join, resolve } from "node:path";
 import { openStorageFromEnv } from "../lib/docs/fetch-file.js";
+import { docsFolders, expandEnv } from "../lib/core/docs-migrate.js";
 import { publishFile, publishFiles, VALID_TYPES } from "../lib/docs/publish-file.js";
-import { forceFinalize } from "../lib/docs/finish-delivery.js";
+import { forceFinalize, isEntryList } from "../lib/docs/finish-delivery.js";
 import { logger, configureFromFlags } from "../lib/utils/logger.js";
 
 function openEnvAndStorage(flags) {
@@ -49,8 +50,10 @@ function reportPublishError(error, storage, tipo) {
 }
 
 /**
- * Lê um manifesto `[{file, tipo, feature?, taskKey?}, …]` (caminhos relativos à pasta do
- * manifesto). Gerado pelo `/eng.spec-consolidate` a partir da listagem "move / fica" (#220).
+ * Lê um manifesto `[{file, tipo, feature?, taskKey?, relPath?, fromSession?}, …]` (caminhos
+ * relativos à pasta do manifesto). Gerado pelo `/eng.spec-consolidate` a partir da listagem
+ * "move / fica" (#220). `relPath` (só `history`) preserva subpastas da sessão; `fromSession`
+ * marca o arquivo vindo de uma sessão (#229).
  */
 function readManifest(path) {
   if (!existsSync(path)) {
@@ -64,12 +67,51 @@ function readManifest(path) {
     logger.error(`❌ Manifesto inválido (${path}): ${error.message}`);
     process.exit(1);
   }
-  if (!Array.isArray(entries) || entries.length === 0) {
+  if (!isEntryList(entries) || entries.length === 0) {
     logger.error(`❌ Manifesto vazio ou no formato errado: ${path}`);
     process.exit(1);
   }
   const base = dirname(path);
   return entries.map(({ file, ...rest }) => ({ ...rest, localFile: join(base, file) }));
+}
+
+/**
+ * Pastas que só existem no disco local de quem escreveu (sessões e `docs/jarvis/`): um link para
+ * elas, num documento da sessão, não pode virar URL do repositório (#229).
+ * @param {Record<string, string>} env - `loadEnv` (variáveis cruas)
+ * @param {string} root - Pasta do workspace
+ * @returns {string[]} caminhos absolutos
+ */
+function localOnlyDirs(env, root) {
+  const expanded = expandEnv(new Map(Object.entries(env || {})));
+  const { jarvis } = docsFolders(expanded);
+  const sessions = expanded.get("SESSIONS_DIR") || ".jarvis/sessions";
+  return [jarvis, ".jarvis", sessions].map((dir) => resolve(root, dir));
+}
+
+/**
+ * Grava no manifesto, por entrada, onde o arquivo foi de fato publicado (`publishedAs`, que
+ * pode ser um `-vN`, Q6 da #229) e o hash do conteúdo publicado (`publishedHash`): o
+ * `--archive` e o `--finalize` usam o nome certo, e o `--force` confere a cópia antes de apagar a
+ * sessão. As entradas em memória (`files`) recebem os mesmos campos, para o `--force` do mesmo
+ * processo. Só regrava o JSON cru, sem tocar nos outros campos.
+ * @param {string} manifestPath
+ * @param {Array<Object>} files - Entradas lidas por `readManifest`
+ * @param {Array<{destPath: string, hash?: string}>} published - Na ordem das entradas
+ */
+function recordPublished(manifestPath, files, published) {
+  if (!Array.isArray(published) || published.length !== files.length) return;
+  const raw = JSON.parse(readFileSync(manifestPath, "utf-8"));
+  if (!Array.isArray(raw) || raw.length !== files.length) return;
+  published.forEach((p, i) => {
+    raw[i].publishedAs = p.destPath;
+    files[i].publishedAs = p.destPath;
+    if (p.hash) {
+      raw[i].publishedHash = p.hash;
+      files[i].publishedHash = p.hash;
+    }
+  });
+  writeFileSync(manifestPath, JSON.stringify(raw, null, 2));
 }
 
 /**
@@ -83,6 +125,7 @@ function readManifest(path) {
  * @param {string} [flags.manifest] - Caminho de um manifesto JSON com vários arquivos (publicação
  *   em lote: uma branch e um PR só, em vez de um por arquivo)
  * @param {string} [flags.slug] - Nome da branch/commit do lote (ex.: a chave da entrega)
+ * @param {boolean} [flags.dryRun] - Só com --manifest: simula e mostra o que seria publicado (novo, igual, nova versão), sem gravar nada
  * @param {string} [flags.produto] - Pasta do produto (padrão: WORKSPACE do ENV.md)
  * @param {string} [flags.feature] - Slug da funcionalidade. Opcional para `feature` quando o
  *   nome do arquivo segue `feature-{slug}.md`; obrigatório para `delivery` e para os
@@ -148,7 +191,17 @@ async function docsPublishManifest(flags) {
   logger.info(`📤 Publicando a consolidação em lote (${files.length} arquivo(s))...\n`);
 
   try {
-    await publishFiles({ storage, squad, produto, slug: flags.slug, files });
+    const result = await publishFiles({
+      storage,
+      squad,
+      produto,
+      slug: flags.slug,
+      files,
+      localOnlyDirs: localOnlyDirs(env, root),
+      dryRun: Boolean(flags.dryRun),
+    });
+    if (result.dryRun) return; // simulação: não grava o manifesto nem finaliza
+    recordPublished(flags.manifest, files, result.published);
     logger.info("");
     logger.info("✅ Publicação concluída!");
   } catch (error) {
@@ -166,6 +219,7 @@ async function docsPublishManifest(flags) {
     produto,
     env,
     workspaceRoot: root,
+    root: storage.location,
   });
   logger.info(`🧹 ${finalized.length} original(is) removido(s) (sem cópia em archive/)`);
   for (const f of finalized) logger.info(`   - ${f.originalPath}`);

@@ -27,9 +27,12 @@ bin/
     ├── config/                # ide-config.js (fonte de verdade de IDEs), constants.js
     ├── core/                  # scanner.js, sync-engine.js (inclui o RuleResolver do overlay), profile-filter.js, token-report.js, company-profile.js (COMPANY_PROFILE e o default stark-industries)
     ├── docs/                  # Central docs, por funcionalidade (#220): fetch/publish/migrate/archive/finalize + validação
-    │   ├── validate-frontmatter.js  # Valida/extrai frontmatter (feature, delivery, product, home, history e documentos de trabalho: PRD, FRD, épico, história, tarefa, ARD, RFC, QA, discovery)
+    │   ├── validate-frontmatter.js  # Valida/extrai frontmatter (feature, delivery, product, home, history, architecture, plan, light-arch e documentos de trabalho: PRD, FRD, épico, história, tarefa, ARD, RFC, QA, discovery)
     │   ├── fetch-file.js       # openStorageFromEnv() + fetchFile() — `docs sync`/`docs fetch`/`docs publish`/`docs migrate`/`docs archive`/`docs finalize`
-    │   ├── publish-file.js     # tipos, resolveDestPath(), publishFile() e publishFiles() (lote) — `docs publish [--manifest]`
+    │   ├── publish-file.js     # tipos, resolveDestPath(), publishFile() e publishFiles() (lote, `--dry-run`, nome com o card, conversão de links) — `docs publish [--manifest]`
+    │   ├── session-inventory.js # inventário das sessões (arquivos, entrega, página-índice, pendente) — `docs sessions`
+    │   ├── rewrite-links.js    # converte os links dos .md da sessão para resolverem no Central docs (#229)
+    │   ├── check-links.js      # avisa dos links relativos que não resolvem dentro do Central docs (#229)
     │   ├── migrate-central.js # planCentralMigration/applyCentralMigration (layout antigo -> por funcionalidade) — `docs migrate`
     │   ├── finish-delivery.js # archiveEntries/finalizeEntries/forceFinalize/rewriteRelatedRefs — `docs archive`/`docs finalize`/`--force`
     │   └── storage/            # adaptadores (CENTRAL_DOCS_STORAGE): index.js (fábrica), filesystem.js (pasta + git, inclui publishBatch), build-index.js
