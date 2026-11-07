@@ -200,6 +200,7 @@ Cada pasta pode ter seu proprio AGENTS.md com instrucoes especificas. No reposit
 
 ```bash
 /jarvis-init            # Cria ENV.md lendo taxonomy.md (unico comando sem ENV.md); oferece o passo opcional de adicionar as stacks
+/jarvis-init repos      # Depois de clonar repositorios (modo workspace): atualiza mapa, bloco do AGENTS.md e especializacoes
 /warm-up                 # Carrega contexto do projeto
 ```
 

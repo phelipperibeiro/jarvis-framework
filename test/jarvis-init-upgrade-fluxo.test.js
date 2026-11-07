@@ -130,7 +130,7 @@ test("SKILL.md continua com o passo 10 no onboarding completo (regressão)", () 
 // ---- #227: AGENTS.md/CLAUDE.md fora do git no modo projeto ----------------------------------------
 
 const skill = readFileSync(join(root, "skills", "jarvis-init", "SKILL.md"), "utf8");
-const item91 = item(upgrade, "9.1. **Exceção", "10. Acrescentar");
+const item91 = item(upgrade, "9.1. **Exceção", "9.2. **Exceção");
 
 test("SKILL.md: o CLI grava o git do modo projeto; o texto não repete a lista nem escreve no .gitignore", () => {
   assert.match(skill, /\.git\/info\/exclude/, "o Passo 5 deve citar o exclude local");
@@ -263,3 +263,61 @@ test("upgrade.md: a nota do terminal lista a pasta da IDE e a pasta dos document
   // convenção do projeto: o asset usa a variável, não o caminho padrão por extenso (paths-no-fixed-text)
 });
 
+
+// ---- #225: o Upgrade deixa AGENTS.md e CDD-MIND-MAP.md no padrão, com aviso e confirmação (Q5) -------------
+
+const item92 = item(upgrade, "9.2. **Exceção — `AGENTS.md` e `CDD-MIND-MAP.md` no padrão", "10. Acrescentar");
+
+test("upgrade.md 9.2: vem depois do 9.1 e antes do item 10, e o item 17 cita 7 a 9.2", () => {
+  const i91 = upgrade.indexOf("9.1. **Exceção");
+  const i92 = upgrade.indexOf("9.2. **Exceção");
+  const i10 = upgrade.indexOf("10. Acrescentar");
+  assert.ok(i91 !== -1 && i92 !== -1 && i10 !== -1 && i91 < i92 && i92 < i10, "9.1 → 9.2 → 10");
+  assert.match(upgrade, /os itens 7 a 9\.2 ainda podem alterá-lo/);
+});
+
+test("upgrade.md 9.2: confere no AGENTS.md a linha do mapa, o bloco entre marcadores e o caminho .jarvis/sessions", () => {
+  assert.match(item92, /no `AGENTS\.md` \(e no `CLAUDE\.md`, se for cópia dele\)/);
+  assert.match(item92, /a linha `> Mapa de tecnologias do projeto:`/);
+  assert.match(item92, /o bloco entre `<!-- jarvis:repos:start -->` e `<!-- jarvis:repos:end -->`/);
+  assert.match(item92, /o caminho de sessões `\$SESSIONS_DIR` \(padrão `\.jarvis\/sessions`\) no lugar de `\{IDE_FOLDER\}\/sessions`/);
+});
+
+test("upgrade.md 9.2: confere no mapa a tabela do template e uma linha por repositório com .git, sem filtrar por WORKSPACE_REPOS", () => {
+  assert.match(item92, /no `CDD-MIND-MAP\.md` \(só se o arquivo existe\), a tabela do `templates\/cdd-mind-map-template\.md`/);
+  assert.match(item92, /uma linha por repositório com `\.git` \(\*\*todas\*\* as subpastas, sem filtrar por `WORKSPACE_REPOS`\)/);
+});
+
+test("upgrade.md 9.2: modo projeto confere só a linha do mapa e o caminho de sessões (o bloco não se aplica)", () => {
+  assert.match(item92, /\*\*Modo projeto:\*\* só a linha do mapa e o caminho de sessões no `AGENTS\.md` \(o bloco de repositórios não se aplica\)/);
+});
+
+test("upgrade.md 9.2: no padrão não pergunta; fora do padrão avisa cada mudança e pede a confirmação antes de gravar", () => {
+  assert.match(item92, /\*\*Tudo no padrão:\*\* siga \*\*sem perguntar\*\*/);
+  assert.match(item92, /\*\*avise\*\* o que precisa ficar no padrão, listando cada mudança/);
+  assert.match(item92, /`AskUserQuestion`: \*\*Ajustar agora\*\* \| \*\*Deixar como está\*\*/);
+  assert.match(item92, /Só com \*\*Ajustar agora\*\*, ajuste o que for necessário, mostrando cada mudança/);
+  assert.match(item92, /\*\*Sem o Sim, nenhum arquivo muda\.\*\*/);
+  const iAviso = item92.indexOf("**avise**");
+  const iPergunta = item92.indexOf("`AskUserQuestion`");
+  const iAjusta = item92.indexOf("Só com **Ajustar agora**");
+  assert.ok(iAviso < iPergunta && iPergunta < iAjusta, "avisa, pergunta e só então ajusta");
+});
+
+test("upgrade.md 9.2: repositório novo segue o repos.md; AGENTS.md e mapa inexistentes não são criados aqui", () => {
+  assert.match(item92, /pela regra do item 3 do \[repos\.md\]\(repos\.md\)/);
+  assert.match(item92, /para repositório novo, siga o `assets\/repos\.md` \(tabela de papel e stack para a pessoa validar\)/);
+  assert.match(item92, /O `AGENTS\.md` que não existe não é criado aqui \(é o Passo 7\), e o mapa que não existe não é criado aqui/);
+});
+
+test("upgrade.md: a nota do terminal cita o item 9.2 e o /jarvis-init repos para repositório fora do mapa", () => {
+  const nota = upgrade.split("\n").find((l) => l.startsWith("> No terminal, rode antes"));
+  assert.match(nota, /o `AGENTS\.md` e o `CDD-MIND-MAP\.md` no padrão \(item 9\.2\)/);
+  assert.match(nota, /repositório fora do mapa: `\/jarvis-init repos`/);
+});
+
+test("guias: README, docs/estrutura/skills.md e AGENTS.md citam o /jarvis-init repos", () => {
+  assert.match(read("README.md"), /o `AGENTS\.md` e o `CDD-MIND-MAP\.md` no padrão/);
+  assert.match(read("docs", "estrutura", "skills.md"), /o argumento `repos` \(`\/jarvis-init repos`\) atualiza o mapa, o bloco de repositórios do `AGENTS\.md` e as especializações/);
+  assert.match(read("AGENTS.md"), /^\/jarvis-init repos +# Depois de clonar repositorios \(modo workspace\)/m);
+});
