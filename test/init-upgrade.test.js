@@ -16,7 +16,7 @@ import {
 import { tmpdir } from "node:os";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
-import { spawnSync } from "node:child_process";
+import { execFileSync, spawnSync } from "node:child_process";
 import {
   parseMenuChoice,
   upgradePendencies,
@@ -330,11 +330,11 @@ test("init (instalação): pasta sem nenhum .git não recebe .gitignore", () => 
   });
 });
 
-test("init (instalação): .gitignore existente sem \\n final recebe uma linha .jarvis/", () => {
+test("init (instalação): .gitignore existente sem \\n final recebe as linhas .jarvis/ e a pasta da IDE (#227)", () => {
   withWorkspace({ ".git/HEAD": "", ".gitignore": "node_modules" }, (ws) => {
     const r = run(ws, "--ide", "claude");
     assert.equal(r.status, 0, r.stderr);
-    assert.equal(readFileSync(join(ws, ".gitignore"), "utf-8"), "node_modules\n.jarvis/\n");
+    assert.equal(readFileSync(join(ws, ".gitignore"), "utf-8"), "node_modules\n.jarvis/\n.claude/\n");
   });
 });
 
@@ -360,7 +360,8 @@ test("init (instalação): .gitignore com /.jarvis/ não recebe a linha de novo"
   withWorkspace({ ".git/HEAD": "", ".gitignore": "/.jarvis/\n" }, (ws) => {
     const r = run(ws, "--ide", "claude");
     assert.equal(r.status, 0, r.stderr);
-    assert.equal(readFileSync(join(ws, ".gitignore"), "utf-8"), "/.jarvis/\n");
+    // .jarvis/ já estava (como /.jarvis/) e não repete; só a pasta da IDE entra (#227)
+    assert.equal(readFileSync(join(ws, ".gitignore"), "utf-8"), "/.jarvis/\n.claude/\n");
   });
 });
 
@@ -1130,4 +1131,96 @@ test("filterRulesByEnv: devolve o erro de gravação para o código de saída (#
       );
     }
   );
+});
+
+// ---- #227: exclude local no modo projeto (git de verdade) -----------------------------------------
+
+const gitIn = (cwd, ...args) =>
+  execFileSync("git", args, { cwd, encoding: "utf-8", stdio: ["ignore", "pipe", "pipe"] });
+
+/** Workspace com um repositório git real na raiz (modo projeto). */
+function withRealRepo(files, fn) {
+  return withWorkspace(files, (ws) => {
+    gitIn(ws, "init", "-q");
+    return fn(ws);
+  });
+}
+
+const commitAll = (ws) => {
+  gitIn(ws, "add", "-A");
+  gitIn(ws, "-c", "user.email=t@t", "-c", "user.name=t", "commit", "-q", "-m", "x");
+};
+const excludeOf = (ws) => readFileSync(join(ws, ".git", "info", "exclude"), "utf-8").split(/\r?\n/);
+const gitignoreOf = (ws) => (existsSync(join(ws, ".gitignore")) ? readFileSync(join(ws, ".gitignore"), "utf-8") : "");
+const GENERATED = ["AGENTS.md", "CLAUDE.md", "CDD-MIND-MAP.md"];
+
+test("init (instalação) no modo projeto: AGENTS.md, CLAUDE.md e CDD-MIND-MAP.md vão para o exclude, não para o .gitignore", () => {
+  withRealRepo({}, (ws) => {
+    const r = run(ws, "--ide", "claude");
+    assert.equal(r.status, 0, r.stderr);
+    for (const f of GENERATED) {
+      assert.ok(excludeOf(ws).includes(f), `${f} deve estar no .git/info/exclude`);
+      assert.doesNotMatch(gitignoreOf(ws), new RegExp(`^${f}$`, "m"), `${f} não deve ir para o .gitignore`);
+    }
+    assert.match(gitignoreOf(ws), /^\.jarvis\/$/m, ".jarvis/ segue no .gitignore (Q1)");
+    assert.match(gitignoreOf(ws), /^\.claude\/$/m, "a pasta da IDE entra no .gitignore (Q3)");
+    assert.match(r.stdout, /\.git\/info\/exclude \(local, fora do PR\)/);
+    assert.match(r.stdout, /remova a linha do \.git\/info\/exclude/);
+  });
+});
+
+test("init (instalação) no modo projeto: rodar de novo não duplica linha no exclude nem no .gitignore", () => {
+  withRealRepo({}, (ws) => {
+    assert.equal(run(ws, "--ide", "claude").status, 0);
+    for (const f of GENERATED) assert.ok(excludeOf(ws).includes(f), `${f} entrou na primeira rodada`);
+    const exclude = readFileSync(join(ws, ".git/info/exclude"), "utf-8");
+    const ignore = gitignoreOf(ws);
+    assert.equal(run(ws, "--ide", "claude", "--force").status, 0);
+    assert.equal(readFileSync(join(ws, ".git/info/exclude"), "utf-8"), exclude);
+    assert.equal(gitignoreOf(ws), ignore);
+  });
+});
+
+test("init (instalação): AGENTS.md já versionado só gera aviso; o índice, o exclude e o histórico não mudam", () => {
+  withRealRepo({ "AGENTS.md": "# do time\n" }, (ws) => {
+    commitAll(ws);
+    const commits = gitIn(ws, "rev-list", "--count", "HEAD").trim();
+    const r = run(ws, "--ide", "claude");
+    assert.equal(r.status, 0, r.stderr);
+    assert.match(r.stdout, /AGENTS\.md está versionado: nada foi removido/);
+    assert.equal(gitIn(ws, "ls-files", "AGENTS.md").trim(), "AGENTS.md");
+    assert.ok(!excludeOf(ws).includes("AGENTS.md"));
+    assert.equal(gitIn(ws, "rev-list", "--count", "HEAD").trim(), commits);
+    assert.equal(readFileSync(join(ws, "AGENTS.md"), "utf-8"), "# do time\n");
+  });
+});
+
+test("init --force --yes nunca tira AGENTS.md do índice (a confirmação é do Upgrade, pelo skill)", () => {
+  withRealRepo({ "AGENTS.md": "# do time\n" }, (ws) => {
+    commitAll(ws);
+    const r = run(ws, "--ide", "claude", "--force", "--yes");
+    assert.equal(r.status, 0, r.stderr);
+    assert.equal(gitIn(ws, "ls-files", "AGENTS.md").trim(), "AGENTS.md");
+    assert.equal(gitIn(ws, "diff", "--cached", "--name-only").trim(), "", "nada staged pelo init");
+  });
+});
+
+test("init (instalação): pasta da IDE já versionada vira aviso e continua no índice", () => {
+  withRealRepo({ ".claude/regra-do-time.md": "x\n" }, (ws) => {
+    commitAll(ws);
+    const r = run(ws, "--ide", "claude", "--force"); // a pasta já existe: reinstala em vez de abrir o menu
+    assert.equal(r.status, 0, r.stderr);
+    assert.match(r.stdout, /\.claude\/ já está versionada: ignorar não a tira do git/);
+    assert.equal(gitIn(ws, "ls-files", ".claude/regra-do-time.md").trim(), ".claude/regra-do-time.md");
+  });
+});
+
+test("init (instalação) no modo workspace: nenhum arquivo de git é criado e nada fala em exclude", () => {
+  withWorkspace({ "app/.git/HEAD": "" }, (ws) => {
+    const r = run(ws, "--ide", "claude");
+    assert.equal(r.status, 0, r.stderr);
+    assert.ok(!existsSync(join(ws, ".git")));
+    assert.ok(!existsSync(join(ws, ".gitignore")));
+    assert.doesNotMatch(r.stdout, /info\/exclude/);
+  });
 });

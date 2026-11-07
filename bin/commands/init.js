@@ -40,6 +40,7 @@ import {
   ensureGitignore,
 } from "../lib/core/docs-migrate.js";
 import { rootIsRepo } from "../lib/core/workspace-mode.js";
+import { applyProjectGitSetup } from "../lib/core/git-exclude.js";
 import { EnvPathError, checkEnvPaths, planSessionsSetup } from "../lib/core/env-paths.js";
 import { ensureContext7 } from "../lib/core/mcp-config.js";
 
@@ -111,6 +112,31 @@ function logRulesFilter(rulesSync, profileLabel) {
   );
   for (const w of rulesSync.warnings) logger.info(`${YELLOW}  ⚠️  ${w}${NC}`);
   for (const e of rulesSync.errors) logger.error(`${RED}  ✗ ${e}${NC}`);
+}
+
+/**
+ * Mensagens do que o modo projeto gravou no git (#227): o que entrou no exclude e no `.gitignore`, a
+ * frase de como reverter e os avisos de arquivo gerado ou pasta da IDE já versionados. Raiz sem `.git`
+ * (modo workspace): nada. Nunca mostra conteúdo de arquivo.
+ * @param {ReturnType<typeof applyProjectGitSetup>} result
+ */
+export function logProjectGitSetup(result) {
+  if (!result.isRepo) return;
+  if (result.exclude.added.length) {
+    logger.info(`  • .git/info/exclude (local, fora do PR): ${result.exclude.added.join(", ")}`);
+    logger.info(`${DIM}    Para versionar algum deles de propósito, remova a linha do .git/info/exclude.${NC}`);
+  }
+  if (result.ideIgnoreAdded) logger.info(`  • .gitignore: ${result.ideEntry}`);
+  for (const file of result.tracked) {
+    logger.info(
+      `${YELLOW}  ⚠ ${file} está versionado: nada foi removido. Rode /jarvis-init upgrade na IDE para decidir se ele sai do git.${NC}`
+    );
+  }
+  if (result.ideFolderTracked) {
+    logger.info(
+      `${YELLOW}  ⚠ ${result.ideEntry} já está versionada: ignorar não a tira do git e o init não a remove.${NC}`
+    );
+  }
 }
 
 /**
@@ -413,6 +439,9 @@ export async function init(flags) {
     for (const dir of sessions.areaDirs) mkdirSync(dir, { recursive: true });
     for (const line of sessions.gitignore) ensureGitignore(cwd, line);
     for (const warning of sessions.warnings) logger.info(`${YELLOW}  ⚠ ${warning}${NC}`);
+    // Modo projeto (#227): AGENTS.md, CLAUDE.md e CDD-MIND-MAP.md no .git/info/exclude (local) e a pasta
+    // da IDE no .gitignore. Nada sai do índice aqui: tirar AGENTS.md/CLAUDE.md do git é decisão do Upgrade.
+    logProjectGitSetup(applyProjectGitSetup({ dir: cwd, ide }));
   } catch (error) {
     if (!(error instanceof EnvPathError)) throw error;
     logger.error(`${RED}  ✗ ${error.message}${NC}`);
