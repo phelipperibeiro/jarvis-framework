@@ -411,3 +411,48 @@ test("applyProjectGitSetup: CDD-MIND-MAP.md já versionado fica fora do exclude 
     assert.ok(!excludeLines(dir).includes("CDD-MIND-MAP.md"));
   });
 });
+
+// ---- Fase 7 (pre-pr rodada 1): helper do git, trimEnd e untrack --------------------------------------
+
+test("untrackFromIndex: versão staged diferente: ok:false com o motivo do git e nada muda", () => {
+  withRepo((dir) => {
+    trackAgents(dir, "v1\n");
+    writeFileSync(join(dir, "AGENTS.md"), "v2\n");
+    git(dir, "add", "AGENTS.md");
+    writeFileSync(join(dir, "AGENTS.md"), "v3\n");
+    const r = untrackFromIndex(dir, "AGENTS.md");
+    assert.equal(r.ok, false);
+    assert.match(r.reason, /^git rm --cached falhou: .*staged content different/);
+    assert.doesNotMatch(r.reason, /Command failed/, "o motivo é o do git, não a linha de comando");
+    assert.deepEqual(trackedFiles(dir), ["AGENTS.md"]);
+    assert.equal(readFileSync(join(dir, "AGENTS.md"), "utf-8"), "v3\n");
+  });
+});
+
+test("o git não herda GIT_DIR do ambiente: age no repositório pedido, não no do ambiente", () => {
+  withRepo((a) => {
+    trackAgents(a);
+    withRepo((g) => {
+      const antes = process.env.GIT_DIR;
+      process.env.GIT_DIR = join(a, ".git");
+      try {
+        assert.deepEqual(trackedFiles(g), [], "AGENTS.md é do repositório A, não do G");
+        assert.equal(untrackFromIndex(g, "AGENTS.md").ok, false);
+        assert.deepEqual(trackedFiles(a), ["AGENTS.md"], "o repositório A não foi tocado");
+        assert.equal(gitExcludePath(g), join(g, ".git", "info", "exclude"));
+      } finally {
+        if (antes === undefined) delete process.env.GIT_DIR;
+        else process.env.GIT_DIR = antes;
+      }
+    });
+  });
+});
+
+test("ensureLocalExclude: espaço no início é outro padrão do git (não conta); espaço no fim é ignorado", () => {
+  withRepo((dir) => {
+    writeFileSync(gitExcludePath(dir), "  AGENTS.md\nCLAUDE.md  \n");
+    const r = ensureLocalExclude(dir, ["AGENTS.md", "CLAUDE.md"]);
+    assert.deepEqual(r.added, ["AGENTS.md"], "AGENTS.md com espaço no início não conta como presente");
+    assert.deepEqual(r.existing, ["CLAUDE.md"], "CLAUDE.md com espaço no fim conta como presente");
+  });
+});

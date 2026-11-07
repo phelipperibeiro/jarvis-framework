@@ -132,19 +132,59 @@ test("untrack: modo workspace (raiz sem .git) recusa e não cria arquivo de git"
   }
 });
 
-test("untrack: sem ENV.md usa a pasta atual, só se ela for a raiz de um repositório", () => {
+test("untrack: sem ENV.md recusa com saída 1 e não toca no índice (não age em repositório filho por acidente)", () => {
   withRepo(
     { "AGENTS.md": "# a\n" },
     (dir) => {
       const r = run(dir, "AGENTS.md");
-      assert.equal(r.status, 0, r.stderr);
-      assert.ok(!tracked(dir, "AGENTS.md"));
-      // subpasta de um repositório (sem .git próprio) não é raiz: recusa
-      const sub = join(dir, "pacote");
-      mkdirSync(sub);
-      const again = run(sub, "AGENTS.md");
-      assert.equal(again.status, 1);
+      assert.equal(r.status, 1);
+      assert.match(r.stderr + r.stdout, /ENV\.md não encontrado/);
+      assert.ok(tracked(dir, "AGENTS.md"), "o arquivo continua versionado");
+      assert.equal(git(dir, "diff", "--cached", "--name-only").trim(), "", "nada staged");
     },
     { env: false }
   );
+});
+
+test("untrack: com ENV.md na raiz, rodar de uma subpasta do repositório resolve a raiz e funciona", () => {
+  withRepo({ "AGENTS.md": "# a\n", "pacote/x.txt": "x\n" }, (dir) => {
+    const r = run(join(dir, "pacote"), "AGENTS.md");
+    assert.equal(r.status, 0, r.stderr);
+    assert.ok(!tracked(dir, "AGENTS.md"));
+    assert.equal(readFileSync(join(dir, "AGENTS.md"), "utf-8"), "# a\n");
+  });
+});
+
+test("untrack: AGENTS.md já no exclude é idempotente (tira do índice sem duplicar a linha)", () => {
+  withRepo({ "AGENTS.md": "# a\n" }, (dir) => {
+    writeFileSync(join(dir, ".git", "info", "exclude"), "AGENTS.md\n", { flag: "a" });
+    const r = run(dir, "AGENTS.md");
+    assert.equal(r.status, 0, r.stderr);
+    const linhas = readFileSync(join(dir, ".git/info/exclude"), "utf-8").split(/\r?\n/).filter((l) => l === "AGENTS.md");
+    assert.equal(linhas.length, 1);
+  });
+});
+
+test("untrack: --ide inválido sai com 1 e explica", () => {
+  withRepo({ "AGENTS.md": "# a\n" }, (dir) => {
+    const r = run(dir, "AGENTS.md", "--ide", "ide-que-nao-existe");
+    assert.equal(r.status, 1);
+    assert.match(r.stderr + r.stdout, /IDE não suportada/);
+    assert.ok(tracked(dir, "AGENTS.md"));
+  });
+});
+
+test("untrack: versão staged diferente do HEAD e do disco é recusada com o motivo do git, e nada muda", () => {
+  withRepo({ "AGENTS.md": "v1\n" }, (dir) => {
+    writeFileSync(join(dir, "AGENTS.md"), "v2\n");
+    git(dir, "add", "AGENTS.md");
+    writeFileSync(join(dir, "AGENTS.md"), "v3\n");
+    const antes = git(dir, "diff", "--cached", "--name-only").trim();
+    const r = run(dir, "AGENTS.md");
+    assert.equal(r.status, 1);
+    assert.match(r.stderr + r.stdout, /AGENTS\.md: git rm --cached falhou: .*staged content different/);
+    assert.ok(tracked(dir, "AGENTS.md"), "continua rastreado");
+    assert.equal(git(dir, "diff", "--cached", "--name-only").trim(), antes, "o índice não mudou");
+    assert.equal(readFileSync(join(dir, "AGENTS.md"), "utf-8"), "v3\n", "o arquivo local fica como estava");
+  });
 });
