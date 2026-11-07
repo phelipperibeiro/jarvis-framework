@@ -16,7 +16,7 @@ import {
 import { join, resolve, relative, dirname, basename, isAbsolute, sep } from "node:path";
 import { execFileSync } from "node:child_process";
 import { rootIsRepo } from "./workspace-mode.js";
-import { assertPathsResolved, expandEnv } from "./env-paths.js";
+import { assertPathsResolved, envWithDefaults, expandEnv } from "./env-paths.js";
 
 const ENG_SUBDIRS = ["ARD", "RFC", "qa", "swagger", "openapi", "robots", "c4"];
 const LEGACY_ENG_SUBDIRS = ["robots", "swagger", "openapi", "c4"];
@@ -27,7 +27,9 @@ export { expandEnv };
 const clean = (p) => p.replace(/^\.\//, "").replace(/\/+$/, "");
 
 /** Pastas de documentos resolvidas, com os padrões do template quando faltam. */
-export function docsFolders(env) {
+export function docsFolders(expanded) {
+  // O ENV já expandido pode ter `$JARVIS_DOCS` solto (a chave faltava no ENV.md): os padrões do template resolvem.
+  const env = expandEnv(envWithDefaults(expanded));
   assertPathsResolved(env, ["DOCS_FOLDER", "JARVIS_DOCS", "PROD_DOCS", "ENG_DOCS", "DISCOVERIES_DOCS"]);
   const docs = clean(env.get("DOCS_FOLDER") || "docs");
   const jarvis = clean(env.get("JARVIS_DOCS") || `${docs}/jarvis`);

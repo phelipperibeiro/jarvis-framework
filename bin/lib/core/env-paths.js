@@ -90,7 +90,7 @@ const LEFTOVER_RE = /\$\{?[A-Za-z0-9_]*\}?/g;
 const toEntries = (env) => (env instanceof Map ? env : new Map(Object.entries(env || {})));
 
 /** Padrões do template + as chaves do ENV (que vencem os padrões, exceto vazias). */
-function withDefaults(env) {
+export function envWithDefaults(env) {
   const entries = new Map(Object.entries(ENV_PATH_DEFAULTS));
   for (const [key, value] of toEntries(env)) {
     if (value !== undefined && value !== null && String(value) !== "") entries.set(key, String(value));
@@ -107,7 +107,7 @@ function withDefaults(env) {
  * @throws {EnvPathError}
  */
 export function expandEnvPath(env, key) {
-  const entries = withDefaults(env);
+  const entries = envWithDefaults(env);
   const value = expandEnv(entries).get(key);
   if (value === undefined) return undefined;
   if (PATH_KEYS.includes(key)) {
@@ -125,7 +125,7 @@ export function expandEnvPath(env, key) {
  * @returns {string}
  */
 export function expandEnvValue(value, env) {
-  const entries = withDefaults(env);
+  const entries = envWithDefaults(env);
   entries.set("\0VALUE", String(value));
   return expandEnv(entries).get("\0VALUE");
 }
@@ -177,4 +177,15 @@ export function planSessionsSetup({ workspaceDir, env = {}, isRepo }) {
     }
   }
   return { sessionsDir, areaDirs: SESSION_AREAS.map((area) => resolve(sessionsDir, area)), gitignore, warnings };
+}
+
+/**
+ * Confere de uma vez as chaves de caminho do ENV (cru): nenhuma pode ter `$` sem valor. Para o
+ * comando validar antes de mexer em qualquer coisa (ex.: `jarvis init --upgrade`, `docs finalize`).
+ * @param {Record<string, string> | Map<string, string>} env
+ * @param {ReadonlyArray<string>} [keys]
+ * @throws {EnvPathError}
+ */
+export function checkEnvPaths(env, keys = PATH_KEYS) {
+  for (const key of keys) expandEnvPath(env, key);
 }

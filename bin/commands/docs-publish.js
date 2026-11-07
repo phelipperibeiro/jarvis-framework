@@ -2,7 +2,7 @@ import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { openStorageFromEnv } from "../lib/docs/fetch-file.js";
 import { docsFolders, expandEnv } from "../lib/core/docs-migrate.js";
-import { expandEnvPath } from "../lib/core/env-paths.js";
+import { EnvPathError, expandEnvPath } from "../lib/core/env-paths.js";
 import { publishFile, publishFiles, VALID_TYPES } from "../lib/docs/publish-file.js";
 import { forceFinalize, isEntryList } from "../lib/docs/finish-delivery.js";
 import { logger, configureFromFlags } from "../lib/utils/logger.js";
@@ -37,6 +37,11 @@ function resolveSquadProduto(flags, env) {
 }
 
 function reportPublishError(error, storage, tipo) {
+  if (error instanceof EnvPathError) {
+    logger.error("\n❌ Caminho do ENV.md inválido (nada foi publicado)\n");
+    logger.error(error.message);
+    return;
+  }
   logger.error("\n❌ Erro ao publicar documento\n");
   logger.error(error.message);
   if (error.message.includes("Campos obrigatórios")) {
