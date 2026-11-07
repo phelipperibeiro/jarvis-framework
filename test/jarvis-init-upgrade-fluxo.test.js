@@ -161,6 +161,18 @@ test("upgrade.md 9.1: jarvis untrack só na opção Tirar do git; Manter version
   );
 });
 
+test("upgrade.md 9.1: a opção Manter versionado não traz comando, e só o 9.1 chama o jarvis untrack em skills, workflows e agentes", () => {
+  const manter = item91.split("\n").find((l) => l.includes("**Manter versionado**, ou sem resposta"));
+  assert.ok(manter, "a opção Manter existe");
+  assert.doesNotMatch(manter, /jarvis untrack|git rm|git add|git commit/, "Manter não executa nada");
+  const chamadores = [];
+  for (const dir of ["skills", "workflows", "agents", "rules", "rules-on-demand"]) {
+    const r = spawnSync("grep", ["-rl", "--include=*.md", "jarvis untrack", join(root, dir)], { encoding: "utf-8" });
+    for (const f of r.stdout.split("\n").filter(Boolean)) chamadores.push(f.slice(root.length + 1));
+  }
+  assert.deepEqual(chamadores, ["skills/jarvis-init/assets/upgrade.md"], "nenhum outro texto manda chamar o untrack");
+});
+
 test("README: o parágrafo do .gitignore lista tudo o que o init grava (inclusive docs/jarvis/ e a pasta da IDE)", () => {
   const linha = read("README.md").split("\n").find((l) => l.includes("põe no `.gitignore`"));
   assert.ok(linha, "o parágrafo do .gitignore existe");
