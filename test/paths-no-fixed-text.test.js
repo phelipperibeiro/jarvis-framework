@@ -3,8 +3,9 @@
 // Rode com: npm run test:filtro
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
-import { dirname, join, resolve, sep } from "node:path";
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { dirname, join, relative, resolve, sep } from "node:path";
 import { expandEnvPath } from "../bin/lib/core/env-paths.js";
 import { fileURLToPath } from "node:url";
 
@@ -138,4 +139,32 @@ test("regra 1: o {RAIZ} calculado chega à pasta do workspace com valores padrã
   assert.equal(raiz(".jarvis/sessions/eng/K"), "../../../../");
   assert.equal(raiz("docs/jarvis/product/prd-1-x/issues"), "../../../../../");
   assert.equal(raiz("docs/jarvis/discoveries"), "../../../");
+});
+
+test("templates: com DOCS_FOLDER, JARVIS_DOCS e SESSIONS_DIR fora do padrão, todo link {RAIZ}… resolve para uma pasta que existe", () => {
+  const ws = mkdtempSync(join(tmpdir(), "jarvis-templates-links-"));
+  try {
+    const env = { DOCS_FOLDER: "documentos", JARVIS_DOCS: ".jarvis/$DOCS_FOLDER/jarvis", SESSIONS_DIR: "sess/a/b" };
+    const fileDir = join(ws, expandEnvPath(env, "SESSIONS_DIR"), "eng", "KEY-1"); // onde o architecture.md etc. são gravados
+    mkdirSync(fileDir, { recursive: true });
+    mkdirSync(join(ws, "jarvis-framework"), { recursive: true });
+    for (const key of ["PROD_DOCS", "ENG_DOCS", "JARVIS_DOCS", "DISCOVERIES_DOCS"]) {
+      mkdirSync(join(ws, expandEnvPath(env, key)), { recursive: true });
+    }
+    const prefixo = raiz(relative(ws, fileDir).split(sep).join("/"));
+    assert.equal(prefixo, "../../../../../", "sess/a/b/eng/KEY-1 tem 5 pastas até o workspace");
+
+    for (const file of TEMPLATES.filter((f) => !f.endsWith("PR-template.md"))) {
+      const text = readFileSync(join(repoRoot, file), "utf-8");
+      const links = [...text.matchAll(/\]\(\{RAIZ\}(\{repo\}|\$(PROD_DOCS|ENG_DOCS|JARVIS_DOCS|DISCOVERIES_DOCS))\//g)];
+      assert.ok(links.length > 0, `${file}: sem link {RAIZ}`);
+      for (const [, destino, chave] of links) {
+        const base = destino === "{repo}" ? "jarvis-framework" : expandEnvPath(env, chave);
+        const alvo = resolve(fileDir, prefixo + base);
+        assert.ok(existsSync(alvo), `${file}: ${destino} → ${alvo} não existe`);
+      }
+    }
+  } finally {
+    rmSync(ws, { recursive: true, force: true });
+  }
 });
