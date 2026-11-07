@@ -72,10 +72,12 @@ export class EnvPathError extends Error {
    * @param {string} key
    * @param {string} value - Valor original da chave, antes da expansão
    * @param {string[]} leftover - O que ficou sem expandir (`$NOME`)
+   * @param {string} [expanded] - Valor depois da expansão parcial (omitido quando igual ao original)
    */
-  constructor(key, value, leftover) {
+  constructor(key, value, leftover, expanded = value) {
     super(
-      `Caminho "${key}" do ENV.md com variável sem valor: "${value}" (sobrou: ${leftover.join(", ")}). ` +
+      `Caminho "${key}" do ENV.md com variável sem valor: "${value}"` +
+        `${expanded !== value ? ` (expande para "${expanded}")` : ""} (sobrou: ${leftover.join(", ")}). ` +
         `Defina a variável no ENV.md ou corrija o caminho.`
     );
     this.name = "EnvPathError";
@@ -85,7 +87,8 @@ export class EnvPathError extends Error {
   }
 }
 
-const LEFTOVER_RE = /\$\{?[A-Za-z0-9_]*\}?/g;
+/** O que sobra de uma variável não expandida: `$NOME` (letra ou `_` primeiro) ou `${...}`; `$` isolado ou no fim é texto. */
+const LEFTOVER_RE = /\$[A-Za-z_][A-Za-z0-9_]*|\$\{[^}]*\}/g;
 
 const toEntries = (env) => (env instanceof Map ? env : new Map(Object.entries(env || {})));
 
@@ -112,7 +115,7 @@ export function expandEnvPath(env, key) {
   if (value === undefined) return undefined;
   if (PATH_KEYS.includes(key)) {
     const leftover = value.match(LEFTOVER_RE);
-    if (leftover) throw new EnvPathError(key, entries.get(key), [...new Set(leftover)]);
+    if (leftover) throw new EnvPathError(key, entries.get(key), [...new Set(leftover)], value);
   }
   return value;
 }
@@ -163,16 +166,19 @@ export const SESSION_AREAS = Object.freeze(["eng", "prod", "qa"]);
  */
 export function planSessionsSetup({ workspaceDir, env = {}, isRepo }) {
   const value = expandEnvPath(env, "SESSIONS_DIR");
-  const sessionsDir = isAbsolute(value) ? value : resolve(workspaceDir, value);
+  const sessionsDir = resolve(workspaceDir, value); // absoluto vale como está; a barra final some
   const rel = relative(workspaceDir, sessionsDir);
-  const inside = rel !== "" && !rel.startsWith("..") && !isAbsolute(rel);
+  const isRoot = rel === "";
+  const inside = !isRoot && !rel.startsWith("..") && !isAbsolute(rel);
   const gitignore = [];
   const warnings = [];
   if (isRepo) {
     gitignore.push(".jarvis/");
     const underJarvis = inside && (rel === ".jarvis" || rel.startsWith(".jarvis/") || rel.startsWith(".jarvis\\"));
     if (inside && !underJarvis) gitignore.push(`${rel.split("\\").join("/")}/`);
-    else if (!inside) {
+    else if (isRoot) {
+      warnings.push(`SESSIONS_DIR (${value}) é a própria raiz do workspace: eng/, prod/ e qa/ ficam soltas nela e o .gitignore não as cobre.`);
+    } else if (!inside) {
       warnings.push(`SESSIONS_DIR (${value}) fora da raiz do repositório: sem entrada no .gitignore para ele.`);
     }
   }

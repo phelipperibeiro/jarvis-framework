@@ -601,6 +601,16 @@ async function runUpgrade(cwd, flags) {
   }
   const workspaceDir = resolved.root;
   const envPath = resolved.path;
+  // 0. Caminhos do ENV.md com `$` sem valor: o upgrade para antes de mexer em qualquer coisa (#228).
+  try {
+    checkEnvPaths(parseEnvEntries(readFileSync(envPath, "utf-8")));
+  } catch (error) {
+    if (!(error instanceof EnvPathError)) throw error;
+    logger.error(`${RED}  ✗ ${error.message}${NC}`);
+    logger.error(`${RED}  ✗ Upgrade interrompido: nada foi alterado. Corrija o ENV.md e rode de novo.${NC}\n`);
+    return 1;
+  }
+
   const previousVersion = readLockVersion(workspaceDir);
   // Vindo do menu do `init`, o aviso já saiu antes da escolha (Q8): só reaproveita o resultado.
   const { downgrade, running } =
@@ -624,16 +634,6 @@ async function runUpgrade(cwd, flags) {
       );
       return 1;
     }
-  }
-
-  // 0. Caminhos do ENV.md com `$` sem valor: o upgrade para antes de mexer em qualquer coisa (#228).
-  try {
-    checkEnvPaths(parseEnvEntries(readFileSync(envPath, "utf-8")));
-  } catch (error) {
-    if (!(error instanceof EnvPathError)) throw error;
-    logger.error(`${RED}  ✗ ${error.message}${NC}`);
-    logger.error(`${RED}  ✗ Upgrade interrompido: nada foi alterado. Corrija o ENV.md e rode de novo.${NC}\n`);
-    return 1;
   }
 
   // 1. Arquivos do framework (o ENV.md não está entre os sincronizados)

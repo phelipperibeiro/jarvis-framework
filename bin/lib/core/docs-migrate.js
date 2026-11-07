@@ -24,7 +24,8 @@ const LEGACY_ENG_SUBDIRS = ["robots", "swagger", "openapi", "c4"];
 // A expansão de `$VAR` mora em `env-paths.js` (#228); re-exportada aqui para os imports existentes.
 export { expandEnv };
 
-const clean = (p) => p.replace(/^\.\//, "").replace(/\/+$/, "");
+// Tira o `./` do começo, a barra do fim e as barras duplicadas (`./docs/` + `/jarvis` → `docs/jarvis`).
+const clean = (p) => p.replace(/^\.\//, "").replace(/\/+$/, "").replace(/([^/])\/{2,}/g, "$1/");
 
 /** Pastas de documentos resolvidas, com os padrões do template quando faltam. */
 export function docsFolders(expanded) {

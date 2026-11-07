@@ -106,7 +106,7 @@ test("docs publish --manifest: SESSIONS_DIR inválido para antes de publicar, co
       assert.match(r.stdout + r.stderr, /Caminho do ENV\.md inválido/);
       assert.match(r.stdout + r.stderr, /SESSIONS_DIR/);
       SEM_TRACE(r);
-      assert.deepEqual(readdirSync(join(ws, "central")).sort(), ["CORE"], "nada foi publicado");
+      assert.deepEqual(readdirSync(join(ws, "central/CORE")), [".keep"], "nada foi publicado (a publicação grava dentro de central/CORE)");
     }
   );
 });
@@ -138,5 +138,29 @@ test("init --upgrade: caminho inválido interrompe antes de sincronizar, com sta
     SEM_TRACE(r);
     assert.deepEqual(readdirSync(join(ws, ".claude")), ["ENV.md"], "nada foi sincronizado");
     assert.ok(!existsSync(join(ws, ".mcp.json")));
+  });
+});
+
+test("docsFolders: barra final, ./ e barras duplicadas não geram // nos caminhos", () => {
+  const f = docsFolders(expandEnv(new Map([["DOCS_FOLDER", "./docs/"]])));
+  assert.equal(f.docs, "docs");
+  assert.equal(f.jarvis, "docs/jarvis");
+  assert.equal(f.prod, "docs/jarvis/product");
+  assert.ok(![f.docs, f.jarvis, f.prod, f.eng, f.discoveries].some((p) => p.includes("//")));
+});
+
+test("init --upgrade: o erro de caminho vem antes do prompt de rebaixamento (lock de versão maior)", () => {
+  withWorkspace(["WORKSPACE=ws", "IDE=claude", "HUB=BACKEND", "AREA=ENGINEERING", "PROD_DOCS=$FOO/product"], { "jarvis-lock.json": JSON.stringify({ version: "99.0.0" }) }, (ws) => {
+    const r = spawnSync(process.execPath, [cli, "init", "--upgrade", "--ide", "claude"], {
+      cwd: ws,
+      encoding: "utf-8",
+      stdio: "pipe",
+      input: "",
+      env: { ...process.env, JARVIS_SKIP_CLI_CHECK: "1" },
+    });
+    assert.equal(r.status, 1, r.stdout + r.stderr);
+    assert.match(r.stdout + r.stderr, /PROD_DOCS.*\$FOO\/product/s);
+    assert.doesNotMatch(r.stdout + r.stderr, /nada será rebaixado|Seguir e rebaixar/, "antes: perguntava do rebaixamento primeiro");
+    assert.deepEqual(readdirSync(join(ws, ".claude")), ["ENV.md"]);
   });
 });

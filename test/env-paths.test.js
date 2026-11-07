@@ -136,3 +136,30 @@ test("assertPathsResolved e docsFolders: $ sobrando numa chave de documentos vir
   // chave que não é de caminho não conta
   assert.doesNotThrow(() => assertPathsResolved(new Map([["RULES_FOLDER", ".$IDE/rules"]])));
 });
+
+test("expandEnvPath: $ isolado, no fim ou duplicado é texto, não variável sem valor", () => {
+  for (const v of ["a$", "a$ b", "C:\\Users\\a$\\d", "preço$/x", "$1/x"]) {
+    assert.equal(expandEnvPath({ CENTRAL_DOCS_LOCATION: v }, "CENTRAL_DOCS_LOCATION"), v);
+  }
+  // variável de verdade (letra ou _ primeiro) e ${...} continuam sendo erro
+  for (const v of ["$x/a", "$_X/a", "${X}/a", "a/$NAO_EXISTE"]) {
+    assert.throws(() => expandEnvPath({ CENTRAL_DOCS_LOCATION: v }, "CENTRAL_DOCS_LOCATION"), EnvPathError, v);
+  }
+});
+
+test("EnvPathError: a mensagem é a mesma por expandEnvPath e por assertPathsResolved; mostra o valor expandido só quando difere", () => {
+  const direto = new Error();
+  try {
+    expandEnvPath({ DOCS_FOLDER: "d", CENTRAL_DOCS_LOCATION: "$JARVIS_DOCS/c", JARVIS_DOCS: "$RAIZ/j" }, "CENTRAL_DOCS_LOCATION");
+  } catch (e) {
+    Object.assign(direto, { message: e.message });
+  }
+  assert.match(direto.message, /"\$JARVIS_DOCS\/c" \(expande para "\$RAIZ\/j\/c"\) \(sobrou: \$RAIZ\)/);
+  try {
+    assertPathsResolved(new Map([["JARVIS_DOCS", "$RAIZ/j"]]));
+    assert.fail("deveria lançar");
+  } catch (e) {
+    assert.match(e.message, /Caminho "JARVIS_DOCS" do ENV\.md com variável sem valor: "\$RAIZ\/j" \(sobrou: \$RAIZ\)/);
+    assert.doesNotMatch(e.message, /expande para/);
+  }
+});

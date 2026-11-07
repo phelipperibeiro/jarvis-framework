@@ -72,6 +72,23 @@ test("planSessionsSetup: dentro de .jarvis não repete linha; absoluto avisa e n
   assert.equal(fora.warnings.length, 1);
 });
 
+test("planSessionsSetup: SESSIONS_DIR igual à raiz do workspace tem aviso próprio (não 'fora da raiz')", () => {
+  for (const v of [".", "./", "/w", "/w/"]) {
+    const p = planSessionsSetup({ workspaceDir: "/w", env: { SESSIONS_DIR: v }, isRepo: true });
+    assert.equal(p.sessionsDir, "/w", v);
+    assert.deepEqual(p.gitignore, [".jarvis/"], v);
+    assert.equal(p.warnings.length, 1, v);
+    assert.match(p.warnings[0], /própria raiz do workspace/, v);
+    assert.doesNotMatch(p.warnings[0], /fora da raiz/, v);
+  }
+});
+
+test("planSessionsSetup: .jarvis exato não repete linha; .jarvisx/… (só começa igual) entra no .gitignore", () => {
+  assert.deepEqual(planSessionsSetup({ workspaceDir: "/w", env: { SESSIONS_DIR: ".jarvis" }, isRepo: true }).gitignore, [".jarvis/"]);
+  assert.deepEqual(planSessionsSetup({ workspaceDir: "/w", env: { SESSIONS_DIR: ".jarvisx/s" }, isRepo: true }).gitignore, [".jarvis/", ".jarvisx/s/"]);
+  assert.deepEqual(planSessionsSetup({ workspaceDir: "/w", env: { SESSIONS_DIR: ".jarvis-outro/s" }, isRepo: true }).gitignore, [".jarvis/", ".jarvis-outro/s/"]);
+});
+
 test("planSessionsSetup: raiz sem .git não gera linha de .gitignore nem aviso", () => {
   const p = planSessionsSetup({ workspaceDir: "/w", env: { SESSIONS_DIR: "/srv/s" }, isRepo: false });
   assert.deepEqual(p.gitignore, []);

@@ -3,7 +3,7 @@
 // Rode com: npm run test:filtro
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, relative, resolve, sep } from "node:path";
 import { expandEnvPath } from "../bin/lib/core/env-paths.js";
@@ -55,13 +55,16 @@ const EXEMPT = [
   { file: "rules-on-demand/doc-links-rules.md", when: (l) => l.includes("com `JARVIS_DOCS=.jarvis/docs/jarvis`"), why: "exemplo com valores diferentes do padrão" },
   { file: "rules-on-demand/doc-links-rules.md", when: (l) => l.startsWith("Num `architecture.md` em `$SESSIONS_DIR/eng/{KEY}/`"), why: "introdução da seção Exemplos, que diz o que o {RAIZ} vira com os valores padrão" },
   { file: "rules-on-demand/doc-links-rules.md", when: (l) => /^- (Requisito|Decisão com travessão|Código|Trecho):/.test(l), why: "seção Exemplos, com os valores padrão" },
-  // O padrão descrito como padrão (valor do template, não suposição):
-  { file: "skills/jarvis-init/SKILL.md", when: (l) => /padrão|padrao/i.test(l) || /^SESSIONS_DIR=|^#\s+SESSIONS_DIR=/.test(l.trim()) || l.includes("~/.jarvis/sessions"), why: "padrão descrito como padrão, ENV de exemplo e o que NÃO criar em ~/" },
+  // O padrão descrito como padrão (valor do template, não suposição). Cada exceção casa um trecho específico:
+  { file: "skills/jarvis-init/SKILL.md", when: (l) => /\(padrão `?\.jarvis\/sessions`?[,)]/.test(l), why: "SESSIONS_DIR com o padrão entre parênteses (linhas 23, 231, 642 e 1174)" },
+  { file: "skills/jarvis-init/SKILL.md", when: (l) => /^(#\s+)?SESSIONS_DIR=\.jarvis\/sessions$/.test(l.trim()), why: "ENV de exemplo com o valor padrão da chave" },
   { file: "skills/jarvis-init/SKILL.md", when: (l) => l.includes("| `SESSIONS_DIR` | `.jarvis/sessions` |"), why: "tabela de variáveis: o valor padrão" },
-  { file: "skills/jarvis-init/assets/upgrade.md", when: (l) => /padrão atual/.test(l), why: "padrão descrito como padrão" },
-  { file: "skills/jarvis-init/assets/exemplo-execucao.md", when: (l) => /padrão `\.jarvis\/sessions`/.test(l), why: "padrão descrito como padrão" },
-  { file: "skills/jarvis-docs-central/SKILL.md", when: (l) => /padrão do template|hoje `docs\/jarvis/.test(l), why: "padrão descrito como padrão" },
-  { file: "skills/jarvis-docs-central/README.md", when: (l) => /valores padrão|padrão/.test(l) && l.includes("docs/jarvis/central-docs"), why: "padrão descrito como padrão" },
+  { file: "skills/jarvis-init/SKILL.md", when: (l) => l.includes("hoje `docs/jarvis/central-docs`"), why: "Central docs: o padrão hoje, junto do derivado" },
+  { file: "skills/jarvis-init/SKILL.md", when: (l) => l.startsWith("- ❌ Criar") && l.includes("`~/.jarvis/sessions`"), why: "o que NÃO criar no home" },
+  { file: "skills/jarvis-init/assets/upgrade.md", when: (l) => l.includes("o padrão atual (`docs/jarvis/central-docs` com os valores padrão)"), why: "Central docs: o padrão atual" },
+  { file: "skills/jarvis-init/assets/exemplo-execucao.md", when: (l) => l.includes("(padrão `.jarvis/sessions`)"), why: "exemplo de execução com o padrão" },
+  { file: "skills/jarvis-docs-central/SKILL.md", when: (l) => l.includes("hoje `docs/jarvis/central-docs`"), why: "Central docs: o padrão hoje" },
+  { file: "skills/jarvis-docs-central/README.md", when: (l) => l.includes("com os valores padrão, `docs/jarvis/central-docs`"), why: "Central docs: o padrão" },
   { file: "rules/product/prod-rules.md", when: (l) => /`\$(JARVIS_DOCS\/product|JARVIS_DOCS\/discoveries|ENG_DOCS)` \(`docs\/jarvis\//.test(l), why: "o padrão ao lado da variável (rule carregada no início da sessão: o tamanho é fixado em teste, #83)" },
   { file: "rules/engineering/eng-rules.md", when: (l) => l.includes("`$SESSIONS_DIR` → `.jarvis/sessions`"), why: "mapeamento da variável para o seu valor padrão (rule carregada no início da sessão)" },
   { file: "rules-on-demand/engineering/eng.transitions-rules.md", when: (l) => l.includes("com o `SESSIONS_DIR` padrão"), why: "exemplo de link com o padrão" },
@@ -167,4 +170,38 @@ test("templates: com DOCS_FOLDER, JARVIS_DOCS e SESSIONS_DIR fora do padrão, to
   } finally {
     rmSync(ws, { recursive: true, force: true });
   }
+});
+
+// --- completude: arquivo novo com caminho fixo não passa batido -------------------
+
+/** Arquivos que têm o padrão por natureza e por isso ficam fora de TARGETS (com o motivo). */
+const IGNORED = {
+  "templates/ENV-template.md": "é o próprio arquivo dos valores padrão",
+  "agents/engineering/data/eng.data-engineer.agent.md": "`../../../../ENV.md` é um link relativo do arquivo do agente até o ENV da IDE, não do workspace",
+};
+
+function markdownFiles(dir) {
+  const out = [];
+  for (const entry of readdirSync(join(repoRoot, dir), { withFileTypes: true })) {
+    const rel = `${dir}/${entry.name}`;
+    if (entry.isDirectory()) out.push(...markdownFiles(rel));
+    else if (entry.name.endsWith(".md")) out.push(rel);
+  }
+  return out;
+}
+
+test("completude: todo .md de workflows, skills, rules, templates e agents com caminho fixo está em TARGETS ou em IGNORED", () => {
+  const faltam = [];
+  for (const dir of ["workflows", "skills", "rules", "rules-on-demand", "templates", "agents"]) {
+    for (const file of markdownFiles(dir)) {
+      if (TARGETS.includes(file) || file in IGNORED) continue;
+      const text = readFileSync(join(repoRoot, file), "utf-8");
+      if (FIXED.some(({ re }) => re.test(text))) faltam.push(file);
+    }
+  }
+  assert.deepEqual(faltam, [], "arquivo com caminho fixo fora de TARGETS: acrescente a TARGETS (e às exceções) ou a IGNORED, com o motivo");
+});
+
+test("completude: os arquivos de IGNORED existem (a lista não apodrece)", () => {
+  for (const file of Object.keys(IGNORED)) assert.ok(existsSync(join(repoRoot, file)), file);
 });
