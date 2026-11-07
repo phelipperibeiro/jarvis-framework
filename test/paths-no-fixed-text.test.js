@@ -26,6 +26,11 @@ const TARGETS = [
   "templates/engineering/plan-template.md",
   "templates/engineering/PR-template.md",
   "workflows/engineering/eng.pre-pr.md",
+  "skills/jarvis-init/SKILL.md",
+  "skills/jarvis-init/assets/upgrade.md",
+  "skills/jarvis-init/assets/exemplo-execucao.md",
+  "skills/jarvis-docs-central/SKILL.md",
+  "skills/jarvis-docs-central/README.md",
 ];
 
 /** Linhas permitidas: arquivo + condição + motivo. Curta e explícita. */
@@ -34,6 +39,13 @@ const EXEMPT = [
   { file: "rules-on-demand/doc-links-rules.md", when: (l) => l.includes("com `JARVIS_DOCS=.jarvis/docs/jarvis`"), why: "exemplo com valores diferentes do padrão" },
   { file: "rules-on-demand/doc-links-rules.md", when: (l) => l.startsWith("Num `architecture.md` em `$SESSIONS_DIR/eng/{KEY}/`"), why: "introdução da seção Exemplos, que diz o que o {RAIZ} vira com os valores padrão" },
   { file: "rules-on-demand/doc-links-rules.md", when: (l) => /^- (Requisito|Decisão com travessão|Código|Trecho):/.test(l), why: "seção Exemplos, com os valores padrão" },
+  // O padrão descrito como padrão (valor do template, não suposição):
+  { file: "skills/jarvis-init/SKILL.md", when: (l) => /padrão|padrao/i.test(l) || /^SESSIONS_DIR=|^#\s+SESSIONS_DIR=/.test(l.trim()) || l.includes("~/.jarvis/sessions"), why: "padrão descrito como padrão, ENV de exemplo e o que NÃO criar em ~/" },
+  { file: "skills/jarvis-init/SKILL.md", when: (l) => l.includes("| `SESSIONS_DIR` | `.jarvis/sessions` |"), why: "tabela de variáveis: o valor padrão" },
+  { file: "skills/jarvis-init/assets/upgrade.md", when: (l) => /padrão atual/.test(l), why: "padrão descrito como padrão" },
+  { file: "skills/jarvis-init/assets/exemplo-execucao.md", when: (l) => /padrão `\.jarvis\/sessions`/.test(l), why: "padrão descrito como padrão" },
+  { file: "skills/jarvis-docs-central/SKILL.md", when: (l) => /padrão do template|hoje `docs\/jarvis/.test(l), why: "padrão descrito como padrão" },
+  { file: "skills/jarvis-docs-central/README.md", when: (l) => /valores padrão|padrão/.test(l) && l.includes("docs/jarvis/central-docs"), why: "padrão descrito como padrão" },
 ];
 
 function violations(file) {

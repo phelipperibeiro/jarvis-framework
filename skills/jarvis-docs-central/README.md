@@ -1,6 +1,6 @@
 # jarvis-docs-central
 
-Integração com o **Central docs**: o registro do que **foi implementado** em cada produto do squad, por funcionalidade (um documento completo por funcionalidade, um registro por entrega, a página do produto e o histórico), com um índice que os outros comandos consultam. Os documentos de trabalho (PRD, FRD, ARD, RFC, SPEC) ficam em `docs/jarvis/` e só vão para lá quando ligados a uma entrega consolidada. **Depois da entrega, a sessão inteira (`architecture.md`, `plan.md`, `context.md`, rodadas do pré-PR, scripts e saídas) também vai**, com uma página-índice, de modo que a pasta da sessão possa ser apagada sem perder nada, e a estrutura é organizada para migrar ao Confluence.
+Integração com o **Central docs**: o registro do que **foi implementado** em cada produto do squad, por funcionalidade (um documento completo por funcionalidade, um registro por entrega, a página do produto e o histórico), com um índice que os outros comandos consultam. Os documentos de trabalho (PRD, FRD, ARD, RFC, SPEC) ficam em `$JARVIS_DOCS` e só vão para lá quando ligados a uma entrega consolidada. **Depois da entrega, a sessão inteira (`architecture.md`, `plan.md`, `context.md`, rodadas do pré-PR, scripts e saídas) também vai**, com uma página-índice, de modo que a pasta da sessão possa ser apagada sem perder nada, e a estrutura é organizada para migrar ao Confluence.
 
 ## Visão Geral
 
@@ -17,7 +17,7 @@ Ligado por padrão. O `/jarvis-init` (Passo 5.2) pergunta "Onde fica o Central d
 
 ```ini
 CENTRAL_DOCS_STORAGE=filesystem
-CENTRAL_DOCS_LOCATION=docs/jarvis/central-docs   # relativo à pasta do workspace, ou absoluto
+CENTRAL_DOCS_LOCATION=$JARVIS_DOCS/central-docs   # relativo à pasta do workspace, ou absoluto; aceita $VAR
 # Só se a pasta tiver .git:
 CENTRAL_DOCS_REF=main
 CENTRAL_DOCS_TARGET_BRANCH=main
@@ -25,7 +25,7 @@ SQUAD=CORE
 WORKSPACE=loja                           # vira a pasta do produto
 ```
 
-A pasta padrão é `docs/jarvis/central-docs` nos dois modos de trabalho, junto dos documentos de trabalho. No projeto único, `docs/jarvis/` no `.gitignore` a deixa fora do versionamento; no workspace (vários repositórios) a raiz não é versionada. Quem já usa `./central-docs` continua funcionando, e o Upgrade do `/jarvis-init` oferece mover a pasta.
+A pasta padrão é `$JARVIS_DOCS/central-docs` (com os valores padrão, `docs/jarvis/central-docs`) nos dois modos de trabalho, junto dos documentos de trabalho; quem muda o `JARVIS_DOCS` leva o Central docs junto. No projeto único, `$JARVIS_DOCS/` no `.gitignore` a deixa fora do versionamento; no workspace (vários repositórios) a raiz não é versionada. Quem já usa `./central-docs` continua funcionando, e o Upgrade do `/jarvis-init` oferece mover a pasta.
 
 > Com `.git` (e só depois da pergunta do `/eng.spec-consolidate`, regra de ouro), o PR é aberto pela CLI do host (`gh pr create` / `glab mr create`), com o login dela (`gh auth login`, `glab auth login`). Sem a CLI, ou com `VERSION_CONTROL_ACCESS` `manual`/inválido no `ENV.md` do projeto, a branch fica no remote e a publicação mostra o link para abrir o MR à mão. Nenhum token vai no chat nem no `ENV.md`.
 
@@ -45,7 +45,7 @@ jarvis docs migrate [--apply]                     # layout antigo -> por funcion
 jarvis docs sessions [--json] [--pendentes] [--proxima]   # sessões, arquivos, entrega e página-índice (só leitura)
 ```
 
-- **Tipos:** `feature`, `delivery`, `product`, `history`, `home`, e os documentos de trabalho (PRD, FRD, épico, história, tarefa, ARD, RFC, SPEC, swagger, relatório de QA, discovery) — estes últimos, só quando ligados a uma entrega consolidada; sem vínculo, ficam em `docs/jarvis/`. Da sessão: `architecture`, `plan` e `light-arch` (em `decisions/`, com o card no nome) e `history` para o resto (subpastas preservadas por `relPath`).
+- **Tipos:** `feature`, `delivery`, `product`, `history`, `home`, e os documentos de trabalho (PRD, FRD, épico, história, tarefa, ARD, RFC, SPEC, swagger, relatório de QA, discovery) — estes últimos, só quando ligados a uma entrega consolidada; sem vínculo, ficam em `$JARVIS_DOCS`. Da sessão: `architecture`, `plan` e `light-arch` (em `decisions/`, com o card no nome) e `history` para o resto (subpastas preservadas por `relPath`).
 - **`--dry-run`** no `--manifest` simula (novo, igual, nova versão, sobrescreve). Arquivos da sessão ganham `-v1`, `-v2`… quando o conteúdo mudou, e os links dos `.md` são convertidos para resolverem dentro do Central docs.
 - Quem gera e publica é o [`/eng.spec-consolidate`](../../workflows/engineering/eng.spec-consolidate.md), depois do PR e do seu Sim, em três passos: publicar, arquivar (`--archive`) e finalizar (`--finalize`), ou `--force` para os três de uma vez sem perguntar.
 
