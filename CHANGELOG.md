@@ -6,7 +6,7 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), e o
 
 > Versões anteriores a `2.1.1` não foram documentadas retroativamente neste changelog — o histórico detalhado dessas versões continua disponível via `git log`.
 
-## [Não lançado]
+## [8.7.0] - 2026-11-06
 
 ### Added
 - **Uma função só para os caminhos do `ENV.md` (#228)**: `bin/lib/core/env-paths.js` expande `$VAR` (no começo, no meio do valor e em qualquer ordem das chaves) e aplica os padrões do template quando a chave falta. Variável sem valor numa chave de caminho (`CENTRAL_DOCS_LOCATION`, `SESSIONS_DIR`, `DOCS_FOLDER`, `JARVIS_DOCS`, `ENG_DOCS`, `PROD_DOCS`, `DISCOVERIES_DOCS`) dá erro claro, com o valor original e o que sobrou, e nenhuma pasta com `$` no nome é criada; `$IDE` e as chaves que o CLI não lê continuam literais. O `expandVars` do `daily-report` vira um wrapper da função única, e a `expandEnv` de antes passa a morar nesse módulo (reexportada por `docs-migrate.js`, então os imports atuais continuam valendo).
