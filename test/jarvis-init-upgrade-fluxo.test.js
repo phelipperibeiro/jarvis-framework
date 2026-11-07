@@ -53,11 +53,16 @@ test("item 5 não afirma que o ENV.md está atualizado (os itens 7 a 9.1 ainda p
   assert.match(item5, /ainda podem alterá-lo/, "o item 5 explica por que não diz 'atualizado'");
 });
 
-test("item 7: a carga inicial do Central docs só é oferecida se moveu documentos nesta execução", () => {
+test("item 7: a carga inicial do Central docs só é oferecida se documentos foram movidos nesta atualização (inclusive pelo terminal)", () => {
   const linha = item7.split("\n").find((l) => l.includes("carga inicial do Central docs"));
   assert.ok(linha, "o item 7 ainda trata da carga inicial");
-  assert.match(linha, /só se moveu documentos nesta execução/, "a oferta tem condição");
+  assert.match(linha, /só se documentos foram movidos nesta atualização/, "a oferta tem condição");
+  assert.match(linha, /pelo `jarvis init --upgrade` do terminal/, "o que o terminal moveu antes também conta");
+  assert.match(linha, /Documentos movidos: N/, "o texto diz a frase que o terminal imprime");
   assert.match(linha, /não ofereça/i, "sem mover nada, não oferece");
+  assert.match(readFileSync(join(root, "bin", "commands", "init.js"), "utf8"), /Documentos movidos: \$\{moved\.length\}/, "o CLI ainda imprime a frase citada");
+  const skillMd = readFileSync(join(root, "skills", "jarvis-init", "SKILL.md"), "utf8");
+  assert.match(skillMd, /\| Passo 5\.3 — Carga inicial do Central docs \|.*só se documentos foram movidos nesta atualização/, "a tabela do SKILL.md traz a mesma condição");
   assert.equal((upgrade.match(/carga inicial do Central docs/g) || []).length, 1, "a oferta aparece uma vez no Upgrade");
 });
 
