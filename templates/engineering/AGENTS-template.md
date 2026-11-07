@@ -67,7 +67,7 @@ Se você é um agente de IA trabalhando neste projeto:
 
 . Leia primeiro: `{IDE_FOLDER}/README.md` para entender o framework JARVIS
 . Regras: Siga as regras em `{IDE_FOLDER}/rules/`
-. Sessões: Use `.jarvis/sessions` para contexto de tarefas em andamento
+. Sessões: Use `.jarvis/sessions` (o padrão de `SESSIONS_DIR` no `ENV.md`) para contexto de tarefas em andamento
 . Templates: Use os templates em `{IDE_FOLDER}/templates/` para documentos
 . Idioma: Toda documentação deve ser em português do Brasil (pt-BR)
 

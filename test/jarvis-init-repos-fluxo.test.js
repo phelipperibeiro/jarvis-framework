@@ -226,7 +226,7 @@ test("AGENTS-template: a linha do mapa vem antes do bloco (é onde o modo repos 
 });
 
 test("AGENTS-template: o caminho das sessões é .jarvis/sessions, sem {IDE_FOLDER}/sessions", () => {
-  assert.match(template, /Use `\.jarvis\/sessions` para contexto de tarefas em andamento/);
+  assert.match(template, /Use `\.jarvis\/sessions` \(o padrão de `SESSIONS_DIR` no `ENV\.md`\) para contexto de tarefas em andamento/);
   assert.doesNotMatch(template, /\{IDE_FOLDER\}\/sessions/);
 });
 
