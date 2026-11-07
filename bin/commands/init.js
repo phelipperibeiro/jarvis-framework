@@ -1,5 +1,5 @@
 import { existsSync, mkdirSync, readFileSync, realpathSync } from "node:fs";
-import { join, dirname, basename, resolve, sep } from "node:path";
+import { join, dirname, basename, resolve, sep, isAbsolute, posix } from "node:path";
 import { createInterface } from "node:readline";
 import {
   syncAssets,
@@ -40,6 +40,7 @@ import {
   ensureGitignore,
 } from "../lib/core/docs-migrate.js";
 import { rootIsRepo } from "../lib/core/workspace-mode.js";
+import { LOCAL_EXCLUDE_ENTRIES, applyProjectGitSetup } from "../lib/core/git-exclude.js";
 import { EnvPathError, checkEnvPaths, planSessionsSetup } from "../lib/core/env-paths.js";
 import { ensureContext7 } from "../lib/core/mcp-config.js";
 
@@ -114,18 +115,117 @@ function logRulesFilter(rulesSync, profileLabel) {
 }
 
 /**
+ * Mensagens do que o modo projeto gravou no git (#227): o que entrou no exclude e no `.gitignore`, a
+ * frase de como reverter e os avisos de arquivo gerado ou pasta da IDE já versionados. Raiz sem `.git`
+ * (modo workspace): nada. Nunca mostra conteúdo de arquivo. `upgrade` só muda a instrução final.
+ * @param {ReturnType<typeof applyProjectGitSetup>} result
+ * @param {{ upgrade?: boolean }} [options]
+ */
+export function logProjectGitSetup(result, { upgrade = false } = {}) {
+  if (!result.isRepo) return;
+  if (result.exclude.added.length) {
+    logger.info(`  • .git/info/exclude (local, fora do PR): ${result.exclude.added.join(", ")}`);
+    logger.info(`${DIM}    Para versionar algum deles de propósito, remova a linha do .git/info/exclude.${NC}`);
+  }
+  if (result.ignoreAdded.length) logger.info(`  • .gitignore: ${result.ignoreAdded.join(", ")}`);
+  for (const file of result.tracked) {
+    logger.info(
+      `${YELLOW}  ⚠ ${file} está versionado: nada foi removido. Rode /jarvis-init upgrade na IDE para decidir se ele sai do git.${NC}`
+    );
+  }
+  if (result.trackedMap) {
+    logger.info(
+      `${YELLOW}  ⚠ CDD-MIND-MAP.md está versionado: o exclude não vale para arquivo rastreado, então as edições dele continuam no PR.${NC}`
+    );
+  }
+  if (result.ideFolderTracked) {
+    logger.info(
+      `${YELLOW}  ⚠ ${result.ideEntry} já está versionada: ignorar não a tira do git e o init não a remove.${NC}`
+    );
+  }
+  for (const line of result.ignoredButTracked) {
+    logger.info(
+      `${YELLOW}  ⚠ ${line} já está versionada: ignorar não a tira do git e os arquivos novos dela deixam de aparecer no git status.${NC}`
+    );
+  }
+  // Uma linha só para a falha do exclude: a causa, o que ficou sem proteção e o que fazer.
+  if (result.exclude.error) {
+    const faltaram = LOCAL_EXCLUDE_ENTRIES.filter(
+      (entry) =>
+        !result.exclude.existing.includes(entry) &&
+        !result.tracked.includes(entry) &&
+        !(entry === "CDD-MIND-MAP.md" && result.trackedMap)
+    );
+    const color = result.exclude.gitUnavailable ? YELLOW : RED;
+    const log = result.exclude.gitUnavailable ? logger.info : logger.error;
+    log.call(
+      logger,
+      `${color}  ${result.exclude.gitUnavailable ? "⚠" : "✗"} Git (modo projeto): ${result.exclude.error}. O exclude não foi gravado e ${faltaram.join(", ")} ${faltaram.length > 1 ? "podem" : "pode"} entrar no PR; corrija e ${upgrade ? "rode jarvis init --upgrade" : "rode o init"} de novo.${NC}`
+    );
+  }
+  // O erro do exclude já saiu na linha única acima; aqui só o que sobra, cada tipo com a sua cor e o seu nível.
+  for (const message of result.warnings) {
+    if (message !== result.exclude.error) logger.info(`${YELLOW}  ⚠ Git (modo projeto): ${message}${NC}`);
+  }
+  for (const message of result.errors) {
+    if (message !== result.exclude.error) logger.error(`${RED}  ✗ Git (modo projeto): ${message}${NC}`);
+  }
+}
+
+/** Há algo a dizer sobre o git do modo projeto (gravou, avisa ou falhou)? Evita um bloco vazio no resumo. */
+function gitSetupHasNews(result) {
+  return Boolean(
+    result.exclude.added.length ||
+      result.ignoreAdded.length ||
+      result.tracked.length ||
+      result.trackedMap ||
+      result.ideFolderTracked ||
+      result.ignoredButTracked.length ||
+      result.warnings.length ||
+      result.errors.length
+  );
+}
+
+/**
+ * Linha do `.gitignore` para a pasta dos documentos de trabalho (`docs/jarvis/` por padrão), como o texto do
+ * init fazia antes da #227 (a pasta não deve ir para o git do time). Sem linha se a pasta é absoluta, sai da
+ * raiz ou o caminho do ENV não resolve (esse erro é do `checkEnvPaths`).
+ * @param {Map<string, string>} entries
+ * @returns {string[]}
+ */
+export function docsIgnoreLines(entries) {
+  try {
+    const raw = docsFolders(expandEnv(entries)).jarvis;
+    if (!raw) return [];
+    // Só uma pasta dentro da raiz: nada de caminho absoluto, que sobe (`..`), é `.` ou vira padrão especial do
+    // git (`!` desfaz um ignore, `#` é comentário, `:` é pathspec mágico, `* ? [` são curingas e `\` é escape).
+    const jarvis = posix.normalize(raw).replace(/\/+$/, "");
+    if (!jarvis || jarvis === "." || isAbsolute(jarvis) || jarvis === ".." || jarvis.startsWith("../")) return [];
+    if (/^[!#:]/.test(jarvis) || /[*?[\\]/.test(jarvis)) return [];
+    return [`${jarvis}/`];
+  } catch (error) {
+    if (error instanceof EnvPathError) return [];
+    throw error;
+  }
+}
+
+/**
  * O que ainda pede o `/jarvis-init upgrade` na IDE depois do `jarvis init --upgrade` (#189, Q4).
  * Só as pendências que o terminal não resolve: eixo sem forma de acesso, chave vazia, Central docs
  * no formato antigo e TOKEN_TASK_MANAGER com valor. Não contam o aviso de WORKSPACE_MODE (conferir
  * no ENV.md), vendor não suportado (vira freelance) nem as chaves novas acrescentadas (Q15: o
  * `/jarvis-init` as põe no assunto delas na próxima vez que rodar). Nunca inclui valores do ENV.
  * Eixo do perfil vazio (HUB, POSITION, AREA, SQUAD) também conta: sem ele, o upgrade não filtra
- * as rules (#83).
- * @param {{ pendingAxes: string[], envPlan: { pending?: string[], warnings?: string[] }, missingProfile?: string[] }} input
+ * as rules (#83). `trackedGenerated` (#227): AGENTS.md/CLAUDE.md já versionados no modo projeto; sair do git
+ * é decisão da pessoa, tomada no `/jarvis-init upgrade` (nunca no terminal).
+ * @param {{ pendingAxes: string[], envPlan: { pending?: string[], warnings?: string[] }, missingProfile?: string[], trackedGenerated?: string[] }} input
  * @returns {string[]} um motivo por pendência; vazio = nada pendente
  */
-export function upgradePendencies({ pendingAxes, envPlan, missingProfile = [] }) {
+export function upgradePendencies({ pendingAxes, envPlan, missingProfile = [], trackedGenerated = [] }) {
   const reasons = [];
+  if (trackedGenerated.length) {
+    reasons.push(`decidir se ${trackedGenerated.join(" e ")} ${trackedGenerated.length > 1 ? "saem" : "sai"} do git`);
+  }
   if (pendingAxes.length) reasons.push(`confirmar o acesso de ${pendingAxes.join(" e ")}`);
   if (missingProfile.length) {
     reasons.push(`preencher ${missingProfile.join(", ")} (as rules ficam sem o filtro do perfil)`);
@@ -411,8 +511,28 @@ export async function init(flags) {
     const sessionsEnv = existsSync(envOnDisk) ? parseEnvEntries(readFileSync(envOnDisk, "utf-8")) : new Map();
     const sessions = planSessionsSetup({ workspaceDir: cwd, env: sessionsEnv, isRepo: rootIsRepo(cwd) });
     for (const dir of sessions.areaDirs) mkdirSync(dir, { recursive: true });
-    for (const line of sessions.gitignore) ensureGitignore(cwd, line);
+    // Falha ao gravar o .gitignore (ex.: ele é um diretório) vira erro claro e saída 1, não stack trace.
+    const sessionIgnoreErrors = [];
+    for (const line of sessions.gitignore) {
+      try {
+        ensureGitignore(cwd, line);
+      } catch (error) {
+        sessionIgnoreErrors.push(
+          `não foi possível gravar ${join(cwd, ".gitignore")}: ${error.code || String(error.message).split("\n")[0]}`
+        );
+        break;
+      }
+    }
     for (const warning of sessions.warnings) logger.info(`${YELLOW}  ⚠ ${warning}${NC}`);
+    // Modo projeto (#227): AGENTS.md, CLAUDE.md e CDD-MIND-MAP.md no .git/info/exclude (local) e a pasta
+    // da IDE no .gitignore. Nada sai do índice aqui: tirar AGENTS.md/CLAUDE.md do git é decisão do Upgrade.
+    const gitSetup = applyProjectGitSetup({ dir: cwd, ide, gitignoreLines: docsIgnoreLines(sessionsEnv) });
+    logProjectGitSetup(gitSetup);
+    // A mesma falha do .gitignore costuma aparecer nos dois lugares; mostra uma vez.
+    for (const message of sessionIgnoreErrors) {
+      if (!gitSetup.errors.includes(message)) logger.error(`${RED}  ✗ Git (modo projeto): ${message}${NC}`);
+    }
+    if (gitSetup.errors.length || sessionIgnoreErrors.length) process.exitCode = 1;
   } catch (error) {
     if (!(error instanceof EnvPathError)) throw error;
     logger.error(`${RED}  ✗ ${error.message}${NC}`);
@@ -752,6 +872,15 @@ async function runUpgrade(cwd, flags) {
   // 3.4 Rules do perfil (#83): o mesmo filtro do `jarvis rules sync`, com o ENV.md já gravado.
   const { rulesSync, missingProfile, profileLabel } = filterRulesByEnv(workspaceDir, ide, envPath);
 
+  // 3.5 Git no modo projeto (#227): o mesmo da instalação (exclude local e pasta da IDE no .gitignore).
+  // AGENTS.md/CLAUDE.md versionados viram pendência do /jarvis-init upgrade: aqui nada sai do índice,
+  // nem com --yes. Raiz sem .git (modo workspace): nada.
+  const gitSetup = applyProjectGitSetup({ dir: workspaceDir, ide, gitignoreLines: docsIgnoreLines(futureEntries) });
+  if (gitSetupHasNews(gitSetup)) {
+    logger.info(`${BLUE}🔒 Git (modo projeto):${NC}`);
+    logProjectGitSetup(gitSetup, { upgrade: true });
+  }
+
   // 4. Resumo (só nomes de chave e caminhos)
   const pkg = getPackageInfo();
   logger.info("");
@@ -828,14 +957,18 @@ async function runUpgrade(cwd, flags) {
     const access = (futureEntries.get(`${key}_ACCESS`) || "").trim();
     return getVendor(futureEntries.get(key)) && (!access || /^\[.*\]$/.test(access));
   });
-  const pending = upgradePendencies({ pendingAxes, envPlan, missingProfile });
+  const pending = upgradePendencies({ pendingAxes, envPlan, missingProfile, trackedGenerated: gitSetup.tracked });
   logger.info("");
   logger.info(
     pending.length
       ? `${CYAN}➡️  Agora rode ${BOLD}/jarvis-init upgrade${NC}${CYAN} na IDE: ${pending.join("; ")}.${NC}\n`
       : `${GREEN}✓ Nada pendente na IDE.${NC}\n`
   );
-  return sync.errors.length || moveErrors.length || staleErrors.length || rulesSync?.errors.length
+  return sync.errors.length ||
+    moveErrors.length ||
+    staleErrors.length ||
+    rulesSync?.errors.length ||
+    gitSetup.errors.length
     ? 1
     : 0;
 }

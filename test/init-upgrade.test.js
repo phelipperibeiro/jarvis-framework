@@ -16,8 +16,10 @@ import {
 import { tmpdir } from "node:os";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
-import { spawnSync } from "node:child_process";
+import { execFileSync, spawnSync } from "node:child_process";
 import {
+  docsIgnoreLines,
+  logProjectGitSetup,
   parseMenuChoice,
   upgradePendencies,
   promptCompanyProfile,
@@ -330,11 +332,11 @@ test("init (instalação): pasta sem nenhum .git não recebe .gitignore", () => 
   });
 });
 
-test("init (instalação): .gitignore existente sem \\n final recebe uma linha .jarvis/", () => {
+test("init (instalação): .gitignore existente sem \\n final recebe as linhas .jarvis/, a pasta da IDE e docs/jarvis/ (#227)", () => {
   withWorkspace({ ".git/HEAD": "", ".gitignore": "node_modules" }, (ws) => {
     const r = run(ws, "--ide", "claude");
     assert.equal(r.status, 0, r.stderr);
-    assert.equal(readFileSync(join(ws, ".gitignore"), "utf-8"), "node_modules\n.jarvis/\n");
+    assert.equal(readFileSync(join(ws, ".gitignore"), "utf-8"), "node_modules\n.jarvis/\n.claude/\ndocs/jarvis/\n");
   });
 });
 
@@ -360,7 +362,8 @@ test("init (instalação): .gitignore com /.jarvis/ não recebe a linha de novo"
   withWorkspace({ ".git/HEAD": "", ".gitignore": "/.jarvis/\n" }, (ws) => {
     const r = run(ws, "--ide", "claude");
     assert.equal(r.status, 0, r.stderr);
-    assert.equal(readFileSync(join(ws, ".gitignore"), "utf-8"), "/.jarvis/\n");
+    // .jarvis/ já estava (como /.jarvis/) e não repete; só a pasta da IDE entra (#227)
+    assert.equal(readFileSync(join(ws, ".gitignore"), "utf-8"), "/.jarvis/\n.claude/\ndocs/jarvis/\n");
   });
 });
 
@@ -1131,3 +1134,479 @@ test("filterRulesByEnv: devolve o erro de gravação para o código de saída (#
     }
   );
 });
+
+// ---- #227: exclude local no modo projeto (git de verdade) -----------------------------------------
+
+const gitIn = (cwd, ...args) =>
+  execFileSync("git", args, { cwd, encoding: "utf-8", stdio: ["ignore", "pipe", "pipe"] });
+
+/** Workspace com um repositório git real na raiz (modo projeto). */
+function withRealRepo(files, fn) {
+  return withWorkspace(files, (ws) => {
+    gitIn(ws, "init", "-q");
+    return fn(ws);
+  });
+}
+
+// Isola dos ajustes globais do git de quem roda (gpgsign, hooks, excludesFile, templates); o CLI herda o ambiente.
+process.env.GIT_CONFIG_GLOBAL = "/dev/null";
+process.env.GIT_CONFIG_NOSYSTEM = "1";
+const GIT_ID = ["-c", "user.email=t@t", "-c", "user.name=t", "-c", "commit.gpgsign=false", "-c", "core.hooksPath=/dev/null"];
+
+const commitAll = (ws) => {
+  gitIn(ws, "add", "-A");
+  gitIn(ws, ...GIT_ID, "commit", "-q", "-m", "x");
+};
+const excludeOf = (ws) => readFileSync(join(ws, ".git", "info", "exclude"), "utf-8").split(/\r?\n/);
+const gitignoreOf = (ws) => (existsSync(join(ws, ".gitignore")) ? readFileSync(join(ws, ".gitignore"), "utf-8") : "");
+const GENERATED = ["AGENTS.md", "CLAUDE.md", "CDD-MIND-MAP.md"];
+
+test("init (instalação) no modo projeto: AGENTS.md, CLAUDE.md e CDD-MIND-MAP.md vão para o exclude, não para o .gitignore", () => {
+  withRealRepo({}, (ws) => {
+    const r = run(ws, "--ide", "claude");
+    assert.equal(r.status, 0, r.stderr);
+    for (const f of GENERATED) {
+      assert.ok(excludeOf(ws).includes(f), `${f} deve estar no .git/info/exclude`);
+      assert.doesNotMatch(gitignoreOf(ws), new RegExp(`^${f}$`, "m"), `${f} não deve ir para o .gitignore`);
+    }
+    assert.match(gitignoreOf(ws), /^\.jarvis\/$/m, ".jarvis/ segue no .gitignore (Q1)");
+    assert.match(gitignoreOf(ws), /^\.claude\/$/m, "a pasta da IDE entra no .gitignore (Q3)");
+    assert.match(r.stdout, /\.git\/info\/exclude \(local, fora do PR\)/);
+    assert.match(r.stdout, /remova a linha do \.git\/info\/exclude/);
+  });
+});
+
+test("init (instalação) no modo projeto: rodar de novo não duplica linha no exclude nem no .gitignore", () => {
+  withRealRepo({}, (ws) => {
+    assert.equal(run(ws, "--ide", "claude").status, 0);
+    for (const f of GENERATED) assert.ok(excludeOf(ws).includes(f), `${f} entrou na primeira rodada`);
+    const exclude = readFileSync(join(ws, ".git/info/exclude"), "utf-8");
+    const ignore = gitignoreOf(ws);
+    assert.equal(run(ws, "--ide", "claude", "--force").status, 0);
+    assert.equal(readFileSync(join(ws, ".git/info/exclude"), "utf-8"), exclude);
+    assert.equal(gitignoreOf(ws), ignore);
+  });
+});
+
+test("init (instalação): AGENTS.md já versionado só gera aviso; o índice, o exclude e o histórico não mudam", () => {
+  withRealRepo({ "AGENTS.md": "# do time\n" }, (ws) => {
+    commitAll(ws);
+    const commits = gitIn(ws, "rev-list", "--count", "HEAD").trim();
+    const r = run(ws, "--ide", "claude");
+    assert.equal(r.status, 0, r.stderr);
+    assert.match(r.stdout, /AGENTS\.md está versionado: nada foi removido/);
+    assert.equal(gitIn(ws, "ls-files", "AGENTS.md").trim(), "AGENTS.md");
+    assert.ok(!excludeOf(ws).includes("AGENTS.md"));
+    assert.equal(gitIn(ws, "rev-list", "--count", "HEAD").trim(), commits);
+    assert.equal(readFileSync(join(ws, "AGENTS.md"), "utf-8"), "# do time\n");
+  });
+});
+
+test("init --force --yes nunca tira AGENTS.md do índice (a confirmação é do Upgrade, pelo skill)", () => {
+  withRealRepo({ "AGENTS.md": "# do time\n" }, (ws) => {
+    commitAll(ws);
+    const r = run(ws, "--ide", "claude", "--force", "--yes");
+    assert.equal(r.status, 0, r.stderr);
+    assert.equal(gitIn(ws, "ls-files", "AGENTS.md").trim(), "AGENTS.md");
+    assert.equal(gitIn(ws, "diff", "--cached", "--name-only").trim(), "", "nada staged pelo init");
+  });
+});
+
+test("init (instalação): pasta da IDE já versionada vira aviso e continua no índice", () => {
+  withRealRepo({ ".claude/regra-do-time.md": "x\n" }, (ws) => {
+    commitAll(ws);
+    const r = run(ws, "--ide", "claude", "--force"); // a pasta já existe: reinstala em vez de abrir o menu
+    assert.equal(r.status, 0, r.stderr);
+    assert.match(r.stdout, /\.claude\/ já está versionada: ignorar não a tira do git/);
+    assert.equal(gitIn(ws, "ls-files", ".claude/regra-do-time.md").trim(), ".claude/regra-do-time.md");
+  });
+});
+
+test("init (instalação) no modo workspace: nenhum arquivo de git é criado e nada fala em exclude", () => {
+  withWorkspace({ "app/.git/HEAD": "" }, (ws) => {
+    const r = run(ws, "--ide", "claude");
+    assert.equal(r.status, 0, r.stderr);
+    assert.ok(!existsSync(join(ws, ".git")));
+    assert.ok(!existsSync(join(ws, ".gitignore")));
+    assert.doesNotMatch(r.stdout, /info\/exclude/);
+  });
+});
+
+// ---- #227: --upgrade no modo projeto --------------------------------------------------------------
+
+test("upgradePendencies: AGENTS.md/CLAUDE.md versionados pedem a decisão no /jarvis-init upgrade", () => {
+  const base = { pendingAxes: [], envPlan: {}, missingProfile: [] };
+  assert.deepEqual(upgradePendencies({ ...base, trackedGenerated: [] }), []);
+  assert.deepEqual(upgradePendencies({ ...base, trackedGenerated: ["AGENTS.md"] }), [
+    "decidir se AGENTS.md sai do git",
+  ]);
+  assert.deepEqual(upgradePendencies({ ...base, trackedGenerated: ["AGENTS.md", "CLAUDE.md"] }), [
+    "decidir se AGENTS.md e CLAUDE.md saem do git",
+  ]);
+});
+
+test("init --upgrade no modo projeto: grava o exclude e a pasta da IDE no .gitignore", () => {
+  withRealRepo({ ".claude/ENV.md": ENV_V520 }, (ws) => {
+    const r = run(ws, "--upgrade", "--ide", "claude", "--yes");
+    assert.equal(r.status, 0, r.stderr);
+    for (const f of GENERATED) assert.ok(excludeOf(ws).includes(f), `${f} no exclude`);
+    assert.match(gitignoreOf(ws), /^\.claude\/$/m);
+    assert.match(r.stdout, /Git \(modo projeto\)/);
+    assert.match(r.stdout, /Agora rode .*\/jarvis-init upgrade.* na IDE: confirmar o acesso de TASK_MANAGER/);
+  });
+});
+
+test("init --upgrade: segunda execução não repete a mensagem nem duplica linha", () => {
+  withRealRepo({ ".claude/ENV.md": ENV_V520 }, (ws) => {
+    assert.equal(run(ws, "--upgrade", "--ide", "claude", "--yes").status, 0);
+    const exclude = readFileSync(join(ws, ".git/info/exclude"), "utf-8");
+    const ignore = gitignoreOf(ws);
+    const again = run(ws, "--upgrade", "--ide", "claude", "--yes");
+    assert.equal(again.status, 0, again.stderr);
+    assert.equal(readFileSync(join(ws, ".git/info/exclude"), "utf-8"), exclude);
+    assert.equal(gitignoreOf(ws), ignore);
+    assert.doesNotMatch(again.stdout, /Git \(modo projeto\)/, "sem novidade, sem bloco");
+  });
+});
+
+test("init --upgrade --yes: AGENTS.md versionado vira pendência e NÃO sai do índice", () => {
+  withRealRepo({ ".claude/ENV.md": ENV_V520, "AGENTS.md": "# do time\n" }, (ws) => {
+    commitAll(ws);
+    const commits = gitIn(ws, "rev-list", "--count", "HEAD").trim();
+    const r = run(ws, "--upgrade", "--ide", "claude", "--yes");
+    assert.equal(r.status, 0, r.stderr);
+    assert.match(r.stdout, /AGENTS\.md está versionado: nada foi removido/);
+    assert.match(r.stdout, /decidir se AGENTS\.md sai do git/);
+    assert.equal(gitIn(ws, "ls-files", "AGENTS.md").trim(), "AGENTS.md");
+    assert.equal(gitIn(ws, "diff", "--cached", "--name-only").trim(), "", "nada staged pelo upgrade");
+    assert.equal(gitIn(ws, "rev-list", "--count", "HEAD").trim(), commits);
+    assert.ok(!excludeOf(ws).includes("AGENTS.md"));
+    assert.equal(readFileSync(join(ws, "AGENTS.md"), "utf-8"), "# do time\n");
+  });
+});
+
+test("init --upgrade no modo workspace: nenhum arquivo de git é criado e nada fala em exclude", () => {
+  withWorkspace({ ".claude/ENV.md": ENV_V520, "app/.git/HEAD": "" }, (ws) => {
+    const r = run(ws, "--upgrade", "--ide", "claude", "--yes");
+    assert.equal(r.status, 0, r.stderr);
+    assert.ok(!existsSync(join(ws, ".git")));
+    assert.ok(!existsSync(join(ws, ".gitignore")));
+    assert.doesNotMatch(r.stdout, /Git \(modo projeto\)|info\/exclude/);
+  });
+});
+
+// ---- Fase 6 (pre-pr rodada 1): docs/jarvis/, falhas do git e mapa versionado -----------------------
+
+const RUNNING_AS_ROOT = typeof process.getuid === "function" && process.getuid() === 0;
+const output = (r) => `${r.stdout}\n${r.stderr}`;
+
+test("init (instalação) no modo projeto: docs/jarvis/ volta ao .gitignore (regressão da #227)", () => {
+  withRealRepo({}, (ws) => {
+    const r = run(ws, "--ide", "claude");
+    assert.equal(r.status, 0, r.stderr);
+    assert.match(gitignoreOf(ws), /^docs\/jarvis\/$/m);
+    assert.match(r.stdout, /\.gitignore: .*docs\/jarvis\//);
+    assert.equal(run(ws, "--ide", "claude", "--force").status, 0);
+    assert.equal(gitignoreOf(ws).split("\n").filter((l) => l === "docs/jarvis/").length, 1, "sem duplicar");
+  });
+});
+
+test("init (instalação): a pasta de documentos segue o JARVIS_DOCS do ENV.md", () => {
+  withRealRepo({ ".claude/ENV.md": "DOCS_FOLDER=meusdocs\nJARVIS_DOCS=$DOCS_FOLDER/jarvis\n" }, (ws) => {
+    const r = run(ws, "--ide", "claude", "--force");
+    assert.equal(r.status, 0, r.stderr);
+    assert.match(gitignoreOf(ws), /^meusdocs\/jarvis\/$/m);
+    assert.doesNotMatch(gitignoreOf(ws), /^docs\/jarvis\/$/m);
+  });
+});
+
+test("init (instalação) no modo workspace: docs/jarvis/ não cria .gitignore", () => {
+  withWorkspace({ "app/.git/HEAD": "" }, (ws) => {
+    assert.equal(run(ws, "--ide", "claude").status, 0);
+    assert.ok(!existsSync(join(ws, ".gitignore")));
+  });
+});
+
+test("init --upgrade no modo projeto: docs/jarvis/ também entra no .gitignore", () => {
+  withRealRepo({ ".claude/ENV.md": ENV_V520 }, (ws) => {
+    const r = run(ws, "--upgrade", "--ide", "claude", "--yes");
+    assert.equal(r.status, 0, r.stderr);
+    assert.match(gitignoreOf(ws), /^docs\/jarvis\/$/m);
+  });
+});
+
+test("init: git que não responde (.git inválido) avisa que o exclude não foi gravado e sai com 0", () => {
+  withWorkspace({ ".git/HEAD": "" }, (ws) => {
+    const r = run(ws, "--ide", "claude");
+    assert.equal(r.status, 0, r.stderr);
+    // uma linha só: a causa, o que ficou sem proteção e o que fazer
+    assert.match(
+      output(r),
+      /Git \(modo projeto\): o git não respondeu .*\. O exclude não foi gravado e AGENTS\.md, CLAUDE\.md, CDD-MIND-MAP\.md podem entrar no PR; corrija e rode o init de novo/
+    );
+    assert.equal((output(r).match(/o git não respondeu/g) || []).length, 1, "a causa aparece uma vez só");
+    assert.match(gitignoreOf(ws), /^\.jarvis\/$/m, "o .gitignore é gravado mesmo assim");
+  });
+});
+
+test("init: exclude sem permissão de escrita vira erro claro e saída 1, sem stack trace", { skip: RUNNING_AS_ROOT }, () => {
+  withRealRepo({}, (ws) => {
+    const alvo = join(ws, ".git", "info", "exclude");
+    chmodSync(alvo, 0o444);
+    try {
+      const r = run(ws, "--ide", "claude");
+      assert.equal(r.status, 1);
+      assert.match(output(r), /Git \(modo projeto\): não foi possível gravar .*exclude: EACCES/);
+      assert.equal((output(r).match(/EACCES/g) || []).length, 1, "a falha do exclude aparece uma vez só");
+      assert.doesNotMatch(output(r), /at .*\.js:\d+/, "sem stack trace");
+    } finally {
+      chmodSync(alvo, 0o644);
+    }
+  });
+});
+
+test("init --upgrade: .gitignore que é diretório vira erro, o resumo continua e a saída é 1", () => {
+  withRealRepo({ ".claude/ENV.md": ENV_V520 }, (ws) => {
+    mkdirSync(join(ws, ".gitignore"));
+    const r = run(ws, "--upgrade", "--ide", "claude", "--yes");
+    assert.equal(r.status, 1);
+    assert.match(output(r), /Git \(modo projeto\): não foi possível gravar .*\.gitignore: EISDIR/);
+    assert.match(r.stdout, /Upgrade concluído/, "o resumo não é derrubado");
+    assert.match(r.stdout, /Agora rode .*\/jarvis-init upgrade.* na IDE: confirmar o acesso de TASK_MANAGER/, "as pendências aparecem");
+  });
+});
+
+test("init (instalação): CDD-MIND-MAP.md já versionado não vai para o exclude e gera aviso", () => {
+  withRealRepo({ "CDD-MIND-MAP.md": "# mapa\n" }, (ws) => {
+    commitAll(ws);
+    const r = run(ws, "--ide", "claude");
+    assert.equal(r.status, 0, r.stderr);
+    assert.match(r.stdout, /CDD-MIND-MAP\.md está versionado: o exclude não vale para arquivo rastreado/);
+    assert.ok(!excludeOf(ws).includes("CDD-MIND-MAP.md"));
+    assert.ok(excludeOf(ws).includes("AGENTS.md"));
+  });
+});
+
+test("init (instalação) numa raiz que é worktree (.git em arquivo): o exclude vai para o repositório comum", () => {
+  withRealRepo({}, (ws) => {
+    gitIn(ws, ...GIT_ID, "commit", "-q", "--allow-empty", "-m", "base");
+    const wt = `${ws}-wt`;
+    try {
+      gitIn(ws, "worktree", "add", "-q", "-b", "wt", wt);
+      assert.ok(existsSync(join(wt, ".git")));
+      const r = run(wt, "--ide", "claude");
+      assert.equal(r.status, 0, r.stderr);
+      for (const f of GENERATED) assert.ok(excludeOf(ws).includes(f), `${f} no exclude do repositório comum`);
+      writeFileSync(join(wt, "AGENTS.md"), "# gerado\n");
+      gitIn(wt, "check-ignore", "-q", "AGENTS.md"); // lança se o git não ignora
+      assert.match(gitignoreOf(wt), /^\.claude\/$/m);
+    } finally {
+      rmSync(wt, { recursive: true, force: true });
+    }
+  });
+});
+
+// logProjectGitSetup escreve no logger (console); aqui o console é capturado.
+function capturar(fn) {
+  const saidas = [];
+  const { log, error } = console;
+  console.log = (...a) => saidas.push(a.join(" "));
+  console.error = (...a) => saidas.push(a.join(" "));
+  try {
+    fn();
+  } finally {
+    console.log = log;
+    console.error = error;
+  }
+  return saidas.join("\n");
+}
+
+const gitSetupBase = () => ({
+  isRepo: true,
+  exclude: { path: "/x/.git/info/exclude", added: [], existing: [], error: null, gitUnavailable: false },
+  tracked: [],
+  trackedMap: false,
+  ideEntry: ".claude/",
+  ignoreAdded: [],
+  ideIgnoreAdded: false,
+  ideFolderTracked: false,
+  ignoredButTracked: [],
+  warnings: [],
+  errors: [],
+});
+
+test("logProjectGitSetup: nada novo, ou raiz sem .git, não imprime nada", () => {
+  assert.equal(capturar(() => logProjectGitSetup(gitSetupBase())), "");
+  assert.equal(capturar(() => logProjectGitSetup({ ...gitSetupBase(), isRepo: false })), "");
+});
+
+test("logProjectGitSetup: lista o que gravou e como reverter", () => {
+  const out = capturar(() =>
+    logProjectGitSetup({
+      ...gitSetupBase(),
+      exclude: { ...gitSetupBase().exclude, added: ["AGENTS.md", "CLAUDE.md"] },
+      ignoreAdded: [".claude/", "docs/jarvis/"],
+    })
+  );
+  assert.match(out, /\.git\/info\/exclude \(local, fora do PR\): AGENTS\.md, CLAUDE\.md/);
+  assert.match(out, /remova a linha do \.git\/info\/exclude/);
+  assert.match(out, /\.gitignore: \.claude\/, docs\/jarvis\//);
+});
+
+test("logProjectGitSetup: avisos de versionado, de git indisponível e erros de gravação", () => {
+  const out = capturar(() =>
+    logProjectGitSetup({
+      ...gitSetupBase(),
+      tracked: ["AGENTS.md"],
+      trackedMap: true,
+      ideFolderTracked: true,
+      exclude: { ...gitSetupBase().exclude, error: "o git não respondeu (fatal)", gitUnavailable: true },
+      warnings: ["o git não respondeu (fatal)"],
+      errors: ["não foi possível gravar /x/.gitignore: EISDIR"],
+    })
+  );
+  assert.match(out, /AGENTS\.md está versionado: nada foi removido/);
+  assert.match(out, /CDD-MIND-MAP\.md está versionado: o exclude não vale para arquivo rastreado/);
+  assert.match(out, /\.claude\/ já está versionada: ignorar não a tira do git/);
+  // AGENTS.md e o mapa já estão versionados: só o CLAUDE.md fica sem proteção, no singular
+  assert.match(out, /Git \(modo projeto\): o git não respondeu \(fatal\)\. O exclude não foi gravado e CLAUDE\.md pode entrar no PR/);
+  assert.doesNotMatch(out, /CDD-MIND-MAP\.md podem entrar/, "o mapa versionado não é listado como sem proteção");
+  assert.match(out, /Git \(modo projeto\): não foi possível gravar \/x\/\.gitignore: EISDIR/);
+  assert.equal((out.match(/o git não respondeu/g) || []).length, 1, "a causa não se repete");
+});
+
+test("logProjectGitSetup: a instrução final muda no upgrade e só lista o que de fato faltou no exclude", () => {
+  const base = {
+    ...gitSetupBase(),
+    exclude: { path: null, added: [], existing: ["CLAUDE.md"], error: "o git não respondeu (fatal)", gitUnavailable: true },
+    warnings: ["o git não respondeu (fatal)"],
+  };
+  const instalacao = capturar(() => logProjectGitSetup(base));
+  const upgrade = capturar(() => logProjectGitSetup(base, { upgrade: true }));
+  assert.match(instalacao, /AGENTS\.md, CDD-MIND-MAP\.md podem entrar no PR; corrija e rode o init de novo/);
+  assert.doesNotMatch(instalacao, /CLAUDE\.md[,]? .*entrar no PR/, "CLAUDE.md já estava no exclude");
+  assert.match(upgrade, /corrija e rode jarvis init --upgrade de novo/);
+});
+
+test("logProjectGitSetup: pasta de documentos já versionada vira aviso", () => {
+  const out = capturar(() => logProjectGitSetup({ ...gitSetupBase(), ignoredButTracked: ["docs/jarvis/"] }));
+  assert.match(out, /docs\/jarvis\/ já está versionada: ignorar não a tira do git e os arquivos novos dela deixam de aparecer/);
+});
+
+test("docsIgnoreLines: só pasta dentro da raiz; recusa o que vira lixo ou padrão especial no .gitignore", () => {
+  const com = (jarvis) => docsIgnoreLines(new Map(jarvis === undefined ? [] : [["JARVIS_DOCS", jarvis]]));
+  assert.deepEqual(com(undefined), ["docs/jarvis/"], "sem a chave vale o padrão");
+  assert.deepEqual(com("meusdocs/jarvis"), ["meusdocs/jarvis/"]);
+  assert.deepEqual(com("docs//jarvis/"), ["docs/jarvis/"], "normaliza barras duplicadas e a final");
+  assert.deepEqual(com("docs/./jarvis"), ["docs/jarvis/"]);
+  for (const ruim of ["/tmp/fora", "../fora", "docs/../../x", ".", "!docs", "#docs", ":(glob)x", "docs/*", "docs/?", "docs/[a]", "docs\\jarvis"]) {
+    assert.deepEqual(com(ruim), [], `${ruim} não vira linha do .gitignore`);
+  }
+});
+
+test("init (instalação): docs/jarvis/ já versionado avisa que ignorar não o tira do git", () => {
+  withRealRepo({ "docs/jarvis/product/prd.md": "# prd\n" }, (ws) => {
+    commitAll(ws);
+    const r = run(ws, "--ide", "claude");
+    assert.equal(r.status, 0, r.stderr);
+    assert.match(r.stdout, /docs\/jarvis\/ já está versionada: ignorar não a tira do git/);
+    assert.equal(gitIn(ws, "ls-files", "docs/jarvis/product/prd.md").trim(), "docs/jarvis/product/prd.md");
+  });
+});
+
+// ---- Fase 10 (pre-pr rodada 2): --upgrade e instalação com o git falhando ------------------------------
+
+test("init --upgrade: git que não responde (.git inválido) avisa dentro do bloco do upgrade e sai com 0", () => {
+  withWorkspace({ ".claude/ENV.md": ENV_V520, ".git/HEAD": "" }, (ws) => {
+    const r = run(ws, "--upgrade", "--ide", "claude", "--yes");
+    assert.equal(r.status, 0, r.stderr);
+    assert.match(r.stdout, /🔒 Git \(modo projeto\):/);
+    assert.match(
+      output(r),
+      /Git \(modo projeto\): o git não respondeu .*\. O exclude não foi gravado e AGENTS\.md, CLAUDE\.md, CDD-MIND-MAP\.md podem entrar no PR; corrija e rode jarvis init --upgrade de novo/
+    );
+    assert.match(r.stdout, /Upgrade concluído/, "o resumo continua");
+    assert.match(gitignoreOf(ws), /^\.claude\/$/m, "o .gitignore é gravado mesmo assim");
+  });
+});
+
+test("init --upgrade: exclude sem permissão de escrita vira erro com saída 1 e o resumo continua", { skip: RUNNING_AS_ROOT }, () => {
+  withRealRepo({ ".claude/ENV.md": ENV_V520 }, (ws) => {
+    const alvo = join(ws, ".git", "info", "exclude");
+    chmodSync(alvo, 0o444);
+    try {
+      const r = run(ws, "--upgrade", "--ide", "claude", "--yes");
+      assert.equal(r.status, 1);
+      assert.match(output(r), /Git \(modo projeto\): não foi possível gravar .*exclude: EACCES/);
+      assert.equal((output(r).match(/EACCES/g) || []).length, 1, "a falha do exclude aparece uma vez só");
+      assert.match(r.stdout, /Upgrade concluído/, "o resumo não é derrubado");
+      assert.match(gitignoreOf(ws), /^docs\/jarvis\/$/m, "o .gitignore foi gravado antes da falha do exclude");
+    } finally {
+      chmodSync(alvo, 0o644);
+    }
+  });
+});
+
+test("init (instalação): .gitignore que é diretório vira erro claro e saída 1, sem stack trace", () => {
+  withRealRepo({}, (ws) => {
+    mkdirSync(join(ws, ".gitignore"));
+    const r = run(ws, "--ide", "claude");
+    assert.equal(r.status, 1);
+    assert.match(output(r), /não foi possível gravar .*\.gitignore: EISDIR/);
+    assert.equal((output(r).match(/EISDIR/g) || []).length, 1, "a mesma falha aparece uma vez só");
+    assert.doesNotMatch(output(r), /at .*\.js:\d+/, "sem stack trace");
+  });
+});
+
+// ---- Fase 11 (pre-pr rodada 3) --------------------------------------------------------------------------
+
+// Como `capturar`, mas separa stdout (logger.info) de stderr (logger.error).
+function capturarSeparado(fn) {
+  const out = [];
+  const err = [];
+  const { log, error } = console;
+  console.log = (...a) => out.push(a.join(" "));
+  console.error = (...a) => err.push(a.join(" "));
+  try {
+    fn();
+  } finally {
+    console.log = log;
+    console.error = error;
+  }
+  return { out: out.join("\n"), err: err.join("\n") };
+}
+
+test("logProjectGitSetup: aviso sai amarelo com ⚠ no stdout e erro sai vermelho com ✗ no stderr, cada um uma vez", () => {
+  const { out, err } = capturarSeparado(() =>
+    logProjectGitSetup({
+      ...gitSetupBase(),
+      warnings: ["aviso qualquer do git"],
+      errors: ["erro qualquer de gravação"],
+    })
+  );
+  assert.match(out, /⚠ Git \(modo projeto\): aviso qualquer do git/);
+  assert.doesNotMatch(out, /erro qualquer/, "o erro não vai para o stdout");
+  assert.match(err, /✗ Git \(modo projeto\): erro qualquer de gravação/);
+  assert.doesNotMatch(err, /aviso qualquer/, "o aviso não vai para o stderr");
+  assert.equal((out + err).match(/aviso qualquer/g).length, 1);
+});
+
+test("init --upgrade: docs/jarvis/ já versionado avisa dentro do bloco do upgrade (também numa 2ª execução, sem mais nada novo) e não sai do índice", () => {
+  // só os documentos são versionados: a pasta da IDE não (senão o bloco apareceria por outra causa)
+  withRealRepo({ ".claude/ENV.md": ENV_V520, "docs/jarvis/product/prd.md": "# prd\n" }, (ws) => {
+    gitIn(ws, "add", "docs/jarvis/product/prd.md");
+    gitIn(ws, ...GIT_ID, "commit", "-q", "-m", "versiona os documentos");
+    const primeira = run(ws, "--upgrade", "--ide", "claude", "--yes");
+    assert.equal(primeira.status, 0, primeira.stderr);
+    assert.match(primeira.stdout, /🔒 Git \(modo projeto\):/);
+    assert.match(primeira.stdout, /docs\/jarvis\/ já está versionada: ignorar não a tira do git/);
+    // 2ª execução: o exclude e o .gitignore já têm tudo; só o aviso da pasta versionada sobra
+    const segunda = run(ws, "--upgrade", "--ide", "claude", "--yes");
+    assert.equal(segunda.status, 0, segunda.stderr);
+    assert.match(segunda.stdout, /🔒 Git \(modo projeto\):/, "o bloco aparece só por causa do aviso");
+    assert.match(segunda.stdout, /docs\/jarvis\/ já está versionada/);
+    assert.doesNotMatch(segunda.stdout, /\.git\/info\/exclude \(local, fora do PR\)/, "nada novo no exclude");
+    assert.equal(gitIn(ws, "ls-files", "docs/jarvis/product/prd.md").trim(), "docs/jarvis/product/prd.md");
+  });
+});
+

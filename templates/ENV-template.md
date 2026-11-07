@@ -67,6 +67,8 @@ RULES_FOLDER=.$IDE/rules
 # .jarvis/sessions; sem ENV.md vale o padrão) e, se a raiz tiver .git, adiciona .jarvis/ ao
 # .gitignore, mais o $SESSIONS_DIR quando ele é relativo e fica fora de .jarvis/ (raiz sem .git,
 # como no modo workspace, não é versionada: o .gitignore não é criado).
+# No modo projeto (raiz com .git), o init também põe no .gitignore a pasta da IDE e a pasta dos documentos
+# ($JARVIS_DOCS/) e mantém AGENTS.md, CLAUDE.md e CDD-MIND-MAP.md no .git/info/exclude (local, fora do PR).
 #   $SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/
 #   $SESSIONS_DIR/prod/{TASK_MANAGER_KEY}/
 #   $SESSIONS_DIR/qa/

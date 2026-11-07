@@ -6,6 +6,7 @@
   - Se não existir, use o skill `jarvis-init` para criar o `ENV.md`.
 - Procure `CLAUDE.md` ou `AGENTS.md` para entender informações sobre o contexto e objetivo do projeto.
   - Se não existirem, use o skill `jarvis-init` para criar o `AGENTS.md` e após essa criação, copie o conteúdo do `AGENTS.md` para o `CLAUDE.md` (se não existir o CLAUDE.md, crie-o).
+  - No modo projeto (raiz com `.git`), a cópia para o `CLAUDE.md` também respeita o `.git/info/exclude` gravado pelo `jarvis init`: não a adicione ao git nem a mostre como arquivo novo no PR.
 - Nunca invente ou presuma dados ou informações. Se não souber, pergunte, valide e confirme com o usuário.
 - Entenda se o projeto é novo ou existente, para criar ou modificar especificações de produto ou técnicas.
 

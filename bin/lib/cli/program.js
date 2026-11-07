@@ -29,6 +29,7 @@ import { docsSessions } from "../../commands/docs-sessions.js";
 import { installRtk } from "../../commands/install-rtk.js";
 import { tokens } from "../../commands/tokens.js";
 import { rulesSync } from "../../commands/rules.js";
+import { untrack } from "../../commands/untrack.js";
 import { map } from "../../commands/map.js";
 import { fork } from "../../commands/fork.js";
 import { dailyReport } from "../../commands/daily-report.js";
@@ -256,6 +257,15 @@ export function buildProgram() {
   );
   withEnvOptions(withLogOptions(rulesSyncCmd)).action((options) =>
     rulesSync(toLegacyFlags(options))
+  );
+
+  const untrackCmd = cmd(program, "untrack")
+    .description(
+      "Tirar AGENTS.md/CLAUDE.md versionados do índice do git (git rm --cached), sem apagar o arquivo e sem commit; a pergunta é do /jarvis-init upgrade"
+    )
+    .argument("<arquivos...>", "AGENTS.md e/ou CLAUDE.md");
+  withEnvOptions(withLogOptions(untrackCmd)).action((files, options) =>
+    untrack(files, toLegacyFlags(options))
   );
 
   cmd(program, "fork")

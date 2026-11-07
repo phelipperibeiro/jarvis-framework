@@ -102,7 +102,7 @@ jarvis init --upgrade --ide {ide}   # confere os caminhos do ENV.md (para sem al
 
 `jarvis init --ide {ide}` numa pasta já instalada mostra o menu **Atualizar** (Enter, o mesmo que o `--upgrade`) / **Reinstalar** (o mesmo que o `--force`) / **Cancelar**, com a versão instalada e a do pacote. No fim, ele só manda rodar o `/jarvis-init upgrade` quando há pendência.
 
-Na IDE, o `/jarvis-init upgrade` vai direto ao Upgrade (C), cuida do que precisa de conversa (Central docs antigo e o passo das stacks) e, no fim, valida o `ENV.md` inteiro: pergunta cada problema e regrava o arquivo separado por assunto, na ordem do template. O `--upgrade` **acrescenta** as chaves novas ao `ENV.md`, no fim do arquivo, e nenhuma chave existente muda, com uma exceção: as chaves que saíram do template (mensageria, banco de dados, observabilidade, SMTP, code quality e o bloco Data Engineering; `DATA_SPECIALIZATIONS` fica) são apagadas, e o resumo mostra só os nomes, nunca os valores. Ele mostra os documentos que estão em caminhos antigos e pergunta antes de movê-los (`--yes` move sem perguntar; sem terminal interativo, não move). Também lista os skills instalados que saíram do framework e pergunta antes de removê-los (`--remove-stale` remove sem perguntar só os listados; skills registrados em `*_SPECIALIZATIONS` nunca são listados).
+Na IDE, o `/jarvis-init upgrade` vai direto ao Upgrade (C), cuida do que precisa de conversa (Central docs antigo, o passo das stacks e, no modo projeto, a decisão de tirar `AGENTS.md`/`CLAUDE.md` do git quando já estão versionados) e, no fim, valida o `ENV.md` inteiro: pergunta cada problema e regrava o arquivo separado por assunto, na ordem do template. O `--upgrade` **acrescenta** as chaves novas ao `ENV.md`, no fim do arquivo, e nenhuma chave existente muda, com uma exceção: as chaves que saíram do template (mensageria, banco de dados, observabilidade, SMTP, code quality e o bloco Data Engineering; `DATA_SPECIALIZATIONS` fica) são apagadas, e o resumo mostra só os nomes, nunca os valores. Ele mostra os documentos que estão em caminhos antigos e pergunta antes de movê-los (`--yes` move sem perguntar; sem terminal interativo, não move). Também lista os skills instalados que saíram do framework e pergunta antes de removê-los (`--remove-stale` remove sem perguntar só os listados; skills registrados em `*_SPECIALIZATIONS` nunca são listados).
 
 **Instalou via clone local** (fluxo de [Desenvolvendo o Jarvis localmente](#desenvolvendo-o-jarvis-localmente)) — quando o repo no GitHub ganhar commits novos, sincronize assim:
 
@@ -151,7 +151,7 @@ No chat da IDE:
 /jarvis-init
 ```
 
-Escolha **Upgrade (C)** — adiciona chaves novas do template sem apagar os valores atuais e oferece o passo opcional **"adicionar as stacks"**.
+Escolha **Upgrade (C)** — adiciona chaves novas do template sem apagar os valores atuais, oferece o passo opcional **"adicionar as stacks"** e, no modo projeto, pergunta se o `AGENTS.md`/`CLAUDE.md` versionados saem do git.
 
 > **Vindo de uma versão anterior à 2.0?** O Upgrade é **obrigatório**: sem as chaves `BACKEND_SPECIALIZATIONS` e `FRONTEND_SPECIALIZATIONS`, os comandos `eng.*` de backend e de frontend param. Skills criados por você precisam de `metadata.area` (veja [especializações de stack](docs/especializacoes-de-stack.md#atualizando-de-uma-versão-anterior)).
 
@@ -164,7 +164,7 @@ Escolha **Upgrade (C)** — adiciona chaves novas do template sem apagar os valo
 | `jarvis init` | Arquivos em `.$IDE/` (skills, agents, workflows…) e o Context7 no arquivo de MCP da IDE (ex.: `.mcp.json` no Claude Code; só acrescenta, sem apagar outros servidores) |
 | `/jarvis-init` Upgrade | Só `$IDE/ENV.md` (variáveis faltantes) e, se você aceitar o passo opcional "adicionar as stacks", as listas de especializações |
 
-`ENV.md`, `$SESSIONS_DIR/` (padrão `.jarvis/sessions/`) e o `.gitignore` do workspace **não** são sobrescritos pelo sync de assets. O `jarvis init` cria `$SESSIONS_DIR/{eng,prod,qa}` e, com `.git` na raiz, põe no `.gitignore` o `.jarvis/` e o `$SESSIONS_DIR/` (quando relativo e fora de `.jarvis/`). O `.gitignore` só é criado ou alterado quando a raiz tem `.git`; sem `.git` (como no modo workspace) a raiz não é versionada e o init não o toca.
+`ENV.md`, `$SESSIONS_DIR/` (padrão `.jarvis/sessions/`) e o `.gitignore` do workspace **não** são sobrescritos pelo sync de assets. O `jarvis init` cria `$SESSIONS_DIR/{eng,prod,qa}` e, com `.git` na raiz (modo projeto), põe no `.gitignore` o `.jarvis/`, o `$SESSIONS_DIR/` (quando relativo e fora de `.jarvis/`), a pasta dos documentos (`docs/jarvis/`) e a pasta da IDE, e mantém `AGENTS.md`, `CLAUDE.md` e `CDD-MIND-MAP.md` no `.git/info/exclude` (local, fora do PR; para versionar de propósito, remova a linha). Se `AGENTS.md` ou `CLAUDE.md` já estiver versionado, o `/jarvis-init upgrade` pergunta se ele sai do git (`jarvis untrack`, sem commit). Sem `.git` (como no modo workspace) a raiz não é versionada e o init não toca em nenhum dos dois. Se o git não responder, o init avisa e segue (saída 0); se não conseguir gravar o exclude ou o `.gitignore`, mostra o erro e sai com 1.
 
 | Papel | Descricao | Link |
 |-------|-----------|------|
