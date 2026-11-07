@@ -201,3 +201,56 @@ test("repos.md: regras — nunca lê .env*, nunca reprocessa linhas validadas, n
   assert.match(regras, /Terminar sem escrever arquivo quando não há nada a atualizar/);
   assert.match(repos, /um por vez dá o mesmo resultado que todos juntos, e as linhas já validadas não mudam/);
 });
+
+// ---- Fase 4: template do AGENTS.md e Passo 7 ---------------------------------------------------------------
+
+const template = read("templates", "engineering", "AGENTS-template.md");
+const passo7 = trecho(skill, "### 7. Criar AGENTS.md", "### 8. Profile-Aware Rules Sync");
+
+test("AGENTS-template: marcadores do bloco de repositórios uma vez cada, com {REPOS_BLOCK} entre eles", () => {
+  const abre = "<!-- jarvis:repos:start -->";
+  const fecha = "<!-- jarvis:repos:end -->";
+  assert.equal(template.split(abre).length - 1, 1, "um marcador de início");
+  assert.equal(template.split(fecha).length - 1, 1, "um marcador de fim");
+  const i = template.indexOf(abre);
+  const f = template.indexOf(fecha);
+  const corpo = template.slice(i, f);
+  assert.ok(i < f && corpo.includes("{REPOS_BLOCK}"), "{REPOS_BLOCK} fica entre os marcadores");
+  assert.match(corpo, /o mapa \[CDD-MIND-MAP\.md\]\(CDD-MIND-MAP\.md\) é a fonte/);
+});
+
+test("AGENTS-template: a linha do mapa vem antes do bloco (é onde o modo repos insere o bloco quando falta)", () => {
+  const linha = template.indexOf("> Mapa de tecnologias do projeto: [CDD-MIND-MAP.md](CDD-MIND-MAP.md)");
+  assert.notEqual(linha, -1, "o template traz a linha do mapa");
+  assert.ok(linha < template.indexOf("<!-- jarvis:repos:start -->"), "a linha do mapa vem antes do bloco");
+});
+
+test("AGENTS-template: o caminho das sessões é .jarvis/sessions, sem {IDE_FOLDER}/sessions", () => {
+  assert.match(template, /Use `\.jarvis\/sessions` para contexto de tarefas em andamento/);
+  assert.doesNotMatch(template, /\{IDE_FOLDER\}\/sessions/);
+});
+
+test("SKILL.md Passo 7: o template já traz a linha do mapa; só acrescenta se o AGENTS.md existente não a cita", () => {
+  assert.match(passo7, /O template já traz a linha que identifica o mapa de tecnologias do projeto; acrescente-a se o `AGENTS\.md` \*\*já existir\*\* e não a citar/);
+});
+
+test("SKILL.md Passo 7 (Q4 e Q5): bloco removido no modo projeto; no workspace, uma linha por repositório do mapa, ou vazio se o mapa não existe", () => {
+  const item7 = trecho(passo7, "7. **Bloco de repositórios**", null);
+  assert.match(item7, /no \*\*modo projeto\*\*, remova o bloco inteiro, marcadores incluídos/);
+  assert.match(item7, /No \*\*modo workspace\*\*, substitua `\{REPOS_BLOCK\}` por uma linha por repositório do `CDD-MIND-MAP\.md`/);
+  assert.match(item7, /`- \*\*\{repo\}\*\* — \{papel\}; \{linguagem\}\/\{framework\} \(\{área\}\)`/);
+  assert.match(item7, /se o mapa \*\*ainda não existe\*\*.*deixe os marcadores e a frase de abertura sem linhas/);
+  assert.match(item7, /sub-passo 9\.8\) ou pelo `\/jarvis-init repos`/);
+});
+
+test("passo-adicionar-stacks 9.8: depois de gravar o mapa, preenche o bloco do AGENTS.md pelo formato do repos.md", () => {
+  const s98 = trecho(stacks, "## 9.8 Montar o mapa de tecnologias", "## Tratamento de situações");
+  assert.match(s98, /preencha o bloco `jarvis:repos` com uma linha por repositório do mapa, no formato do item 3 de \[repos\.md\]\(repos\.md\)/);
+  assert.match(s98, /o texto fora do bloco não muda/);
+});
+
+test("o formato da linha do bloco é o mesmo no template, no Passo 7 e no repos.md", () => {
+  const formato = "- **{repo}** — {papel}; {linguagem}/{framework} ({área})";
+  assert.ok(passo7.includes(formato), "Passo 7");
+  assert.ok(repos.includes(formato), "repos.md");
+});
