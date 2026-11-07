@@ -32,7 +32,7 @@ Antes de começar o documento:
 
 ### Central docs
 
-Os documentos destes comandos são **documentos de trabalho**: nascem em `$PROD_DOCS`/`$ENG_DOCS` (`docs/jarvis/`), fora do Central docs. Desde a #220, um documento **ligado a uma entrega consolidada** também é publicado em `decisions/` da funcionalidade, e pode mais tarde ser removido de `docs/jarvis/` (`--finalize`/`--force`); o que não está ligado nunca sai de `docs/jarvis/`. O Central docs registra o que foi implementado, e quem o atualiza é o `/eng.spec-consolidate`, depois do PR da entrega.
+Os documentos destes comandos são **documentos de trabalho**: nascem em `$PROD_DOCS`/`$ENG_DOCS`, fora do Central docs. Desde a #220, um documento **ligado a uma entrega consolidada** também é publicado em `decisions/` da funcionalidade, e pode mais tarde ser removido de `$JARVIS_DOCS` (`--finalize`/`--force`); o que não está ligado nunca sai de `$JARVIS_DOCS`. O Central docs registra o que foi implementado, e quem o atualiza é o `/eng.spec-consolidate`, depois do PR da entrega.
 
 ## Referências
 

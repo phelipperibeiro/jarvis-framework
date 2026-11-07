@@ -56,7 +56,7 @@ Verifique se a documentação reflete as mudanças realizadas:
 - Atualizações no README.md para novas funcionalidades ou mudanças
 - Documentação de APIs
 - Comentários no código para lógicas complexas
-- Atualizações na pasta docs/
+- Atualizações na pasta `$DOCS_FOLDER` do projeto
 - CHANGELOG ou notas de release
 
 4. Análise de Cobertura de Testes

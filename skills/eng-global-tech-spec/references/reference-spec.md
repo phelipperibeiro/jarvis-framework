@@ -88,7 +88,7 @@ Apresente um resumo (escopo, decisões resolvidas e origem de cada uma, contrato
 - **Caminho:** `$ENG_DOCS/SPEC/SPEC-###-{slug}.md`, com `{slug}` em kebab-case, sem acentos.
 - **Número:** se `$ENG_DOCS/SPEC/` existir e tiver arquivos no padrão `SPEC-###-*.md`, use o maior `###` + 1; senão, `001`. Crie a pasta se não existir.
 - **Frontmatter:** `id`, `name`, `version` (`1.0.0` na criação), `status` (`proposed` na criação), `related`, datas, `author` e `reviewers`.
-- É um **documento de trabalho**: fica em `$ENG_DOCS` (`docs/jarvis/`) e **não** é publicado no Central docs, como RFC e ARD.
+- É um **documento de trabalho**: fica em `$ENG_DOCS` e **não** é publicado no Central docs, como RFC e ARD.
 
 Ao terminar, exiba:
 

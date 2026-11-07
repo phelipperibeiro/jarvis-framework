@@ -8,7 +8,7 @@ recommended_model: sonnet
 
 Este comando junta o que foi feito nos últimos `N` dias, lendo os `daily.md` que o `/eng.pr` grava em cada sessão. O resultado é um relatório em markdown, do dia mais recente para o mais antigo, em lista aninhada (tarefa > frentes de trabalho > detalhes), com a linha de timesheet de cada tarefa e um bloco de **alertas** das sessões que deveriam ter `daily.md` e não têm.
 
-> 🔒 **Privado**: o relatório reaproveita a narrativa e o timesheet pessoais do `daily.md`. Ele fica em `$ENG_DOCS/daily-reports/` (dentro de `docs/jarvis/`, fora do versionamento) e **nunca** é publicado: nem no Central docs, nem no card.
+> 🔒 **Privado**: o relatório reaproveita a narrativa e o timesheet pessoais do `daily.md`. Ele fica em `$ENG_DOCS/daily-reports/` (dentro de `$JARVIS_DOCS`, fora do versionamento) e **nunca** é publicado: nem no Central docs, nem no card.
 
 ### Skills invocados durante o workflow
 
@@ -122,7 +122,7 @@ O link usa o caminho relativo ao workspace (`reportPath`).
 
 ### ⛔ Não faça
 
-- Não publique o relatório (Central docs, card, PR) nem o copie para fora de `docs/jarvis/`
+- Não publique o relatório (Central docs, card, PR) nem o copie para fora de `$JARVIS_DOCS`
 - Não inclua e-mails, tokens nem valores de variáveis do `ENV.md`
 - Não acrescente fatos além do `daily.md` e do vendor
 - Não altere os `daily.md` nem outros arquivos das sessões

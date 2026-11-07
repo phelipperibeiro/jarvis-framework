@@ -63,7 +63,7 @@ Foque especialmente em:
 Examine a documentação atual do projeto:
 
 - Ler o `README.md`
-- Analisar todos os arquivos da pasta `docs/` (se existir)
+- Analisar todos os arquivos da pasta `$DOCS_FOLDER` do projeto (se existir)
 - Verificar comentários de documentação inline no código
 - Conferir documentação de APIs
 - Revisar exemplos e tutoriais existentes

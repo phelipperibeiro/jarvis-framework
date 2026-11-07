@@ -31,6 +31,21 @@ const TARGETS = [
   "skills/jarvis-init/assets/exemplo-execucao.md",
   "skills/jarvis-docs-central/SKILL.md",
   "skills/jarvis-docs-central/README.md",
+  "workflows/engineering/eng.start.md",
+  "workflows/engineering/eng.pr.md",
+  "workflows/engineering/eng.docs.md",
+  "workflows/engineering/eng.create-ard.md",
+  "workflows/engineering/eng.create-ard-from-code.md",
+  "workflows/engineering/eng.create-rfc.md",
+  "workflows/engineering/eng.daily-report.md",
+  "workflows/engineering/eng.spec-consolidate.md",
+  "rules/product/prod-rules.md",
+  "rules/engineering/eng-rules.md",
+  "rules-on-demand/product/prod.spec-common-rules.md",
+  "rules-on-demand/engineering/eng.transitions-rules.md",
+  "skills/AGENTS.md",
+  "skills/product-specs-update/SKILL.md",
+  "skills/eng-global-tech-spec/references/reference-spec.md",
 ];
 
 /** Linhas permitidas: arquivo + condição + motivo. Curta e explícita. */
@@ -46,6 +61,11 @@ const EXEMPT = [
   { file: "skills/jarvis-init/assets/exemplo-execucao.md", when: (l) => /padrão `\.jarvis\/sessions`/.test(l), why: "padrão descrito como padrão" },
   { file: "skills/jarvis-docs-central/SKILL.md", when: (l) => /padrão do template|hoje `docs\/jarvis/.test(l), why: "padrão descrito como padrão" },
   { file: "skills/jarvis-docs-central/README.md", when: (l) => /valores padrão|padrão/.test(l) && l.includes("docs/jarvis/central-docs"), why: "padrão descrito como padrão" },
+  { file: "rules/product/prod-rules.md", when: (l) => /`\$(JARVIS_DOCS\/product|JARVIS_DOCS\/discoveries|ENG_DOCS)` \(`docs\/jarvis\//.test(l), why: "o padrão ao lado da variável (rule carregada no início da sessão: o tamanho é fixado em teste, #83)" },
+  { file: "rules/engineering/eng-rules.md", when: (l) => l.includes("`$SESSIONS_DIR` → `.jarvis/sessions`"), why: "mapeamento da variável para o seu valor padrão (rule carregada no início da sessão)" },
+  { file: "rules-on-demand/engineering/eng.transitions-rules.md", when: (l) => l.includes("com o `SESSIONS_DIR` padrão"), why: "exemplo de link com o padrão" },
+  { file: "skills/product-specs-update/SKILL.md", when: (l) => l.includes("com os valores padrão"), why: "padrão descrito como padrão" },
+  { file: "workflows/engineering/eng.spec-consolidate.md", when: (l) => l.includes('"originalPath": "/ws/.jarvis/sessions/'), why: "manifesto de exemplo, com caminho real de sessão" },
 ];
 
 function violations(file) {

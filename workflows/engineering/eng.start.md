@@ -27,7 +27,7 @@ Este comando inicia o **planejamento** de uma nova feature.
 | Fase 0.1: Análise de Contexto (CDD) | `/jarvis-context-detect` | Se `ENABLE_CDD=true` no ENV.md (execução obrigatória antes da Fase 1); `ENABLE_CDD=false` pula |
 | Fase 0.5: Advisor (opcional) | `eng.advisor.agent` (agente) | Se o usuário escolher usar o Advisor no alerta e o `architecture.md` tiver questões em aberto (aberto só na primeira questão) |
 | Fase 1.1: Criar Branch de Feature | `/eng-global-branch` | Sempre que criar ou renomear a branch de trabalho (compõe o nome e confirma quando o projeto tem convenção) |
-| Fase 2.2: Buscar Documentação Central | `/jarvis-docs-central` | Se `CENTRAL_DOCS_STORAGE` estiver configurado no ENV.md (buscar as funcionalidades já implementadas, `feature-*`, e entregas recentes; PRD, ARD e RFC ficam em `docs/jarvis/`) |
+| Fase 2.2: Buscar Documentação Central | `/jarvis-docs-central` | Se `CENTRAL_DOCS_STORAGE` estiver configurado no ENV.md (buscar as funcionalidades já implementadas, `feature-*`, e entregas recentes; PRD, ARD e RFC ficam em `$JARVIS_DOCS`) |
 | Fase 3.4: Estratégia de Testes | `eng.qa.test-architect` (agente) | Se a feature tiver requisitos de performance ou segurança (APIs públicas, dados sensíveis, alta carga ou requisitos não-funcionais explícitos) |
 | Fase 3.4: Estratégia de Testes | `/eng-platform` | Se a feature tiver requisitos de performance (latência, throughput, escalabilidade) |
 | Fase 3.4: Estratégia de Testes | `/eng-ai` | Se a feature envolver IA (LLM, RAG, agentes, chatbots, embeddings) |
@@ -164,14 +164,14 @@ Se `CENTRAL_DOCS_STORAGE` estiver configurado no ENV.md, buscar docs relacionado
 - funcionalidades relacionadas (`feature-*`): comportamento atual, decisões, onde está no código;
 - entregas recentes dessas funcionalidades (`delivery-*`), se ajudarem.
 
-Os documentos de trabalho da tarefa (PRD, FRD, ARD, RFC, SPEC) ficam em `$PROD_DOCS`/`$ENG_DOCS` (`docs/jarvis/`): leia-os de lá primeiro; não achando, busque em `decisions/` pela skill `jarvis-docs-central` (Modo 1) — pode já ter sido consolidado e removido de `docs/jarvis/` (#220).
+Os documentos de trabalho da tarefa (PRD, FRD, ARD, RFC, SPEC) ficam em `$PROD_DOCS`/`$ENG_DOCS`: leia-os de lá primeiro; não achando, busque em `decisions/` pela skill `jarvis-docs-central` (Modo 1) — pode já ter sido consolidado e removido de `$JARVIS_DOCS` (#220).
 
 **Passo 3:** Incorporar ao contexto antes de prosseguir para análise
 
 **Comportamento:**
 - Se docs encontrados → carregar e exibir resumo
-- Se não encontrados → seguir com os documentos de trabalho em `docs/jarvis/` e o card
-- Se `CENTRAL_DOCS_STORAGE` vazio → pular só a busca no Central docs; os documentos de trabalho em `docs/jarvis/` e o card seguem
+- Se não encontrados → seguir com os documentos de trabalho em `$JARVIS_DOCS` e o card
+- Se `CENTRAL_DOCS_STORAGE` vazio → pular só a busca no Central docs; os documentos de trabalho em `$JARVIS_DOCS` e o card seguem
 
 ### 2.3 Análise do Requisito
 
@@ -179,7 +179,7 @@ Examine os cards, seus pais e filhos, e desenvolva compreensão do que deve ser 
 
 **Se funcionalidades do Central docs foram carregadas:** validar o alinhamento com o que já existe (comportamento atual, decisões, onde está no código).
 
-**Com os documentos de trabalho de `docs/jarvis/`:**
+**Com os documentos de trabalho de `$JARVIS_DOCS`:**
 - Validar alinhamento com o PRD
 - Verificar restrições arquiteturais do ARD
 - Considerar decisões de RFCs relacionados
@@ -222,7 +222,7 @@ Use ferramentas de busca para entender o código existente:
 - **Grep**: Buscar padrões e implementações similares
 - **Read**: Analisar arquivos críticos que serão impactados
 
-Com `WORKSPACE_MODE=workspace`, busque só nos repositórios do workspace e siga a regra "Buscas de código em modo workspace" de `eng-rules.md` (ignora `$IDE/`, `.jarvis/`, `.vscode/`, `node_modules/` e o `CDD-MIND-MAP.md`; `docs/jarvis/` é lida como documento de trabalho).
+Com `WORKSPACE_MODE=workspace`, busque só nos repositórios do workspace e siga a regra "Buscas de código em modo workspace" de `eng-rules.md` (ignora `$IDE/`, `.jarvis/`, `.vscode/`, `node_modules/` e o `CDD-MIND-MAP.md`; `$JARVIS_DOCS` é lida como documento de trabalho).
 
 ### 3.2 Documentação Existente
 

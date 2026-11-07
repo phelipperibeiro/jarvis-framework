@@ -15,16 +15,16 @@ Este comando registra no **Central docs** o que a entrega **de fato implementou*
 - o **registro da entrega** (`delivery-{AAAA-MM-DD}-{task_key}[-{funcionalidade}].md`), com o PR, os commits e os autores;
 - se houver conteúdo que não é de uma funcionalidade só, a **página do produto** (`{produto}.md`).
 
-Os documentos de trabalho (PRD, FRD, ARD, RFC, SPEC, discovery…) continuam em `docs/jarvis/`. Um documento **ligado a uma entrega consolidada** (chave da sessão, `related_*`, ou indicação sua) é **também publicado** em `decisions/`, na pasta da funcionalidade — o Central docs passa a ser, além do registro do implementado, o registro técnico oficial (#220). O que não está ligado **não é tocado**.
+Os documentos de trabalho (PRD, FRD, ARD, RFC, SPEC, discovery…) continuam em `$JARVIS_DOCS`. Um documento **ligado a uma entrega consolidada** (chave da sessão, `related_*`, ou indicação sua) é **também publicado** em `decisions/`, na pasta da funcionalidade — o Central docs passa a ser, além do registro do implementado, o registro técnico oficial (#220). O que não está ligado **não é tocado**.
 
 **Toda a sessão vai junto (#229).** O Central docs guarda um snapshot de cada funcionalidade seguido das sessões e dos artefatos dela, para uma pessoa ou uma IA consultar sem abrir a sessão, e organizado para migrar ao Confluence. Por isso o comando publica **todos os arquivos da sessão** `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/`: `architecture.md`, `plan.md` e `light-arch.md` em `decisions/`; os demais (inclusive subpastas e arquivos que não são Markdown) em `history/{card}/`; e uma **página-índice da sessão** (`history/{card}/{card}.md`), que liga tudo e as funcionalidades tocadas. Depois de publicar, arquivar e finalizar (cada um com o seu Sim), a pasta da sessão pode ser apagada sem perder nada. Uma sessão pode estar **incompleta**: o comando documenta com o que existir, marca o que faltou e nunca inventa.
 
-> ⚠️ **Três execuções separadas** (Q3/Q15 da #220), cada uma com o seu Sim: publicar (copia; os originais continuam onde estão), `--archive` (guarda os originais em `archive/`, ainda sem apagar nada) e `--finalize` (apaga os originais de `docs/jarvis/`, só os que não mudaram desde o `--archive`; irreversível). Rodar só `/eng.spec-consolidate {chave}` cobre o primeiro Sim; os outros dois são chamadas separadas, de propósito.
+> ⚠️ **Três execuções separadas** (Q3/Q15 da #220), cada uma com o seu Sim: publicar (copia; os originais continuam onde estão), `--archive` (guarda os originais em `archive/`, ainda sem apagar nada) e `--finalize` (apaga os originais de `$JARVIS_DOCS`, só os que não mudaram desde o `--archive`; irreversível). Rodar só `/eng.spec-consolidate {chave}` cobre o primeiro Sim; os outros dois são chamadas separadas, de propósito.
 
 > 🤖 **Modelo**: se a IDE informar o modelo desta sessão e ele for de outra família que o `recommended_model` do documento (ou do template, se for novo), avise em uma linha e siga, sem bloquear e sem repetir. Sem essa informação, não avise.
 > 📤 **Templates**: `$IDE/templates/engineering/central-feature-template.md`, `central-delivery-template.md`, `central-session-template.md` (página-índice da sessão) e `central-product-template.md`
 >
-> 🔗 **Links**: antes de escrever a consolidação, leia `$IDE/rules-on-demand/doc-links-rules.md` e siga-a: toda citação com lugar exato (requisito, documento, código, card, PR) vira link. O Central docs pode ser lido fora do workspace: siga a regra 6 (URL absoluta, com o sha do merge; sessão e `docs/jarvis/` em texto).
+> 🔗 **Links**: antes de escrever a consolidação, leia `$IDE/rules-on-demand/doc-links-rules.md` e siga-a: toda citação com lugar exato (requisito, documento, código, card, PR) vira link. O Central docs pode ser lido fora do workspace: siga a regra 6 (URL absoluta, com o sha do merge; sessão e `$JARVIS_DOCS` em texto).
 
 ### Skills invocados durante o workflow
 
@@ -127,8 +127,8 @@ Para cada candidato, determine:
 1. **Vínculo com esta entrega** (Q10), na ordem:
    - **Pela chave:** os arquivos da própria sessão (`$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/`) — vínculo automático.
    - **Por `related_*`:** o documento de trabalho tem `related_prd`/`related_frd`/`related_epic`/`related_discovery` apontando para algo já ligado à entrega.
-   - **Sem vínculo automático:** pergunte se você quer ligar aquele documento a esta entrega. Se sim, **grave o `related_*`** nele (é a única escrita fora de `consolidation/` que este comando faz, e só com a sua indicação) e ele entra na lista; se não, ele **fica** em `docs/jarvis/`, sem ser tocado.
-2. **Com vínculo, confira o `status`** (Q11) — **só para documentos de `docs/jarvis/`**; os arquivos da sessão não têm `status`: só é elegível para publicar com `status` em `in_production`, `cancelled` ou `deprecated`. Em qualquer outro `status` (ex.: `in_progress`, `backlog`), ofereça: **"Marcar `{documento}` como `in_production` e publicar?"** (Q23) — um Sim por item da lista, nunca em lote. Sem o Sim, o documento **fica** onde está, mesmo tendo vínculo.
+   - **Sem vínculo automático:** pergunte se você quer ligar aquele documento a esta entrega. Se sim, **grave o `related_*`** nele (é a única escrita fora de `consolidation/` que este comando faz, e só com a sua indicação) e ele entra na lista; se não, ele **fica** em `$JARVIS_DOCS`, sem ser tocado.
+2. **Com vínculo, confira o `status`** (Q11) — **só para documentos de `$JARVIS_DOCS`**; os arquivos da sessão não têm `status`: só é elegível para publicar com `status` em `in_production`, `cancelled` ou `deprecated`. Em qualquer outro `status` (ex.: `in_progress`, `backlog`), ofereça: **"Marcar `{documento}` como `in_production` e publicar?"** (Q23) — um Sim por item da lista, nunca em lote. Sem o Sim, o documento **fica** onde está, mesmo tendo vínculo.
 3. **Destino** de cada arquivo da sessão:
 
    | Arquivo da sessão | Destino no Central docs | Tipo |
@@ -169,7 +169,7 @@ O agente gera em `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/consolidation/` (no `--in
 ]
 ```
 
-A página-índice **não tem `originalPath`** (é gerada, não existe na sessão) e `feature-*`/`delivery-*` também não. Para documentos de `docs/jarvis/` (PRD, FRD, ARD…), o manifesto continua como na #220 (`originalPath` do documento, sem `fromSession`).
+A página-índice **não tem `originalPath`** (é gerada, não existe na sessão) e `feature-*`/`delivery-*` também não. Para documentos de `$JARVIS_DOCS` (PRD, FRD, ARD…), o manifesto continua como na #220 (`originalPath` do documento, sem `fromSession`).
 
 O frontmatter segue o template, com os comentários `#`. `product` = `WORKSPACE` (ou o produto confirmado).
 
@@ -201,13 +201,13 @@ Pergunte com `AskUserQuestion` (**Sim / Não**): **"Publicar no Central docs?"**
 
 Com `ARTIFACT_STYLE=human-generated`, a versão humanizada (`{nome}.public.md`) fica ao lado da consolidação, na sessão, e **não** entra no manifesto.
 
-Os originais em `docs/jarvis/` e na sessão (inclusive os que acabaram de ser publicados aqui) **continuam onde estão** depois deste passo: só o Passo 9 os apaga.
+Os originais em `$JARVIS_DOCS` e na sessão (inclusive os que acabaram de ser publicados aqui) **continuam onde estão** depois deste passo: só o Passo 9 os apaga.
 
 Informe que o próximo passo, **arquivar**, pode ser feito agora ou mais tarde (nova chamada: `/eng.spec-consolidate {TASK_MANAGER_KEY} --archive`), e não é obrigatório — quem não quiser mover os originais da entrega para o Central docs pode parar aqui. Para poder **apagar a sessão** sem perder nada, são necessários os Passos 8 e 9.
 
 ## Passo 8: Arquivar (`--archive`)
 
-São arquivadas todas as entradas do manifesto com `originalPath`: os documentos de trabalho de `docs/jarvis/` marcados "publica" no Passo 4 **e os arquivos da sessão** (`decisions/` e `history/`). `feature`, `delivery`, `product` e `home`, e a página-índice da sessão, não têm "original" fora do Central docs e não passam por aqui.
+São arquivadas todas as entradas do manifesto com `originalPath`: os documentos de trabalho de `$JARVIS_DOCS` marcados "publica" no Passo 4 **e os arquivos da sessão** (`decisions/` e `history/`). `feature`, `delivery`, `product` e `home`, e a página-índice da sessão, não têm "original" fora do Central docs e não passam por aqui.
 
 Pergunte com `AskUserQuestion` (**Sim / Não**): **"Arquivar os originais (sem apagar nada)?"**, mostrando a lista de `originalPath` que serão copiados.
 
@@ -268,7 +268,7 @@ Liste o que sobrou na pasta `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/` (`ls -A`, qu
 
 ### ⛔ Nunca
 - Publicar sem o **Sim** do Passo 7, arquivar sem o do Passo 8, finalizar sem o do Passo 9, ou apagar a pasta da sessão sem o do Passo 9.1 — cada passo tem a sua pergunta, nunca uma cobre a seguinte
-- Publicar um documento de trabalho **sem vínculo** com esta entrega (Q1) — sem o vínculo (chave, `related_*` ou a sua indicação no Passo 4), ele fica em `docs/jarvis/`, sem exceção
+- Publicar um documento de trabalho **sem vínculo** com esta entrega (Q1) — sem o vínculo (chave, `related_*` ou a sua indicação no Passo 4), ele fica em `$JARVIS_DOCS`, sem exceção
 - Quebrar (Q9) um documento de uma funcionalidade só, ou perder/inventar conteúdo ao separar as partes de um documento quebrado
 - Finalizar (apagar o original) sem ter arquivado antes, ou apagar um original cujo conteúdo mudou desde o `--archive` (Q13)
 - Incluir e-mails, tokens, senhas, valores de variáveis ou dados pessoais de clientes

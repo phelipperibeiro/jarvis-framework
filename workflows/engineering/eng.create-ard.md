@@ -360,5 +360,5 @@ Peça explicitamente para o usuário:
 
 ## Central docs
 
-Este documento é um **documento de trabalho**: fica em `$PROD_DOCS`/`$ENG_DOCS` (`docs/jarvis/`) e **não** é publicado no Central docs. O Central docs registra só o que foi implementado, e quem o atualiza é o `/eng.spec-consolidate`, depois do PR da entrega.
+Este documento é um **documento de trabalho**: fica em `$PROD_DOCS`/`$ENG_DOCS` e **não** é publicado no Central docs. O Central docs registra só o que foi implementado, e quem o atualiza é o `/eng.spec-consolidate`, depois do PR da entrega.
 

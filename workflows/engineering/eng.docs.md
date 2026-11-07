@@ -6,7 +6,7 @@ recommended_model: claude-sonnet-5
 
 # eng.docs
 
-> 🔗 **Links**: antes de escrever a documentação, leia `$IDE/rules-on-demand/doc-links-rules.md` e siga-a: toda citação com lugar exato (requisito, documento, código, card, PR) vira link. Num documento versionado no repositório (`README.md`, `docs/`), siga a regra 7: caminho relativo dentro do repositório, com a sessão e o `docs/jarvis/` em texto.
+> 🔗 **Links**: antes de escrever a documentação, leia `$IDE/rules-on-demand/doc-links-rules.md` e siga-a: toda citação com lugar exato (requisito, documento, código, card, PR) vira link. Num documento versionado no repositório (`README.md`, `docs/`), siga a regra 7: caminho relativo dentro do repositório, com a sessão e o `$JARVIS_DOCS` em texto.
 
 Use este workflow quando você quiser ajuda de engenharia para **atualizar/criar documentação**.
 
