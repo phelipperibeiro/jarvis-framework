@@ -921,6 +921,7 @@ Se não existir na raiz do projeto:
    `> Mapa de tecnologias do projeto: [CDD-MIND-MAP.md](CDD-MIND-MAP.md) (tecnologias e papel de cada repositório, ou da raiz no modo projeto; lido pelo /warm-up).`
 6. No modo projeto (raiz com `.git`), o `AGENTS.md` (e o `CLAUDE.md`, que é cópia dele) já está no `.git/info/exclude`, gravado pelo CLI antes de o arquivo existir: **não escreva no `.gitignore`**. Avise a pessoa: "para versionar de propósito, remova a linha do `.git/info/exclude`". Se o CLI avisou que o arquivo já está versionado, **não o tire do índice aqui**: a decisão é do Upgrade (`assets/upgrade.md`).
 7. **Bloco de repositórios** (`<!-- jarvis:repos:start -->` … `<!-- jarvis:repos:end -->`, o `{REPOS_BLOCK}` do template): no **modo projeto**, remova o bloco inteiro, marcadores incluídos (o mapa tem só a raiz). No **modo workspace**, substitua `{REPOS_BLOCK}` por uma linha por repositório do `CDD-MIND-MAP.md`, no formato `- **{repo}** — {papel}; {linguagem}/{framework} ({área})`; se o mapa **ainda não existe** (ele é montado no passo 9, que é pulável), deixe os marcadores e a frase de abertura sem linhas: elas entram quando o mapa for montado (sub-passo 9.8) ou pelo `/jarvis-init repos`.
+8. **`CLAUDE.md`** (a regra da cópia fica só aqui; o `/jarvis-init repos` e o Upgrade 9.2 apontam para ela): ao criar o `AGENTS.md`, crie o `CLAUDE.md` com o mesmo conteúdo, como cópia, **só se a IDE for `claude`** (as outras não o leem) **e ele não existir**. Se o `CLAUDE.md` já existir, não o toque e avise a pessoa.
 
 ### 8. Profile-Aware Rules Sync
 

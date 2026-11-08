@@ -163,9 +163,9 @@ test("repos.md: bloco do AGENTS.md entre marcadores, uma linha por repositório,
 test("repos.md (Q5 ajustada): AGENTS.md ausente é criado pelo Passo 7; sem marcadores o bloco entra depois da linha do mapa (ou no fim), na mesma confirmação", () => {
   const p3 = passo(3, 4);
   assert.match(p3, /\*\*`AGENTS\.md` não existe:\*\* \*\*crie-o pelo Passo 7 do `SKILL\.md`\*\*/);
-  assert.match(p3, /com o bloco preenchido por todos os repositórios do mapa já confirmado, e, também, o `CLAUDE\.md` com o mesmo conteúdo, como cópia\)/);
+  assert.match(p3, /com o bloco preenchido por todos os repositórios do mapa já confirmado\); o `CLAUDE\.md` segue o \*\*item 8 do Passo 7\*\* \(cópia, só se a IDE for `claude` e ele não existir; existente, não se toca\)/);
   assert.doesNotMatch(p3, /como o Passo 7 faz/, "o Passo 7 não cria o CLAUDE.md: a regra da cópia fica no repos.md");
-  assert.match(passo(2, 3), /Se o `AGENTS\.md` não existe, a tabela avisa que ele será criado/);
+  assert.match(passo(2, 3), /Se o `AGENTS\.md` não existe, a tabela avisa que ele será criado e, pelo item 8 do Passo 7, se o `CLAUDE\.md` também será criado \(ou se já existe e não será tocado\)/);
   assert.match(p3, /\*\*Existe com os marcadores:\*\* só acrescente as linhas novas entre eles/);
   assert.match(p3, /\*\*Existe sem os marcadores:\*\* insira o bloco, com uma linha por repositório do mapa \(já confirmado\), logo depois da linha `> Mapa de tecnologias do projeto:`; sem essa linha, no fim do arquivo/);
   assert.match(p3, /\*\*na mesma confirmação da tabela\*\* do item 2 \(não é uma pergunta a mais\)/);
@@ -304,4 +304,19 @@ test("guias: dizem que o /jarvis-init repos cria o AGENTS.md se ele ainda não e
   assert.match(read("docs", "estrutura", "skills.md"), /o bloco de repositórios do `AGENTS\.md` \(cria o `AGENTS\.md` se ainda não existir\)/);
   assert.match(read("docs", "visao-geral.md"), /o bloco de repositórios do `AGENTS\.md` \(cria o `AGENTS\.md` se ainda não existir\)/);
   assert.match(read("AGENTS.md"), /bloco do AGENTS\.md \(cria o AGENTS\.md se faltar\)/);
+});
+
+// ---- Fase 8: lacunas da rodada 3 do pre-pr ----------------------------------------------------------------
+
+test("SKILL.md Passo 7 item 8: o CLAUDE.md é cópia do AGENTS.md só com a IDE claude e só se não existir; existente não se toca", () => {
+  const item8 = trecho(passo7, "8. **`CLAUDE.md`**", null);
+  assert.match(item8, /a regra da cópia fica só aqui; o `\/jarvis-init repos` e o Upgrade 9\.2 apontam para ela/);
+  assert.match(item8, /crie o `CLAUDE\.md` com o mesmo conteúdo, como cópia, \*\*só se a IDE for `claude`\*\*/);
+  assert.match(item8, /\*\*e ele não existir\*\*/);
+  assert.match(item8, /Se o `CLAUDE\.md` já existir, não o toque e avise a pessoa/);
+});
+
+test("repos.md: não repete a regra do CLAUDE.md (aponta para o item 8 do Passo 7) e a linha 3 cita a exceção do Passo 7", () => {
+  assert.doesNotMatch(repos, /como cópia\)/, "a regra da cópia não é repetida no repos.md");
+  assert.match(repos, /Termina aqui, sem continuar o onboarding, salvo o Passo 7 quando o `AGENTS\.md` não existe e o modo o cria\./);
 });

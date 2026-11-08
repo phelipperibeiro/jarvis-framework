@@ -307,7 +307,7 @@ test("upgrade.md 9.2: no padrão não pergunta; fora do padrão avisa cada mudan
 test("upgrade.md 9.2: repositório novo segue o repos.md; AGENTS.md e mapa inexistentes não são criados aqui", () => {
   assert.match(item92, /pela regra do item 3 do \[repos\.md\]\(repos\.md\)/);
   assert.match(item92, /para repositório novo, siga os itens 1 a 5 do \[repos\.md\]\(repos\.md\) \(tabela de papel e stack para a pessoa validar\) e \*\*volte ao item 10 deste arquivo\*\*: o resumo e o fim são os do Upgrade/);
-  assert.match(item92, /`AGENTS\.md` que não existe conta como fora do padrão: com \*\*Ajustar agora\*\*, é criado pelo Passo 7 do `SKILL\.md`; o mapa que não existe não é criado aqui/);
+  assert.match(item92, /`AGENTS\.md` que não existe conta como fora do padrão: com \*\*Ajustar agora\*\*, é criado pelo Passo 7 do `SKILL\.md` \(e o `CLAUDE\.md`, pelo item 8 do Passo 7\); o mapa que não existe não é criado aqui/);
   assert.match(item92, /com uma linha por repositório do mapa/, "o bloco confere uma linha por repositório do mapa");
   assert.match(item92, /\(num `AGENTS\.md` já gerado, a forma resolvida, como `\.claude\/sessions\/`\)/, "o caminho antigo é conferido também na forma resolvida");
 });
