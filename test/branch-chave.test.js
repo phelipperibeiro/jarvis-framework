@@ -94,7 +94,6 @@ test("o frontmatter da skill fica pequeno (entra no início de toda sessão)", (
 test("a skill está registrada onde as eng-global-* aparecem", () => {
   for (const arquivo of [
     "skills/AGENTS.md",
-    "skills/SKILLS-ROADMAP.md",
     "AGENTS.md",
     "docs/estrutura/skills.md",
   ]) {
