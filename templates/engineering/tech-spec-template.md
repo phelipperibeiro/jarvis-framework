@@ -14,6 +14,10 @@ reviewers: {lista de revisores}
 
 # {id}: {name}
 
+> ⚠️ **Atenção:** {o que exige atenção e por quê}
+>
+> **Como usar o alerta:** use este formato só para o que o leitor não pode deixar passar: risco, bloqueio, divergência, dado sensível ou ação irreversível. Texto comum continua sem ícone, para o alerta não perder a força. Os alertas-modelo das seções 4.1, 7.2 e 10 mostram o uso; apague os que não se aplicam.
+
 ## 1. Contexto da História
 
 ### História Original (card do board)
@@ -187,6 +191,8 @@ sequenceDiagram
 - **{Consideração 1}**: {Descrição e como endereçar}
 - **{Consideração 2}**: {Descrição e como endereçar}
 
+> ⚠️ **Atenção:** {dado sensível envolvido (pessoal, financeiro ou credencial), onde ele trafega ou fica guardado e como é protegido}
+
 **Checklist de Segurança:**
 - [ ] Validação de input sanitizada
 - [ ] Autenticação e autorização implementadas
@@ -338,6 +344,8 @@ ALTER TABLE {tabela} DROP COLUMN {coluna};
 - **Validação**: {Como validar que migração foi bem-sucedida}
 - **Impacto**: {Downtime? Bloqueio de tabela?}
 
+> ⚠️ **Atenção:** {migração destrutiva ou irreversível: o que se perde e como confirmar o backup antes de rodar}
+
 ### 7.3 Seeds e Dados de Teste
 {Dados necessários para desenvolvimento/testes}
 
@@ -409,6 +417,8 @@ TIMEOUT_MS=5000
 | {Risco 1: ex: API de terceiros instável} | Alta/Média/Baixa | Alto/Médio/Baixo | {Como mitigar} | {Alternativa se falhar} |
 | {Risco 2: ex: Performance degradada} | Alta/Média/Baixa | Alto/Médio/Baixo | {Como mitigar} | {Alternativa} |
 | {Risco 3: ex: Complexidade subestimada} | Alta/Média/Baixa | Alto/Médio/Baixo | {Como mitigar} | {Alternativa} |
+
+> ⚠️ **Atenção:** {risco de impacto Alto sem plano B definido, ou bloqueio que impede o início do trabalho}
 
 ---
 
@@ -491,8 +501,25 @@ TIMEOUT_MS=5000
 
 ## 14. Apêndices
 
-### Apêndice A: {Título}
-{Informações adicionais, diagramas detalhados, exemplos de código, etc.}
+### Apêndice A: Questões em aberto
+
+> Sem questões em aberto, escreva "Nenhuma" e o motivo em uma frase.
+
+| ID | Status | Questão | Quem responde | Assumido ou decidido |
+| -- | ------ | ------- | ------------- | -------------------- |
+| Q1 | {✅ Decidida \| 🔄 Aberta} | {resumo da questão} | {nome} | {suposição atual ou decisão} |
+
+#### Q1 — {Título da questão}
+
+**Contexto:**
+{Explicação do problema e por que a decisão é necessária.}
+
+> Questão aberta: ✅ na opção assumida e 🔄 nas alternativas. Questão decidida: ✅ na opção escolhida e ❌ nas demais.
+
+**Opções:**
+1. ✅ {Opção assumida}: {o que muda se esta opção valer}
+2. 🔄 {Alternativa}: {o que muda se esta opção valer}
+3. 🔄 {Alternativa}: {o que muda se esta opção valer}
 
 ### Apêndice B: {Título}
 {Conteúdo adicional}
