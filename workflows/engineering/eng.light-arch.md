@@ -18,7 +18,6 @@ Diferente do `eng.start`, não cria branch nem PR: o entendimento e a estrutura 
 | Passo | Skill | Condição |
 |-------|-------|----------|
 | Arquitetura (dicas) e Pesquisa | `context7` (MCP) | Se for necessário consultar melhores práticas ou a documentação de uma biblioteca; não adivinhar |
-| Pesquisa | `Perplexity` (MCP) | Se não houver certeza de como uma biblioteca específica funciona |
 
 ## Exame
 
@@ -58,7 +57,7 @@ Aqui é onde você colocará seu chapéu de super pensamento e considerará o me
 3. Construa uma proposta de estrutura arquitetural que se alinhe com os convenções e melhores práticas do projeto.
 
 Dicas:
-   - Use as ferramentas code-expert (se disponíveis) para encontrar arquivos específicos baseados nas respostas de descoberta
+   - Use Glob, Grep e Read para encontrar arquivos específicos baseados nas respostas de descoberta
    - Mergulhe fundo em features e convenções similares
    - Analise detalhes específicos de execução
    - Use WebSearch ou context7 para melhores práticas ou documentação de biblioteca (se necessário)
@@ -83,7 +82,7 @@ Se ajudar a construir um diagrama MERMAID, sinta-se livre para fazê-lo.
 
 ## Pesquisa
 
-Se não tiver certeza de como uma biblioteca específica funciona, você pode usar Context7 e Perplexity para buscar informações sobre ela. Então, não tente adivinhar.
+Se não tiver certeza de como uma biblioteca específica funciona, você pode usar Context7 e WebSearch para buscar informações sobre ela. Então, não tente adivinhar.
 
 <task_manager_key>
 #$ARGUMENTS
