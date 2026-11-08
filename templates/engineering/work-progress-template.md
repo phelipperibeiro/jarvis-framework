@@ -66,8 +66,12 @@
 
 ### 3.3 Decisões Pendentes
 
-- [ ] {decisão_1}: {opções disponíveis}
-- [ ] {decisão_2}: {aguardando informação}
+> Sem decisões pendentes, escreva "Nenhuma" e o motivo em uma frase. Enquanto aberta, a coluna "Assumido ou decidido" lista a opção assumida (✅) e as alternativas (🔄); decidida, a escolhida (✅) e as demais (❌).
+
+| ID | Status | Questão | Quem responde | Assumido ou decidido |
+| -- | ------ | ------- | ------------- | -------------------- |
+| Q1 | {✅ Decidida \| 🔄 Aberta} | {decisão_1} | {nome} | ✅ {assumida} · 🔄 {alternativa 1} · 🔄 {alternativa 2} |
+| Q2 | {✅ Decidida \| 🔄 Aberta} | {decisão_2: aguardando informação} | {nome} | ✅ {assumida} · 🔄 {alternativa 1} · 🔄 {alternativa 2} |
 
 ---
 

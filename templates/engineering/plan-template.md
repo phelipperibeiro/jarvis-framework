@@ -240,7 +240,11 @@ FASE 1
 
 ### Decisões Pendentes
 
-- [ ] {Decisão que precisa ser tomada}
+> Sem decisões pendentes, escreva "Nenhuma" e o motivo em uma frase. Enquanto aberta, a coluna "Assumido ou decidido" lista a opção assumida (✅) e as alternativas (🔄); decidida, a escolhida (✅) e as demais (❌).
+
+| ID | Status | Questão | Quem responde | Assumido ou decidido |
+| -- | ------ | ------- | ------------- | -------------------- |
+| Q1 | {✅ Decidida \| 🔄 Aberta} | {decisão que precisa ser tomada} | {nome} | ✅ {assumida} · 🔄 {alternativa 1} · 🔄 {alternativa 2} |
 
 ---
 

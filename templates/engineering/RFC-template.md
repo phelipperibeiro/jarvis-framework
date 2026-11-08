@@ -110,10 +110,23 @@ Liste os critérios que devem pesar mais na decisão final:
 
 ## 9. Perguntas em Aberto
 
-Liste dúvidas que **precisam ser respondidas antes do aceite**:
+Liste dúvidas que **precisam ser respondidas antes do aceite**. Sem questões em aberto, escreva "Nenhuma" e o motivo em uma frase.
 
-- ?
-- ?
+| ID | Status | Questão | Quem responde | Assumido ou decidido |
+| -- | ------ | ------- | ------------- | -------------------- |
+| Q1 | {✅ Decidida \| 🔄 Aberta} | {resumo da questão} | {nome} | {suposição atual ou decisão} |
+
+### Q1 — {Título da questão}
+
+**Contexto:**
+{Explicação do problema e por que a decisão é necessária.}
+
+> Questão aberta: ✅ na opção assumida e 🔄 nas alternativas. Questão decidida: ✅ na opção escolhida e ❌ nas demais.
+
+**Opções:**
+1. ✅ {Opção assumida}: {o que muda se esta opção valer}
+2. 🔄 {Alternativa}: {o que muda se esta opção valer}
+3. 🔄 {Alternativa}: {o que muda se esta opção valer}
 
 ---
 
