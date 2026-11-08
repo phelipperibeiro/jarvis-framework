@@ -260,7 +260,7 @@ Detalhe da rule: `rules/rtk-rules.md`. Comentários: `templates/ENV-template.md`
 | `taxonomy.md` | Opções de org | [raiz.md](./estrutura/raiz.md#taxonomymd) |
 | `members.md` | Pessoas da org | [raiz.md](./estrutura/raiz.md#membersmd) |
 
-Pastas: [agents](./estrutura/agents.md) · [bin](./estrutura/bin.md) · [docs](./estrutura/docs.md) · [issues](./estrutura/issues.md) · [node_modules](./estrutura/node_modules.md) · [rules](./estrutura/rules.md) · [skills](./estrutura/skills.md) · [templates](./estrutura/templates.md) · [workflows](./estrutura/workflows.md)
+Pastas: [agents](./estrutura/agents.md) · [bin](./estrutura/bin.md) · [docs](./estrutura/docs.md) · [node_modules](./estrutura/node_modules.md) · [rules](./estrutura/rules.md) · [skills](./estrutura/skills.md) · [templates](./estrutura/templates.md) · [workflows](./estrutura/workflows.md)
 
 ---
 

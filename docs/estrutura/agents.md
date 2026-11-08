@@ -17,6 +17,7 @@ agents/
 │   ├── eng.agent.md          # agente principal (ATHENA)
 │   ├── eng.bug-hunter.md
 │   ├── eng.dev-code-reviewer.md
+│   ├── eng.docs-consolidator.agent.md  # consolida a entrega no Central docs
 │   ├── eng.docs-writer.md
 │   ├── eng.frontend.agent.md
 │   ├── eng.rpa.agent.md             # ARACHNE
@@ -27,7 +28,6 @@ agents/
 │       ├── eng.qa.test-planner.md
 │       ├── eng.qa.testing-engineer.md
 │       ├── eng.qa.test-architect.md
-│       ├── eng.qa.quality-champion-task-agent.md
 │       └── eng.qa.quality-strategist.md
 └── product/
     ├── prod.pm-checker.md

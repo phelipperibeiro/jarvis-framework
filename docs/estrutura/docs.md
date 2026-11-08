@@ -25,7 +25,6 @@ docs/
     ├── agents.md
     ├── bin.md
     ├── docs.md                       # este arquivo
-    ├── issues.md
     ├── node_modules.md
     ├── rules.md
     ├── skills.md
