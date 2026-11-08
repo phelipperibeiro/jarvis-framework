@@ -13,6 +13,10 @@
 > **Questões em aberto:** tratar no architecture.md (como hoje) | uma a uma, assim que surgirem (só sem Advisor)  
 > **Ajustes antes da aprovação:** {0} (o `eng.start` soma 1 a cada "Ajustar o documento"; o `eng.pre-pr` copia o número para o PR Brief)
 
+> ⚠️ **Atenção:** {o que exige atenção e por quê}
+>
+> **Como usar o alerta:** use este formato só para o que o leitor não pode deixar passar: risco, bloqueio, divergência, dado sensível ou ação irreversível. Texto comum continua sem ícone, para o alerta não perder a força. Os alertas-modelo das seções 5 e 6.1 mostram o uso; apague os que não se aplicam.
+
 ---
 
 ## 1. Visão Geral
@@ -162,6 +166,8 @@ Novo fluxo:
 | R1  | {descrição do risco}      | Alta/Média/Baixa | Alto/Médio/Baixo | {como mitigar} | {alternativa} |
 | R2  | {descrição do risco}      | Alta/Média/Baixa | Alto/Médio/Baixo | {como mitigar} | {alternativa} |
 
+> ⚠️ **Atenção:** {risco de impacto Alto sem plano B definido, ou bloqueio que impede o início do trabalho}
+
 ---
 
 ## 6. Considerações Técnicas
@@ -172,6 +178,8 @@ Novo fluxo:
 - **Validação de Dados:** {considerações}
 - **Dados Sensíveis:** {considerações}
 - **OWASP:** {considerações relevantes}
+
+> ⚠️ **Atenção:** {dado sensível envolvido (pessoal, financeiro ou credencial), onde ele trafega ou fica guardado e como é protegido}
 
 ### 6.2 Performance
 
@@ -211,7 +219,7 @@ Novo fluxo:
 | Throughput        | {X req/s}           | {ferramenta}            |
 | Tempo de resposta | {< Xms}             | {ferramenta}            |
 
-> ⚠️ **Relacionado a**: Seção 6.2 (Performance)
+> ⚠️ **Atenção:** os limites desta tabela devem ser coerentes com a Seção 6.2 (Performance); divergência entre as duas seções invalida o teste.
 
 #### 6.5.3 Requisitos de Segurança (se aplicável)
 
@@ -221,7 +229,7 @@ Novo fluxo:
 | Input Validation  | {campos críticos}                | {fuzzing/injection}     |
 | Autenticação      | {endpoints protegidos}           | {testes de acesso}      |
 
-> ⚠️ **Relacionado a**: Seção 6.1 (Segurança)
+> ⚠️ **Atenção:** o que esta tabela valida deve ser coerente com a Seção 6.1 (Segurança); divergência entre as duas seções deixa a superfície de ataque sem teste.
 
 #### 6.5.4 Estrutura de Testes
 
@@ -268,11 +276,11 @@ graph TD
 > Tudo que for **diferente do código ou ambíguo no card** vira uma questão aqui, detalhada a ponto de outro agente entendê-la sem reconstruir a análise. No mínimo 3 opções, mais a **4 — Outra**.
 > **Com Advisor** (cabeçalho), a sugestão do Advisor prevalece e é a decisão adotada; o agente principal não a substitui nem contesta. **Sem Advisor**, "Sugestão do Sub-Agent (Advisor)" e "Divergência" ficam "N/A (Advisor não utilizado)", a regra em destaque é omitida e a decisão é a do usuário ao revisar o documento.
 > Questão levantada depois do `eng.start` (consulta por exceção) entra aqui, numerada em sequência, marcada "levantada no `eng.plan`" ou "no `eng.work`". Sem questão em aberto, escreva "Nenhuma" e o motivo em uma frase.
-> **Marcação para leitura rápida:** decidida a questão, a opção escolhida ganha ✅ e "(escolhida)" no título, e as demais ganham ❌, inclusive a **4 — Outra**. A coluna "Opção escolhida" da tabela repete a escolha (`✅ {n} — {nome curto}`). Enquanto a questão estiver 🔄 Aberta, as opções ficam sem marcação e a coluna fica "—".
+> **Marcação para leitura rápida:** enquanto a questão estiver 🔄 Aberta, a opção assumida ganha ✅ e "(assumida)" no título, e as alternativas ganham 🔄, inclusive a **4 — Outra**; a coluna "Assumido ou decidido" mostra a suposição atual (`✅ {n} — {nome curto}`). Decidida a questão, a opção escolhida ganha ✅ e "(escolhida)" no título, e as demais ganham ❌, inclusive a **4 — Outra**; a coluna passa a mostrar a decisão.
 
-| ID | Questão                      | Opção escolhida                     | Responsável                 | Deadline | Status                     |
-| -- | ---------------------------- | ----------------------------------- | --------------------------- | -------- | -------------------------- |
-| Q1 | {resumo objetivo da questão} | {✅ {n} — {nome curto} \| —}        | {Advisor \| nome do usuário} | {— \| data} | {✅ Decidida \| 🔄 Aberta} |
+| ID | Status                     | Questão                      | Quem responde                | Assumido ou decidido         | Deadline    |
+| -- | -------------------------- | ---------------------------- | ---------------------------- | ---------------------------- | ----------- |
+| Q1 | {✅ Decidida \| 🔄 Aberta} | {resumo objetivo da questão} | {Advisor \| nome do usuário} | {✅ {n} — {nome curto}} | {— \| data} |
 
 ### Q1 — {Título da questão}
 
@@ -288,17 +296,17 @@ graph TD
 
 **Opções:**
 
-**✅ 1. {Opção 1} (escolhida)**
+**✅ 1. {Opção assumida} (assumida)** _(decidida a questão: "(escolhida)" e ❌ nas demais)_
 * Como funciona: {descrição}
 * Vantagens: {vantagens}
 * Desvantagens: {desvantagens}
 * Impacto: {impacto}
 
-**❌ 2. {Opção 2}** (mesmo formato)
+**🔄 2. {Alternativa}** (mesmo formato)
 
-**❌ 3. {Opção 3}** (mesmo formato)
+**🔄 3. {Alternativa}** (mesmo formato)
 
-**❌ 4. Outra**
+**🔄 4. Outra**
 * Alternativa adicional identificada pelo Sub-Agent/Advisor, detalhada caso ele entenda que nenhuma das opções anteriores é a melhor abordagem.
 
 **Sugestão do Agente Principal (Architect):**
