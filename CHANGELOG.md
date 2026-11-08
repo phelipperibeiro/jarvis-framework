@@ -6,6 +6,11 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), e o
 
 > Versões anteriores a `2.1.1` não foram documentadas retroativamente neste changelog — o histórico detalhado dessas versões continua disponível via `git log`.
 
+## Não lançado
+
+### Removed
+- **Arquivos sem consumidor, lote A (#238, da limpeza de código morto #237)**: saem `templates/engineering/work-progress-template.md` (o `eng.work` declarava o template, mas nenhum passo o usava: o progresso fica no `plan.md`), o agente `eng.qa.quality-champion-task-agent` (nenhum workflow, skill ou agente o chamava), os assets `test-coverage-template.md` e `test-patterns.md` do skill `eng-qa-planner`, os comandos `status.compiled.single.team.md` e `status.list.projects.md` do skill `product-roadmap-report` e a página `docs/estrutura/issues.md`, que documentava uma pasta inexistente. O `jarvis init --upgrade` apaga as cópias da pasta da IDE (`OBSOLETE_PATHS`); ninguém precisa agir. O `commands/status.memory.md` do `product-roadmap-report` fica, porque a regra do skill manda rodá-lo (o destino do skill é da #243). Os inventários de agentes passam a ter as contagens reais e a listar o `eng.advisor.agent` e o `eng.docs-consolidator.agent`, que faltavam; o `.gitignore` perde a linha `docs/produto/issues/`, de um caminho que não existe.
+
 ## [8.8.0] - 2026-11-08
 
 ### Added
