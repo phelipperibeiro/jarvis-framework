@@ -3,9 +3,6 @@
  * @module config/constants
  */
 
-/** @constant {string} Nome do pacote NPM */
-export const CLI_NAME = "jarvis-framework";
-
 /** @constant {string} Nome do arquivo de lock */
 export const LOCK_FILE = "jarvis-lock.json";
 
@@ -20,7 +17,6 @@ export const SYNC_DIRS = Object.freeze([
   "templates",
   "rules",
   "rules-on-demand",
-  "scripts",
 ]);
 
 /**

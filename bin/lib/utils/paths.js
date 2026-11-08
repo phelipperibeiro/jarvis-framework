@@ -1,7 +1,6 @@
 import { existsSync, readFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
-import { IDES } from "../config/ide-config.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -36,19 +35,4 @@ export function getPackageInfo() {
     version: pkg.version || "0.0.0",
     root,
   };
-}
-
-export function detectIDE(cwd) {
-  for (const ide of IDES) {
-    if (!ide.supported) continue;
-    const folder = ide.folderName || ide.value;
-    if (existsSync(join(cwd, `.${folder}`))) return ide.value;
-  }
-  return null;
-}
-
-export function detectAllIDEs(cwd) {
-  return IDES.filter((ide) => ide.supported)
-    .filter((ide) => existsSync(join(cwd, `.${ide.folderName || ide.value}`)))
-    .map((ide) => ide.value);
 }

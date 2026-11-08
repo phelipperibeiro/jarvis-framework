@@ -73,7 +73,6 @@ function buildMinimalFramework(root) {
   write(root, "templates/engineering/architecture-template.md");
   write(root, "rules/engineering/eng-rules.md");
   write(root, "rules-on-demand/engineering/eng.plan-rules.md");
-  write(root, "scripts/algum-script.sh");
   write(root, "taxonomy.md");
   write(root, "AGENTS.md");
   write(root, "members.md");
@@ -91,7 +90,6 @@ test("syncAssets: caminho feliz para claude — copia SYNC_DIRS, SYNC_ROOT_FILES
     assert.ok(existsSync(join(target, ".claude/templates/engineering/architecture-template.md")));
     assert.ok(existsSync(join(target, ".claude/rules/engineering/eng-rules.md")));
     assert.ok(existsSync(join(target, ".claude/rules-on-demand/engineering/eng.plan-rules.md")));
-    assert.ok(existsSync(join(target, ".claude/scripts/algum-script.sh")));
     assert.ok(existsSync(join(target, ".claude/taxonomy.md")));
     assert.ok(existsSync(join(target, ".claude/AGENTS.md")));
     assert.ok(existsSync(join(target, ".claude/members.md")));
