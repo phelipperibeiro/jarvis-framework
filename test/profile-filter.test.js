@@ -261,16 +261,18 @@ test("listRulesForProfile: rtk é opt-in, sem bloco é universal, recursivo em s
 // /eng.spec-consolidate à regra de ouro. +466 B nos 4 perfis; nenhum arquivo a mais.
 // Issue #227 (2026-11-07): prod-rules.md (AREA: all) ganha a linha de que a cópia do AGENTS.md para o
 // CLAUDE.md respeita o .git/info/exclude no modo projeto. +195 B nos 4 perfis; nenhum arquivo a mais.
+// Issue #239 (2026-11-08): eng.integrations-rules.md (AREA: all) perde a linha de MESSAGE_COMUNICATOR,
+// a seção "Alertas (runtime)" e as menções a Slack. −301 B nos 4 perfis; nenhum arquivo a menos.
 const BASE = [
   [
     "FULLCYCLE/GENERALIST/ENGINEERING/CORE",
     profile("FULLCYCLE", "GENERALIST", "ENGINEERING"),
     10,
-    67090,
+    66789,
   ],
-  ["BACKEND/SENIOR/ENGINEERING/CORE", profile("BACKEND", "SENIOR", "ENGINEERING"), 7, 47606],
-  ["FRONTEND/PLENO/ENGINEERING/CORE", profile("FRONTEND", "PLENO", "ENGINEERING"), 8, 55905],
-  ["QA/QA-ENGINEER/ENGINEERING/CORE", profile("QA", "QA-ENGINEER", "ENGINEERING"), 8, 48069],
+  ["BACKEND/SENIOR/ENGINEERING/CORE", profile("BACKEND", "SENIOR", "ENGINEERING"), 7, 47305],
+  ["FRONTEND/PLENO/ENGINEERING/CORE", profile("FRONTEND", "PLENO", "ENGINEERING"), 8, 55604],
+  ["QA/QA-ENGINEER/ENGINEERING/CORE", profile("QA", "QA-ENGINEER", "ENGINEERING"), 8, 47768],
 ];
 
 for (const [nome, p, arquivos, bytes] of BASE) {
