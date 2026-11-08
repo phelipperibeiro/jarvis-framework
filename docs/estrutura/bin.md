@@ -16,7 +16,7 @@ bin/
 │   ├── init.js             # jarvis init [--ide] [--force] [--upgrade [--yes] [--remove-stale]]; em pasta já instalada, menu Atualizar / Reinstalar / Cancelar; grava o Context7 no MCP da IDE
 │   ├── list.js             # jarvis list
 │   ├── info.js             # jarvis info …
-│   ├── whoami.js           # jarvis whoami / logout legado
+│   ├── whoami.js           # jarvis whoami
 │   ├── docs-sync.js        # jarvis docs sync
 │   ├── docs-publish.js     # jarvis docs publish (--manifest/--force: #220)
 │   ├── docs-archive.js     # jarvis docs archive (#220)

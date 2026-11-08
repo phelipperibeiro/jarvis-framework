@@ -50,7 +50,7 @@ function getVersion() {
 
 /**
  * Remonta as opções do commander (camelCase) no formato antigo de `flags`
- * que `bin/commands/*.js` espera. `extra` (positionals, `logout: true`, etc.)
+ * que `bin/commands/*.js` espera. `extra` (positionals em `_`)
  * é aplicado por último e sempre vence.
  * @param {Record<string, unknown>} options
  * @param {Record<string, unknown>} [extra]
@@ -123,9 +123,6 @@ export function buildProgram() {
 
   const whoamiCmd = cmd(program, "whoami").description("Exibir identidade (ENV.md / git / SO)");
   withEnvOptions(withLogOptions(whoamiCmd)).action((options) => whoami(toLegacyFlags(options)));
-
-  const logoutCmd = cmd(program, "logout").description("Remover auth.json legado");
-  withLogOptions(logoutCmd).action((options) => whoami(toLegacyFlags(options, { logout: true })));
 
   const docs = cmd(program, "docs").description("Sincronizar ou publicar documentação");
 

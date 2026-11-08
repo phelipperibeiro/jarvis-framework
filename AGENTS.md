@@ -151,8 +151,7 @@ Este repositorio possui `package.json` com o CLI `jarvis` (`bin/jarvis.js`).
 
 Comandos disponíveis:
 ```bash
-jarvis whoami   [--logout]                          # Exibir identidade (ENV.md / git / SO)
-jarvis logout                                       # Remover auth.json legado (opcional)
+jarvis whoami                                       # Exibir identidade (ENV.md / git / SO)
 jarvis init                                         # Bootstrap do framework no projeto
 jarvis init --upgrade [--ide X] [--yes] [--remove-stale]   # Atualizar projeto existente: confere os caminhos do ENV (para sem alterar nada se sobrar $ sem valor) + assets + variáveis novas do ENV (inclui WORKSPACE_MODE) + documentos nas pastas novas + lista/remove skills antigos + rules filtradas pelo perfil do ENV
 jarvis list                                         # Listar agents, skills e workflows

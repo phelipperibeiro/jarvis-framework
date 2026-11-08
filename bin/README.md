@@ -38,7 +38,7 @@ bin/
     │   └── storage/            # adaptadores (CENTRAL_DOCS_STORAGE): index.js (fábrica), filesystem.js (pasta + git, inclui publishBatch), build-index.js
     ├── utils/                 # logger.js, ui.js, paths.js, frontmatter.js (inclui readDescription), git-parser.js
     ├── flow-map/              # `jarvis map` — grafo de chamadas entre workflows/skills/agents
-    ├── auth/                  # session.js (auth.json legado, hoje só `jarvis logout` o lê)
+    ├── auth/                  # session.js (resolveUser: identidade por ENV.md, git e SO)
     └── env-loader.js          # Resolve e lê o ENV.md ($IDE/ENV.md)
 ```
 
@@ -69,7 +69,7 @@ const whoamiCmd = cmd(program, "whoami").description("...");
 withEnvOptions(withLogOptions(whoamiCmd)).action((options) => whoami(toLegacyFlags(options)));
 ```
 
-`toLegacyFlags` remapeia só as duas chaves que mudam de formato (`envFile`→`"env-file"`, `maxAge`→`"max-age"`); todo o resto passa direto. O `extra` (segundo argumento) serve para injetar positionals como `_` ou flags sintéticas como `{ logout: true }` (usado por `jarvis logout`, que chama a mesma função de `whoami.js` com essa flag).
+`toLegacyFlags` remapeia só as duas chaves que mudam de formato (`envFile`→`"env-file"`, `maxAge`→`"max-age"`); todo o resto passa direto. O `extra` (segundo argumento) serve para injetar positionals como `_` (ex.: `jarvis list`, `jarvis fork` e `jarvis map`).
 
 **Ao adicionar uma opção nova que usa hífen** (ex: `--body-file`), decida: se a função de `bin/commands/*.js` vai ler `flags["body-file"]` (formato antigo) ou se você vai atualizá-la para ler `options.bodyFile` direto. Os 4 comandos novos (`vcs create-merge`, `vcs create-issue`, etc.) já usam o segundo caminho — passam o objeto de opções do commander quase direto, sem o adapter — porque não têm lógica legada para preservar.
 
