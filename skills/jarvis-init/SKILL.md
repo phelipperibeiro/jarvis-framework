@@ -60,6 +60,13 @@ Regras que **substituem** qualquer trecho legado deste skill ou dos assets:
 
 ---
 
+## Regra de sincronia: `AGENTS.md` e `CLAUDE.md` (sempre)
+
+- O `AGENTS.md` da raiz do workspace é a **fonte**; o `CLAUDE.md` é sempre uma **cópia idêntica** dele, em qualquer IDE. Por quê: o Claude Code lê o `CLAUDE.md`; Cursor e VS Code (Copilot) leem o `AGENTS.md`. Com os dois iguais, todas as IDEs veem o mesmo contexto.
+- **Toda escrita no `AGENTS.md` escreve o mesmo no `CLAUDE.md`, na mesma ação:** o Passo 7, o sub-passo 9.8, o modo `repos` (`assets/repos.md`), o Upgrade 9.2 e a linha do mapa acrescentada pelo `/warm-up`. Ninguém edita só um dos dois.
+- `CLAUDE.md` com conteúdo diferente do `AGENTS.md` (escrito à mão): não o sobrescreva sem confirmação; mostre a diferença e pergunte.
+- `AGENTS.md`, `CLAUDE.md` e `CDD-MIND-MAP.md` existem **sempre**, nos dois modos de trabalho: a instalação os cria (Passo 7) e o Upgrade cria o que faltar (9.2). O `jarvis init --upgrade` lista como pendência o que faltar e o `CLAUDE.md` fora de sincronia.
+
 ## Fluxo de Execução
 
 ```
@@ -911,7 +918,9 @@ Deseja instalar o perfil recomendado agora?
 
 ### 7. Criar AGENTS.md
 
-Se não existir na raiz do projeto:
+**Mapa primeiro (obrigatório, nos dois modos):** se o `CDD-MIND-MAP.md` não existe, monte-o agora pelo `assets/mapa-de-tecnologias.md` (no modo projeto, uma linha: a raiz). O `AGENTS.md` nasce depois, com o bloco de repositórios já preenchido.
+
+Se o `AGENTS.md` não existir na raiz do projeto:
 
 1. Detectar stack (package.json, pyproject.toml, etc.)
 2. Extrair informações do projeto
@@ -920,8 +929,8 @@ Se não existir na raiz do projeto:
 5. O template já traz a linha que identifica o mapa de tecnologias do projeto; acrescente-a se o `AGENTS.md` **já existir** e não a citar:
    `> Mapa de tecnologias do projeto: [CDD-MIND-MAP.md](CDD-MIND-MAP.md) (tecnologias e papel de cada repositório, ou da raiz no modo projeto; lido pelo /warm-up).`
 6. No modo projeto (raiz com `.git`), o `AGENTS.md` (e o `CLAUDE.md`, que é cópia dele) já está no `.git/info/exclude`, gravado pelo CLI antes de o arquivo existir: **não escreva no `.gitignore`**. Avise a pessoa: "para versionar de propósito, remova a linha do `.git/info/exclude`". Se o CLI avisou que o arquivo já está versionado, **não o tire do índice aqui**: a decisão é do Upgrade (`assets/upgrade.md`).
-7. **Bloco de repositórios** (`<!-- jarvis:repos:start -->` … `<!-- jarvis:repos:end -->`, o `{REPOS_BLOCK}` do template): no **modo projeto**, remova o bloco inteiro, marcadores incluídos (o mapa tem só a raiz). No **modo workspace**, substitua `{REPOS_BLOCK}` por uma linha por repositório do `CDD-MIND-MAP.md`, no formato `- **{repo}** — {papel}; {linguagem}/{framework} ({área})`; se o mapa **ainda não existe** (ele é montado no passo 9, que é pulável), deixe os marcadores e a frase de abertura sem linhas: elas entram quando o mapa for montado (sub-passo 9.8) ou pelo `/jarvis-init repos`.
-8. **`CLAUDE.md`** (a regra da cópia fica só aqui; o `/jarvis-init repos` e o Upgrade 9.2 apontam para ela): ao criar o `AGENTS.md`, crie o `CLAUDE.md` com o mesmo conteúdo, como cópia, **só se a IDE for `claude`** (as outras não o leem) **e ele não existir**. Se o `CLAUDE.md` já existir, não o toque e avise a pessoa.
+7. **Bloco de repositórios** (`<!-- jarvis:repos:start -->` … `<!-- jarvis:repos:end -->`, o `{REPOS_BLOCK}` do template): no **modo projeto**, remova o bloco inteiro, marcadores incluídos (o mapa tem só a raiz). No **modo workspace**, substitua `{REPOS_BLOCK}` por uma linha por repositório do `CDD-MIND-MAP.md`, no formato `- **{repo}** — {papel}; {linguagem}/{framework} ({área})`; o mapa já existe (montado no início deste passo).
+8. **`CLAUDE.md`:** crie-o com o mesmo conteúdo do `AGENTS.md`, como cópia idêntica, pela **regra de sincronia** (seção acima), em qualquer IDE. Se ele já existir com outro conteúdo (escrito à mão), mostre a diferença e pergunte antes de sobrescrever.
 
 ### 8. Profile-Aware Rules Sync
 
@@ -942,7 +951,7 @@ A **detecção de stack por código e a criação de skill novo** (sub-passos 9.
 3. **Lê** o workspace (a análise **só lê**: não altera arquivos do projeto nem as listas), identifica as stacks de backend e de frontend, inclusive de vários projetos, e **mostra o que encontrou antes de sugerir** (só essas 2 áreas)
 4. Para cada stack de backend/frontend, sugere **registrar o skill que já existe** (mesmo `area` e `stack`) ou **criar um novo** com `/jarvis-create-specialization {área} {stack}`; a pessoa escolhe, e o que não aceita não muda
 5. Mostra um resumo das 6 listas e do que foi registrado ou criado
-6. **Monta o `CDD-MIND-MAP.md`** (o mapa de tecnologias, lido pelo `/warm-up`: do workspace ou, no modo projeto, do repositório), no sub-passo 9.8 do `passo-adicionar-stacks.md`, que segue `assets/mapa-de-tecnologias.md`: com a mesma leitura do sub-passo 3, agora para **todas as áreas**, preenche uma linha por repositório (papel, linguagem, framework, área, até 5 ferramentas principais) pelo `$IDE/templates/cdd-mind-map-template.md`, mostra a tabela e pede a validação com `AskUserQuestion` (**Confirmar** | **Corrigir** | **Incluir informação**). Grava na raiz do workspace (com `.git` na raiz, já no `.git/info/exclude`, Passo 5). Se o mapa já existe, só acrescenta os repositórios que faltam. Pular é permitido: o primeiro `/warm-up` cria o mapa.
+6. **Monta o `CDD-MIND-MAP.md`** (o mapa de tecnologias, lido pelo `/warm-up`: do workspace ou, no modo projeto, do repositório), no sub-passo 9.8 do `passo-adicionar-stacks.md`, que segue `assets/mapa-de-tecnologias.md`: com a mesma leitura do sub-passo 3, agora para **todas as áreas**, preenche uma linha por repositório (papel, linguagem, framework, área, até 5 ferramentas principais) pelo `$IDE/templates/cdd-mind-map-template.md`, mostra a tabela e pede a validação com `AskUserQuestion` (**Confirmar** | **Corrigir** | **Incluir informação**). Grava na raiz do workspace (com `.git` na raiz, já no `.git/info/exclude`, Passo 5). O mapa já existe (o Passo 7 o monta antes do `AGENTS.md`): aqui só se acrescentam os repositórios que faltam.
 
 O tempo de ~10 minutos é referência, não limite. Nunca leia `.env*`, chaves ou credenciais.
 

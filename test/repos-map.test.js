@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
 import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { MAP_FILE, readMapRepos, reposOutsideMap, reposPendencyLine } from "../bin/lib/core/repos-map.js";
+import { MAP_FILE, documentPendencies, readMapRepos, reposOutsideMap, reposPendencyLine } from "../bin/lib/core/repos-map.js";
 
 const TABELA = (linhas) =>
   [
@@ -140,4 +140,56 @@ test("reposPendencyLine: cita o comando, a contagem e os nomes; vazio sem reposi
   assert.equal(reposPendencyLine([]), "");
   assert.equal(reposPendencyLine(["web"]), "Rode /jarvis-init repos: 1 repositório(s) fora do mapa (web)");
   assert.equal(reposPendencyLine(["a", "b"]), "Rode /jarvis-init repos: 2 repositório(s) fora do mapa (a, b)");
+});
+
+// --- documentPendencies (ajuste do usuário: documentos sempre existentes e CLAUDE.md espelho) ---------------
+
+function withFiles(files, fn) {
+  const root = mkdtempSync(join(tmpdir(), "jarvis-docs-pend-"));
+  try {
+    for (const [name, content] of Object.entries(files)) writeFileSync(join(root, name), content);
+    return fn(root);
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+}
+
+test("documentPendencies: com mapa, AGENTS.md e CLAUDE.md idêntico, nada pendente", () => {
+  withFiles({ [MAP_FILE]: TABELA([]), "AGENTS.md": "# a\n", "CLAUDE.md": "# a\n" }, (root) => {
+    assert.deepEqual(documentPendencies(root), []);
+  });
+});
+
+test("documentPendencies: mapa ausente pede para criar o mapa", () => {
+  withFiles({ "AGENTS.md": "# a\n", "CLAUDE.md": "# a\n" }, (root) => {
+    assert.deepEqual(documentPendencies(root), ["criar o mapa de tecnologias (CDD-MIND-MAP.md)"]);
+  });
+});
+
+test("documentPendencies: AGENTS.md ausente pede para criá-lo com o CLAUDE.md (e não acusa sincronia)", () => {
+  withFiles({ [MAP_FILE]: TABELA([]), "CLAUDE.md": "# só o claude\n" }, (root) => {
+    assert.deepEqual(documentPendencies(root), ["criar o AGENTS.md (e o CLAUDE.md, cópia dele)"]);
+  });
+});
+
+test("documentPendencies: CLAUDE.md ausente ou diferente pede sincronia", () => {
+  const msg = "sincronizar o CLAUDE.md com o AGENTS.md (o CLAUDE.md é sempre cópia do AGENTS.md)";
+  withFiles({ [MAP_FILE]: TABELA([]), "AGENTS.md": "# a\n" }, (root) => {
+    assert.deepEqual(documentPendencies(root), [msg]);
+  });
+  withFiles({ [MAP_FILE]: TABELA([]), "AGENTS.md": "# a\n", "CLAUDE.md": "# b\n" }, (root) => {
+    assert.deepEqual(documentPendencies(root), [msg]);
+  });
+});
+
+test("documentPendencies: só o fim de linha diferente (CRLF × LF) não conta como fora de sincronia", () => {
+  withFiles({ [MAP_FILE]: TABELA([]), "AGENTS.md": "# a\nlinha\n", "CLAUDE.md": "# a\r\nlinha\r\n" }, (root) => {
+    assert.deepEqual(documentPendencies(root), []);
+  });
+});
+
+test("documentPendencies: tudo ausente lista mapa e AGENTS.md, nesta ordem", () => {
+  withFiles({}, (root) => {
+    assert.deepEqual(documentPendencies(root), ["criar o mapa de tecnologias (CDD-MIND-MAP.md)", "criar o AGENTS.md (e o CLAUDE.md, cópia dele)"]);
+  });
 });

@@ -40,7 +40,7 @@ import {
   ensureGitignore,
 } from "../lib/core/docs-migrate.js";
 import { rootIsRepo, detectWorkspaceMode, normalizeWorkspaceMode } from "../lib/core/workspace-mode.js";
-import { reposOutsideMap, reposPendencyLine } from "../lib/core/repos-map.js";
+import { documentPendencies, reposOutsideMap, reposPendencyLine } from "../lib/core/repos-map.js";
 import { LOCAL_EXCLUDE_ENTRIES, applyProjectGitSetup } from "../lib/core/git-exclude.js";
 import { EnvPathError, checkEnvPaths, planSessionsSetup } from "../lib/core/env-paths.js";
 import { ensureContext7 } from "../lib/core/mcp-config.js";
@@ -219,10 +219,12 @@ export function docsIgnoreLines(entries) {
  * Eixo do perfil vazio (HUB, POSITION, AREA, SQUAD) também conta: sem ele, o upgrade não filtra
  * as rules (#83). `trackedGenerated` (#227): AGENTS.md/CLAUDE.md já versionados no modo projeto; sair do git
  * é decisão da pessoa, tomada no `/jarvis-init upgrade` (nunca no terminal).
+ * `documents` (#225): `CDD-MIND-MAP.md` ou `AGENTS.md` ausentes e `CLAUDE.md` fora de sincronia com o `AGENTS.md`
+ * (`documentPendencies`); o Upgrade os cria ou sincroniza, com confirmação.
  * @param {{ pendingAxes: string[], envPlan: { pending?: string[], warnings?: string[] }, missingProfile?: string[], trackedGenerated?: string[] }} input
  * @returns {string[]} um motivo por pendência; vazio = nada pendente
  */
-export function upgradePendencies({ pendingAxes, envPlan, missingProfile = [], trackedGenerated = [] }) {
+export function upgradePendencies({ pendingAxes, envPlan, missingProfile = [], trackedGenerated = [], documents = [] }) {
   const reasons = [];
   if (trackedGenerated.length) {
     reasons.push(`decidir se ${trackedGenerated.join(" e ")} ${trackedGenerated.length > 1 ? "saem" : "sai"} do git`);
@@ -236,6 +238,7 @@ export function upgradePendencies({ pendingAxes, envPlan, missingProfile = [], t
   if (warnings.includes("CENTRAL_DOCS_REPO")) reasons.push("migrar o Central docs");
   if (warnings.includes("CENTRAL_DOCS_LAYOUT")) reasons.push("migrar o Central docs para a estrutura por funcionalidade");
   if (warnings.includes("TOKEN_TASK_MANAGER")) reasons.push("remover o TOKEN_TASK_MANAGER");
+  reasons.push(...documents);
   return reasons;
 }
 
@@ -958,7 +961,13 @@ async function runUpgrade(cwd, flags) {
     const access = (futureEntries.get(`${key}_ACCESS`) || "").trim();
     return getVendor(futureEntries.get(key)) && (!access || /^\[.*\]$/.test(access));
   });
-  const pending = upgradePendencies({ pendingAxes, envPlan, missingProfile, trackedGenerated: gitSetup.tracked });
+  const pending = upgradePendencies({
+    pendingAxes,
+    envPlan,
+    missingProfile,
+    trackedGenerated: gitSetup.tracked,
+    documents: documentPendencies(workspaceDir),
+  });
   // #225: repositório (subpasta com .git) fora do mapa. Só lê; quem atualiza os documentos é o /jarvis-init repos.
   const reposFora = reposOutsideMap({
     workspaceDir,

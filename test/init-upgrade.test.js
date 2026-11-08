@@ -764,8 +764,13 @@ test("init (Atualizar): com a versão igual, sem seta X → X e com o ENV.md com
 // Perfil completo (os 4 eixos): sem ele, o upgrade não filtra as rules e pede o /jarvis-init (#83).
 const ENV_PERFIL = ENV_SEM_BOARD.replace("HUB=BACKEND", "HUB=BACKEND\nPOSITION=SENIOR\nSQUAD=CORE");
 
+// #225: mapa, AGENTS.md e CLAUDE.md (cópia idêntica) existem sempre; sem eles o upgrade tem pendência.
+const MAPA_VAZIO = "| Repositório | Papel |\n|---|---|\n";
+const DOCS_EM_DIA = { "CDD-MIND-MAP.md": MAPA_VAZIO, "AGENTS.md": "# Projeto\n", "CLAUDE.md": "# Projeto\n" };
+const AGENTS_E_CLAUDE = { "AGENTS.md": "# Projeto\n", "CLAUDE.md": "# Projeto\n" };
+
 test("init --upgrade: sem pendência, não manda rodar o /jarvis-init upgrade", () => {
-  withWorkspace({ ".claude/ENV.md": ENV_PERFIL }, (ws) => {
+  withWorkspace({ ".claude/ENV.md": ENV_PERFIL, ...DOCS_EM_DIA }, (ws) => {
     const r = run(ws, "--upgrade", "--ide", "claude", "--yes");
     assert.equal(r.status, 0, r.stderr);
     assert.doesNotMatch(r.stdout, /Agora rode/);
@@ -783,7 +788,7 @@ const MAPA_API = [
 
 test("init --upgrade (#225): repositório fora do mapa tem linha própria e tira o 'Nada pendente'", () => {
   withWorkspace(
-    { ".claude/ENV.md": ENV_PERFIL, "CDD-MIND-MAP.md": MAPA_API, "api/.git/HEAD": "", "web/.git/HEAD": "" },
+    { ".claude/ENV.md": ENV_PERFIL, ...AGENTS_E_CLAUDE, "CDD-MIND-MAP.md": MAPA_API, "api/.git/HEAD": "", "web/.git/HEAD": "" },
     (ws) => {
       const r = run(ws, "--upgrade", "--ide", "claude", "--yes");
       assert.equal(r.status, 0, r.stderr);
@@ -795,7 +800,7 @@ test("init --upgrade (#225): repositório fora do mapa tem linha própria e tira
 });
 
 test("init --upgrade (#225): com o mapa em dia, 'Nada pendente' e sem a linha do repos", () => {
-  withWorkspace({ ".claude/ENV.md": ENV_PERFIL, "CDD-MIND-MAP.md": MAPA_API, "api/.git/HEAD": "" }, (ws) => {
+  withWorkspace({ ".claude/ENV.md": ENV_PERFIL, ...AGENTS_E_CLAUDE, "CDD-MIND-MAP.md": MAPA_API, "api/.git/HEAD": "" }, (ws) => {
     const r = run(ws, "--upgrade", "--ide", "claude", "--yes");
     assert.equal(r.status, 0, r.stderr);
     assert.match(r.stdout, /Nada pendente na IDE\./);
@@ -803,13 +808,29 @@ test("init --upgrade (#225): com o mapa em dia, 'Nada pendente' e sem a linha do
   });
 });
 
-test("init --upgrade (#225): sem o arquivo do mapa não há pendência de repositório", () => {
-  withWorkspace({ ".claude/ENV.md": ENV_PERFIL, "api/.git/HEAD": "", "web/.git/HEAD": "" }, (ws) => {
+test("init --upgrade (#225): sem o mapa, o upgrade pede para criá-lo e não há linha de repositório fora do mapa", () => {
+  withWorkspace({ ".claude/ENV.md": ENV_PERFIL, ...AGENTS_E_CLAUDE, "api/.git/HEAD": "", "web/.git/HEAD": "" }, (ws) => {
     const r = run(ws, "--upgrade", "--ide", "claude", "--yes");
     assert.equal(r.status, 0, r.stderr);
     assert.doesNotMatch(r.stdout, /jarvis-init repos/);
-    assert.match(r.stdout, /Nada pendente na IDE\./);
+    assert.match(r.stdout, /Agora rode .*\/jarvis-init upgrade.*criar o mapa de tecnologias \(CDD-MIND-MAP\.md\)/);
   });
+});
+
+test("init --upgrade (#225): AGENTS.md ausente e CLAUDE.md fora de sincronia viram pendência, nos dois modos", () => {
+  withWorkspace({ ".claude/ENV.md": ENV_PERFIL, "CDD-MIND-MAP.md": MAPA_VAZIO }, (ws) => {
+    const r = run(ws, "--upgrade", "--ide", "claude", "--yes");
+    assert.equal(r.status, 0, r.stderr);
+    assert.match(r.stdout, /Agora rode .*\/jarvis-init upgrade.*criar o AGENTS\.md \(e o CLAUDE\.md, cópia dele\)/);
+  });
+  withWorkspace(
+    { ".claude/ENV.md": ENV_PERFIL, ".git/HEAD": "", "CDD-MIND-MAP.md": MAPA_VAZIO, "AGENTS.md": "# novo\n", "CLAUDE.md": "# antigo\n" },
+    (ws) => {
+      const r = run(ws, "--upgrade", "--ide", "claude", "--yes");
+      assert.equal(r.status, 0, r.stderr);
+      assert.match(r.stdout, /sincronizar o CLAUDE\.md com o AGENTS\.md/, "modo projeto também confere a sincronia");
+    }
+  );
 });
 
 test("init --upgrade (#225): WORKSPACE_REPOS preenchida não esconde o clone novo", () => {
@@ -1010,6 +1031,14 @@ test("promptCompanyProfile: inválido é perguntado de novo (com aviso); inváli
 });
 
 // --- Filtro de rules pelo perfil no --upgrade (#83) ---
+
+test("upgradePendencies (#225): os motivos dos documentos (mapa, AGENTS.md, CLAUDE.md) entram no fim da lista", () => {
+  assert.deepEqual(
+    upgradePendencies({ pendingAxes: ["TASK_MANAGER"], envPlan: {}, documents: ["criar o AGENTS.md (e o CLAUDE.md, cópia dele)"] }),
+    ["confirmar o acesso de TASK_MANAGER", "criar o AGENTS.md (e o CLAUDE.md, cópia dele)"]
+  );
+  assert.deepEqual(upgradePendencies({ pendingAxes: [], envPlan: {} }), [], "sem documents, nada muda");
+});
 
 test("upgradePendencies: eixo do perfil vazio é pendência (#83)", () => {
   assert.deepEqual(

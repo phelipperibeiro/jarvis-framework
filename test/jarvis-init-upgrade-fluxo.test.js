@@ -276,20 +276,22 @@ test("upgrade.md 9.2: vem depois do 9.1 e antes do item 10, e o item 5 cita 7 a 
   assert.match(upgrade, /os itens 7 a 9\.2 ainda podem alterá-lo/);
 });
 
-test("upgrade.md 9.2: confere no AGENTS.md a linha do mapa, o bloco entre marcadores e o caminho .jarvis/sessions", () => {
-  assert.match(item92, /no `AGENTS\.md` \(e no `CLAUDE\.md`, se for cópia dele\)/);
-  assert.match(item92, /a linha `> Mapa de tecnologias do projeto:`/);
-  assert.match(item92, /o bloco entre `<!-- jarvis:repos:start -->` e `<!-- jarvis:repos:end -->`/);
+test("upgrade.md 9.2: nos dois modos, confere mapa, AGENTS.md (linha do mapa e caminho de sessões) e CLAUDE.md igual ao AGENTS.md", () => {
+  assert.match(item92, /os dois existem sempre, nos dois modos, e o `CLAUDE\.md` é sempre cópia idêntica do `AGENTS\.md` \(\*\*regra de sincronia\*\* do `SKILL\.md`\)/);
+  assert.match(item92, /o `CDD-MIND-MAP\.md` existe, com a tabela do `templates\/cdd-mind-map-template\.md`/);
+  assert.match(item92, /o `AGENTS\.md` existe, com a linha `> Mapa de tecnologias do projeto:`/);
   assert.match(item92, /o caminho de sessões `\$SESSIONS_DIR` \(padrão `\.jarvis\/sessions`\) no lugar de `\{IDE_FOLDER\}\/sessions`/);
+  assert.match(item92, /\(num `AGENTS\.md` já gerado, a forma resolvida, como `\.claude\/sessions\/`\)/);
+  assert.match(item92, /o `CLAUDE\.md` existe e é igual ao `AGENTS\.md`/);
 });
 
-test("upgrade.md 9.2: confere no mapa a tabela do template e uma linha por repositório com .git, sem filtrar por WORKSPACE_REPOS", () => {
-  assert.match(item92, /no `CDD-MIND-MAP\.md` \(só se o arquivo existe\), a tabela do `templates\/cdd-mind-map-template\.md`/);
-  assert.match(item92, /uma linha por repositório com `\.git` \(\*\*todas\*\* as subpastas, sem filtrar por `WORKSPACE_REPOS`\)/);
+test("upgrade.md 9.2: no modo workspace, também o bloco por repositório e uma linha do mapa por repositório com .git, sem filtrar por WORKSPACE_REPOS", () => {
+  assert.match(item92, /o bloco entre `<!-- jarvis:repos:start -->` e `<!-- jarvis:repos:end -->` com uma linha por repositório do mapa/);
+  assert.match(item92, /uma linha do mapa por repositório com `\.git` \(\*\*todas\*\* as subpastas, sem filtrar por `WORKSPACE_REPOS`\)/);
 });
 
-test("upgrade.md 9.2: modo projeto confere só a linha do mapa e o caminho de sessões (o bloco não se aplica)", () => {
-  assert.match(item92, /\*\*Modo projeto:\*\* só a linha do mapa e o caminho de sessões no `AGENTS\.md` \(o bloco de repositórios não se aplica\)/);
+test("upgrade.md 9.2: no modo projeto, o mapa tem uma linha (a raiz) e o bloco de repositórios não se aplica", () => {
+  assert.match(item92, /\*\*No modo projeto\*\*, o mapa tem uma linha \(a raiz\) e o bloco de repositórios não se aplica/);
 });
 
 test("upgrade.md 9.2: no padrão não pergunta; fora do padrão avisa cada mudança e pede a confirmação antes de gravar", () => {
@@ -304,12 +306,13 @@ test("upgrade.md 9.2: no padrão não pergunta; fora do padrão avisa cada mudan
   assert.ok(iAviso < iPergunta && iPergunta < iAjusta, "avisa, pergunta e só então ajusta");
 });
 
-test("upgrade.md 9.2: repositório novo segue o repos.md; AGENTS.md e mapa inexistentes não são criados aqui", () => {
+test("upgrade.md 9.2: com o Sim, cria o mapa e o AGENTS.md que faltam, escreve o mesmo no CLAUDE.md e, para repositório novo, segue o repos.md e volta ao item 10", () => {
+  assert.match(item92, /crie o mapa que não existe pelo `assets\/mapa-de-tecnologias\.md`/);
+  assert.match(item92, /crie o `AGENTS\.md` que não existe pelo Passo 7 do `SKILL\.md`/);
   assert.match(item92, /pela regra do item 3 do \[repos\.md\]\(repos\.md\)/);
+  assert.match(item92, /escreva o mesmo no `CLAUDE\.md` \(um `CLAUDE\.md` escrito à mão, diferente do `AGENTS\.md`, só é sobrescrito com essa confirmação, mostrando a diferença\)/);
   assert.match(item92, /para repositório novo, siga os itens 1 a 5 do \[repos\.md\]\(repos\.md\) \(tabela de papel e stack para a pessoa validar\) e \*\*volte ao item 10 deste arquivo\*\*: o resumo e o fim são os do Upgrade/);
-  assert.match(item92, /`AGENTS\.md` que não existe conta como fora do padrão: com \*\*Ajustar agora\*\*, é criado pelo Passo 7 do `SKILL\.md` \(e o `CLAUDE\.md`, pelo item 8 do Passo 7\); o mapa que não existe não é criado aqui/);
-  assert.match(item92, /com uma linha por repositório do mapa/, "o bloco confere uma linha por repositório do mapa");
-  assert.match(item92, /\(num `AGENTS\.md` já gerado, a forma resolvida, como `\.claude\/sessions\/`\)/, "o caminho antigo é conferido também na forma resolvida");
+  assert.doesNotMatch(item92, /não é criado aqui/, "o 9.2 cria o mapa e o AGENTS.md que faltam");
 });
 
 test("upgrade.md: a nota do terminal cita o item 9.2 e o /jarvis-init repos para repositório fora do mapa", () => {

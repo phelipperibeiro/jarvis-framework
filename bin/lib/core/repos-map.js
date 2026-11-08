@@ -46,7 +46,7 @@ export function readMapRepos(text) {
 
 /**
  * Repositórios (subpastas com `.git`) que não estão no mapa. Só vale no modo `workspace`; sem o arquivo do
- * mapa não há pendência (montar o mapa é opcional); e **todas** as subpastas com `.git` entram, sem filtrar
+ * mapa não há esta pendência (a falta do mapa é pendência própria, de `documentPendencies`); e **todas** as subpastas com `.git` entram, sem filtrar
  * por `WORKSPACE_REPOS` (senão um clone novo, fora da lista, nunca apareceria).
  * @param {{ workspaceDir: string, mode: string|null }} input
  * @returns {string[]}
@@ -63,6 +63,32 @@ export function reposOutsideMap({ workspaceDir, mode }) {
   }
   const inMap = new Set(readMapRepos(text));
   return listGitSubdirs(workspaceDir).filter((name) => !inMap.has(name));
+}
+
+/**
+ * Pendências dos documentos gerados (#225, ajuste do usuário): `AGENTS.md` e `CDD-MIND-MAP.md` existem sempre,
+ * nos dois modos, e o `CLAUDE.md` é sempre cópia idêntica do `AGENTS.md` (a fonte). Só lê; quem cria ou
+ * sincroniza é o `/jarvis-init upgrade` (item 9.2), com a confirmação da pessoa. Fim de linha não conta (CRLF = LF).
+ * @param {string} workspaceDir pasta que contém o `$IDE/`
+ * @returns {string[]} um motivo por pendência; vazio = documentos em dia
+ */
+export function documentPendencies(workspaceDir) {
+  const read = (name) => {
+    try {
+      return readFileSync(join(workspaceDir, name), "utf-8").replace(/\r\n/g, "\n");
+    } catch {
+      return null;
+    }
+  };
+  const reasons = [];
+  if (!existsSync(join(workspaceDir, MAP_FILE))) reasons.push(`criar o mapa de tecnologias (${MAP_FILE})`);
+  const agents = read("AGENTS.md");
+  if (agents === null) {
+    reasons.push("criar o AGENTS.md (e o CLAUDE.md, cópia dele)");
+  } else if (read("CLAUDE.md") !== agents) {
+    reasons.push("sincronizar o CLAUDE.md com o AGENTS.md (o CLAUDE.md é sempre cópia do AGENTS.md)");
+  }
+  return reasons;
 }
 
 /**
