@@ -49,9 +49,10 @@ Analise o repositório só se precisar para ter certeza (sem chutar). Responda (
 Questões levantadas no `architecture.md` desta issue e a sugestão do Advisor ({modelo}). **A sugestão do Advisor prevalece e é a decisão adotada.** Análise, documentação, execução e este registro são do agente principal.
 
 ### {QN} — {título}
+- **Status:** ✅ Decidida
 - **Contexto:** {...}
 - **Arquivos envolvidos:** {...}
-- **Opções:** 1 — {...} · 2 — {...} · 3 — {...} · 4 — Outra
+- **Opções:** ✅ {N} — {escolhida, a sugestão do Advisor} · ❌ {demais opções} · ❌ 4 — Outra
 - **Sugestão do agente principal:** {N}
 - **Sugestão do Advisor (decisão adotada):** **{N}**
 - **Divergência:** {motivo técnico, ou "sem divergência"}
