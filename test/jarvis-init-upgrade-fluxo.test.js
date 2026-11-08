@@ -320,6 +320,6 @@ test("upgrade.md: a nota do terminal cita o item 9.2 e o /jarvis-init repos para
 
 test("guias: README, docs/estrutura/skills.md e AGENTS.md citam o /jarvis-init repos", () => {
   assert.match(read("README.md"), /o `AGENTS\.md` e o `CDD-MIND-MAP\.md` no padrão/);
-  assert.match(read("docs", "estrutura", "skills.md"), /o argumento `repos` \(`\/jarvis-init repos`\) atualiza o mapa, o bloco de repositórios do `AGENTS\.md` e as especializações/);
+  assert.match(read("docs", "estrutura", "skills.md"), /o argumento `repos` \(`\/jarvis-init repos`\) atualiza o mapa, o bloco de repositórios do `AGENTS\.md` \(cria o `AGENTS\.md` se ainda não existir\) e as especializações/);
   assert.match(read("AGENTS.md"), /^\/jarvis-init repos +# Depois de clonar repositorios \(modo workspace\)/m);
 });

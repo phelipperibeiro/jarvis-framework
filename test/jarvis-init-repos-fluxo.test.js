@@ -163,10 +163,11 @@ test("repos.md: bloco do AGENTS.md entre marcadores, uma linha por repositório,
 test("repos.md (Q5 ajustada): AGENTS.md ausente é criado pelo Passo 7; sem marcadores o bloco entra depois da linha do mapa (ou no fim), na mesma confirmação", () => {
   const p3 = passo(3, 4);
   assert.match(p3, /\*\*`AGENTS\.md` não existe:\*\* \*\*crie-o pelo Passo 7 do `SKILL\.md`\*\*/);
-  assert.match(p3, /com o bloco preenchido por todos os repositórios do mapa já confirmado, e o `CLAUDE\.md` cópia/);
+  assert.match(p3, /com o bloco preenchido por todos os repositórios do mapa já confirmado, e, também, o `CLAUDE\.md` com o mesmo conteúdo, como cópia\)/);
+  assert.doesNotMatch(p3, /como o Passo 7 faz/, "o Passo 7 não cria o CLAUDE.md: a regra da cópia fica no repos.md");
   assert.match(passo(2, 3), /Se o `AGENTS\.md` não existe, a tabela avisa que ele será criado/);
   assert.match(p3, /\*\*Existe com os marcadores:\*\* só acrescente as linhas novas entre eles/);
-  assert.match(p3, /\*\*Existe sem os marcadores:\*\* insira o bloco inteiro logo depois da linha `> Mapa de tecnologias do projeto:`; sem essa linha, no fim do arquivo/);
+  assert.match(p3, /\*\*Existe sem os marcadores:\*\* insira o bloco, com uma linha por repositório do mapa \(já confirmado\), logo depois da linha `> Mapa de tecnologias do projeto:`; sem essa linha, no fim do arquivo/);
   assert.match(p3, /\*\*na mesma confirmação da tabela\*\* do item 2 \(não é uma pergunta a mais\)/);
 });
 
@@ -286,6 +287,21 @@ test("guias: README, bin.md, templates.md, visao-geral.md e especializacoes-de-s
   assert.match(bin, /repos-map \(repositórios com `\.git` fora do `CDD-MIND-MAP\.md`, só lê, #225\)/);
   assert.match(bin, /lista numa linha própria os repositórios \(todas as subpastas com `\.git`, sem filtrar por `WORKSPACE_REPOS`\) que não estão no mapa e orienta `\/jarvis-init repos`/);
   assert.match(read("docs", "estrutura", "templates.md"), /AGENTS-template\.md +# gera AGENTS\.md do projeto alvo \(com a linha do mapa e, no modo workspace, o bloco de repositórios mantido pelo \/jarvis-init repos\)/);
-  assert.match(read("docs", "visao-geral.md"), /Depois de clonar repositórios no workspace, `\/jarvis-init repos` atualiza o mapa, o bloco de repositórios do `AGENTS\.md` e as especializações/);
+  assert.match(read("docs", "visao-geral.md"), /Depois de clonar repositórios no workspace, `\/jarvis-init repos` atualiza o mapa, o bloco de repositórios do `AGENTS\.md` \(cria o `AGENTS\.md` se ainda não existir\) e as especializações/);
   assert.match(read("docs", "especializacoes-de-stack.md"), /Depois de clonar repositórios novos no workspace, `\/jarvis-init repos` registra \(ou oferece criar\) as especializações só dos repositórios novos/);
+});
+
+// ---- Fase 7: lacunas da rodada 2 do pre-pr ----------------------------------------------------------------
+
+test("SKILL.md: o modo repos não faz as perguntas do onboarding, salvo as do Passo 7 quando cria o AGENTS.md", () => {
+  const entrada = trecho(skill, "## Entrada", "## Recursos");
+  assert.match(entrada, /\*\*não continua o onboarding\*\* \(a única exceção é o Passo 7, quando o `AGENTS\.md` não existe e o modo o cria: só as perguntas que ele mesmo faz\)/);
+  const modo = trecho(skill, "### Modo `repos` (`$ARGUMENTS` = `repos`)", "### 2. Verificar Existência do ENV.md");
+  assert.match(modo, /termina sem continuar o fluxo \(passos 1 a 13\), salvo o Passo 7, quando o `AGENTS\.md` não existe \(só as perguntas que ele mesmo faz\)/);
+});
+
+test("guias: dizem que o /jarvis-init repos cria o AGENTS.md se ele ainda não existir", () => {
+  assert.match(read("docs", "estrutura", "skills.md"), /o bloco de repositórios do `AGENTS\.md` \(cria o `AGENTS\.md` se ainda não existir\)/);
+  assert.match(read("docs", "visao-geral.md"), /o bloco de repositórios do `AGENTS\.md` \(cria o `AGENTS\.md` se ainda não existir\)/);
+  assert.match(read("AGENTS.md"), /bloco do AGENTS\.md \(cria o AGENTS\.md se faltar\)/);
 });

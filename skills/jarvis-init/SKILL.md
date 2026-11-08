@@ -39,7 +39,7 @@ Regras que **substituem** qualquer trecho legado deste skill ou dos assets:
 
 ## Entrada
 
-- `$ARGUMENTS` - (Opcional) `upgrade` (sem diferenciar maiúsculas): com `$IDE/ENV.md` existente, vai direto ao **Upgrade (C)** do passo "2. Verificar Existência do ENV.md", sem o menu A/B/C/D; sem `ENV.md`, avisa e segue a criação normal. `repos` (sem diferenciar maiúsculas): modo para depois de clonar repositórios no workspace; segue `assets/repos.md` (mapa, `AGENTS.md` e especializações só do que ainda não está nos documentos) e **não continua o onboarding**. Qualquer outro valor é o nome do novo membro, para personalizar o onboarding.
+- `$ARGUMENTS` - (Opcional) `upgrade` (sem diferenciar maiúsculas): com `$IDE/ENV.md` existente, vai direto ao **Upgrade (C)** do passo "2. Verificar Existência do ENV.md", sem o menu A/B/C/D; sem `ENV.md`, avisa e segue a criação normal. `repos` (sem diferenciar maiúsculas): modo para depois de clonar repositórios no workspace; segue `assets/repos.md` (mapa, `AGENTS.md` e especializações só do que ainda não está nos documentos) e **não continua o onboarding** (a única exceção é o Passo 7, quando o `AGENTS.md` não existe e o modo o cria: só as perguntas que ele mesmo faz). Qualquer outro valor é o nome do novo membro, para personalizar o onboarding.
 
 ## Recursos
 
@@ -203,7 +203,7 @@ Identificar qual IDE o usuário está utilizando:
 
 ### Modo `repos` (`$ARGUMENTS` = `repos`)
 
-Faça só o passo 0 (versão) e siga `assets/repos.md` do começo ao fim: ele exige o `ENV.md` existente, não faz as perguntas do onboarding e termina sem continuar o fluxo (passos 1 a 13).
+Faça só o passo 0 (versão) e siga `assets/repos.md` do começo ao fim: ele exige o `ENV.md` existente, não faz as perguntas do onboarding e termina sem continuar o fluxo (passos 1 a 13), salvo o Passo 7, quando o `AGENTS.md` não existe (só as perguntas que ele mesmo faz).
 
 ### 2. Verificar Existência do ENV.md
 
