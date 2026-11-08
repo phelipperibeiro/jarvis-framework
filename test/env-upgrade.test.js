@@ -36,16 +36,15 @@ test("parseEnvEntries: chave vazia conta; comentário não", () => {
 
 test("planEnvUpgrade: só chaves que faltam; existentes ficam fora (preenchida, vazia ou lista)", () => {
   const env =
-    "HUB=BACKEND\nTASK_MANAGER=github\nMESSAGE_COMUNICATOR=[slack, discord]\nOBJECT_STORAGE=\n";
-  const tpl =
-    "TASK_MANAGER=[jira, linear]\nMESSAGE_COMUNICATOR=[x]\nOBJECT_STORAGE=[aws_s3]\nNOVA=valor\n";
+    "HUB=BACKEND\nCOMPANY_PROFILE=stark-industries\nVERSION_CONTROL_ACCESS=[cli, manual]\nRTK_ENABLED=\n";
+  const tpl = "COMPANY_PROFILE=acme\nVERSION_CONTROL_ACCESS=[x]\nRTK_ENABLED=false\nNOVA=valor\n";
   const plan = planEnvUpgrade(env, tpl);
   assert.deepEqual(plan.added, [{ key: "NOVA", value: "valor" }]);
 });
 
 test("planEnvUpgrade: lista de opções do template entra vazia", () => {
-  const plan = planEnvUpgrade("HUB=BACKEND\n", "OBJECT_STORAGE=[aws_s3, gcs]\n");
-  assert.deepEqual(plan.added, [{ key: "OBJECT_STORAGE", value: "" }]);
+  const plan = planEnvUpgrade("HUB=BACKEND\n", "VERSION_CONTROL_ACCESS=[cli, manual]\n");
+  assert.deepEqual(plan.added, [{ key: "VERSION_CONTROL_ACCESS", value: "" }]);
 });
 
 test("planEnvUpgrade: DATA_SPECIALIZATIONS entra com qualquer HUB (sem regra do bloco DATA, #209)", () => {
@@ -154,16 +153,16 @@ test("applyEnvUpgrade: linhas antigas intactas, bloco datado no fim, idempotente
   });
 });
 
-// #209: blocos que saíram do template. O upgrade apaga as chaves sem ler o valor.
+// #209 e #239: blocos que saíram do template. O upgrade apaga as chaves sem ler o valor.
 const BAR = "# =============================================================================";
 const frame = (title) => [BAR, `# ${title}`, BAR];
 
 test("planEnvUpgrade: removed traz só os nomes das chaves removidas presentes, sem valores", () => {
-  const env = "HUB=BACKEND\nSMTP=google\nPASSWORD_DATABASE=segredo\nMESSAGE_COMUNICATOR=slack\n";
+  const env = "HUB=BACKEND\nSMTP=google\nPASSWORD_DATABASE=segredo\nRTK_ENABLED=false\n";
   const plan = planEnvUpgrade(env, "HUB=[A]\n");
   assert.deepEqual(plan.removed, ["SMTP", "PASSWORD_DATABASE"]);
   assert.ok(!JSON.stringify(plan).includes("segredo"));
-  assert.equal(REMOVED_KEYS.length, 23);
+  assert.equal(REMOVED_KEYS.length, 30);
   // Nunca volta pelo template (um template antigo ainda com o bloco não a acrescenta).
   assert.deepEqual(planEnvUpgrade("HUB=BACKEND\n", "SMTP=[google]\nNOVA=1\n").added, [
     { key: "NOVA", value: "1" },
@@ -181,8 +180,8 @@ test("removeEnvKeys: apaga a chave e a moldura vazia; o resto fica igual", () =>
     "MESSAGE_BROKER_URL_API=",
     "",
     "",
-    ...frame("Chat / comunicador (opcional)"),
-    "MESSAGE_COMUNICATOR=slack",
+    ...frame("RTK — Token Killer (opcional)"),
+    "RTK_ENABLED=false",
     "",
   ].join("\n");
   const out = removeEnvKeys(text, ["MESSAGE_BROKER", "MESSAGE_BROKER_URL_API"]);
@@ -193,8 +192,8 @@ test("removeEnvKeys: apaga a chave e a moldura vazia; o resto fica igual", () =>
       "HUB=BACKEND",
       "",
       "",
-      ...frame("Chat / comunicador (opcional)"),
-      "MESSAGE_COMUNICATOR=slack",
+      ...frame("RTK — Token Killer (opcional)"),
+      "RTK_ENABLED=false",
       "",
     ].join("\n")
   );
@@ -245,8 +244,8 @@ test("removeEnvKeys: só mexe na moldura do bloco de onde a chave saiu", () => {
     ...frame("SMTP (opcional)"),
     "",
     "",
-    ...frame("Chat / comunicador (opcional)"),
-    "MESSAGE_COMUNICATOR=slack",
+    ...frame("RTK — Token Killer (opcional)"),
+    "RTK_ENABLED=false",
     "",
   ].join("\n");
   assert.equal(
@@ -255,8 +254,8 @@ test("removeEnvKeys: só mexe na moldura do bloco de onde a chave saiu", () => {
       ...frame("SMTP (opcional)"),
       "",
       "",
-      ...frame("Chat / comunicador (opcional)"),
-      "MESSAGE_COMUNICATOR=slack",
+      ...frame("RTK — Token Killer (opcional)"),
+      "RTK_ENABLED=false",
       "",
     ].join("\n")
   );
@@ -273,6 +272,61 @@ test("removeEnvKeys: subconjunto das chaves do bloco mantém a moldura; duplicad
   const out = removeEnvKeys(text, ["DATABASE"]);
   assert.deepEqual(out.removed, ["DATABASE"]);
   assert.equal(out.text, [...frame("Banco de dados (opcional)"), "HOST_DATABASE=h", ""].join("\n"));
+});
+
+test("#239: chat e object storage saem com as molduras, sem ler os valores", () => {
+  const text = [
+    "HUB=BACKEND",
+    "VERSION_CONTROL_ACCESS=cli",
+    "",
+    "",
+    ...frame("Chat / comunicador (opcional)"),
+    "# slack: BOT_TOKEN + SIGNING_SECRET + APP_TOKEN (Socket Mode)",
+    "# discord: BOT_TOKEN (Bot) + ALERTS_CHANNEL = ID do canal",
+    "# teams: BOT_TOKEN = URL do Incoming Webhook (SIGNING/APP vazios)",
+    "MESSAGE_COMUNICATOR=slack",
+    "MESSAGE_COMUNICATOR_BOT_TOKEN=valor-ficticio-bot",
+    "MESSAGE_COMUNICATOR_SIGNING_SECRET=valor-ficticio-signing",
+    "MESSAGE_COMUNICATOR_APP_TOKEN=valor-ficticio-app",
+    "ALERTS_CHANNEL=C123",
+    "",
+    "",
+    ...frame("Object storage (opcional)"),
+    "OBJECT_STORAGE=aws_s3",
+    "TOKEN_OBJECT_STORAGE=valor-ficticio-storage",
+    "",
+    "",
+    ...frame("RTK — Token Killer (opcional)"),
+    "RTK_ENABLED=false",
+    "",
+  ].join("\n");
+  const plan = planEnvUpgrade(text, "HUB=[A]\n");
+  assert.deepEqual(plan.removed, [
+    "MESSAGE_COMUNICATOR",
+    "MESSAGE_COMUNICATOR_BOT_TOKEN",
+    "MESSAGE_COMUNICATOR_SIGNING_SECRET",
+    "MESSAGE_COMUNICATOR_APP_TOKEN",
+    "ALERTS_CHANNEL",
+    "OBJECT_STORAGE",
+    "TOKEN_OBJECT_STORAGE",
+  ]);
+  assert.ok(!JSON.stringify(plan).includes("valor-ficticio"));
+  assert.equal(
+    removeEnvKeys(text, plan.removed).text,
+    [
+      "HUB=BACKEND",
+      "VERSION_CONTROL_ACCESS=cli",
+      "",
+      "",
+      ...frame("RTK — Token Killer (opcional)"),
+      "RTK_ENABLED=false",
+      "",
+    ].join("\n")
+  );
+  // O template atual não traz mais as chaves, e um template antigo não as acrescenta de volta.
+  const tpl = readFileSync(join(root, "templates", "ENV-template.md"), "utf-8");
+  assert.ok(!parseEnvEntries(tpl).has("MESSAGE_COMUNICATOR"));
+  assert.deepEqual(planEnvUpgrade("HUB=BACKEND\n", "OBJECT_STORAGE=[aws_s3]\n").added, []);
 });
 
 test("applyEnvUpgrade: remove e acrescenta no mesmo passe", () => {
@@ -464,7 +518,8 @@ test("ENV-template: cada assunto numa moldura de # ==== e nenhum separador # ---
   }
   assert.ok(titles.includes("Workspace e identidade"), titles.join(" | "));
   // #209: saíram 6 assuntos (mensageria, banco, observabilidade, SMTP, Data Engineering, code quality).
-  assert.ok(titles.length >= 14, `só ${titles.length} assuntos: ${titles.join(" | ")}`);
+  // #239: saíram mais 2 (chat / comunicador e object storage).
+  assert.ok(titles.length >= 12, `só ${titles.length} assuntos: ${titles.join(" | ")}`);
 });
 
 test("planEnvUpgrade: COMPANY_PROFILE nova entra com o default stark-industries e não vira pendência (#199)", () => {

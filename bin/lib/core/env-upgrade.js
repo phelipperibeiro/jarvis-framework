@@ -1,7 +1,7 @@
 // Upgrade do ENV.md (`jarvis init --upgrade`): acrescenta as chaves do template que faltam.
 // Regra: só acrescenta. Nenhuma chave existente muda, preenchida, vazia ou com lista de opções.
 // Exceções declaradas (automáticas): `JARVIS_PROJECT=` vazio recebe o valor oficial do template, e
-// as chaves de REMOVED_KEYS (blocos que saíram do template, #209) são apagadas, sem ler o valor.
+// as chaves de REMOVED_KEYS (blocos que saíram do template, #209 e #239) são apagadas, sem ler o valor.
 // As outras exceções (CENTRAL_DOCS_LOCATION e esvaziar o TOKEN_TASK_MANAGER) pedem confirmação
 // e ficam no Upgrade (C) do skill jarvis-init (item 8). Mesmas regras dos itens 3, 4, 8, 9 e 10.
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
@@ -35,7 +35,7 @@ function isOptionList(value) {
   return /^\[.*\]$/.test(value);
 }
 
-// Blocos que saíram do template (#209): o upgrade apaga as chaves e, quando o bloco fica vazio,
+// Blocos que saíram do template (#209, #239): o upgrade apaga as chaves e, quando o bloco fica vazio,
 // a moldura dele. Os comentários são os do template na época; moldura diferente fica.
 const REMOVED_BLOCKS = Object.freeze([
   {
@@ -78,6 +78,26 @@ const REMOVED_BLOCKS = Object.freeze([
       "# Análise estática / quality gate. Em branco = sem MCP de code quality.",
       "# URL da instância (self-hosted).",
     ],
+  },
+  {
+    title: "Chat / comunicador (opcional)",
+    keys: [
+      "MESSAGE_COMUNICATOR",
+      "MESSAGE_COMUNICATOR_BOT_TOKEN",
+      "MESSAGE_COMUNICATOR_SIGNING_SECRET",
+      "MESSAGE_COMUNICATOR_APP_TOKEN",
+      "ALERTS_CHANNEL",
+    ],
+    comments: [
+      "# slack: BOT_TOKEN + SIGNING_SECRET + APP_TOKEN (Socket Mode)",
+      "# discord: BOT_TOKEN (Bot) + ALERTS_CHANNEL = ID do canal",
+      "# teams: BOT_TOKEN = URL do Incoming Webhook (SIGNING/APP vazios)",
+    ],
+  },
+  {
+    title: "Object storage (opcional)",
+    keys: ["OBJECT_STORAGE", "TOKEN_OBJECT_STORAGE"],
+    comments: [],
   },
 ]);
 

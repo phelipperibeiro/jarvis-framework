@@ -9,7 +9,7 @@ Lido pelo passo 2 do `SKILL.md` quando o `ENV.md` existe e a opção é C (ou o 
 1. Ler todas as chaves do `templates/ENV-template.md`
 2. Ler todas as chaves do `$IDE/ENV.md` existente
 3. Calcular diff: chaves no template que **não existem** no ENV.md atual
-4. **Exceção — chaves removidas do template (#209):** apague, sem perguntar, as linhas das chaves de mensageria, banco, observabilidade, SMTP, code quality e Data Engineering (`MESSAGE_BROKER*`, `DATABASE`, `*_DATABASE`, `OBSERVABILITY*`, `TOKEN_OBSERVABILITY`, `SMTP`, `CODE_QUALITY_*` e as `DATA_*`, **menos** `DATA_SPECIALIZATIONS`; lista em `REMOVED_KEYS`, `bin/lib/core/env-upgrade.js`) e a moldura de comentário do bloco que ficar vazio. Nunca leia, mostre ou copie o valor; avise só com os nomes (`ENV.md: removidas (não são mais usadas): …`). O `jarvis init --upgrade` já faz isso no terminal
+4. **Exceção — chaves removidas do template (#209, #239):** apague, sem perguntar, as linhas das chaves de mensageria, banco, observabilidade, SMTP, code quality, Data Engineering, chat e object storage (`MESSAGE_BROKER*`, `DATABASE`, `*_DATABASE`, `OBSERVABILITY*`, `TOKEN_OBSERVABILITY`, `SMTP`, `CODE_QUALITY_*`, as `DATA_*` **menos** `DATA_SPECIALIZATIONS`, `MESSAGE_COMUNICATOR*`, `ALERTS_CHANNEL`, `OBJECT_STORAGE` e `TOKEN_OBJECT_STORAGE`; lista em `REMOVED_KEYS`, `bin/lib/core/env-upgrade.js`) e a moldura de comentário do bloco que ficar vazio. Nunca leia, mostre ou copie o valor; avise só com os nomes (`ENV.md: removidas (não são mais usadas): …`). O `jarvis init --upgrade` já faz isso no terminal
 5. Se não houver diff:
    ```
    ℹ️ Nenhuma variável nova encontrada.
