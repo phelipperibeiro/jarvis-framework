@@ -144,7 +144,7 @@ Quando perguntar:
 
 **Se o usuário não souber responder (total ou parcialmente):**
 Não bloquear. Prosseguir para A.5 com o que se sabe.
-As perguntas sem resposta viram a seção **"Perguntas em Aberto"** no topo do documento gerado em A.7 — sinalizando que, se respondidas, aumentariam a precisão do plano.
+As perguntas sem resposta viram a seção **"Perguntas em Aberto"** no topo do documento gerado em A.7 — sinalizando que, se respondidas, aumentariam a precisão do plano. Cada pergunta registra a **situação** (aberta), o que o plano **assumiu** enquanto ela não é respondida e as **alternativas** consideradas, em texto corrido, sem tabela nem emoji (regras de formato da A.7).
 
 Formato correto:
 ```
