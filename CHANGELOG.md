@@ -6,6 +6,16 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), e o
 
 > Versões anteriores a `2.1.1` não foram documentadas retroativamente neste changelog — o histórico detalhado dessas versões continua disponível via `git log`.
 
+## [Unreleased]
+
+### Changed
+- **Mapa de modelos do OpenCode na família Claude 5.5 (#239)**: `opus`, `sonnet` e `haiku` passam a gerar `anthropic/claude-opus-5-5`, `anthropic/claude-sonnet-5-5` e `anthropic/claude-haiku-5-5` nos agents e comandos de `.opencode/`, e o `opencode.json` novo sai com `anthropic/claude-sonnet-5-5`. O `haiku` apontava para um ID que não existe (`claude-haiku-4-5-20250414`), e o `claude-sonnet-5` (o `recommended_model` da maioria dos workflows) era rebaixado para `claude-sonnet-4-6`; agora ele passa com o próprio ID. IDs conferidos no catálogo do models.dev, que o OpenCode usa, em 2026-11-08. Quem usa OpenCode recebe os modelos novos com `jarvis init --upgrade`.
+
+### Removed
+- **Chat e object storage do `ENV.md` (#239)**: `MESSAGE_COMUNICATOR`, `MESSAGE_COMUNICATOR_BOT_TOKEN`, `MESSAGE_COMUNICATOR_SIGNING_SECRET`, `MESSAGE_COMUNICATOR_APP_TOKEN`, `ALERTS_CHANNEL`, `OBJECT_STORAGE` e `TOKEN_OBJECT_STORAGE` saem do template, do `/jarvis-init`, da visão geral e da `eng.integrations-rules.md` (que deixa de descrever um runtime `communicator/` que não existe no repositório). Nenhum código lia essas chaves. O `jarvis init --upgrade` as apaga dos `ENV.md` instalados, com a moldura do bloco que ficar vazio, sem ler nem mostrar o valor (mesmo mecanismo da #209), e o resumo traz só os nomes.
+- **`jarvis logout` e a leitura do `~/.jarvis/auth.json` (#239)**: o comando apagava um arquivo da época do login OAuth, que nada mais lê, e o `jarvis whoami` deixa de avisar sobre ele. A identidade continua vindo de `USER=` no `ENV.md`, do git ou do SO. Quem ainda tiver o arquivo pode apagá-lo à mão.
+- **Código sem uso no CLI (#239)**: `detectIDE`, `detectAllIDEs`, `buildWebUrl`, `extractMetadata`, `_clearCache`, `CLI_NAME`, `readSession`, `clearSession` e `getAuthUser`, e a entrada `scripts` do `SYNC_DIRS` (a pasta nunca existiu no repositório).
+
 ## [8.8.0] - 2026-11-08
 
 ### Added

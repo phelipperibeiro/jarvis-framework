@@ -261,8 +261,8 @@ test("listRulesForProfile: rtk é opt-in, sem bloco é universal, recursivo em s
 // /eng.spec-consolidate à regra de ouro. +466 B nos 4 perfis; nenhum arquivo a mais.
 // Issue #227 (2026-11-07): prod-rules.md (AREA: all) ganha a linha de que a cópia do AGENTS.md para o
 // CLAUDE.md respeita o .git/info/exclude no modo projeto. +195 B nos 4 perfis; nenhum arquivo a mais.
-// Issue #239 (2026-11-08): eng.integrations-rules.md (AREA: all) perde a linha de MESSAGE_COMUNICATOR,
-// a seção "Alertas (runtime)" e as menções a Slack. −301 B nos 4 perfis; nenhum arquivo a menos.
+// Issue #239 (2026-11-08): eng.integrations-rules.md (AREA: all) perde a linha do chat, a seção
+// de alertas e as menções a Slack. −301 B nos 4 perfis; nenhum arquivo a menos.
 const BASE = [
   [
     "FULLCYCLE/GENERALIST/ENGINEERING/CORE",
