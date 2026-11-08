@@ -15,7 +15,7 @@
 
 > ⚠️ **Atenção:** {o que exige atenção e por quê}
 
-> **Como usar o alerta:** use o formato acima só para o que o leitor não pode deixar passar: risco, bloqueio, divergência, dado sensível ou ação irreversível. Texto comum continua sem ícone, para o alerta não perder a força. Os alertas-modelo das seções 5, 6.1, 6.5.2 e 6.5.3 mostram o uso. Ao preencher, apague este alerta, os alertas-modelo que não se aplicam e esta nota.
+> **Como usar o alerta:** use o formato acima só para o que o leitor não pode deixar passar: risco, bloqueio, divergência, dado sensível ou ação irreversível. Texto comum continua sem ícone, para o alerta não perder a força. Os alertas-modelo das seções 5, 6.1, 6.5.2 e 6.5.3 mostram o uso. Ao preencher, use o alerta acima só se houver algo a alertar no documento inteiro (senão, apague-o) e apague os alertas-modelo que não se aplicam e esta nota.
 
 ---
 
