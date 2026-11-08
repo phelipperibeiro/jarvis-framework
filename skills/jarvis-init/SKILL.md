@@ -1,7 +1,7 @@
 ---
 name: jarvis-init
 description: Inicializa o framework JARVIS e guia novos membros no processo de onboarding. Use quando precisar configurar o ambiente, criar ENV.md, validar MCPs ou orientar um novo desenvolvedor.
-argument-hint: "[upgrade | nome-do-membro-opcional]"
+argument-hint: "[upgrade | repos | nome-do-membro-opcional]"
 disable-model-invocation: false
 allowed-tools: Read Write Edit Grep Glob Bash
 metadata:
@@ -39,7 +39,7 @@ Regras que **substituem** qualquer trecho legado deste skill ou dos assets:
 
 ## Entrada
 
-- `$ARGUMENTS` - (Opcional) `upgrade` (sem diferenciar maiúsculas): com `$IDE/ENV.md` existente, vai direto ao **Upgrade (C)** do passo "2. Verificar Existência do ENV.md", sem o menu A/B/C/D; sem `ENV.md`, avisa e segue a criação normal. Qualquer outro valor é o nome do novo membro, para personalizar o onboarding.
+- `$ARGUMENTS` - (Opcional) `upgrade` (sem diferenciar maiúsculas): com `$IDE/ENV.md` existente, vai direto ao **Upgrade (C)** do passo "2. Verificar Existência do ENV.md", sem o menu A/B/C/D; sem `ENV.md`, avisa e segue a criação normal. `repos` (sem diferenciar maiúsculas): modo para depois de clonar repositórios no workspace; segue `assets/repos.md` (mapa, `AGENTS.md` e especializações só do que ainda não está nos documentos) e **não continua o onboarding** (a única exceção é o Passo 7, quando o `AGENTS.md` não existe e o modo o cria: só as perguntas que ele mesmo faz). Qualquer outro valor é o nome do novo membro, para personalizar o onboarding.
 
 ## Recursos
 
@@ -50,13 +50,22 @@ Regras que **substituem** qualquer trecho legado deste skill ou dos assets:
 - **Checklist Onboarding**: `$IDE/skills/jarvis-init/assets/onboarding-checklist.md`
 - **Guia de Setup**: `$IDE/skills/jarvis-init/assets/setup-guide.md`
 - **Passo "adicionar as stacks"**: `$IDE/skills/jarvis-init/assets/passo-adicionar-stacks.md` e `$IDE/skills/jarvis-init/assets/sinais-de-stack.md`
+- **Mapa de tecnologias (parte comum)**: `$IDE/skills/jarvis-init/assets/mapa-de-tecnologias.md` (usado pelo `/warm-up`, pelo Passo 7, pelo sub-passo 9.8 das stacks, pelo Upgrade (item 9.2) e pelo modo `repos`)
 - **Passo 8 sem o CLI**: `$IDE/skills/jarvis-init/assets/rules-sync-manual.md` (fallback do `jarvis rules sync`)
 - **Upgrade (C)**: `$IDE/skills/jarvis-init/assets/upgrade.md`
+- **Modo `repos`**: `$IDE/skills/jarvis-init/assets/repos.md`
 - **Opções padrão e exemplos de validação**: `$IDE/skills/jarvis-init/assets/validacoes.md`
 - **Exemplo de execução**: `$IDE/skills/jarvis-init/assets/exemplo-execucao.md`
 - **Saída**: `$IDE/ENV.md`, `AGENTS.md`, `{workspace}/$SESSIONS_DIR/{eng,prod,qa}/`
 
 ---
+
+## Regra de sincronia: `AGENTS.md` e `CLAUDE.md` (sempre)
+
+- O `AGENTS.md` da raiz do workspace é a **fonte**; o `CLAUDE.md` é sempre uma **cópia idêntica** dele, em qualquer IDE. Por quê: o Claude Code lê o `CLAUDE.md`; Cursor e VS Code (Copilot) leem o `AGENTS.md`. Com os dois iguais, todas as IDEs veem o mesmo contexto.
+- **Toda escrita no `AGENTS.md` escreve o mesmo no `CLAUDE.md`, na mesma ação:** o Passo 7, o sub-passo 9.8, o modo `repos` (`assets/repos.md`), o Upgrade 9.2 e a linha do mapa acrescentada pelo `/warm-up`. Ninguém edita só um dos dois.
+- `CLAUDE.md` com conteúdo diferente do `AGENTS.md` (escrito à mão): não o sobrescreva sem confirmação; mostre a diferença e pergunte.
+- `AGENTS.md`, `CLAUDE.md` e `CDD-MIND-MAP.md` existem **sempre**, nos dois modos de trabalho: a instalação os cria (Passo 7) e o Upgrade cria o que faltar (9.2). O `jarvis init --upgrade` lista como pendência o que faltar e o `CLAUDE.md` fora de sincronia.
 
 ## Fluxo de Execução
 
@@ -79,7 +88,7 @@ Regras que **substituem** qualquer trecho legado deste skill ou dos assets:
 │        ↓                                                    │
 │  6. VALIDAR → Context7 (obrigatório)                        │
 │        ↓                                                    │
-│  7. CRIAR → AGENTS.md                                       │
+│  7. CRIAR → mapa, AGENTS.md e CLAUDE.md (cópia)             │
 │        ↓                                                    │
 │  8. SYNC RULES → jarvis rules sync (perfil do ENV.md)       │
 │        ↓                                                    │
@@ -198,6 +207,10 @@ Identificar qual IDE o usuário está utilizando:
 | Kiro | `.kiro/` | `.kiro/settings/mcp.json` |
 
 > Formatos e como ativar cada um: tabela "Caminhos de Configuração" em `assets/mcp-configs.md`.
+
+### Modo `repos` (`$ARGUMENTS` = `repos`)
+
+Faça só o passo 0 (versão) e siga `assets/repos.md` do começo ao fim: ele exige o `ENV.md` existente, não faz as perguntas do onboarding e termina sem continuar o fluxo (passos 1 a 13), salvo o Passo 7, quando o `AGENTS.md` não existe (só as perguntas que ele mesmo faz).
 
 ### 2. Verificar Existência do ENV.md
 
@@ -582,7 +595,7 @@ Se **A** ou **B**, perguntar sobre cada variável opcional conforme seleção �
 | `CENTRAL_DOCS_STORAGE` / `_LOCATION` | `filesystem` / pasta padrão do modo de trabalho | Central docs (o que foi implementado), configurado no Passo 5.2; vazio = desligado |
 | `JARVIS_DOCS` / `ENG_DOCS` | `$DOCS_FOLDER/jarvis` / `$JARVIS_DOCS/engineering` | Documentos de trabalho (não perguntar; `$JARVIS_DOCS/` no `.gitignore` só se a raiz tiver `.git`) |
 | `DISCOVERIES_FOLDER_NAME` / `DISCOVERIES_DOCS` | `discoveries` / `$JARVIS_DOCS/$DISCOVERIES_FOLDER_NAME` | Discoveries, fora de `product/` (não perguntar) |
-| `CENTRAL_DOCS_REF` / `_TARGET_BRANCH` / `_REVIEWERS` | `main` / `main` / *(vazio)* | Só quando a pasta do Central docs tem `.git` |
+| `CENTRAL_DOCS_REF` / `_TARGET_BRANCH` | `main` / `main` | Só quando a pasta do Central docs tem `.git` |
 | `SESSIONS_DIR` | `.jarvis/sessions` | Não perguntar — gravar o padrão. A pessoa pode trocar depois no `ENV.md`: o `jarvis init` cria as pastas e o `.gitignore` a partir da chave |
 | `RTK_ENABLED` | `false` (ou true se detectar `rtk`) | Token Killer |
 | `ADVISOR_MODELS` | `"Sonnet 5.5,Opus 5.5,Opus 5,Fable 5.1"` | Advisor do `eng.start` — não perguntar, gravar o padrão |
@@ -905,15 +918,19 @@ Deseja instalar o perfil recomendado agora?
 
 ### 7. Criar AGENTS.md
 
-Se não existir na raiz do projeto:
+**Mapa primeiro (obrigatório, nos dois modos):** se o `CDD-MIND-MAP.md` não existe, monte-o agora pelo `assets/mapa-de-tecnologias.md` (no modo projeto, uma linha: a raiz). O `AGENTS.md` nasce depois, com o bloco de repositórios já preenchido.
+
+Se o `AGENTS.md` não existir na raiz do projeto (itens 1 a 7; o item 8 vale sempre):
 
 1. Detectar stack (package.json, pyproject.toml, etc.)
 2. Extrair informações do projeto
 3. Criar a partir do template com substituições
 4. Se não detectar, perguntar ao usuário
-5. Incluir (ou acrescentar, se o `AGENTS.md` já existir e não citar) a linha que identifica o mapa de tecnologias do projeto:
+5. O template já traz a linha que identifica o mapa de tecnologias do projeto; acrescente-a se o `AGENTS.md` **já existir** e não a citar:
    `> Mapa de tecnologias do projeto: [CDD-MIND-MAP.md](CDD-MIND-MAP.md) (tecnologias e papel de cada repositório, ou da raiz no modo projeto; lido pelo /warm-up).`
 6. No modo projeto (raiz com `.git`), o `AGENTS.md` (e o `CLAUDE.md`, que é cópia dele) já está no `.git/info/exclude`, gravado pelo CLI antes de o arquivo existir: **não escreva no `.gitignore`**. Avise a pessoa: "para versionar de propósito, remova a linha do `.git/info/exclude`". Se o CLI avisou que o arquivo já está versionado, **não o tire do índice aqui**: a decisão é do Upgrade (`assets/upgrade.md`).
+7. **Bloco de repositórios** (`<!-- jarvis:repos:start -->` … `<!-- jarvis:repos:end -->`, o `{REPOS_BLOCK}` do template): no **modo projeto**, remova o bloco inteiro, marcadores incluídos (o mapa tem só a raiz). No **modo workspace**, substitua `{REPOS_BLOCK}` por uma linha por repositório do `CDD-MIND-MAP.md`, no formato `- **{repo}** — {papel}; {linguagem}/{framework} ({área})`; o mapa já existe (montado no início deste passo).
+8. **`CLAUDE.md` (sempre, exista ou não o `AGENTS.md`):** pela **regra de sincronia** (seção acima), em qualquer IDE, ele é cópia idêntica do `AGENTS.md`: se não existir, crie-o com o mesmo conteúdo do `AGENTS.md`; se já existir com outro conteúdo (escrito à mão), mostre a diferença e pergunte antes de sobrescrever.
 
 ### 8. Profile-Aware Rules Sync
 
@@ -934,7 +951,7 @@ A **detecção de stack por código e a criação de skill novo** (sub-passos 9.
 3. **Lê** o workspace (a análise **só lê**: não altera arquivos do projeto nem as listas), identifica as stacks de backend e de frontend, inclusive de vários projetos, e **mostra o que encontrou antes de sugerir** (só essas 2 áreas)
 4. Para cada stack de backend/frontend, sugere **registrar o skill que já existe** (mesmo `area` e `stack`) ou **criar um novo** com `/jarvis-create-specialization {área} {stack}`; a pessoa escolhe, e o que não aceita não muda
 5. Mostra um resumo das 6 listas e do que foi registrado ou criado
-6. **Monta o `CDD-MIND-MAP.md`** (o mapa de tecnologias, lido pelo `/warm-up`: do workspace ou, no modo projeto, do repositório): com a mesma leitura do sub-passo 3, agora para **todas as áreas**, preenche uma linha por repositório (papel, linguagem, framework, área, até 5 ferramentas principais) pelo `$IDE/templates/cdd-mind-map-template.md`, mostra a tabela e pede a validação com `AskUserQuestion` (**Confirmar** | **Corrigir** | **Incluir informação**). Grava na raiz do workspace (com `.git` na raiz, já no `.git/info/exclude`, Passo 5). Se o mapa já existe, só acrescenta os repositórios que faltam. Pular é permitido: o primeiro `/warm-up` cria o mapa.
+6. **Monta o `CDD-MIND-MAP.md`** (o mapa de tecnologias, lido pelo `/warm-up`: do workspace ou, no modo projeto, do repositório), no sub-passo 9.8 do `passo-adicionar-stacks.md`, que segue `assets/mapa-de-tecnologias.md`: com a mesma leitura do sub-passo 3, agora para **todas as áreas**, preenche uma linha por repositório (papel, linguagem, framework, área, até 5 ferramentas principais) pelo `$IDE/templates/cdd-mind-map-template.md`, mostra a tabela e pede a validação com `AskUserQuestion` (**Confirmar** | **Corrigir** | **Incluir informação**). Grava na raiz do workspace (com `.git` na raiz, já no `.git/info/exclude`, Passo 5). O mapa já existe (o Passo 7 o monta antes do `AGENTS.md`): aqui só se acrescentam os repositórios que faltam.
 
 O tempo de ~10 minutos é referência, não limite. Nunca leia `.env*`, chaves ou credenciais.
 
@@ -1040,6 +1057,7 @@ Apresentar checklist de onboarding por período (Dia 1, Semana 1, Mês 1).
 | Passo | Skill | Condição |
 |-------|-------|----------|
 | Passo 5.3 — Carga inicial do Central docs | `/eng.spec-consolidate --inicial` | Se o Central docs estiver ligado, houver PRD/FRD/ARD/RFC/SPEC e o usuário responder Sim (também no Upgrade, só se documentos foram movidos nesta atualização) |
+| Modo `repos` — especializações dos repositórios novos | `/jarvis-create-specialization {área} {stack}` | Se a pessoa aceitar criar um skill novo (só backend e frontend) para a stack de um repositório novo que ainda não tem especialização instalada, depois da confirmação da tabela |
 | Passo 9 — Adicionar as stacks (opcional) | `/jarvis-create-specialization {área} {stack}` | Se a pessoa escolher criar um skill novo para uma stack que ainda não tem especialização instalada (uma stack por vez; pular o passo não chama nada) |
 
 ---

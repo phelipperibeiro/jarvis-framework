@@ -130,7 +130,7 @@ test("SKILL.md continua com o passo 10 no onboarding completo (regressão)", () 
 // ---- #227: AGENTS.md/CLAUDE.md fora do git no modo projeto ----------------------------------------
 
 const skill = readFileSync(join(root, "skills", "jarvis-init", "SKILL.md"), "utf8");
-const item91 = item(upgrade, "9.1. **Exceção", "10. Acrescentar");
+const item91 = item(upgrade, "9.1. **Exceção", "9.2. **Exceção");
 
 test("SKILL.md: o CLI grava o git do modo projeto; o texto não repete a lista nem escreve no .gitignore", () => {
   assert.match(skill, /\.git\/info\/exclude/, "o Passo 5 deve citar o exclude local");
@@ -263,3 +263,72 @@ test("upgrade.md: a nota do terminal lista a pasta da IDE e a pasta dos document
   // convenção do projeto: o asset usa a variável, não o caminho padrão por extenso (paths-no-fixed-text)
 });
 
+
+// ---- #225: o Upgrade deixa AGENTS.md e CDD-MIND-MAP.md no padrão, com aviso e confirmação (Q5) -------------
+
+const item92 = item(upgrade, "9.2. **Exceção — `AGENTS.md` e `CDD-MIND-MAP.md` no padrão", "10. Acrescentar");
+
+test("upgrade.md 9.2: vem depois do 9.1 e antes do item 10, e o item 5 cita 7 a 9.2", () => {
+  const i91 = upgrade.indexOf("9.1. **Exceção");
+  const i92 = upgrade.indexOf("9.2. **Exceção");
+  const i10 = upgrade.indexOf("10. Acrescentar");
+  assert.ok(i91 !== -1 && i92 !== -1 && i10 !== -1 && i91 < i92 && i92 < i10, "9.1 → 9.2 → 10");
+  assert.match(upgrade, /os itens 7 a 9\.2 ainda podem alterá-lo/);
+});
+
+test("upgrade.md 9.2: nos dois modos, confere mapa, AGENTS.md (linha do mapa e caminho de sessões) e CLAUDE.md igual ao AGENTS.md", () => {
+  assert.match(item92, /os dois existem sempre, nos dois modos, e o `CLAUDE\.md` é sempre cópia idêntica do `AGENTS\.md` \(\*\*regra de sincronia\*\* do `SKILL\.md`\)/);
+  assert.match(item92, /o `CDD-MIND-MAP\.md` existe, com a tabela do `templates\/cdd-mind-map-template\.md`/);
+  assert.match(item92, /o `AGENTS\.md` existe, com a linha `> Mapa de tecnologias do projeto:`/);
+  assert.match(item92, /o caminho de sessões `\$SESSIONS_DIR` \(padrão `\.jarvis\/sessions`\) no lugar de `\{IDE_FOLDER\}\/sessions`/);
+  assert.match(item92, /\(num `AGENTS\.md` já gerado, a forma resolvida, como `\.claude\/sessions\/`\)/);
+  assert.match(item92, /o `CLAUDE\.md` existe e é igual ao `AGENTS\.md`/);
+});
+
+test("upgrade.md 9.2: no modo workspace, também o bloco por repositório e uma linha do mapa por repositório com .git, sem filtrar por WORKSPACE_REPOS", () => {
+  assert.match(item92, /o bloco entre `<!-- jarvis:repos:start -->` e `<!-- jarvis:repos:end -->` com uma linha por repositório do mapa/);
+  assert.match(item92, /uma linha do mapa por repositório com `\.git` \(\*\*todas\*\* as subpastas, sem filtrar por `WORKSPACE_REPOS`\)/);
+});
+
+test("upgrade.md 9.2: no modo projeto, o mapa tem uma linha (a raiz) e o bloco de repositórios não se aplica", () => {
+  assert.match(item92, /\*\*No modo projeto\*\*, o mapa tem uma linha \(a raiz\) e o bloco de repositórios não se aplica/);
+});
+
+test("upgrade.md 9.2: no padrão não pergunta; fora do padrão avisa cada mudança e pede a confirmação antes de gravar", () => {
+  assert.match(item92, /\*\*Tudo no padrão:\*\* siga \*\*sem perguntar\*\*/);
+  assert.match(item92, /\*\*avise\*\* o que precisa ficar no padrão, listando cada mudança/);
+  assert.match(item92, /`AskUserQuestion`: \*\*Ajustar agora\*\* \| \*\*Deixar como está\*\*/);
+  assert.match(item92, /a pendência volta a cada `jarvis init --upgrade` enquanto o documento não estiver no padrão/);
+  assert.match(item92, /Só com \*\*Ajustar agora\*\*, ajuste o que for necessário, mostrando cada mudança/);
+  assert.match(item92, /\*\*Sem o Sim, nenhum arquivo muda\*\*, e a pendência volta/);
+  const iAviso = item92.indexOf("**avise**");
+  const iPergunta = item92.indexOf("`AskUserQuestion`");
+  const iAjusta = item92.indexOf("Só com **Ajustar agora**");
+  assert.ok(iAviso < iPergunta && iPergunta < iAjusta, "avisa, pergunta e só então ajusta");
+});
+
+test("upgrade.md 9.2: com o Sim, cria o mapa e o AGENTS.md que faltam, escreve o mesmo no CLAUDE.md e, para repositório novo, segue o repos.md e volta ao item 10", () => {
+  assert.match(item92, /crie o mapa que não existe pelo `assets\/mapa-de-tecnologias\.md`/);
+  assert.match(item92, /crie o `AGENTS\.md` que não existe pelo Passo 7 do `SKILL\.md`/);
+  assert.match(item92, /pela regra do item 3 do \[repos\.md\]\(repos\.md\)/);
+  assert.match(item92, /escreva o mesmo no `CLAUDE\.md` \(um `CLAUDE\.md` escrito à mão, diferente do `AGENTS\.md`, só é sobrescrito com essa confirmação, mostrando a diferença\)/);
+  assert.match(item92, /para repositório novo, siga os itens 1 a 5 do \[repos\.md\]\(repos\.md\) \(tabela de papel e stack para a pessoa validar\) e \*\*volte ao item 10 deste arquivo\*\*: o resumo e o fim são os do Upgrade/);
+  assert.doesNotMatch(item92, /não é criado aqui/, "o 9.2 cria o mapa e o AGENTS.md que faltam");
+});
+
+test("upgrade.md: a nota do terminal cita o item 9.2 e o /jarvis-init repos para repositório fora do mapa", () => {
+  const nota = upgrade.split("\n").find((l) => l.startsWith("> No terminal, rode antes"));
+  assert.match(nota, /o `AGENTS\.md` e o `CDD-MIND-MAP\.md` no padrão \(item 9\.2\)/);
+  assert.match(nota, /repositório fora do mapa: `\/jarvis-init repos`/);
+});
+
+test("guias: README, docs/estrutura/skills.md e AGENTS.md citam o /jarvis-init repos", () => {
+  assert.match(read("README.md"), /o `AGENTS\.md` e o `CDD-MIND-MAP\.md` no padrão/);
+  assert.match(read("docs", "estrutura", "skills.md"), /o argumento `repos` \(`\/jarvis-init repos`\) atualiza o mapa, o bloco de repositórios do `AGENTS\.md` \(cria o `AGENTS\.md` se ainda não existir\) e as especializações/);
+  assert.match(read("AGENTS.md"), /^\/jarvis-init repos +# Depois de clonar repositorios \(modo workspace\)/m);
+});
+
+test("README (#225, rodada 5): diz que o --upgrade volta a acusar enquanto o CLAUDE.md não for cópia", () => {
+  const readme = readFileSync(join(root, "README.md"), "utf-8");
+  assert.match(readme, /e o `CLAUDE\.md` é sempre cópia do `AGENTS\.md`; enquanto não for, o `--upgrade` volta a acusar\)/);
+});

@@ -11,7 +11,7 @@ import { join } from "node:path";
 export const WORKSPACE_MODES = ["workspace", "project"];
 
 /** Subpastas diretas com `.git` (arquivo ou pasta). Ignora ocultas e `node_modules`. */
-function listGitSubdirs(dir) {
+export function listGitSubdirs(dir) {
   let entries;
   try {
     entries = readdirSync(dir, { withFileTypes: true });

@@ -130,6 +130,11 @@ O CLI resolve o `ENV.md` na seguinte precedência:
 - Todo arquivo `.md` gerado deve ser em pt-BR.
 - Termos tecnicos em ingles sao aceitos.
 
+### AGENTS.md e CLAUDE.md sempre sincronizados
+
+- No workspace do usuário, o `AGENTS.md` é a fonte e o `CLAUDE.md` é sempre cópia idêntica dele (o Claude Code lê o `CLAUDE.md`; Cursor e VS Code leem o `AGENTS.md`). `AGENTS.md`, `CLAUDE.md` e `CDD-MIND-MAP.md` existem sempre, nos dois modos de trabalho.
+- **Ao evoluir o framework:** todo texto (skill, workflow, asset, template) ou código que escreve no `AGENTS.md` precisa escrever o mesmo no `CLAUDE.md` e citar a "regra de sincronia" do `skills/jarvis-init/SKILL.md`; o teste `test/jarvis-init-repos-fluxo.test.js` confere os pontos de escrita conhecidos.
+
 ### Seguranca
 
 - Nao inventar stack, endpoints, ambientes, credenciais ou integracoes.
@@ -200,6 +205,7 @@ Cada pasta pode ter seu proprio AGENTS.md com instrucoes especificas. No reposit
 
 ```bash
 /jarvis-init            # Cria ENV.md lendo taxonomy.md (unico comando sem ENV.md); oferece o passo opcional de adicionar as stacks
+/jarvis-init repos      # Depois de clonar repositorios (modo workspace): atualiza mapa, bloco do AGENTS.md (cria o AGENTS.md se faltar) e especializacoes
 /warm-up                 # Carrega contexto do projeto
 ```
 

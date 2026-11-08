@@ -16,7 +16,7 @@ workspace: {nome}
 
 <!--
 Como preencher (o /warm-up e o /jarvis-init seguem estas instruções):
-- Uma linha por repositório com .git do workspace (respeitando WORKSPACE_REPOS, se preenchida); em projeto único, uma linha para a raiz.
+- Uma linha por repositório com .git do workspace (o /warm-up respeita WORKSPACE_REPOS, se preenchida; o /jarvis-init repos e o Upgrade usam todas as subpastas com .git); em projeto único, uma linha para a raiz.
 - Linguagem e framework: pela tabela skills/jarvis-init/assets/sinais-de-stack.md (manifesto → linguagem → dependência → framework). Área: a da linha da tabela; sem sinal, pergunte.
 - Papel: inferido da estrutura e do nome (ex.: rotas sem regra de negócio → gateway); é sempre hipótese até o usuário confirmar.
 - Ferramentas principais: as dependências diretas mais relevantes do manifesto, com a versão declarada; no máximo 5.

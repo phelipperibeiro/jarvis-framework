@@ -8,6 +8,14 @@
 
 {PROJECT_DESCRIPTION}
 
+> Mapa de tecnologias do projeto: [CDD-MIND-MAP.md](CDD-MIND-MAP.md) (tecnologias e papel de cada repositório, ou da raiz no modo projeto; lido pelo /warm-up).
+
+<!-- jarvis:repos:start -->
+Repositórios do workspace (gerado pelo `/jarvis-init repos`; o mapa [CDD-MIND-MAP.md](CDD-MIND-MAP.md) é a fonte):
+
+{REPOS_BLOCK}
+<!-- jarvis:repos:end -->
+
  Tech Stack
 
 {TECH_STACK}
@@ -59,7 +67,7 @@ Se você é um agente de IA trabalhando neste projeto:
 
 . Leia primeiro: `{IDE_FOLDER}/README.md` para entender o framework JARVIS
 . Regras: Siga as regras em `{IDE_FOLDER}/rules/`
-. Sessões: Use `{IDE_FOLDER}/sessions/` para contexto de tarefas em andamento
+. Sessões: Use `.jarvis/sessions` (o padrão de `SESSIONS_DIR` no `ENV.md`) para contexto de tarefas em andamento
 . Templates: Use os templates em `{IDE_FOLDER}/templates/` para documentos
 . Idioma: Toda documentação deve ser em português do Brasil (pt-BR)
 

@@ -64,6 +64,7 @@ const EXEMPT = [
   { file: "skills/jarvis-init/SKILL.md", when: (l) => l.includes("hoje `docs/jarvis/central-docs`"), why: "Central docs: o padrão hoje, junto do derivado" },
   { file: "skills/jarvis-init/SKILL.md", when: (l) => l.startsWith("- ❌ Criar") && l.includes("`~/.jarvis/sessions`"), why: "o que NÃO criar no home" },
   { file: "skills/jarvis-init/assets/upgrade.md", when: (l) => l.includes("o padrão atual (`docs/jarvis/central-docs` com os valores padrão)"), why: "Central docs: o padrão atual" },
+  { file: "skills/jarvis-init/assets/upgrade.md", when: (l) => l.includes("(padrão `.jarvis/sessions`) no lugar de `{IDE_FOLDER}/sessions`"), why: "9.2: o caminho de sessões padrão que o AGENTS.md novo cita (#225)" },
   { file: "skills/jarvis-init/assets/exemplo-execucao.md", when: (l) => l.includes("(padrão `.jarvis/sessions`)"), why: "exemplo de execução com o padrão" },
   { file: "skills/jarvis-docs-central/SKILL.md", when: (l) => l.includes("hoje `docs/jarvis/central-docs`"), why: "Central docs: o padrão hoje" },
   { file: "skills/jarvis-docs-central/README.md", when: (l) => l.includes("com os valores padrão, `docs/jarvis/central-docs`"), why: "Central docs: o padrão" },
@@ -181,6 +182,7 @@ test("templates: com DOCS_FOLDER, JARVIS_DOCS e SESSIONS_DIR fora do padrão, to
 /** Arquivos que têm o padrão por natureza e por isso ficam fora de TARGETS (com o motivo). */
 const IGNORED = {
   "templates/ENV-template.md": "é o próprio arquivo dos valores padrão",
+  "templates/engineering/AGENTS-template.md": "o AGENTS.md do projeto alvo cita `.jarvis/sessions` como o valor padrão de `SESSIONS_DIR`, dito na própria frase (#225)",
   "agents/engineering/data/eng.data-engineer.agent.md": "`../../../../ENV.md` é um link relativo do arquivo do agente até o ENV da IDE, não do workspace",
 };
 
