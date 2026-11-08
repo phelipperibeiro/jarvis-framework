@@ -188,6 +188,36 @@ test("documentPendencies: só o fim de linha diferente (CRLF × LF) não conta c
   });
 });
 
+test("documentPendencies: CRLF só no AGENTS.md também não conta (a normalização vale para os dois)", () => {
+  withFiles({ [MAP_FILE]: TABELA([]), "AGENTS.md": "# a\r\nlinha\r\n", "CLAUDE.md": "# a\nlinha\n" }, (root) => {
+    assert.deepEqual(documentPendencies(root), []);
+  });
+});
+
+test("documentPendencies: BOM no início não conta como diferença", () => {
+  withFiles({ [MAP_FILE]: TABELA([]), "AGENTS.md": "# a\n", "CLAUDE.md": "\uFEFF# a\n" }, (root) => {
+    assert.deepEqual(documentPendencies(root), []);
+  });
+});
+
+test("documentPendencies: quebras de linha no fim do arquivo não contam como diferença", () => {
+  withFiles({ [MAP_FILE]: TABELA([]), "AGENTS.md": "# a", "CLAUDE.md": "# a\n\n" }, (root) => {
+    assert.deepEqual(documentPendencies(root), []);
+  });
+});
+
+test("documentPendencies: diferença no meio do texto continua contando", () => {
+  withFiles({ [MAP_FILE]: TABELA([]), "AGENTS.md": "# a\n\nb\n", "CLAUDE.md": "# a\nb\n" }, (root) => {
+    assert.deepEqual(documentPendencies(root), ["sincronizar o CLAUDE.md com o AGENTS.md (o CLAUDE.md é sempre cópia do AGENTS.md)"]);
+  });
+});
+
+test("documentPendencies: AGENTS.md vazio (só espaços) vale como ausente", () => {
+  withFiles({ [MAP_FILE]: TABELA([]), "AGENTS.md": "  \n", "CLAUDE.md": "  \n" }, (root) => {
+    assert.deepEqual(documentPendencies(root), ["criar o AGENTS.md (e o CLAUDE.md, cópia dele)"]);
+  });
+});
+
 test("documentPendencies: tudo ausente lista mapa e AGENTS.md, nesta ordem", () => {
   withFiles({}, (root) => {
     assert.deepEqual(documentPendencies(root), ["criar o mapa de tecnologias (CDD-MIND-MAP.md)", "criar o AGENTS.md (e o CLAUDE.md, cópia dele)"]);

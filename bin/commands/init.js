@@ -221,7 +221,7 @@ export function docsIgnoreLines(entries) {
  * é decisão da pessoa, tomada no `/jarvis-init upgrade` (nunca no terminal).
  * `documents` (#225): `CDD-MIND-MAP.md` ou `AGENTS.md` ausentes e `CLAUDE.md` fora de sincronia com o `AGENTS.md`
  * (`documentPendencies`); o Upgrade os cria ou sincroniza, com confirmação.
- * @param {{ pendingAxes: string[], envPlan: { pending?: string[], warnings?: string[] }, missingProfile?: string[], trackedGenerated?: string[] }} input
+ * @param {{ pendingAxes: string[], envPlan: { pending?: string[], warnings?: string[] }, missingProfile?: string[], trackedGenerated?: string[], documents?: string[] }} input
  * @returns {string[]} um motivo por pendência; vazio = nada pendente
  */
 export function upgradePendencies({ pendingAxes, envPlan, missingProfile = [], trackedGenerated = [], documents = [] }) {

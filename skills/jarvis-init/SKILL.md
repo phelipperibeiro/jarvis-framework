@@ -50,7 +50,7 @@ Regras que **substituem** qualquer trecho legado deste skill ou dos assets:
 - **Checklist Onboarding**: `$IDE/skills/jarvis-init/assets/onboarding-checklist.md`
 - **Guia de Setup**: `$IDE/skills/jarvis-init/assets/setup-guide.md`
 - **Passo "adicionar as stacks"**: `$IDE/skills/jarvis-init/assets/passo-adicionar-stacks.md` e `$IDE/skills/jarvis-init/assets/sinais-de-stack.md`
-- **Mapa de tecnologias (parte comum)**: `$IDE/skills/jarvis-init/assets/mapa-de-tecnologias.md` (usado pelo `/warm-up`, pelo passo das stacks e pelo modo `repos`)
+- **Mapa de tecnologias (parte comum)**: `$IDE/skills/jarvis-init/assets/mapa-de-tecnologias.md` (usado pelo `/warm-up`, pelo Passo 7, pelo sub-passo 9.8 das stacks, pelo Upgrade (item 9.2) e pelo modo `repos`)
 - **Passo 8 sem o CLI**: `$IDE/skills/jarvis-init/assets/rules-sync-manual.md` (fallback do `jarvis rules sync`)
 - **Upgrade (C)**: `$IDE/skills/jarvis-init/assets/upgrade.md`
 - **Modo `repos`**: `$IDE/skills/jarvis-init/assets/repos.md`
@@ -88,7 +88,7 @@ Regras que **substituem** qualquer trecho legado deste skill ou dos assets:
 │        ↓                                                    │
 │  6. VALIDAR → Context7 (obrigatório)                        │
 │        ↓                                                    │
-│  7. CRIAR → AGENTS.md                                       │
+│  7. CRIAR → mapa, AGENTS.md e CLAUDE.md (cópia)             │
 │        ↓                                                    │
 │  8. SYNC RULES → jarvis rules sync (perfil do ENV.md)       │
 │        ↓                                                    │
@@ -920,7 +920,7 @@ Deseja instalar o perfil recomendado agora?
 
 **Mapa primeiro (obrigatório, nos dois modos):** se o `CDD-MIND-MAP.md` não existe, monte-o agora pelo `assets/mapa-de-tecnologias.md` (no modo projeto, uma linha: a raiz). O `AGENTS.md` nasce depois, com o bloco de repositórios já preenchido.
 
-Se o `AGENTS.md` não existir na raiz do projeto:
+Se o `AGENTS.md` não existir na raiz do projeto (itens 1 a 7; o item 8 vale sempre):
 
 1. Detectar stack (package.json, pyproject.toml, etc.)
 2. Extrair informações do projeto
@@ -930,7 +930,7 @@ Se o `AGENTS.md` não existir na raiz do projeto:
    `> Mapa de tecnologias do projeto: [CDD-MIND-MAP.md](CDD-MIND-MAP.md) (tecnologias e papel de cada repositório, ou da raiz no modo projeto; lido pelo /warm-up).`
 6. No modo projeto (raiz com `.git`), o `AGENTS.md` (e o `CLAUDE.md`, que é cópia dele) já está no `.git/info/exclude`, gravado pelo CLI antes de o arquivo existir: **não escreva no `.gitignore`**. Avise a pessoa: "para versionar de propósito, remova a linha do `.git/info/exclude`". Se o CLI avisou que o arquivo já está versionado, **não o tire do índice aqui**: a decisão é do Upgrade (`assets/upgrade.md`).
 7. **Bloco de repositórios** (`<!-- jarvis:repos:start -->` … `<!-- jarvis:repos:end -->`, o `{REPOS_BLOCK}` do template): no **modo projeto**, remova o bloco inteiro, marcadores incluídos (o mapa tem só a raiz). No **modo workspace**, substitua `{REPOS_BLOCK}` por uma linha por repositório do `CDD-MIND-MAP.md`, no formato `- **{repo}** — {papel}; {linguagem}/{framework} ({área})`; o mapa já existe (montado no início deste passo).
-8. **`CLAUDE.md`:** crie-o com o mesmo conteúdo do `AGENTS.md`, como cópia idêntica, pela **regra de sincronia** (seção acima), em qualquer IDE. Se ele já existir com outro conteúdo (escrito à mão), mostre a diferença e pergunte antes de sobrescrever.
+8. **`CLAUDE.md` (sempre, exista ou não o `AGENTS.md`):** pela **regra de sincronia** (seção acima), em qualquer IDE, ele é cópia idêntica do `AGENTS.md`: se não existir, crie-o com o mesmo conteúdo do `AGENTS.md`; se já existir com outro conteúdo (escrito à mão), mostre a diferença e pergunte antes de sobrescrever.
 
 ### 8. Profile-Aware Rules Sync
 

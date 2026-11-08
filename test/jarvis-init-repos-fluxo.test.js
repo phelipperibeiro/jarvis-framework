@@ -65,8 +65,11 @@ test("asset do mapa: nunca apaga linha sem perguntar, nunca lê .env* e nunca gr
   assert.match(mapa, /Gravar uma linha que a pessoa não confirmou/);
 });
 
-test("asset do mapa: cita os três fluxos que o usam", () => {
+test("asset do mapa: cita os cinco fluxos que o usam", () => {
+  assert.match(mapa, /Lido por cinco fluxos:/);
   assert.match(mapa, /Passo 2 do `workflows\/warm-up\.md`/);
+  assert.match(mapa, /o Passo 7 do `SKILL\.md` \(instalação\)/);
+  assert.match(mapa, /o item 9\.2 do \[upgrade\.md\]\(upgrade\.md\)/);
   assert.match(mapa, /sub-passo 9\.8 do \[passo-adicionar-stacks\.md\]/);
   assert.match(mapa, /\[repos\.md\]\(repos\.md\)/);
 });
@@ -139,6 +142,7 @@ test("repos.md: sem repositório novo, 'Nada a atualizar.' e nenhum arquivo muda
   const p1 = passo(1, 2);
   assert.match(p1, /Nada novo, nada ausente e o `AGENTS\.md` existe: responda "Nada a atualizar\." e \*\*termine sem escrever nenhum arquivo\*\*/);
   assert.match(p1, /Sem o `AGENTS\.md`, siga o fluxo: ele é criado no item 3/);
+  assert.match(p1, /Um `CLAUDE\.md` fora de sincronia, sem repositório novo, fica para o Upgrade \(item 9\.2 do \[upgrade\.md\]\(upgrade\.md\)\)/);
 });
 
 test("repos.md (Q6): tabela com 'O que será gravado' por repositório; tirar a linha deixa o repositório fora de todos os documentos", () => {
@@ -167,7 +171,7 @@ test("repos.md (Q5 ajustada): AGENTS.md ausente é criado pelo Passo 7 com o CLA
   assert.match(p3, /\*\*`AGENTS\.md` não existe:\*\* \*\*crie-o pelo Passo 7 do `SKILL\.md`\*\*/);
   assert.match(p3, /com o bloco preenchido por todos os repositórios do mapa já confirmado\); o `CLAUDE\.md` nasce igual, pela regra de sincronia/);
   assert.match(passo(2, 3), /Se o `AGENTS\.md` não existe, a tabela avisa que ele será criado e que o `CLAUDE\.md` recebe o mesmo conteúdo \(\*\*regra de sincronia\*\* do `SKILL\.md`\)/);
-  assert.match(passo(2, 3), /um `CLAUDE\.md` existente com outro conteúdo aparece na tabela, e a confirmação vale para sobrescrevê-lo/);
+  assert.match(passo(2, 3), /\*\*Em qualquer caso\*\*, exista ou não o `AGENTS\.md`, um `CLAUDE\.md` diferente do `AGENTS\.md` \(escrito à mão\) aparece na tabela com a diferença, e só é sobrescrito com a confirmação dela/);
   assert.match(p3, /\*\*Existe com os marcadores:\*\* só acrescente as linhas novas entre eles/);
   assert.match(p3, /\*\*Existe sem os marcadores:\*\* insira o bloco, com uma linha por repositório do mapa \(já confirmado\), logo depois da linha `> Mapa de tecnologias do projeto:`; sem essa linha, no fim do arquivo/);
   assert.match(p3, /\*\*na mesma confirmação da tabela\*\* do item 2 \(não é uma pergunta a mais\)/);
@@ -176,6 +180,7 @@ test("repos.md (Q5 ajustada): AGENTS.md ausente é criado pelo Passo 7 com o CLA
 test("repos.md: o CLAUDE.md recebe sempre o mesmo conteúdo do AGENTS.md (regra de sincronia), e gravar só o AGENTS.md é proibido", () => {
   const p3 = passo(3, 4);
   assert.match(p3, /\*\*`CLAUDE\.md`:\*\* depois de gravar o `AGENTS\.md`, escreva o mesmo conteúdo no `CLAUDE\.md` \(\*\*regra de sincronia\*\* do `SKILL\.md`\): os dois ficam sempre iguais/);
+  assert.match(p3, /Um `CLAUDE\.md` diferente do `AGENTS\.md` só é sobrescrito com a confirmação da tabela do item 2, que mostrou a diferença/);
   assert.match(trecho(repos, "## Regras", null), /Gravar o `AGENTS\.md` sem gravar o mesmo no `CLAUDE\.md` \(regra de sincronia\)/);
 });
 
@@ -245,7 +250,7 @@ test("SKILL.md Passo 7: o template já traz a linha do mapa; só acrescenta se o
 test("SKILL.md Passo 7 (Q4 e Q5): mapa primeiro, nos dois modos; bloco removido no modo projeto; no workspace, uma linha por repositório do mapa", () => {
   assert.match(passo7, /\*\*Mapa primeiro \(obrigatório, nos dois modos\):\*\* se o `CDD-MIND-MAP\.md` não existe, monte-o agora pelo `assets\/mapa-de-tecnologias\.md`/);
   assert.ok(passo7.indexOf("**Mapa primeiro") < passo7.indexOf("1. Detectar stack"), "o mapa vem antes da criação do AGENTS.md");
-  const item7 = trecho(passo7, "7. **Bloco de repositórios**", "8. **`CLAUDE.md`:**");
+  const item7 = trecho(passo7, "7. **Bloco de repositórios**", "8. **`CLAUDE.md` (sempre");
   assert.match(item7, /no \*\*modo projeto\*\*, remova o bloco inteiro, marcadores incluídos/);
   assert.match(item7, /No \*\*modo workspace\*\*, substitua `\{REPOS_BLOCK\}` por uma linha por repositório do `CDD-MIND-MAP\.md`/);
   assert.match(item7, /`- \*\*\{repo\}\*\* — \{papel\}; \{linguagem\}\/\{framework\} \(\{área\}\)`/);
@@ -320,9 +325,13 @@ test("SKILL.md: a regra de sincronia (AGENTS.md fonte, CLAUDE.md cópia idêntic
   assert.match(regra, /\*\*Toda escrita no `AGENTS\.md` escreve o mesmo no `CLAUDE\.md`, na mesma ação:\*\*/);
   assert.match(regra, /`CLAUDE\.md` com conteúdo diferente do `AGENTS\.md` \(escrito à mão\): não o sobrescreva sem confirmação/);
   assert.match(regra, /`AGENTS\.md`, `CLAUDE\.md` e `CDD-MIND-MAP\.md` existem \*\*sempre\*\*, nos dois modos de trabalho/);
-  const item8 = trecho(passo7, "8. **`CLAUDE.md`:**", null);
-  assert.match(item8, /crie-o com o mesmo conteúdo do `AGENTS\.md`, como cópia idêntica, pela \*\*regra de sincronia\*\* \(seção acima\), em qualquer IDE/);
-  assert.match(item8, /Se ele já existir com outro conteúdo \(escrito à mão\), mostre a diferença e pergunte antes de sobrescrever/);
+  const item8 = trecho(passo7, "8. **`CLAUDE.md` (sempre, exista ou não o `AGENTS.md`):**", null);
+  assert.match(item8, /pela \*\*regra de sincronia\*\* \(seção acima\), em qualquer IDE, ele é cópia idêntica do `AGENTS\.md`/);
+  assert.match(item8, /se não existir, crie-o com o mesmo conteúdo do `AGENTS\.md`/);
+  assert.match(item8, /se já existir com outro conteúdo \(escrito à mão\), mostre a diferença e pergunte antes de sobrescrever/);
+  assert.match(passo7, /Se o `AGENTS\.md` não existir na raiz do projeto \(itens 1 a 7; o item 8 vale sempre\):/, "o item 8 não fica preso à condição");
+  assert.match(skill, /│ {2}7\. CRIAR → mapa, AGENTS\.md e CLAUDE\.md \(cópia\) +│/, "diagrama do fluxo");
+  assert.match(skill, /\(usado pelo `\/warm-up`, pelo Passo 7, pelo sub-passo 9\.8 das stacks, pelo Upgrade \(item 9\.2\) e pelo modo `repos`\)/);
   assert.doesNotMatch(item8, /só se a IDE for `claude`/, "a cópia não depende mais da IDE");
 });
 
@@ -341,7 +350,7 @@ test("AGENTS.md do repositório do Jarvis: a convenção da sincronia AGENTS.md/
 });
 
 test("todo ponto que escreve no AGENTS.md cita a regra de sincronia (Passo 7, 9.8, repos.md, Upgrade 9.2, warm-up)", () => {
-  assert.match(trecho(passo7, "8. **`CLAUDE.md`:**", null), /regra de sincronia/, "Passo 7");
+  assert.match(trecho(passo7, "8. **`CLAUDE.md` (sempre", null), /regra de sincronia/, "Passo 7");
   assert.match(trecho(stacks, "## 9.8 Montar o mapa de tecnologias", "## Tratamento de situações"), /regra de sincronia/, "9.8");
   assert.match(passo(3, 4), /regra de sincronia/, "repos.md item 3");
   assert.match(passo(5, 6), /regra de sincronia/, "repos.md item 5 (ausentes)");

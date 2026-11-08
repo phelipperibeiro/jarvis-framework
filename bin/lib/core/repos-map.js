@@ -68,14 +68,18 @@ export function reposOutsideMap({ workspaceDir, mode }) {
 /**
  * Pendências dos documentos gerados (#225, ajuste do usuário): `AGENTS.md` e `CDD-MIND-MAP.md` existem sempre,
  * nos dois modos, e o `CLAUDE.md` é sempre cópia idêntica do `AGENTS.md` (a fonte). Só lê; quem cria ou
- * sincroniza é o `/jarvis-init upgrade` (item 9.2), com a confirmação da pessoa. Fim de linha não conta (CRLF = LF).
+ * sincroniza é o `/jarvis-init upgrade` (item 9.2), com a confirmação da pessoa. Não contam como diferença: o fim de linha (CRLF = LF), o BOM
+ * no início e as quebras de linha no fim do arquivo. `AGENTS.md` vazio (só espaços) vale como ausente.
  * @param {string} workspaceDir pasta que contém o `$IDE/`
  * @returns {string[]} um motivo por pendência; vazio = documentos em dia
  */
 export function documentPendencies(workspaceDir) {
   const read = (name) => {
     try {
-      return readFileSync(join(workspaceDir, name), "utf-8").replace(/\r\n/g, "\n");
+      return readFileSync(join(workspaceDir, name), "utf-8")
+        .replace(/^\uFEFF/, "")
+        .replace(/\r\n/g, "\n")
+        .replace(/\n+$/, "");
     } catch {
       return null;
     }
@@ -83,7 +87,7 @@ export function documentPendencies(workspaceDir) {
   const reasons = [];
   if (!existsSync(join(workspaceDir, MAP_FILE))) reasons.push(`criar o mapa de tecnologias (${MAP_FILE})`);
   const agents = read("AGENTS.md");
-  if (agents === null) {
+  if (agents === null || agents.trim() === "") {
     reasons.push("criar o AGENTS.md (e o CLAUDE.md, cópia dele)");
   } else if (read("CLAUDE.md") !== agents) {
     reasons.push("sincronizar o CLAUDE.md com o AGENTS.md (o CLAUDE.md é sempre cópia do AGENTS.md)");

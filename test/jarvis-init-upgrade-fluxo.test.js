@@ -298,8 +298,9 @@ test("upgrade.md 9.2: no padrão não pergunta; fora do padrão avisa cada mudan
   assert.match(item92, /\*\*Tudo no padrão:\*\* siga \*\*sem perguntar\*\*/);
   assert.match(item92, /\*\*avise\*\* o que precisa ficar no padrão, listando cada mudança/);
   assert.match(item92, /`AskUserQuestion`: \*\*Ajustar agora\*\* \| \*\*Deixar como está\*\*/);
+  assert.match(item92, /a pendência volta a cada `jarvis init --upgrade` enquanto o documento não estiver no padrão/);
   assert.match(item92, /Só com \*\*Ajustar agora\*\*, ajuste o que for necessário, mostrando cada mudança/);
-  assert.match(item92, /\*\*Sem o Sim, nenhum arquivo muda\.\*\*/);
+  assert.match(item92, /\*\*Sem o Sim, nenhum arquivo muda\*\*, e a pendência volta/);
   const iAviso = item92.indexOf("**avise**");
   const iPergunta = item92.indexOf("`AskUserQuestion`");
   const iAjusta = item92.indexOf("Só com **Ajustar agora**");
@@ -325,4 +326,9 @@ test("guias: README, docs/estrutura/skills.md e AGENTS.md citam o /jarvis-init r
   assert.match(read("README.md"), /o `AGENTS\.md` e o `CDD-MIND-MAP\.md` no padrão/);
   assert.match(read("docs", "estrutura", "skills.md"), /o argumento `repos` \(`\/jarvis-init repos`\) atualiza o mapa, o bloco de repositórios do `AGENTS\.md` \(cria o `AGENTS\.md` se ainda não existir\) e as especializações/);
   assert.match(read("AGENTS.md"), /^\/jarvis-init repos +# Depois de clonar repositorios \(modo workspace\)/m);
+});
+
+test("README (#225, rodada 5): diz que o --upgrade volta a acusar enquanto o CLAUDE.md não for cópia", () => {
+  const readme = readFileSync(join(root, "README.md"), "utf-8");
+  assert.match(readme, /e o `CLAUDE\.md` é sempre cópia do `AGENTS\.md`; enquanto não for, o `--upgrade` volta a acusar\)/);
 });

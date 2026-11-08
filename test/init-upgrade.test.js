@@ -813,7 +813,7 @@ test("init --upgrade (#225): sem o mapa, o upgrade pede para criá-lo e não há
     const r = run(ws, "--upgrade", "--ide", "claude", "--yes");
     assert.equal(r.status, 0, r.stderr);
     assert.doesNotMatch(r.stdout, /jarvis-init repos/);
-    assert.match(r.stdout, /Agora rode .*\/jarvis-init upgrade.*criar o mapa de tecnologias \(CDD-MIND-MAP\.md\)/);
+    assert.match(r.stdout, /Agora rode \S*\/jarvis-init upgrade\S* na IDE: [^\n]*criar o mapa de tecnologias \(CDD-MIND-MAP\.md\)/);
   });
 });
 
@@ -821,7 +821,7 @@ test("init --upgrade (#225): AGENTS.md ausente e CLAUDE.md fora de sincronia vir
   withWorkspace({ ".claude/ENV.md": ENV_PERFIL, "CDD-MIND-MAP.md": MAPA_VAZIO }, (ws) => {
     const r = run(ws, "--upgrade", "--ide", "claude", "--yes");
     assert.equal(r.status, 0, r.stderr);
-    assert.match(r.stdout, /Agora rode .*\/jarvis-init upgrade.*criar o AGENTS\.md \(e o CLAUDE\.md, cópia dele\)/);
+    assert.match(r.stdout, /Agora rode \S*\/jarvis-init upgrade\S* na IDE: [^\n]*criar o AGENTS\.md \(e o CLAUDE\.md, cópia dele\)/);
   });
   withWorkspace(
     { ".claude/ENV.md": ENV_PERFIL, ".git/HEAD": "", "CDD-MIND-MAP.md": MAPA_VAZIO, "AGENTS.md": "# novo\n", "CLAUDE.md": "# antigo\n" },
@@ -831,6 +831,11 @@ test("init --upgrade (#225): AGENTS.md ausente e CLAUDE.md fora de sincronia vir
       assert.match(r.stdout, /sincronizar o CLAUDE\.md com o AGENTS\.md/, "modo projeto também confere a sincronia");
     }
   );
+  withWorkspace({ ".claude/ENV.md": ENV_PERFIL, "CDD-MIND-MAP.md": MAPA_VAZIO, "AGENTS.md": "# Projeto\n" }, (ws) => {
+    const r = run(ws, "--upgrade", "--ide", "claude", "--yes");
+    assert.equal(r.status, 0, r.stderr);
+    assert.match(r.stdout, /Agora rode \S*\/jarvis-init upgrade\S* na IDE: [^\n]*sincronizar o CLAUDE\.md com o AGENTS\.md/, "CLAUDE.md ausente com AGENTS.md presente");
+  });
 });
 
 test("init --upgrade (#225): WORKSPACE_REPOS preenchida não esconde o clone novo", () => {
