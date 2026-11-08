@@ -177,12 +177,12 @@ graph TD
 
 ## 8. Questões em Aberto
 
-> Tudo que for **diferente do código ou ambíguo no card** vira uma questão aqui. No mínimo 3 opções, mais a **4 — Outra**. O `/eng.light-arch` não usa Advisor: a decisão é sempre a do humano, ao revisar o documento (Passo 6 da Arquitetura).
-> **Marcação para leitura rápida:** decidida a questão, a opção escolhida ganha ✅ e "(escolhida)" no título, e as demais ganham ❌, inclusive a **4 — Outra**. A coluna "Opção escolhida" da tabela repete a escolha (`✅ {n} — {nome curto}`). Enquanto a questão estiver 🔄 Aberta, as opções ficam sem marcação e a coluna fica "—".
+> Tudo que for **diferente do código ou ambíguo no card** vira uma questão aqui. No mínimo 3 opções, mais a **4 — Outra**. O `/eng.light-arch` não usa Advisor: a decisão é sempre a do humano, ao revisar o documento (Passo 6 da Arquitetura). Sem questão em aberto, escreva "Nenhuma" e o motivo em uma frase.
+> **Marcação para leitura rápida:** enquanto a questão estiver 🔄 Aberta, a opção assumida ganha ✅ e "(assumida)" no título, e as alternativas ganham 🔄, inclusive a **4 — Outra**; a coluna "Assumido ou decidido" mostra a suposição atual (`✅ {n} — {nome curto}`). Decidida a questão, a opção escolhida ganha ✅ e "(escolhida)" no título, e as demais ganham ❌, inclusive a **4 — Outra**; a coluna passa a mostrar a decisão. Enquanto a questão estiver 🔄 Aberta, "Decisão adotada" fica "— (aguardando decisão)".
 
-| ID | Questão                      | Opção escolhida                     | Status                     |
-| -- | ----------------------------- | ------------------------------------- | --------------------------- |
-| Q1 | {resumo objetivo da questão}  | {✅ {n} — {nome curto} \| —}         | {✅ Decidida \| 🔄 Aberta} |
+| ID | Status                     | Questão                      | Quem responde  | Assumido ou decidido    |
+| -- | -------------------------- | ---------------------------- | -------------- | ----------------------- |
+| Q1 | {✅ Decidida \| 🔄 Aberta} | {resumo objetivo da questão} | {nome do usuário} | {✅ {n} — {nome curto}} |
 
 ### Q1 — {Título da questão}
 
@@ -197,16 +197,16 @@ graph TD
 
 **Opções:**
 
-**✅ 1. {Opção 1} (escolhida)**
+**✅ 1. {Opção assumida} (assumida)**
 * Como funciona: {descrição}
 * Vantagens: {vantagens}
 * Desvantagens: {desvantagens}
 
-**❌ 2. {Opção 2}** (mesmo formato)
+**🔄 2. {Alternativa}** (mesmo formato)
 
-**❌ 3. {Opção 3}** (mesmo formato)
+**🔄 3. {Alternativa}** (mesmo formato)
 
-**❌ 4. Outra**
+**🔄 4. Outra**
 * Alternativa adicional, se nenhuma das anteriores for a melhor abordagem.
 
 **Sugestão do Agente:**

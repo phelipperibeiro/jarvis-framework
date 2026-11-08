@@ -144,9 +144,9 @@ Quando perguntar:
 
 **Se o usuário não souber responder (total ou parcialmente):**
 Não bloquear. Prosseguir para A.5 com o que se sabe.
-As perguntas sem resposta viram a seção **"Perguntas em Aberto"** no topo do documento gerado em A.7 — sinalizando que, se respondidas, aumentariam a precisão do plano.
+As perguntas sem resposta viram a seção **"Perguntas em Aberto"** no topo do documento gerado em A.7 — sinalizando que, se respondidas, aumentariam a precisão do plano. Cada pergunta registra a **situação** (aberta), o que o plano **assumiu** enquanto ela não é respondida e as **alternativas** consideradas, em texto corrido, sem tabela nem emoji (regras de formato da A.7).
 
-Formato correto:
+Formato correto da pergunta feita ao usuário:
 ```
 **[Título descritivo da dúvida]**
 
@@ -155,6 +155,14 @@ Formato correto:
 **[Outro título descritivo diferente do anterior]**
 
 [Texto da segunda pergunta]
+```
+
+Formato de cada pergunta sem resposta na seção "Perguntas em Aberto" do documento gerado em A.7 (texto corrido, sem tabela nem emoji):
+```
+**[Título descritivo da dúvida]**
+[Texto da pergunta]
+Situação: aberta
+Assumido no plano: [o que o plano de testes presumiu]. Alternativas consideradas: [alternativa 1]; [alternativa 2].
 ```
 
 Exemplos do tipo certo de pergunta:

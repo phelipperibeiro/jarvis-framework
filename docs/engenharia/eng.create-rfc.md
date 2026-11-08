@@ -34,7 +34,7 @@ Segue os 5 passos do RFC-Playbook:
 |---|---|
 | 0 e 0.5 | Define se é novo ou iteração e aplica **versionamento** SemVer (campo `Versão`, regras de `eng.bump-rules.md`) |
 | 0.6 | Busca documentação relacionada em `$JARVIS_DOCS` (PRD, ARD, RFCs) e, se configurado, o implementado no central docs |
-| 1 | **Criação:** preenche o template com `status: Draft`, dono e revisores. Contexto e problema (sem solução), motivação, escopo em discussão, pontos de atenção e riscos com responsável |
+| 1 | **Criação:** preenche o template com `status: Draft`, dono e revisores. Contexto e problema (sem solução), motivação, escopo em discussão, pontos de atenção, riscos com responsável e questões em aberto (seção 9), com status, quem responde e o assumido ou decidido; enquanto abertas, a opção assumida fica com ✅ e as alternativas com 🔄, e ao decidir a escolhida fica com ✅ e as demais com ❌ |
 | 2 | **Divulgação obrigatória:** gera a mensagem para Slack ou equivalente, com link, data limite para comentários (por exemplo D+5) e lista de revisores. Um RFC que ninguém sabe que existe não vale |
 | 3 | **Discussão assíncrona:** os comentários ficam no RFC, não em chats soltos, e toda opinião precisa de argumento técnico |
 | 4 | **Decisão formal:** `In Review` quando PRD/FRD existem e `Ready for Decision` ao marcar a decisão, com o checklist de revisão técnica e rastreabilidade (`related_prd`, `related_frd`, `related_ard`) |

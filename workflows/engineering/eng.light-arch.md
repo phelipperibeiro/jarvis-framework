@@ -77,7 +77,7 @@ Se ajudar a construir um diagrama MERMAID, sinta-se livre para fazê-lo.
 
 4. Se, em algum ponto, você tiver perguntas ou se encontrar algo que contradiz o que entendeu anteriormente, peça esclarecimento ao humano.
 
-5. Uma vez que tenha um bom entendimento do que está sendo construído, preencha as seções 2 a 8 do `light-arch.md` (análise técnica, decisões, dependências, riscos, diagrama e questões em aberto, com a marcação ✅/❌ da seção 8) e aponte o arquivo ao usuário. Itere nele até estar pronto — cada rodada de ajuste soma 1 em "Ajustes antes da aprovação" no cabeçalho. PAUSE para aguardar a aprovação do humano.
+5. Uma vez que tenha um bom entendimento do que está sendo construído, preencha as seções 2 a 8 do `light-arch.md` (análise técnica, decisões, dependências, riscos, diagrama e questões em aberto, com a marcação da seção 8: ✅ na opção assumida e 🔄 nas alternativas enquanto aberta; ✅ na escolhida e ❌ nas demais ao decidir) e aponte o arquivo ao usuário. Itere nele até estar pronto — cada rodada de ajuste soma 1 em "Ajustes antes da aprovação" no cabeçalho. PAUSE para aguardar a aprovação do humano.
 
 6. Quando o humano concordar com o `light-arch.md` (`Status: ✅ Aprovado` no cabeçalho), você pode proceder ao próximo passo, salvando os detalhes da estrutura arquitetural no card do $TASK_MANAGER como um comentário ao card original, a partir do conteúdo do `light-arch.md`, pelo `/eng-global-task-comment`, que mostra o texto e pergunta antes de enviar (regra de ouro, `eng.integrations-rules.md`); sem o Sim, o texto fica só na sessão.
 

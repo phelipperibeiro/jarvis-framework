@@ -33,7 +33,7 @@ Entende o que precisa ser construído, tira as dúvidas com você e propõe uma 
 **2. Arquitetura** (desenhar)
 
 - Lê o código relevante e os docs técnicos do projeto
-- Preenche o resto do `light-arch.md`: componentes afetados e dependências, padrões mantidos ou introduzidos, decisões (com opções consideradas), riscos, considerações técnicas, questões em aberto (cada uma com a sugestão e a decisão, marcadas ✅/❌) e lista dos principais arquivos a editar ou criar. Pode incluir um diagrama Mermaid
+- Preenche o resto do `light-arch.md`: componentes afetados e dependências, padrões mantidos ou introduzidos, decisões (com opções consideradas), riscos, considerações técnicas, questões em aberto (cada uma com a sugestão e a decisão; enquanto aberta, a opção assumida fica com ✅ e as alternativas com 🔄, e ao decidir a escolhida fica com ✅ e as demais com ❌) e lista dos principais arquivos a editar ou criar. Pode incluir um diagrama Mermaid
 - Aponta o arquivo, itera até você aprovar (`Status: ✅ Aprovado` no cabeçalho) e, só então, salva o resultado como comentário no card a partir do arquivo, só depois de mostrar o texto e você dizer Sim (regra de ouro)
 
 ## Regras que importam

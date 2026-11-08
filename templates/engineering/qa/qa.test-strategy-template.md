@@ -2,12 +2,14 @@
 # Estratégia de Testes — {feature}
 
 ## Perguntas em Aberto
-(incluir apenas se houver perguntas do A.4 sem resposta)
+(incluir apenas se houver perguntas do A.4 sem resposta; sem perguntas em aberto, omitir a seção. Texto corrido, sem tabela nem emoji, como manda a A.7. A situação é sempre "aberta" aqui: a pergunta respondida sai da seção e o cenário correspondente é ajustado)
 Estas dúvidas não foram respondidas antes da geração deste plano.
 Se respondidas, os cenários abaixo podem ser refinados ou expandidos.
 
 **{Título da pergunta}**
 {texto da pergunta}
+Situação: aberta
+Assumido no plano: {o que o plano de testes presumiu enquanto a pergunta não é respondida}. Alternativas consideradas: {alternativa 1}; {alternativa 2}.
 
 ---
 
