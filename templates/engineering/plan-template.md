@@ -240,7 +240,7 @@ FASE 1
 
 ### Decisões Pendentes
 
-> Sem decisões pendentes, escreva "Nenhuma" e o motivo em uma frase. Enquanto aberta, a coluna "Assumido ou decidido" lista a opção assumida (✅) e as alternativas (🔄); decidida, a escolhida (✅) e as demais (❌).
+> Sem decisões pendentes, escreva "Nenhuma" e o motivo em uma frase. Enquanto aberta, a coluna "Assumido ou decidido" lista a opção assumida (✅) e as alternativas (🔄); decidida, a escolhida (✅) e as demais (❌). Decisão que veio do `architecture.md` usa o mesmo ID da seção 8; decisão nova entra primeiro na seção 8 e volta aqui com o ID dela.
 
 | ID | Status | Questão | Quem responde | Assumido ou decidido |
 | -- | ------ | ------- | ------------- | -------------------- |

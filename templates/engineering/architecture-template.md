@@ -14,8 +14,8 @@
 > **Ajustes antes da aprovação:** {0} (o `eng.start` soma 1 a cada "Ajustar o documento"; o `eng.pre-pr` copia o número para o PR Brief)
 
 > ⚠️ **Atenção:** {o que exige atenção e por quê}
->
-> **Como usar o alerta:** use este formato só para o que o leitor não pode deixar passar: risco, bloqueio, divergência, dado sensível ou ação irreversível. Texto comum continua sem ícone, para o alerta não perder a força. Os alertas-modelo das seções 5 e 6.1 mostram o uso; apague os que não se aplicam.
+
+> **Como usar o alerta:** use o formato acima só para o que o leitor não pode deixar passar: risco, bloqueio, divergência, dado sensível ou ação irreversível. Texto comum continua sem ícone, para o alerta não perder a força. Os alertas-modelo das seções 5, 6.1, 6.5.2 e 6.5.3 mostram o uso. Ao preencher, apague este alerta, os alertas-modelo que não se aplicam e esta nota.
 
 ---
 
@@ -276,7 +276,7 @@ graph TD
 > Tudo que for **diferente do código ou ambíguo no card** vira uma questão aqui, detalhada a ponto de outro agente entendê-la sem reconstruir a análise. No mínimo 3 opções, mais a **4 — Outra**.
 > **Com Advisor** (cabeçalho), a sugestão do Advisor prevalece e é a decisão adotada; o agente principal não a substitui nem contesta. **Sem Advisor**, "Sugestão do Sub-Agent (Advisor)" e "Divergência" ficam "N/A (Advisor não utilizado)", a regra em destaque é omitida e a decisão é a do usuário ao revisar o documento.
 > Questão levantada depois do `eng.start` (consulta por exceção) entra aqui, numerada em sequência, marcada "levantada no `eng.plan`" ou "no `eng.work`". Sem questão em aberto, escreva "Nenhuma" e o motivo em uma frase.
-> **Marcação para leitura rápida:** enquanto a questão estiver 🔄 Aberta, a opção assumida ganha ✅ e "(assumida)" no título, e as alternativas ganham 🔄, inclusive a **4 — Outra**; a coluna "Assumido ou decidido" mostra a suposição atual (`✅ {n} — {nome curto}`). Decidida a questão, a opção escolhida ganha ✅ e "(escolhida)" no título, e as demais ganham ❌, inclusive a **4 — Outra**; a coluna passa a mostrar a decisão.
+> **Marcação para leitura rápida:** enquanto a questão estiver 🔄 Aberta, a opção assumida ganha ✅ e "(assumida)" no título, e as alternativas ganham 🔄, inclusive a **4 — Outra**; a coluna "Assumido ou decidido" mostra a suposição atual (`✅ {n} — {nome curto}`). Decidida a questão, a opção escolhida ganha ✅ e "(escolhida)" no título, e as demais ganham ❌, inclusive a **4 — Outra**; a coluna passa a mostrar a decisão. Enquanto a questão estiver 🔄 Aberta, "Decisão adotada" fica "— (aguardando decisão)".
 
 | ID | Status                     | Questão                      | Quem responde                | Assumido ou decidido         | Deadline    |
 | -- | -------------------------- | ---------------------------- | ---------------------------- | ---------------------------- | ----------- |
@@ -296,7 +296,7 @@ graph TD
 
 **Opções:**
 
-**✅ 1. {Opção assumida} (assumida)** _(decidida a questão: "(escolhida)" e ❌ nas demais)_
+**✅ 1. {Opção assumida} (assumida)**
 * Como funciona: {descrição}
 * Vantagens: {vantagens}
 * Desvantagens: {desvantagens}

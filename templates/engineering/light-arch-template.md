@@ -178,7 +178,7 @@ graph TD
 ## 8. Questões em Aberto
 
 > Tudo que for **diferente do código ou ambíguo no card** vira uma questão aqui. No mínimo 3 opções, mais a **4 — Outra**. O `/eng.light-arch` não usa Advisor: a decisão é sempre a do humano, ao revisar o documento (Passo 6 da Arquitetura). Sem questão em aberto, escreva "Nenhuma" e o motivo em uma frase.
-> **Marcação para leitura rápida:** enquanto a questão estiver 🔄 Aberta, a opção assumida ganha ✅ e "(assumida)" no título, e as alternativas ganham 🔄, inclusive a **4 — Outra**; a coluna "Assumido ou decidido" mostra a suposição atual (`✅ {n} — {nome curto}`). Decidida a questão, a opção escolhida ganha ✅ e "(escolhida)" no título, e as demais ganham ❌, inclusive a **4 — Outra**; a coluna passa a mostrar a decisão.
+> **Marcação para leitura rápida:** enquanto a questão estiver 🔄 Aberta, a opção assumida ganha ✅ e "(assumida)" no título, e as alternativas ganham 🔄, inclusive a **4 — Outra**; a coluna "Assumido ou decidido" mostra a suposição atual (`✅ {n} — {nome curto}`). Decidida a questão, a opção escolhida ganha ✅ e "(escolhida)" no título, e as demais ganham ❌, inclusive a **4 — Outra**; a coluna passa a mostrar a decisão. Enquanto a questão estiver 🔄 Aberta, "Decisão adotada" fica "— (aguardando decisão)".
 
 | ID | Status                     | Questão                      | Quem responde  | Assumido ou decidido    |
 | -- | -------------------------- | ---------------------------- | -------------- | ----------------------- |
@@ -197,7 +197,7 @@ graph TD
 
 **Opções:**
 
-**✅ 1. {Opção assumida} (assumida)** _(decidida a questão: "(escolhida)" e ❌ nas demais)_
+**✅ 1. {Opção assumida} (assumida)**
 * Como funciona: {descrição}
 * Vantagens: {vantagens}
 * Desvantagens: {desvantagens}

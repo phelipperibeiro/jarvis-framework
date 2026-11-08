@@ -15,8 +15,8 @@ reviewers: {lista de revisores}
 # {id}: {name}
 
 > ⚠️ **Atenção:** {o que exige atenção e por quê}
->
-> **Como usar o alerta:** use este formato só para o que o leitor não pode deixar passar: risco, bloqueio, divergência, dado sensível ou ação irreversível. Texto comum continua sem ícone, para o alerta não perder a força. Os alertas-modelo das seções 4.1, 7.2 e 10 mostram o uso; apague os que não se aplicam.
+
+> **Como usar o alerta:** use o formato acima só para o que o leitor não pode deixar passar: risco, bloqueio, divergência, dado sensível ou ação irreversível. Texto comum continua sem ícone, para o alerta não perder a força. Os alertas-modelo das seções 4.1, 7.2 e 10 mostram o uso. Ao preencher, apague este alerta, os alertas-modelo que não se aplicam e esta nota.
 
 ## 1. Contexto da História
 
@@ -507,7 +507,7 @@ TIMEOUT_MS=5000
 
 | ID | Status | Questão | Quem responde | Assumido ou decidido |
 | -- | ------ | ------- | ------------- | -------------------- |
-| Q1 | {✅ Decidida \| 🔄 Aberta} | {resumo da questão} | {nome} | {suposição atual ou decisão} |
+| Q1 | {✅ Decidida \| 🔄 Aberta} | {resumo da questão} | {nome} | {✅ {n} — {suposição atual ou decisão, em poucas palavras}} |
 
 #### Q1 — {Título da questão}
 

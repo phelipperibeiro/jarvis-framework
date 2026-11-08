@@ -52,7 +52,7 @@ Questões levantadas no `architecture.md` desta issue e a sugestão do Advisor (
 - **Status:** ✅ Decidida
 - **Contexto:** {...}
 - **Arquivos envolvidos:** {...}
-- **Opções:** ✅ {N} — {escolhida, a sugestão do Advisor} · ❌ {demais opções} · ❌ 4 — Outra
+- **Opções:** ✅ {N} — {escolhida, a sugestão do Advisor} · ❌ {demais opções, inclusive a 4 — Outra, se não for a escolhida}
 - **Sugestão do agente principal:** {N}
 - **Sugestão do Advisor (decisão adotada):** **{N}**
 - **Divergência:** {motivo técnico, ou "sem divergência"}
