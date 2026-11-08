@@ -64,7 +64,7 @@ bin/
 
 ## Sync (`sync-engine`)
 
-Pastas sincronizadas (`SYNC_DIRS`): `agents`, `skills`, `workflows`, `templates`, `rules`, `scripts` (se existir).
+Pastas sincronizadas (`SYNC_DIRS`): `agents`, `skills`, `workflows`, `templates`, `rules`, `rules-on-demand`.
 
 Arquivos de raiz (`SYNC_ROOT_FILES`): `taxonomy.md`, `AGENTS.md`, `members.md`.
 
