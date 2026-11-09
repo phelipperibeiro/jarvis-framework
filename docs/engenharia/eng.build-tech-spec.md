@@ -16,13 +16,13 @@ Tem dois modos: transforma um épico ou uma história do board em uma **Tech Spe
 ## Quando usar
 
 - Antes de implementar uma história ou épico que precisa de especificação técnica detalhada (Delivery Spec)
-- Quando o time quer subtarefas bem definidas para distribuir o trabalho (Delivery Spec)
+- Quando o time quer subtarefas bem definidas para distribuir o trabalho, em resumo ou como passo a passo para quem executa sem perguntar (Delivery Spec)
+- Quando a história já tem Tech Spec e falta só gerar as subtarefas (Delivery Spec, atalho da Fase 1.1)
 - Quando um RFC ou ARD já decidiu o rumo e falta o documento que fixa contratos, convenções e fases (Reference Spec)
 
 ## Quando **não** usar
 
 - Você quer o fluxo enxuto de planejamento de uma tarefa → [`eng.start`](./eng.start.md)
-- Só quer detalhar as fatias de uma Tech Spec que já existe → [`eng.breakdown-subtasks`](./eng.breakdown-subtasks.md)
 - A decisão ainda está em discussão → [`eng.create-rfc`](./eng.create-rfc.md)
 - Você vai desenhar a arquitetura → [`eng.create-ard`](./eng.create-ard.md)
 
@@ -39,7 +39,7 @@ Entendimento do card, validação de necessidade de RFC (8 critérios), investig
 
 **Delivery Spec: história → Tech Spec de implementação**
 
-Entendimento do card, validação de RFC, investigação do codebase, **avaliação de complexidade**, proposta arquitetural, quebra em subtarefas, riscos e considerações, criação do `tech-spec.md`, anexo opcional da tech spec na issue (só com board, depois da aprovação e da pergunta), criação das subtarefas só no Jira, pela `acli`, depois da pergunta (em GitHub/GitLab, sem a CLI ou sem o Sim, um template para você criar) e validação final.
+Entendimento do card (se a história já tem `tech-spec.md`, você pode só gerar as subtarefas dela, indo direto para a criação das subtarefas), validação de RFC, investigação do codebase, **avaliação de complexidade**, proposta arquitetural, quebra em subtarefas, riscos e considerações, criação do `tech-spec.md`, anexo opcional da tech spec na issue (só com board, depois da aprovação e da pergunta), escolha do nível de detalhe das subtarefas (resumo ou passo a passo, gravadas em `subtarefas.md` na sessão), criação das subtarefas só no Jira, pela `acli`, depois da pergunta (em GitHub/GitLab, sem a CLI ou sem o Sim, um template para você criar) e validação final.
 
 **Reference Spec**
 
@@ -51,12 +51,14 @@ Triagem (escopo, áreas e se há RFC ou ARD de origem), checagem de RFC (sem ori
 - Toda decisão tem justificativa; no Delivery Spec, com pelo menos duas alternativas consideradas
 - Toda Tech Spec documenta riscos com mitigação
 - No Delivery Spec, subtarefas são **fatias verticais completas** (endpoint inteiro, modal inteiro, tela inteira) e nunca fatias horizontais (só enum, só repository, só DTO)
+- O título de cada subtarefa começa com o prefixo da stack predominante: `[BACKEND]`, `[FRONTEND]`, `[DATA]`, `[QA]`, `[INFRA]` ou `[DOCS]`
+- Testes unitários ficam dentro da própria subtarefa; `[QA]` é só para E2E que cruza backend e frontend (e `[QA-BACKEND]`/`[QA-FRONTEND]` para validações que cruzam fatias do mesmo lado)
 - No Reference Spec, cada decisão aponta a origem (RFC, ARD ou "resolvida aqui"), para que uma decisão nova não passe escondida
 - **Links clicáveis:** requisitos, documentos e código citados na spec viram links relativos ao arquivo (`rules-on-demand/doc-links-rules.md`)
 
 ## Próximo passo típico
 
-- **Delivery Spec:** [`eng.start`](./eng.start.md) em cada subtarefa. Se as fatias forem para pessoas diferentes ou para quem precisa de um passo a passo (ex.: time com juniores), rode antes o [`eng.breakdown-subtasks`](./eng.breakdown-subtasks.md): ele não gera a spec, só detalha cada fatia.
+- **Delivery Spec:** [`eng.start`](./eng.start.md) em cada subtarefa. Se as fatias forem para pessoas diferentes ou para quem precisa de um passo a passo (ex.: time com juniores), escolha "Passo a passo para quem executa sem perguntar" na criação das subtarefas.
 - **Reference Spec:** revisar a spec com os revisores e mudar o status para `approved`; as implementações que a seguirem citam o `SPEC-###`.
 
 ## Exemplos (bom e ruim por princípio)

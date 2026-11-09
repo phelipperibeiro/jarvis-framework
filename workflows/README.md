@@ -31,7 +31,6 @@ workflows/
     ├── eng.create-ard.md         # Criar ARD
     ├── eng.create-rfc.md         # Criar RFC
     ├── eng.build-tech-spec.md    # Criar Tech Spec (Delivery Spec ou Reference Spec)
-    ├── eng.breakdown-subtasks.md # Quebrar em subtarefas
     ├── eng.light-arch.md         # Design arquitetural leve
     ├── eng.rpa.robot.md      # Criar robô RPA do zero ao PR (skill técnica)
     ├── frontend/
@@ -83,7 +82,6 @@ workflows/
 | `eng.create-ard.md` | Criar ARD (Architecture Review Document) |
 | `eng.create-rfc.md` | Criar RFC (Request For Comments) |
 | `eng.build-tech-spec.md` | Criar especificação técnica (Delivery Spec ou Reference Spec) |
-| `eng.breakdown-subtasks.md` | Quebrar tech spec em subtarefas |
 | `eng.light-arch.md` | Design arquitetural leve |
 | `eng.rpa.robot.md` | Criar robô novo ou manter existente — análise, scaffolding, impl, docs, PR |
 | `eng.frontend-component.md` | Criar ou refatorar componente frontend com qualidade (design system vs remote, a11y, testes) |
