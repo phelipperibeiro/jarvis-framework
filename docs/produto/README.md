@@ -52,8 +52,6 @@ O `discovery` vem **antes** do topo: é um rascunho para decidir se vale especif
 | `/prod.spec.epic`      | [prod.spec.epic.md](./prod.spec.epic.md)           | Precisa agrupar várias histórias sob um tema  |
 | `/prod.spec.issue`     | [prod.spec.issue.md](./prod.spec.issue.md)         | Precisa da unidade de trabalho da sprint      |
 
-Relacionado (roadmap): workflow `prod.roadmap.preview` — visão de planejamento; não substitui as specs acima.
-
 ## Como o Jarvis te ajuda na prática
 
 1. **`ENV.md`** — define pastas (`PROD_DOCS`, `PROD_FLOWS`, `PROD_RULES`, …). Sem isso, rode `/jarvis-init`.

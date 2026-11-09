@@ -20,9 +20,9 @@ jarvis-framework/
 │   └── product/                  # 2 de produto (prod.pm-checker, prod.discovery-interviewer)
 ├── workflows/                    # comandos slash (em $IDE/commands/ ou workflows/, sem subpastas)
 │   ├── engineering/              # 13 + frontend/ (3) e qa/ (3)
-│   ├── product/                  # 10 (prod.spec.*, prod.roadmap.preview)
+│   ├── product/                  # 9 (prod.spec.*)
 │   └── warm-up.md, taxonomy.md
-├── skills/                       # 29 skills, todos com metadata.area:
+├── skills/                       # 28 skills, todos com metadata.area:
 │                                 # bases: eng-backend, eng-frontend, eng-qa, eng-data, eng-automation,
 │                                 #   eng-platform, eng-ai (+ especializações: eng-backend-*, eng-qa-planner)
 │                                 # eng-global-branch (nome da branch, forkável), eng-global-pr,

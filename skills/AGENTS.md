@@ -65,8 +65,6 @@ skills/
 │   └── SKILL.md
 ├── product-specs-update/ # Sincroniza especificações de produto
 │   └── SKILL.md
-├── product-roadmap-report/ # Relatório de status do roadmap
-│   └── SKILL.md
 ├── eng-automation/          # Base neutra de automação (RPA, web, APIs, extração, ingestão) + especializações em AUTOMATION_SPECIALIZATIONS
 │   ├── SKILL.md
 │   └── references/
