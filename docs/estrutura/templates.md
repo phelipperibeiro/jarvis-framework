@@ -17,7 +17,7 @@ templates/
     ├── RFC-template.md
     ├── RFC-Playbook.md
     ├── tech-spec-template.md
-    ├── tech-spec-delivery-template.md
+    ├── tech-spec-delivery-template.md  # formatos de entrega do Delivery Spec (subtarefa em resumo ou passo a passo)
     ├── ref-spec-template.md     # Reference Spec do eng.build-tech-spec
     ├── architecture-template.md
     ├── light-arch-template.md   # desenho leve do eng.light-arch (sem branch nem PR)

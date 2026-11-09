@@ -25,7 +25,7 @@ templates/
 │   ├── RFC-template.md             # Request For Comments
 │   ├── RFC-Playbook.md             # Playbook para RFCs
 │   ├── tech-spec-template.md       # Especificacao tecnica
-│   ├── tech-spec-delivery-template.md # Formatos de entrega da tech spec (Jira, mensagem final, fluxo)
+│   ├── tech-spec-delivery-template.md # Formatos de entrega da tech spec (descrição da subtarefa em resumo ou passo a passo, mensagem final, fluxo)
 │   ├── ref-spec-template.md        # Especificação técnica de referência (Reference Spec do eng.build-tech-spec)
 │   ├── plan-template.md            # Plano de execucao
 │   ├── PR-template.md              # Pull Request
@@ -123,7 +123,7 @@ Use chaves `{...}` para indicar campos a serem preenchidos:
 | `ARD-template.md` | Revisao de arquitetura | `/eng.create-ard` |
 | `RFC-template.md` | Proposta de mudanca | `/eng.create-rfc` |
 | `tech-spec-template.md` | Especificação técnica de um card (Delivery Spec) | `/eng.build-tech-spec` |
-| `tech-spec-delivery-template.md` | Formatos de entrega da tech spec | `/eng.build-tech-spec` |
+| `tech-spec-delivery-template.md` | Formatos de entrega da tech spec (subtarefa em resumo ou passo a passo) | `/eng.build-tech-spec` |
 | `ref-spec-template.md` | Especificação técnica de referência | `/eng.build-tech-spec` (Reference Spec) |
 | `plan-template.md` | Plano de execucao | `/eng.plan` |
 | `PR-template.md` | Pull Request | `/eng.pr` |
