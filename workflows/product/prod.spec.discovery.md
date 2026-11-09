@@ -29,7 +29,7 @@ Investiga uma ideia crua com **poucas perguntas certas** e grava um **rascunho**
 |-------|-------|----------|
 | Passo 1 — Ler em silêncio | `prod.discovery-interviewer` (agente) | Sempre — a postura da entrevista |
 | Passo 1 — Ler em silêncio | `/jarvis-docs-central` | Se `CENTRAL_DOCS_STORAGE` estiver configurado (o que já foi implementado) |
-| Passo 1 — Ler em silêncio | `/eng-backend-arch-c4` | Só com a confirmação do usuário; o retorno é suposição a validar |
+| Passo 1 — Ler em silêncio | `/eng-global-arch-c4` | Só com a confirmação do usuário; o retorno é suposição a validar |
 | Passo 1 — Ler em silêncio | `/eng-platform` + `PLATFORM_SPECIALIZATIONS` | Só com a confirmação do usuário; o retorno é suposição a validar |
 
 ## Passo 0 — Entrada

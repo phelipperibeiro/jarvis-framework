@@ -310,8 +310,11 @@ test("syncAssets: instalação antiga é limpa (claude, windsurf e kiro) pelo OB
       "commands/eng.review.md",
       // eng.docs removido (#246): coberto pela oferta de documentação do eng.work
       "commands/eng.docs.md",
+      // eng.create-ard-from-code fundido no eng.create-ard e o C4 global (#247)
+      "commands/eng.create-ard-from-code.md",
+      "skills/eng-backend-arch-c4/SKILL.md", // some com a entrada de pasta
     ],
-    windsurf: ["workflows/AGENTS.md", "workflows/README.md", "workflows/all-tools.md", "workflows/eng.review.md", "workflows/eng.docs.md"],
+    windsurf: ["workflows/AGENTS.md", "workflows/README.md", "workflows/all-tools.md", "workflows/eng.review.md", "workflows/eng.docs.md", "workflows/eng.create-ard-from-code.md"],
     kiro: [
       "steering/AGENTS.md",
       "steering/README.md",
@@ -322,6 +325,8 @@ test("syncAssets: instalação antiga é limpa (claude, windsurf e kiro) pelo OB
       "steering/eng.rpa-rules.md",
       "steering/eng.review.md", // eng.review consolidado no eng.pre-pr (#245)
       "steering/eng.docs.md", // eng.docs removido (#246)
+      "steering/eng.create-ard-from-code.md", // fundido no eng.create-ard (#247)
+      "steering/skills/skill-eng-backend-arch-c4.md", // C4 virou global (#247)
     ],
   };
   for (const [ide, arquivos] of Object.entries(antigos)) {
@@ -337,6 +342,12 @@ test("syncAssets: instalação antiga é limpa (claude, windsurf e kiro) pelo OB
         assert.ok(
           !existsSync(join(target, `.${ide}/${arquivo}`)),
           `${ide}: ${arquivo} deveria ter sido removido`
+        );
+      }
+      if (ide === "claude") {
+        assert.ok(
+          !existsSync(join(target, ".claude/skills/eng-backend-arch-c4")),
+          "claude: a pasta skills/eng-backend-arch-c4 deveria ter sido removida inteira"
         );
       }
       assert.ok(

@@ -1,6 +1,6 @@
 # Atualização de Diagramas e ADRs (C4)
 
-> Parte do skill `eng-backend-arch-c4`. Leia este arquivo quando já existirem diagramas em `$ENG_DOCS/c4/` ou a mudança pedir ADR.
+> Parte do skill `eng-global-arch-c4`. Leia este arquivo quando já existirem diagramas em `$ENG_DOCS/c4/` ou a mudança pedir ADR.
 
 ## Fluxo de Atualização
 

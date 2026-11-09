@@ -14,7 +14,7 @@ A pasta `skills/` contem **playbooks executaveis** que sao a fonte de verdade op
 
 ```
 skills/
-├── eng-backend-arch-c4/          # Diagramas C4
+├── eng-global-arch-c4/          # Diagramas C4 (global: usado por eng.create-ard, prod.spec.discovery, eng-global-docs-write)
 │   ├── SKILL.md
 │   ├── assets/
 │   └── references/
@@ -244,7 +244,7 @@ Skills são invocados de formas diferentes dependendo da IDE:
 | `eng.start` (nome da branch), Gates 0.2/0.3 | `eng-global-branch` |
 | `jarvis docs sync` | `jarvis-docs-central` |
 | `jarvis docs publish` | `jarvis-docs-central` |
-| Arquitetura C4 | `eng-backend-arch-c4` |
+| Arquitetura C4 | `eng-global-arch-c4` |
 | Listar especializações de stack (instaladas e registradas) | `jarvis-list-specializations` |
 | Criar uma especialização de stack (backend ou frontend) a partir do código do projeto | `jarvis-create-specialization` |
 | Ajustar um comando do core a uma empresa sem editar o core (fork para `$IDE/overlays/{COMPANY_PROFILE}/`), listar, atualizar ou remover forks | `jarvis-fork` |
@@ -316,7 +316,7 @@ Link para docs existentes?         → references/
 
 ### Skill grande com temas separaveis: roteador + references/
 
-O corpo do `SKILL.md` e carregado inteiro ao invocar a skill. Quando a skill tem **3 ou mais temas que se usam isoladamente** (por exemplo guards, testes, troubleshooting), mantenha no `SKILL.md` so o que vale sempre (objetivo, quando usar, padroes criticos, arvore de decisao, regras, checklist, a tabela de skills invocados) e uma tabela "Referencias" (Tema | Quando ler | Arquivo); cada tema vai para `references/{n}-{tema}.md`. Modelo: `skills/eng-backend/`. Ja seguem o modelo: `eng-backend-nestjs`, `eng-backend-arch-c4`, `eng-automation`, `eng-platform`, `eng-qa`, `eng-ai`, `eng-data` e `eng-frontend`.
+O corpo do `SKILL.md` e carregado inteiro ao invocar a skill. Quando a skill tem **3 ou mais temas que se usam isoladamente** (por exemplo guards, testes, troubleshooting), mantenha no `SKILL.md` so o que vale sempre (objetivo, quando usar, padroes criticos, arvore de decisao, regras, checklist, a tabela de skills invocados) e uma tabela "Referencias" (Tema | Quando ler | Arquivo); cada tema vai para `references/{n}-{tema}.md`. Modelo: `skills/eng-backend/`. Ja seguem o modelo: `eng-backend-nestjs`, `eng-global-arch-c4`, `eng-automation`, `eng-platform`, `eng-qa`, `eng-ai`, `eng-data` e `eng-frontend`.
 
 Nao converta procedimento sequencial (passo 1, 2, 3 que se le de ponta a ponta) nem skill pequena (menos de ~8 KB): nao ha tema para pular, so mais arquivos para ler.
 

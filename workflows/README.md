@@ -29,7 +29,6 @@ workflows/
     ├── eng.pr.md                 # Criação de PR
     ├── eng.debug.md              # Debug: investiga um bug ou varre um escopo
     ├── eng.create-ard.md         # Criar ARD
-    ├── eng.create-ard-from-code.md
     ├── eng.create-rfc.md         # Criar RFC
     ├── eng.build-tech-spec.md    # Criar Tech Spec (Delivery Spec ou Reference Spec)
     ├── eng.breakdown-subtasks.md # Quebrar em subtarefas
@@ -82,7 +81,6 @@ workflows/
 | `eng.pr.md` | Push e Pull Request, depois da pergunta (regra de ouro) |
 | `eng.debug.md` | Investiga um bug ou varre um escopo atrás de problemas |
 | `eng.create-ard.md` | Criar ARD (Architecture Review Document) |
-| `eng.create-ard-from-code.md` | Criar ARD a partir do código |
 | `eng.create-rfc.md` | Criar RFC (Request For Comments) |
 | `eng.build-tech-spec.md` | Criar especificação técnica (Delivery Spec ou Reference Spec) |
 | `eng.breakdown-subtasks.md` | Quebrar tech spec em subtarefas |

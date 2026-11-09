@@ -1,5 +1,5 @@
 ---
-name: eng-backend-arch-c4
+name: eng-global-arch-c4
 description: Cria e mantém documentação de arquitetura usando C4 Model. Use quando precisar documentar sistemas com diagramas de Contexto, Container, Componente e Código.
 argument-hint: "[nivel: context|container|component|code] [sistema-opcional]"
 disable-model-invocation: false
@@ -7,8 +7,7 @@ allowed-tools: Read Write Edit Grep Glob Bash
 metadata:
   author: jarvis-team
   version: "1.0"
-  area: backend
-  stack: arch-c4
+  area: global
 ---
 
 # Arch C4 - Documentação de Arquitetura
@@ -32,10 +31,10 @@ Criar e manter documentação de arquitetura usando os 4 níveis do C4:
 **Exemplos de uso:**
 
 ```
-/eng-backend-arch-c4 context                    # Criar/Atualizar diagrama de contexto
-/eng-backend-arch-c4 container                  # Criar/Atualizar diagrama de containers
-/eng-backend-arch-c4 component api-backend      # Detalhar componentes de um container
-/eng-backend-arch-c4 code user-service          # Diagrama de código (raro)
+/eng-global-arch-c4 context                    # Criar/Atualizar diagrama de contexto
+/eng-global-arch-c4 container                  # Criar/Atualizar diagrama de containers
+/eng-global-arch-c4 component api-backend      # Detalhar componentes de um container
+/eng-global-arch-c4 code user-service          # Diagrama de código (raro)
 ```
 
 ## Recursos
@@ -48,10 +47,10 @@ Criar e manter documentação de arquitetura usando os 4 níveis do C4:
 
 | Nível | Arquivo |
 |-------|---------|
-| Context | `$IDE/skills/eng-backend-arch-c4/assets/example-context.md` |
-| Container | `$IDE/skills/eng-backend-arch-c4/assets/example-container.md` |
-| Component | `$IDE/skills/eng-backend-arch-c4/assets/example-component.md` |
-| Code | `$IDE/skills/eng-backend-arch-c4/assets/example-code.md` |
+| Context | `$IDE/skills/eng-global-arch-c4/assets/example-context.md` |
+| Container | `$IDE/skills/eng-global-arch-c4/assets/example-container.md` |
+| Component | `$IDE/skills/eng-global-arch-c4/assets/example-component.md` |
+| Code | `$IDE/skills/eng-global-arch-c4/assets/example-code.md` |
 
 ---
 

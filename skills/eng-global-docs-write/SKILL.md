@@ -27,7 +27,7 @@ Garantir que a documentação reflita com precisão o **estado atual do codebase
 ## Recursos
 
 - **Template C4**: `$IDE/templates/engineering/c4-model-template.md`
-- **Skill eng-backend-arch-c4**: `$IDE/skills/eng-backend-arch-c4/SKILL.md`
+- **Skill eng-global-arch-c4**: `$IDE/skills/eng-global-arch-c4/SKILL.md`
 - **Saída**: `$DOCS_FOLDER/` (conforme ENV.md)
 
 > **Dica**: Em caso de dúvida sobre documentação de bibliotecas ou frameworks, use o MCP `context7` para consultar documentação atualizada.
@@ -174,7 +174,7 @@ Você gostaria que eu prosseguisse com essas atualizações?
 
 ## Documentação de Arquitetura (C4 Model)
 
-Quando houver **mudanças arquiteturais significativas**, utilize a skill `eng-backend-arch-c4`:
+Quando houver **mudanças arquiteturais significativas**, utilize a skill `eng-global-arch-c4`:
 
 ### Quando usar C4 Model
 
@@ -295,7 +295,7 @@ Antes de finalizar:
 
 | Passo | Skill | Condição |
 |-------|-------|----------|
-| Documentação de Arquitetura (C4 Model) | `/eng-backend-arch-c4` | Se houver mudanças arquiteturais significativas (novos serviços ou contêineres, integrações externas, componentes, bancos ou filas, APIs públicas) |
+| Documentação de Arquitetura (C4 Model) | `/eng-global-arch-c4` | Se houver mudanças arquiteturais significativas (novos serviços ou contêineres, integrações externas, componentes, bancos ou filas, APIs públicas) |
 
 Sugestões após atualizar a documentação (não são chamadas do fluxo):
 
