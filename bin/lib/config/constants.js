@@ -265,7 +265,7 @@ export const SYNC_EXCLUDE = Object.freeze({
  * Arquivos da raiz que devem ser sincronizados
  * @constant {ReadonlyArray<string>}
  */
-export const SYNC_ROOT_FILES = Object.freeze(["taxonomy.md", "AGENTS.md", "members.md"]);
+export const SYNC_ROOT_FILES = Object.freeze(["taxonomy.md", "AGENTS.md"]);
 
 /**
  * Mapeamento de model do Jarvis para formato OpenCode (provider/model-id)

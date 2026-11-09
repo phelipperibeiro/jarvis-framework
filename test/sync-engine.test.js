@@ -76,7 +76,6 @@ function buildMinimalFramework(root) {
   write(root, "rules-on-demand/engineering/eng.plan-rules.md");
   write(root, "taxonomy.md");
   write(root, "AGENTS.md");
-  write(root, "members.md");
 }
 
 test("syncAssets: caminho feliz para claude — copia SYNC_DIRS, SYNC_ROOT_FILES, achata workflows/ e grava o lock", () => {
@@ -93,7 +92,6 @@ test("syncAssets: caminho feliz para claude — copia SYNC_DIRS, SYNC_ROOT_FILES
     assert.ok(existsSync(join(target, ".claude/rules-on-demand/engineering/eng.plan-rules.md")));
     assert.ok(existsSync(join(target, ".claude/taxonomy.md")));
     assert.ok(existsSync(join(target, ".claude/AGENTS.md")));
-    assert.ok(existsSync(join(target, ".claude/members.md")));
 
     // flatten: workflows/sub/eng.start.md -> workflows/eng.start.md (sem subpasta)
     assert.ok(existsSync(join(target, ".claude/workflows/eng.start.md")));

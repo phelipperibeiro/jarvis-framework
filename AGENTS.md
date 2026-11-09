@@ -39,7 +39,7 @@ jarvis-framework/
 ├── test/                         # node:test (npm run test:filtro, npm run test:comandos)
 ├── docs/                         # guias para humanos (engenharia/, produto/, estrutura/)
 ├── AGENTS.md                     # este arquivo (instalado como $IDE/AGENTS.md)
-├── CHANGELOG.md, CONTRIBUTING.md, taxonomy.md, members.md
+├── CHANGELOG.md, CONTRIBUTING.md, taxonomy.md
 └── .github/                      # template de PR
 ```
 

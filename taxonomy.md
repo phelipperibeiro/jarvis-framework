@@ -119,7 +119,7 @@ Group Product Manager
 ### QUALITY_CHAMPION
 Designação secundária para devs com função parcial de qualidade dentro do squad.
 Não é uma posição de senioridade — o dev mantém seu cargo (JUNIOR, PLENO, SENIOR, etc.).
-Registrado no campo Posição do `members.md` junto com o cargo principal.
+Registrada junto do cargo principal no cadastro de pessoas do time (fora do Jarvis); não é valor de `POSITION` no `ENV.md`.
 - Responsável por cobertura de testes em features de baixo/médio risco do squad
 - Executa quality gates e orienta outros devs com a base eng-qa
 - NÃO substitui QA em features críticas, decisões de bloqueio ou sign-off de release
@@ -193,8 +193,6 @@ board_code: MOB
 modules: app-ios, app-android, push-notification, deep-link
 Time focado em desenvolvimento mobile nativo (iOS/Android)
 ```
-
-> Membros da organização são gerenciados em `members.md`.
 
 **Exemplo — Area com prefix:**
 ```markdown

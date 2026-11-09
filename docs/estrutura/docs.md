@@ -21,7 +21,7 @@ docs/
 │   └── eng.*.md
 └── estrutura/
     ├── README.md                     # como as pastas se montam
-    ├── raiz.md                       # README, AGENTS, LICENSE, package, taxonomy, members
+    ├── raiz.md                       # README, AGENTS, LICENSE, package, taxonomy
     ├── agents.md
     ├── bin.md
     ├── docs.md                       # este arquivo
