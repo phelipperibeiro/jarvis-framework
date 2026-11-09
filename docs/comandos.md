@@ -19,7 +19,6 @@ Fonte: `workflows/product/`. Guia didático: [produto/README.md](./produto/READM
 | [`/prod.spec.issue`](./produto/prod.spec.issue.md) | Cria issues: histórias de usuário, tarefas técnicas e bugs | [workflow](../workflows/product/prod.spec.issue.md) |
 | [`/prod.spec.breakdown`](./produto/prod.spec.breakdown.md) | Quebra uma spec grande em fatias (versões, épicos e histórias) | [workflow](../workflows/product/prod.spec.breakdown.md) |
 | [`/prod.spec.clarify`](./produto/prod.spec.clarify.md) | Faz até 5 perguntas para esclarecer ambiguidades e grava as respostas na spec | [workflow](../workflows/product/prod.spec.clarify.md) |
-| `/prod.roadmap.preview` | Mostra o roadmap de entregas planejadas (períodos, projetos e responsáveis) | [workflow](../workflows/product/prod.roadmap.preview.md) |
 
 ## Engenharia (`eng.*`)
 

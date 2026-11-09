@@ -792,10 +792,6 @@ test("os outros pontos que enviam algo (delivery-spec, prod.spec.issue, central 
       "skills/eng-global-tech-spec/references/delivery-spec.md",
       /[Pp]ara anexá-la na issue do board, depois da aprovação da 6\.3, mostre o que vai e pergunte com `AskUserQuestion` \(regra de ouro/,
     ],
-    [
-      "skills/product-roadmap-report/commands/status.roadmap.preview.md",
-      /Leia o board pela CLI oficial do `\$TASK_MANAGER`.*sem REST nem MCP/,
-    ],
   ];
   for (const [file, frase] of FRASES) {
     assert.match(read(file), frase, `${file} sem ${frase}. ${DE_PROPOSITO}`);

@@ -323,8 +323,11 @@ test("syncAssets: instalação antiga é limpa (claude, windsurf e kiro) pelo OB
       "agents/engineering/data/eng.data-engineer.agent.md",
       "templates/engineering/data-contract-template.md",
       "templates/engineering/data-pipeline-template.md",
+      // prod.roadmap.preview e product-roadmap-report removidos (#243)
+      "commands/prod.roadmap.preview.md",
+      "skills/product-roadmap-report/SKILL.md", // some com a entrada de pasta
     ],
-    windsurf: ["workflows/AGENTS.md", "workflows/README.md", "workflows/all-tools.md", "workflows/eng.review.md", "workflows/eng.docs.md", "workflows/eng.create-ard-from-code.md", "workflows/eng.breakdown-subtasks.md", "workflows/data.contract.md", "workflows/data.new-pipeline.md"],
+    windsurf: ["workflows/AGENTS.md", "workflows/README.md", "workflows/all-tools.md", "workflows/eng.review.md", "workflows/eng.docs.md", "workflows/eng.create-ard-from-code.md", "workflows/eng.breakdown-subtasks.md", "workflows/data.contract.md", "workflows/data.new-pipeline.md", "workflows/prod.roadmap.preview.md"],
     kiro: [
       "steering/AGENTS.md",
       "steering/README.md",
@@ -344,6 +347,8 @@ test("syncAssets: instalação antiga é limpa (claude, windsurf e kiro) pelo OB
       "steering/data.new-pipeline.md",
       "templates/engineering/data-contract-template.md",
       "templates/engineering/data-pipeline-template.md",
+      "steering/prod.roadmap.preview.md", // prod.roadmap.preview removido (#243)
+      "steering/skills/skill-product-roadmap-report.md",
     ],
   };
   for (const [ide, arquivos] of Object.entries(antigos)) {
@@ -365,6 +370,10 @@ test("syncAssets: instalação antiga é limpa (claude, windsurf e kiro) pelo OB
         assert.ok(
           !existsSync(join(target, ".claude/skills/eng-backend-arch-c4")),
           "claude: a pasta skills/eng-backend-arch-c4 deveria ter sido removida inteira"
+        );
+        assert.ok(
+          !existsSync(join(target, ".claude/skills/product-roadmap-report")),
+          "claude: a pasta skills/product-roadmap-report deveria ter sido removida inteira"
         );
       }
       assert.ok(

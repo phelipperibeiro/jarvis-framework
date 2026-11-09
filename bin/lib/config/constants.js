@@ -230,6 +230,13 @@ export const OBSOLETE_PATHS = Object.freeze([
   "agents/engineering/data/eng.data-engineer.agent.md",
   "templates/engineering/data-contract-template.md",
   "templates/engineering/data-pipeline-template.md",
+  // prod.roadmap.preview e product-roadmap-report (issue #243, mãe #237): o par só chamava um ao outro,
+  // dependia de Obsidian e de .claude/status.memory/ e não tinha uso. O workflow é achatado; a pasta do skill sai inteira.
+  "workflows/prod.roadmap.preview.md",
+  "commands/prod.roadmap.preview.md",
+  "steering/prod.roadmap.preview.md",
+  "skills/product-roadmap-report",
+  "steering/skills/skill-product-roadmap-report.md",
 ]);
 
 /**
