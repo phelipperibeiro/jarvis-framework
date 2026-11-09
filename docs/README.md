@@ -30,7 +30,6 @@ jarvis/
 ├── templates/             → ENV + modelos de documento
 ├── bin/                   → CLI (jarvis init, list, …)
 ├── docs/                  → esta documentação
-├── issues/                → pendências / notas internas do framework
 └── node_modules/          → dependências locais de desenvolvimento (não é o produto)
 ```
 

@@ -37,7 +37,6 @@ const CITAM_A_REGRA = [
   TASK_COMMENT,
   REPORT_ISSUE,
   "templates/engineering/advisor-template.md",
-  "agents/engineering/qa/eng.qa.quality-champion-task-agent.md",
   "skills/eng-global-tech-spec/references/delivery-spec.md",
   "workflows/engineering/data/data.contract.md",
   "workflows/product/prod.spec.issue.md",
@@ -746,12 +745,8 @@ test("a proibição de comentar início ou fim de etapa continua na regra e no s
   }
 });
 
-test("os outros pontos que enviam algo (agente, delivery-spec, data.contract, prod.spec.issue, central docs) trazem a pergunta", () => {
+test("os outros pontos que enviam algo (delivery-spec, data.contract, prod.spec.issue, central docs) trazem a pergunta", () => {
   const FRASES = [
-    [
-      "agents/engineering/qa/eng.qa.quality-champion-task-agent.md",
-      /pelo `\/eng-global-task-comment`, que mostra o texto e pergunta/,
-    ],
     [
       "skills/eng-global-tech-spec/references/delivery-spec.md",
       /[Aa]ntes de criar as subtarefas, mostre o texto e pergunte/,

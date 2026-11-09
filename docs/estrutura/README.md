@@ -25,7 +25,7 @@ Como o Jarvis está **montado** no disco: o que cada peça é, o que entra no pa
 4. No chat, `/jarvis-init` cria o `ENV.md` e filtra rules pelo perfil.
 
 O que o npm publica (campo `files` do `package.json`): `bin/`, `agents/`, `skills/`, `workflows/`, `templates/`, `rules/`, `rules-on-demand/`, `taxonomy.md`, `members.md`, `AGENTS.md`, `README.md`.  
-**Não** entra no pacote: `docs/`, `issues/`, `node_modules/`, `.git/`, etc. (docs ficam no GitHub para leitura humana).
+**Não** entra no pacote: `docs/`, `node_modules/`, `.git/`, etc. (docs ficam no GitHub para leitura humana).
 
 ## Índice das subpáginas
 
@@ -47,7 +47,6 @@ O que o npm publica (campo `files` do `package.json`): `bin/`, `agents/`, `skill
 | `agents/` | [agents.md](./agents.md) |
 | `bin/` | [bin.md](./bin.md) |
 | `docs/` | [docs.md](./docs.md) |
-| `issues/` | [issues.md](./issues.md) |
 | `node_modules/` | [node_modules.md](./node_modules.md) |
 | `rules/` | [rules.md](./rules.md) |
 | `rules-on-demand/` | [rules.md](./rules.md) |
