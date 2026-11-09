@@ -201,6 +201,13 @@ export const OBSOLETE_PATHS = Object.freeze([
   "workflows/eng.docs.md",
   "commands/eng.docs.md",
   "steering/eng.docs.md",
+  // eng.create-ard-from-code (issue #247, mãe #237): fundido no eng.create-ard, no modo "Do código existente"
+  // (--codigo). O workflow é achatado. O skill de diagramas C4 virou global (eng-backend-arch-c4 → eng-global-arch-c4).
+  "workflows/eng.create-ard-from-code.md",
+  "commands/eng.create-ard-from-code.md",
+  "steering/eng.create-ard-from-code.md",
+  "skills/eng-backend-arch-c4",
+  "steering/skills/skill-eng-backend-arch-c4.md",
 ]);
 
 /**
