@@ -43,8 +43,8 @@ test("os rótulos da variante B na tabela de transições são os mesmos do fech
     .map((r) => r.replace(/\s*\(como hoje\)$/, "").trim());
   assert.equal(
     rotulos.length,
-    3,
-    `${TRANSITIONS}: a variante B deveria ter 3 opções. ${DE_PROPOSITO}`
+    4,
+    `${TRANSITIONS}: a variante B deveria ter 4 opções. ${DE_PROPOSITO}`
   );
   // Só o trecho da variante B: "Só gerar o relatório" também é opção da variante A.
   const fechamento = secao(read(PRE_PR), "## Fechamento");
@@ -120,6 +120,8 @@ test("a variante B tem os rótulos de cada caso e a condição dela é a mesma n
     "Aceitar as 🟡 e as ⚪ e seguir para o PR",
     "Aceitar as ⚪ e decidir as 🟡 uma a uma",
     "Decidir as 🟡 uma a uma",
+    "Corrigir as 🟡 e as ⚪ e seguir para o PR",
+    "Corrigir as 🟡 e seguir para o PR",
   ]) {
     assert.ok(
       fechamento.includes(rotulo),
@@ -154,6 +156,7 @@ test("os textos de decisão da variante B são os mesmos no workflow e na rule",
   for (const texto of [
     "👍 Aceitar: aceito no fechamento da rodada {N}",
     "👍 Aceitar: teto de rodadas atingido na rodada {N}",
+    "sem nova rodada do pre-pr",
   ]) {
     for (const arquivo of [PRE_PR, PRE_PR_RULES]) {
       assert.ok(read(arquivo).includes(texto), `${arquivo} sem "${texto}". ${DE_PROPOSITO}`);
