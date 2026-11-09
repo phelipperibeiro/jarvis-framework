@@ -50,6 +50,13 @@ B: História / Task — implementação específica, pronta para desenvolvimento
 
 > 🧩 **Agora aplique o Passo 2 (Áreas) do workflow** com o que o card mostrou: skill base de cada área + especializações registradas no `ENV.md` (`eng.specializations-rules.md`).
 
+**Tech Spec já pronta (só história):** se já existe `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/tech-spec.md`, ou o usuário apontou ou colou uma Tech Spec de história, pergunte com `AskUserQuestion`: **"Já existe uma Tech Spec para este card"** → **Gerar a Tech Spec de novo (como hoje)** / **Só gerar as subtarefas dela (vai para a Fase 7)**. Com o atalho:
+- aplique o Passo 2 (Áreas), acima: o passo a passo usa as convenções do projeto;
+- pule as Fases 1.2 a 6 (a checagem de RFC já está registrada na spec);
+- a Fase 7 parte da seção 3 (`SUBTASK-XXX`) da Tech Spec existente e regrava o `subtarefas.md`; depois, siga para a Fase 8.
+
+O épico não tem subtarefas: o atalho não vale para o `tech-spec-arch.md`.
+
 #### 1.2 Contexto de Negócio
 
 Analise e documente:
@@ -579,6 +586,8 @@ Só com board configurado (no freelance não há issue: pule este passo). Só h�
 
 ### FASE 7: Criação de Subtarefas (automática só no Jira)
 
+**Nível de detalhe**, antes da 7.1: pergunte com `AskUserQuestion` **"Como descrever cada subtarefa?"** → **Resumo (como hoje)** / **Passo a passo para quem executa sem perguntar**. O passo a passo é para time com juniores ou fatias que vão para pessoas diferentes: antes de escrevê-lo, leia os arquivos listados em cada subtarefa, para que os caminhos e o código sejam reais. A escolha só muda a descrição entregue (7.2); o `tech-spec.md` não muda.
+
 > **Escopo:** a criação automática de subtarefas é só no Jira, pela `acli`. Em GitHub ou GitLab, ou no Jira sem a `acli` logada ou com `TASK_MANAGER_ACCESS=manual`, esta fase entrega o template formatado e as instruções para a pessoa criar as subtarefas à mão; como não há envio, a 7.3 não faz a pergunta nesse caso. A generalização para `gh`/`glab` fica para uma issue à parte.
 
 #### 7.1 Preparação para Criação
@@ -593,11 +602,15 @@ Para cada subtarefa no plano:
 - Pai: {STORY-XXX original}
 - Prioridade: {P0/P1/P2}
 - Estimativa: {X horas}
-- Labels: `tech-spec`, `{área}` (ex: backend, frontend)
+- Labels: `tech-spec`, `{área}` (a área vem do prefixo do título: `[BACKEND]` → `backend`, `[FRONTEND]` → `frontend`…)
 
 #### 7.2 Estrutura da Descrição no board
 
-Use o formato **Descrição da subtarefa no board** de `$IDE/templates/engineering/tech-spec-delivery-template.md` (seções: Descrição, Arquivos a Modificar/Criar, Critérios de Aceitação, Testes Requeridos, Dependências, Referência).
+Use o formato de `$IDE/templates/engineering/tech-spec-delivery-template.md` que corresponde ao nível escolhido:
+- **Resumo:** **Descrição da subtarefa no board** (Descrição, Arquivos a Modificar/Criar, Critérios de Aceitação, Testes Requeridos, Dependências, Referência);
+- **Passo a passo:** **Descrição da subtarefa no board, passo a passo**.
+
+Grave as descrições de todas as subtarefas, uma seção por subtarefa separada por `---`, em `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/subtarefas.md`, **antes** da pergunta da 7.3 e em qualquer cenário de board. É o texto que vai para o board com o Sim, ou que a pessoa usa para criar os cards à mão.
 
 #### 7.3 Criação (Jira pela `acli`; outros boards, template)
 
@@ -610,6 +623,7 @@ Só há pergunta quando a criação vai sair: no Jira, com a `acli` logada e `TA
 
 **Em GitHub/GitLab, sem a `acli` logada (ou com `TASK_MANAGER_ACCESS=manual`), ou sem o Sim:**
 
+- As subtarefas ficam no `subtarefas.md` da sessão (7.2): é a saída "só o Markdown, sem criar card"
 - Forneça ao usuário **template formatado** para copiar/colar no board (Jira, GitHub ou GitLab)
 - Forneça **instruções passo-a-passo** para criação manual
 
@@ -630,7 +644,7 @@ Valide que:
 - [ ] Tech Spec completa e aprovada pelo usuário
 - [ ] Arquivo salvo na sessão: `$SESSIONS_DIR/eng/{feature-name}/tech-spec.md`
 - [ ] Tech Spec anexada na issue (com o Sim), a anexar pela pessoa (orientado) ou deixada na sessão
-- [ ] Subtarefas documentadas com critérios claros
+- [ ] Subtarefas documentadas com critérios claros, no nível escolhido (resumo ou passo a passo), e gravadas em `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/subtarefas.md`
 - [ ] Subtarefas criadas no Jira pela `acli`, ou template fornecido (outros boards, sem a CLI, com acesso manual, sem o Sim ou sem board)
 - [ ] História original atualizada com link para tech spec (com o Sim do comentário da 7.4) ou texto deixado na sessão
 - [ ] Decisões arquiteturais documentadas
@@ -643,8 +657,6 @@ Valide que:
 Forneça ao usuário:
 
 Use o formato **Mensagem de entrega** de `$IDE/templates/engineering/tech-spec-delivery-template.md`; um exemplo preenchido está na seção **Exemplo de output final** do mesmo arquivo.
-
-> 🔀 **Fronteira com o `/eng.breakdown-subtasks`:** esta Tech Spec já entrega as subtarefas como fatias verticais de 4h a 1 dia, prontas para virar cards. Se cada fatia precisar ser reescrita como passo a passo para outra pessoa executar sem perguntar (ex.: time com juniores ou fatias para pessoas diferentes), rode o `/eng.breakdown-subtasks` com esta Tech Spec: ele não gera a spec, só detalha as fatias.
 
 ---
 
