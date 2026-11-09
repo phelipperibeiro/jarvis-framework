@@ -191,6 +191,11 @@ export const OBSOLETE_PATHS = Object.freeze([
   "skills/eng-qa-planner/assets",
   "skills/product-roadmap-report/commands/status.compiled.single.team.md",
   "skills/product-roadmap-report/commands/status.list.projects.md",
+  // eng.review (issue #245, mãe #237): consolidado no eng.pre-pr (com o eng.frontend-review para
+  // interface). O workflow é achatado na pasta de comandos de cada IDE.
+  "workflows/eng.review.md",
+  "commands/eng.review.md",
+  "steering/eng.review.md",
 ]);
 
 /**

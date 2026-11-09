@@ -306,8 +306,10 @@ test("syncAssets: instalação antiga é limpa (claude, windsurf e kiro) pelo OB
       "skills/eng-qa-planner/assets/test-patterns.md",
       "skills/product-roadmap-report/commands/status.compiled.single.team.md",
       "skills/product-roadmap-report/commands/status.list.projects.md",
+      // eng.review consolidado no eng.pre-pr (#245): o workflow fica achatado na pasta de comandos
+      "commands/eng.review.md",
     ],
-    windsurf: ["workflows/AGENTS.md", "workflows/README.md", "workflows/all-tools.md"],
+    windsurf: ["workflows/AGENTS.md", "workflows/README.md", "workflows/all-tools.md", "workflows/eng.review.md"],
     kiro: [
       "steering/AGENTS.md",
       "steering/README.md",
@@ -316,6 +318,7 @@ test("syncAssets: instalação antiga é limpa (claude, windsurf e kiro) pelo OB
       "steering/eng.bump-rules.md",
       "steering/eng.docs-scraping-rules.md",
       "steering/eng.rpa-rules.md",
+      "steering/eng.review.md", // eng.review consolidado no eng.pre-pr (#245)
     ],
   };
   for (const [ide, arquivos] of Object.entries(antigos)) {
