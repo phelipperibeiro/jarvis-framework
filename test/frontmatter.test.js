@@ -86,7 +86,9 @@ test("OpenCode: model dos agents, dos comandos e do opencode.json na família Cl
     syncAssets(target, "opencode", { workflowsFolder: getWorkflowsFolder("opencode") });
     const model = (caminho) =>
       readFileSync(join(target, ".opencode", caminho), "utf-8").match(/^model: (.*)$/m)?.[1];
-    // opus e sonnet (shorthands do mapa); claude-sonnet-5 passa pelo fallback anthropic/{id}.
+    // Amostras do framework real: eng.agent.md (model: opus), prod.pm-checker.md (model: sonnet) e
+    // eng.start.md (recommended_model: claude-sonnet-5, que passa pelo fallback anthropic/{id}).
+    // Se o model de uma delas mudar, troque a amostra por outra com o mesmo valor.
     assert.equal(model("agents/engineering/eng.agent.md"), "anthropic/claude-opus-5-5");
     assert.equal(model("agents/product/prod.pm-checker.md"), "anthropic/claude-sonnet-5-5");
     assert.equal(model("commands/eng.start.md"), "anthropic/claude-sonnet-5");
