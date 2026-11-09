@@ -15,6 +15,8 @@ const PRE_PR = "workflows/engineering/eng.pre-pr.md";
 const PRE_PR_RULES = "rules-on-demand/engineering/eng.pre-pr-rules.md";
 const TRANSITIONS = "rules-on-demand/engineering/eng.transitions-rules.md";
 const CONTEXT_DETECT = "skills/jarvis-context-detect/SKILL.md";
+const GUIA_PRE_PR = "docs/engenharia/eng.pre-pr.md";
+const WORK = "workflows/engineering/eng.work.md";
 
 // A mensagem de falha diz que o valor é guardado de propósito: mudar num arquivo pede mudar nos outros e no teste.
 const DE_PROPOSITO =
@@ -58,12 +60,13 @@ test("os rótulos da variante B na tabela de transições são os mesmos do fech
     rotulos.length,
     `${PRE_PR}: a variante B tem ${opcoes.length} opções, a tabela de transições tem ${rotulos.length}. ${DE_PROPOSITO}`
   );
-  for (const rotulo of rotulos) {
+  // Mesma ordem nos dois arquivos: a ordem é decisão de produto (#191 e #259: Aceitar, depois Corrigir e seguir).
+  rotulos.forEach((rotulo, i) => {
     assert.ok(
-      opcoes.some((l) => l.includes(`**${rotulo}`)),
-      `${PRE_PR}: a variante B não tem a opção "${rotulo}" da tabela de transições. ${DE_PROPOSITO}`
+      opcoes[i].includes(`**${rotulo}`),
+      `${PRE_PR}: a ${i + 1}ª opção da variante B deveria ser "${rotulo}", como na tabela de transições. ${DE_PROPOSITO}`
     );
-  }
+  });
 });
 
 test("os rótulos da pergunta do teto na tabela de transições são os mesmos do fechamento", () => {
@@ -149,6 +152,37 @@ test('o modelo do relatório e a rule usam o "(item N)" que a rodada incremental
   assert.ok(
     read(PRE_PR_RULES).includes("(item N)"),
     `${PRE_PR_RULES} sem "(item N)". ${DE_PROPOSITO}`
+  );
+});
+
+test("a opção \"Corrigir … e seguir para o PR\" (#259): linha do PR Brief, rule, guia e o atalho pelo /eng.work", () => {
+  const prePr = read(PRE_PR);
+  // A linha do modelo do PR Brief, gravada antes do /eng.work: "Mandadas corrigir" vale mesmo se ele parar.
+  assert.match(
+    prePr,
+    /^- Mandadas corrigir depois da rodada \{N\}, sem nova rodada do pre-pr: \{lista\}/m,
+    `${PRE_PR}: o modelo do PR Brief sem a linha "Mandadas corrigir … sem nova rodada do pre-pr". ${DE_PROPOSITO}`
+  );
+  // A rule e o guia citam a opção.
+  assert.ok(
+    read(PRE_PR_RULES).includes("Corrigir … e seguir para o PR"),
+    `${PRE_PR_RULES} sem a opção "Corrigir … e seguir para o PR". ${DE_PROPOSITO}`
+  );
+  for (const rotulo of ["Corrigir as ⚪ e seguir para o PR", "Corrigir as 🟡 e as ⚪ e seguir para o PR"]) {
+    assert.ok(read(GUIA_PRE_PR).includes(rotulo), `${GUIA_PRE_PR} sem "${rotulo}". ${DE_PROPOSITO}`);
+  }
+  // O atalho depende de rótulos do /eng.work: a opção "Rodar o /eng.pr" do "Depois do work" e a pergunta da retomada.
+  const work = read(WORK);
+  const depois = work.split("\n").find((l) => l.startsWith("| **Depois do work** |"));
+  assert.ok(depois, `${WORK} sem a linha "Depois do work" da 1.3. ${DE_PROPOSITO}`);
+  assert.ok(
+    depois.includes("**Rodar o `/eng.pr`**"),
+    `${WORK}: o "Depois do work" sem a opção "Rodar o \`/eng.pr\`", que o atalho do pre-pr cita. ${DE_PROPOSITO}`
+  );
+  assert.ok(work.includes("Manter as escolhas"), `${WORK} sem a pergunta "Manter as escolhas". ${DE_PROPOSITO}`);
+  assert.ok(
+    prePr.includes("no \"Depois do work\", \"Rodar o `/eng.pr`\"") && prePr.includes("\"Manter as escolhas?\""),
+    `${PRE_PR}: a opção nova sem o aviso de "Mudar" para "Rodar o \`/eng.pr\`". ${DE_PROPOSITO}`
   );
 });
 
