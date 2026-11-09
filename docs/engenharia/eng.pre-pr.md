@@ -14,7 +14,7 @@ Revê a branch atrás de lacunas (produto, código, testes, segurança, document
 
 - Quando a implementação terminou e você quer chegar ao PR sem surpresa
 - Depois de qualquer correção grande que mexeu na branch (rodar de novo guarda o relatório anterior como `gate-checklist-rodada-{N}.md`)
-- Para revisar o PR de outra pessoa: faça checkout da branch do PR e rode o comando com a chave do card dela (interface: [`eng.frontend-review`](./eng.frontend-review.md))
+- Para revisar o PR de outra pessoa: faça checkout da branch do PR e rode o comando com a chave do card dela (interface: [`eng.frontend-review`](./eng.frontend-review.md)). Quando ele perguntar a branch base, informe a do PR; no fim, fique com o relatório e não use o `/eng.work` nem o `/eng.pr`, que são do autor
 
 ## Quando **não** usar
 
