@@ -340,7 +340,7 @@ test("rules reais: prod.spec-common-rules.md em rules-on-demand/ chega a qualque
       );
     }
   }
-  // Os 4 workflows mandam ler a rule antes de começar.
+  // Os 5 workflows (prd, frd, epic, issue, breakdown) mandam ler a rule antes de começar.
   for (const w of ["prd", "frd", "epic", "issue", "breakdown"]) {
     assert.match(
       readFileSync(join(root, "workflows", "product", `prod.spec.${w}.md`), "utf8"),
