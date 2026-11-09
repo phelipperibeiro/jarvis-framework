@@ -341,11 +341,6 @@ test("rules reais: prod.spec-common-rules.md em rules-on-demand/ chega a qualque
     }
   }
   // Os 4 workflows mandam ler a rule antes de começar.
-  // O skill product-specs também a cita entre as rules que lê antes de executar.
-  assert.match(
-    readFileSync(join(root, "skills", "product-specs", "SKILL.md"), "utf8"),
-    /\$IDE\/rules-on-demand\/product\/prod\.spec-common-rules\.md/
-  );
   for (const w of ["prd", "frd", "epic", "issue", "breakdown"]) {
     assert.match(
       readFileSync(join(root, "workflows", "product", `prod.spec.${w}.md`), "utf8"),

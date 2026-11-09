@@ -43,7 +43,6 @@ const TARGETS = [
   "rules-on-demand/product/prod.spec-common-rules.md",
   "rules-on-demand/engineering/eng.transitions-rules.md",
   "skills/AGENTS.md",
-  "skills/product-specs-update/SKILL.md",
   "skills/eng-global-tech-spec/references/reference-spec.md",
   "docs/visao-geral.md",
   "docs/estrutura/docs.md",
@@ -71,7 +70,6 @@ const EXEMPT = [
   { file: "rules/product/prod-rules.md", when: (l) => /`\$(JARVIS_DOCS\/product|JARVIS_DOCS\/discoveries|ENG_DOCS)` \(`docs\/jarvis\//.test(l), why: "o padrão ao lado da variável (rule carregada no início da sessão: o tamanho é fixado em teste, #83)" },
   { file: "rules/engineering/eng-rules.md", when: (l) => l.includes("`$SESSIONS_DIR` → `.jarvis/sessions`"), why: "mapeamento da variável para o seu valor padrão (rule carregada no início da sessão)" },
   { file: "rules-on-demand/engineering/eng.transitions-rules.md", when: (l) => l.includes("com o `SESSIONS_DIR` padrão"), why: "exemplo de link com o padrão" },
-  { file: "skills/product-specs-update/SKILL.md", when: (l) => l.includes("com os valores padrão"), why: "padrão descrito como padrão" },
   { file: "workflows/engineering/eng.spec-consolidate.md", when: (l) => l.includes('"originalPath": "/ws/.jarvis/sessions/'), why: "manifesto de exemplo, com caminho real de sessão" },
 ];
 

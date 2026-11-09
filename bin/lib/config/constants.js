@@ -237,6 +237,13 @@ export const OBSOLETE_PATHS = Object.freeze([
   "steering/prod.roadmap.preview.md",
   "skills/product-roadmap-report",
   "steering/skills/skill-product-roadmap-report.md",
+  // product-specs e product-specs-update (issue #244, mãe #237): skills sem chamador. O roteamento para os
+  // prod.spec.* fica no /prod.spec, e a cascata PRD↔FRD não era executada por nenhum comando. No Kiro, o
+  // skill vira steering/skills/skill-{nome}.md.
+  "skills/product-specs",
+  "skills/product-specs-update",
+  "steering/skills/skill-product-specs.md",
+  "steering/skills/skill-product-specs-update.md",
 ]);
 
 /**
