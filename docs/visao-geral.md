@@ -185,7 +185,7 @@ Hierarquia de leitura completa: ver `AGENTS.md` na raiz.
 | Pré-PR | `/eng.pre-pr` | Checklist | — |
 | Entregar | `/eng.pr` | Push e MR/PR, depois da pergunta (regra de ouro) | — |
 
-Produto: família `/prod.spec*`. Data/QA/RPA/Security: workflows sob `workflows/engineering/…` (após flatten, nomes na raiz da IDE).
+Produto: família `/prod.spec*`. QA/RPA/Security: workflows sob `workflows/engineering/…` (após flatten, nomes na raiz da IDE).
 
 ---
 
