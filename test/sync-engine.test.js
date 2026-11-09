@@ -313,8 +313,12 @@ test("syncAssets: instalação antiga é limpa (claude, windsurf e kiro) pelo OB
       // eng.create-ard-from-code fundido no eng.create-ard e o C4 global (#247)
       "commands/eng.create-ard-from-code.md",
       "skills/eng-backend-arch-c4/SKILL.md", // some com a entrada de pasta
+      // eng.breakdown-subtasks fundido no Delivery Spec (#248): workflow, rule e template
+      "commands/eng.breakdown-subtasks.md",
+      "rules-on-demand/engineering/eng.breakdown-subtasks-rules.md",
+      "templates/engineering/breakdown-subtasks-template.md",
     ],
-    windsurf: ["workflows/AGENTS.md", "workflows/README.md", "workflows/all-tools.md", "workflows/eng.review.md", "workflows/eng.docs.md", "workflows/eng.create-ard-from-code.md"],
+    windsurf: ["workflows/AGENTS.md", "workflows/README.md", "workflows/all-tools.md", "workflows/eng.review.md", "workflows/eng.docs.md", "workflows/eng.create-ard-from-code.md", "workflows/eng.breakdown-subtasks.md"],
     kiro: [
       "steering/AGENTS.md",
       "steering/README.md",
@@ -327,6 +331,9 @@ test("syncAssets: instalação antiga é limpa (claude, windsurf e kiro) pelo OB
       "steering/eng.docs.md", // eng.docs removido (#246)
       "steering/eng.create-ard-from-code.md", // fundido no eng.create-ard (#247)
       "steering/skills/skill-eng-backend-arch-c4.md", // C4 virou global (#247)
+      "steering/eng.breakdown-subtasks.md", // fundido no Delivery Spec (#248)
+      "rules-on-demand/engineering/eng.breakdown-subtasks-rules.md",
+      "templates/engineering/breakdown-subtasks-template.md",
     ],
   };
   for (const [ide, arquivos] of Object.entries(antigos)) {
