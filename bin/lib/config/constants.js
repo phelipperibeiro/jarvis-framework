@@ -244,6 +244,22 @@ export const OBSOLETE_PATHS = Object.freeze([
   "skills/product-specs-update",
   "steering/skills/skill-product-specs.md",
   "steering/skills/skill-product-specs-update.md",
+  // Cluster QA fora do ciclo (issue #241, mãe #237): os 3 comandos só citavam uns aos outros. O workflow é
+  // achatado; o agente e os 2 templates saem pelo caminho normal. O Modo A do eng.qa.test-planner continua
+  // por chamada direta. O cadastro de membros da raiz não entra aqui: saiu do SYNC_ROOT_FILES, e a cópia
+  // instalada é do usuário (pode ter dados do time).
+  "workflows/eng.qa-refinement-entry.md",
+  "commands/eng.qa-refinement-entry.md",
+  "steering/eng.qa-refinement-entry.md",
+  "workflows/eng.qa-release-signoff.md",
+  "commands/eng.qa-release-signoff.md",
+  "steering/eng.qa-release-signoff.md",
+  "workflows/eng.qa-sprint-planning.md",
+  "commands/eng.qa-sprint-planning.md",
+  "steering/eng.qa-sprint-planning.md",
+  "agents/engineering/qa/eng.qa.quality-strategist.md",
+  "templates/engineering/qa/qa.release-signoff-template.md",
+  "templates/engineering/qa/qa.sprint-plan-template.md",
 ]);
 
 /**

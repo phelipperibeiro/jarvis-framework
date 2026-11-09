@@ -327,8 +327,33 @@ test("syncAssets: instalação antiga é limpa (claude, windsurf e kiro) pelo OB
       // product-specs e product-specs-update, skills sem chamador (#244): somem com a entrada de pasta
       "skills/product-specs/SKILL.md",
       "skills/product-specs-update/SKILL.md",
+      // cluster QA fora do ciclo removido (#241): os 3 comandos achatados, o agente e os 2 templates
+      "commands/eng.qa-refinement-entry.md",
+      "commands/eng.qa-release-signoff.md",
+      "commands/eng.qa-sprint-planning.md",
+      "agents/engineering/qa/eng.qa.quality-strategist.md",
+      "templates/engineering/qa/qa.release-signoff-template.md",
+      "templates/engineering/qa/qa.sprint-plan-template.md",
     ],
-    windsurf: ["workflows/AGENTS.md", "workflows/README.md", "workflows/all-tools.md", "workflows/eng.review.md", "workflows/eng.docs.md", "workflows/eng.create-ard-from-code.md", "workflows/eng.breakdown-subtasks.md", "workflows/data.contract.md", "workflows/data.new-pipeline.md", "workflows/prod.roadmap.preview.md"],
+    windsurf: [
+      "workflows/AGENTS.md",
+      "workflows/README.md",
+      "workflows/all-tools.md",
+      "workflows/eng.review.md",
+      "workflows/eng.docs.md",
+      "workflows/eng.create-ard-from-code.md",
+      "workflows/eng.breakdown-subtasks.md",
+      "workflows/data.contract.md", // cluster DATA removido (#242)
+      "workflows/data.new-pipeline.md",
+      "workflows/prod.roadmap.preview.md", // prod.roadmap.preview removido (#243)
+      // cluster QA fora do ciclo removido (#241)
+      "workflows/eng.qa-refinement-entry.md",
+      "workflows/eng.qa-release-signoff.md",
+      "workflows/eng.qa-sprint-planning.md",
+      "agents/engineering/qa/eng.qa.quality-strategist.md",
+      "templates/engineering/qa/qa.release-signoff-template.md",
+      "templates/engineering/qa/qa.sprint-plan-template.md",
+    ],
     kiro: [
       "steering/AGENTS.md",
       "steering/README.md",
@@ -352,6 +377,13 @@ test("syncAssets: instalação antiga é limpa (claude, windsurf e kiro) pelo OB
       "steering/skills/skill-product-roadmap-report.md",
       "steering/skills/skill-product-specs.md", // skills sem chamador (#244)
       "steering/skills/skill-product-specs-update.md",
+      // cluster QA fora do ciclo removido (#241)
+      "steering/eng.qa-refinement-entry.md",
+      "steering/eng.qa-release-signoff.md",
+      "steering/eng.qa-sprint-planning.md",
+      "agents/engineering/qa/eng.qa.quality-strategist.md",
+      "templates/engineering/qa/qa.release-signoff-template.md",
+      "templates/engineering/qa/qa.sprint-plan-template.md",
     ],
   };
   for (const [ide, arquivos] of Object.entries(antigos)) {
