@@ -23,7 +23,7 @@ workflows/
 │   ├── eng.security-*.md
 │   ├── eng.rpa.robot.md
 │   ├── frontend/              # component, review, perf-audit, …
-│   ├── qa/                    # fluxos QA
+│   └── qa/                    # fluxos QA
 └── product/
     ├── prod.spec.md
     ├── prod.spec.discovery.md
