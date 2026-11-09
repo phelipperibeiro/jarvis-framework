@@ -22,8 +22,6 @@ agents/
 │   ├── eng.frontend.agent.md
 │   ├── eng.rpa.agent.md             # ARACHNE
 │   ├── eng.ux-designer.agent.md
-│   ├── data/
-│   │   └── eng.data-engineer.agent.md   # HEPHAESTUS
 │   └── qa/
 │       ├── eng.qa.test-planner.md
 │       ├── eng.qa.testing-engineer.md

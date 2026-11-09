@@ -31,8 +31,6 @@ templates/
 │   ├── PR-template.md              # Pull Request
 │   ├── c4-model-template.md        # Diagramas C4
 │   ├── AGENTS-template.md          # Template de AGENTS.md
-│   ├── data-pipeline-template.md   # Documentacao de pipeline de dados
-│   ├── data-contract-template.md   # Contrato de dados
 │   ├── central-feature-template.md # Central docs: pagina da funcionalidade
 │   ├── central-delivery-template.md # Central docs: registro da entrega
 │   ├── central-product-template.md # Central docs: pagina do produto (transversal)

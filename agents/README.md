@@ -18,21 +18,19 @@ agents/
 │   ├── eng.rpa.agent.md          # Automação RPA (ARACHNE)
 │   ├── eng.frontend.agent.md     # Especialista frontend (neutro de stack): UI, estado, a11y
 │   ├── eng.ux-designer.agent.md  # Especialista UX/UI: heurísticas, jornada, microcopy
-│   ├── data/                     # Data Engineering (1 agent)
-│   │   └── eng.data-engineer.agent.md
 │   └── qa/                       # QA específico de engenharia (4 agents)
 └── product/                      # 🎯 Agentes do domínio de Produto
     ├── prod.pm-checker.md        # Product Manager checker
     └── prod.discovery-interviewer.md  # Entrevistador de discovery
 ```
 
-**📊 Total: 16 agents**
-- Engineering: 14 (9 main + 1 data + 4 QA)
+**📊 Total: 15 agents**
+- Engineering: 13 (9 main + 4 QA)
 - Product: 2
 
 ---
 
-## ⚙️ 1. Engenharia (14 agents)
+## ⚙️ 1. Engenharia (13 agents)
 
 **Pasta**: `engineering/`
 
@@ -49,11 +47,6 @@ Agentes específicos para fluxos e regras do domínio de Engenharia.
 - `eng.advisor.agent.md` - `@eng.advisor.agent` - Advisor opcional: orienta as questões em aberto do `eng.start` (modelo escolhido pelo usuário)
 - `eng.docs-consolidator.agent.md` - `@eng.docs-consolidator.agent` - Consolida o que a entrega implementou em documentos do Central docs (por funcionalidade e por entrega), chamado pelo `/eng.spec-consolidate`
 
-
-### Data Agents (1)
-**Subpasta**: `engineering/data/`
-
-- `eng.data-engineer.agent.md` - `@eng.data-engineer` - Pipelines ETL/ELT, contratos de dados, qualidade (HEPHAESTUS)
 
 ### QA Agents (4)
 **Subpasta**: `engineering/qa/`
@@ -82,10 +75,9 @@ Agentes específicos para fluxos e validações do domínio de Produto.
 |---------|---------|-----|
 | ⚙️ **Engineering** (main) | 9 | Agent principal, advisor, bug hunter, code review, docs, docs consolidator, RPA, frontend, UX |
 | 🧪 **QA** (sub-eng) | 4 | Test planning, testing (+Cypress), test architect, quality strategist |
-| 📊 **Data** (sub-eng) | 1 | Pipelines, contratos de dados, qualidade |
 | 🎯 **Product** | 2 | PM checker, discovery interviewer |
 
-**Total: 16 agents**
+**Total: 15 agents**
 
 ---
 
@@ -203,5 +195,5 @@ Você também pode invocar agentes manualmente usando `@`:
 
 ---
 
-**Última atualização**: 2026-11-08
-**Agents ativos:** 16 (Engineering: 9 main + 4 QA + 1 Data, Product: 2)
+**Última atualização**: 2026-11-09
+**Agents ativos:** 15 (Engineering: 9 main + 4 QA, Product: 2)

@@ -22,9 +22,8 @@ workflows/
 │   ├── eng.create-ard.md / eng.create-rfc.md / …
 │   ├── eng.security-*.md
 │   ├── eng.rpa.robot.md
-│   ├── data/                  # data.new-pipeline, data.contract, …
 │   ├── frontend/              # component, review, perf-audit, …
-│   ├── qa/                    # fluxos QA
+│   └── qa/                    # fluxos QA
 └── product/
     ├── prod.spec.md
     ├── prod.spec.discovery.md

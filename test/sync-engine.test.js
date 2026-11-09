@@ -317,8 +317,14 @@ test("syncAssets: instalação antiga é limpa (claude, windsurf e kiro) pelo OB
       "commands/eng.breakdown-subtasks.md",
       "rules-on-demand/engineering/eng.breakdown-subtasks-rules.md",
       "templates/engineering/breakdown-subtasks-template.md",
+      // cluster DATA removido (#242): os 2 comandos achatados, o agente e os 2 templates
+      "commands/data.contract.md",
+      "commands/data.new-pipeline.md",
+      "agents/engineering/data/eng.data-engineer.agent.md",
+      "templates/engineering/data-contract-template.md",
+      "templates/engineering/data-pipeline-template.md",
     ],
-    windsurf: ["workflows/AGENTS.md", "workflows/README.md", "workflows/all-tools.md", "workflows/eng.review.md", "workflows/eng.docs.md", "workflows/eng.create-ard-from-code.md", "workflows/eng.breakdown-subtasks.md"],
+    windsurf: ["workflows/AGENTS.md", "workflows/README.md", "workflows/all-tools.md", "workflows/eng.review.md", "workflows/eng.docs.md", "workflows/eng.create-ard-from-code.md", "workflows/eng.breakdown-subtasks.md", "workflows/data.contract.md", "workflows/data.new-pipeline.md"],
     kiro: [
       "steering/AGENTS.md",
       "steering/README.md",
@@ -334,6 +340,10 @@ test("syncAssets: instalação antiga é limpa (claude, windsurf e kiro) pelo OB
       "steering/eng.breakdown-subtasks.md", // fundido no Delivery Spec (#248)
       "rules-on-demand/engineering/eng.breakdown-subtasks-rules.md",
       "templates/engineering/breakdown-subtasks-template.md",
+      "steering/data.contract.md", // cluster DATA removido (#242)
+      "steering/data.new-pipeline.md",
+      "templates/engineering/data-contract-template.md",
+      "templates/engineering/data-pipeline-template.md",
     ],
   };
   for (const [ide, arquivos] of Object.entries(antigos)) {

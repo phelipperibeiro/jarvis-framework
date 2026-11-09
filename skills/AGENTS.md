@@ -262,8 +262,6 @@ Skills são invocados de formas diferentes dependendo da IDE:
 | Planejar capacidade QA da sprint: risco por task, alocação entre QAs e Quality Champions | workflow `eng.qa-sprint-planning` |
 | Sign-off QA pré-deploy: verifica cobertura, bugs abertos, produz GO/NO-GO | workflow `eng.qa-release-signoff` |
 | Pipelines ETL/ELT, modelagem, qualidade, BI/dashboards, governança, onboarding de fonte, orquestração | `eng-data` (base) + `DATA_SPECIALIZATIONS` |
-| Criar pipeline novo (docs, qualidade, idempotência, gold) | `data.new-pipeline` |
-| Criar contrato de dados para squad requisitante | `data.contract` |
 | Documentação central (GitHub/GitLab) | `jarvis-docs-central` |
 | Bug cross-service (HTTP + AMQP) | `eng-backend-microservices-trace` |
 

@@ -38,7 +38,6 @@ const CITAM_A_REGRA = [
   REPORT_ISSUE,
   "templates/engineering/advisor-template.md",
   "skills/eng-global-tech-spec/references/delivery-spec.md",
-  "workflows/engineering/data/data.contract.md",
   "workflows/product/prod.spec.issue.md",
   "skills/jarvis-docs-central/SKILL.md",
   SPEC_CONSOLIDATE,
@@ -512,12 +511,6 @@ test("cada ponto que envia algo tem a pergunta logo antes", () => {
       0,
       /só depois de mostrar o texto e o usuário dizer Sim \(regra de ouro\)/,
     ],
-    [
-      "workflows/engineering/data/data.contract.md",
-      /^Com o Sim, criar card no board `DE`/,
-      2,
-      /pergunte com `AskUserQuestion` antes de criar/,
-    ],
     ["docs/engenharia/eng.spec-consolidate.md", /^7\. Pergunta/, 0, /Pergunta \*\*Sim \/ Não\*\*/],
     [
       "workflows/engineering/eng.build-tech-spec.md",
@@ -745,7 +738,7 @@ test("a proibição de comentar início ou fim de etapa continua na regra e no s
   }
 });
 
-test("os outros pontos que enviam algo (delivery-spec, data.contract, prod.spec.issue, central docs) trazem a pergunta", () => {
+test("os outros pontos que enviam algo (delivery-spec, prod.spec.issue, central docs) trazem a pergunta", () => {
   const FRASES = [
     [
       "skills/eng-global-tech-spec/references/delivery-spec.md",
@@ -761,14 +754,6 @@ test("os outros pontos que enviam algo (delivery-spec, data.contract, prod.spec.
     [
       "skills/eng-global-tech-spec/references/delivery-spec.md",
       /com o `\/eng-global-task-comment`, que mostra o texto e pergunta/,
-    ],
-    [
-      "workflows/engineering/data/data.contract.md",
-      /pergunte com `AskUserQuestion` antes de notificar/,
-    ],
-    [
-      "workflows/engineering/data/data.contract.md",
-      /pergunte com `AskUserQuestion` antes de criar/,
     ],
     ["workflows/product/prod.spec.issue.md", /pergunte com `AskUserQuestion` \(regra de ouro/],
     [
@@ -803,10 +788,6 @@ test("os outros pontos que enviam algo (delivery-spec, data.contract, prod.spec.
       /`acli jira workitem create`.*só depois de mostrar o texto e perguntar \(regra de ouro\)/,
     ],
     [ENG_PRE_PR, /nada é enviado ao card \(o texto fica no `gate-checklist\.md`\)/],
-    [
-      "workflows/engineering/data/data.contract.md",
-      /pergunte com `AskUserQuestion` antes de criar \(regra de ouro\)/,
-    ],
     [
       "skills/eng-global-tech-spec/references/delivery-spec.md",
       /[Pp]ara anexá-la na issue do board, depois da aprovação da 6\.3, mostre o que vai e pergunte com `AskUserQuestion` \(regra de ouro/,
