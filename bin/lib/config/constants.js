@@ -215,6 +215,21 @@ export const OBSOLETE_PATHS = Object.freeze([
   "steering/eng.breakdown-subtasks.md",
   "rules-on-demand/engineering/eng.breakdown-subtasks-rules.md",
   "templates/engineering/breakdown-subtasks-template.md",
+  // Cluster DATA (issue #242, mãe #237): os workflows data.contract e data.new-pipeline, o agente
+  // eng.data-engineer e os 2 templates não tinham porta de entrada no ciclo eng.*; a área data fica
+  // com o skill eng-data. O workflow é achatado. Só o arquivo do agente sai: a pasta
+  // agents/engineering/data/ fica vazia na IDE, sem apagar o que a empresa tenha posto lá.
+  "workflows/engineering/data/data.contract.md",
+  "workflows/data.contract.md",
+  "commands/data.contract.md",
+  "steering/data.contract.md",
+  "workflows/engineering/data/data.new-pipeline.md",
+  "workflows/data.new-pipeline.md",
+  "commands/data.new-pipeline.md",
+  "steering/data.new-pipeline.md",
+  "agents/engineering/data/eng.data-engineer.agent.md",
+  "templates/engineering/data-contract-template.md",
+  "templates/engineering/data-pipeline-template.md",
 ]);
 
 /**

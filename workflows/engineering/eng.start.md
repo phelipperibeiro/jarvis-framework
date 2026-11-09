@@ -280,7 +280,7 @@ Documente:
 **Se a feature envolver engenharia de dados** (pipelines ETL/ELT, modelagem dimensional, ingestão em S3/Athena, jobs AWS Glue, DAGs Airflow, contratos de dados, Great Expectations, camadas bronze/silver/gold), aplique a regra [eng.specializations-rules.md]($IDE/rules/engineering/eng.specializations-rules.md) para a área **data**: ela carrega o skill base [eng-data]($IDE/skills/eng-data/SKILL.md) mais as especializações registradas em `DATA_SPECIALIZATIONS`, e então:
 - Definir a arquitetura Medallion da feature (bronze → silver → gold)
 - Planejar Expectation Suite obrigatória e checks de qualidade
-- Documentar pipeline com `data-pipeline-template.md` antes de implementar
+- Documentar origem, transformação e responsável do pipeline antes de implementar (Padrão 1 do `eng-data`)
 - Garantir idempotência e nomenclatura padronizada
 
 **Se a feature envolver RPA ou extração de dados** (web scraping, Puppeteer, parsing, ETL, automação de browser/fluxos de trabalho), aplique a regra [eng.specializations-rules.md]($IDE/rules/engineering/eng.specializations-rules.md) para a área **automation**: ela carrega o skill base [eng-automation]($IDE/skills/eng-automation/SKILL.md) mais as especializações registradas em `AUTOMATION_SPECIALIZATIONS`, e então:

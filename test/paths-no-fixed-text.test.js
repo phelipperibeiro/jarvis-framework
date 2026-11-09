@@ -181,7 +181,6 @@ test("templates: com DOCS_FOLDER, JARVIS_DOCS e SESSIONS_DIR fora do padrão, to
 const IGNORED = {
   "templates/ENV-template.md": "é o próprio arquivo dos valores padrão",
   "templates/engineering/AGENTS-template.md": "o AGENTS.md do projeto alvo cita `.jarvis/sessions` como o valor padrão de `SESSIONS_DIR`, dito na própria frase (#225)",
-  "agents/engineering/data/eng.data-engineer.agent.md": "`../../../../ENV.md` é um link relativo do arquivo do agente até o ENV da IDE, não do workspace",
 };
 
 function markdownFiles(dir) {
