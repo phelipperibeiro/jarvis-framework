@@ -26,8 +26,6 @@ templates/
     ├── PR-template.md
     ├── debug-report-template.md      # relatório do /eng.debug (caso investigar)
     ├── bug-audit-report-template.md  # relatório do /eng.debug (caso varrer)
-    ├── data-pipeline-template.md
-    ├── data-contract-template.md
     ├── central-feature-template.md   # Central docs: página da funcionalidade
     ├── central-delivery-template.md  # Central docs: registro da entrega
     ├── central-product-template.md   # Central docs: página do produto (transversal)

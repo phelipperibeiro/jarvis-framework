@@ -14,7 +14,7 @@ A pasta `agents/` contem **definicoes de agentes especializados** que atuam no f
 
 ```
 agents/
-├── engineering/           # Agentes ativos de engenharia (14 agents)
+├── engineering/           # Agentes ativos de engenharia (13 agents)
 │   ├── eng.advisor.agent.md
 │   ├── eng.agent.md
 │   ├── eng.bug-hunter.md
@@ -24,8 +24,6 @@ agents/
 │   ├── eng.frontend.agent.md
 │   ├── eng.rpa.agent.md
 │   ├── eng.ux-designer.agent.md
-│   ├── data/              # Agentes de Data (1 agent)
-│   │   └── eng.data-engineer.agent.md
 │   └── qa/                # Agentes de QA (4 agents)
 │       ├── eng.qa.test-planner.md
 │       ├── eng.qa.testing-engineer.md
@@ -125,7 +123,6 @@ Para que serve e quando usar:
 
 ```bash
 @eng.qa.test-planner "analisar cobertura"
-@eng.data-engineer "design de contrato de dados"
 @eng.dev-code-reviewer "revisar PR #123"
 ```
 
@@ -179,7 +176,7 @@ ENABLE_CDD=true
 
 ## Agentes Ativos
 
-- `engineering/` - Agentes de engenharia (14 agents: 9 main + 4 QA + 1 Data)
+- `engineering/` - Agentes de engenharia (13 agents: 9 main + 4 QA)
 - `product/` - Agentes de produto (2 agents)
 
 ---

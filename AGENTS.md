@@ -14,13 +14,12 @@ Este repositorio contem o **Framework Jarvis** - um framework de desenvolvimento
 
 ```
 jarvis-framework/
-├── agents/                       # 16 agentes (instalados em $IDE/agents/)
+├── agents/                       # 15 agentes (instalados em $IDE/agents/)
 │   ├── engineering/              # 9 principais (eng.agent, eng.advisor.agent, eng.rpa.agent…)
-│   │   ├── data/                 # 1 de dados (eng.data-engineer.agent)
 │   │   └── qa/                   # 4 de QA
 │   └── product/                  # 2 de produto (prod.pm-checker, prod.discovery-interviewer)
 ├── workflows/                    # comandos slash (em $IDE/commands/ ou workflows/, sem subpastas)
-│   ├── engineering/              # 17 + data/ (2), frontend/ (3) e qa/ (3)
+│   ├── engineering/              # 13 + frontend/ (3) e qa/ (3)
 │   ├── product/                  # 10 (prod.spec.*, prod.roadmap.preview)
 │   └── warm-up.md, taxonomy.md
 ├── skills/                       # 29 skills, todos com metadata.area:
