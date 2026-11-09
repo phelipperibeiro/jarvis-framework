@@ -6,7 +6,7 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), e o
 
 > Versões anteriores a `2.1.1` não foram documentadas retroativamente neste changelog — o histórico detalhado dessas versões continua disponível via `git log`.
 
-## Não lançado
+## [Não lançado]
 
 ### Changed
 - **Mapa de modelos do OpenCode na família Claude 5.5 (#239)**: `opus`, `sonnet` e `haiku` passam a gerar `anthropic/claude-opus-5-5`, `anthropic/claude-sonnet-5-5` e `anthropic/claude-haiku-5-5` nos agents e comandos de `.opencode/`, e o `opencode.json` novo sai com `anthropic/claude-sonnet-5-5`. O `haiku` apontava para um ID que não existe (`claude-haiku-4-5-20250414`), e o `claude-sonnet-5` (o `recommended_model` da maioria dos workflows) era rebaixado para `claude-sonnet-4-6`; agora ele passa com o próprio ID. IDs conferidos no catálogo do models.dev, que o OpenCode usa, em 2026-11-08. Quem usa OpenCode recebe os modelos novos com `jarvis init --upgrade`.

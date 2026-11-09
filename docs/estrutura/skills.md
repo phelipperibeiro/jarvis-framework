@@ -21,7 +21,7 @@ skills/
 ├── eng-qa/, eng-qa-planner/    # base de QA + especializações em QA_SPECIALIZATIONS
 ├── eng-data/                   # base de dados (+ especializações em DATA_SPECIALIZATIONS)
 ├── eng-platform/               # base de platform/infra (+ segurança) em PLATFORM_SPECIALIZATIONS
-├── eng.rpa.robot usa eng-automation (base) + AUTOMATION_SPECIALIZATIONS
+├── eng-automation/             # base de automação/RPA, usada pelo /eng.rpa.robot (+ especializações em AUTOMATION_SPECIALIZATIONS)
 ├── product-specs/ (porta de entrada), product-specs-update/, product-roadmap-report/
 ├── jarvis-report-issue/
 ├── jarvis-fork/                # fork guiado para o overlay da empresa (COMPANY_PROFILE), só grava com o Sim
