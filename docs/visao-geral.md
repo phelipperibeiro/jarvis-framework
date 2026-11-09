@@ -83,7 +83,6 @@ jarvis/
 ├── templates/         # ENV + docs models
 ├── bin/               # CLI
 ├── docs/              # esta documentação (humana)
-├── issues/            # pendências internas do framework
 └── node_modules/      # deps locais de desenvolvimento
 ```
 
@@ -116,7 +115,7 @@ jarvis/
 ```
 
 O que o **npm publica** (`package.json` → `files`): CLI + agents + skills + workflows + templates + rules + taxonomy + members + AGENTS + README.  
-**Fora do pacote** (mas no Git): `docs/`, `issues/`, etc.
+**Fora do pacote** (mas no Git): `docs/`, etc.
 
 ---
 

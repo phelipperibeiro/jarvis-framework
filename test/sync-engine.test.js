@@ -291,7 +291,8 @@ test("syncAssets: instalação antiga é limpa (claude, windsurf e kiro) pelo OB
       // lote A de código morto (#238): template, agente, assets e comandos de skill sem consumidor
       "templates/engineering/work-progress-template.md",
       "agents/engineering/qa/eng.qa.quality-champion-task-agent.md",
-      "skills/eng-qa-planner/assets/test-patterns.md", // some junto com a entrada de pasta
+      "skills/eng-qa-planner/assets/test-coverage-template.md", // os 2 somem com a entrada de pasta
+      "skills/eng-qa-planner/assets/test-patterns.md",
       "skills/product-roadmap-report/commands/status.compiled.single.team.md",
       "skills/product-roadmap-report/commands/status.list.projects.md",
     ],
@@ -328,6 +329,9 @@ test("syncAssets: instalação antiga é limpa (claude, windsurf e kiro) pelo OB
       // A limpeza não leva junto a rule que continua no framework (nem a cópia dela no Kiro).
       assert.ok(existsSync(join(target, `.${ide}/rules/engineering/eng-rules.md`)));
       if (ide === "kiro") assert.ok(existsSync(join(target, ".kiro/steering/eng-rules.md")));
+      // Entrada de pasta (#238): a pasta some inteira, não só os arquivos de dentro
+      if (ide === "claude")
+        assert.ok(!existsSync(join(target, ".claude/skills/eng-qa-planner/assets")));
     });
   }
 });
@@ -387,12 +391,16 @@ test("OBSOLETE_PATHS: nenhuma entrada ainda é copiada do repositório do framew
     const rel = resto.join("/");
     // steering/skills/skill-{nome}.md é gerado na instalação do Kiro; nunca existe no repositório
     if (entrada.startsWith("steering/skills/")) continue;
-    if (PASTAS_ACHATADAS.includes(pasta) && resto.length === 1) {
+    const achatado = PASTAS_ACHATADAS.includes(pasta) && resto.length === 1;
+    // A limpeza apaga todo workflow pelo nome achatado (sync-engine.js), inclusive o que tem
+    // subpasta no caminho: um nome ainda usado em outra subpasta de workflows/ sumiria da IDE.
+    if (achatado || pasta === "workflows") {
+      const nome = resto[resto.length - 1];
       const copiados = arquivosDeWorkflows.filter(
-        (arquivo) => arquivo.split("/").pop() === rel && !isExcludedFromSync("workflows", arquivo)
+        (arquivo) => arquivo.split("/").pop() === nome && !isExcludedFromSync("workflows", arquivo)
       );
       if (copiados.length) problemas.push(`${entrada} (ainda copiado de workflows/${copiados[0]})`);
-      continue;
+      if (achatado) continue;
     }
     if (existsSync(join(raiz, entrada)) && !isExcludedFromSync(pasta, rel)) {
       problemas.push(`${entrada} (ainda existe no repositório e é copiado)`);
