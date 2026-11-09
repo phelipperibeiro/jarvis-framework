@@ -28,7 +28,6 @@ workflows/
     ├── eng.pre-pr.md             # Validação pré-PR
     ├── eng.pr.md                 # Criação de PR
     ├── eng.debug.md              # Debug: investiga um bug ou varre um escopo
-    ├── eng.docs.md               # Documentação (engenharia)
     ├── eng.create-ard.md         # Criar ARD
     ├── eng.create-ard-from-code.md
     ├── eng.create-rfc.md         # Criar RFC
@@ -82,7 +81,6 @@ workflows/
 | `eng.pre-pr.md` | Validação final antes do PR |
 | `eng.pr.md` | Push e Pull Request, depois da pergunta (regra de ouro) |
 | `eng.debug.md` | Investiga um bug ou varre um escopo atrás de problemas |
-| `eng.docs.md` | Atualizar documentação de engenharia |
 | `eng.create-ard.md` | Criar ARD (Architecture Review Document) |
 | `eng.create-ard-from-code.md` | Criar ARD a partir do código |
 | `eng.create-rfc.md` | Criar RFC (Request For Comments) |

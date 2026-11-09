@@ -34,7 +34,6 @@ const TARGETS = [
   "skills/jarvis-docs-central/README.md",
   "workflows/engineering/eng.start.md",
   "workflows/engineering/eng.pr.md",
-  "workflows/engineering/eng.docs.md",
   "workflows/engineering/eng.create-ard.md",
   "workflows/engineering/eng.create-ard-from-code.md",
   "workflows/engineering/eng.create-rfc.md",

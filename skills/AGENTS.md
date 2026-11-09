@@ -235,7 +235,7 @@ Skills são invocados de formas diferentes dependendo da IDE:
 | `/jarvis-init` | `jarvis-init` |
 | `/warm-up` | `jarvis-docs-central` (só o recorte escolhido), `context7` (se o MCP estiver disponível) |
 | `eng.start` | `jarvis-docs-central` (funcionalidades implementadas; PRD/ARD vêm de `$JARVIS_DOCS`) |
-| `/eng.docs` | `eng-global-docs-write`, `jarvis-docs-index` |
+| `/eng.work` (oferta de documentação, Fase 6.2) | `eng-global-docs-write` (aciona `jarvis-docs-index` quando há índice) |
 | `/eng.pre-pr` | `eng-qa-planner`, `eng-global-docs-write`, `jarvis-docs-central` (detectar docs) |
 | `/eng.pr` | `eng-global-pr` |
 | `/eng.debug` (investigar um bug ou varrer um escopo) | `eng-global-investigation` |

@@ -33,7 +33,6 @@ workflows/
     ├── eng.pre-pr.md              # Validacao pre-PR
     ├── eng.pr.md                  # Criacao de PR
     ├── eng.debug.md               # Debug
-    ├── eng.docs.md                # Documentacao
     ├── eng.create-ard.md          # Criar ARD
     ├── eng.create-ard-from-code.md
     ├── eng.create-rfc.md          # Criar RFC
@@ -216,7 +215,8 @@ Workflows de engenharia seguem fases restritas:
 
 ```bash
 /warm-up
-/eng.docs
+/eng.work "feature"      # Oferta de documentacao no fim (Fase 6.2), pelo skill eng-global-docs-write
+/eng-global-docs-write   # Uso direto do skill (Codex e Kiro: ver "Invocacao de Skills por IDE")
 ```
 
 ---

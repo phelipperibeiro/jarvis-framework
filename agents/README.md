@@ -100,7 +100,7 @@ Quando um agente estiver atuando em um tema que possui skill correspondente, ele
 
 ### Mapeamento recomendado (Workflows/Comandos → Skills)
 
-- **eng.docs** → `eng-global-docs-write` (principal) e `jarvis-docs-index` (quando houver índice).
+- **eng.work** (oferta de documentação, Fase 6.2) → `eng-global-docs-write` (e `jarvis-docs-index` quando houver índice).
 - **eng.pre-pr** → `eng-qa-planner` (cobertura) e `eng-global-docs-write` (docs).
 - **eng.start** (nome da branch) e **eng.pr** → `eng-global-branch` (política de nome da branch; o `eng.pr` também usa `eng-global-pr`).
 - **eng.pr** → `eng-global-pr`.
@@ -158,7 +158,7 @@ Você também pode invocar agentes manualmente usando `@`:
    └─> @eng.dev-code-reviewer
 
 5. 📚 DOCUMENTAÇÃO
-   └─> @eng.docs-writer → /eng.docs
+   └─> /eng.work (oferta 6.2) → /eng-global-docs-write; @eng.docs-writer aponta o que ficou desatualizado no gate 9 do /eng.pre-pr
 
 6. 🔧 ENTREGA
    └─> /eng.pre-pr, /eng.pr
