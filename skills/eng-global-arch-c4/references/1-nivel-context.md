@@ -1,6 +1,6 @@
 # Guia do Nível Context (C4)
 
-> Parte do skill `eng-backend-arch-c4`. Leia este arquivo antes da proposta (passo 3) quando o nível pedido for Context (nível 1).
+> Parte do skill `eng-global-arch-c4`. Leia este arquivo antes da proposta (passo 3) quando o nível pedido for Context (nível 1).
 
 ### Context (Nível 1)
 

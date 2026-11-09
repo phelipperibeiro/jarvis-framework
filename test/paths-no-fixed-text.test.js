@@ -35,7 +35,6 @@ const TARGETS = [
   "workflows/engineering/eng.start.md",
   "workflows/engineering/eng.pr.md",
   "workflows/engineering/eng.create-ard.md",
-  "workflows/engineering/eng.create-ard-from-code.md",
   "workflows/engineering/eng.create-rfc.md",
   "workflows/engineering/eng.daily-report.md",
   "workflows/engineering/eng.spec-consolidate.md",

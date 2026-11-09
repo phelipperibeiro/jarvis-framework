@@ -34,7 +34,6 @@ workflows/
     ├── eng.pr.md                  # Criacao de PR
     ├── eng.debug.md               # Debug
     ├── eng.create-ard.md          # Criar ARD
-    ├── eng.create-ard-from-code.md
     ├── eng.create-rfc.md          # Criar RFC
     ├── eng.build-tech-spec.md     # Tech Spec (Delivery Spec ou Reference Spec)
     ├── eng.breakdown-subtasks.md  # Subtarefas

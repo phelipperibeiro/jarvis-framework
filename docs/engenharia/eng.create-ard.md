@@ -8,23 +8,24 @@ Cria ou atualiza um **ARD** (Architecture Requirements Document): o documento qu
 
 ## O que é
 
-O ARD responde "como vamos construir isto?" de forma versionada e revisável. Ele nasce de uma demanda de produto (PRD) e serve de base para as tarefas técnicas. O comando funciona em dois modos: **novo ARD** ou **iteração** de um ARD existente.
+O ARD responde "como vamos construir isto?" de forma versionada e revisável. Ele nasce de uma demanda de produto (PRD) e serve de base para as tarefas técnicas. O comando funciona em dois modos: **novo ARD** ou **iteração** de um ARD existente. Nos dois, o ARD pode partir **de PRD e decisões** (como sempre) ou **do código existente**, quando ele deve refletir a arquitetura que o repositório já tem.
 
 Atalhos:
 
-- `eng.create-ard new <nome> [--prd <caminho-do-prd>]`
-- `eng.create-ard edit <nome-ou-caminho>`
+- `eng.create-ard new <nome> [--prd <caminho-do-prd>] [--codigo]`
+- `eng.create-ard edit <nome-ou-caminho> [--codigo]`
+- `--codigo`: o ARD parte do código existente (sem a flag, o comando pergunta "De onde vem o ARD?")
 
 ## Quando usar
 
 - Mudança arquitetural relevante ou feature nova com impacto em vários componentes
 - Quando a decisão precisa ficar documentada e versionada
 - Para atualizar um ARD depois que a solução mudou
+- O ARD deve refletir o código que já existe → modo **código existente** (`--codigo`): o comando lê o repositório (stack, estrutura, entrypoints, integrações, contratos observados), separa o que é fato observado do que é hipótese e registra a arquitetura atual ao lado da proposta; para diagramas C4, oferece o `/eng-global-arch-c4` (opcional)
 
 ## Quando **não** usar
 
 - Você quer um desenho rápido para uma feature pequena → [`eng.light-arch`](./eng.light-arch.md)
-- O ARD deve refletir o código que já existe → [`eng.create-ard-from-code`](./eng.create-ard-from-code.md)
 - A decisão precisa de discussão aberta e aprovação formal → [`eng.create-rfc`](./eng.create-rfc.md)
 
 ## Como funciona

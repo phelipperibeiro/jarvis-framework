@@ -21,7 +21,7 @@ O que o produto traz para esse documento são os **requisitos**: quantos usuári
 ## Quando **não** usar
 
 - Para editar um ARD que já existe → [`/eng.create-ard`](../engenharia/eng.create-ard.md) (modo `edit`)
-- Para extrair o ARD do código existente → [`/eng.create-ard-from-code`](../engenharia/eng.create-ard-from-code.md)
+- Para extrair o ARD do código existente → [`/eng.create-ard`](../engenharia/eng.create-ard.md) no modo código existente (`--codigo`)
 - Para escolher tecnologia ou desenhar componentes → isso é da engenharia, dentro do ARD
 - Quando ainda é só uma ideia → [`discovery`](./prod.spec.discovery.md) ou [`prd`](./prod.spec.prd.md)
 

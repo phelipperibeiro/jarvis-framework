@@ -1,6 +1,6 @@
 # Guia do Nível Code (C4)
 
-> Parte do skill `eng-backend-arch-c4`. Leia este arquivo antes da proposta (passo 3) quando o nível pedido for Code (nível 4).
+> Parte do skill `eng-global-arch-c4`. Leia este arquivo antes da proposta (passo 3) quando o nível pedido for Code (nível 4).
 
 ### Code (Nível 4) - Raramente usado
 

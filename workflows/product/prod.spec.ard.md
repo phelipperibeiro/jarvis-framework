@@ -33,7 +33,7 @@ Utilize o `$ARGUMENTS` que o usuário passar como ponto de partida e para entend
 
 ## Quando **não** usar
 - Para iterar ou editar um ARD que já existe → use `eng.create-ard` (modo `edit`)
-- Para extrair o ARD do código existente → use `eng.create-ard-from-code`
+- Para extrair o ARD do código existente → use `eng.create-ard` no modo código existente (`eng.create-ard new <nome> --codigo`)
 - Para decidir tecnologia, desenho de componentes ou contratos → isso é da engenharia, dentro do ARD
 - Quando ainda não há PRD nem FRD e a ideia está crua → comece por `prod.spec.discovery` ou `prod.spec.prd`
 

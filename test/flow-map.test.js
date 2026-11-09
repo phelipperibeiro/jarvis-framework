@@ -162,8 +162,8 @@ test("framework real: índice sem duplicados e todos os artefatos declaram chama
   const { items, duplicates } = buildIndex(root);
   assert.deepEqual(duplicates, []);
   const porTipo = (t) => [...items.values()].filter((i) => i.type === t).length;
-  // Piso de sanidade do índice real; a remoção do eng.docs (#246, limpeza de código morto #237) baixou os workflows para 35.
-  assert.ok(porTipo("workflow") >= 35 && porTipo("skill") >= 26 && porTipo("agent") >= 15);
+  // Piso de sanidade do índice real; as remoções do eng.docs (#246) e do eng.create-ard-from-code (#247), da limpeza de código morto #237, baixaram os workflows para 34.
+  assert.ok(porTipo("workflow") >= 34 && porTipo("skill") >= 26 && porTipo("agent") >= 15);
   const semDeclaracao = [...items.values()].filter(
     (i) => !parseDeclaration(i.type, readFileSync(join(root, i.path), "utf-8")).declared
   );

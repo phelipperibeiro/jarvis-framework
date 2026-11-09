@@ -1,6 +1,6 @@
 # Guia do Nível Component (C4)
 
-> Parte do skill `eng-backend-arch-c4`. Leia este arquivo antes da proposta (passo 3) quando o nível pedido for Component (nível 3).
+> Parte do skill `eng-global-arch-c4`. Leia este arquivo antes da proposta (passo 3) quando o nível pedido for Component (nível 3).
 
 ### Component (Nível 3)
 

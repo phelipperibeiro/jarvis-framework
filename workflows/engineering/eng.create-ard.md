@@ -27,6 +27,7 @@ usando o template `$IDE/templates/engineering/ARD-template.md`, sempre alinhado 
 |-------|-------|----------|
 | Objetivo | `eng.agent` (agente) | Sempre — identidade do workflow (alinhamento com `eng.agent.md`) |
 | Passo 1.1.1 – Consultar funcionalidades no Central Docs | `/jarvis-docs-central` (via `jarvis docs sync --silent`) | Se `CENTRAL_DOCS_STORAGE` estiver definido no ENV.md |
+| Passo 3 (ramo código, Desenho da Arquitetura) | `/eng-global-arch-c4` | Opcional: só com a confirmação do usuário; sem ela, o diagrama vai no próprio ARD |
 
 ---
 
@@ -34,13 +35,17 @@ usando o template `$IDE/templates/engineering/ARD-template.md`, sempre alinhado 
 
 0. Se o comando vier com argumentos (atalhos):
 
-- `eng.create-ard new <nome> [--prd <caminho-do-prd>]` → modo **novo ARD**
-- `eng.create-ard edit <nome-ou-caminho>` → modo **iteração**
+- `eng.create-ard new <nome> [--prd <caminho-do-prd>] [--codigo]` → modo **novo ARD**
+- `eng.create-ard edit <nome-ou-caminho> [--codigo]` → modo **iteração**
+- `--codigo` → o ARD parte do **código existente** (pula a pergunta de origem do item 1.1)
 
 1. Se os argumentos **não** estiverem claros, pergunte ao usuário:
    - Você quer:
      - ( ) Criar um **novo ARD**
      - ( ) **Iterar** um ARD existente
+
+1.1. Origem do ARD: sem `--codigo`, pergunte com `AskUserQuestion` (uma pergunta separada da anterior): **"De onde vem o ARD?"** → **De PRD e decisões (como hoje)** / **Do código existente**.
+   - **Do código existente** (ou `--codigo`): o fluxo é o mesmo, mais o Passo 2.1 (coletar contexto do repositório), o bloco "No ramo código" do Passo 3 e a arquitetura atual (observada) no resumo do Passo 7. O PRD continua sendo lido quando existir (Passo 1.1).
 
 2. Se for **iterar**:
 
@@ -62,10 +67,9 @@ usando o template `$IDE/templates/engineering/ARD-template.md`, sempre alinhado 
   - `Slug` para o nome do arquivo (kebab-case)
 - Defina o `ARD-ID` automaticamente assim:
   - Se a pasta `$ENG_DOCS/ARD/` existir e houver arquivos no padrão `ARD-###-*.md`, use o maior `###` + 1.
-- Defina o `ARD-ID` automaticamente assim:
-  - Se a pasta `$ENG_DOCS/ARD/` existir e houver arquivos no padrão `ARD-###-*.md`, use o maior `###` + 1.
-- `Status` (campo `status` no frontmatter: `proposed | in_progress | in_review | approved`)
-- `Caminho do arquivo` (`$ENG_DOCS/ARD/{ARD-ID}-{slug}.md` ou caminho fornecido para iteração)
+- Defina:
+  - `Status` (campo `status` no frontmatter: `proposed | in_progress | in_review | approved`)
+  - `Caminho do arquivo` (`$ENG_DOCS/ARD/{ARD-ID}-{slug}.md` ou caminho fornecido para iteração)
 
 ---
 
@@ -114,7 +118,7 @@ Regras:
 
 ---
 
-## Passo 1.1 – Verificar PRD (obrigatório)
+## Passo 1.1 – Verificar PRD (obrigatório; no ramo código, quando existir)
 
 ### 1.1.1 – Buscar o PRD em `$PROD_DOCS` e o implementado no Central docs
 
@@ -157,7 +161,7 @@ Regras:
    - Regra adicional (modo `new`):
      - Se o comando veio com `--prd <caminho-do-prd>`, usar essa rota como fonte e iniciar a leitura imediatamente.
 
-   - Regra de rastreabilidade:
+   - Regra de rastreabilidade (com PRD):
      - Toda **decisão técnica** no ARD deve citar explicitamente pelo menos um item acima (ex.: `RF-03`, `NFR-02`, `SLA-01`, etc.).
      - Se não houver referência no PRD, trate como **lacuna do PRD** e peça validação explícita antes de registrar como decisão.
 
@@ -199,6 +203,52 @@ Regras:
    - Restrições operacionais: rollout/rollback, janelas, dependências.
 
 > Se o contexto estiver incompleto, **pare e peça esclarecimentos** antes de propor solução.
+
+---
+
+## Passo 2.1 – Coletar contexto do repositório (só no ramo código)
+
+Objetivo: montar um retrato fiel do que o código revela hoje.
+
+1. Identificar e ler arquivos de topo (se existirem):
+
+- `README.md`
+- `ENV.md`
+- `$DOCS_FOLDER/**` (especialmente `$ENG_DOCS/ARD/**` e docs de arquitetura existentes)
+
+2. Identificar a stack e artefatos de build:
+
+- arquivos de dependências (ex.: `package.json`, `requirements.txt`, `go.mod`, etc.)
+- arquivos de runtime/infra (ex.: `Dockerfile`, `docker-compose.*`, manifests, etc.)
+
+3. Mapear estrutura de diretórios (visão macro):
+
+- listar diretórios de primeiro nível
+- identificar pastas prováveis de domínio (ex.: `src`, `apps`, `services`, `packages`, `api`, `web`, etc.)
+
+4. Identificar entrypoints e "o que roda em produção":
+
+- procurar scripts de start/build/test
+- localizar bootstrap do servidor, consumers, jobs, cron, CLIs internas
+
+5. Mapear integrações e dependências externas observáveis:
+
+- banco(s), filas/tópicos, storage, terceiros
+- regras explícitas de autenticação/autorização
+- para APIs de terceiros, aplique o checkpoint de contratos do Passo 3 (contrato no repositório primeiro; sem ele, pergunte; sem contrato, `[A DEFINIR — contrato pendente com {time/parceiro}]`)
+
+6. Mapear contratos observáveis:
+
+- rotas/endpoints (se houver)
+- eventos/filas (nomes, exchanges, tópicos)
+- schemas/DTOs
+
+7. Extrair evidências e anotar incertezas:
+
+- separar o que é "fato observado no código" vs "hipótese"
+- registrar lacunas (ex.: não foi possível identificar entrypoint; faltam docs)
+
+> Se o repositório for grande, priorize a visão macro (top-level + entrypoints + configs) antes de ler muitos arquivos.
 
 ---
 
@@ -264,6 +314,7 @@ Sempre que possível, destaque:
 > - `**/*swagger*.{yaml,yml,json}`
 > - `**/*openapi*.{yaml,yml,json}`
 > - `**/*api-spec*.{yaml,yml,json}`
+> - Client SDKs ou arquivos de contrato referenciados no código
 >
 > → Se encontrar: use o contrato disponível no repositório. Documente com referência ao arquivo fonte.
 >
@@ -272,6 +323,18 @@ Sempre que possível, destaque:
 >
 > - **Sim** → Solicite o arquivo, link ou conteúdo. Documente apenas o que estiver no contrato fornecido.
 > - **Não** → Registre apenas: qual integração, qual propósito, quais dados são necessários. Use `[A DEFINIR — contrato pendente com {time/parceiro}]`. Nunca crie paths, schemas ou payloads fictícios.
+
+**No ramo código** (Passo 0, item 1.1), preencha o template a partir do que o Passo 2.1 encontrou:
+
+1. Onde houver PRD, preencher a tabela de requisitos consumidos e amarrar decisões aos IDs.
+2. Onde não houver PRD, declarar explicitamente lacunas e validar premissas com o usuário.
+3. Em "Desenho da Arquitetura", preferir um diagrama que reflita o que existe hoje + proposta incremental. Para diagramas C4, ofereça o `/eng-global-arch-c4` com `AskUserQuestion` (opcional; o diagrama fica em `$ENG_DOCS/c4/` e o ARD o cita por link); sem o Sim, o diagrama vai no próprio ARD.
+4. Em "Componentes", "Fluxos", "Integrações" e "Contratos", usar o que foi encontrado no código/config. Para integrações externas cujo contrato não está no repositório, aplicar o placeholder do checkpoint acima — nunca criar paths ou schemas fictícios.
+5. Em "Decisões e Trade-offs", separar:
+
+- arquitetura atual (observada)
+- arquitetura proposta (mudanças)
+- motivação (RF/NFR/Restrição/SLA/Métrica)
 
 Garanta que o ARD cubra explicitamente:
 
@@ -342,6 +405,7 @@ Finalize entregando:
 1. Um **rascunho de ARD preenchido** no formato do `$IDE/templates/engineering/ARD-template.md`.
 2. Um **resumo executivo** em poucas linhas:
    - problema
+   - arquitetura atual (observada), no ramo código
    - solução proposta
    - principais riscos
    - próximos passos sugeridos
