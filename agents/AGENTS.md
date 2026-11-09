@@ -24,11 +24,10 @@ agents/
 │   ├── eng.frontend.agent.md
 │   ├── eng.rpa.agent.md
 │   ├── eng.ux-designer.agent.md
-│   └── qa/                # Agentes de QA (4 agents)
+│   └── qa/                # Agentes de QA (3 agents)
 │       ├── eng.qa.test-planner.md
 │       ├── eng.qa.testing-engineer.md
-│       ├── eng.qa.test-architect.md
-│       └── eng.qa.quality-strategist.md
+│       └── eng.qa.test-architect.md
 └── product/               # Agentes ativos de produto (2 agents)
     ├── prod.pm-checker.md
     └── prod.discovery-interviewer.md

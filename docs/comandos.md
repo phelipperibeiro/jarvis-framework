@@ -54,14 +54,6 @@ Fonte: `workflows/engineering/`. Guias didáticos: [engenharia/README.md](./enge
 | [`/eng.frontend-review`](./engenharia/eng.frontend-review.md) | Revisão de PR frontend (tipagem, a11y, tokens, itens da stack) | [workflow](../workflows/engineering/frontend/eng.frontend-review.md) |
 | [`/eng.frontend-perf-audit`](./engenharia/eng.frontend-perf-audit.md) | Auditoria de performance frontend (Core Web Vitals, bundle) | [workflow](../workflows/engineering/frontend/eng.frontend-perf-audit.md) |
 
-### QA
-
-| Comando                           | O que faz                                           | Workflow |
-| --------------------------------- | --------------------------------------------------- | --- |
-| [`/eng.qa-refinement-entry`](./engenharia/eng.qa-refinement-entry.md) | Estratégia de testes a partir de spec, PRD ou FRD | [workflow](../workflows/engineering/qa/eng.qa-refinement-entry.md) |
-| [`/eng.qa-sprint-planning`](./engenharia/eng.qa-sprint-planning.md) | Capacidade de QA da sprint e distribuição por risco | [workflow](../workflows/engineering/qa/eng.qa-sprint-planning.md) |
-| [`/eng.qa-release-signoff`](./engenharia/eng.qa-release-signoff.md) | Sign-off pré-deploy (GO/NO-GO) | [workflow](../workflows/engineering/qa/eng.qa-release-signoff.md) |
-
 ### Fluxos especializados
 
 | Comando               | O que faz                                                  | Workflow |

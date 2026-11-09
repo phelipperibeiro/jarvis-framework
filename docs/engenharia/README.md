@@ -47,14 +47,6 @@ Os comandos de frontend e de backend são **neutros de stack**: carregam a skill
 | [`eng.frontend-review`](./eng.frontend-review.md) | Revisa um PR de frontend |
 | [`eng.frontend-perf-audit`](./eng.frontend-perf-audit.md) | Audita performance (Core Web Vitals, bundle) |
 
-## QA
-
-| Comando | Em uma frase |
-|---|---|
-| [`eng.qa-refinement-entry`](./eng.qa-refinement-entry.md) | Estratégia de testes a partir da spec, antes do código |
-| [`eng.qa-sprint-planning`](./eng.qa-sprint-planning.md) | Capacidade de QA da sprint, por risco |
-| [`eng.qa-release-signoff`](./eng.qa-release-signoff.md) | GO ou NO-GO antes do deploy |
-
 ## Fluxos especializados
 
 | Comando | Em uma frase |

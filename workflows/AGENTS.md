@@ -37,14 +37,10 @@ workflows/
     ├── eng.create-rfc.md          # Criar RFC
     ├── eng.build-tech-spec.md     # Tech Spec (Delivery Spec ou Reference Spec)
     ├── eng.light-arch.md          # Design leve
-    ├── frontend/
-    │   ├── eng.frontend-component.md   # Criar/refatorar componente frontend
-    │   ├── eng.frontend-review.md      # Revisão de PR frontend
-    │   └── eng.frontend-perf-audit.md  # Auditoria de performance (Core Web Vitals)
-    └── qa/
-        ├── eng.qa-refinement-entry.md
-        ├── eng.qa-release-signoff.md
-        └── eng.qa-sprint-planning.md
+    └── frontend/
+        ├── eng.frontend-component.md   # Criar/refatorar componente frontend
+        ├── eng.frontend-review.md      # Revisão de PR frontend
+        └── eng.frontend-perf-audit.md  # Auditoria de performance (Core Web Vitals)
 ```
 
 ---

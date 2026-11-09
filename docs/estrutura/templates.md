@@ -32,8 +32,6 @@ templates/
     ├── central-home-template.md      # Central docs: página inicial do squad (editável, só uma vez)
     ├── central-session-template.md   # Central docs: página-índice da sessão de um card (history/{card}/{card}.md)
     └── qa/
-        ├── qa.release-signoff-template.md
-        ├── qa.sprint-plan-template.md
         ├── qa.test-strategy-template.md         # estratégia do Modo A do eng.qa.test-planner
         ├── qa.test-coverage-report-template.md  # relatório de cobertura do Modo B do eng.qa.test-planner
         └── qa.test-suite-report-template.md     # relatório de teste do eng.qa.testing-engineer

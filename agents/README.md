@@ -18,7 +18,7 @@ agents/
 │   ├── eng.rpa.agent.md          # Automação RPA (ARACHNE)
 │   ├── eng.frontend.agent.md     # Especialista frontend (neutro de stack): UI, estado, a11y
 │   ├── eng.ux-designer.agent.md  # Especialista UX/UI: heurísticas, jornada, microcopy
-│   └── qa/                       # QA específico de engenharia (4 agents)
+│   └── qa/                       # QA específico de engenharia (3 agents)
 └── product/                      # 🎯 Agentes do domínio de Produto
     ├── prod.pm-checker.md        # Product Manager checker
     └── prod.discovery-interviewer.md  # Entrevistador de discovery
@@ -48,13 +48,12 @@ Agentes específicos para fluxos e regras do domínio de Engenharia.
 - `eng.docs-consolidator.agent.md` - `@eng.docs-consolidator.agent` - Consolida o que a entrega implementou em documentos do Central docs (por funcionalidade e por entrega), chamado pelo `/eng.spec-consolidate`
 
 
-### QA Agents (4)
+### QA Agents (3)
 **Subpasta**: `engineering/qa/`
 
 - `eng.qa.test-planner.md` - `@eng.qa.test-planner`
 - `eng.qa.testing-engineer.md` - `@eng.qa.testing-engineer` _(stack primária: Cypress + TypeScript — inclui domínio e debugging Cypress)_
 - `eng.qa.test-architect.md` - `@eng.qa.test-architect`
-- `eng.qa.quality-strategist.md` - `@eng.qa.quality-strategist` — priorização de esforço, risco de feature, distribuição QA/dev
 
 ---
 
