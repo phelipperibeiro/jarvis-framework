@@ -37,7 +37,7 @@ bin/
     ├── vcs/                # GitHub/GitLab pela CLI (gh, glab)
     ├── tasks/              # comentários em boards
     ├── docs/               # scripts de sync/publish de docs
-    ├── auth/               # legado (login removido no fork)
+    ├── auth/               # session.js (resolveUser: identidade por ENV.md, git e SO)
     └── utils/              # paths, ui (banner), logger
 ```
 

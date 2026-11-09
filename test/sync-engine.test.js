@@ -103,6 +103,19 @@ test("syncAssets: caminho feliz para claude — copia SYNC_DIRS, SYNC_ROOT_FILES
   });
 });
 
+test("syncAssets: scripts/ do framework não é copiado (saiu do SYNC_DIRS, #239)", () => {
+  withJarvisRoot((root, target) => {
+    buildMinimalFramework(root);
+    write(root, "scripts/x.sh");
+
+    const result = syncAssets(target, "claude", {});
+
+    assert.equal(result.errors.length, 0, JSON.stringify(result.errors));
+    assert.ok(!existsSync(join(target, ".claude/scripts")));
+    assert.ok(!result.skipped.some((s) => s.includes("scripts/")));
+  });
+});
+
 test("syncAssets: dir inexistente no framework é listado em skipped, não em errors", () => {
   withJarvisRoot((root, target) => {
     // framework vazio — nenhum SYNC_DIRS/SYNC_ROOT_FILES existe
