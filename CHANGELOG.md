@@ -9,6 +9,7 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), e o
 ## Não lançado
 
 ### Changed
+- **Pergunta de merge do `/eng.pr` com o `--force` (#255)**: no fim do `/eng.pr`, "O PR já foi aprovado e mergeado?" ganha a opção "Sim, rodar o `/eng.spec-consolidate --force` (publica e apaga os originais, sem `archive/`)", que antes precisava ser digitada no "Outro". O padrão continua "Ainda não (como hoje)", e a pasta da sessão só é apagada com o Sim da pergunta própria do `/eng.spec-consolidate`.
 - **Mapa de modelos do OpenCode na família Claude 5.5 (#239)**: `opus`, `sonnet` e `haiku` passam a gerar `anthropic/claude-opus-5-5`, `anthropic/claude-sonnet-5-5` e `anthropic/claude-haiku-5-5` nos agents e comandos de `.opencode/`, e o `opencode.json` novo sai com `anthropic/claude-sonnet-5-5`. O `haiku` apontava para um ID que não existe (`claude-haiku-4-5-20250414`), e o `claude-sonnet-5` (o `recommended_model` da maioria dos workflows) era rebaixado para `claude-sonnet-4-6`; agora ele passa com o próprio ID. IDs conferidos no catálogo do models.dev, que o OpenCode usa, em 2026-11-08. Quem usa OpenCode recebe os modelos novos com `jarvis init --upgrade`.
 
 ### Removed
