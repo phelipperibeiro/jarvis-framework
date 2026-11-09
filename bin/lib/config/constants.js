@@ -196,6 +196,11 @@ export const OBSOLETE_PATHS = Object.freeze([
   "workflows/eng.review.md",
   "commands/eng.review.md",
   "steering/eng.review.md",
+  // eng.docs (issue #246, mãe #237): coberto pela oferta de documentação do eng.work (Fase 6.2) e
+  // pelo gate 9 do eng.pre-pr; o skill eng-global-docs-write continua. O workflow é achatado.
+  "workflows/eng.docs.md",
+  "commands/eng.docs.md",
+  "steering/eng.docs.md",
 ]);
 
 /**

@@ -308,8 +308,10 @@ test("syncAssets: instalação antiga é limpa (claude, windsurf e kiro) pelo OB
       "skills/product-roadmap-report/commands/status.list.projects.md",
       // eng.review consolidado no eng.pre-pr (#245): o workflow fica achatado na pasta de comandos
       "commands/eng.review.md",
+      // eng.docs removido (#246): coberto pela oferta de documentação do eng.work
+      "commands/eng.docs.md",
     ],
-    windsurf: ["workflows/AGENTS.md", "workflows/README.md", "workflows/all-tools.md", "workflows/eng.review.md"],
+    windsurf: ["workflows/AGENTS.md", "workflows/README.md", "workflows/all-tools.md", "workflows/eng.review.md", "workflows/eng.docs.md"],
     kiro: [
       "steering/AGENTS.md",
       "steering/README.md",
@@ -319,6 +321,7 @@ test("syncAssets: instalação antiga é limpa (claude, windsurf e kiro) pelo OB
       "steering/eng.docs-scraping-rules.md",
       "steering/eng.rpa-rules.md",
       "steering/eng.review.md", // eng.review consolidado no eng.pre-pr (#245)
+      "steering/eng.docs.md", // eng.docs removido (#246)
     ],
   };
   for (const [ide, arquivos] of Object.entries(antigos)) {
