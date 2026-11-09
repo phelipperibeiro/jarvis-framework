@@ -3,7 +3,6 @@ description: Fluxo de implementação de código (commit por fase, SEM push nem 
 auto_execution_mode: 3
 agent: "$IDE/agents/engineering/eng.agent.md"
 rules_file: "$IDE/rules-on-demand/engineering/eng.work-rules.md"
-template_file: "$IDE/templates/engineering/work-progress-template.md"
 recommended_model: claude-sonnet-5
 ---
 
@@ -12,7 +11,6 @@ recommended_model: claude-sonnet-5
 Este comando executa a **implementação de código** seguindo o plano de execução.
 
 > 📋 **Rules**: `$IDE/rules-on-demand/engineering/eng.work-rules.md` — **antes de começar, leia esse arquivo e siga-o**: ele não é carregado automaticamente no início da sessão.
-> 📤 **Template**: `$IDE/templates/engineering/work-progress-template.md`
 > 🔀 **Transições**: `$IDE/rules-on-demand/engineering/eng.transitions-rules.md` — perguntas de início e de fim deste comando (a opção padrão mantém o fluxo de sempre).
 >
 > 🔗 **Links**: antes de escrever os comentários de fase no `plan.md`, leia `$IDE/rules-on-demand/doc-links-rules.md` e siga-a: toda citação com lugar exato (requisito, documento, código, card, PR) vira link.

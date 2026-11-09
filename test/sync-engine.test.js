@@ -26,6 +26,7 @@ import {
   syncRulesForProfile,
 } from "../bin/lib/core/sync-engine.js";
 import { listRulesForProfile } from "../bin/lib/core/profile-filter.js";
+import { OBSOLETE_PATHS } from "../bin/lib/config/constants.js";
 import { createHash } from "node:crypto";
 import { dirname, relative, sep } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -287,6 +288,13 @@ test("syncAssets: instalação antiga é limpa (claude, windsurf e kiro) pelo OB
       "templates/engineering/CONTACTS-template.md",
       "templates/cdd-aplicado-a-prompts.md",
       "skills/product-roadmap-report/rules/detailed-guide.md",
+      // lote A de código morto (#238): template, agente, assets e comandos de skill sem consumidor
+      "templates/engineering/work-progress-template.md",
+      "agents/engineering/qa/eng.qa.quality-champion-task-agent.md",
+      "skills/eng-qa-planner/assets/test-coverage-template.md", // os 2 somem com a entrada de pasta
+      "skills/eng-qa-planner/assets/test-patterns.md",
+      "skills/product-roadmap-report/commands/status.compiled.single.team.md",
+      "skills/product-roadmap-report/commands/status.list.projects.md",
     ],
     windsurf: ["workflows/AGENTS.md", "workflows/README.md", "workflows/all-tools.md"],
     kiro: [
@@ -321,6 +329,9 @@ test("syncAssets: instalação antiga é limpa (claude, windsurf e kiro) pelo OB
       // A limpeza não leva junto a rule que continua no framework (nem a cópia dela no Kiro).
       assert.ok(existsSync(join(target, `.${ide}/rules/engineering/eng-rules.md`)));
       if (ide === "kiro") assert.ok(existsSync(join(target, ".kiro/steering/eng-rules.md")));
+      // Entrada de pasta (#238): a pasta some inteira, não só os arquivos de dentro
+      if (ide === "claude")
+        assert.ok(!existsSync(join(target, ".claude/skills/eng-qa-planner/assets")));
     });
   }
 });
@@ -354,6 +365,52 @@ test("isExcludedFromSync: só documentação de pasta fica de fora; componentes 
   for (const [dir, rel] of fora) assert.equal(isExcludedFromSync(dir, rel), true, `${dir}/${rel}`);
   for (const [dir, rel] of dentro)
     assert.equal(isExcludedFromSync(dir, rel), false, `${dir}/${rel}`);
+});
+
+// Uma entrada de OBSOLETE_PATHS que ainda é copiada do framework seria instalada e apagada
+// na mesma passada, sem aviso (#238). Cada entrada tem que ter saído do repositório ou ser
+// documentação de pasta que o SYNC_EXCLUDE tira da cópia.
+test("OBSOLETE_PATHS: nenhuma entrada ainda é copiada do repositório do framework", () => {
+  const raiz = fileURLToPath(new URL("..", import.meta.url));
+  const PASTAS_ACHATADAS = ["workflows", "commands", "steering"];
+
+  // Arquivos de workflows/** (relativos a workflows/), para conferir os nomes achatados
+  const arquivosDeWorkflows = [];
+  const varrer = (dir) => {
+    for (const entrada of readdirSync(join(raiz, "workflows", dir), { withFileTypes: true })) {
+      const rel = dir ? `${dir}/${entrada.name}` : entrada.name;
+      if (entrada.isDirectory()) varrer(rel);
+      else arquivosDeWorkflows.push(rel);
+    }
+  };
+  varrer("");
+
+  const problemas = [];
+  for (const entrada of OBSOLETE_PATHS) {
+    const [pasta, ...resto] = entrada.split("/");
+    const rel = resto.join("/");
+    // steering/skills/skill-{nome}.md é gerado na instalação do Kiro; nunca existe no repositório
+    if (entrada.startsWith("steering/skills/")) continue;
+    const achatado = PASTAS_ACHATADAS.includes(pasta) && resto.length === 1;
+    // A limpeza apaga todo workflow pelo nome achatado (sync-engine.js), inclusive o que tem
+    // subpasta no caminho: um nome ainda usado em outra subpasta de workflows/ sumiria da IDE.
+    if (achatado || pasta === "workflows") {
+      const nome = resto[resto.length - 1];
+      const copiados = arquivosDeWorkflows.filter(
+        (arquivo) => arquivo.split("/").pop() === nome && !isExcludedFromSync("workflows", arquivo)
+      );
+      if (copiados.length) problemas.push(`${entrada} (ainda copiado de workflows/${copiados[0]})`);
+      if (achatado) continue;
+    }
+    if (existsSync(join(raiz, entrada)) && !isExcludedFromSync(pasta, rel)) {
+      problemas.push(`${entrada} (ainda existe no repositório e é copiado)`);
+    }
+  }
+  assert.deepEqual(
+    problemas,
+    [],
+    `Entradas de OBSOLETE_PATHS ainda copiadas:\n${problemas.join("\n")}`
+  );
 });
 
 // OBSOLETE_PATHS guarda os workflows pelo caminho do framework (workflows/engineering/...),

@@ -14,21 +14,22 @@ A pasta `agents/` contem **definicoes de agentes especializados** que atuam no f
 
 ```
 agents/
-├── engineering/           # Agentes ativos de engenharia (13 agents)
+├── engineering/           # Agentes ativos de engenharia (14 agents)
+│   ├── eng.advisor.agent.md
 │   ├── eng.agent.md
 │   ├── eng.bug-hunter.md
 │   ├── eng.dev-code-reviewer.md
+│   ├── eng.docs-consolidator.agent.md
 │   ├── eng.docs-writer.md
 │   ├── eng.frontend.agent.md
 │   ├── eng.rpa.agent.md
 │   ├── eng.ux-designer.agent.md
 │   ├── data/              # Agentes de Data (1 agent)
 │   │   └── eng.data-engineer.agent.md
-│   └── qa/                # Agentes de QA (5 agents)
+│   └── qa/                # Agentes de QA (4 agents)
 │       ├── eng.qa.test-planner.md
 │       ├── eng.qa.testing-engineer.md
 │       ├── eng.qa.test-architect.md
-│       ├── eng.qa.quality-champion-task-agent.md
 │       └── eng.qa.quality-strategist.md
 └── product/               # Agentes ativos de produto (2 agents)
     ├── prod.pm-checker.md
@@ -178,7 +179,7 @@ ENABLE_CDD=true
 
 ## Agentes Ativos
 
-- `engineering/` - Agentes de engenharia (14 agents: 8 main + 5 QA + 1 Data)
+- `engineering/` - Agentes de engenharia (14 agents: 9 main + 4 QA + 1 Data)
 - `product/` - Agentes de produto (2 agents)
 
 ---

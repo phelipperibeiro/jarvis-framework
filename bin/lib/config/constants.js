@@ -187,6 +187,14 @@ export const OBSOLETE_PATHS = Object.freeze([
   "templates/engineering/swagger-template.md",
   "templates/engineering/CONTACTS-template.md",
   "templates/cdd-aplicado-a-prompts.md",
+  // Lote A de código morto (issue #238, mãe #237): template, agente e arquivos de skill sem
+  // consumidor. A pasta assets/ do eng-qa-planner saiu inteira (test-coverage-template.md e
+  // test-patterns.md). O commands/status.memory.md do product-roadmap-report fica: a regra do skill manda rodá-lo.
+  "templates/engineering/work-progress-template.md",
+  "agents/engineering/qa/eng.qa.quality-champion-task-agent.md",
+  "skills/eng-qa-planner/assets",
+  "skills/product-roadmap-report/commands/status.compiled.single.team.md",
+  "skills/product-roadmap-report/commands/status.list.projects.md",
 ]);
 
 /**
