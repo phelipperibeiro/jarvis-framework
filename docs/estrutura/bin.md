@@ -16,7 +16,7 @@ bin/
 │   ├── init.js             # jarvis init [--ide] [--force] [--upgrade [--yes] [--remove-stale]]; em pasta já instalada, menu Atualizar / Reinstalar / Cancelar; grava o Context7 no MCP da IDE
 │   ├── list.js             # jarvis list
 │   ├── info.js             # jarvis info …
-│   ├── whoami.js           # jarvis whoami / logout legado
+│   ├── whoami.js           # jarvis whoami
 │   ├── docs-sync.js        # jarvis docs sync
 │   ├── docs-publish.js     # jarvis docs publish (--manifest/--force: #220)
 │   ├── docs-archive.js     # jarvis docs archive (#220)
@@ -37,7 +37,7 @@ bin/
     ├── vcs/                # GitHub/GitLab pela CLI (gh, glab)
     ├── tasks/              # comentários em boards
     ├── docs/               # scripts de sync/publish de docs
-    ├── auth/               # legado (login removido no fork)
+    ├── auth/               # session.js (resolveUser: identidade por ENV.md, git e SO)
     └── utils/              # paths, ui (banner), logger
 ```
 
@@ -64,7 +64,7 @@ bin/
 
 ## Sync (`sync-engine`)
 
-Pastas sincronizadas (`SYNC_DIRS`): `agents`, `skills`, `workflows`, `templates`, `rules`, `scripts` (se existir).
+Pastas sincronizadas (`SYNC_DIRS`): `agents`, `skills`, `workflows`, `templates`, `rules`, `rules-on-demand`.
 
 Arquivos de raiz (`SYNC_ROOT_FILES`): `taxonomy.md`, `AGENTS.md`, `members.md`.
 

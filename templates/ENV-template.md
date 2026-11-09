@@ -168,26 +168,6 @@ VERSION_CONTROL_ACCESS=[cli, manual]
 
 
 # =============================================================================
-# Chat / comunicador (opcional)
-# =============================================================================
-# slack: BOT_TOKEN + SIGNING_SECRET + APP_TOKEN (Socket Mode)
-# discord: BOT_TOKEN (Bot) + ALERTS_CHANNEL = ID do canal
-# teams: BOT_TOKEN = URL do Incoming Webhook (SIGNING/APP vazios)
-MESSAGE_COMUNICATOR=[slack, discord, teams]
-MESSAGE_COMUNICATOR_BOT_TOKEN=
-MESSAGE_COMUNICATOR_SIGNING_SECRET=
-MESSAGE_COMUNICATOR_APP_TOKEN=
-ALERTS_CHANNEL=
-
-
-# =============================================================================
-# Object storage (opcional)
-# =============================================================================
-OBJECT_STORAGE=[aws_s3, gcs, azure_blob]
-TOKEN_OBJECT_STORAGE=
-
-
-# =============================================================================
 # RTK — Token Killer (opcional)
 # =============================================================================
 # Proxy CLI em Rust que comprime output de shell (economia 60–90% de tokens).

@@ -27,7 +27,7 @@ bin/
     ├── config/                # ide-config.js (fonte de verdade de IDEs), constants.js
     ├── core/                  # scanner.js, sync-engine.js (inclui o RuleResolver do overlay), profile-filter.js, token-report.js, company-profile.js (COMPANY_PROFILE e o default stark-industries)
     ├── docs/                  # Central docs, por funcionalidade (#220): fetch/publish/migrate/archive/finalize + validação
-    │   ├── validate-frontmatter.js  # Valida/extrai frontmatter (feature, delivery, product, home, history, architecture, plan, light-arch e documentos de trabalho: PRD, FRD, épico, história, tarefa, ARD, RFC, QA, discovery)
+    │   ├── validate-frontmatter.js  # Valida frontmatter (feature, delivery, product, home, history, architecture, plan, light-arch e documentos de trabalho: PRD, FRD, épico, história, tarefa, ARD, RFC, QA, discovery)
     │   ├── fetch-file.js       # openStorageFromEnv() + fetchFile() — `docs sync`/`docs fetch`/`docs publish`/`docs migrate`/`docs archive`/`docs finalize`
     │   ├── publish-file.js     # tipos, resolveDestPath(), publishFile() e publishFiles() (lote, `--dry-run`, nome com o card, conversão de links) — `docs publish [--manifest]`
     │   ├── session-inventory.js # inventário das sessões (arquivos, entrega, página-índice, pendente) — `docs sessions`
@@ -38,7 +38,7 @@ bin/
     │   └── storage/            # adaptadores (CENTRAL_DOCS_STORAGE): index.js (fábrica), filesystem.js (pasta + git, inclui publishBatch), build-index.js
     ├── utils/                 # logger.js, ui.js, paths.js, frontmatter.js (inclui readDescription), git-parser.js
     ├── flow-map/              # `jarvis map` — grafo de chamadas entre workflows/skills/agents
-    ├── auth/                  # session.js (auth.json legado, hoje só `jarvis logout` o lê)
+    ├── auth/                  # session.js (resolveUser: identidade por ENV.md, git e SO)
     └── env-loader.js          # Resolve e lê o ENV.md ($IDE/ENV.md)
 ```
 
@@ -69,7 +69,7 @@ const whoamiCmd = cmd(program, "whoami").description("...");
 withEnvOptions(withLogOptions(whoamiCmd)).action((options) => whoami(toLegacyFlags(options)));
 ```
 
-`toLegacyFlags` remapeia só as duas chaves que mudam de formato (`envFile`→`"env-file"`, `maxAge`→`"max-age"`); todo o resto passa direto. O `extra` (segundo argumento) serve para injetar positionals como `_` ou flags sintéticas como `{ logout: true }` (usado por `jarvis logout`, que chama a mesma função de `whoami.js` com essa flag).
+`toLegacyFlags` remapeia só as duas chaves que mudam de formato (`envFile`→`"env-file"`, `maxAge`→`"max-age"`); todo o resto passa direto. O `extra` (segundo argumento) serve para injetar positionals como `_` (ex.: `jarvis list`, `jarvis fork` e `jarvis map`).
 
 **Ao adicionar uma opção nova que usa hífen** (ex: `--body-file`), decida: se a função de `bin/commands/*.js` vai ler `flags["body-file"]` (formato antigo) ou se você vai atualizá-la para ler `options.bodyFile` direto. Os 4 comandos novos (`vcs create-merge`, `vcs create-issue`, etc.) já usam o segundo caminho — passam o objeto de opções do commander quase direto, sem o adapter — porque não têm lógica legada para preservar.
 

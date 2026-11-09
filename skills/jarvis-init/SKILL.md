@@ -585,11 +585,6 @@ Se **A** ou **B**, perguntar sobre cada variável opcional conforme seleção �
 | `TASK_MANAGER_URL_BASE` | *(vazio)* | GitHub/GitLab: repositório dos cards (obrigatório); Jira: o site, só para o link |
 | `VERSION_CONTROL` | *(vazio)* | `github`, `gitlab` |
 | `VERSION_CONTROL_ACCESS` | *(vazio)* | `cli` ou `manual` |
-| `MESSAGE_COMUNICATOR` | *(vazio)* | `slack`, `discord`, `teams` |
-| `MESSAGE_COMUNICATOR_BOT_TOKEN` / `_SIGNING_SECRET` / `_APP_TOKEN` | *(vazio)* | Tokens do chat |
-| `ALERTS_CHANNEL` | *(vazio)* | Canal de alertas |
-| `OBJECT_STORAGE` | *(vazio)* | `aws_s3`, `gcs`, `azure_blob` |
-| `TOKEN_OBJECT_STORAGE` | *(vazio)* | Token storage |
 | `TEST_FOLDER` | *(vazio)* | Pasta de testes |
 | `JARVIS_PROJECT` | `https://github.com/phelipperibeiro/jarvis-framework` | URL completa do repo do framework (`/jarvis-report-issue`); trocar só para um fork |
 | `CENTRAL_DOCS_STORAGE` / `_LOCATION` | `filesystem` / pasta padrão do modo de trabalho | Central docs (o que foi implementado), configurado no Passo 5.2; vazio = desligado |
@@ -767,7 +762,7 @@ TASK_MANAGER_URL_BASE=
 # =============================================================================
 VERSION_CONTROL=
 VERSION_CONTROL_ACCESS=
-# ... restante do template, cada assunto na sua moldura (MESSAGE_COMUNICATOR*, OBJECT_STORAGE, JARVIS_PROJECT, CENTRAL_DOCS_*, etc.)
+# ... restante do template, cada assunto na sua moldura (JARVIS_PROJECT, CENTRAL_DOCS_*, etc.)
 JARVIS_PROJECT=https://github.com/phelipperibeiro/jarvis-framework
 ```
 
@@ -1044,7 +1039,7 @@ Não pergunte de novo o que as exceções 8 a 8.3 do Upgrade já resolveram nest
 
 ### 12. Verificar Acessos
 
-Confirmar acessos relevantes (não bloqueantes): Git; a CLI do board e do git (`auth status` do catálogo) se `TASK_MANAGER`/`VERSION_CONTROL` estiverem definidos; chat se `MESSAGE_COMUNICATOR` estiver definido; ambiente de Dev.
+Confirmar acessos relevantes (não bloqueantes): Git; a CLI do board e do git (`auth status` do catálogo) se `TASK_MANAGER`/`VERSION_CONTROL` estiverem definidos; ambiente de Dev.
 
 ### 13. Entregar Checklist
 

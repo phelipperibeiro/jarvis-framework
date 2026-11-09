@@ -3,9 +3,6 @@
  * @module config/constants
  */
 
-/** @constant {string} Nome do pacote NPM */
-export const CLI_NAME = "jarvis-framework";
-
 /** @constant {string} Nome do arquivo de lock */
 export const LOCK_FILE = "jarvis-lock.json";
 
@@ -20,7 +17,6 @@ export const SYNC_DIRS = Object.freeze([
   "templates",
   "rules",
   "rules-on-demand",
-  "scripts",
 ]);
 
 /**
@@ -224,14 +220,13 @@ export const SYNC_ROOT_FILES = Object.freeze(["taxonomy.md", "AGENTS.md", "membe
  */
 export const OPENCODE_MODEL_MAP = Object.freeze({
   // Anthropic — shorthands usados no Jarvis
-  opus: "anthropic/claude-opus-4-6",
-  sonnet: "anthropic/claude-sonnet-4-6",
-  haiku: "anthropic/claude-haiku-4-5-20250414",
-  // Anthropic — IDs completos
+  opus: "anthropic/claude-opus-5-5",
+  sonnet: "anthropic/claude-sonnet-5-5",
+  haiku: "anthropic/claude-haiku-5-5",
+  // Anthropic — IDs completos com data: normalizados para o ID sem data. Os demais IDs `claude-*`
+  // (ex.: claude-sonnet-5) passam direto pelo fallback `anthropic/{id}` de resolveOpenCodeModel.
   "claude-opus-4-6-20250529": "anthropic/claude-opus-4-6",
   "claude-sonnet-4-6-20250514": "anthropic/claude-sonnet-4-6",
-  "claude-sonnet-5": "anthropic/claude-sonnet-4-6",
-  "claude-haiku-4-5-20250414": "anthropic/claude-haiku-4-5-20250414",
   // OpenAI
   "gpt-4o": "openai/gpt-4o",
   "gpt-4o-mini": "openai/gpt-4o-mini",
