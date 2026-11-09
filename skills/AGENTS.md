@@ -277,7 +277,7 @@ Não há um gerador de skills: a criação é manual.
 2. Criar a pasta `skills/{nome}/` com um `SKILL.md`, usando como modelo um skill existente de porte parecido (por exemplo, `eng-qa-planner` para um skill de fluxo, `eng-backend-nestjs` para uma especialização)
 3. Preencher o frontmatter ("Frontmatter Obrigatorio"), **inclusive `metadata.area`** (e `metadata.stack` se for especialização), e as "Secoes Obrigatorias de um SKILL.md", incluindo a tabela `Skills invocados durante a execução do skill`
 4. Validar estrutura: `name` igual ao nome da pasta e área reconhecida
-5. Registrar o skill no `SKILLS-ROADMAP.md` e, se houver comando associado, na tabela "Mapeamento Comando → Skill"
+5. Registrar o skill na árvore da seção **Estrutura** deste arquivo e, se houver comando associado, na tabela "Mapeamento Comando → Skill"
 
 ---
 
@@ -324,7 +324,6 @@ Nao converta procedimento sequencial (passo 1, 2, 3 que se le de ponta a ponta) 
 
 ## Referencias
 
-- `SKILLS-ROADMAP.md` - Skills existentes e planejadas
 - `../agents/` - Agentes que usam skills
 - `../workflows/` - Workflows relacionados
 - `../rules/` - Regras que skills implementam

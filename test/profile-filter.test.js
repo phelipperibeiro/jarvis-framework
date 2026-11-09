@@ -263,16 +263,18 @@ test("listRulesForProfile: rtk é opt-in, sem bloco é universal, recursivo em s
 // CLAUDE.md respeita o .git/info/exclude no modo projeto. +195 B nos 4 perfis; nenhum arquivo a mais.
 // Issue #239 (2026-11-08): eng.integrations-rules.md (AREA: all) perde a linha do chat, a seção
 // de alertas e as menções a Slack. −301 B nos 4 perfis; nenhum arquivo a menos.
+// Issue #240 (2026-11-08): eng-rules.md (AREA: all) perde a linha da pasta $SESSIONS_DIR/qa/, sem
+// gerador desde a consolidação de QA. −74 B nos 4 perfis; nenhum arquivo a menos.
 const BASE = [
   [
     "FULLCYCLE/GENERALIST/ENGINEERING/CORE",
     profile("FULLCYCLE", "GENERALIST", "ENGINEERING"),
     10,
-    66789,
+    66715,
   ],
-  ["BACKEND/SENIOR/ENGINEERING/CORE", profile("BACKEND", "SENIOR", "ENGINEERING"), 7, 47305],
-  ["FRONTEND/PLENO/ENGINEERING/CORE", profile("FRONTEND", "PLENO", "ENGINEERING"), 8, 55604],
-  ["QA/QA-ENGINEER/ENGINEERING/CORE", profile("QA", "QA-ENGINEER", "ENGINEERING"), 8, 47768],
+  ["BACKEND/SENIOR/ENGINEERING/CORE", profile("BACKEND", "SENIOR", "ENGINEERING"), 7, 47231],
+  ["FRONTEND/PLENO/ENGINEERING/CORE", profile("FRONTEND", "PLENO", "ENGINEERING"), 8, 55530],
+  ["QA/QA-ENGINEER/ENGINEERING/CORE", profile("QA", "QA-ENGINEER", "ENGINEERING"), 8, 47694],
 ];
 
 for (const [nome, p, arquivos, bytes] of BASE) {

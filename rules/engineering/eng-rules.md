@@ -44,7 +44,6 @@
   - `$SESSIONS_DIR` → `.jarvis/sessions` (na pasta do workspace, a que contém `$IDE/`)
     - `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/` — architecture.md, plan.md, context.md
     - `$SESSIONS_DIR/prod/{TASK_MANAGER_KEY}/` — rascunhos de spec de produto
-    - `$SESSIONS_DIR/qa/` — exploratório EXP-*, bug-reports, specs E2E
     - Cookie/HTTP session (auth) **não** é esta pasta
   - **Detecção**: Verifique qual pasta `.{ide}/` existe no projeto antes de criar arquivos.
 
