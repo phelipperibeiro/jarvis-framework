@@ -29,7 +29,7 @@ jarvis-framework/
 │                                 #   -task-comment, -investigation, -tech-spec, -docs-write
 │                                 # jarvis-*: init, fork, context-detect, docs-central, docs-index,
 │                                 #   create/list-specializations, report-issue, evolution-architect
-│                                 # product-*: specs, specs-update, roadmap-report
+│                                 # product-*: specs, specs-update
 ├── templates/                    # documentos: engineering/ (ARD, RFC, tech spec, architecture, plan…),
 │                                 # product/ (PRD, FRD, épico, issue, breakdown, discovery), ENV-template.md
 ├── rules/                        # carregadas no início da sessão, filtradas pelo perfil (Applies to)
