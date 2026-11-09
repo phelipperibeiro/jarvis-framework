@@ -60,4 +60,5 @@ Os comandos de frontend e de backend são **neutros de stack**: carregam a skill
 - Quer revisar um PR → [`eng.pre-pr`](./eng.pre-pr.md) (de outra pessoa: faça checkout da branch do PR e use a chave do card dela) ou [`eng.frontend-review`](./eng.frontend-review.md) se for interface
 - Quer atualizar a documentação do repositório → aceite a oferta no fim do [`eng.work`](./eng.work.md), ou use o skill `/eng-global-docs-write` direto
 - Quer quebrar uma história em subtarefas (em resumo ou passo a passo) → [`eng.build-tech-spec`](./eng.build-tech-spec.md) (Delivery Spec)
+- Quer a estratégia de testes de um card antes do código → chame o agente `@eng.qa.test-planner` com o id do card ou o caminho da spec (Modo A); no ciclo, o [`eng.start`](./eng.start.md) já traz a estratégia de testes no `architecture.md`
 - Precisa de uma decisão de arquitetura → [`eng.light-arch`](./eng.light-arch.md), [`eng.create-ard`](./eng.create-ard.md) ou [`eng.create-rfc`](./eng.create-rfc.md)

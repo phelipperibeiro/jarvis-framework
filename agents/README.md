@@ -123,6 +123,7 @@ Você também pode invocar agentes manualmente usando `@`:
 ```bash
 # Invocar agente específico
 @eng.qa.test-planner "analisar cobertura de testes da branch"
+@eng.qa.test-planner TASK-123   # Modo A: estratégia de testes a partir do card, antes do código
 
 # Múltiplos agentes em paralelo
 @eng.frontend.agent @eng.ux-designer.agent "revisar fluxo de checkout"
