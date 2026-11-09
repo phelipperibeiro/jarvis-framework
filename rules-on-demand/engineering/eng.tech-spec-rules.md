@@ -143,7 +143,7 @@ O `/eng.build-tech-spec` tem dois modos, escolhidos na triagem do workflow:
 [ ] Um dev pode executar sem perguntas adicionais
 ```
 
-**Exemplo:** ✅ `SUBTASK-003: Criar endpoint POST /api/users com validação de email` (rota, validador e testes; 1,5h; critérios verificáveis) · ❌ `SUBTASK-003: Implementar API de usuários` (descrição "Criar API", critério "deve funcionar").
+**Exemplo:** ✅ `SUBTASK-003: [BACKEND] Criar endpoint POST /api/users com validação de email` (rota, validador e testes; 1,5h; critérios verificáveis) · ❌ `SUBTASK-003: [BACKEND] Implementar API de usuários` (descrição "Criar API", critério "deve funcionar").
 
 ---
 

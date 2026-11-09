@@ -52,6 +52,7 @@ B: História / Task — implementação específica, pronta para desenvolvimento
 
 **Tech Spec já pronta (só história):** se já existe `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/tech-spec.md`, ou o usuário apontou ou colou uma Tech Spec de história, pergunte com `AskUserQuestion`: **"Já existe uma Tech Spec para este card"** → **Gerar a Tech Spec de novo (como hoje)** / **Só gerar as subtarefas dela (vai para a Fase 7)**. Com o atalho:
 - aplique o Passo 2 (Áreas), acima: o passo a passo usa as convenções do projeto;
+- se a Tech Spec veio colada ou de outro caminho, grave-a em `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/tech-spec.md` (é o arquivo que as subtarefas citam);
 - pule as Fases 1.2 a 6 (a checagem de RFC já está registrada na spec);
 - a Fase 7 parte da seção 3 (`SUBTASK-XXX`) da Tech Spec existente e regrava o `subtarefas.md`; depois, siga para a Fase 8.
 
@@ -557,7 +558,7 @@ Preencha a seção 5 do template: para cada caso extremo ou erro, cenário, comp
 **Preencha todas as seções** com as informações coletadas nas fases anteriores.
 
 **Salve o arquivo na SESSÃO do projeto:**
-`$SESSIONS_DIR/eng/{feature-name}/tech-spec.md`
+`$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/tech-spec.md`
 
 Exemplo: `$SESSIONS_DIR/eng/story-123/tech-spec.md`
 
@@ -586,7 +587,7 @@ Só com board configurado (no freelance não há issue: pule este passo). Só h�
 
 ### FASE 7: Criação de Subtarefas (automática só no Jira)
 
-**Nível de detalhe**, antes da 7.1: pergunte com `AskUserQuestion` **"Como descrever cada subtarefa?"** → **Resumo (como hoje)** / **Passo a passo para quem executa sem perguntar**. O passo a passo é para time com juniores ou fatias que vão para pessoas diferentes: antes de escrevê-lo, leia os arquivos listados em cada subtarefa, para que os caminhos e o código sejam reais. A escolha só muda a descrição entregue (7.2); o `tech-spec.md` não muda.
+**Nível de detalhe**, antes da 7.1: pergunte com `AskUserQuestion` **"Como descrever cada subtarefa?"** → **Resumo (como hoje)** / **Passo a passo para quem executa sem perguntar**. O passo a passo é para time com juniores ou fatias que vão para pessoas diferentes: antes de escrevê-lo, leia os arquivos listados em cada subtarefa e localize no projeto (glob e grep) arquivos parecidos para "Arquivos de referência", para que os caminhos e o código sejam reais; sem arquivo parecido, escreva "nenhum parecido no projeto", nunca um caminho inventado. A escolha só muda a descrição entregue (7.2); o `tech-spec.md` não muda.
 
 > **Escopo:** a criação automática de subtarefas é só no Jira, pela `acli`. Em GitHub ou GitLab, ou no Jira sem a `acli` logada ou com `TASK_MANAGER_ACCESS=manual`, esta fase entrega o template formatado e as instruções para a pessoa criar as subtarefas à mão; como não há envio, a 7.3 não faz a pergunta nesse caso. A generalização para `gh`/`glab` fica para uma issue à parte.
 
@@ -596,7 +597,7 @@ Só com board configurado (no freelance não há issue: pule este passo). Só h�
 
 Para cada subtarefa no plano:
 
-- Título: `SUBTASK-XXX: {Nome}`
+- Título: `SUBTASK-XXX: [{STACK}] {Nome}` (o prefixo da stack predominante, princípio 3 da rule)
 - Descrição: Incluir descrição técnica, arquivos, critérios, testes
 - Tipo: Subtask
 - Pai: {STORY-XXX original}
@@ -641,8 +642,8 @@ Use o formato **Comentário na história original** de `$IDE/templates/engineeri
 
 Valide que:
 
-- [ ] Tech Spec completa e aprovada pelo usuário
-- [ ] Arquivo salvo na sessão: `$SESSIONS_DIR/eng/{feature-name}/tech-spec.md`
+- [ ] Tech Spec completa e aprovada pelo usuário (no atalho da 1.1, a que já existia)
+- [ ] Arquivo salvo na sessão: `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/tech-spec.md`
 - [ ] Tech Spec anexada na issue (com o Sim), a anexar pela pessoa (orientado) ou deixada na sessão
 - [ ] Subtarefas documentadas com critérios claros, no nível escolhido (resumo ou passo a passo), e gravadas em `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/subtarefas.md`
 - [ ] Subtarefas criadas no Jira pela `acli`, ou template fornecido (outros boards, sem a CLI, com acesso manual, sem o Sim ou sem board)

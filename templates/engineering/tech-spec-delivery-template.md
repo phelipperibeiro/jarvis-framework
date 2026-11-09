@@ -40,7 +40,7 @@ Tech Spec: [Link para tech-spec.md]
 Fase 7.2 do workflow, nível **Passo a passo para quem executa sem perguntar**. A descrição é um tutorial: quem pega o card implementa seguindo-a, sem perguntar. Preencha todas as seções; caminhos reais do projeto; código completo, sem `...` nem `// resto do código`.
 
 ````markdown
-# [{STACK}] {Título específico e acionável}
+# SUBTASK-XXX: [{STACK}] {Título específico e acionável}
 
 **Depende de:** {SUBTASK-XXX / Nenhuma} · **Desbloqueia:** {SUBTASK-XXX / Nenhuma} · **Paralela com:** {SUBTASK-XXX / Nenhuma}
 
@@ -57,7 +57,7 @@ Fase 7.2 do workflow, nível **Passo a passo para quem executa sem perguntar**. 
 
 ## Arquivos de referência (copie o padrão)
 
-- `{caminho/arquivo-parecido}` — use como base para {o quê}
+- `{caminho/arquivo-parecido}` — use como base para {o quê} (sem arquivo parecido no projeto: "nenhum parecido no projeto")
 
 ## Arquivos a criar/modificar
 
@@ -138,7 +138,7 @@ Fase 8.2 do workflow. O que entregar ao usuário ao final.
 ```
 ✅ Tech Spec criada com sucesso!
 
-📄 Documento Local: $SESSIONS_DIR/eng/{feature-name}/tech-spec.md
+📄 Documento Local: $SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/tech-spec.md
 📎 {Anexada na issue: {STORY-XXX} | A anexar pela pessoa (orientado: GitHub/GitLab, sem a CLI, CLI que não anexa ou acesso manual) | Não anexada (só na sessão; sem o Sim) | Sem issue (freelance)}
 
 📋 Resumo:
@@ -147,7 +147,7 @@ Fase 8.2 do workflow. O que entregar ao usuário ao final.
 - Subtarefas: {Y subtarefas}
 - Estimativa total: {Z horas}
 
-📝 Subtarefas ({resumo | passo a passo}): $SESSIONS_DIR/eng/{feature-name}/subtarefas.md
+📝 Subtarefas ({resumo | passo a passo}): $SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/subtarefas.md
 
 🔗 Subtarefas {criadas no Jira pela acli | entregues em template para criação manual (outros boards, sem a CLI, com acesso manual, sem o Sim ou sem board)}:
 - SUBTASK-001: {Nome} (P0, 6h)
@@ -233,6 +233,7 @@ Visão geral do fluxo do workflow, do modo e do tipo de documento (épico ou his
 ┌─────────────────────────────────────────────────────────┐
 │ 1. ENTENDIMENTO                                         │
 │    └─ Ler card, fazer perguntas, validar contexto      │
+│    └─ História com tech-spec.md pronta? atalho → 7B    │
 └─────────────────────────────────────────────────────────┘
                           ↓
            ┌──────────────┴──────────────┐
@@ -254,7 +255,9 @@ Visão geral do fluxo do workflow, do modo e do tipo de documento (épico ou his
                                  │ 6B. Doc       │
                                  │ tech-spec.md  │
                                  ├───────────────┤
-                                 │ 7B. $TASK_MGR │
+                                 │ 7B. Nível +   │
+                                 │ subtarefas.md │
+                                 │ + $TASK_MGR   │
                                  ├───────────────┤
                                  │ 8B. Entrega   │
                                  └───────────────┘
