@@ -14,7 +14,7 @@ Atalhos:
 
 - `eng.create-ard new <nome> [--prd <caminho-do-prd>] [--codigo]`
 - `eng.create-ard edit <nome-ou-caminho> [--codigo]`
-- `--codigo`: o ARD parte do código existente (sem a flag, o comando pergunta "De onde vem o ARD?")
+- `--codigo`: o ARD parte do código existente (sem a flag, o comando pergunta "Qual é a base do ARD?")
 
 ## Quando usar
 

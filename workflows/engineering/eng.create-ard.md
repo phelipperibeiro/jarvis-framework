@@ -1,5 +1,5 @@
 ---
-description: Fluxo de trabalho de Engenharia para criação/iteração de ARD
+description: Fluxo de trabalho de Engenharia para criação/iteração de ARD, a partir de PRD ou do código existente
 recommended_model: opus
 ---
 
@@ -14,6 +14,7 @@ recommended_model: opus
 ## Objetivo
 
 Guiar o assistente de Engenharia (ENG) na criação, revisão ou iteração de um ARD,
+a partir de PRD e decisões ou da arquitetura observada no código existente,
 usando o template `$IDE/templates/engineering/ARD-template.md`, sempre alinhado com:
 
 - contexto do projeto definido em `$IDE/ENV.md`
@@ -37,15 +38,15 @@ usando o template `$IDE/templates/engineering/ARD-template.md`, sempre alinhado 
 
 - `eng.create-ard new <nome> [--prd <caminho-do-prd>] [--codigo]` → modo **novo ARD**
 - `eng.create-ard edit <nome-ou-caminho> [--codigo]` → modo **iteração**
-- `--codigo` → o ARD parte do **código existente** (pula a pergunta de origem do item 1.1)
+- `--codigo` → o ARD parte do **código existente** (pula a pergunta de origem do Passo 0)
 
 1. Se os argumentos **não** estiverem claros, pergunte ao usuário:
    - Você quer:
      - ( ) Criar um **novo ARD**
      - ( ) **Iterar** um ARD existente
 
-1.1. Origem do ARD: sem `--codigo`, pergunte com `AskUserQuestion` (uma pergunta separada da anterior): **"De onde vem o ARD?"** → **De PRD e decisões (como hoje)** / **Do código existente**.
-   - **Do código existente** (ou `--codigo`): o fluxo é o mesmo, mais o Passo 2.1 (coletar contexto do repositório), o bloco "No ramo código" do Passo 3 e a arquitetura atual (observada) no resumo do Passo 7. O PRD continua sendo lido quando existir (Passo 1.1).
+**Pergunta de origem.** Sem `--codigo`, pergunte com `AskUserQuestion` (uma pergunta separada da anterior): **"Qual é a base do ARD?"** → **De PRD e decisões (como hoje)** / **Do código existente**.
+- **Do código existente** (ou `--codigo`): o fluxo é o mesmo, mais o Passo 2.1 (coletar contexto do repositório), o bloco "No ramo código" do Passo 3 e a arquitetura atual (observada) no resumo do Passo 7. O PRD continua sendo lido quando existir (Passo 1.1).
 
 2. Se for **iterar**:
 
@@ -213,7 +214,7 @@ Objetivo: montar um retrato fiel do que o código revela hoje.
 1. Identificar e ler arquivos de topo (se existirem):
 
 - `README.md`
-- `ENV.md`
+- `$IDE/ENV.md`
 - `$DOCS_FOLDER/**` (especialmente `$ENG_DOCS/ARD/**` e docs de arquitetura existentes)
 
 2. Identificar a stack e artefatos de build:
@@ -223,7 +224,7 @@ Objetivo: montar um retrato fiel do que o código revela hoje.
 
 3. Mapear estrutura de diretórios (visão macro):
 
-- listar diretórios de primeiro nível
+- listar diretórios de primeiro nível (no modo workspace, dentro de cada repositório; ver "Buscas de código em modo workspace" em `eng-rules.md`)
 - identificar pastas prováveis de domínio (ex.: `src`, `apps`, `services`, `packages`, `api`, `web`, etc.)
 
 4. Identificar entrypoints e "o que roda em produção":
@@ -324,7 +325,7 @@ Sempre que possível, destaque:
 > - **Sim** → Solicite o arquivo, link ou conteúdo. Documente apenas o que estiver no contrato fornecido.
 > - **Não** → Registre apenas: qual integração, qual propósito, quais dados são necessários. Use `[A DEFINIR — contrato pendente com {time/parceiro}]`. Nunca crie paths, schemas ou payloads fictícios.
 
-**No ramo código** (Passo 0, item 1.1), preencha o template a partir do que o Passo 2.1 encontrou:
+**No ramo código** (pergunta de origem do Passo 0), preencha o template a partir do que o Passo 2.1 encontrou:
 
 1. Onde houver PRD, preencher a tabela de requisitos consumidos e amarrar decisões aos IDs.
 2. Onde não houver PRD, declarar explicitamente lacunas e validar premissas com o usuário.

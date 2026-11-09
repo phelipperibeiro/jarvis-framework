@@ -344,6 +344,12 @@ test("syncAssets: instalação antiga é limpa (claude, windsurf e kiro) pelo OB
           `${ide}: ${arquivo} deveria ter sido removido`
         );
       }
+      if (ide === "claude") {
+        assert.ok(
+          !existsSync(join(target, ".claude/skills/eng-backend-arch-c4")),
+          "claude: a pasta skills/eng-backend-arch-c4 deveria ter sido removida inteira"
+        );
+      }
       assert.ok(
         existsSync(join(target, `.${ide}/AGENTS.md`)),
         `${ide}: AGENTS.md da raiz da IDE deve ficar`
