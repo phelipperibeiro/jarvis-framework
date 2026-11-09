@@ -11,7 +11,7 @@ Tem dois modos: transforma um épico ou uma história do board em uma **Tech Spe
 - **Delivery Spec:** a Tech Spec é o documento técnico auto-contido de um card: um desenvolvedor deve conseguir executá-la sem precisar perguntar. Ela **é salva na sessão** (`$SESSIONS_DIR/eng/{card}/tech-spec.md`); anexá-la ao card é opcional e só acontece depois de mostrar o que vai e perguntar (regra de ouro); sem o Sim, ela fica só na sessão. O que ficou em aberto vai no Apêndice A (Questões em aberto), com status, quem responde e o que foi assumido ou decidido; os pontos que o leitor não pode deixar passar (risco, bloqueio, divergência, dado sensível, ação irreversível) usam `> ⚠️ **Atenção:**`.
 - **Reference Spec:** um documento normativo (contrato entre serviços, convenção de nomes, topologia, perfil de adaptação de uma spec, fases de adoção) que **não** deriva de card, **não** decide trade-off (isso é do RFC) e **não** desenha a arquitetura (isso é do ARD). Não tem subtarefas. Fica em `$ENG_DOCS/SPEC/SPEC-###-{nome}.md`, numerado como RFC e ARD, e é versionado com SemVer.
 
-> **Quem pode rodar:** `POSITION` igual a `TECH LEAD`, `HEAD`, `CTO`, `SPECIALIST` ou `SENIOR`. O `GENERALIST` sempre passa: em time pequeno ele acumula todos os papéis (ver `taxonomy.md`). Com outro cargo no `ENV.md`, o comando responde "Acesso Negado", lista os cargos aceitos e para.
+> **Quem pode rodar:** `POSITION` igual a `TECH LEAD`, `HEAD`, `CTO`, `SPECIALIST` ou `SENIOR`. O `GENERALIST` sempre passa: em time pequeno ele acumula todos os papéis (ver `taxonomy.md`). Com outro cargo no `ENV.md`, o comando responde "Acesso Negado", lista os cargos aceitos e para. Vale também para gerar ou detalhar as subtarefas de uma Tech Spec que já existe.
 
 ## Quando usar
 
