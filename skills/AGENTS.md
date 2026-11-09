@@ -76,8 +76,7 @@ skills/
 │   ├── SKILL.md
 │   └── assets/
 ├── eng-qa-planner/           # Planejamento de testes e análise de gaps de cobertura (especialização de qa: registrar em QA_SPECIALIZATIONS)
-│   ├── SKILL.md
-│   └── assets/
+│   └── SKILL.md
 ├── jarvis-report-issue/         # Reportar bug no próprio Jarvis (JARVIS_PROJECT)
 │   └── SKILL.md
 ├── jarvis-fork/                 # Fork guiado de um artefato do core para o overlay da empresa (COMPANY_PROFILE; CLI jarvis fork)
