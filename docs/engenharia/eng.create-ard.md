@@ -32,7 +32,7 @@ Atalhos:
 
 | Passo | O que acontece |
 |---|---|
-| 0 | Define se é novo ARD ou iteração e de onde vem o ARD: de PRD e decisões ou do código existente (`--codigo`); pergunta se os argumentos não deixarem claro |
+| 0 | Define se é novo ARD ou iteração e qual é a base do ARD: de PRD e decisões ou do código existente (`--codigo`); pergunta se os argumentos não deixarem claro |
 | 0.5 | **Versiona** com SemVer: novo ARD começa em `1.0.0`; em iteração, você diz se a mudança foi major, minor ou patch (regras em `eng.bump-rules.md`) |
 | 1 | Confirma o contexto e a origem da demanda |
 | 1.1 | **Verifica o PRD** (obrigatório; no modo código, quando existir) em `$PROD_DOCS`, consulta o implementado no central docs (se configurado) ou pergunta |
