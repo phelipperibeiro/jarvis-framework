@@ -48,7 +48,6 @@ Fonte: `workflows/engineering/`. Guias didáticos: [engenharia/README.md](./enge
 | [`/eng.create-rfc`](./engenharia/eng.create-rfc.md) | Cria ou itera um RFC (RFC-Playbook) | [workflow](../workflows/engineering/eng.create-rfc.md) |
 | [`/eng.build-tech-spec`](./engenharia/eng.build-tech-spec.md) | Cria a Tech Spec de um card (Delivery Spec) ou uma especificação técnica de referência (Reference Spec) | [workflow](../workflows/engineering/eng.build-tech-spec.md) |
 | [`/eng.breakdown-subtasks`](./engenharia/eng.breakdown-subtasks.md) | Quebra a Tech Spec em subtarefas detalhadas | [workflow](../workflows/engineering/eng.breakdown-subtasks.md) |
-| [`/eng.docs`](./engenharia/eng.docs.md) | Atualiza a documentação de engenharia | [workflow](../workflows/engineering/eng.docs.md) |
 
 ### Frontend
 

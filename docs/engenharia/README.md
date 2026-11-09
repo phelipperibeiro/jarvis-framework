@@ -27,7 +27,6 @@ Cada etapa só avança com a sua aprovação. O `eng.start` e o `eng.plan` só p
 | [`eng.spec-consolidate`](./eng.spec-consolidate.md) | Registra no Central docs o que a entrega implementou |
 | [`eng.daily-report`](./eng.daily-report.md) | Junta os `daily.md` em um relatório por dia, com alertas das sessões sem registro |
 | [`eng.debug`](./eng.debug.md) | Investiga um bug ou varre um escopo atrás de problemas, só lendo |
-| [`eng.docs`](./eng.docs.md) | Cria ou atualiza a documentação |
 
 ## Arquitetura e specs técnicas
 
@@ -69,4 +68,5 @@ Os comandos de frontend e de backend são **neutros de stack**: carregam a skill
 - Vai desenvolver uma feature nova → [`eng.start`](./eng.start.md)
 - Tem um bug para investigar → [`eng.debug`](./eng.debug.md)
 - Quer revisar um PR → [`eng.pre-pr`](./eng.pre-pr.md) (de outra pessoa: faça checkout da branch do PR e use a chave do card dela) ou [`eng.frontend-review`](./eng.frontend-review.md) se for interface
+- Quer atualizar a documentação do repositório → aceite a oferta no fim do [`eng.work`](./eng.work.md), ou use o skill `/eng-global-docs-write` direto
 - Precisa de uma decisão de arquitetura → [`eng.light-arch`](./eng.light-arch.md), [`eng.create-ard`](./eng.create-ard.md) ou [`eng.create-rfc`](./eng.create-rfc.md)
