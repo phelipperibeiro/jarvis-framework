@@ -32,17 +32,18 @@ Atalhos:
 
 | Passo | O que acontece |
 |---|---|
-| 0 | Define se é novo ARD ou iteração (pergunta se os argumentos não deixarem claro) |
+| 0 | Define se é novo ARD ou iteração e de onde vem o ARD: de PRD e decisões ou do código existente (`--codigo`); pergunta se os argumentos não deixarem claro |
 | 0.5 | **Versiona** com SemVer: novo ARD começa em `1.0.0`; em iteração, você diz se a mudança foi major, minor ou patch (regras em `eng.bump-rules.md`) |
 | 1 | Confirma o contexto e a origem da demanda |
-| 1.1 | **Verifica o PRD** (obrigatório) em `$PROD_DOCS`, consulta o implementado no central docs (se configurado) ou pergunta |
+| 1.1 | **Verifica o PRD** (obrigatório; no modo código, quando existir) em `$PROD_DOCS`, consulta o implementado no central docs (se configurado) ou pergunta |
 | 2 | Lê os insumos relevantes |
+| 2.1 | **Só no modo código:** coleta o contexto do repositório (stack, estrutura, entrypoints, integrações, contratos observados), separando fato observado de hipótese |
 | 2.5 | **Avalia a complexidade** (simples, moderada ou complexa) e declara o resultado antes de decidir qualquer coisa |
-| 3 | Preenche o `ARD-template.md` |
+| 3 | Preenche o `ARD-template.md`; no modo código, registra a arquitetura atual ao lado da proposta e oferece o `/eng-global-arch-c4` para diagramas C4 (opcional) |
 | 4 | Análise de impacto e riscos |
 | 5 | Estratégia de testes e validação |
 | 6 | Checagem final com os guard rails das regras de engenharia |
-| 7 | Entrega: ARD preenchido, resumo executivo e próximos passos |
+| 7 | Entrega: ARD preenchido, resumo executivo (no modo código, com a arquitetura atual observada) e próximos passos |
 | 8 | O ARD fica em `$ENG_DOCS/ARD/` (documento de trabalho); o Central docs é atualizado pelo `/eng.spec-consolidate` depois da entrega |
 
 ### Avaliação de complexidade (passo 2.5)
