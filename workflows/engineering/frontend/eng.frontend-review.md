@@ -1,7 +1,7 @@
 ---
 name: eng.frontend-review
 description: >
-  Revisão de PR frontend: tipagem, tokens de design, acessibilidade, performance, testes; complementa eng.review; neutra de stack (FRONTEND_SPECIALIZATIONS).
+  Revisão de PR frontend: tipagem, tokens de design, acessibilidade, performance, testes; complementa eng.pre-pr; neutra de stack (FRONTEND_SPECIALIZATIONS).
 version: "1.1"
 
 ---
