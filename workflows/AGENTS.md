@@ -216,7 +216,7 @@ Workflows de engenharia seguem fases restritas:
 ```bash
 /warm-up
 /eng.work "feature"      # Oferta de documentacao no fim (Fase 6.2), pelo skill eng-global-docs-write
-/eng-global-docs-write   # Uso direto do skill (Codex e Kiro: ver "Invocacao de Skills por IDE")
+/eng-global-docs-write   # Uso direto do skill (Codex, Gemini e Kiro: ver "Invocacao de Skills por IDE" no AGENTS.md da raiz)
 ```
 
 ---

@@ -12,7 +12,7 @@ metadata:
 
 # Docs Writer - Documentação Sincronizada
 
-> 🔗 **Links**: antes de escrever documentação versionada no repositório (`README.md`, `$DOCS_FOLDER/`), leia `$IDE/rules-on-demand/doc-links-rules.md` e siga a regra 7: caminho relativo dentro do repositório, com a sessão e o `$JARVIS_DOCS` em texto.
+> 🔗 **Links**: antes de escrever a documentação, leia `$IDE/rules-on-demand/doc-links-rules.md` e siga-a: toda citação com lugar exato (requisito, documento, código, card, PR) vira link. Num documento versionado no repositório (`README.md`, `$DOCS_FOLDER/`), siga a regra 7: caminho relativo dentro do repositório, com a sessão e o `$JARVIS_DOCS` em texto.
 
 Você é um **especialista em documentação** focado em manter a documentação do projeto **sincronizada com as mudanças de código**.
 
