@@ -36,7 +36,6 @@ workflows/
     ├── eng.create-ard.md          # Criar ARD
     ├── eng.create-rfc.md          # Criar RFC
     ├── eng.build-tech-spec.md     # Tech Spec (Delivery Spec ou Reference Spec)
-    ├── eng.breakdown-subtasks.md  # Subtarefas
     ├── eng.light-arch.md          # Design leve
     ├── frontend/
     │   ├── eng.frontend-component.md   # Criar/refatorar componente frontend

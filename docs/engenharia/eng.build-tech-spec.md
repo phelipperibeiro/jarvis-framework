@@ -11,18 +11,18 @@ Tem dois modos: transforma um épico ou uma história do board em uma **Tech Spe
 - **Delivery Spec:** a Tech Spec é o documento técnico auto-contido de um card: um desenvolvedor deve conseguir executá-la sem precisar perguntar. Ela **é salva na sessão** (`$SESSIONS_DIR/eng/{card}/tech-spec.md`); anexá-la ao card é opcional e só acontece depois de mostrar o que vai e perguntar (regra de ouro); sem o Sim, ela fica só na sessão. O que ficou em aberto vai no Apêndice A (Questões em aberto), com status, quem responde e o que foi assumido ou decidido; os pontos que o leitor não pode deixar passar (risco, bloqueio, divergência, dado sensível, ação irreversível) usam `> ⚠️ **Atenção:**`.
 - **Reference Spec:** um documento normativo (contrato entre serviços, convenção de nomes, topologia, perfil de adaptação de uma spec, fases de adoção) que **não** deriva de card, **não** decide trade-off (isso é do RFC) e **não** desenha a arquitetura (isso é do ARD). Não tem subtarefas. Fica em `$ENG_DOCS/SPEC/SPEC-###-{nome}.md`, numerado como RFC e ARD, e é versionado com SemVer.
 
-> **Quem pode rodar:** `POSITION` igual a `TECH LEAD`, `HEAD`, `CTO`, `SPECIALIST` ou `SENIOR`. O `GENERALIST` sempre passa: em time pequeno ele acumula todos os papéis (ver `taxonomy.md`). Com outro cargo no `ENV.md`, o comando responde "Acesso Negado", lista os cargos aceitos e para.
+> **Quem pode rodar:** `POSITION` igual a `TECH LEAD`, `HEAD`, `CTO`, `SPECIALIST` ou `SENIOR`. O `GENERALIST` sempre passa: em time pequeno ele acumula todos os papéis (ver `taxonomy.md`). Com outro cargo no `ENV.md`, o comando responde "Acesso Negado", lista os cargos aceitos e para. Vale também para gerar ou detalhar as subtarefas de uma Tech Spec que já existe.
 
 ## Quando usar
 
 - Antes de implementar uma história ou épico que precisa de especificação técnica detalhada (Delivery Spec)
-- Quando o time quer subtarefas bem definidas para distribuir o trabalho (Delivery Spec)
+- Quando o time quer subtarefas bem definidas para distribuir o trabalho, em resumo ou como passo a passo para quem executa sem perguntar (Delivery Spec)
+- Quando a história já tem Tech Spec e falta só gerar as subtarefas (Delivery Spec, atalho da Fase 1.1)
 - Quando um RFC ou ARD já decidiu o rumo e falta o documento que fixa contratos, convenções e fases (Reference Spec)
 
 ## Quando **não** usar
 
 - Você quer o fluxo enxuto de planejamento de uma tarefa → [`eng.start`](./eng.start.md)
-- Só quer detalhar as fatias de uma Tech Spec que já existe → [`eng.breakdown-subtasks`](./eng.breakdown-subtasks.md)
 - A decisão ainda está em discussão → [`eng.create-rfc`](./eng.create-rfc.md)
 - Você vai desenhar a arquitetura → [`eng.create-ard`](./eng.create-ard.md)
 
@@ -39,7 +39,7 @@ Entendimento do card, validação de necessidade de RFC (8 critérios), investig
 
 **Delivery Spec: história → Tech Spec de implementação**
 
-Entendimento do card, validação de RFC, investigação do codebase, **avaliação de complexidade**, proposta arquitetural, quebra em subtarefas, riscos e considerações, criação do `tech-spec.md`, anexo opcional da tech spec na issue (só com board, depois da aprovação e da pergunta), criação das subtarefas só no Jira, pela `acli`, depois da pergunta (em GitHub/GitLab, sem a CLI ou sem o Sim, um template para você criar) e validação final.
+Entendimento do card (se a história já tem `tech-spec.md`, você pode só gerar as subtarefas dela, indo direto para a criação das subtarefas), validação de RFC, investigação do codebase, **avaliação de complexidade**, proposta arquitetural, quebra em subtarefas, riscos e considerações, criação do `tech-spec.md`, anexo opcional da tech spec na issue (só com board, depois da aprovação e da pergunta), escolha do nível de detalhe das subtarefas (resumo ou passo a passo, gravadas em `subtarefas.md` na sessão), criação das subtarefas só no Jira, pela `acli`, depois da pergunta (em GitHub/GitLab, sem a CLI ou sem o Sim, um template para você criar) e validação final.
 
 **Reference Spec**
 
@@ -51,12 +51,14 @@ Triagem (escopo, áreas e se há RFC ou ARD de origem), checagem de RFC (sem ori
 - Toda decisão tem justificativa; no Delivery Spec, com pelo menos duas alternativas consideradas
 - Toda Tech Spec documenta riscos com mitigação
 - No Delivery Spec, subtarefas são **fatias verticais completas** (endpoint inteiro, modal inteiro, tela inteira) e nunca fatias horizontais (só enum, só repository, só DTO)
+- O título de cada subtarefa começa com o prefixo da stack predominante: `[BACKEND]`, `[FRONTEND]`, `[DATA]`, `[QA]`, `[INFRA]` ou `[DOCS]`
+- Testes unitários ficam dentro da própria subtarefa; `[QA]` é só para E2E que cruza backend e frontend (e `[QA-BACKEND]`/`[QA-FRONTEND]` para validações que cruzam fatias do mesmo lado)
 - No Reference Spec, cada decisão aponta a origem (RFC, ARD ou "resolvida aqui"), para que uma decisão nova não passe escondida
 - **Links clicáveis:** requisitos, documentos e código citados na spec viram links relativos ao arquivo (`rules-on-demand/doc-links-rules.md`)
 
 ## Próximo passo típico
 
-- **Delivery Spec:** [`eng.start`](./eng.start.md) em cada subtarefa. Se as fatias forem para pessoas diferentes ou para quem precisa de um passo a passo (ex.: time com juniores), rode antes o [`eng.breakdown-subtasks`](./eng.breakdown-subtasks.md): ele não gera a spec, só detalha cada fatia.
+- **Delivery Spec:** [`eng.start`](./eng.start.md) em cada subtarefa. Se as fatias forem para pessoas diferentes ou para quem precisa de um passo a passo (ex.: time com juniores), escolha "Passo a passo para quem executa sem perguntar" na criação das subtarefas.
 - **Reference Spec:** revisar a spec com os revisores e mudar o status para `approved`; as implementações que a seguirem citam o `SPEC-###`.
 
 ## Exemplos (bom e ruim por princípio)

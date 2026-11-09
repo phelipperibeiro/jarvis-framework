@@ -32,7 +32,7 @@ O `/eng.build-tech-spec` tem dois modos, escolhidos na triagem do workflow:
 
 ## Arquivos e localização
 
-- Workflows: `$IDE/workflows/engineering/eng.build-tech-spec.md` (criação da tech spec a partir de um card, épico ou história, ou de uma especificação técnica de referência; no Delivery Spec, já quebra a história em fatias verticais de 4h a 1 dia) e `eng.breakdown-subtasks.md` (detalhamento opcional das fatias de uma tech spec pronta como passo a passo, sem gerar a spec); `eng.start.md` e `eng.plan.md` como referência.
+- Workflows: `$IDE/workflows/engineering/eng.build-tech-spec.md` (criação da tech spec a partir de um card, épico ou história, ou de uma especificação técnica de referência; no Delivery Spec, já quebra a história em fatias verticais de 4h a 1 dia, descritas em resumo ou passo a passo na Fase 7, e só gera as subtarefas quando a história já tem Tech Spec); `eng.start.md` e `eng.plan.md` como referência.
 - Templates: `$IDE/templates/engineering/tech-spec-template.md` (Delivery Spec), `tech-spec-delivery-template.md` (formatos de entrega do Delivery Spec) e `ref-spec-template.md` (Reference Spec). Esta rule: `$IDE/rules-on-demand/engineering/eng.tech-spec-rules.md`.
 - `$IDE/` resolve para a pasta da IDE atual (`.windsurf/`, `.claude/`, `.cursor/`).
 - A tech spec **não** vai para `master-docs/`: fica na **sessão do projeto**; a sessão é temporária e não cria arquivos permanentes no repositório de código. O anexo na issue do board é opcional e só sai depois de mostrar o que vai e perguntar (regra de ouro, `eng.integrations-rules.md`; Jira pela `acli`, em GitHub/GitLab a pessoa anexa, orientada); sem o Sim, fica só na sessão.
@@ -96,6 +96,7 @@ O `/eng.build-tech-spec` tem dois modos, escolhidos na triagem do workflow:
    - **Nunca** é uma fatia horizontal (só enum, só repository, só factory, só DTO, só contratos)
 
 2. **Título Claro e Acionável**
+   - Começa com o prefixo da stack predominante do entregável (não a única camada tocada): `[DATA]`, `[BACKEND]`, `[FRONTEND]`, `[QA]`, `[INFRA]` ou `[DOCS]`
    - Usa verbo de ação: Criar, Implementar, Adicionar, Atualizar
    - Específico sobre o que fazer
    - Não genérico ou vago
@@ -119,6 +120,7 @@ O `/eng.build-tech-spec` tem dois modos, escolhidos na triagem do workflow:
    - Quais testes unitários criar
    - Quais testes de integração criar
    - Casos de teste específicos
+   - Ownership de QA: os testes unitários ficam dentro da própria fatia (nunca viram subtarefa); `[QA-BACKEND]` ou `[QA-FRONTEND]` só quando a validação cruza mais de uma fatia do mesmo lado; `[QA]` só para E2E ou integração que cruza backend e frontend, do QA Engineer. Ex.: ❌ `[QA] Testar endpoint POST /users` → é `[BACKEND]` com os testes incluídos
 
 7. **Dependências Mapeadas**
    - O que precisa estar pronto antes (outras fatias verticais completas, nunca camadas isoladas)
@@ -131,6 +133,7 @@ O `/eng.build-tech-spec` tem dois modos, escolhidos na triagem do workflow:
 [ ] Mergeada isoladamente, o sistema continua funcionando
 [ ] A entrega é observável (testável ou demonstrável)
 [ ] Título é específico e acionável
+[ ] Título começa com o prefixo da stack predominante ([BACKEND], [FRONTEND]...)
 [ ] Descrição tem O QUE, COMO e POR QUE
 [ ] Arquivos afetados estão listados
 [ ] Critérios de aceitação são testáveis
@@ -140,7 +143,7 @@ O `/eng.build-tech-spec` tem dois modos, escolhidos na triagem do workflow:
 [ ] Um dev pode executar sem perguntas adicionais
 ```
 
-**Exemplo:** ✅ `SUBTASK-003: Criar endpoint POST /api/users com validação de email` (rota, validador e testes; 1,5h; critérios verificáveis) · ❌ `SUBTASK-003: Implementar API de usuários` (descrição "Criar API", critério "deve funcionar").
+**Exemplo:** ✅ `SUBTASK-003: [BACKEND] Criar endpoint POST /api/users com validação de email` (rota, validador e testes; 1,5h; critérios verificáveis) · ❌ `SUBTASK-003: [BACKEND] Implementar API de usuários` (descrição "Criar API", critério "deve funcionar").
 
 ---
 
@@ -528,7 +531,6 @@ Riscos: Nenhum identificado.
 ### Workflows
 
 - import `$IDE/workflows/engineering/eng.build-tech-spec.md`
-- import `$IDE/workflows/engineering/eng.breakdown-subtasks.md`
 
 ### Documentação Relacionada
 

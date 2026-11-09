@@ -34,7 +34,6 @@ rules-on-demand/                    # lidas pelo workflow; não carregadas no in
 │   ├── eng.pr-rules.md
 │   ├── eng.tech-spec-rules.md
 │   ├── eng.transitions-rules.md
-│   ├── eng.breakdown-subtasks-rules.md
 │   ├── eng.bump-rules.md
 │   ├── eng.security-rules.md      # seções de etapa da eng-security-rules (architecture.md e gate-checklist.md)
 │   ├── eng.rpa-rules.md          # inclui a documentação de robôs (HUB: all)

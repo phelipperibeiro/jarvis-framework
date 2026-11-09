@@ -14,7 +14,7 @@ Uma **especificação técnica de referência** é um documento normativo: diz c
 | **não** deriva de um card | o Delivery Spec (Tech Spec de épico ou história) |
 | **não** decide trade-off | o RFC (`/eng.create-rfc`) |
 | **não** desenha a arquitetura | o ARD (`/eng.create-ard`) |
-| **não** quebra em subtarefas nem cria cards | o Delivery Spec e o `/eng.breakdown-subtasks` |
+| **não** quebra em subtarefas nem cria cards | o Delivery Spec |
 
 Se a conversa mostrar que existe um card de origem, volte ao workflow e siga o Delivery Spec.
 

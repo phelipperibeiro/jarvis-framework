@@ -41,7 +41,7 @@ Utilize o `$ARGUMENTS` como ponto de partida (caminho da spec, nome da feature o
 - Spec ainda ambígua → execute `$PROD_FLOWS/prod.spec.clarify.md` **primeiro**
 - Escopo já cabe em uma história → `$PROD_FLOWS/prod.spec.issue.md`
 - Só quer um único épico sem árvore de releases → `$PROD_FLOWS/prod.spec.epic.md`
-- Quebra de **tech spec** em subtarefas de engenharia → isso é `eng.breakdown-subtasks` (outro domínio)
+- Quebra de **tech spec** em subtarefas de engenharia → isso é o Delivery Spec do `eng.build-tech-spec` (outro domínio)
 
 ## Pré-requisitos
 
@@ -162,7 +162,7 @@ Ao final, perguntar o que materializar agora:
 - Transformar breakdown em lista de tarefas de infra sem história de valor
 - Criar 15 épicos “por precaução”
 - Copiar a spec pai inteira no arquivo de breakdown
-- Confundir com `eng.breakdown-subtasks` (tech spec → subtarefas de código)
+- Confundir com o Delivery Spec do `eng.build-tech-spec` (história → tech spec e subtarefas de código)
 
 ## Status
 

@@ -36,7 +36,6 @@ Cada etapa só avança com a sua aprovação. O `eng.start` e o `eng.plan` só p
 | [`eng.create-ard`](./eng.create-ard.md) | ARD: arquitetura proposta, riscos e testes, a partir de PRD ou do código existente |
 | [`eng.create-rfc`](./eng.create-rfc.md) | RFC: decisão técnica discutida em aberto |
 | [`eng.build-tech-spec`](./eng.build-tech-spec.md) | Delivery Spec (épico ou história) ou Reference Spec (spec normativa) |
-| [`eng.breakdown-subtasks`](./eng.breakdown-subtasks.md) | Quebra a Tech Spec em subtarefas verticais |
 
 ## Frontend
 
@@ -68,4 +67,5 @@ Os comandos de frontend e de backend são **neutros de stack**: carregam a skill
 - Tem um bug para investigar → [`eng.debug`](./eng.debug.md)
 - Quer revisar um PR → [`eng.pre-pr`](./eng.pre-pr.md) (de outra pessoa: faça checkout da branch do PR e use a chave do card dela) ou [`eng.frontend-review`](./eng.frontend-review.md) se for interface
 - Quer atualizar a documentação do repositório → aceite a oferta no fim do [`eng.work`](./eng.work.md), ou use o skill `/eng-global-docs-write` direto
+- Quer quebrar uma história em subtarefas (em resumo ou passo a passo) → [`eng.build-tech-spec`](./eng.build-tech-spec.md) (Delivery Spec)
 - Precisa de uma decisão de arquitetura → [`eng.light-arch`](./eng.light-arch.md), [`eng.create-ard`](./eng.create-ard.md) ou [`eng.create-rfc`](./eng.create-rfc.md)

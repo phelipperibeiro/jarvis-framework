@@ -46,7 +46,6 @@ Fonte: `workflows/engineering/`. Guias didáticos: [engenharia/README.md](./enge
 | [`/eng.create-ard`](./engenharia/eng.create-ard.md) | Cria ou itera um ARD, a partir de PRD ou do código existente | [workflow](../workflows/engineering/eng.create-ard.md) |
 | [`/eng.create-rfc`](./engenharia/eng.create-rfc.md) | Cria ou itera um RFC (RFC-Playbook) | [workflow](../workflows/engineering/eng.create-rfc.md) |
 | [`/eng.build-tech-spec`](./engenharia/eng.build-tech-spec.md) | Cria a Tech Spec de um card (Delivery Spec) ou uma especificação técnica de referência (Reference Spec) | [workflow](../workflows/engineering/eng.build-tech-spec.md) |
-| [`/eng.breakdown-subtasks`](./engenharia/eng.breakdown-subtasks.md) | Quebra a Tech Spec em subtarefas detalhadas | [workflow](../workflows/engineering/eng.breakdown-subtasks.md) |
 
 ### Frontend
 

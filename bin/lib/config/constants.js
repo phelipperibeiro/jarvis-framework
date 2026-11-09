@@ -208,6 +208,13 @@ export const OBSOLETE_PATHS = Object.freeze([
   "steering/eng.create-ard-from-code.md",
   "skills/eng-backend-arch-c4",
   "steering/skills/skill-eng-backend-arch-c4.md",
+  // eng.breakdown-subtasks (issue #248, mãe #237): fundido no Delivery Spec do eng.build-tech-spec (atalho da
+  // Tech Spec pronta, nível "passo a passo" na Fase 7). O workflow é achatado; a rule e o template saem junto.
+  "workflows/eng.breakdown-subtasks.md",
+  "commands/eng.breakdown-subtasks.md",
+  "steering/eng.breakdown-subtasks.md",
+  "rules-on-demand/engineering/eng.breakdown-subtasks-rules.md",
+  "templates/engineering/breakdown-subtasks-template.md",
 ]);
 
 /**
