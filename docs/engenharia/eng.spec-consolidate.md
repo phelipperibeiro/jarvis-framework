@@ -29,7 +29,7 @@ O Central docs é, portanto, um **snapshot de cada funcionalidade implementada, 
 | Página-índice da sessão | `{SQUAD}/{produto}/history/{task_key}/{task_key}.md` | O que a tarefa fez, as funcionalidades tocadas (com links), a tabela de artefatos e o que faltou, com as fontes |
 | Página inicial do squad (automática, criada uma vez) | `{SQUAD}/home.md` | Ponto de entrada do squad no Central docs; o adaptador nunca sobrescreve depois de criada |
 
-> ⚠️ Três execuções separadas, cada uma com o seu Sim: **publicar** (copia), **`--archive`** (guarda o original em `archive/`, sem apagar) e **`--finalize`** (apaga o original, só o que não mudou desde o `--archive`; irreversível).
+> ⚠️ Três execuções separadas, cada uma com o seu Sim: **publicar** (copia), **`--archive`** (guarda o original em `archive/`, sem apagar) e **`--finalize`** (apaga o original, só o que não mudou desde o `--archive`; irreversível). A exceção é o **`--force`** (ver "Modo `--force`", abaixo).
 
 ## Quando usar
 
@@ -65,9 +65,18 @@ Quem já tem dezenas de pastas em `$SESSIONS_DIR/eng/` não precisa fazer tudo d
 - **Sessão que já tem entrega no Central docs:** publica só os arquivos e a página-índice, sem regerar a página da funcionalidade nem o registro da entrega.
 - **Épico:** cards do mesmo épico entram no mesmo registro da funcionalidade (com o `task_key` do épico e uma tabela de cards e PRs), que cresce a cada sessão processada.
 
+## Modo `--force`
+
+`/eng.spec-consolidate {chave} --force` faz numa execução só o que seriam as chamadas separadas: escreve a consolidação, publica e já apaga os originais, **sem perguntar** e **sem o `--archive`** (não há cópia em `archive/`; é irreversível). O `/eng.pr` oferece esse caminho no fim, na opção "Sim, rodar o `/eng.spec-consolidate --force` (publica e apaga os originais, sem `archive/`)".
+
+- Ele mesmo decide quais documentos entram e se algum é quebrado em partes.
+- A trava de segredo continua: se algo parecer um segredo, ele para antes de publicar.
+- Só apaga um arquivo da sessão depois de conferir que a cópia publicada existe e bate o hash; o que não passar fica na sessão e entra no relatório.
+- A pasta da sessão continua com pergunta própria: só é apagada com o seu **Sim**.
+
 ## Regras que importam
 
-- Nada é publicado, arquivado ou finalizado sem o **Sim** daquele passo — cada um tem a pergunta dele
+- Nada é publicado, arquivado ou finalizado sem o **Sim** daquele passo — cada um tem a pergunta dele (exceto com `--force`, em que a própria flag vale como esse Sim)
 - Um documento de trabalho só é publicado se estiver **ligado** a esta entrega; sem vínculo, continua em `$JARVIS_DOCS`
 - Documento de uma funcionalidade só nunca é quebrado em partes
 - Finalizar sem ter arquivado antes é recusado; documento que mudou desde o `--archive` nunca é apagado

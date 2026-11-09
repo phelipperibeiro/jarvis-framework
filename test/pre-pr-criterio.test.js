@@ -255,3 +255,31 @@ test("a numeração dos gates é a mesma na lista, na tabela de chamadas e na ta
     `${PRE_PR}: a tabela da rodada incremental não cobre cada gate da lista uma vez ("Gate (N)"). ${DE_PROPOSITO}`
   );
 });
+
+// A pergunta de merge do fim do eng.pr (#255): o padrão fica em primeiro e a opção --force (irreversível) por último.
+const MERGE_FORCE =
+  "As opções da pergunta de merge do eng.pr são guardadas de propósito (#255): ao mudá-las, atualize a eng.transitions-rules.md, o workflows/engineering/eng.pr.md e este teste junto.";
+
+test("a pergunta de merge do eng.pr mantém o padrão e oferece o --force com o mesmo rótulo no workflow (#255)", () => {
+  const linha = read(TRANSITIONS)
+    .split("\n")
+    .find((l) => l.startsWith("| `eng.pr` | Fim |") && l.includes("aprovado e mergeado"));
+  assert.ok(linha, `${TRANSITIONS} sem a linha da pergunta de merge do eng.pr. ${MERGE_FORCE}`);
+  const celulas = linha.split("|").map((c) => c.trim());
+  const opcoes = celulas[celulas.length - 2].split(" · ").map((o) => o.trim());
+  assert.equal(opcoes.length, 3, `${TRANSITIONS}: a pergunta de merge deveria ter 3 opções. ${MERGE_FORCE}`);
+  assert.equal(opcoes[0], "Ainda não (como hoje)", "o padrão da pergunta de merge deve continuar sendo a primeira opção");
+  assert.match(opcoes[2], /--force/, "a terceira opção da pergunta de merge deve ser a do --force");
+  // No workflow, as 3 opções aparecem como `**{opção}:**`, na mesma ordem da tabela.
+  const workflow = read("workflows/engineering/eng.pr.md");
+  const posicoes = opcoes.map((opcao) => {
+    const i = workflow.indexOf(`**${opcao}:**`);
+    assert.ok(i >= 0, `workflows/engineering/eng.pr.md sem a opção "${opcao}" da tabela. ${MERGE_FORCE}`);
+    return i;
+  });
+  assert.deepEqual(
+    [...posicoes].sort((x, y) => x - y),
+    posicoes,
+    `workflows/engineering/eng.pr.md: as opções da pergunta de merge estão fora da ordem da tabela. ${MERGE_FORCE}`
+  );
+});

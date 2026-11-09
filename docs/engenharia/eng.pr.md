@@ -40,12 +40,12 @@ Confere que tudo está passando, envia a branch e abre o merge request (ou pull 
    - o [`/eng.daily-report`](./eng.daily-report.md) junta esses registros por dia, de todas as sessões.
 10. **Mensagem final** ("Merge request criado" ou "PR não publicado", conforme a etapa 5 terminou com PR no host), com a linha de timesheet pronta para copiar, os labels sugeridos no PR Brief (a pessoa adiciona no host) e o lembrete do [`/eng.spec-consolidate`](./eng.spec-consolidate.md)
 
-A sessão **não é apagada**: o `/eng.spec-consolidate` precisa dela. Remova à mão quando quiser.
+A sessão **não é apagada**: o `/eng.spec-consolidate` precisa dela. Remova à mão quando quiser (o `/eng.spec-consolidate --force`, se escolhido, apaga os arquivos da sessão depois de conferir a cópia publicada).
 
 ## Perguntas que ele faz
 
 - **No início:** "O que fazer com o PR?" → **Revisar o texto e publicar (como hoje)**, **Publicar sem revisar o texto**, **Só gerar os arquivos** (o texto ainda é mostrado para revisão; você abre o PR à mão e nada é enviado). Na revisão do texto de quem escolheu "Revisar o texto e publicar", o botão `[Só gerar os arquivos]` faz o mesmo.
-- **No fim:** "O PR já foi aprovado e mergeado?" → **Ainda não (como hoje)** ou **Sim, rodar o `/eng.spec-consolidate`**, que registra no Central docs o que a entrega implementou.
+- **No fim:** "O PR já foi aprovado e mergeado?" → **Ainda não (como hoje)**, **Sim, rodar o `/eng.spec-consolidate`**, que registra no Central docs o que a entrega implementou, ou **Sim, rodar o `/eng.spec-consolidate --force` (publica e apaga os originais, sem `archive/`)**, que faz o mesmo sem as perguntas de publicar e de apagar os originais e sem arquivar (irreversível); a trava de segredo e a pergunta de apagar a pasta da sessão continuam.
 
 ## Regras que importam
 
