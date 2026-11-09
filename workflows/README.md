@@ -27,7 +27,6 @@ workflows/
     ├── eng.work.md               # Execução do trabalho
     ├── eng.pre-pr.md             # Validação pré-PR
     ├── eng.pr.md                 # Criação de PR
-    ├── eng.review.md             # Revisão
     ├── eng.debug.md              # Debug: investiga um bug ou varre um escopo
     ├── eng.docs.md               # Documentação (engenharia)
     ├── eng.create-ard.md         # Criar ARD
@@ -82,7 +81,6 @@ workflows/
 | `eng.work.md` | Executar implementação de código |
 | `eng.pre-pr.md` | Validação final antes do PR |
 | `eng.pr.md` | Push e Pull Request, depois da pergunta (regra de ouro) |
-| `eng.review.md` | Revisão de solução/PR |
 | `eng.debug.md` | Investiga um bug ou varre um escopo atrás de problemas |
 | `eng.docs.md` | Atualizar documentação de engenharia |
 | `eng.create-ard.md` | Criar ARD (Architecture Review Document) |
