@@ -1,15 +1,16 @@
 /**
  * @fileoverview Estimativa do que o framework carrega no início de uma sessão.
  *
- * Mede, por tipo, os arquivos que a IDE lê no início para um perfil (HUB,
- * POSITION, AREA, SQUAD). Tokens são uma **estimativa** (bytes ÷ 4): serve
+ * Mede, por tipo, os arquivos que a IDE lê no início da sessão (rules, `AGENTS.md`,
+ * frontmatter dos skills e `warm-up`). As rules são as do `jarvis rules sync`: todas, menos as
+ * duas exceções desligadas. Tokens são uma **estimativa** (bytes ÷ 4): serve
  * para comparar antes e depois, não para cobrar custo.
  * @module core/token-report
  */
 
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
-import { listRulesForProfile } from "./profile-filter.js";
+import { listRules } from "./profile-filter.js";
 
 /** Bytes por token usados na estimativa. */
 export const BYTES_PER_TOKEN = 4;
@@ -44,13 +45,16 @@ function category(id, label, files, note = "") {
 
 /**
  * @param {string} root - Raiz do framework (`rules/`, `skills/`, `workflows/`, `AGENTS.md`)
- * @param {import("./profile-filter.js").Profile} profile
+ * @param {{ ARTIFACT_STYLE?: string }} [profile] - `ARTIFACT_STYLE` vazio = `ai-generated`
  * @param {{ rtkEnabled?: boolean }} [opts]
  */
-export function buildReport(root, profile, opts = {}) {
+export function buildReport(root, profile = {}, opts = {}) {
   const rtkEnabled = Boolean(opts.rtkEnabled);
 
-  const rules = listRulesForProfile(join(root, "rules"), profile, { rtkEnabled });
+  const rules = listRules(join(root, "rules"), {
+    artifactStyle: profile.ARTIFACT_STYLE,
+    rtkEnabled,
+  });
 
   const agentsMd = existsSync(join(root, "AGENTS.md"))
     ? [{ path: "AGENTS.md", bytes: fileBytes(join(root, "AGENTS.md")) }]
@@ -86,13 +90,7 @@ export function buildReport(root, profile, opts = {}) {
 
   const bytes = categories.reduce((sum, c) => sum + c.bytes, 0);
   return {
-    profile: {
-      HUB: profile.HUB,
-      POSITION: profile.POSITION,
-      AREA: profile.AREA,
-      SQUAD: profile.SQUAD,
-      ARTIFACT_STYLE: profile.ARTIFACT_STYLE || "ai-generated",
-    },
+    profile: { ARTIFACT_STYLE: profile.ARTIFACT_STYLE || "ai-generated" },
     rtkEnabled,
     estimate: `tokens = bytes ÷ ${BYTES_PER_TOKEN} (estimativa)`,
     categories,

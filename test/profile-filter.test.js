@@ -9,9 +9,62 @@ import {
   parseAppliesTo,
   matchesProfile,
   listRulesForProfile,
+  isRuleEnabled,
+  listRules,
 } from "../bin/lib/core/profile-filter.js";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
+
+test("isRuleEnabled: artifact-style-rules.md só com human-generated, rtk-rules.md só com o RTK, o resto entra (#263)", () => {
+  assert.equal(isRuleEnabled("artifact-style-rules.md"), false);
+  assert.equal(isRuleEnabled("artifact-style-rules.md", { artifactStyle: "ai-generated" }), false);
+  assert.equal(
+    isRuleEnabled("artifact-style-rules.md", { artifactStyle: " human-generated " }),
+    true
+  );
+  assert.equal(isRuleEnabled("rtk-rules.md"), false);
+  assert.equal(isRuleEnabled("rtk-rules.md", { rtkEnabled: true }), true);
+  // Decide o nome exato do arquivo, em qualquer pasta e com qualquer separador.
+  assert.equal(isRuleEnabled("engineering\\rtk-rules.md"), false);
+  for (const rel of ["engineering/eng-rules.md", "product/prod-rules.md", "minha-rtk-rules.md"]) {
+    assert.equal(isRuleEnabled(rel), true, rel);
+    assert.equal(isRuleEnabled(rel, { artifactStyle: "human-generated", rtkEnabled: true }), true);
+  }
+});
+
+test("listRules: recursivo em subpastas, sem as exceções desligadas e do maior para o menor (#263)", () => {
+  const dir = mkdtempSync(join(tmpdir(), "jarvis-filtro-"));
+  try {
+    mkdirSync(join(dir, "engineering", "frontend"), { recursive: true });
+    writeFileSync(join(dir, "universal.md"), "u".repeat(10));
+    writeFileSync(join(dir, "engineering", "back.md"), "b".repeat(30));
+    writeFileSync(join(dir, "engineering", "frontend", "front.md"), "f".repeat(20));
+    writeFileSync(join(dir, "rtk-rules.md"), "r".repeat(5));
+    writeFileSync(join(dir, "artifact-style-rules.md"), "a".repeat(5));
+    writeFileSync(join(dir, "notas.txt"), "não é rule");
+
+    assert.deepEqual(listRules(dir), [
+      { path: "engineering/back.md", bytes: 30 },
+      { path: "engineering/frontend/front.md", bytes: 20 },
+      { path: "universal.md", bytes: 10 },
+    ]);
+    const tudo = listRules(dir, { artifactStyle: "human-generated", rtkEnabled: true });
+    assert.deepEqual(
+      tudo.map((r) => r.path),
+      [
+        "engineering/back.md",
+        "engineering/frontend/front.md",
+        "universal.md",
+        "artifact-style-rules.md",
+        "rtk-rules.md",
+      ]
+    );
+    assert.deepEqual(listRules(join(dir, "nao-existe")), []);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
 const bloco = (hub, pos, area, squad) =>
   `> **Applies to:** HUB: ${hub} | POSITION: ${pos} | AREA: ${area} | SQUAD: ${squad}`;
 
