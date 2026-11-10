@@ -18,7 +18,7 @@ Leitura rápida de install: [README](../../README.md). Visão geral do framework
 | **Product Owner**    | Mantém o backlog saudável: épicos, histórias, aceite, ordem de entrega                 |
 | **Desenvolvedor(a)** | Entrega o _como_ com qualidade — e, neste framework, **também pode escrever as specs** |
 
-No Jarvis, qualquer `POSITION` pode conduzir o card ponta a ponta. Você não precisa esperar um PM para rascunhar um Documento de Requisitos de Produto — mas precisa ser honesto sobre ambiguidades (aí entra o comando de esclarecimento).
+No Jarvis, qualquer pessoa pode conduzir o card ponta a ponta. Você não precisa esperar um PM para rascunhar um Documento de Requisitos de Produto — mas precisa ser honesto sobre ambiguidades (aí entra o comando de esclarecimento).
 
 ## Pirâmide (do macro ao micro)
 

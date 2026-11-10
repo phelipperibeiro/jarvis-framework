@@ -31,10 +31,10 @@ jarvis-framework/
 │                                 #   create/list-specializations, report-issue, evolution-architect
 ├── templates/                    # documentos: engineering/ (ARD, RFC, tech spec, architecture, plan…),
 │                                 # product/ (PRD, FRD, épico, issue, breakdown, discovery), ENV-template.md
-├── rules/                        # carregadas no início da sessão, filtradas pelo perfil (Applies to)
-│   ├── engineering/              # eng-rules.md, eng-security-rules.md, frontend/, qa/…
-│   └── product/                  # prod-rules.md, prod.spec-rules.md
-├── rules-on-demand/              # lidas pelo workflow que as usa (etapas, doc-links, warm-up, product/)
+├── rules/                        # carregadas no início da sessão, iguais para todos
+│   ├── engineering/              # eng-rules.md, eng-security-rules.md, integrations, specializations, skills
+│   └── product/                  # prod-rules.md
+├── rules-on-demand/              # lidas pelo comando que as usa (etapas, área, doc-links, warm-up, product/)
 ├── bin/                          # CLI jarvis (jarvis.js, commands/, lib/)
 ├── test/                         # node:test (npm run test:filtro, npm run test:comandos)
 ├── docs/                         # guias para humanos (engenharia/, produto/, estrutura/)
@@ -54,11 +54,7 @@ jarvis-framework/
 
 ### Taxonomia Organizacional
 
-O framework usa `taxonomy.md` (raiz) como fonte de verdade para opções válidas:
-- **SQUADS** - Times de desenvolvimento
-- **HUBS** - Áreas técnicas (AI, FRONTEND, BACKEND, QA, DATA, FULLCYCLE)
-- **POSITIONS** - Cargos (JUNIOR, PLENO, SENIOR, TECH LEAD, etc.)
-- **AREAS** - Áreas de negócio (ENGINEERING, PRODUCT)
+O framework usa `taxonomy.md` (raiz) como fonte de verdade para as opções de SQUAD (times de desenvolvimento) e o domínio de e-mail.
 
 **Relação com jarvis-init:**
 1. `taxonomy.md` define as opções válidas
@@ -76,9 +72,9 @@ O framework usa `taxonomy.md` (raiz) como fonte de verdade para opções válida
 
 ### Variaveis obrigatorias no ENV.md
 
-- `WORKSPACE`, `IDE`, `SQUAD`, `HUB`, `AREA`
+- `WORKSPACE`, `IDE`, `SQUAD`
 - `MAX_AI_EXECUTION_PERCENTAGE` (60-100)
-- `POSITION`
+- `SENIORITY` (`junior`, `pleno` ou `senior`; as seis `{ÁREA}_SENIORITY` são opcionais e só calibram a conversa)
 - `USER` (identidade; se vazio, fallback git / SO)
 
 `WORKSPACE` e a pasta que contem `$IDE/` (nao um repo). Vazio = nome dessa pasta.
@@ -151,11 +147,11 @@ Comandos disponíveis:
 ```bash
 jarvis whoami                                       # Exibir identidade (ENV.md / git / SO)
 jarvis init                                         # Bootstrap do framework no projeto
-jarvis init --upgrade [--ide X] [--yes] [--remove-stale]   # Atualizar projeto existente: confere os caminhos do ENV (para sem alterar nada se sobrar $ sem valor) + assets + variáveis novas do ENV (inclui WORKSPACE_MODE) + documentos nas pastas novas + lista/remove skills antigos + rules filtradas pelo perfil do ENV
+jarvis init --upgrade [--ide X] [--yes] [--remove-stale]   # Atualizar projeto existente: confere os caminhos do ENV (para sem alterar nada se sobrar $ sem valor) + assets + variáveis novas do ENV (inclui WORKSPACE_MODE) + documentos nas pastas novas + lista/remove skills antigos + rules sincronizadas
 jarvis list                                         # Listar agents, skills e workflows
 jarvis install-rtk                                  # Instalar RTK (token killer — economia 60-90% em tokens de shell)
-jarvis tokens    [--hub X --position Y --area Z --squad W] [--rtk] [--json]   # Estimar o que carrega no início da sessão (perfil do ENV.md se sem flags)
-jarvis rules sync [--ide X]                         # Filtra rules/ e rules-on-demand/ da IDE pelo perfil do ENV.md (Passo 8 do /jarvis-init)
+jarvis tokens    [--artifact-style X] [--rtk] [--json]   # Estimar o que carrega no início da sessão (estilo e RTK do ENV.md se sem flags)
+jarvis rules sync [--ide X]                         # Sincroniza rules/ e rules-on-demand/ da IDE com o ENV.md (Passo 8 do /jarvis-init)
 jarvis untrack   <AGENTS.md|CLAUDE.md>...            # Modo projeto (#227): tira do índice do git (git rm --cached) o arquivo já versionado, sem apagá-lo e sem commit; é a execução do "Tirar do git" do /jarvis-init upgrade
 jarvis map       <nome> [--depth N] [--reverse]      # Mapa de chamadas de um workflow, skill ou agente (lê só as tabelas padronizadas)
 jarvis fork      [nome] [--list] [--update [--diff]] [--delete] [--candidate]   # Overlay de empresa (#199): copia um artefato do core para $IDE/overlays/{COMPANY_PROFILE}/ com carimbo; lista; recarimba; remove
