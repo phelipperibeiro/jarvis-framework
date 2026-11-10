@@ -11,7 +11,7 @@ O Modo Fácil **não é um Jarvis simplificado**. É um programa de transição 
 ## Escopo
 
 - Vale **somente** quando `PROD_MODE=developer-guided` no `$IDE/ENV.md`. Com `PROD_MODE` vazio ou `product-led`, este arquivo não se aplica.
-- Vale em todos os comandos de `workflows/product/` (`prod.spec`, `prod.spec.discovery`, `.prd`, `.frd`, `.ard`, `.epic`, `.issue`, `.breakdown`, `.clarify`, `prod.roadmap.preview`) e no `eng.create-ard`.
+- Vale em todos os comandos de `workflows/product/` (`prod.spec`, `prod.spec.discovery`, `.prd`, `.frd`, `.ard`, `.epic`, `.issue`, `.breakdown`, `.clarify`) e no `eng.create-ard`.
 - Muda **a conversa**, não o documento: etapas, seções e conteúdo de cada documento seguem o workflow e o template, como no Modo Padrão.
 - Complementa `rules/product/prod-rules.md`. Onde as duas falam do mesmo assunto (formato das perguntas), esta prevalece.
 

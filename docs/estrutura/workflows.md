@@ -32,8 +32,7 @@ workflows/
     ├── prod.spec.ard.md
     ├── prod.spec.epic.md
     ├── prod.spec.issue.md
-    ├── prod.spec.clarify.md
-    └── prod.roadmap.preview.md
+    └── prod.spec.clarify.md
 ```
 
 ## Flatten no `jarvis init`
