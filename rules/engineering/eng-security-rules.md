@@ -1,5 +1,3 @@
-> **Applies to:** HUB: all | POSITION: all | AREA: ENGINEERING | SQUAD: all
-
 # Regras de Seguranca para Engenharia
 
 Regras de seguranca aplicaveis a todo o fluxo de engenharia — do planejamento ao merge.

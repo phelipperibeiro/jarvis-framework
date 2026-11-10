@@ -1220,8 +1220,7 @@ test("init --force: reinstalação com o ENV.md sincroniza as rules como o --upg
   });
 });
 
-const RULE_TODOS =
-  "> **Applies to:** HUB: all | POSITION: all | AREA: all | SQUAD: all\n\n# empresa\n";
+const RULE_TODOS = "# empresa\n";
 
 test("init --upgrade: falha ao gravar uma rule do overlay sai com 1 e mostra o ✗ (#83)", () => {
   withWorkspace(

@@ -63,7 +63,7 @@ test("listRules: recursivo em subpastas, sem as exceções desligadas e do maior
 // padrão: as rules de toda instalação, desde a #263. Muda quando uma rule é acrescentada, movida,
 // apagada ou editada: atualize no mesmo PR, dizendo o motivo. Arquivos não rastreados em rules/ e
 // CRLF mudam a medida. As medidas antigas, por perfil, estão no histórico do git deste arquivo.
-const RULES = { arquivos: 10, bytes: 66715 };
+const RULES = { arquivos: 10, bytes: 65961 };
 
 test(`rules reais: rules/ entrega ${RULES.arquivos} arquivos e ${RULES.bytes} B`, () => {
   const rules = listRules(join(root, "rules"));

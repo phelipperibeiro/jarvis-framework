@@ -1,5 +1,3 @@
-> **Applies to:** HUB: all | POSITION: all | AREA: all | SQUAD: all
-
 # Regras do Modo Developer-Guided
 
 ## Objetivo

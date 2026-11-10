@@ -1,5 +1,3 @@
-> **Applies to:** HUB: all | POSITION: all | AREA: all | SQUAD: all
-
 # Overlay de empresa — precedência na chamada
 
 Perfil ativo: `COMPANY_PROFILE` do `ENV.md` (vazio = `stark-industries`, o overlay padrão). O overlay fica em `$IDE/overlays/{COMPANY_PROFILE}/` e espelha o core: `workflows/`, `skills/`, `agents/`, `rules/`, `rules-on-demand/`, `templates/`.

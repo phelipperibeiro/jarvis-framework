@@ -1,5 +1,3 @@
-> **Applies to:** HUB: all | POSITION: all | AREA: ENGINEERING | SQUAD: all
-
 # Regras do Workflow PR (Pull Request / Merge Request)
 
 ## Propósito

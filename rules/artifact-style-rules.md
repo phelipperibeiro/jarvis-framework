@@ -1,5 +1,3 @@
-> **Applies to:** HUB: all | POSITION: all | AREA: all | SQUAD: all | ARTIFACT_STYLE: human-generated
-
 # Artifact Style Rules (human-generated)
 
 ## Objetivo
@@ -8,7 +6,7 @@ Com `ARTIFACT_STYLE=human-generated` no `ENV.md`, nada do que o Jarvis publica l
 
 ## Escopo
 
-Esta rule só é copiada para `$IDE/rules/` quando o perfil tem `ARTIFACT_STYLE=human-generated` (eixo do `Applies to`, Passo 8 do `/jarvis-init`). Vale para todo comando e para pedidos fora de workflow.
+Esta rule só é copiada para `$IDE/rules/` com `ARTIFACT_STYLE=human-generated` no `ENV.md` (Passo 8 do `/jarvis-init`). Vale para todo comando e para pedidos fora de workflow.
 
 ## Regras
 
@@ -52,4 +50,4 @@ Esta rule só é copiada para `$IDE/rules/` quando o perfil tem `ARTIFACT_STYLE=
 - `templates/ENV-template.md` (`ARTIFACT_STYLE`)
 - `skills/jarvis-init/SKILL.md` (Pergunta 9 e Passo 8)
 - `workflows/engineering/eng.pr.md` (conferência antes do push)
-- `docs/estrutura/rules.md` (eixo `ARTIFACT_STYLE` do `Applies to`)
+- `docs/estrutura/rules.md` (as duas rules que dependem de uma variável do `ENV.md`)

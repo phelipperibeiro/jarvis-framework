@@ -1,5 +1,3 @@
-> **Applies to:** HUB: all | POSITION: all | AREA: ENGINEERING | SQUAD: all
-
 # Regras de Segurança por Etapa
 
 Seções de `rules/engineering/eng-security-rules.md` que só valem dentro de um comando; o resto daquela rule continua carregado em toda sessão.

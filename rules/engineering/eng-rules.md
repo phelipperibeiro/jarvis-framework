@@ -1,5 +1,3 @@
-> **Applies to:** HUB: all | POSITION: all | AREA: all | SQUAD: all
-
 - **🚨 PRÉ-REQUISITO: VALIDAÇÃO DO ENV.md**
   - **ANTES de executar qualquer comando ou workflow**, o agente **DEVE verificar** se o arquivo `$IDE/ENV.md` existe e está preenchido corretamente.
   - **Exceção**: O comando `/jarvis-init` é o único que pode ser executado sem o `ENV.md`, pois é ele que cria o arquivo.

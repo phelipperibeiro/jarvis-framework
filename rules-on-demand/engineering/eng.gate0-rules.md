@@ -1,5 +1,3 @@
-> **Applies to:** HUB: all | POSITION: all | AREA: ENGINEERING | SQUAD: all
-
 # Gate 0 — Pré-requisitos de eng.plan, eng.work, eng.pre-pr e eng.pr
 
 Lida pela rule de cada um desses comandos antes de qualquer ação. Se qualquer condição falhar, o comando para imediatamente.
