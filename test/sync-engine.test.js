@@ -338,6 +338,9 @@ test("syncAssets: instalação antiga é limpa (claude, windsurf e kiro) pelo OB
       "rules/engineering/frontend/eng.frontend-rules.md",
       "rules/engineering/qa/eng.qa.cypress-standards-rules.md",
       "rules/product/prod.spec-rules.md",
+      // tudo de Cypress saiu (#263): a rule de rules-on-demand/ e o agente antigo que nunca foi limpo
+      "rules-on-demand/engineering/qa/eng.qa.cypress-standards-rules.md",
+      "agents/engineering/qa/eng.qa.cypress-specialist.md",
     ],
     windsurf: [
       "workflows/AGENTS.md",
@@ -360,6 +363,8 @@ test("syncAssets: instalação antiga é limpa (claude, windsurf e kiro) pelo OB
       "rules/engineering/frontend/eng.frontend-rules.md", // saíram de rules/ (#263)
       "rules/engineering/qa/eng.qa.cypress-standards-rules.md",
       "rules/product/prod.spec-rules.md",
+      "rules-on-demand/engineering/qa/eng.qa.cypress-standards-rules.md", // Cypress (#263)
+      "agents/engineering/qa/eng.qa.cypress-specialist.md",
     ],
     kiro: [
       "steering/AGENTS.md",
@@ -398,6 +403,8 @@ test("syncAssets: instalação antiga é limpa (claude, windsurf e kiro) pelo OB
       "steering/eng.frontend-rules.md",
       "steering/eng.qa.cypress-standards-rules.md",
       "steering/prod.spec-rules.md",
+      "rules-on-demand/engineering/qa/eng.qa.cypress-standards-rules.md", // Cypress (#263)
+      "agents/engineering/qa/eng.qa.cypress-specialist.md",
     ],
   };
   for (const [ide, arquivos] of Object.entries(antigos)) {

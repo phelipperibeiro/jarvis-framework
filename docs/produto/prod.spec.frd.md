@@ -54,7 +54,7 @@ Onde o Documento de Requisitos de Produto fala do produto inteiro (ou de uma ini
 
 ## Relação com QA
 
-Documento de Requisitos Funcionais bom vira roteiro de teste exploratório e base de Cypress/E2E. QA agradece critérios de aceite testáveis (“então vejo X”), não (“sistema deve ser intuitivo”).
+Documento de Requisitos Funcionais bom vira roteiro de teste exploratório e base de testes E2E. QA agradece critérios de aceite testáveis (“então vejo X”), não (“sistema deve ser intuitivo”).
 
 ## Com um discovery como insumo (opcional)
 

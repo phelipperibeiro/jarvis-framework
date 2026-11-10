@@ -52,7 +52,7 @@ Agentes específicos para fluxos e regras do domínio de Engenharia.
 **Subpasta**: `engineering/qa/`
 
 - `eng.qa.test-planner.md` - `@eng.qa.test-planner`
-- `eng.qa.testing-engineer.md` - `@eng.qa.testing-engineer` _(stack primária: Cypress + TypeScript — inclui domínio e debugging Cypress)_
+- `eng.qa.testing-engineer.md` - `@eng.qa.testing-engineer` _(testes unitários e E2E, com a ferramenta do projeto)_
 - `eng.qa.test-architect.md` - `@eng.qa.test-architect`
 
 ---
@@ -73,7 +73,7 @@ Agentes específicos para fluxos e validações do domínio de Produto.
 | Domínio | Agentes | Uso |
 |---------|---------|-----|
 | ⚙️ **Engineering** (main) | 9 | Agent principal, advisor, bug hunter, code review, docs, docs consolidator, RPA, frontend, UX |
-| 🧪 **QA** (sub-eng) | 3 | Test planning, testing (+Cypress), test architect |
+| 🧪 **QA** (sub-eng) | 3 | Test planning, testing, test architect |
 | 🎯 **Product** | 2 | PM checker, discovery interviewer |
 
 **Total: 14 agents**

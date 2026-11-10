@@ -270,6 +270,10 @@ export const OBSOLETE_PATHS = Object.freeze([
   "steering/eng.frontend-rules.md",
   "steering/eng.qa.cypress-standards-rules.md",
   "steering/prod.spec-rules.md",
+  // Tudo de Cypress saiu (issue #263, mãe #237): a rule de rules-on-demand/, que nenhum comando lia, e o
+  // agente antigo de Cypress, removido do framework sem entrar aqui.
+  "rules-on-demand/engineering/qa/eng.qa.cypress-standards-rules.md",
+  "agents/engineering/qa/eng.qa.cypress-specialist.md",
 ]);
 
 /**

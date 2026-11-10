@@ -91,7 +91,7 @@ test("rules reais: a de frontend e a de spec de produto ficam em rules-on-demand
     assert.ok(sobDemanda.includes(caminho), `rules-on-demand/${caminho}`);
     assert.ok(!existsSync(join(root, "rules", caminho)), `rules/${caminho} não deveria existir`);
   }
-  // O ponteiro de Cypress saiu de rules/ (a pasta engineering/qa/ ficou vazia e sumiu).
+  // A pasta rules/engineering/qa/, que só tinha um ponteiro, não existe mais.
   assert.ok(!existsSync(join(root, "rules", "engineering", "qa")));
   // Os 7 comandos de spec de produto mandam ler a prod.spec-rules.md.
   for (const w of ["prd", "frd", "epic", "issue", "breakdown", "ard", "clarify"]) {

@@ -213,7 +213,7 @@ test("planEnvUpgrade: removed traz só os nomes das chaves removidas presentes, 
   const plan = planEnvUpgrade(env, "SQUAD=[A]\n");
   assert.deepEqual(plan.removed, ["SMTP", "PASSWORD_DATABASE"]);
   assert.ok(!JSON.stringify(plan).includes("segredo"));
-  assert.equal(REMOVED_KEYS.length, 33);
+  assert.equal(REMOVED_KEYS.length, 34);
   // Nunca volta pelo template (um template antigo ainda com o bloco não a acrescenta).
   assert.deepEqual(planEnvUpgrade("SQUAD=CORE\n", "SMTP=[google]\nNOVA=1\n").added, [
     { key: "NOVA", value: "1" },
@@ -395,6 +395,31 @@ test("#239: chat e object storage saem com as molduras, sem ler os valores", () 
   const tpl = readFileSync(join(root, "templates", "ENV-template.md"), "utf-8");
   assert.ok(!parseEnvEntries(tpl).has("MESSAGE_COMUNICATOR"));
   assert.deepEqual(planEnvUpgrade("SQUAD=CORE\n", "OBJECT_STORAGE=[aws_s3]\n").added, []);
+});
+
+test("#263: o bloco QA / suíte de testes sai com a moldura e os comentários, sem ler o valor", () => {
+  const text = [
+    "SQUAD=CORE",
+    "",
+    "",
+    ...frame("QA / suíte de testes (opcional)"),
+    "# Caminho relativo à raiz do projeto.",
+    "# Cypress E2E: cypress | e2e | tests/e2e",
+    "# Unit/integração: tests | test | src/__tests__",
+    "TEST_FOLDER=valor-ficticio-testes",
+    "",
+    "",
+    ...frame("RTK — Token Killer (opcional)"),
+    "RTK_ENABLED=false",
+    "",
+  ].join("\n");
+  const plan = planEnvUpgrade(text, "SQUAD=[A]\n");
+  assert.deepEqual(plan.removed, ["TEST_FOLDER"]);
+  assert.ok(!JSON.stringify(plan).includes("valor-ficticio"));
+  assert.equal(
+    removeEnvKeys(text, plan.removed).text,
+    ["SQUAD=CORE", "", "", ...frame("RTK — Token Killer (opcional)"), "RTK_ENABLED=false", ""].join("\n")
+  );
 });
 
 test("applyEnvUpgrade: remove e acrescenta no mesmo passe", () => {

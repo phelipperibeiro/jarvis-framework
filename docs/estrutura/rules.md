@@ -35,10 +35,8 @@ rules-on-demand/                    # lidas pelo comando; não carregadas no in�
 │   ├── eng.bump-rules.md
 │   ├── eng.security-rules.md      # seções de etapa da eng-security-rules (architecture.md e gate-checklist.md)
 │   ├── eng.rpa-rules.md          # inclui a documentação de robôs
-│   ├── frontend/
-│   │   └── eng.frontend-rules.md # padrões de frontend (lida pelos comandos e pelo agente de frontend)
-│   └── qa/
-│       └── eng.qa.cypress-standards-rules.md # convenções da suíte E2E
+│   └── frontend/
+│       └── eng.frontend-rules.md # padrões de frontend (lida pelos comandos e pelo agente de frontend)
 ├── product/
 │   ├── prod.guided-rules.md        # modo Developer-Guided (só com PROD_MODE=developer-guided)
 │   ├── prod.spec-common-rules.md   # princípios e busca de contexto dos prod.spec.* (lida pelo comando)
@@ -94,7 +92,7 @@ Regras mais específicas têm precedência sobre regras gerais.
 |------|--------|----------|
 | Regra geral | `{dominio}-rules.md` | `eng-rules.md` |
 | Regra de comando | `{dominio}.{comando}-rules.md` | `eng.work-rules.md` |
-| Regra de QA | `qa/{nome}-rules.md` | `qa/eng.qa.cypress-standards-rules.md` |
+| Regra de QA | `qa/{nome}-rules.md` | — |
 
 ### Estrutura obrigatória de um arquivo de regra
 

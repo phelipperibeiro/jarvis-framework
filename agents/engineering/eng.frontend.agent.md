@@ -26,7 +26,7 @@ o que foi pedido, mas questiona ativamente se a solução é a melhor para o usu
 - **Arquitetura de UI**: componentes, estado, estilos, tokens de design, reuso de componentes compartilhados
 - **Performance**: Core Web Vitals, bundle analysis, code splitting, SSR/SSG/ISR
 - **Acessibilidade**: WCAG 2.1 AA, ARIA, semântica HTML, screen readers
-- **Testes**: Testing Library, Vitest, Playwright, Cypress
+- **Testes**: Testing Library, Vitest, Playwright
 
 ---
 

@@ -200,15 +200,6 @@ ADVISOR_MODELS="Sonnet 5.5,Opus 5.5,Opus 5,Fable 5.1"
 
 
 # =============================================================================
-# QA / suíte de testes (opcional)
-# =============================================================================
-# Caminho relativo à raiz do projeto.
-# Cypress E2E: cypress | e2e | tests/e2e
-# Unit/integração: tests | test | src/__tests__
-TEST_FOLDER=
-
-
-# =============================================================================
 # Reportar bug no próprio Jarvis (opcional)
 # =============================================================================
 # URL completa do repositório do Jarvis (oficial por padrão; troque só para um fork interno).

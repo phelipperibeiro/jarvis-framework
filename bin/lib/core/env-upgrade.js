@@ -114,6 +114,16 @@ const REMOVED_BLOCKS = Object.freeze([
     comments: [],
   },
   {
+    // #263: a variável só servia à rule de Cypress, que saiu.
+    title: "QA / suíte de testes (opcional)",
+    keys: ["TEST_FOLDER"],
+    comments: [
+      "# Caminho relativo à raiz do projeto.",
+      "# Cypress E2E: cypress | e2e | tests/e2e",
+      "# Unit/integração: tests | test | src/__tests__",
+    ],
+  },
+  {
     // #263: o cargo vira a SENIORITY nova antes de sair (planEnvUpgrade); hub e área não têm substituto.
     title: "Organização (obrigatório — opções vêm do taxonomy.md)",
     keys: ["HUB", "AREA", "POSITION"],

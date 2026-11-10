@@ -549,7 +549,6 @@ Se **A** ou **B**, perguntar sobre cada variável opcional conforme seleção �
 | `TASK_MANAGER_URL_BASE` | *(vazio)* | GitHub/GitLab: repositório dos cards (obrigatório); Jira: o site, só para o link |
 | `VERSION_CONTROL` | *(vazio)* | `github`, `gitlab` |
 | `VERSION_CONTROL_ACCESS` | *(vazio)* | `cli` ou `manual` |
-| `TEST_FOLDER` | *(vazio)* | Pasta de testes |
 | `JARVIS_PROJECT` | `https://github.com/phelipperibeiro/jarvis-framework` | URL completa do repo do framework (`/jarvis-report-issue`); trocar só para um fork |
 | `CENTRAL_DOCS_STORAGE` / `_LOCATION` | `filesystem` / pasta padrão do modo de trabalho | Central docs (o que foi implementado), configurado no Passo 5.2; vazio = desligado |
 | `JARVIS_DOCS` / `ENG_DOCS` | `$DOCS_FOLDER/jarvis` / `$JARVIS_DOCS/engineering` | Documentos de trabalho (não perguntar; `$JARVIS_DOCS/` no `.gitignore` só se a raiz tiver `.git`) |
