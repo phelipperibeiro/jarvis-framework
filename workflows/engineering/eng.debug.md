@@ -30,6 +30,7 @@ Nos dois, ele só lê (política de acesso por ambiente; o card é lido pela CLI
 
 | Passo | Skill | Condição |
 |-------|-------|----------|
+| Cabeçalho (agente) | `eng.bug-hunter` (agente) | Sempre — persona do workflow |
 | Passo 1 | `/jarvis-context-detect` | Se `ENABLE_CDD=true` no ENV.md e o `context.md` não existir |
 | Passo 3 | `/eng-global-investigation` | **Sempre** — método e detalhe do caso escolhido |
 | Passo 3 (caso investigar) | `/eng-backend-microservices-trace` | Se o bug cruza serviços **e** a especialização estiver registrada em `BACKEND_SPECIALIZATIONS` |
