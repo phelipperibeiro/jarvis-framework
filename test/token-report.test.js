@@ -122,8 +122,8 @@ test("buildReport: framework sem warm-up nem AGENTS.md não quebra", () => {
 // ARTIFACT_STYLE padrão (ai-generated), sem overlay nem ENV.md, na raiz deste repositório
 // (#122, #208 fase 4). Fórmula: orçamento = Math.ceil(medido × 1,02 / 100) × 100.
 // Desde a #263 as rules são as mesmas para todo mundo, e a medida é uma só. Medido em 2026-11-10,
-// na #237 (com o `jarvis info` e as correções de texto do AGENTS.md): 20.454 tokens (81.816 B;
-// no fim da #263, 20.447 tokens; antes da #263, 25.982 tokens).
+// no fim da #237 (com o `jarvis info` e as correções de texto do AGENTS.md e da rule de
+// integrações): 20.434 tokens (81.737 B; no fim da #263, 20.447; antes da #263, 25.982).
 // Arquivos não rastreados em rules/ ou skills/ e CRLF mudam a medida (como na medida de rules/ do
 // profile-filter). Aumento intencional: recalcule pela fórmula e atualize no mesmo PR, com o
 // motivo. Reduções não exigem mudar o teste.

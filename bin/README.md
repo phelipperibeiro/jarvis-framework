@@ -57,11 +57,11 @@ bin/commands/*.js          →  lógica de negócio pura: async (flags) => {...}
 - Trocar de biblioteca de CLI um dia (se um dia fizer sentido) significa reescrever só `program.js`, não os arquivos de `bin/commands/`.
 - `program.js` é o **mapa completo** do CLI: para saber todo comando que existe, todas as flags que cada um aceita, é o único arquivo que precisa abrir.
 
-## O adapter: commander → formato antigo de `flags`
+## O adapter: commander → objeto `flags`
 
-O commander entrega ao `.action()` as opções em **camelCase** (`--env-file` → `options.envFile`, `--max-age` → `options.maxAge`) e cada positional como seu próprio parâmetro. As funções em `bin/commands/*.js` foram escritas para um objeto `flags` no formato que o parser manual antigo produzia: chaves com hífen literal (`flags["env-file"]`) e um array `flags._` para positionals.
+O commander entrega ao `.action()` as opções em **camelCase** (`--env-file` → `options.envFile`, `--max-age` → `options.maxAge`) e cada positional como seu próprio parâmetro. As funções em `bin/commands/*.js` leem um objeto `flags`, com chaves com hífen literal (`flags["env-file"]`) e um array `flags._` para positionals.
 
-Em vez de reescrever as 10 funções para o formato novo (risco maior, mexe em lógica que já funciona), `program.js` tem uma função `toLegacyFlags(options, extra)` que remonta o objeto no formato antigo antes de cada chamada:
+`program.js` tem uma função `toLegacyFlags(options, extra)` que monta esse objeto antes de cada chamada:
 
 ```js
 // bin/lib/cli/program.js
@@ -71,7 +71,7 @@ withEnvOptions(withLogOptions(whoamiCmd)).action((options) => whoami(toLegacyFla
 
 `toLegacyFlags` remapeia só as duas chaves que mudam de formato (`envFile`→`"env-file"`, `maxAge`→`"max-age"`); todo o resto passa direto. O `extra` (segundo argumento) serve para injetar positionals como `_` (ex.: `jarvis list`, `jarvis fork` e `jarvis map`).
 
-**Ao adicionar uma opção nova que usa hífen** (ex: `--body-file`), decida: se a função de `bin/commands/*.js` vai ler `flags["body-file"]` (formato antigo) ou se você vai atualizá-la para ler `options.bodyFile` direto. Os 4 comandos novos (`vcs create-merge`, `vcs create-issue`, etc.) já usam o segundo caminho — passam o objeto de opções do commander quase direto, sem o adapter — porque não têm lógica legada para preservar.
+**Ao adicionar uma opção nova que usa hífen** (ex: `--body-file`), decida: se a função de `bin/commands/*.js` vai ler `flags["body-file"]` (pelo adapter) ou `options.bodyFile` direto. Os comandos `vcs create-merge`, `vcs create-issue` e `tasks comment` usam o segundo caminho: recebem as opções do commander quase direto, sem o adapter.
 
 ## O helper `cmd()` — por que todo comando passa por ele
 
@@ -81,7 +81,7 @@ function cmd(parent, name) {
 }
 ```
 
-O parser manual antigo nunca validava nada: qualquer `--flag` era aceito e ignorado silenciosamente se o comando não o lesse. O commander, por padrão, dá erro em flag não declarada e em positional excedente. `allowUnknownOption()`/`allowExcessArguments()` replicam a permissividade antiga — mas **o commander não propaga essas duas configs do comando pai para os subcomandos**: setar só no `program` raiz não é suficiente (testado e confirmado durante a implementação). Por isso `cmd()` existe e **todo** comando — incluindo os aninhados (`docs sync`, `vcs create-merge`) — é criado com ele, nunca com `.command()` direto.
+O commander, por padrão, dá erro em flag não declarada e em positional excedente. `allowUnknownOption()`/`allowExcessArguments()` fazem o CLI aceitar uma `--flag` que o comando não lê e argumentos a mais, sem erro — mas **o commander não propaga essas duas configs do comando pai para os subcomandos**: setar só no `program` raiz não é suficiente. Por isso `cmd()` existe e **todo** comando — incluindo os aninhados (`docs sync`, `vcs create-merge`) — é criado com ele, nunca com `.command()` direto.
 
 ## Argumentos: `[opcional]`, não `<obrigatório>` — de propósito
 

@@ -35,6 +35,10 @@ templates/
 │   ├── central-delivery-template.md # Central docs: registro da entrega
 │   ├── central-product-template.md # Central docs: pagina do produto (transversal)
 │   ├── central-home-template.md    # Central docs: pagina inicial do squad (editavel, so uma vez)
+│   ├── central-session-template.md # Central docs: pagina-indice da sessao
+│   ├── debug-report-template.md    # Relatorio do eng.debug (caso investigar)
+│   ├── bug-audit-report-template.md # Relatorio do eng.debug (caso varrer)
+│   ├── daily-template.md           # Registro de esforco da tarefa (daily.md do eng.pr)
 │   └── qa/                         # Templates de QA
 │       ├── qa.test-strategy-template.md   # Estrategia de testes (Modo A do eng.qa.test-planner)
 │       ├── qa.test-coverage-report-template.md # Relatorio de cobertura (Modo B do eng.qa.test-planner)
@@ -127,6 +131,10 @@ Use chaves `{...}` para indicar campos a serem preenchidos:
 | `central-delivery-template.md` | Central docs: registro de uma entrega | `/eng.spec-consolidate` |
 | `central-product-template.md` | Central docs: página do produto (transversal a funcionalidades) | `/eng.spec-consolidate` |
 | `central-home-template.md` | Central docs: página inicial do squad (editável, criada uma vez) | `jarvis docs publish --tipo home` |
+| `central-session-template.md` | Central docs: página-índice da sessão | `/eng.spec-consolidate` |
+| `debug-report-template.md` | Relatório da investigação de um bug | `/eng.debug` |
+| `bug-audit-report-template.md` | Relatório da varredura de um escopo | `/eng.debug` |
+| `daily-template.md` | Registro de esforço da tarefa (`daily.md`) | `/eng.pr` |
 
 ### Product
 
@@ -204,7 +212,3 @@ Checklist ao criar/editar:
 - `../skills/` - Skills que referenciam templates
 - `../commands/` - Commands que disparam uso
 - `../rules/` - Rules que governam templates
-
----
-
-**Ultima atualizacao**: 2026-01-26

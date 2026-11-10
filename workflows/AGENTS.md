@@ -237,7 +237,3 @@ Workflows de engenharia seguem fases restritas:
 - `../skills/` - Skills invocados por workflows
 - `../templates/` - Templates usados por workflows
 - `../rules/` - Regras que governam workflows
-
----
-
-**Ultima atualizacao**: 2026-01-26

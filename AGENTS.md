@@ -266,7 +266,3 @@ Lista completa de agentes: `jarvis list` (ou `agents/README.md`, no repositorio 
 - Logica de negocio ou implementacao de features.
 
 Se o usuario pedir comandos especificos, solicite o projeto alvo ou arquivos de config.
-
----
-
-**Última atualização**: 2026-04-26

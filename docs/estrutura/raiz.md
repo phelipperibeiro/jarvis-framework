@@ -37,7 +37,7 @@ Não explica cada pasta em profundidade — isso fica em [estrutura/](./README.m
 - Lista de agentes ativos
 - O que o repo **não** fornece (build de um produto específico)
 
-Há `AGENTS.md` **aninhados** em `agents/`, `skills/`, `rules/`, `templates/`, `workflows/` — o mais próximo do arquivo em edição tem precedência.
+Há `AGENTS.md` **aninhados** em `agents/`, `skills/`, `templates/` e `workflows/` — o mais próximo do arquivo em edição tem precedência.
 
 Não confundir com o template `templates/engineering/AGENTS-template.md`, que gera o `AGENTS.md` **do projeto alvo** no `/jarvis-init`.
 
@@ -99,7 +99,7 @@ Para customizar a org: edite o arquivo ou use `/taxonomy add|update|remove|valid
 
 | Arquivo / pasta | Nota                                                             |
 | --------------- | ---------------------------------------------------------------- |
-| `.gitignore`    | Deste repositório: ignora `.history` e `.jarvis/` (sessões locais) |
+| `.gitignore`    | Deste repositório: ignora `node_modules`, `.history`, `.jarvis/` (sessões locais), `.claude/` e `trash-archived-docs/` |
 | `.vscode/`      | Settings locais do editor — não faz parte do framework publicado |
 | `.git/`         | Controle de versão                                               |
 | `.history/`     | Histórico local de edições (IDE) — ignorado                      |

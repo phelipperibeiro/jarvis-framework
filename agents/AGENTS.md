@@ -226,7 +226,3 @@ ENABLE_CDD=true
 - `../skills/` - Skills correspondentes
 - `../workflows/` - Workflows que ativam agentes
 - `../rules/` - Regras que agentes devem seguir
-
----
-
-**Última atualização**: 2026-04-26

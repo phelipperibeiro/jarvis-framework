@@ -41,7 +41,7 @@ Agentes específicos para fluxos e regras do domínio de Engenharia.
 - `eng.bug-hunter.md` - `@eng.bug-hunter` - Caça e análise de bugs
 - `eng.dev-code-reviewer.md` - `@eng.dev-code-reviewer` - Code review
 - `eng.docs-writer.md` - `@eng.docs-writer` - Documentação técnica
-- `eng.rpa.agent.md` - `@eng.rpa` - Automação e scraping RPA (ARACHNE)
+- `eng.rpa.agent.md` - `@eng.rpa.agent` - Automação e scraping RPA (ARACHNE)
 - `eng.frontend.agent.md` - `@eng.frontend` - Especialista frontend (neutro de stack): UI, estado, performance, a11y
 - `eng.ux-designer.agent.md` - `@eng.ux-designer` - Especialista UX/UI: heurísticas Nielsen, jornada, microcopy
 - `eng.advisor.agent.md` - `@eng.advisor.agent` - Advisor opcional: orienta as questões em aberto do `eng.start` (modelo escolhido pelo usuário)

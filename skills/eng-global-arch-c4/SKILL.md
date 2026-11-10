@@ -235,7 +235,7 @@ cat docker-compose.yml 2>/dev/null | grep -E "^\s+\w+:"
 
 - [ ] ENV.md verificado
 - [ ] Documentação existente verificada
-- [ ] Stack detectada com script
+- [ ] Stack identificada (`CDD-MIND-MAP.md`, manifestos e infra)
 - [ ] Proposta apresentada ao usuário
 - [ ] Aprovação obtida
 - [ ] Diagrama criado/atualizado
@@ -274,10 +274,6 @@ Referência: https://c4model.com
 ### ENV.md não encontrado
 - Interromper execução
 - Orientar usuário a executar `/jarvis-init` primeiro
-
-### Script de detecção não encontrado
-- Executar detecção manual com comandos básicos
-- Verificar `package.json`, `docker-compose.yml`
 
 ### Diagrama existente desatualizado
 - Comparar com código atual
