@@ -218,7 +218,7 @@ test("repos.md: regras — nunca lê .env*, nunca reprocessa linhas validadas, n
 // ---- Fase 4: template do AGENTS.md e Passo 7 ---------------------------------------------------------------
 
 const template = read("templates", "engineering", "AGENTS-template.md");
-const passo7 = trecho(skill, "### 7. Criar AGENTS.md", "### 8. Profile-Aware Rules Sync");
+const passo7 = trecho(skill, "### 7. Criar AGENTS.md", "### 8. Rules Sync");
 
 test("AGENTS-template: marcadores do bloco de repositórios uma vez cada, com {REPOS_BLOCK} entre eles", () => {
   const abre = "<!-- jarvis:repos:start -->";
