@@ -326,6 +326,9 @@ test("syncAssets: instalação antiga é limpa (claude, windsurf e kiro) pelo OB
       // prod.roadmap.preview e product-roadmap-report removidos (#243)
       "commands/prod.roadmap.preview.md",
       "skills/product-roadmap-report/SKILL.md", // some com a entrada de pasta
+      // product-specs e product-specs-update, skills sem chamador (#244): somem com a entrada de pasta
+      "skills/product-specs/SKILL.md",
+      "skills/product-specs-update/SKILL.md",
     ],
     windsurf: ["workflows/AGENTS.md", "workflows/README.md", "workflows/all-tools.md", "workflows/eng.review.md", "workflows/eng.docs.md", "workflows/eng.create-ard-from-code.md", "workflows/eng.breakdown-subtasks.md", "workflows/data.contract.md", "workflows/data.new-pipeline.md", "workflows/prod.roadmap.preview.md"],
     kiro: [
@@ -349,6 +352,8 @@ test("syncAssets: instalação antiga é limpa (claude, windsurf e kiro) pelo OB
       "templates/engineering/data-pipeline-template.md",
       "steering/prod.roadmap.preview.md", // prod.roadmap.preview removido (#243)
       "steering/skills/skill-product-roadmap-report.md",
+      "steering/skills/skill-product-specs.md", // skills sem chamador (#244)
+      "steering/skills/skill-product-specs-update.md",
     ],
   };
   for (const [ide, arquivos] of Object.entries(antigos)) {
@@ -375,6 +380,12 @@ test("syncAssets: instalação antiga é limpa (claude, windsurf e kiro) pelo OB
           !existsSync(join(target, ".claude/skills/product-roadmap-report")),
           "claude: a pasta skills/product-roadmap-report deveria ter sido removida inteira"
         );
+        for (const pasta of ["skills/product-specs", "skills/product-specs-update"]) {
+          assert.ok(
+            !existsSync(join(target, `.claude/${pasta}`)),
+            `claude: a pasta ${pasta} deveria ter sido removida inteira`
+          );
+        }
       }
       assert.ok(
         existsSync(join(target, `.${ide}/AGENTS.md`)),
