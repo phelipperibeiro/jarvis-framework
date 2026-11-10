@@ -15,12 +15,14 @@ A pasta `workflows/` contem os **templates de execucao** dos comandos slash. Cad
 ```
 workflows/
 ├── warm-up.md                      # Preparacao de sessao
+├── taxonomy.md                     # Gerenciar o taxonomy.md
 │
 ├── product/                        # Workflows de produto
 │   ├── prod.spec.md               # Entrypoint de specs
 │   ├── prod.spec.discovery.md     # Investigacao inicial de uma ideia
 │   ├── prod.spec.prd.md           # Documento de Requisitos de Produto
 │   ├── prod.spec.frd.md           # Documento de Requisitos Funcionais
+│   ├── prod.spec.ard.md           # ARD a partir do produto
 │   ├── prod.spec.breakdown.md     # Quebra em versões / épicos / histórias
 │   ├── prod.spec.epic.md          # Epicos
 │   ├── prod.spec.issue.md         # Issues
@@ -37,6 +39,9 @@ workflows/
     ├── eng.create-rfc.md          # Criar RFC
     ├── eng.build-tech-spec.md     # Tech Spec (Delivery Spec ou Reference Spec)
     ├── eng.light-arch.md          # Design leve
+    ├── eng.rpa.robot.md           # Robô RPA (criar ou manter)
+    ├── eng.spec-consolidate.md    # Consolidação no Central docs
+    ├── eng.daily-report.md        # Relatório dos daily.md por dia
     └── frontend/
         ├── eng.frontend-component.md   # Criar/refatorar componente frontend
         ├── eng.frontend-review.md      # Revisão de PR frontend

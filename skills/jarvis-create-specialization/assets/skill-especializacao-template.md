@@ -4,7 +4,6 @@ description: >
   Especialização de {area} para {stack}: convenções, estrutura, comandos e padrões que este
   projeto usa de fato. Soma-se à skill base eng-{area}.
   Trigger: Use ao implementar, revisar ou depurar código de {area} em {stack} neste projeto.
-license: AGPL-3.0
 compatibility: Designed for Claude Code (or similar products)
 allowed-tools: Read Write Edit Glob Grep Bash
 metadata:

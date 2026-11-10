@@ -70,7 +70,7 @@ Se você só rodar `jarvis init` numa pasta nova (sem `ENV.md`), a IDE fica tamb
 
 ## Para quem vai criar ou editar uma rule
 
-Esta seção era antes `rules/AGENTS.md`. Esse arquivo foi removido: era o único `AGENTS.md` do repositório force-carregado em toda sessão (caso especial em `profile-filter.js`), diferente de `skills/AGENTS.md`, `workflows/AGENTS.md`, `templates/AGENTS.md` e `agents/AGENTS.md`, que só são lidos sob demanda. O conteúdo de autoria está aqui agora.
+O guia de autoria fica aqui, e não num `rules/AGENTS.md`: tudo o que está em `rules/` é carregado em toda sessão.
 
 ### Hierarquia de Regras
 

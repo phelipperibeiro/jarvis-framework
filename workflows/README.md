@@ -9,6 +9,7 @@ Este diretório contém os workflows (templates) usados pelos comandos slash do 
 ```
 workflows/
 ├── warm-up.md                    # Preparação de sessão
+├── taxonomy.md                   # Gerenciar o taxonomy.md (opções organizacionais)
 │
 ├── product/                      # Gestão de Produto & Requisitos
 │   ├── prod.spec.md              # Entrypoint de especificações
@@ -33,6 +34,8 @@ workflows/
     ├── eng.build-tech-spec.md    # Criar Tech Spec (Delivery Spec ou Reference Spec)
     ├── eng.light-arch.md         # Design arquitetural leve
     ├── eng.rpa.robot.md      # Criar robô RPA do zero ao PR (skill técnica)
+    ├── eng.spec-consolidate.md   # Consolidar no Central docs o que a entrega implementou
+    ├── eng.daily-report.md       # Juntar os daily.md das sessões por dia
     └── frontend/
         ├── eng.frontend-component.md     # Criar/refatorar componente (design system vs remote, a11y, testes)
         ├── eng.frontend-review.md        # Revisão de PR frontend (TS, tokens, a11y, MFE)
@@ -46,6 +49,7 @@ workflows/
 | Workflow | Propósito |
 |----------|-----------|
 | `warm-up.md` | Preparar sessão carregando contexto do projeto |
+| `taxonomy.md` | Gerenciar o `taxonomy.md` de forma segura (opções organizacionais) |
 
 ---
 
@@ -80,6 +84,8 @@ workflows/
 | `eng.build-tech-spec.md` | Criar especificação técnica (Delivery Spec ou Reference Spec) |
 | `eng.light-arch.md` | Design arquitetural leve |
 | `eng.rpa.robot.md` | Criar robô novo ou manter existente — análise, scaffolding, impl, docs, PR |
+| `eng.spec-consolidate.md` | Consolidar no Central docs o que a entrega implementou, por funcionalidade (publicar, arquivar, finalizar) |
+| `eng.daily-report.md` | Juntar os `daily.md` das sessões em um relatório por dia, com alertas das sessões sem `daily.md` |
 | `eng.frontend-component.md` | Criar ou refatorar componente frontend com qualidade (design system vs remote, a11y, testes) |
 | `eng.frontend-review.md` | Revisão de código específica para PRs frontend (TypeScript, tokens, a11y, MFE) |
 | `eng.frontend-perf-audit.md` | Auditoria de performance frontend (Core Web Vitals, bundle, diagnóstico por métrica) |

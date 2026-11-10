@@ -26,7 +26,7 @@ Tem dois modos: transforma um épico ou uma história do board em uma **Tech Spe
 
 ## Como funciona
 
-1. **Modo:** com URL, ID ou texto de card, segue no Delivery Spec sem perguntar, como sempre. Com a descrição de um documento normativo, segue no Reference Spec. Sem argumentos (ou se ficar ambíguo), pergunta se há card de origem.
+1. **Modo:** com URL, ID ou texto de card, segue no Delivery Spec sem perguntar. Com a descrição de um documento normativo, segue no Reference Spec. Sem argumentos (ou se ficar ambíguo), pergunta se há card de origem.
 2. **Áreas (dentro do modo, depois de ler o card ou da triagem):** identifica as áreas da spec (backend, frontend, qa, data, automation, platform) e carrega o skill base de cada uma mais as especializações registradas no `ENV.md` (regra `eng.specializations-rules.md`). Assim a spec segue as convenções do projeto, e não padrões genéricos.
 3. **Executa o modo**, lendo só o arquivo dele (`skills/eng-global-tech-spec/references/`); o passo 2 acontece no começo desse arquivo.
 

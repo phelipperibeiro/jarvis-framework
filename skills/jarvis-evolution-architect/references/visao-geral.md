@@ -246,7 +246,7 @@ Area: architecture
 Specialization: jarvis-framework-evolution
 Version: 1.0
 Framework: Jarvis 2.0+
-License: AGPL-3.0
+License: MIT
 ```
 
 ---

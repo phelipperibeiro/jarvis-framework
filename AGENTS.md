@@ -26,7 +26,7 @@ jarvis-framework/
 │                                 # bases: eng-backend, eng-frontend, eng-qa, eng-data, eng-automation,
 │                                 #   eng-platform, eng-ai (+ especializações: eng-backend-*, eng-qa-planner)
 │                                 # eng-global-branch (nome da branch, forkável), eng-global-pr,
-│                                 #   -task-comment, -investigation, -tech-spec, -docs-write
+│                                 #   -task-comment, -investigation, -tech-spec, -docs-write, -arch-c4
 │                                 # jarvis-*: init, fork, context-detect, docs-central, docs-index,
 │                                 #   create/list-specializations, report-issue, evolution-architect
 ├── templates/                    # documentos: engineering/ (ARD, RFC, tech spec, architecture, plan…),
@@ -107,12 +107,12 @@ O CLI resolve o `ENV.md` na seguinte precedência:
 
 | IDE | Mecanismo | Como invocar um skill |
 |-----|-----------|-----------------------|
-| Claude Code | Slash commands em `.claude/commands/` | `/warm-up-jarvis`, `/eng.start` |
-| Windsurf | Rules + prompts em `.windsurf/` | `/warm-up-jarvis`, `/eng.start` |
-| Cursor | Slash commands em `.cursor/` | `/warm-up-jarvis`, `/eng.start` |
+| Claude Code | Slash commands em `.claude/commands/` | `/warm-up`, `/eng.start` |
+| Windsurf | Rules + prompts em `.windsurf/` | `/warm-up`, `/eng.start` |
+| Cursor | Slash commands em `.cursor/` | `/warm-up`, `/eng.start` |
 | **Codex** | Skills TUI em `.codex/skills/` | Linguagem natural ou painel de skills do TUI |
-| OpenCode | Slash commands em `.opencode/` | `/warm-up-jarvis`, `/eng.start` |
-| Gemini CLI | Prompts em `.agents/` | `@warm-up-jarvis`, linguagem natural |
+| OpenCode | Slash commands em `.opencode/` | `/warm-up`, `/eng.start` |
+| Gemini CLI | Prompts em `.agents/` | `@warm-up`, linguagem natural |
 | **Kiro** | Steering files em `.kiro/steering/` | `#skill-{nome}` no chat (ex: `#skill-eng-backend`) |
 
 > **Codex**: Não existe slash command (`/`) no Codex. Skills são descobertas automaticamente

@@ -19,8 +19,8 @@
 jarvis/
 ├── README.md              → leitura rápida
 ├── AGENTS.md              → instruções para agentes de IA neste repo
-├── LICENSE                → AGPL-3.0
-├── package.json           → pacote jarvis-framework + bin jarvis
+├── LICENSE                → MIT
+├── package.json           → pacote jarvis-ai-framework + bin jarvis
 ├── taxonomy.md            → squads válidos e domínio de e-mail
 ├── agents/                → personas de IA
 ├── skills/                → playbooks executáveis

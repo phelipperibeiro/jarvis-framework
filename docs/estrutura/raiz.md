@@ -45,24 +45,24 @@ Não confundir com o template `templates/engineering/AGENTS-template.md`, que ge
 
 ## `LICENSE`
 
-Licença **GNU Affero General Public License v3 (AGPL-3.0)**.
+Licença **MIT**.
 
-Copyright: Jarvis Framework Contributors (2026).
+Copyright (c) 2026 Felipe Ribeiro de Andrade.
 
-Implicação prática: quem modifica e oferece o software em rede precisa disponibilizar o código correspondente sob AGPL. Leia o arquivo completo antes de redistribuir ou embutir em produto proprietário.
+Implicação prática: o uso, a cópia, a modificação e a redistribuição são livres, inclusive em produto proprietário, desde que o aviso de copyright e o texto da licença acompanhem as cópias. Leia o arquivo completo.
 
 ---
 
 ## `package.json`
 
-Manifesto npm do pacote **`jarvis-framework`**.
+Manifesto npm do pacote **`jarvis-ai-framework`**.
 
 Campos importantes neste fork:
 
 | Campo          | Valor / significado                                            |
 | -------------- | -------------------------------------------------------------- |
-| `name`         | `jarvis-framework`             |
-| `version`      | `2.0.0` — marco do fork de autoria própria                     |
+| `name`         | `jarvis-ai-framework`          |
+| `version`      | a versão lançada (ver o `package.json` e o `CHANGELOG.md`)     |
 | `bin.jarvis`   | `./bin/jarvis.js` — comando global `jarvis`                    |
 | `type`         | `module` (ESM)                                                 |
 | `postinstall`  | `node bin/postinstall.js` — só imprime as dicas (`jarvis init`, `jarvis install-rtk`) |

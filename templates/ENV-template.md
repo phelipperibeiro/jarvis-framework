@@ -181,7 +181,7 @@ VERSION_CONTROL_ACCESS=[cli, manual]
 # RTK — Token Killer (opcional)
 # =============================================================================
 # Proxy CLI em Rust que comprime output de shell (economia 60–90% de tokens).
-# Instale com: cargo install rtk (requer Rust).
+# Instale com: jarvis install-rtk (ou cargo install brokk-rtk; requer Rust).
 # false = a rule RTK não é copiada para $IDE/rules/.
 RTK_ENABLED=false
 

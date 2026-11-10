@@ -8,7 +8,7 @@ Cria ou atualiza um **ARD** (Architecture Requirements Document): o documento qu
 
 ## O que é
 
-O ARD responde "como vamos construir isto?" de forma versionada e revisável. Ele nasce de uma demanda de produto (PRD) e serve de base para as tarefas técnicas. O comando funciona em dois modos: **novo ARD** ou **iteração** de um ARD existente. Nos dois, o ARD pode partir **de PRD e decisões** (como sempre) ou **do código existente**, quando ele deve refletir a arquitetura que o repositório já tem.
+O ARD responde "como vamos construir isto?" de forma versionada e revisável. Ele nasce de uma demanda de produto (PRD) e serve de base para as tarefas técnicas. O comando funciona em dois modos: **novo ARD** ou **iteração** de um ARD existente. Nos dois, o ARD pode partir **de PRD e decisões** ou **do código existente**, quando ele deve refletir a arquitetura que o repositório já tem.
 
 Atalhos:
 

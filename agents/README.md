@@ -183,7 +183,7 @@ Você também pode invocar agentes manualmente usando `@`:
 - **Todos os agentes são compatíveis** com os comandos slash existentes
 - **Ativação automática** baseada em contexto continua funcionando
 - **Invocação manual** com `@nome-do-agente` permanece a mesma
-- **Agentes de QA consolidados** em `engineering/qa/` (antes estavam em stand-by)
+- **Agentes de QA** em `engineering/qa/`
 
 ---
 

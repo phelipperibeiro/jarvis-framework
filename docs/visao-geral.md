@@ -9,7 +9,7 @@ Complemento do [README](../README.md) (leitura rápida). Aqui está o **detalhe*
 | Produto / PM / PO (comandos `/prod.spec*`) | [produto/](./produto/README.md) |
 | Instruções para agentes (operacional) | [../AGENTS.md](../AGENTS.md) |
 
-**Pacote:** `jarvis-framework` · **Versão:** ver `package.json` (marco deste fork: **2.0.0**) · **Repo:** [phelipperibeiro/jarvis-framework](https://github.com/phelipperibeiro/jarvis-framework)
+**Pacote:** `jarvis-ai-framework` · **Versão:** ver `package.json` · **Repo:** [phelipperibeiro/jarvis-framework](https://github.com/phelipperibeiro/jarvis-framework)
 
 ---
 
@@ -57,8 +57,6 @@ Com Jarvis, o contexto vive em arquivos (`ENV.md`, taxonomy, sessions, skills) e
 |-------|---------|
 | App de produto | Só prompts + CLI |
 | Login OAuth | Identidade = `USER=` → git → SO |
-| Runtime Redis / event bus | Removidos no fork v2 |
-| Ritual diário (checkin/daily) | Removido do CLI |
 | Vendor locked | Vendors no `ENV.md` |
 | `node_modules` “mágico” | Ver [node_modules.md](./estrutura/node_modules.md) |
 
@@ -72,8 +70,8 @@ Com Jarvis, o contexto vive em arquivos (`ENV.md`, taxonomy, sessions, skills) e
 jarvis/
 ├── README.md          # leitura rápida
 ├── AGENTS.md          # manual operacional para agentes neste repo
-├── LICENSE            # AGPL-3.0
-├── package.json       # jarvis-framework @ 2.x + bin
+├── LICENSE            # MIT
+├── package.json       # jarvis-ai-framework + bin
 ├── taxonomy.md        # opções de org
 ├── agents/            # personas
 ├── skills/            # playbooks
@@ -125,7 +123,7 @@ O que o **npm publica** (`package.json` → `files`): CLI + agents + skills + wo
 Pasta que contém `.$IDE/`. Não é “um repo git” necessariamente — pode ser multi-repo com `WORKSPACE_REPOS`.
 
 Sessões: `{workspace}/$SESSIONS_DIR/{eng,prod}/` (`SESSIONS_DIR`, padrão `.jarvis/sessions`; o `jarvis init` cria as pastas nesse caminho).  
-Estado do framework **não** fica em `~/.jarvis/` neste fork (exceto restos legados de login, ignorados).
+Estado do framework **não** fica em `~/.jarvis/`.
 
 ### ENV.md
 
@@ -222,7 +220,7 @@ O banner do `init` mostra **versão + path de origem** do pacote.
 Proxy Rust que comprime output de shell (~60–90% menos tokens).
 
 ```bash
-jarvis install-rtk          # rustup se preciso + cargo install rtk
+jarvis install-rtk          # rustup se preciso + cargo install brokk-rtk
 # ENV: RTK_ENABLED=true      # a rule rtk-rules.md entra na IDE
 ```
 
@@ -252,8 +250,8 @@ Detalhe da rule: `rules/rtk-rules.md`. Comentários: `templates/ENV-template.md`
 |---------|-----------|---------|
 | `README.md` | Install/sync rápido | [raiz.md](./estrutura/raiz.md#readmemd) |
 | `AGENTS.md` | Manual do agente neste repo | [raiz.md](./estrutura/raiz.md#agentsmd) |
-| `LICENSE` | AGPL-3.0 | [raiz.md](./estrutura/raiz.md#license) |
-| `package.json` | Nome, versão 2.x, bin | [raiz.md](./estrutura/raiz.md#packagejson) |
+| `LICENSE` | MIT | [raiz.md](./estrutura/raiz.md#license) |
+| `package.json` | Nome, versão, bin | [raiz.md](./estrutura/raiz.md#packagejson) |
 | `taxonomy.md` | Opções de org | [raiz.md](./estrutura/raiz.md#taxonomymd) |
 
 Pastas: [agents](./estrutura/agents.md) · [bin](./estrutura/bin.md) · [docs](./estrutura/docs.md) · [node_modules](./estrutura/node_modules.md) · [rules](./estrutura/rules.md) · [skills](./estrutura/skills.md) · [templates](./estrutura/templates.md) · [workflows](./estrutura/workflows.md)

@@ -132,10 +132,12 @@ Use chaves `{...}` para indicar campos a serem preenchidos:
 
 | Template | Uso | Comando |
 |----------|-----|---------|
-| `PRD-template.md` | Requisitos de produto | `/prod.spec.prd` |
-| `FRD-template.md` | Requisitos de feature | `/prod.spec.frd` |
-| `epic-template.md` | Epicos | `/prod.spec.epic` |
-| `story-template.md` | User Stories | `/prod.spec.issue` |
+| `prod-prd-template.md` | Requisitos de produto | `/prod.spec.prd` |
+| `prod-frd-template.md` | Requisitos funcionais | `/prod.spec.frd` |
+| `prod-epic-template.md` | Épicos | `/prod.spec.epic` |
+| `prod-issue-template.md` | Histórias, tarefas e bugs | `/prod.spec.issue` |
+| `prod-breakdown-template.md` | Quebra em versões, épicos e histórias | `/prod.spec.breakdown` |
+| `prod-discovery-template.md` | Rascunho de discovery | `/prod.spec.discovery` |
 
 ---
 

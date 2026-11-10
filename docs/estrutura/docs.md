@@ -13,6 +13,8 @@ docs/
 ├── README.md                         # índice desta pasta
 ├── visao-geral.md                    # proposta + conceitos + fluxos
 ├── comandos.md                       # consulta rápida: todos os comandos eng.* e prod.*
+├── especializacoes-de-stack.md       # adaptar o Jarvis à sua stack
+├── overlay-de-empresa.md             # adaptar o Jarvis à sua empresa
 ├── produto/                          # universo PM/PO + um guia por comando
 │   ├── README.md
 │   └── prod.spec*.md
