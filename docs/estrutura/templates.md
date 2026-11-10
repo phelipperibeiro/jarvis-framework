@@ -2,7 +2,7 @@
 
 ## Para que serve
 
-Modelos Markdown que skills/workflows preenchem (ARD, RFC, tech spec, PRD, planos QA…) e o **template canônico do ENV** do projeto.
+Modelos Markdown que skills/workflows preenchem (ARD, RFC, tech spec, PRD, estratégia e relatórios de QA…) e o **template canônico do ENV** do projeto.
 
 ## Como é montado
 
