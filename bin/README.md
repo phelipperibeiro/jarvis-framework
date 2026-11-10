@@ -118,8 +118,8 @@ if (fileURLToPath(import.meta.url) === process.argv[1]) {
    - Importar a função no topo.
    - Registrar com `cmd(program, "meu-comando")` (ou `cmd(parentExistente, "nome")` se for subcomando de um grupo como `docs`/`vcs`/`tasks`).
    - Declarar as opções/positionals com `.option()`/`.argument()`. Usar `withEnvOptions()`/`withLogOptions()` de `shared-options.js` se o comando precisar de `--ide`/`--env-file` ou `--quiet`/`--verbose`/`--silent`.
-   - No `.action()`, chamar `toLegacyFlags(options, extra)` se a função usa o formato antigo de flags, ou passar `options` quase direto se for um comando novo sem lógica legada (ver os 4 de `vcs`/`tasks` como exemplo).
-3. Rodar manualmente o comando novo e **todos os outros** (não há suíte automatizada de CLI end-to-end — só `test/comandos-docs.test.js`, que valida a documentação dos workflows/skills, não o comportamento do CLI em si). Checklist mínimo: `--help` do comando novo, caminho feliz, caminho de erro (flag/argumento faltando).
+   - No `.action()`, chamar `toLegacyFlags(options, extra)` se a função lê o objeto `flags`, ou passar `options` quase direto se ela lê as opções do commander (como os comandos de `vcs` e `tasks`).
+3. Rodar manualmente o comando novo e **todos os outros** (a suíte de `test/` roda o `jarvis` de verdade em vários comandos, por exemplo em `rules-sync.test.js`, `token-report.test.js` e `docs-commands-cli.test.js`; o resto depende desse teste manual). Checklist mínimo: `--help` do comando novo, caminho feliz, caminho de erro (flag/argumento faltando).
 4. `npm run lint && npm run test:comandos && npm run test:filtro` antes de comitar.
 
 ## Variáveis de ambiente lidas diretamente (fora do ENV.md)

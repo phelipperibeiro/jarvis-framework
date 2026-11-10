@@ -10,6 +10,8 @@ Modelos Markdown que skills/workflows preenchem (ARD, RFC, tech spec, PRD, estra
 templates/
 ├── AGENTS.md
 ├── ENV-template.md              # ÚNICA fonte do ENV.md no init (fork)
+├── cdd-mind-map-template.md     # mapa de tecnologias (CDD-MIND-MAP.md) do /jarvis-init
+├── warm-up-template.md          # aquecimento do /warm-up
 └── engineering/
     ├── AGENTS-template.md       # gera AGENTS.md do projeto alvo (com a linha do mapa e, no modo workspace, o bloco de repositórios mantido pelo /jarvis-init repos)
     ├── advisor-template.md      # prompts e auditoria do Advisor (eng.start)
@@ -24,6 +26,7 @@ templates/
     ├── c4-model-template.md
     ├── plan-template.md
     ├── PR-template.md
+    ├── daily-template.md             # registro de esforço da tarefa (daily.md do /eng.pr)
     ├── debug-report-template.md      # relatório do /eng.debug (caso investigar)
     ├── bug-audit-report-template.md  # relatório do /eng.debug (caso varrer)
     ├── central-feature-template.md   # Central docs: página da funcionalidade

@@ -269,4 +269,4 @@ Pastas: [agents](./estrutura/agents.md) · [bin](./estrutura/bin.md) · [docs](.
 
 ---
 
-**Última atualização:** 2026-08-13 · documentação em subarquivos sob `docs/estrutura/`
+Documentação em subarquivos sob `docs/estrutura/`.
