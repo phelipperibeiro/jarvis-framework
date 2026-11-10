@@ -148,7 +148,7 @@ Comandos disponíveis:
 jarvis whoami                                       # Exibir identidade (ENV.md / git / SO)
 jarvis init                                         # Bootstrap do framework no projeto
 jarvis init --upgrade [--ide X] [--yes] [--remove-stale]   # Atualizar projeto existente: confere os caminhos do ENV (para sem alterar nada se sobrar $ sem valor) + assets + variáveis novas do ENV (inclui WORKSPACE_MODE) + documentos nas pastas novas + lista/remove skills antigos + rules sincronizadas
-jarvis list                                         # Listar agents, skills e workflows
+jarvis list | info <tipo/nome>                      # Listar agents, skills e workflows; info mostra os detalhes de um (ex.: agent/eng.agent)
 jarvis install-rtk                                  # Instalar RTK (token killer — economia 60-90% em tokens de shell)
 jarvis tokens    [--artifact-style X] [--rtk] [--json] [--ide X]   # Estimar o que carrega no início da sessão (estilo e RTK do ENV.md se sem flags; com mais de um ENV.md na pasta, passe --ide)
 jarvis rules sync [--ide X]                         # Sincroniza rules/ e rules-on-demand/ da IDE com o ENV.md (Passo 8 do /jarvis-init)

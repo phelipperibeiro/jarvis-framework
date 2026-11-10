@@ -44,6 +44,7 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), e o
 
 ### Fixed
 - **Skill de diagramas C4 sem o script inexistente (#237)**: o passo 2 do `eng-global-arch-c4` mandava rodar `$IDE/scripts/detect-stack.sh`, que nunca existiu; agora lê o `CDD-MIND-MAP.md`, os manifestos e os arquivos de infra, com a tabela de sinais de stack do `/jarvis-init`.
+- **`jarvis info` na lista de comandos do `AGENTS.md` (#237)**: o comando existia, mas faltava na lista que os agentes leem; agora ele aparece na linha do `jarvis list`. Os comandos `docs fetch`/`sync`, `vcs` e `tasks` seguem só na rule de integrações, que já é carregada em toda sessão. O início da sessão ganha 54 B (≈ 13 tokens).
 
 ## [8.8.0] - 2026-11-08
 
