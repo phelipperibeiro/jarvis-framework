@@ -9,7 +9,7 @@ recommended_model: opus
 
 > 🎓 **Modo de condução**: leia `PROD_MODE` no `$IDE/ENV.md`. Se for `developer-guided`, **antes de começar leia `$IDE/rules-on-demand/product/prod.guided-rules.md` e siga-o** em toda a conversa. Vazio ou `product-led`: siga este fluxo como está.
 >
-> 📋 **Princípios e busca de contexto**: antes de começar, leia `$IDE/rules-on-demand/product/prod.spec-common-rules.md` e siga-a.
+> 📋 **Princípios e busca de contexto**: antes de começar, leia `$IDE/rules-on-demand/product/prod.spec-common-rules.md` e `$IDE/rules-on-demand/product/prod.spec-rules.md` e siga-as.
 >
 > 🤖 **Modelo**: se a IDE informar o modelo desta sessão e ele for de outra família que o `recommended_model` do documento (ou do template, se o documento for novo), avise em uma linha e siga, sem bloquear e sem repetir. Sem essa informação, não avise.
 
@@ -51,7 +51,7 @@ O fluxo é dividido em checkpoints obrigatórios (gates). Você NÃO DEVE avanç
 Não busque validação de tudo de uma vez; valide os gates de forma incremental.
 
 ### Gate 1: Reconhecer e esclarecer
-- **Discovery (opcional).** Se o usuário apontar um discovery (por exemplo `discovery-002`), siga o princípio "Discovery como insumo" de `$PROD_RULES/prod.spec-rules.md`: leia-o como contexto e repasse tudo com o usuário antes de avançar; o que ele já levantou reduz o que falta perguntar aqui. Sem discovery apontado, siga este fluxo normalmente, sem procurar na pasta `discoveries/`.
+- **Discovery (opcional).** Se o usuário apontar um discovery (por exemplo `discovery-002`), siga o princípio "Discovery como insumo" de `$IDE/rules-on-demand/product/prod.spec-rules.md`: leia-o como contexto e repasse tudo com o usuário antes de avançar; o que ele já levantou reduz o que falta perguntar aqui. Sem discovery apontado, siga este fluxo normalmente, sem procurar na pasta `discoveries/`.
 - Reconheça o que o usuário forneceu (liste o que foi recebido).
 - Identifique o que foi fornecido explicitamente vs. o que está faltando
 - Evite fazer novas buscas ou leitura de arquivos se você já recebeu informações suficientes para prosseguir. Caso contrário, peça mais informações para o usuário. Diga exatamente o que você precisa para preencher o template completamente.

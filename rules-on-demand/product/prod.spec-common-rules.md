@@ -34,5 +34,5 @@ Os documentos destes comandos são **documentos de trabalho**: nascem em `$PROD_
 
 ## Referências
 
-- `rules/product/prod.spec-rules.md`: princípios de escrita de spec (critérios de aceitação, contexto completo, terminologia, discovery)
+- `rules-on-demand/product/prod.spec-rules.md`: princípios de escrita de spec (critérios de aceitação, contexto completo, terminologia, discovery)
 - `rules/product/prod-rules.md`: regras gerais de produto

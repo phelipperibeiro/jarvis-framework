@@ -97,6 +97,6 @@ Ao terminar um documento, sem esperar pedido:
 ## Referências
 
 - `rules/product/prod-rules.md`: regras gerais de produto (ambiente, status, formato das perguntas)
-- `rules/product/prod.spec-rules.md`: princípios de escrita de spec
+- `rules-on-demand/product/prod.spec-rules.md`: princípios de escrita de spec
 - `templates/product/`: templates com o frontmatter comentado
 - `docs/produto/`: guia humano de cada comando (para quem mantém o framework)

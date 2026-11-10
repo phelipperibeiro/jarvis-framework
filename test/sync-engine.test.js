@@ -334,6 +334,10 @@ test("syncAssets: instalação antiga é limpa (claude, windsurf e kiro) pelo OB
       "agents/engineering/qa/eng.qa.quality-strategist.md",
       "templates/engineering/qa/qa.release-signoff-template.md",
       "templates/engineering/qa/qa.sprint-plan-template.md",
+      // rules de uma área só e o ponteiro de Cypress saíram de rules/ (#263)
+      "rules/engineering/frontend/eng.frontend-rules.md",
+      "rules/engineering/qa/eng.qa.cypress-standards-rules.md",
+      "rules/product/prod.spec-rules.md",
     ],
     windsurf: [
       "workflows/AGENTS.md",
@@ -353,6 +357,9 @@ test("syncAssets: instalação antiga é limpa (claude, windsurf e kiro) pelo OB
       "agents/engineering/qa/eng.qa.quality-strategist.md",
       "templates/engineering/qa/qa.release-signoff-template.md",
       "templates/engineering/qa/qa.sprint-plan-template.md",
+      "rules/engineering/frontend/eng.frontend-rules.md", // saíram de rules/ (#263)
+      "rules/engineering/qa/eng.qa.cypress-standards-rules.md",
+      "rules/product/prod.spec-rules.md",
     ],
     kiro: [
       "steering/AGENTS.md",
@@ -384,6 +391,13 @@ test("syncAssets: instalação antiga é limpa (claude, windsurf e kiro) pelo OB
       "agents/engineering/qa/eng.qa.quality-strategist.md",
       "templates/engineering/qa/qa.release-signoff-template.md",
       "templates/engineering/qa/qa.sprint-plan-template.md",
+      // rules que saíram de rules/ (#263) e as cópias delas no steering
+      "rules/engineering/frontend/eng.frontend-rules.md",
+      "rules/engineering/qa/eng.qa.cypress-standards-rules.md",
+      "rules/product/prod.spec-rules.md",
+      "steering/eng.frontend-rules.md",
+      "steering/eng.qa.cypress-standards-rules.md",
+      "steering/prod.spec-rules.md",
     ],
   };
   for (const [ide, arquivos] of Object.entries(antigos)) {

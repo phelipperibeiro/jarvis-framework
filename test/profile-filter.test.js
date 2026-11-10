@@ -1,7 +1,7 @@
 // Testes do filtro de rules por perfil. Rode com: npm run test:filtro
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { mkdtempSync, mkdirSync, writeFileSync, rmSync, readFileSync } from "node:fs";
+import { mkdtempSync, mkdirSync, writeFileSync, rmSync, readFileSync, existsSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -63,7 +63,7 @@ test("listRules: recursivo em subpastas, sem as exceções desligadas e do maior
 // padrão: as rules de toda instalação, desde a #263. Muda quando uma rule é acrescentada, movida,
 // apagada ou editada: atualize no mesmo PR, dizendo o motivo. Arquivos não rastreados em rules/ e
 // CRLF mudam a medida. As medidas antigas, por perfil, estão no histórico do git deste arquivo.
-const RULES = { arquivos: 10, bytes: 65961 };
+const RULES = { arquivos: 7, bytes: 46724 };
 
 test(`rules reais: rules/ entrega ${RULES.arquivos} arquivos e ${RULES.bytes} B`, () => {
   const rules = listRules(join(root, "rules"));
@@ -82,17 +82,38 @@ test("rules reais: artifact-style-rules.md só com ARTIFACT_STYLE=human-generate
   assert.equal(tem({ artifactStyle: "human-generated" }), true);
 });
 
-test("rules reais: a rule Cypress inteira está em rules-on-demand/ e o ponteiro em rules/ (#118)", () => {
-  const caminho = "engineering/qa/eng.qa.cypress-standards-rules.md";
-  const emRules = listRules(join(root, "rules")).find((r) => r.path === caminho);
-  const sobDemanda = listRules(join(root, "rules-on-demand")).find((r) => r.path === caminho);
-  assert.ok(emRules && emRules.bytes < 600, "ponteiro em rules/ com menos de 600 B");
-  assert.ok(sobDemanda && sobDemanda.bytes > 7000, "rule inteira em rules-on-demand/");
-  // O ponteiro tem de continuar mandando ler a rule inteira, não só ser pequeno.
-  assert.match(
-    readFileSync(join(root, "rules", caminho), "utf8"),
-    /\$IDE\/rules-on-demand\/engineering\/qa\/eng\.qa\.cypress-standards-rules\.md/
-  );
+test("rules reais: a de frontend e a de spec de produto ficam em rules-on-demand/, e os comandos da área mandam lê-las (#263)", () => {
+  const sobDemanda = listRules(join(root, "rules-on-demand")).map((r) => r.path);
+  for (const caminho of [
+    "engineering/frontend/eng.frontend-rules.md",
+    "product/prod.spec-rules.md",
+  ]) {
+    assert.ok(sobDemanda.includes(caminho), `rules-on-demand/${caminho}`);
+    assert.ok(!existsSync(join(root, "rules", caminho)), `rules/${caminho} não deveria existir`);
+  }
+  // O ponteiro de Cypress saiu de rules/ (a pasta engineering/qa/ ficou vazia e sumiu).
+  assert.ok(!existsSync(join(root, "rules", "engineering", "qa")));
+  // Os 7 comandos de spec de produto mandam ler a prod.spec-rules.md.
+  for (const w of ["prd", "frd", "epic", "issue", "breakdown", "ard", "clarify"]) {
+    assert.match(
+      readFileSync(join(root, "workflows", "product", `prod.spec.${w}.md`), "utf8"),
+      /antes de começar, leia [^\n]*`\$IDE\/rules-on-demand\/product\/prod\.spec-rules\.md`/,
+      w
+    );
+  }
+  // Os 3 comandos de frontend e o agente mandam ler a eng.frontend-rules.md.
+  for (const arquivo of [
+    "workflows/engineering/frontend/eng.frontend-component.md",
+    "workflows/engineering/frontend/eng.frontend-perf-audit.md",
+    "workflows/engineering/frontend/eng.frontend-review.md",
+    "agents/engineering/eng.frontend.agent.md",
+  ]) {
+    assert.match(
+      readFileSync(join(root, arquivo), "utf8"),
+      /\$IDE\/rules-on-demand\/engineering\/frontend\/eng\.frontend-rules\.md/,
+      arquivo
+    );
+  }
 });
 
 test("rules reais: prod.spec-common-rules.md fica em rules-on-demand/ e os 5 workflows mandam lê-la (#83)", () => {

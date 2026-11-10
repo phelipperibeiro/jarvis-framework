@@ -1,7 +1,6 @@
 # Regras de Padrões Cypress — QA Engineering
 
 Convenções obrigatórias para a escrita e manutenção da suíte de testes E2E em Cypress + TypeScript.
-Estas regras são lidas a partir do ponteiro em `$IDE/rules/engineering/qa/eng.qa.cypress-standards-rules.md`, instalado quando `HUB=QA`.
 
 > **Fonte de verdade**: este arquivo define o padrão para toda a sessão.
 > A especialização de Cypress registrada em `QA_SPECIALIZATIONS` assume que estas regras foram carregadas — não as redescobre.

@@ -198,6 +198,8 @@ Carregue **só o tema necessário** para a tarefa, em vez de todos de uma vez.
 - Esquecer os casos limite (lista vazia, falha de rede)
 - Hardcodar cor, espaçamento ou fonte fora dos tokens do design system
 - Importar diretamente de outro micro frontend (rompe o isolamento) ou compartilhar estado via módulo entre eles
+- Manipular o DOM diretamente, fora do mecanismo que o framework do projeto prevê para isso
+- Deixar log de depuração (`console.log` ou equivalente) em código commitado
 
 ### Sempre
 - Considerar mobile-first

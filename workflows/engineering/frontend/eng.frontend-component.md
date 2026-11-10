@@ -20,7 +20,7 @@ estrutura de pastas. O que é específico da stack do projeto vem de:
 2. Os arquivos de configuração do projeto (por exemplo, `package.json`, `go.mod`, `composer.json`, `pyproject.toml`)
 3. As especializações registradas em `FRONTEND_SPECIALIZATIONS` no `ENV.md`
 
-**Antes de começar**, aplique a regra `$IDE/rules/engineering/eng.specializations-rules.md` para a área **frontend**: ela carrega o skill base `eng-frontend` e as especializações registradas. Onde este workflow disser "conforme a especialização", siga o que o skill da especialização pedir; sem especialização registrada, siga as convenções do código existente e **pergunte ao usuário** o que faltar, sem inventar.
+**Antes de começar**, aplique a regra `$IDE/rules/engineering/eng.specializations-rules.md` para a área **frontend**: ela carrega o skill base `eng-frontend` e as especializações registradas. Leia também `$IDE/rules-on-demand/engineering/frontend/eng.frontend-rules.md` (padrões obrigatórios de frontend) e siga-a. Onde este workflow disser "conforme a especialização", siga o que o skill da especialização pedir; sem especialização registrada, siga as convenções do código existente e **pergunte ao usuário** o que faltar, sem inventar.
 
 ### Skills invocados durante o workflow
 

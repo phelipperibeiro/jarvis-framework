@@ -260,6 +260,16 @@ export const OBSOLETE_PATHS = Object.freeze([
   "agents/engineering/qa/eng.qa.quality-strategist.md",
   "templates/engineering/qa/qa.release-signoff-template.md",
   "templates/engineering/qa/qa.sprint-plan-template.md",
+  // Rules de uma área só saíram de rules/ (issue #263, mãe #237): a de frontend e a de spec de produto
+  // foram para rules-on-demand/ e são lidas pelos comandos da área; o ponteiro de Cypress foi apagado (a
+  // rule inteira já estava em rules-on-demand/). Entradas de arquivo, para não apagar uma rule própria da
+  // pessoa na mesma pasta. No Kiro, a cópia de cada uma em steering/.
+  "rules/engineering/frontend/eng.frontend-rules.md",
+  "rules/engineering/qa/eng.qa.cypress-standards-rules.md",
+  "rules/product/prod.spec-rules.md",
+  "steering/eng.frontend-rules.md",
+  "steering/eng.qa.cypress-standards-rules.md",
+  "steering/prod.spec-rules.md",
 ]);
 
 /**

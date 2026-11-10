@@ -55,6 +55,7 @@ Não criar abstração para reutilização hipotética.
 Para criar ou refatorar componente, estado ou estilos, aplique a regra `eng.specializations-rules.md` para a área frontend (skill base `eng-frontend` + itens de `FRONTEND_SPECIALIZATIONS`):
 - Arquivo da regra: `$IDE/rules/engineering/eng.specializations-rules.md`
 - Skill base: `$IDE/skills/eng-frontend/SKILL.md` + itens de `FRONTEND_SPECIALIZATIONS`
+- Regras de frontend: `$IDE/rules-on-demand/engineering/frontend/eng.frontend-rules.md` (leia antes de implementar e ao revisar)
 - Auditoria de performance: seção Performance do `eng-frontend`
 
 ### eng-qa
@@ -95,7 +96,7 @@ ls
 
 ### 3. Executar com o skill correto
 
-Aplicar a regra `eng.specializations-rules.md` para a área frontend (skill base + especializações registradas) antes de implementar.
+Aplicar a regra `eng.specializations-rules.md` para a área frontend (skill base + especializações registradas) e ler `$IDE/rules-on-demand/engineering/frontend/eng.frontend-rules.md` antes de implementar ou revisar.
 
 ---
 
