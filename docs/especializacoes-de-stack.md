@@ -77,7 +77,7 @@ Os skills de apoio abaixo viram especializações quando você os registra: `eng
 | Engenharia por área | `eng-<área>-<nome>` | `eng-qa-planner` |
 | Especialização | `eng-<backend\|frontend>-<stack>` | `eng-backend-golang` |
 | Engenharia global | `eng-global-<nome>` | `eng-global-pr`, `eng-global-branch` |
-| Produto | `product-<nome>` | `product-specs` |
+| Produto | `product-<nome>` | — |
 | Transversal do framework | `jarvis-<nome>` | `jarvis-init`, `jarvis-create-specialization` |
 
 Áreas reconhecidas: `qa`, `data`, `ai`, `frontend`, `backend`, `automation`, `devops`, `platform`, `global` e `product`. A convenção completa está em [`skills/AGENTS.md`](../skills/AGENTS.md).

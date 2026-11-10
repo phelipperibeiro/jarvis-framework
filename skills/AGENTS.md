@@ -61,10 +61,6 @@ skills/
 ├── eng-data/ # Base neutra de dados (pipelines, modelagem, qualidade, BI, governança) + especializações em DATA_SPECIALIZATIONS
 │   ├── SKILL.md
 │   └── references/
-├── product-specs/ # Porta de entrada de especificação de produto
-│   └── SKILL.md
-├── product-specs-update/ # Sincroniza especificações de produto
-│   └── SKILL.md
 ├── eng-automation/          # Base neutra de automação (RPA, web, APIs, extração, ingestão) + especializações em AUTOMATION_SPECIALIZATIONS
 │   ├── SKILL.md
 │   └── references/
@@ -164,7 +160,7 @@ O nome tem a forma `<prefixo>-<área>-<nome>`; **só os dois primeiros segmentos
 | Skill base de outra área | `eng-<área>` | `eng-platform`, `eng-qa`, `eng-ai`, `eng-data` |
 | Especialização de stack | `eng-<backend\|frontend>-<stack>` | `eng-backend-nestjs` |
 | Engenharia global | `eng-global-<nome>` | `eng-global-pr`, `eng-global-docs-write` |
-| Produto | `product-<nome>` | `product-specs`, `product-specs-update` |
+| Produto | `product-<nome>` | — |
 | Transversal do framework | `jarvis-<nome>` (`area: global`) | `jarvis-init`, `jarvis-docs-central` |
 
 ### Skill base, especialização e `stack`

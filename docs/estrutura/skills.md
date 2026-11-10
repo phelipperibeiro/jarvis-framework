@@ -22,7 +22,6 @@ skills/
 ├── eng-data/                   # base de dados (+ especializações em DATA_SPECIALIZATIONS)
 ├── eng-platform/               # base de platform/infra (+ segurança) em PLATFORM_SPECIALIZATIONS
 ├── eng-automation/             # base de automação/RPA, usada pelo /eng.rpa.robot (+ especializações em AUTOMATION_SPECIALIZATIONS)
-├── product-specs/ (porta de entrada), product-specs-update/
 ├── jarvis-report-issue/
 ├── jarvis-fork/                # fork guiado para o overlay da empresa (COMPANY_PROFILE), só grava com o Sim
 └── … (skills restantes; todos com `metadata.area`)

@@ -22,14 +22,13 @@ jarvis-framework/
 │   ├── engineering/              # 13 + frontend/ (3) e qa/ (3)
 │   ├── product/                  # 9 (prod.spec.*)
 │   └── warm-up.md, taxonomy.md
-├── skills/                       # 28 skills, todos com metadata.area:
+├── skills/                       # 26 skills, todos com metadata.area:
 │                                 # bases: eng-backend, eng-frontend, eng-qa, eng-data, eng-automation,
 │                                 #   eng-platform, eng-ai (+ especializações: eng-backend-*, eng-qa-planner)
 │                                 # eng-global-branch (nome da branch, forkável), eng-global-pr,
 │                                 #   -task-comment, -investigation, -tech-spec, -docs-write
 │                                 # jarvis-*: init, fork, context-detect, docs-central, docs-index,
 │                                 #   create/list-specializations, report-issue, evolution-architect
-│                                 # product-*: specs, specs-update
 ├── templates/                    # documentos: engineering/ (ARD, RFC, tech spec, architecture, plan…),
 │                                 # product/ (PRD, FRD, épico, issue, breakdown, discovery), ENV-template.md
 ├── rules/                        # carregadas no início da sessão, filtradas pelo perfil (Applies to)
