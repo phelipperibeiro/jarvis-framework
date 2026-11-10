@@ -39,7 +39,7 @@ Criar e manter documentação de arquitetura usando os 4 níveis do C4:
 
 ## Recursos
 
-- **Script de detecção**: `$IDE/scripts/detect-stack.sh`
+- **Sinais de stack**: `$IDE/skills/jarvis-init/assets/sinais-de-stack.md`
 - **Template**: `$IDE/templates/engineering/c4-model-template.md`
 - **Saída**: `$ENG_DOCS/c4/`
 
@@ -91,18 +91,15 @@ ls -la $DOCS_FOLDER/architecture/adr/ 2>/dev/null
 
 ### 2. Detectar Stack e Padrões
 
-Executar script de detecção:
+Identifique a stack lendo, nesta ordem: o `CDD-MIND-MAP.md` da raiz (se existir, já validado pelo usuário), os manifestos (`package.json`, `go.mod`, `pom.xml`, `pyproject.toml`…) e os arquivos de infra (`Dockerfile`, `docker-compose.*`, CI). Linguagem e framework: pela tabela `$IDE/skills/jarvis-init/assets/sinais-de-stack.md`.
 
-```bash
-bash $IDE/scripts/detect-stack.sh
-```
+Confira:
+- ORM e bancos de dados (dependências)
+- Mensageria e cache (dependências)
+- Padrão arquitetural: Clean, Hexagonal, DDD, MVC (estrutura de pastas)
+- Infraestrutura: Docker, CI/CD
 
-O script detecta automaticamente:
-- Linguagem e frameworks
-- ORM e bancos de dados
-- Mensageria e cache
-- Padrão arquitetural (Clean, Hexagonal, DDD, MVC)
-- Infraestrutura (Docker, CI/CD)
+Só leia manifestos e estrutura; nunca `.env*`, chaves ou credenciais.
 
 ### 3. Propor Diagrama (antes de criar)
 
