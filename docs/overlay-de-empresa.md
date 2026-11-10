@@ -45,7 +45,7 @@ Precedência: **overlay > especialização de stack > core.**
 
 - Leem `overlays/{perfil}/rules/` e `rules-on-demand/` para o RuleResolver.
 - Criam a pasta vazia do perfil ativo se ela não existir. É a **única** escrita em `overlays/`.
-- Avisam quando o overlay ativo tem um fork num caminho de rule que saiu do framework (como uma rule que foi para `rules-on-demand/`). Esse fork é copiado como rule só da empresa e não vale onde o core está agora. Para ele voltar a valer, faça o fork do caminho novo (`jarvis fork rules-on-demand/…`), leve para ele o ajuste da empresa e apague o antigo (`jarvis fork {caminho antigo} --delete`). O `jarvis rules sync` mostra o mesmo aviso.
+- Avisam quando o overlay ativo tem um fork num caminho de rule que o framework removeu ou moveu. Esse fork é copiado como rule só da empresa e não vale onde o core está agora. Se a rule mudou de caminho, faça o fork do caminho novo (`jarvis fork rules-on-demand/…`), leve para ele o ajuste da empresa e apague o antigo (`jarvis fork {caminho antigo} --delete`); se ela saiu do framework, apague o fork (`jarvis fork {caminho} --delete`). Uma rule própria da empresa numa pasta que saiu do framework também gera aviso, para conferir se ela ainda serve. O `jarvis rules sync` mostra os mesmos avisos.
 - **Nunca** gravam, alteram ou apagam arquivo dentro de `overlays/`. Quem escreve é só o `jarvis fork`.
 
 Trocar de empresa é mudar o `COMPANY_PROFILE` e rodar `jarvis init --upgrade` (para as rules): as rules do perfil anterior que estavam na IDE voltam à versão do core (ou saem, se só existiam naquele overlay), e o overlay antigo fica intacto na pasta. Vários overlays podem coexistir; um está ativo.
