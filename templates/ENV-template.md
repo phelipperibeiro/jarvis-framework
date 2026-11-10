@@ -44,9 +44,6 @@ ENABLE_CDD=true
 # Organização (obrigatório — opções vêm do taxonomy.md)
 # =============================================================================
 SQUAD=[CORE]
-HUB=[AI, FRONTEND, BACKEND, QA, DATA, FULLCYCLE]
-AREA=[ENGINEERING, PRODUCT]
-POSITION=[JUNIOR, PLENO, SENIOR, TECH LEAD, SPECIALIST, PM, TPM, GPM, CTO, GENERALIST]
 
 
 # =============================================================================

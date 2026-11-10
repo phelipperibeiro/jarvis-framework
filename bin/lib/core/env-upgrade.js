@@ -1,7 +1,8 @@
 // Upgrade do ENV.md (`jarvis init --upgrade`): acrescenta as chaves do template que faltam.
 // Regra: só acrescenta. Nenhuma chave existente muda, preenchida, vazia ou com lista de opções.
 // Exceções declaradas (automáticas): `JARVIS_PROJECT=` vazio recebe o valor oficial do template, e
-// as chaves de REMOVED_KEYS (blocos que saíram do template, #209 e #239) são apagadas, sem ler o valor.
+// as chaves de REMOVED_KEYS (blocos e chaves que saíram do template, #209, #239 e #263) são apagadas,
+// sem ler o valor.
 // As outras exceções (CENTRAL_DOCS_LOCATION e esvaziar o TOKEN_TASK_MANAGER) pedem confirmação
 // e ficam no Upgrade (C) do skill jarvis-init (item 8). Mesmas regras dos itens 3, 4, 8, 9 e 10.
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
@@ -48,7 +49,8 @@ function isOptionList(value) {
 }
 
 // Blocos que saíram do template (#209, #239): o upgrade apaga as chaves e, quando o bloco fica vazio,
-// a moldura dele. Os comentários são os do template na época; moldura diferente fica.
+// a moldura dele. Os comentários são os do template na época; moldura diferente fica. Na #263 saem só
+// três chaves da moldura "Organização", que fica no ENV.md da pessoa com o SQUAD.
 const REMOVED_BLOCKS = Object.freeze([
   {
     title: "Mensageria (opcional)",
@@ -109,6 +111,12 @@ const REMOVED_BLOCKS = Object.freeze([
   {
     title: "Object storage (opcional)",
     keys: ["OBJECT_STORAGE", "TOKEN_OBJECT_STORAGE"],
+    comments: [],
+  },
+  {
+    // #263: o cargo vira a SENIORITY nova antes de sair (planEnvUpgrade); hub e área não têm substituto.
+    title: "Organização (obrigatório — opções vêm do taxonomy.md)",
+    keys: ["HUB", "AREA", "POSITION"],
     comments: [],
   },
 ]);

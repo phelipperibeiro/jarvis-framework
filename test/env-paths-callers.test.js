@@ -125,7 +125,7 @@ test("docs finalize: caminho de documentos inválido sai com status 1 e a mensag
 });
 
 test("init --upgrade: caminho inválido interrompe antes de sincronizar, com status 1 e sem stack trace", () => {
-  withWorkspace(["WORKSPACE=ws", "IDE=claude", "HUB=BACKEND", "AREA=ENGINEERING", "PROD_DOCS=$FOO/product", "DOCS_FOLDER=docs"], {}, (ws) => {
+  withWorkspace(["WORKSPACE=ws", "IDE=claude", "SQUAD=CORE", "PROD_DOCS=$FOO/product", "DOCS_FOLDER=docs"], {}, (ws) => {
     const r = spawnSync(process.execPath, [cli, "init", "--upgrade", "--yes", "--ide", "claude"], {
       cwd: ws,
       encoding: "utf-8",
@@ -153,7 +153,7 @@ test("docsFolders: barra final, ./ e barras duplicadas não geram // nos caminho
 });
 
 test("init --upgrade: o erro de caminho vem antes do prompt de rebaixamento (lock de versão maior)", () => {
-  withWorkspace(["WORKSPACE=ws", "IDE=claude", "HUB=BACKEND", "AREA=ENGINEERING", "PROD_DOCS=$FOO/product"], { "jarvis-lock.json": JSON.stringify({ version: "99.0.0" }) }, (ws) => {
+  withWorkspace(["WORKSPACE=ws", "IDE=claude", "SQUAD=CORE", "PROD_DOCS=$FOO/product"], { "jarvis-lock.json": JSON.stringify({ version: "99.0.0" }) }, (ws) => {
     const r = spawnSync(process.execPath, [cli, "init", "--upgrade", "--ide", "claude"], {
       cwd: ws,
       encoding: "utf-8",

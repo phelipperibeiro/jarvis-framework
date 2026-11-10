@@ -47,8 +47,9 @@ const ENV_V520 = [
   "",
 ].join("\n");
 
-// #209: o upgrade apaga MESSAGE_BROKER e SMTP (blocos que saíram do template); o resto fica igual.
-const semRemovidas = (text) => text.replace(/^(MESSAGE_BROKER|SMTP)=.*\n/gm, "");
+// #209 e #263: o upgrade apaga MESSAGE_BROKER e SMTP (blocos que saíram do template) e as chaves HUB,
+// AREA e POSITION; o resto fica igual.
+const semRemovidas = (text) => text.replace(/^(MESSAGE_BROKER|SMTP|HUB|AREA|POSITION)=.*\n/gm, "");
 
 const OLD = "docs/jarvis/product/discoveries/discovery-001-x.md";
 const NEW = "docs/jarvis/discoveries/discovery-001-x.md";
@@ -105,7 +106,7 @@ test("init --upgrade --yes: chaves novas, PROD_MODE pendente, discovery movido, 
       const env = readFileSync(join(ws, ".claude/ENV.md"), "utf-8");
       assert.ok(env.startsWith(semRemovidas(ENV_V520)), "linhas existentes do ENV mudaram");
       assert.doesNotMatch(env, /^(MESSAGE_BROKER|SMTP)=/m);
-      assert.match(r.stdout, /removidas \(não são mais usadas\): MESSAGE_BROKER, SMTP/);
+      assert.match(r.stdout, /removidas \(não são mais usadas\): HUB, AREA, MESSAGE_BROKER, SMTP/);
       assert.doesNotMatch(r.stdout, /rabbitmq/);
       assert.match(env, /^DISCOVERIES_FOLDER_NAME=discoveries$/m);
       assert.match(env, /^DISCOVERIES_DOCS=\$JARVIS_DOCS\/\$DISCOVERIES_FOLDER_NAME$/m);
@@ -799,6 +800,40 @@ test("init --upgrade: sem cargo antigo, SENIORITY fica vazia e é pendência do 
     assert.match(readFileSync(join(ws, ".claude/ENV.md"), "utf-8"), /^SENIORITY=$/m);
     assert.match(r.stdout, /SENIORITY está vazio: responda no \/jarvis-init upgrade/);
     assert.match(r.stdout, /Agora rode .*\/jarvis-init upgrade.* preencher [^\n]*SENIORITY/);
+  });
+});
+
+test("init --upgrade --yes: ENV.md antigo com HUB, AREA e POSITION perde as três linhas e ganha a SENIORITY derivada (#263)", () => {
+  const antigo = ENV_V520.replace("HUB=BACKEND", "HUB=FULLCYCLE").replace(
+    "AREA=ENGINEERING",
+    "AREA=ENGINEERING\nPOSITION=GENERALIST\nSQUAD=CORE"
+  );
+  withWorkspace({ ".claude/ENV.md": antigo }, (ws) => {
+    const r = run(ws, "--upgrade", "--ide", "claude", "--yes");
+    assert.equal(r.status, 0, r.stderr);
+    const env = readFileSync(join(ws, ".claude/ENV.md"), "utf-8");
+    assert.doesNotMatch(env, /^(HUB|AREA|POSITION)=/m);
+    assert.match(env, /^SQUAD=CORE$/m);
+    assert.match(env, /^SENIORITY=senior$/m);
+    for (const area of ["BACKEND", "FRONTEND", "QA", "DATA", "AUTOMATION", "PLATFORM"]) {
+      assert.match(env, new RegExp(`^${area}_SENIORITY=$`, "m"), area);
+    }
+    assert.match(r.stdout, /removidas \(não são mais usadas\): HUB, AREA, POSITION/);
+    assert.match(r.stdout, /SENIORITY: gravada como senior, a partir do cargo antigo/);
+    assert.doesNotMatch(r.stdout, /SENIORITY está vazio/);
+    assert.doesNotMatch(r.stdout, /FULLCYCLE|GENERALIST/, "valor do ENV apareceu no resumo");
+    assert.match(r.stdout, /PROD_MODE está vazio/);
+
+    const again = run(ws, "--upgrade", "--ide", "claude", "--yes");
+    assert.equal(again.status, 0, again.stderr);
+    assert.equal(readFileSync(join(ws, ".claude/ENV.md"), "utf-8"), env);
+  });
+  // Com a PROD_MODE já preenchida, ela não vira pendência.
+  withWorkspace({ ".claude/ENV.md": `${antigo}PROD_MODE=product-led\n` }, (ws) => {
+    const r = run(ws, "--upgrade", "--ide", "claude", "--yes");
+    assert.equal(r.status, 0, r.stderr);
+    assert.doesNotMatch(r.stdout, /PROD_MODE está vazio/);
+    assert.match(readFileSync(join(ws, ".claude/ENV.md"), "utf-8"), /^PROD_MODE=product-led$/m);
   });
 });
 

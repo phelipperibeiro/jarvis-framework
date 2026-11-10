@@ -36,22 +36,20 @@ test("parseEnvEntries: chave vazia conta; comentário não", () => {
 
 test("planEnvUpgrade: só chaves que faltam; existentes ficam fora (preenchida, vazia ou lista)", () => {
   const env =
-    "HUB=BACKEND\nCOMPANY_PROFILE=stark-industries\nVERSION_CONTROL_ACCESS=[cli, manual]\nRTK_ENABLED=\n";
+    "SQUAD=CORE\nCOMPANY_PROFILE=stark-industries\nVERSION_CONTROL_ACCESS=[cli, manual]\nRTK_ENABLED=\n";
   const tpl = "COMPANY_PROFILE=acme\nVERSION_CONTROL_ACCESS=[x]\nRTK_ENABLED=false\nNOVA=valor\n";
   const plan = planEnvUpgrade(env, tpl);
   assert.deepEqual(plan.added, [{ key: "NOVA", value: "valor" }]);
 });
 
 test("planEnvUpgrade: lista de opções do template entra vazia", () => {
-  const plan = planEnvUpgrade("HUB=BACKEND\n", "VERSION_CONTROL_ACCESS=[cli, manual]\n");
+  const plan = planEnvUpgrade("SQUAD=CORE\n", "VERSION_CONTROL_ACCESS=[cli, manual]\n");
   assert.deepEqual(plan.added, [{ key: "VERSION_CONTROL_ACCESS", value: "" }]);
 });
 
-test("planEnvUpgrade: DATA_SPECIALIZATIONS entra com qualquer HUB (sem regra do bloco DATA, #209)", () => {
+test("planEnvUpgrade: DATA_SPECIALIZATIONS entra como qualquer chave nova (sem regra do bloco DATA, #209)", () => {
   const tpl = "DATA_SPECIALIZATIONS=\n";
-  for (const hub of ["DATA", "BACKEND", "FULLCYCLE"]) {
-    assert.deepEqual(keys(planEnvUpgrade(`HUB=${hub}\n`, tpl)), ["DATA_SPECIALIZATIONS"]);
-  }
+  assert.deepEqual(keys(planEnvUpgrade("SQUAD=CORE\n", tpl)), ["DATA_SPECIALIZATIONS"]);
 });
 
 test("planEnvUpgrade: PROD_MODE nova entra vazia e vira pendência, qualquer que seja a área (#263)", () => {
@@ -118,7 +116,7 @@ test("planEnvUpgrade: as seis SENIORITY de área entram vazias e sem pendência;
 });
 
 test("planEnvUpgrade: PROD_MODE= existente não muda e vira pendência", () => {
-  const plan = planEnvUpgrade("AREA=ENGINEERING\nPROD_MODE=\n", "PROD_MODE=\n");
+  const plan = planEnvUpgrade("SQUAD=CORE\nPROD_MODE=\n", "PROD_MODE=\n");
   assert.deepEqual(plan.added, []);
   assert.deepEqual(plan.pending, ["PROD_MODE"]);
 });
@@ -186,8 +184,8 @@ test("planEnvUpgrade: CENTRAL_DOCS_LOCATION com variável sem valor não quebra 
 });
 
 test("applyEnvUpgrade: linhas antigas intactas, bloco datado no fim, idempotente", () => {
-  const original = "# cabeçalho\nHUB=BACKEND\nTOKEN_X=abc\nVAZIA=\n";
-  const tpl = "HUB=[A]\nNOVA=1\nDISCOVERIES_DOCS=$JARVIS_DOCS/discoveries\n";
+  const original = "# cabeçalho\nSQUAD=CORE\nTOKEN_X=abc\nVAZIA=\n";
+  const tpl = "SQUAD=[A]\nNOVA=1\nDISCOVERIES_DOCS=$JARVIS_DOCS/discoveries\n";
   withTempEnv(original, (p) => {
     const plan = planEnvUpgrade(original, tpl);
     assert.equal(
@@ -211,21 +209,38 @@ const BAR = "# =================================================================
 const frame = (title) => [BAR, `# ${title}`, BAR];
 
 test("planEnvUpgrade: removed traz só os nomes das chaves removidas presentes, sem valores", () => {
-  const env = "HUB=BACKEND\nSMTP=google\nPASSWORD_DATABASE=segredo\nRTK_ENABLED=false\n";
-  const plan = planEnvUpgrade(env, "HUB=[A]\n");
+  const env = "SQUAD=CORE\nSMTP=google\nPASSWORD_DATABASE=segredo\nRTK_ENABLED=false\n";
+  const plan = planEnvUpgrade(env, "SQUAD=[A]\n");
   assert.deepEqual(plan.removed, ["SMTP", "PASSWORD_DATABASE"]);
   assert.ok(!JSON.stringify(plan).includes("segredo"));
-  assert.equal(REMOVED_KEYS.length, 30);
+  assert.equal(REMOVED_KEYS.length, 33);
   // Nunca volta pelo template (um template antigo ainda com o bloco não a acrescenta).
-  assert.deepEqual(planEnvUpgrade("HUB=BACKEND\n", "SMTP=[google]\nNOVA=1\n").added, [
+  assert.deepEqual(planEnvUpgrade("SQUAD=CORE\n", "SMTP=[google]\nNOVA=1\n").added, [
     { key: "NOVA", value: "1" },
   ]);
   assert.ok(!REMOVED_KEYS.includes("DATA_SPECIALIZATIONS"));
 });
 
+test("planEnvUpgrade: HUB, AREA e POSITION saem como chaves removidas, sem ler os valores (#263)", () => {
+  const env = "SQUAD=CORE\nHUB=FULLCYCLE\nAREA=ENGINEERING\nPOSITION=GENERALIST\n";
+  const plan = planEnvUpgrade(env, "SQUAD=[CORE]\n");
+  assert.deepEqual(plan.removed, ["HUB", "AREA", "POSITION"]);
+  assert.ok(!/FULLCYCLE|ENGINEERING|GENERALIST/.test(JSON.stringify(plan)));
+  for (const key of ["HUB", "AREA", "POSITION"]) assert.ok(REMOVED_KEYS.includes(key), key);
+});
+
+test("removeEnvKeys: os três eixos saem e a moldura Organização fica, com o SQUAD (#263)", () => {
+  const org = frame("Organização (obrigatório — opções vêm do taxonomy.md)");
+  const resto = ["", "", ...frame("IDE e pastas"), "IDE=claude", ""];
+  const text = [...org, "SQUAD=CORE", "HUB=FULLCYCLE", "AREA=ENGINEERING", "POSITION=GENERALIST", ...resto];
+  const out = removeEnvKeys(text.join("\n"), ["HUB", "AREA", "POSITION"]);
+  assert.deepEqual(out.removed, ["HUB", "AREA", "POSITION"]);
+  assert.equal(out.text, [...org, "SQUAD=CORE", ...resto].join("\n"));
+});
+
 test("removeEnvKeys: apaga a chave e a moldura vazia; o resto fica igual", () => {
   const text = [
-    "HUB=BACKEND",
+    "SQUAD=CORE",
     "",
     "",
     ...frame("Mensageria (opcional)"),
@@ -242,7 +257,7 @@ test("removeEnvKeys: apaga a chave e a moldura vazia; o resto fica igual", () =>
   assert.equal(
     out.text,
     [
-      "HUB=BACKEND",
+      "SQUAD=CORE",
       "",
       "",
       ...frame("RTK — Token Killer (opcional)"),
@@ -254,7 +269,7 @@ test("removeEnvKeys: apaga a chave e a moldura vazia; o resto fica igual", () =>
 
 test("removeEnvKeys: moldura com comentários do template sai; no fim do arquivo também", () => {
   const text = [
-    "HUB=DATA",
+    "SQUAD=CORE",
     "",
     "",
     ...frame("Data Engineering (só se HUB=DATA)"),
@@ -264,7 +279,7 @@ test("removeEnvKeys: moldura com comentários do template sai; no fim do arquivo
     "DATA_WAREHOUSE=",
     "",
   ].join("\n");
-  assert.equal(removeEnvKeys(text, ["DATA_LAKE", "DATA_WAREHOUSE"]).text, "HUB=DATA\n");
+  assert.equal(removeEnvKeys(text, ["DATA_LAKE", "DATA_WAREHOUSE"]).text, "SQUAD=CORE\n");
 });
 
 test("removeEnvKeys: moldura com chave ou comentário próprio fica; só a chave sai", () => {
@@ -329,7 +344,7 @@ test("removeEnvKeys: subconjunto das chaves do bloco mantém a moldura; duplicad
 
 test("#239: chat e object storage saem com as molduras, sem ler os valores", () => {
   const text = [
-    "HUB=BACKEND",
+    "SQUAD=CORE",
     "VERSION_CONTROL_ACCESS=cli",
     "",
     "",
@@ -353,7 +368,7 @@ test("#239: chat e object storage saem com as molduras, sem ler os valores", () 
     "RTK_ENABLED=false",
     "",
   ].join("\n");
-  const plan = planEnvUpgrade(text, "HUB=[A]\n");
+  const plan = planEnvUpgrade(text, "SQUAD=[A]\n");
   assert.deepEqual(plan.removed, [
     "MESSAGE_COMUNICATOR",
     "MESSAGE_COMUNICATOR_BOT_TOKEN",
@@ -367,7 +382,7 @@ test("#239: chat e object storage saem com as molduras, sem ler os valores", () 
   assert.equal(
     removeEnvKeys(text, plan.removed).text,
     [
-      "HUB=BACKEND",
+      "SQUAD=CORE",
       "VERSION_CONTROL_ACCESS=cli",
       "",
       "",
@@ -379,33 +394,33 @@ test("#239: chat e object storage saem com as molduras, sem ler os valores", () 
   // O template atual não traz mais as chaves, e um template antigo não as acrescenta de volta.
   const tpl = readFileSync(join(root, "templates", "ENV-template.md"), "utf-8");
   assert.ok(!parseEnvEntries(tpl).has("MESSAGE_COMUNICATOR"));
-  assert.deepEqual(planEnvUpgrade("HUB=BACKEND\n", "OBJECT_STORAGE=[aws_s3]\n").added, []);
+  assert.deepEqual(planEnvUpgrade("SQUAD=CORE\n", "OBJECT_STORAGE=[aws_s3]\n").added, []);
 });
 
 test("applyEnvUpgrade: remove e acrescenta no mesmo passe", () => {
-  const original = `HUB=BACKEND\n\n\n${frame("SMTP (opcional)").join("\n")}\nSMTP=ses\n`;
+  const original = `SQUAD=CORE\n\n\n${frame("SMTP (opcional)").join("\n")}\nSMTP=ses\n`;
   withTempEnv(original, (p) => {
-    const plan = planEnvUpgrade(original, "HUB=[A]\nNOVA=1\n");
+    const plan = planEnvUpgrade(original, "SQUAD=[A]\nNOVA=1\n");
     assert.equal(applyEnvUpgrade(p, plan, "2026-11-01"), true);
-    assert.equal(readFileSync(p, "utf-8"), "HUB=BACKEND\n\n# --- Upgrade 2026-11-01 ---\nNOVA=1\n");
+    assert.equal(readFileSync(p, "utf-8"), "SQUAD=CORE\n\n# --- Upgrade 2026-11-01 ---\nNOVA=1\n");
   });
 });
 
 test("removeEnvKeys: ENV com CRLF", () => {
-  const text = ["HUB=X", "", ...frame("SMTP (opcional)"), "SMTP=ses", ""].join("\r\n");
+  const text = ["SQUAD=X", "", ...frame("SMTP (opcional)"), "SMTP=ses", ""].join("\r\n");
   const out = removeEnvKeys(text, ["SMTP"]);
-  assert.equal(out.text, "HUB=X\r\n");
+  assert.equal(out.text, "SQUAD=X\r\n");
 });
 
 test("applyEnvUpgrade: só remoção grava, informa removedApplied e é idempotente", () => {
-  const original = `HUB=BACKEND\n\n\n${frame("SMTP (opcional)").join("\n")}\nSMTP=segredo\n`;
+  const original = `SQUAD=CORE\n\n\n${frame("SMTP (opcional)").join("\n")}\nSMTP=segredo\n`;
   withTempEnv(original, (p) => {
-    const plan = planEnvUpgrade(original, "HUB=[A]\n");
+    const plan = planEnvUpgrade(original, "SQUAD=[A]\n");
     assert.equal(applyEnvUpgrade(p, plan, "2026-11-01"), true);
     assert.deepEqual(plan.removedApplied, ["SMTP"]);
     const after = readFileSync(p, "utf-8");
-    assert.equal(after, "HUB=BACKEND\n");
-    const again = planEnvUpgrade(after, "HUB=[A]\n");
+    assert.equal(after, "SQUAD=CORE\n");
+    const again = planEnvUpgrade(after, "SQUAD=[A]\n");
     assert.deepEqual(again.removed, []);
     assert.equal(applyEnvUpgrade(p, again, "2026-11-02"), false);
     assert.equal(readFileSync(p, "utf-8"), after);
@@ -430,7 +445,7 @@ test("planEnvUpgrade: WORKSPACE_MODE novo entra com o modo detectado (workspace 
   const dir = mkdtempSync(join(tmpdir(), "jarvis-env-upgrade-ws-"));
   try {
     mkdirSync(join(dir, "app", ".git"), { recursive: true });
-    const plan = planEnvUpgrade("HUB=BACKEND\n", "WORKSPACE_MODE=\n", { workspaceDir: dir });
+    const plan = planEnvUpgrade("SQUAD=CORE\n", "WORKSPACE_MODE=\n", { workspaceDir: dir });
     assert.deepEqual(plan.added, [{ key: "WORKSPACE_MODE", value: "workspace" }]);
     assert.deepEqual(plan.warnings, []);
   } finally {
@@ -442,7 +457,7 @@ test("planEnvUpgrade: WORKSPACE_MODE em raiz com .git entra como project", () =>
   const dir = mkdtempSync(join(tmpdir(), "jarvis-env-upgrade-ws-"));
   try {
     mkdirSync(join(dir, ".git"), { recursive: true });
-    const plan = planEnvUpgrade("HUB=BACKEND\n", "WORKSPACE_MODE=\n", { workspaceDir: dir });
+    const plan = planEnvUpgrade("SQUAD=CORE\n", "WORKSPACE_MODE=\n", { workspaceDir: dir });
     assert.deepEqual(plan.added, [{ key: "WORKSPACE_MODE", value: "project" }]);
   } finally {
     rmSync(dir, { recursive: true, force: true });
@@ -454,7 +469,7 @@ test("planEnvUpgrade: WORKSPACE_MODE com submódulo gera aviso só com o nome da
   try {
     mkdirSync(join(dir, ".git"), { recursive: true });
     mkdirSync(join(dir, "lib", ".git"), { recursive: true });
-    const plan = planEnvUpgrade("HUB=BACKEND\n", "WORKSPACE_MODE=\n", { workspaceDir: dir });
+    const plan = planEnvUpgrade("SQUAD=CORE\n", "WORKSPACE_MODE=\n", { workspaceDir: dir });
     assert.deepEqual(plan.warnings, ["WORKSPACE_MODE"]);
   } finally {
     rmSync(dir, { recursive: true, force: true });
@@ -475,7 +490,7 @@ test("planEnvUpgrade: WORKSPACE_MODE já existente nunca muda (preenchido ou vaz
 });
 
 test("planEnvUpgrade: sem workspaceDir, WORKSPACE_MODE entra com o valor do template", () => {
-  const plan = planEnvUpgrade("HUB=BACKEND\n", "WORKSPACE_MODE=\n");
+  const plan = planEnvUpgrade("SQUAD=CORE\n", "WORKSPACE_MODE=\n");
   assert.deepEqual(plan.added, [{ key: "WORKSPACE_MODE", value: "" }]);
 });
 
@@ -501,7 +516,7 @@ test("planEnvUpgrade: JARVIS_PROJECT vazio é preenchido; preenchido ou ausente 
     planEnvUpgrade("JARVIS_PROJECT=https://github.com/fork/jarvis\n", tpl).filled,
     []
   );
-  const absent = planEnvUpgrade("HUB=X\n", tpl);
+  const absent = planEnvUpgrade("SQUAD=X\n", tpl);
   assert.deepEqual(absent.filled, []);
   assert.deepEqual(keys(absent), ["JARVIS_PROJECT"]);
 });
@@ -532,7 +547,7 @@ test("planEnvUpgrade: TOKEN_TASK_MANAGER com valor e vendor não suportado viram
 
 test("planEnvUpgrade: *_ACCESS do template real entram vazios (lista de opções)", () => {
   const tpl = readFileSync(join(root, "templates", "ENV-template.md"), "utf-8");
-  const plan = planEnvUpgrade("HUB=BACKEND\n", tpl);
+  const plan = planEnvUpgrade("SQUAD=CORE\n", tpl);
   const access = plan.added.filter((a) => a.key.endsWith("_ACCESS"));
   assert.deepEqual(access, [
     { key: "TASK_MANAGER_ACCESS", value: "" },
@@ -577,7 +592,7 @@ test("ENV-template: cada assunto numa moldura de # ==== e nenhum separador # ---
 
 test("planEnvUpgrade: COMPANY_PROFILE nova entra com o default stark-industries e não vira pendência (#199)", () => {
   const tpl = readFileSync(join(root, "templates", "ENV-template.md"), "utf-8");
-  const plan = planEnvUpgrade("HUB=BACKEND\nAREA=ENGINEERING\n", tpl);
+  const plan = planEnvUpgrade("SQUAD=CORE\n", tpl);
   const added = plan.added.find((a) => a.key === "COMPANY_PROFILE");
   assert.deepEqual(added, { key: "COMPANY_PROFILE", value: "stark-industries" });
   assert.ok(!plan.pending.includes("COMPANY_PROFILE"));
