@@ -15,7 +15,7 @@ import { getFrameworkRoot } from "../utils/paths.js";
 import { getIDEFolder } from "../config/ide-config.js";
 import { extractFrontmatterBlock, readDescription } from "../utils/frontmatter.js";
 import { readCompanyProfile } from "./company-profile.js";
-import { parseAppliesTo, matchesProfile } from "./profile-filter.js";
+import { isRuleEnabled } from "./profile-filter.js";
 import {
   SYNC_DIRS,
   SYNC_ROOT_FILES,
@@ -380,21 +380,21 @@ export function applyRuleOverlay(ideDir, result, { dryRun = false, frameworkRoot
 }
 
 /**
- * Passo 8 do `/jarvis-init` (Profile-Aware Rules Sync) pelo CLI (#102): deixa em `.{ide}/rules/` e
- * `.{ide}/rules-on-demand/` só as rules do perfil, com o filtro de `profile-filter.js`.
+ * Passo 8 do `/jarvis-init` pelo CLI (#102): sincroniza `.{ide}/rules/` e `.{ide}/rules-on-demand/`.
  * Candidatos de cada pasta: todo `.md` do core mais os do overlay ativo que o core não tem. O arquivo
- * efetivo é o do overlay, se existir (e estiver dentro dele), senão o do core; o `Applies to` lido é
- * o dele. Entra → copia do core (o do overlay já foi gravado, marcado, por `applyRuleOverlay`); não
- * entra → sai da IDE. `rtk-rules.md` só com `rtkEnabled`. Arquivo da IDE que não é candidato não é tocado.
+ * efetivo é o do overlay, se existir (e estiver dentro dele), senão o do core. Toda rule entra, menos
+ * as duas exceções de `isRuleEnabled`, decididas pelo nome do arquivo, sem ler o conteúdo (#263).
+ * Entra → copia do core (o do overlay já foi gravado, marcado, por `applyRuleOverlay`); não entra →
+ * sai da IDE. Arquivo da IDE que não é candidato não é tocado.
  * @param {string} ideDir - Pasta da IDE (ex.: `{workspace}/.claude`)
- * @param {{ HUB: string, POSITION: string, AREA: string, SQUAD: string, ARTIFACT_STYLE?: string }} profile
+ * @param {{ ARTIFACT_STYLE?: string }} [profile] - `ARTIFACT_STYLE` vazio = `ai-generated`
  * @param {{ rtkEnabled?: boolean, frameworkRoot?: string, dryRun?: boolean, envText?: string }} [opts]
  * @returns {{ companyProfile: string, copied: Record<string, number>, removed: number,
- *   universal: number, fromOverlay: number, folderCreated: boolean, warnings: string[], errors: string[] }}
+ *   fromOverlay: number, folderCreated: boolean, warnings: string[], errors: string[] }}
  */
 export function syncRulesForProfile(
   ideDir,
-  profile,
+  profile = {},
   { rtkEnabled = false, frameworkRoot = getFrameworkRoot(), dryRun = false, envText } = {}
 ) {
   const overlayResult = { copied: [], skipped: [], errors: [] };
@@ -409,7 +409,6 @@ export function syncRulesForProfile(
     companyProfile,
     copied: {},
     removed: 0,
-    universal: 0,
     fromOverlay: 0,
     folderCreated: overlayResult.copied.some((line) =>
       line.startsWith(`Overlay ${companyProfile}:`)
@@ -451,15 +450,12 @@ export function syncRulesForProfile(
       const source = overlayFile ?? join(coreDir, rel);
       const dest = join(ideDir, dir, rel);
       try {
-        const appliesTo = parseAppliesTo(readFileSync(source, "utf-8"));
-        const rtkOk = !rel.split(sep).join("/").endsWith("rtk-rules.md") || rtkEnabled;
-        if (rtkOk && matchesProfile(appliesTo, profile)) {
+        if (isRuleEnabled(rel, { artifactStyle: profile.ARTIFACT_STYLE, rtkEnabled })) {
           if (!overlayFile && !dryRun) {
             mkdirSync(dirname(dest), { recursive: true });
             cpSync(source, dest);
           }
           out.copied[dir]++;
-          if (appliesTo === null) out.universal++;
           if (overlayFile) out.fromOverlay++;
           if (kiro && dir === "rules" && !dryRun && existsSync(dest))
             writeKiroRuleSteering(ideDir, dest);

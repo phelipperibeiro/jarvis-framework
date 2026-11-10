@@ -124,8 +124,7 @@ export async function rulesSync(flags) {
   logger.info(
     `   Copiadas : ${total} arquivos (rules/: ${result.copied.rules} | rules-on-demand/: ${result.copied["rules-on-demand"]})`
   );
-  logger.info(`   Removidas: ${result.removed} arquivos (não batem com o perfil)`);
-  logger.info(`   Universais: ${result.universal} arquivos (sem applies_to — sempre copiadas)`);
+  logger.info(`   Removidas: ${result.removed} arquivos (exceção desligada)`);
   logger.info(`   Do overlay: ${result.fromOverlay} arquivos (${result.companyProfile})`);
   if (result.folderCreated) logger.info(`   Overlay ${result.companyProfile}: pasta criada`);
 

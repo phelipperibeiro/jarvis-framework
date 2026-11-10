@@ -25,7 +25,7 @@ import {
   readOverlayMarker,
   syncRulesForProfile,
 } from "../bin/lib/core/sync-engine.js";
-import { listRulesForProfile } from "../bin/lib/core/profile-filter.js";
+import { listRules } from "../bin/lib/core/profile-filter.js";
 import { OBSOLETE_PATHS } from "../bin/lib/config/constants.js";
 import { createHash } from "node:crypto";
 import { dirname, relative, sep } from "node:path";
@@ -945,13 +945,20 @@ const ideFiles = (ideDir, dir) => {
   return out.sort();
 };
 
-test("syncRulesForProfile: perfil BACKEND recebe a que bate e a universal, não a de FRONTEND nem a de PRODUCT (a)", () => {
+test("syncRulesForProfile: toda rule do core entra, menos as duas exceções desligadas; o cabeçalho antigo não filtra mais (a)", () => {
   withJarvisRoot((root, target) => {
     const ideDir = buildRulesFixture(root, target);
+    // O perfil ainda traz os eixos antigos, e a rule de FRONTEND e a de PRODUCT entram mesmo assim.
     const r = syncRulesForProfile(ideDir, BACKEND, { frameworkRoot: root });
-    assert.deepEqual(ideFiles(ideDir, "rules"), ["engineering/eng-rules.md", "universal.md"]);
-    assert.equal(r.universal, 1);
-    assert.equal(r.copied.rules, 2);
+    assert.deepEqual(ideFiles(ideDir, "rules"), [
+      "engineering/eng-rules.md",
+      "engineering/frontend/x.md",
+      "product/y.md",
+      "universal.md",
+    ]);
+    assert.equal(r.copied.rules, 4);
+    assert.equal(r.removed, 0);
+    assert.equal("universal" in r, false);
   });
 });
 
@@ -983,39 +990,50 @@ test("syncRulesForProfile: artifact-style só para ARTIFACT_STYLE=human-generate
   });
 });
 
-test("syncRulesForProfile: rule que deixou de bater sai; a que passou a bater é copiada (d)", () => {
+test("syncRulesForProfile: a cópia de uma exceção desligada sai da IDE e volta quando ela liga (d)", () => {
   withJarvisRoot((root, target) => {
     const ideDir = buildRulesFixture(root, target);
-    write(ideDir, "rules/engineering/frontend/x.md", "cópia antiga");
+    write(ideDir, "rules/rtk-rules.md", "cópia antiga");
     const r = syncRulesForProfile(ideDir, BACKEND, { frameworkRoot: root });
-    assert.ok(!existsSync(join(ideDir, "rules/engineering/frontend/x.md")));
+    assert.ok(!existsSync(join(ideDir, "rules/rtk-rules.md")));
     assert.equal(r.removed, 1);
-    syncRulesForProfile(ideDir, { ...BACKEND, HUB: "FRONTEND" }, { frameworkRoot: root });
-    assert.ok(existsSync(join(ideDir, "rules/engineering/frontend/x.md")));
+    syncRulesForProfile(ideDir, BACKEND, { frameworkRoot: root, rtkEnabled: true });
+    assert.match(readFileSync(join(ideDir, "rules/rtk-rules.md"), "utf-8"), /# rtk/);
   });
 });
 
-test("syncRulesForProfile: overlay com o mesmo caminho vale pelo Applies to dele, marcado; se não bate, sai (e)", () => {
+test("syncRulesForProfile: a rule do overlay no mesmo caminho entra sempre, marcada, até com o cabeçalho de um fork antigo; o fork de uma exceção segue a variável (e)", () => {
   withJarvisRoot((root, target) => {
     const ideDir = buildRulesFixture(root, target);
-    // O core manda a eng-rules para todos; o overlay acme só para FRONTEND.
     write(
       ideDir,
       "overlays/acme/rules/engineering/eng-rules.md",
-      `${AT("FRONTEND", "all", "all", "all")}\n# acme\n`
+      "> **Applies to:** linha de um fork antigo\n\n# acme\n"
     );
     const r = syncRulesForProfile(ideDir, BACKEND, { frameworkRoot: root });
-    assert.ok(!existsSync(join(ideDir, "rules/engineering/eng-rules.md")));
-    assert.equal(r.fromOverlay, 0);
-    const r2 = syncRulesForProfile(
-      ideDir,
-      { ...BACKEND, HUB: "FRONTEND" },
-      { frameworkRoot: root }
-    );
     const copia = readFileSync(join(ideDir, "rules/engineering/eng-rules.md"), "utf-8");
     assert.equal(readOverlayMarker(copia), "acme");
     assert.match(copia, /# acme/);
-    assert.equal(r2.fromOverlay, 1);
+    assert.equal(r.fromOverlay, 1);
+
+    // Fork de uma exceção: sai da IDE com ai-generated e volta, marcado, com human-generated.
+    write(ideDir, "overlays/acme/rules/artifact-style-rules.md", "# estilo da acme\n");
+    const sem = syncRulesForProfile(
+      ideDir,
+      { ...BACKEND, ARTIFACT_STYLE: "ai-generated" },
+      { frameworkRoot: root }
+    );
+    assert.ok(!existsSync(join(ideDir, "rules/artifact-style-rules.md")));
+    assert.equal(sem.fromOverlay, 1);
+    const com = syncRulesForProfile(
+      ideDir,
+      { ...BACKEND, ARTIFACT_STYLE: "human-generated" },
+      { frameworkRoot: root }
+    );
+    const estilo = readFileSync(join(ideDir, "rules/artifact-style-rules.md"), "utf-8");
+    assert.equal(readOverlayMarker(estilo), "acme");
+    assert.match(estilo, /# estilo da acme/);
+    assert.equal(com.fromOverlay, 2);
   });
 });
 
@@ -1031,13 +1049,20 @@ test("syncRulesForProfile: rule própria da pessoa (fora do core e do overlay) f
   });
 });
 
-test("syncRulesForProfile: rules-on-demand/ é filtrada igual (g)", () => {
+test("syncRulesForProfile: rules-on-demand/ segue a mesma regra (g)", () => {
   withJarvisRoot((root, target) => {
     const ideDir = buildRulesFixture(root, target);
     write(ideDir, "rules-on-demand/product/prod.guided-rules.md", "antiga");
     const r = syncRulesForProfile(ideDir, BACKEND, { frameworkRoot: root });
-    assert.deepEqual(ideFiles(ideDir, "rules-on-demand"), ["engineering/eng.plan-rules.md"]);
-    assert.equal(r.copied["rules-on-demand"], 1);
+    assert.deepEqual(ideFiles(ideDir, "rules-on-demand"), [
+      "engineering/eng.plan-rules.md",
+      "product/prod.guided-rules.md",
+    ]);
+    assert.equal(r.copied["rules-on-demand"], 2);
+    assert.notEqual(
+      readFileSync(join(ideDir, "rules-on-demand/product/prod.guided-rules.md"), "utf-8"),
+      "antiga"
+    );
   });
 });
 
@@ -1064,42 +1089,34 @@ test("syncRulesForProfile: overlays/ fica intacto, conferido por hash; a pasta d
   });
 });
 
-test("syncRulesForProfile: com o rules/ real e sem overlay, o resultado é o de listRulesForProfile nos 4 perfis do BASE", () => {
+test("syncRulesForProfile: com o rules/ real e sem overlay, o resultado é o de listRules", () => {
   const repo = join(dirname(fileURLToPath(import.meta.url)), "..");
-  const perfis = [
-    { HUB: "FULLCYCLE", POSITION: "GENERALIST", AREA: "ENGINEERING", SQUAD: "CORE" },
-    BACKEND,
-    { HUB: "FRONTEND", POSITION: "PLENO", AREA: "ENGINEERING", SQUAD: "CORE" },
-    { HUB: "QA", POSITION: "QA-ENGINEER", AREA: "ENGINEERING", SQUAD: "CORE" },
-  ];
-  for (const perfil of perfis) {
-    const target = mkdtempSync(join(tmpdir(), "jarvis-rules-equiv-"));
-    try {
-      const ideDir = join(target, ".claude");
-      mkdirSync(join(ideDir, "overlays", "stark-industries"), { recursive: true });
-      writeFileSync(join(ideDir, "ENV.md"), "HUB=X\n");
-      syncRulesForProfile(ideDir, perfil, { frameworkRoot: repo });
-      for (const dir of ["rules", "rules-on-demand"]) {
-        const esperado = listRulesForProfile(join(repo, dir), perfil)
-          .map((r) => r.path)
-          .sort();
-        assert.deepEqual(ideFiles(ideDir, dir), esperado, `${perfil.HUB}: ${dir}/`);
-      }
-    } finally {
-      rmSync(target, { recursive: true, force: true });
+  const target = mkdtempSync(join(tmpdir(), "jarvis-rules-equiv-"));
+  try {
+    const ideDir = join(target, ".claude");
+    mkdirSync(join(ideDir, "overlays", "stark-industries"), { recursive: true });
+    writeFileSync(join(ideDir, "ENV.md"), "SQUAD=CORE\n");
+    syncRulesForProfile(ideDir, {}, { frameworkRoot: repo });
+    for (const dir of ["rules", "rules-on-demand"]) {
+      const esperado = listRules(join(repo, dir))
+        .map((r) => r.path)
+        .sort();
+      assert.deepEqual(ideFiles(ideDir, dir), esperado, `${dir}/`);
     }
+  } finally {
+    rmSync(target, { recursive: true, force: true });
   }
 });
 
 test("syncRulesForProfile: com dryRun não grava nem apaga, e conta o que faria", () => {
   withJarvisRoot((root, target) => {
     const ideDir = buildRulesFixture(root, target);
-    write(ideDir, "rules/engineering/frontend/x.md", "cópia antiga");
+    write(ideDir, "rules/rtk-rules.md", "cópia antiga");
     const r = syncRulesForProfile(ideDir, BACKEND, { frameworkRoot: root, dryRun: true });
-    assert.deepEqual(ideFiles(ideDir, "rules"), ["engineering/frontend/x.md"]);
+    assert.deepEqual(ideFiles(ideDir, "rules"), ["rtk-rules.md"]);
     assert.ok(!existsSync(join(ideDir, "overlays", "acme")));
     assert.equal(r.removed, 1);
-    assert.equal(r.copied.rules, 2);
+    assert.equal(r.copied.rules, 4);
   });
 });
 
@@ -1169,11 +1186,11 @@ test("syncAssets (kiro): upgrade sobre instalação existente não solta skill-*
   });
 });
 
-test("syncRulesForProfile (kiro): o steering acompanha o filtro de rules (#83)", () => {
+test("syncRulesForProfile (kiro): o steering acompanha as rules copiadas (#83, #263)", () => {
   withJarvisRoot((root, target) => {
     buildRulesFixture(root, target);
     const kiroDir = join(target, ".kiro");
-    write(target, ".kiro/ENV.md", "HUB=BACKEND\n");
+    write(target, ".kiro/ENV.md", "SQUAD=CORE\n");
     // Instalação com o steering de todas as rules (o que o transformKiroAssets gera) e um workflow.
     for (const n of ["eng-rules.md", "x.md", "y.md", "universal.md", "rtk-rules.md"])
       write(target, `.kiro/steering/${n}`, "antigo");
@@ -1181,8 +1198,15 @@ test("syncRulesForProfile (kiro): o steering acompanha o filtro de rules (#83)",
 
     syncRulesForProfile(kiroDir, BACKEND, { frameworkRoot: root });
 
+    // Só o steering da exceção desligada (rtk-rules.md) sai.
     const steering = readdirSync(join(kiroDir, "steering")).filter((n) => n.endsWith(".md"));
-    assert.deepEqual(steering.sort(), ["eng-rules.md", "eng.start.md", "universal.md"]);
+    assert.deepEqual(steering.sort(), [
+      "eng-rules.md",
+      "eng.start.md",
+      "universal.md",
+      "x.md",
+      "y.md",
+    ]);
     // A rule que fica tem o steering regravado a partir da rule (não o arquivo antigo).
     assert.match(
       readFileSync(join(kiroDir, "steering/eng-rules.md"), "utf-8"),

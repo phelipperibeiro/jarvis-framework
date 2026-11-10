@@ -1052,13 +1052,13 @@ test("upgradePendencies: eixo do perfil vazio é pendência (#83)", () => {
   );
 });
 
-test("init --upgrade: com o perfil completo, filtra as rules como o jarvis rules sync (#83)", () => {
+test("init --upgrade: sincroniza as rules como o jarvis rules sync, sem a exceção desligada (#83, #263)", () => {
   withWorkspace({ ".claude/ENV.md": ENV_PERFIL }, (ws) => {
     const r = run(ws, "--upgrade", "--ide", "claude", "--yes");
     assert.equal(r.status, 0, r.stderr);
     assert.match(r.stdout, /Rules filtradas pelo perfil \(BACKEND\/SENIOR\/ENGINEERING\/CORE\)/);
-    // AREA: PRODUCT não é do perfil; a rule comum dos prod.spec.* (AREA: all) fica.
-    assert.ok(!existsSync(join(ws, ".claude/rules/product/prod.spec-rules.md")));
+    // Toda rule entra, menos a artifact-style-rules.md (ARTIFACT_STYLE padrão).
+    assert.ok(!existsSync(join(ws, ".claude/rules/artifact-style-rules.md")));
     assert.ok(existsSync(join(ws, ".claude/rules/engineering/eng-rules.md")));
     assert.ok(existsSync(join(ws, ".claude/rules-on-demand/product/prod.spec-common-rules.md")));
   });
@@ -1097,24 +1097,24 @@ test("init --upgrade: instalação 8.4.0 → estado final de rules/ e rules-on-d
     for (const a of antigas) {
       assert.ok(!existsSync(join(ws, ".claude/rules", a)), `rules/${a} deveria ter saído`);
     }
-    // Do perfil BACKEND/SENIOR/ENGINEERING: fica o que é dele e o que é de qualquer AREA.
+    // Fica toda rule do core, menos a exceção desligada.
     assert.ok(existsSync(join(ws, ".claude/rules/engineering/eng-rules.md")));
-    assert.ok(!existsSync(join(ws, ".claude/rules/product/prod.spec-rules.md")));
+    assert.ok(!existsSync(join(ws, ".claude/rules/artifact-style-rules.md")));
     assert.ok(existsSync(join(ws, ".claude/rules-on-demand/product/prod.spec-common-rules.md")));
     assert.ok(existsSync(join(ws, ".claude/rules-on-demand/engineering/eng.rpa-rules.md")));
     assert.ok(existsSync(join(ws, ".claude/rules-on-demand/engineering/eng.start-rules.md")));
   });
 });
 
-test("init --upgrade (kiro): o steering fica só com as rules do perfil (#83)", () => {
+test("init --upgrade (kiro): o steering acompanha as rules, sem as exceções desligadas (#83, #263)", () => {
   withWorkspace({ ".kiro/ENV.md": ENV_PERFIL.replace("IDE=claude", "IDE=kiro") }, (ws) => {
     const r = run(ws, "--upgrade", "--ide", "kiro", "--yes");
     assert.equal(r.status, 0, r.stderr);
     const steering = join(ws, ".kiro/steering");
     assert.ok(existsSync(join(steering, "eng-rules.md")));
-    // AREA: PRODUCT e HUB: FRONTEND não são do perfil BACKEND/SENIOR/ENGINEERING.
-    assert.ok(!existsSync(join(steering, "prod.spec-rules.md")));
-    assert.ok(!existsSync(join(steering, "eng.frontend-rules.md")));
+    // ARTIFACT_STYLE padrão e RTK desligado: as duas exceções não viram steering.
+    assert.ok(!existsSync(join(steering, "artifact-style-rules.md")));
+    assert.ok(!existsSync(join(steering, "rtk-rules.md")));
   });
 });
 
@@ -1151,12 +1151,12 @@ test("init --upgrade: RTK_ENABLED=true com o rtk no PATH traz a rtk-rules.md (#8
   });
 });
 
-test("init --force: reinstalação com o ENV.md completo filtra as rules como o --upgrade (#83)", () => {
+test("init --force: reinstalação com o ENV.md sincroniza as rules como o --upgrade (#83, #263)", () => {
   withWorkspace({ ".claude/ENV.md": ENV_PERFIL }, (ws) => {
     const r = run(ws, "--ide", "claude", "--force");
     assert.equal(r.status, 0, r.stderr);
     assert.match(r.stdout, /Rules filtradas pelo perfil \(BACKEND\/SENIOR\/ENGINEERING\/CORE\)/);
-    assert.ok(!existsSync(join(ws, ".claude/rules/product/prod.spec-rules.md")));
+    assert.ok(!existsSync(join(ws, ".claude/rules/artifact-style-rules.md")));
     assert.ok(existsSync(join(ws, ".claude/rules/engineering/eng-rules.md")));
   });
 });
