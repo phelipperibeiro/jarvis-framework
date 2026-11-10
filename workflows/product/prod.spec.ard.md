@@ -68,7 +68,7 @@ Utilize o `$ARGUMENTS` que o usuário passar como ponto de partida e para entend
 ### Gate 1: Reconhecer o contexto
 1. Valide o `ENV.md` (regra geral de produto) e avise que o ARD é um documento de engenharia.
 2. Identifique o PRD ou FRD de origem em `$PROD_DOCS` (ou o caminho que o usuário informar) e leia-o. Se `CENTRAL_DOCS_STORAGE` estiver definido, consulte também no Central docs as funcionalidades já implementadas relacionadas (o PRD e o FRD ficam em `$PROD_DOCS`).
-3. Resuma em poucas linhas o que a especificação pede e confirme com o usuário que é essa a origem. Com `PROD_MODE=product-led`, avise que o ARD seguirá o fluxo de engenharia e deve ser revisado por alguém da engenharia.
+3. Resuma em poucas linhas o que a especificação pede e confirme com o usuário que é essa a origem. Com `PROD_MODE` vazia ou `product-led`, avise que o ARD seguirá o fluxo de engenharia e deve ser revisado por alguém da engenharia.
 
 ### Gate 2: Levantar os requisitos arquiteturais em termos de produto
 Pergunte, **uma por vez**, só o que a especificação não responde (pule o que o PRD ou FRD já traz, confirmando):

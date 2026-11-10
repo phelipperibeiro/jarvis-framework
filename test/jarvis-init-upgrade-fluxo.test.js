@@ -173,6 +173,17 @@ test("upgrade.md: a nota do terminal diz que o CLI nunca tira arquivo do índice
   assert.match(upgrade, /\*\*nunca tira arquivo do índice\*\*/);
 });
 
+// #263: o terminal acrescenta a PROD_MODE vazia e a lista como pendência; quem pergunta é o item 9.
+// Se o item 9 só perguntasse a chave nova, a pendência voltaria em todo upgrade.
+test("upgrade.md: o item 9 pergunta a PROD_MODE nova ou vazia, e a nota do terminal deixa a pergunta para a IDE (#263)", () => {
+  const item9 = item(upgrade, "9. **Exceção — `PROD_MODE`:**", "9.1. **Exceção");
+  assert.match(item9, /entre as chaves novas, ou já existir vazia/);
+  assert.doesNotMatch(item9, /mesmo vazia, não muda/);
+  const nota = upgrade.split("\n").find((l) => l.startsWith("> No terminal, rode antes"));
+  assert.match(nota, /a pergunta da `PROD_MODE` nova ou vazia \(item 9\)/);
+  assert.doesNotMatch(nota, /9 a 11/, "o terminal não faz a pergunta do item 9");
+});
+
 // ---- #227: o mapa de tecnologias vale nos dois modos; comando novo documentado ---------------------
 
 const read = (...parts) => readFileSync(join(root, ...parts), "utf8");
