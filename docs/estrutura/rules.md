@@ -92,7 +92,7 @@ Regras mais específicas têm precedência sobre regras gerais.
 |------|--------|----------|
 | Regra geral | `{dominio}-rules.md` | `eng-rules.md` |
 | Regra de comando | `{dominio}.{comando}-rules.md` | `eng.work-rules.md` |
-| Regra de QA | `qa/{nome}-rules.md` | — |
+| Regra de uma área | `rules-on-demand/engineering/{área}/{dominio}.{área}-rules.md` | `frontend/eng.frontend-rules.md` |
 
 ### Estrutura obrigatória de um arquivo de regra
 
@@ -129,7 +129,7 @@ Links para documentação relacionada.
 
 1. **Regras Gerais** (`eng-rules.md`) — valem para todo o domínio de engenharia; base para as específicas.
 2. **Regras de Comando** (`eng.{comando}-rules.md`) — específicas de um comando, podem sobrescrever regras gerais.
-3. **Regras de QA** (`qa/`) — qualidade, testes, critérios de aceitação, cobertura.
+3. **Regras de área** (`rules-on-demand/engineering/{área}/`, como `frontend/`) — padrões de uma área só, lidos pelo comando e pelo agente da área, fora do início da sessão.
 4. **Regras de Produto** (`product/`) — especificações, requisitos, validação de PRD/FRD.
 
 ### Regras Críticas do Framework

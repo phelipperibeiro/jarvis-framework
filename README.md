@@ -193,6 +193,18 @@ O `/jarvis-init` pergunta o `ARTIFACT_STYLE` (variável do `ENV.md`):
 
 Com `human-generated`, o `/jarvis-init` copia a rule `rules/artifact-style-rules.md`; com `ai-generated`, ela nem existe na sessão. Trocou o valor à mão? Rode `/jarvis-init upgrade`.
 
+## Senioridade por assunto
+
+O `/jarvis-init` pergunta a sua senioridade padrão (`SENIORITY`) e, se você quiser, uma diferente por área (`BACKEND_SENIORITY`, `FRONTEND_SENIORITY`, `QA_SENIORITY`, `DATA_SENIORITY`, `AUTOMATION_SENIORITY` e `PLATFORM_SENIORITY`; vazia = igual à padrão). A senioridade da área da tarefa calibra só a conversa:
+
+| Valor | Como o Jarvis conversa |
+|---|---|
+| `junior` | Didático: explica o porquê, define termos, traz exemplos e confirma o entendimento com mais frequência |
+| `pleno` | Equilibrado: explica só o que não é óbvio |
+| `senior` | Direto: trade-offs e riscos, sem fundamentos |
+
+A área vem do card e da sua mensagem; com mais de uma área, vale a menor senioridade. Ela não libera nem bloqueia comando, não muda o `MAX_AI_EXECUTION_PERCENTAGE` nem as rules carregadas. Para outro tom numa tarefa: `/jarvis-context-detect --override comunicacao=direto` (ou `didático`, `equilibrado`).
+
 ## Funciona com qualquer stack
 
 O Jarvis não presume Go, PHP, NestJS ou React. Cada área (backend e frontend) tem uma **skill base neutra**, e cada projeto registra no `ENV.md` as **especializações** da sua stack (`BACKEND_SPECIALIZATIONS` e `FRONTEND_SPECIALIZATIONS`). Os comandos `eng.*` carregam a base mais o que o projeto registrou.
