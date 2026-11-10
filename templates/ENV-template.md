@@ -50,6 +50,20 @@ POSITION=[JUNIOR, PLENO, SENIOR, TECH LEAD, SPECIALIST, PM, TPM, GPM, CTO, GENER
 
 
 # =============================================================================
+# Senioridade por assunto (calibra só a conversa: quanto o Jarvis explica)
+# =============================================================================
+# SENIORITY é a padrão (obrigatória). As de área são opcionais: vazia = igual à SENIORITY.
+# junior = didático; pleno = equilibrado; senior = direto. Não libera nem bloqueia comando.
+SENIORITY=[junior, pleno, senior]
+BACKEND_SENIORITY=
+FRONTEND_SENIORITY=
+QA_SENIORITY=
+DATA_SENIORITY=
+AUTOMATION_SENIORITY=
+PLATFORM_SENIORITY=
+
+
+# =============================================================================
 # IDE e pastas
 # =============================================================================
 # Qual IDE este ENV.md alimenta. FLOWS_FOLDER: workflows (maioria) ou commands (Claude).

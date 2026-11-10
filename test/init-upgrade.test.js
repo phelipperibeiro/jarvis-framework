@@ -91,7 +91,7 @@ function snapshot(dir, base = dir) {
   return out;
 }
 
-test("init --upgrade --yes: chaves novas, PROD_MODE pela AREA, discovery movido, ENV antigo intacto, idempotente", () => {
+test("init --upgrade --yes: chaves novas, PROD_MODE pendente, discovery movido, ENV antigo intacto, idempotente", () => {
   withWorkspace(
     {
       ".claude/ENV.md": ENV_V520,
@@ -109,7 +109,8 @@ test("init --upgrade --yes: chaves novas, PROD_MODE pela AREA, discovery movido,
       assert.doesNotMatch(r.stdout, /rabbitmq/);
       assert.match(env, /^DISCOVERIES_FOLDER_NAME=discoveries$/m);
       assert.match(env, /^DISCOVERIES_DOCS=\$JARVIS_DOCS\/\$DISCOVERIES_FOLDER_NAME$/m);
-      assert.match(env, /^PROD_MODE=developer-guided$/m);
+      assert.match(env, /^PROD_MODE=$/m);
+      assert.match(r.stdout, /PROD_MODE está vazio: responda no \/jarvis-init upgrade/);
       assert.match(env, /^ARTIFACT_STYLE=ai-generated$/m);
       assert.match(env, /^RTK_ENABLED=false$/m);
       assert.equal((env.match(/^TASK_MANAGER=/gm) || []).length, 1);
@@ -762,12 +763,44 @@ test("init (Atualizar): com a versão igual, sem seta X → X e com o ENV.md com
 });
 
 // ENV.md sem pendência do upgrade.
-const ENV_PERFIL = ENV_SEM_BOARD.replace("HUB=BACKEND", "HUB=BACKEND\nPOSITION=SENIOR\nSQUAD=CORE");
+const ENV_PERFIL = ENV_SEM_BOARD.replace(
+  "HUB=BACKEND",
+  "HUB=BACKEND\nPOSITION=SENIOR\nSQUAD=CORE\nPROD_MODE=developer-guided"
+);
 
 // #225: mapa, AGENTS.md e CLAUDE.md (cópia idêntica) existem sempre; sem eles o upgrade tem pendência.
 const MAPA_VAZIO = "| Repositório | Papel |\n|---|---|\n";
 const DOCS_EM_DIA = { "CDD-MIND-MAP.md": MAPA_VAZIO, "AGENTS.md": "# Projeto\n", "CLAUDE.md": "# Projeto\n" };
 const AGENTS_E_CLAUDE = { "AGENTS.md": "# Projeto\n", "CLAUDE.md": "# Projeto\n" };
+
+test("init --upgrade: SENIORITY nova vem do cargo antigo, com o aviso no resumo; idempotente (#263)", () => {
+  withWorkspace({ ".claude/ENV.md": ENV_PERFIL }, (ws) => {
+    const r = run(ws, "--upgrade", "--ide", "claude", "--yes");
+    assert.equal(r.status, 0, r.stderr);
+    const env = readFileSync(join(ws, ".claude/ENV.md"), "utf-8");
+    assert.match(env, /^SENIORITY=senior$/m);
+    for (const area of ["BACKEND", "FRONTEND", "QA", "DATA", "AUTOMATION", "PLATFORM"]) {
+      assert.match(env, new RegExp(`^${area}_SENIORITY=$`, "m"), area);
+    }
+    assert.match(r.stdout, /SENIORITY: gravada como senior, a partir do cargo antigo; confira no ENV\.md/);
+    assert.doesNotMatch(r.stdout, /SENIORITY está vazio/);
+
+    const again = run(ws, "--upgrade", "--ide", "claude", "--yes");
+    assert.equal(again.status, 0, again.stderr);
+    assert.equal(readFileSync(join(ws, ".claude/ENV.md"), "utf-8"), env);
+    assert.doesNotMatch(again.stdout, /SENIORITY: gravada/);
+  });
+});
+
+test("init --upgrade: sem cargo antigo, SENIORITY fica vazia e é pendência do /jarvis-init upgrade (#263)", () => {
+  withWorkspace({ ".claude/ENV.md": ENV_V520 }, (ws) => {
+    const r = run(ws, "--upgrade", "--ide", "claude", "--yes");
+    assert.equal(r.status, 0, r.stderr);
+    assert.match(readFileSync(join(ws, ".claude/ENV.md"), "utf-8"), /^SENIORITY=$/m);
+    assert.match(r.stdout, /SENIORITY está vazio: responda no \/jarvis-init upgrade/);
+    assert.match(r.stdout, /Agora rode .*\/jarvis-init upgrade.* preencher [^\n]*SENIORITY/);
+  });
+});
 
 test("init --upgrade: sem pendência, não manda rodar o /jarvis-init upgrade", () => {
   withWorkspace({ ".claude/ENV.md": ENV_PERFIL, ...DOCS_EM_DIA }, (ws) => {

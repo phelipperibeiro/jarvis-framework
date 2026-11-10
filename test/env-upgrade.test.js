@@ -54,14 +54,67 @@ test("planEnvUpgrade: DATA_SPECIALIZATIONS entra com qualquer HUB (sem regra do 
   }
 });
 
-test("planEnvUpgrade: PROD_MODE nova vem da AREA", () => {
+test("planEnvUpgrade: PROD_MODE nova entra vazia e vira pendência, qualquer que seja a área (#263)", () => {
   const tpl = "PROD_MODE=\n";
-  const byArea = (area) => planEnvUpgrade(`AREA=${area}\n`, tpl);
-  assert.deepEqual(byArea("ENGINEERING").added, [{ key: "PROD_MODE", value: "developer-guided" }]);
-  assert.deepEqual(byArea("PRODUCT").added, [{ key: "PROD_MODE", value: "product-led" }]);
-  const other = byArea("OUTRA");
-  assert.deepEqual(other.added, [{ key: "PROD_MODE", value: "" }]);
-  assert.deepEqual(other.pending, ["PROD_MODE"]);
+  for (const env of ["AREA=ENGINEERING\n", "AREA=PRODUCT\n", "SQUAD=CORE\n"]) {
+    const plan = planEnvUpgrade(env, tpl);
+    assert.deepEqual(plan.added, [{ key: "PROD_MODE", value: "" }], env);
+    assert.deepEqual(plan.pending, ["PROD_MODE"], env);
+  }
+});
+
+const TPL_SENIORITY = [
+  "SENIORITY=[junior, pleno, senior]",
+  "BACKEND_SENIORITY=",
+  "FRONTEND_SENIORITY=",
+  "QA_SENIORITY=",
+  "DATA_SENIORITY=",
+  "AUTOMATION_SENIORITY=",
+  "PLATFORM_SENIORITY=",
+  "",
+].join("\n");
+const AREAS_SENIORITY = ["BACKEND", "FRONTEND", "QA", "DATA", "AUTOMATION", "PLATFORM"].map(
+  (area) => `${area}_SENIORITY`
+);
+
+test("planEnvUpgrade: SENIORITY nova vem do cargo antigo, sem distinguir maiúsculas nem espaços (#263)", () => {
+  const casos = [
+    ["POSITION=JUNIOR\n", "junior"],
+    ["POSITION=pleno\n", "pleno"],
+    ["POSITION=  Junior  \n", "junior"],
+    ["POSITION=SENIOR\n", "senior"],
+    ["POSITION=TECH LEAD\n", "senior"],
+    ["POSITION=GENERALIST\n", "senior"],
+    ["POSITION=PM\n", "senior"],
+  ];
+  for (const [env, esperado] of casos) {
+    const plan = planEnvUpgrade(env, TPL_SENIORITY);
+    assert.deepEqual(plan.added[0], { key: "SENIORITY", value: esperado }, env);
+    assert.deepEqual(plan.pending, [], env);
+    assert.ok(plan.warnings.includes("SENIORITY_DERIVED"), env);
+  }
+});
+
+test("planEnvUpgrade: sem cargo (ausente, vazio ou a lista do template), SENIORITY entra vazia e pendente (#263)", () => {
+  for (const env of ["SQUAD=CORE\n", "POSITION=\n", "POSITION=[JUNIOR, PLENO, SENIOR]\n"]) {
+    const plan = planEnvUpgrade(env, TPL_SENIORITY);
+    assert.deepEqual(plan.added[0], { key: "SENIORITY", value: "" }, env);
+    assert.deepEqual(plan.pending, ["SENIORITY"], env);
+    assert.ok(!plan.warnings.includes("SENIORITY_DERIVED"), env);
+  }
+});
+
+test("planEnvUpgrade: as seis SENIORITY de área entram vazias e sem pendência; SENIORITY existente nunca muda (#263)", () => {
+  for (const existente of ["SENIORITY=pleno\n", "SENIORITY=\n"]) {
+    const plan = planEnvUpgrade(`${existente}POSITION=JUNIOR\n`, TPL_SENIORITY);
+    assert.deepEqual(
+      plan.added,
+      AREAS_SENIORITY.map((key) => ({ key, value: "" })),
+      existente
+    );
+    assert.deepEqual(plan.pending, [], existente);
+    assert.ok(!plan.warnings.includes("SENIORITY_DERIVED"), existente);
+  }
 });
 
 test("planEnvUpgrade: PROD_MODE= existente não muda e vira pendência", () => {

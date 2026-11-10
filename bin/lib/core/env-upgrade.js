@@ -13,8 +13,20 @@ import { EnvPathError, expandEnvPath } from "./env-paths.js";
 
 const KEY_LINE = /^([A-Z][A-Z0-9_]*)=(.*)$/;
 
-// PROD_MODE nova: o valor vem da AREA (só no upgrade; a criação do ENV continua perguntando).
-const PROD_MODE_BY_AREA = { ENGINEERING: "developer-guided", PRODUCT: "product-led" };
+/**
+ * SENIORITY nova (#263): vem do cargo antigo (POSITION), que o upgrade apaga, lido sem distinguir
+ * maiúsculas nem espaços nas pontas. JUNIOR → junior, PLENO → pleno, outro valor → senior. Sem
+ * cargo (ausente, vazio ou a lista de exemplo do template) → vazia, e vira pendência.
+ * @param {string | undefined} role
+ * @returns {string}
+ */
+function seniorityFromRole(role) {
+  const value = (role || "").trim().toUpperCase();
+  if (!value || isOptionList(value)) return "";
+  if (value === "JUNIOR") return "junior";
+  if (value === "PLENO") return "pleno";
+  return "senior";
+}
 
 /**
  * Lê as chaves do ENV na ordem do arquivo, **incluindo as vazias** (o `loadEnv`
@@ -125,7 +137,6 @@ const AXES = ["TASK_MANAGER", "VERSION_CONTROL"];
 export function planEnvUpgrade(envText, templateText, { workspaceDir } = {}) {
   const env = parseEnvEntries(envText);
   const template = parseEnvEntries(templateText);
-  const area = (env.get("AREA") || "").toUpperCase();
 
   const added = [];
   const filled = [];
@@ -136,9 +147,12 @@ export function planEnvUpgrade(envText, templateText, { workspaceDir } = {}) {
     if (env.has(key) || REMOVED_KEYS.includes(key)) continue;
 
     let value = isOptionList(templateValue) ? "" : templateValue;
-    if (key === "PROD_MODE") {
-      value = PROD_MODE_BY_AREA[area] || "";
-      if (!value) pending.push("PROD_MODE");
+    // PROD_MODE nova: sempre perguntada no /jarvis-init upgrade (#263).
+    if (key === "PROD_MODE") pending.push("PROD_MODE");
+    if (key === "SENIORITY") {
+      value = seniorityFromRole(env.get("POSITION"));
+      if (value) warnings.push("SENIORITY_DERIVED");
+      else pending.push("SENIORITY");
     }
     if (key === "WORKSPACE_MODE" && workspaceDir) {
       const repos = (env.get("WORKSPACE_REPOS") || "")

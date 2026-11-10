@@ -917,6 +917,12 @@ async function runUpgrade(cwd, flags) {
       `${YELLOW}  ⚠️  Central docs no layout antigo (product/engineering): rode "jarvis docs migrate" para ver o plano, ou o /jarvis-init oferece (Upgrade C)${NC}`
     );
   }
+  if (envPlan.warnings.includes("SENIORITY_DERIVED")) {
+    const seniority = envPlan.added.find((entry) => entry.key === "SENIORITY")?.value;
+    logger.info(
+      `${YELLOW}  ⚠️  SENIORITY: gravada como ${seniority}, a partir do cargo antigo; confira no ENV.md${NC}`
+    );
+  }
   if (envPlan.warnings.includes("WORKSPACE_MODE")) {
     logger.info(
       `${YELLOW}  ⚠️  WORKSPACE_MODE: a raiz é um repositório e há subpastas com .git (submódulos?): gravado como project; confira no ENV.md${NC}`
