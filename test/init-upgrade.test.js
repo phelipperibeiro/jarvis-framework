@@ -1252,6 +1252,19 @@ test("init --upgrade: o filtro aplica a rule do overlay do COMPANY_PROFILE (#83)
   );
 });
 
+test("init --upgrade: o resumo avisa do fork do overlay num caminho de rule que saiu do framework (#263)", () => {
+  const fork = ".claude/overlays/stark-industries/rules/engineering/frontend/eng.frontend-rules.md";
+  withWorkspace({ ".claude/ENV.md": ENV_PERFIL, [fork]: "# fork antigo\n" }, (ws) => {
+    const r = run(ws, "--upgrade", "--ide", "claude", "--yes");
+    assert.equal(r.status, 0, r.stderr);
+    assert.match(
+      r.stdout,
+      /overlays\/stark-industries\/rules\/engineering\/frontend\/eng\.frontend-rules\.md: fork num caminho que saiu do framework/
+    );
+    assert.equal(readFileSync(join(ws, fork), "utf-8"), "# fork antigo\n", "o upgrade gravou no overlay");
+  });
+});
+
 test("init --upgrade: ARTIFACT_STYLE decide a artifact-style-rules.md (#83)", () => {
   for (const [estilo, presente] of [
     ["human-generated", true],

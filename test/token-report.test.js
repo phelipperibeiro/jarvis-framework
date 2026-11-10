@@ -158,20 +158,22 @@ const ENV_LIMPO = Object.fromEntries(
 const AS_DUAS_LIGADAS = "ARTIFACT_STYLE=human-generated\nRTK_ENABLED=true\n";
 
 /**
- * Roda `jarvis tokens --json` numa pasta temporária com os ENV.md pedidos ({ claude: "texto" }).
+ * Roda `jarvis tokens --json` numa pasta temporária com os ENV.md pedidos ({ claude: "texto" };
+ * `null` cria o ENV.md como pasta) e as variáveis de ambiente extras.
  * `rules` são os caminhos da categoria rules do relatório (vazio quando o comando falha).
  */
-function tokensNaPasta(envs, args = []) {
+function tokensNaPasta(envs, args = [], envExtra = {}) {
   const dir = mkdtempSync(join(tmpdir(), "jarvis-tokens-cli-"));
   try {
     for (const [ide, texto] of Object.entries(envs)) {
       mkdirSync(join(dir, `.${ide}`), { recursive: true });
-      writeFileSync(join(dir, `.${ide}`, "ENV.md"), texto);
+      if (texto === null) mkdirSync(join(dir, `.${ide}`, "ENV.md"));
+      else writeFileSync(join(dir, `.${ide}`, "ENV.md"), texto);
     }
     const r = spawnSync("node", [cli, "tokens", "--json", ...args], {
       cwd: dir,
       encoding: "utf-8",
-      env: { ...ENV_LIMPO, NO_COLOR: "1" },
+      env: { ...ENV_LIMPO, NO_COLOR: "1", ...envExtra },
     });
     const report = r.status === 0 ? JSON.parse(r.stdout) : null;
     const rules = report
@@ -228,6 +230,36 @@ test("jarvis tokens: --ide inválida sai com 1", () => {
   const r = tokensNaPasta({ claude: AS_DUAS_LIGADAS }, ["--ide", "xpto"]);
   assert.equal(r.status, 1);
   assert.match(r.stderr, /IDE não suportada/);
+  assert.equal(r.stdout, "");
+});
+
+test("jarvis tokens: --ide válida sem o ENV.md dela sai com 1", () => {
+  const r = tokensNaPasta({ claude: AS_DUAS_LIGADAS }, ["--ide", "cursor"]);
+  assert.equal(r.status, 1);
+  assert.match(r.stderr, /não encontrado para --ide cursor/);
+  assert.equal(r.stdout, "");
+});
+
+test("jarvis tokens: JARVIS_ENV_FILE inexistente sai com 1 e cita a variável", () => {
+  const r = tokensNaPasta({}, [], { JARVIS_ENV_FILE: "nao-existe.md" });
+  assert.equal(r.status, 1);
+  assert.match(r.stderr, /JARVIS_ENV_FILE/);
+  assert.equal(r.stdout, "");
+});
+
+test("jarvis tokens: ENV.md ilegível (uma pasta com esse nome) sai com 1, com a mensagem e sem stack trace", () => {
+  const r = tokensNaPasta({ claude: null });
+  assert.equal(r.status, 1);
+  assert.match(r.stderr, /❌/);
+  assert.doesNotMatch(r.stderr, /node:fs|at loadEnv/);
+  assert.equal(r.stdout, "");
+});
+
+test("jarvis tokens: --env-file inexistente não mede", () => {
+  // No Node 22, quem recusa é o próprio Node, com saída 9, antes do CLI; num Node que não lê a
+  // opção depois do script, é o CLI, com saída 1. Nos dois casos, nada é medido.
+  const r = tokensNaPasta({}, ["--env-file", "nao-existe.md"]);
+  assert.notEqual(r.status, 0);
   assert.equal(r.stdout, "");
 });
 

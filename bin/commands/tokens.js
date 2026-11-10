@@ -6,9 +6,10 @@ import { logger } from "../lib/utils/logger.js";
 
 /**
  * O que muda a medida: ARTIFACT_STYLE e RTK. A flag manda; o que faltar vem do ENV.md, se houver.
- * Sem ENV.md, vale `ai-generated` e o RTK desligado (#263). Se não dá para escolher o ENV.md (dois
- * na mesma pasta, `--ide` inválida ou sem ENV.md, `--env-file` inexistente), sai com 1, como o
- * `jarvis rules sync`: medir com o padrão daria um número errado que parece certo.
+ * Sem ENV.md, vale `ai-generated` e o RTK desligado (#263). Se não dá para escolher ou ler o ENV.md
+ * (dois na mesma pasta, `--ide` inválida ou sem ENV.md, `JARVIS_ENV_FILE` inexistente, ENV.md
+ * ilegível), sai com 1, como o `jarvis rules sync`: medir com o padrão daria um número errado que
+ * parece certo.
  */
 function resolveProfile(flags) {
   const profile = {};
@@ -16,15 +17,14 @@ function resolveProfile(flags) {
   let rtkEnabled = flags.rtk === true || flags.rtk === "true";
   if (profile.ARTIFACT_STYLE && flags.rtk !== undefined) return { profile, rtkEnabled };
 
-  let envPath;
+  let env;
   try {
-    envPath = resolveEnvPath(process.cwd(), flags).path;
+    // Sem ENV.md, o resolveEnvPath devolve o caminho da raiz, que não existe, e o loadEnv devolve {}.
+    env = loadEnv(process.cwd(), resolveEnvPath(process.cwd(), flags).path);
   } catch (err) {
     logger.error(`${RED}❌ ${err.message}${NC}`);
     process.exit(1);
   }
-  // Sem ENV.md, o resolveEnvPath devolve o caminho da raiz, que não existe, e o loadEnv devolve {}.
-  const env = loadEnv(process.cwd(), envPath);
   if (!profile.ARTIFACT_STYLE && env.ARTIFACT_STYLE) profile.ARTIFACT_STYLE = env.ARTIFACT_STYLE;
   if (flags.rtk === undefined) rtkEnabled = env.RTK_ENABLED === "true";
   return { profile, rtkEnabled };

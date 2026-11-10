@@ -1037,21 +1037,55 @@ test("syncRulesForProfile: rule própria da pessoa (fora do core e do overlay) f
   });
 });
 
-test("syncRulesForProfile: fork do overlay num caminho que saiu do framework gera aviso e fica intacto (#263)", () => {
+test("syncRulesForProfile: fork do overlay ativo num caminho que saiu do framework avisa, só para o que é copiado (#263)", () => {
   withJarvisRoot((root, target) => {
     const ideDir = buildRulesFixture(root, target);
-    const antigo = "rules/engineering/frontend/eng.frontend-rules.md";
-    assert.ok(OBSOLETE_PATHS.includes(antigo), "o caminho antigo precisa estar no OBSOLETE_PATHS");
-    write(ideDir, `overlays/acme/${antigo}`, "# fork antigo\n");
+    const frontend = "rules/engineering/frontend/eng.frontend-rules.md";
+    const cypress = "rules-on-demand/engineering/qa/eng.qa.cypress-standards-rules.md";
+    for (const antigo of [frontend, cypress, "rules/engineering/rpa"])
+      assert.ok(OBSOLETE_PATHS.includes(antigo), `${antigo} precisa estar no OBSOLETE_PATHS`);
+    write(ideDir, `overlays/acme/${frontend}`, "# fork antigo\n");
+    write(ideDir, `overlays/acme/${cypress}`, "# fork do cypress\n");
+    // Rule própria da empresa numa pasta que saiu do framework: o aviso só pede para conferir.
+    write(ideDir, "overlays/acme/rules/engineering/rpa/acme-robos.md", "# robôs da acme\n");
     write(ideDir, "overlays/acme/rules/so-da-acme.md", "# só da acme\n");
+    write(ideDir, "overlays/outra/rules/product/prod.spec-rules.md", "# fork de outro perfil\n");
+    // Link para fora do overlay num caminho antigo: o applyRuleOverlay o ignora e ele não é copiado.
+    write(target, "fora.md", "# fora do overlay\n");
+    mkdirSync(join(ideDir, "overlays/acme/rules/product"), { recursive: true });
+    symlinkSync(
+      join(target, "fora.md"),
+      join(ideDir, "overlays/acme/rules/product/prod.spec-rules.md")
+    );
+
     const r = syncRulesForProfile(ideDir, {}, { frameworkRoot: root });
     const avisos = r.warnings.filter((w) => w.includes("saiu do framework"));
-    // Só o caminho antigo avisa; a rule da empresa num caminho atual, não.
-    assert.deepEqual(
-      avisos.map((w) => w.split(":")[0]),
-      [`overlays/acme/${antigo}`]
+    assert.deepEqual(avisos.map((w) => w.split(":")[0]).sort(), [
+      `overlays/acme/${cypress}`,
+      `overlays/acme/${frontend}`,
+      "overlays/acme/rules/engineering/rpa/acme-robos.md",
+    ]);
+    const naPasta = avisos.find((w) => w.includes("rpa/acme-robos.md"));
+    assert.match(naPasta, /numa pasta que saiu do framework \(rules\/engineering\/rpa\/\)/);
+    assert.doesNotMatch(naPasta, /apague/);
+    assert.equal(
+      readFileSync(join(ideDir, `overlays/acme/${frontend}`), "utf-8"),
+      "# fork antigo\n"
     );
-    assert.equal(readFileSync(join(ideDir, `overlays/acme/${antigo}`), "utf-8"), "# fork antigo\n");
+  });
+});
+
+test("syncRulesForProfile: com dryRun, avisa do fork em caminho antigo e não grava na IDE (#263)", () => {
+  withJarvisRoot((root, target) => {
+    const ideDir = buildRulesFixture(root, target);
+    const frontend = "rules/engineering/frontend/eng.frontend-rules.md";
+    write(ideDir, `overlays/acme/${frontend}`, "# fork antigo\n");
+    const r = syncRulesForProfile(ideDir, {}, { frameworkRoot: root, dryRun: true });
+    assert.ok(
+      r.warnings.some((w) => w.startsWith(`overlays/acme/${frontend}: fork num caminho`)),
+      r.warnings.join("\n")
+    );
+    assert.ok(!existsSync(join(ideDir, frontend)), "dryRun gravou na IDE");
   });
 });
 

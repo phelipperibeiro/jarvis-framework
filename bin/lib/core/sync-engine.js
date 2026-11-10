@@ -416,20 +416,6 @@ export function syncRulesForProfile(
     errors: overlayResult.errors,
   };
 
-  // Fork do overlay num caminho de rule que saiu do framework (OBSOLETE_PATHS), como as rules que
-  // foram para rules-on-demand/ na #263: ele entra como rule só da empresa e não vale onde o core
-  // está agora. Só avisa: quem grava no overlay é o /jarvis-fork.
-  if (overlayRoot) {
-    for (const obsolete of OBSOLETE_PATHS) {
-      const isRule = OVERLAY_RULE_DIRS.some((dir) => obsolete.startsWith(`${dir}/`));
-      if (isRule && existsSync(join(overlayDir, obsolete))) {
-        out.warnings.push(
-          `overlays/${companyProfile}/${obsolete}: fork num caminho que saiu do framework, copiado como rule só da empresa. Mova-o para o caminho novo ou apague-o (veja o CHANGELOG).`
-        );
-      }
-    }
-  }
-
   // No Kiro, a IDE carrega steering/ (cópia de rules/ feita pelo transformKiroAssets): o filtro
   // mantém o steering de cada rule junto com ela (#83).
   const kiro = basename(ideDir) === ".kiro";
@@ -448,6 +434,29 @@ export function syncRulesForProfile(
         } catch {
           // link quebrado: applyRuleOverlay já avisou; vale o core
         }
+      }
+    }
+    // Fork do overlay num caminho de rule que saiu do framework (OBSOLETE_PATHS), como as rules que
+    // foram para rules-on-demand/ na #263: ele entra como rule só da empresa e não vale onde o core
+    // está agora. Só os arquivos válidos do overlay (os que são copiados) avisam. Numa pasta que
+    // saiu do framework, a rule pode ser própria da empresa: o aviso só pede para conferir. Quem
+    // grava no overlay é o /jarvis-fork.
+    for (const rel of fromOverlay.keys()) {
+      const relPath = `${dir}/${rel.split(sep).join("/")}`;
+      const shown = `overlays/${companyProfile}/${relPath}`;
+      if (OBSOLETE_PATHS.includes(relPath)) {
+        out.warnings.push(
+          `${shown}: fork num caminho que saiu do framework, copiado como rule só da empresa. Mova-o para o caminho novo ou apague-o (veja o CHANGELOG).`
+        );
+        continue;
+      }
+      const folder = OBSOLETE_PATHS.map((p) => p.replace(/\/$/, "")).find((p) =>
+        relPath.startsWith(`${p}/`)
+      );
+      if (folder) {
+        out.warnings.push(
+          `${shown}: rule numa pasta que saiu do framework (${folder}/), copiada como rule só da empresa. Confira se ela ainda serve (veja o CHANGELOG).`
+        );
       }
     }
     const coreDir = join(frameworkRoot, dir);
