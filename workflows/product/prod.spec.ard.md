@@ -9,6 +9,8 @@ recommended_model: opus
 
 > 🎓 **Modo de condução**: leia `PROD_MODE` no `$IDE/ENV.md`. Se for `developer-guided`, **antes de começar leia `$IDE/rules-on-demand/product/prod.guided-rules.md` e siga-o** em toda a conversa. Vazio ou `product-led`: siga este fluxo como está.
 >
+> 📋 **Princípios de escrita**: antes de começar, leia `$IDE/rules-on-demand/product/prod.spec-rules.md` e siga-a.
+>
 > 🤖 **Modelo**: se a IDE informar o modelo desta sessão e ele for de outra família que o `recommended_model` do documento (ou do template, se o documento for novo), avise em uma linha e siga, sem bloquear e sem repetir. Sem essa informação, não avise.
 
 Antes de iniciar, revise o arquivo de regras invioláveis em `$PROD_RULES/**/*`. Se você não estiver familiarizado com essa variável, leia as regras diretamente na pasta `.$IDE/rules/product/**/*.*`.
@@ -39,7 +41,7 @@ Utilize o `$ARGUMENTS` que o usuário passar como ponto de partida e para entend
 
 ## Pré-requisitos e opcionais
 - **PRD ou FRD de origem (recomendado).** Procure em `$PROD_DOCS` e pergunte qual é a origem. Sem nenhum, avise que o ARD fica sem rastreabilidade e pergunte se o usuário quer seguir assim ou criar antes o PRD (`prod.spec.prd`) ou o FRD (`prod.spec.frd`).
-- **Discovery (opcional).** Se o usuário apontar um discovery (por exemplo `discovery-002`), siga o princípio "Discovery como insumo" de `$PROD_RULES/prod.spec-rules.md`: leia-o como contexto e repasse tudo com o usuário antes de usar. Sem discovery apontado, não procure nem pergunte.
+- **Discovery (opcional).** Se o usuário apontar um discovery (por exemplo `discovery-002`), siga o princípio "Discovery como insumo" de `$IDE/rules-on-demand/product/prod.spec-rules.md`: leia-o como contexto e repasse tudo com o usuário antes de usar. Sem discovery apontado, não procure nem pergunte.
 - Nome do ARD (título e slug em kebab-case): pergunte se não vier em `$ARGUMENTS`.
 
 ### Skills invocados durante o workflow
@@ -47,7 +49,7 @@ Utilize o `$ARGUMENTS` que o usuário passar como ponto de partida e para entend
 | Passo | Skill | Condição |
 |-------|-------|----------|
 | Gate 1: Reconhecer o contexto | `/jarvis-docs-central` (via `jarvis docs sync --silent`) | Se `CENTRAL_DOCS_STORAGE` estiver definido no ENV.md e for preciso conhecer as funcionalidades já implementadas relacionadas |
-| Gate 4: Conduzir o ARD | `/eng.create-ard` | Sempre, depois de os requisitos serem confirmados: modo `new`, com `--prd` quando houver PRD (workflow de engenharia; o aviso de transição de domínio é dado antes) |
+| Gate 4: Conduzir o ARD | `/eng.create-ard` | Sempre, depois de os requisitos serem confirmados: modo `new`, com `--prd` quando houver PRD (workflow de engenharia; o aviso do passo 1 do Gate 4 é dado antes) |
 
 ## Resultado final
 - Um **resumo dos requisitos arquiteturais** confirmado pelo usuário (Gate 3), entregue como insumo ao `eng.create-ard`
@@ -59,14 +61,14 @@ Utilize o `$ARGUMENTS` que o usuário passar como ponto de partida e para entend
 - **Não invente.** O que o PM não souber fica registrado como "a validar pela engenharia", e não como fato.
 - **Termos de produto, não de tecnologia.** Pergunte pelo que a solução precisa atender (por exemplo, "quantos usuários simultâneos no pico?"), e não por qual banco ou framework usar.
 - **Uma pergunta por vez.** Siga o formato de perguntas de `prod-rules.md` (`AskUserQuestion` quando existir; tabela com alternativas quando não).
-- **Terminologia consistente** com a do PRD e do FRD de origem (ver `$PROD_RULES/prod.spec-rules.md`).
+- **Terminologia consistente** com a do PRD e do FRD de origem (ver `$IDE/rules-on-demand/product/prod.spec-rules.md`).
 
 ## Etapas de execução
 
 ### Gate 1: Reconhecer o contexto
 1. Valide o `ENV.md` (regra geral de produto) e avise que o ARD é um documento de engenharia.
 2. Identifique o PRD ou FRD de origem em `$PROD_DOCS` (ou o caminho que o usuário informar) e leia-o. Se `CENTRAL_DOCS_STORAGE` estiver definido, consulte também no Central docs as funcionalidades já implementadas relacionadas (o PRD e o FRD ficam em `$PROD_DOCS`).
-3. Resuma em poucas linhas o que a especificação pede e confirme com o usuário que é essa a origem. Se `AREA` do usuário não for `ENGINEERING`, avise que o ARD seguirá o fluxo de engenharia e deve ser revisado por alguém da engenharia.
+3. Resuma em poucas linhas o que a especificação pede e confirme com o usuário que é essa a origem. Com `PROD_MODE` vazia ou `product-led`, avise que o ARD seguirá o fluxo de engenharia e deve ser revisado por alguém da engenharia.
 
 ### Gate 2: Levantar os requisitos arquiteturais em termos de produto
 Pergunte, **uma por vez**, só o que a especificação não responde (pule o que o PRD ou FRD já traz, confirmando):

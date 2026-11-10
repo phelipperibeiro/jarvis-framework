@@ -53,7 +53,7 @@ function buildCore(root) {
     "---\nname: eng-global-pr\ndescription: PR\nlicense: AGPL-3.0\n---\n# pr\n"
   );
   write(root, "skills/eng-global-pr/references/1.md", "# ref");
-  write(root, "rules/engineering/eng-rules.md", "> **Applies to:** HUB: all\n\n# core rules\n");
+  write(root, "rules/engineering/eng-rules.md", "# core rules\n");
   write(root, "rules-on-demand/engineering/eng.pr-rules.md", "# pr rules do core\n");
   write(root, "templates/pull-request.md", "# PR template, sem frontmatter\n");
 }
@@ -69,11 +69,7 @@ async function withFixture(profileLine, fn) {
     buildCore(root);
     write(ws, ".claude/ENV.md", `WORKSPACE=ws\n${profileLine}\n`);
     // cópias do core na IDE, como depois de um jarvis init
-    write(
-      ws,
-      ".claude/rules/engineering/eng-rules.md",
-      "> **Applies to:** HUB: all\n\n# core rules\n"
-    );
+    write(ws, ".claude/rules/engineering/eng-rules.md", "# core rules\n");
     write(ws, ".claude/rules-on-demand/engineering/eng.pr-rules.md", "# pr rules do core\n");
     const envFile = join(ws, ".claude/ENV.md");
     const run = (args, extra = {}) => fork({ _: args, "env-file": envFile, ...extra });
@@ -169,7 +165,7 @@ test("fork: rule e rule-on-demand são recopiadas na IDE na hora, com a marcaç�
     const ide = readFileSync(join(ws, ".claude/rules/engineering/eng-rules.md"), "utf-8");
     assert.match(
       ide,
-      /^---\nforked_from: rules\/engineering\/eng-rules\.md@9\.9\.9\nforked_at: .*\n---\n\n> Overlay: acme \(forked_from rules\/engineering\/eng-rules\.md@9\.9\.9\)\n\n> \*\*Applies to:\*\* HUB: all\n\n# core rules\n$/
+      /^---\nforked_from: rules\/engineering\/eng-rules\.md@9\.9\.9\nforked_at: .*\n---\n\n> Overlay: acme \(forked_from rules\/engineering\/eng-rules\.md@9\.9\.9\)\n\n# core rules\n$/
     );
     assert.equal(await run(["rules-on-demand/engineering/eng.pr-rules.md"]), 0);
     assert.match(
@@ -183,7 +179,7 @@ test("fork: rule e rule-on-demand são recopiadas na IDE na hora, com a marcaç�
     );
     assert.equal(
       readFileSync(join(root, "rules/engineering/eng-rules.md"), "utf-8"),
-      "> **Applies to:** HUB: all\n\n# core rules\n"
+      "# core rules\n"
     );
   });
 });
@@ -303,7 +299,7 @@ test("fork --delete: remove skill e workflow do overlay; rule volta à versão d
     assert.ok(!existsSync(join(ws, ".claude/overlays/acme/rules/engineering/eng-rules.md")));
     assert.equal(
       readFileSync(join(ws, ".claude/rules/engineering/eng-rules.md"), "utf-8"),
-      "> **Applies to:** HUB: all\n\n# core rules\n"
+      "# core rules\n"
     );
     assert.deepEqual(listOverlay(join(ws, ".claude/overlays/acme")), []);
   });

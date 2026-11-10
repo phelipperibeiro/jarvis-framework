@@ -117,24 +117,22 @@ test("OpenCode: model dos agents, dos comandos e do opencode.json na família Cl
   }
 });
 
-test("rules reais: o Applies to vem na 1ª linha ou logo depois do frontmatter (#83)", () => {
+test("rules reais: nenhuma rule tem a linha Applies to, que o CLI não lê mais (#263)", () => {
   const raiz = join(dirname(fileURLToPath(import.meta.url)), "..");
-  const fora = [];
+  const com = [];
   const visitar = (dir) => {
     for (const e of readdirSync(dir, { withFileTypes: true })) {
       const caminho = join(dir, e.name);
       if (e.isDirectory()) visitar(caminho);
-      else if (e.name.endsWith(".md") && !["AGENTS.md", "README.md"].includes(e.name)) {
+      else if (e.name.endsWith(".md")) {
         const texto = readFileSync(caminho, "utf-8");
-        const fm = texto.match(/^---\n[\s\S]*?\n---\n/);
-        const corpo = (fm ? texto.slice(fm[0].length) : texto).replace(/^\n+/, "");
-        if (!corpo.startsWith("> **Applies to:**")) fora.push(caminho.slice(raiz.length + 1));
+        if (/^> \*\*Applies to:\*\*/m.test(texto)) com.push(caminho.slice(raiz.length + 1));
       }
     }
   };
   visitar(join(raiz, "rules"));
   visitar(join(raiz, "rules-on-demand"));
-  assert.deepEqual(fora, []);
+  assert.deepEqual(com, []);
 });
 
 test("readDescription: indicadores de bloco e aspas escapadas (#83)", () => {

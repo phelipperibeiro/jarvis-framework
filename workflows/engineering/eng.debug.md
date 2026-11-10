@@ -50,16 +50,15 @@ O que o usuário tem: chave ou URL do card, mensagem de erro, stack trace, uma d
 ## Passo 1 – Contexto
 
 1. **CDD:** com `ENABLE_CDD=true`, leia o `CONTEXT_PROFILE` de `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/context.md`; sem o arquivo, rode `/jarvis-context-detect {TASK_MANAGER_KEY}`. A urgência define o orçamento de etapas (skill).
-2. **Comunicação por POSITION** (do ENV.md):
+2. **Comunicação pela senioridade da área** (do `context.md`):
 
-| Categoria | POSITION | Comportamento |
-|-----------|----------|---------------|
-| Técnico júnior | `junior`, `pleno` | Explicar as hipóteses em detalhe, sugerir leituras |
-| Técnico sênior | `senior`, `specialist` | Direto, foco nas evidências críticas |
-| Generalista | `generalist` | Direto; consultar só em trade-offs críticos |
-| Liderança | `tech-lead`, `staff`, `pm`, `tpm`, `gpm`, `cto`, `principal` | Incluir impacto no negócio e comunicação para stakeholders |
+| Senioridade | Comportamento |
+|-------------|---------------|
+| `junior` | Explicar cada hipótese e o caminho até ela |
+| `pleno` | Explicar as hipóteses que não são óbvias |
+| `senior` | Direto: hipóteses principais e evidências críticas |
 
-> Sem POSITION ou com valor desconhecido: comportamento de `pleno`.
+> Mais de uma área: a menor senioridade; sem valor: `SENIORITY`; sem `SENIORITY`: `pleno`. O método, o orçamento de etapas e o relatório não mudam.
 
 3. **Especializações:** identificada a área do bug ou do escopo (backend, frontend, data, automation, platform), aplique `eng.specializations-rules.md`: skill base da área + a lista `{ÁREA}_SPECIALIZATIONS`.
 

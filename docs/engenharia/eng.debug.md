@@ -39,7 +39,6 @@ Tenho um problema
 ├── É bug do próprio Jarvis? ──────────────► /jarvis-report-issue
 ├── O bug ainda não está descrito (produto)? ► /prod.spec.issue (tipo Bug)
 ├── Bug, sintoma ou quero varrer código? ───► /eng.debug {card | erro | escopo}
-├── Teste flaky do Cypress? ────────────────► agente eng.qa.testing-engineer
 └── Robô RPA quebrou? ──────────────────────► /eng.rpa.robot (manutenção)
 ```
 

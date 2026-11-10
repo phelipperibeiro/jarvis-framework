@@ -97,7 +97,7 @@ Mesmos passos 2 e 3 do [Get Started](#get-started) acima — `jarvis init --ide 
 
 ```bash
 npm install -g jarvis-ai-framework@latest
-jarvis init --upgrade --ide {ide}   # confere os caminhos do ENV.md (para sem alterar nada se sobrar $ sem valor) + assets + variáveis novas do ENV.md + documentos para as pastas novas + rules filtradas pelo perfil
+jarvis init --upgrade --ide {ide}   # confere os caminhos do ENV.md (para sem alterar nada se sobrar $ sem valor) + assets + variáveis novas do ENV.md + documentos para as pastas novas + rules sincronizadas
 ```
 
 `jarvis init --ide {ide}` numa pasta já instalada mostra o menu **Atualizar** (Enter, o mesmo que o `--upgrade`) / **Reinstalar** (o mesmo que o `--force`) / **Cancelar**, com a versão instalada e a do pacote. No fim, ele manda rodar o `/jarvis-init upgrade` quando há pendência da IDE e o `/jarvis-init repos` quando há repositório (subpasta com `.git`) fora do mapa `CDD-MIND-MAP.md`; sem nenhuma das duas, diz que não há nada pendente.
@@ -191,7 +191,19 @@ O `/jarvis-init` pergunta o `ARTIFACT_STYLE` (variável do `ENV.md`):
 | `ai-generated` (padrão) | Como sempre: metadados, links de rastreabilidade e padrões da ferramenta |
 | `human-generated` | Nada do que o Jarvis publica (commit, PR/MR, comentário no card, issue; sempre depois da pergunta) leva marca de IA ou da IDE: o `/eng.pr` confere e limpa antes do push. Todo documento gerado pergunta, no fim, se você quer a versão humanizada, gravada ao lado como `{nome}.public.md` para repassar a clientes ou stakeholders |
 
-Com `human-generated`, o `/jarvis-init` copia a rule `rules/artifact-style-rules.md` (eixo `ARTIFACT_STYLE` do `Applies to`); com `ai-generated`, ela nem existe na sessão. Trocou o valor à mão? Rode `/jarvis-init upgrade`.
+Com `human-generated`, o `/jarvis-init` copia a rule `rules/artifact-style-rules.md`; com `ai-generated`, ela nem existe na sessão. Trocou o valor à mão? Rode `/jarvis-init upgrade`.
+
+## Senioridade por assunto
+
+O `/jarvis-init` pergunta a sua senioridade padrão (`SENIORITY`) e, se você quiser, uma diferente por área (`BACKEND_SENIORITY`, `FRONTEND_SENIORITY`, `QA_SENIORITY`, `DATA_SENIORITY`, `AUTOMATION_SENIORITY` e `PLATFORM_SENIORITY`; vazia = igual à padrão). A senioridade da área da tarefa calibra só a conversa:
+
+| Valor | Como o Jarvis conversa |
+|---|---|
+| `junior` | Didático: explica o porquê, define termos, traz exemplos e confirma o entendimento com mais frequência |
+| `pleno` | Equilibrado: explica só o que não é óbvio |
+| `senior` | Direto: trade-offs e riscos, sem fundamentos |
+
+A área vem do card e da sua mensagem; com mais de uma área, vale a menor senioridade. Ela não libera nem bloqueia comando, não muda o `MAX_AI_EXECUTION_PERCENTAGE` nem as rules carregadas. Para outro tom numa tarefa: `/jarvis-context-detect --override comunicacao=direto` (ou `didático`, `equilibrado`).
 
 ## Funciona com qualquer stack
 
@@ -225,7 +237,7 @@ O Jarvis e organizado em 5 camadas.
 | **Agents** | Agentes especializados de IA para engenharia, QA e produto |
 | **Skills** | Playbooks executaveis com logica autonoma |
 | **Templates** | Modelos de documentos (ARD, RFC, Tech Spec, PRD, Epic) |
-| **Rules** | Regras de dominio filtradas por perfil (HUB, POSITION, AREA, SQUAD) no `/jarvis-init` |
+| **Rules** | Regras de dominio carregadas no inicio da sessao, iguais para todos; as de uma etapa ou area ficam em `rules-on-demand/` |
 | **Workflows** | Fluxos de execucao dos comandos slash |
 
 ---

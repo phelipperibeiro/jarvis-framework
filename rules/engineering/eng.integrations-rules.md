@@ -1,5 +1,3 @@
-> **Applies to:** HUB: all | POSITION: all | AREA: all | SQUAD: all
-
 # Integrações — vendors via ENV
 
 O Jarvis não assume Jira ou GitLab. Leia `$IDE/ENV.md` e siga a cadeia de execução abaixo. Board e git usam **só a CLI oficial** do vendor, com o login dela; nenhum token passa pelo Jarvis.

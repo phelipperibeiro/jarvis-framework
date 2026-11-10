@@ -1,5 +1,3 @@
-> **Applies to:** HUB: all | POSITION: all | AREA: ENGINEERING | SQUAD: all
-
 # Regras de Seguranca para Engenharia
 
 Regras de seguranca aplicaveis a todo o fluxo de engenharia — do planejamento ao merge.
@@ -109,19 +107,6 @@ Usar `jarvis-context-detect` para calibrar a profundidade da analise de seguranc
 
 O peso do token fica em subagentes isolados — janela da sessao principal nao lota.
 PR comum sem risco identificado = zero token extra (so as rules, que ja ficam carregadas).
-
----
-
-## Escalacao por POSITION
-
-As regras acima se aplicam a TODOS os engenheiros. A responsabilidade escala com o cargo:
-
-| POSITION | Responsabilidade adicional |
-|----------|---------------------------|
-| JUNIOR, PLENO | Seguir as regras. Em duvida de seguranca, consultar senior/TL — nao bloqueia a entrega se o risco for registrado |
-| SENIOR, SPECIALIST | Seguir + revisar seguranca de PRs do squad quando solicitado |
-| TECH LEAD, HEAD | Seguir + garantir que o gate de seguranca do `eng.pre-pr` foi seguido em PRs com label `security`. Decidir se escala incidente |
-| CTO | Seguir + visao de compliance (LGPD/GDPR) e risco organizacional. Aprovar excecoes de seguranca |
 
 ---
 

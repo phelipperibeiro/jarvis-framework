@@ -10,8 +10,7 @@ import { DEFAULT_COMPANY_PROFILE } from "../bin/lib/core/company-profile.js";
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const rule = readFileSync(join(root, "rules", "company-overlay-rules.md"), "utf-8");
 
-test("company-overlay-rules: universal, abaixo de 1 KB e com o default do perfil", () => {
-  assert.match(rule, /> \*\*Applies to:\*\* HUB: all \| POSITION: all \| AREA: all \| SQUAD: all/);
+test("company-overlay-rules: abaixo de 1 KB e com o default do perfil", () => {
   assert.ok(Buffer.byteLength(rule, "utf-8") < 1024, "a rule passou de 1 KB");
   assert.ok(rule.includes(DEFAULT_COMPANY_PROFILE), "não cita o perfil default");
 });

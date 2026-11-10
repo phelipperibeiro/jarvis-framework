@@ -1,11 +1,9 @@
 ---
 description: >
-  Padrões obrigatórios para devs com HUB: FRONTEND, neutros de stack — componentes,
+  Padrões obrigatórios de frontend, neutros de stack — componentes,
   tipagem, acessibilidade, performance, testes, arquiteturas distribuídas e tokens de design.
   O que depende da stack vem das especializações registradas em FRONTEND_SPECIALIZATIONS.
 ---
-
-> **Applies to:** HUB: FRONTEND | POSITION: all | AREA: ENGINEERING | SQUAD: all
 
 # Regras de Engenharia Frontend
 

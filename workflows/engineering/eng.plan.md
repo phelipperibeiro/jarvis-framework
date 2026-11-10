@@ -82,7 +82,7 @@ CONTEXT_PROFILE:
   tipo: [hotfix|bugfix|feature|refactor]
   urgencia: [normal|alta|baixa]
   rigor: [mínimo|padrão|alto]
-  comunicacao: [didático|direto|estratégico]
+  comunicacao: [didático|equilibrado|direto]
   autonomia: [baixa|média|alta]
 ```
 
@@ -97,13 +97,17 @@ CONTEXT_PROFILE:
 | `feature` | Fases completas (~1h cada), todas as validações |
 | `refactor` | Fase 0 obrigatória de testes antes de qualquer mudança |
 
-#### 0.3 Granularidade por POSITION
+#### 0.3 Granularidade por senioridade da área
 
-| POSITION | Granularidade do Plano |
-|----------|------------------------|
-| `junior`, `pleno` | Mais detalhado, passos menores, mais checkpoints |
-| `senior`, `staff` | Fases maiores, menos micro-gerenciamento |
-| `tech-lead` | Visão estratégica, delegar detalhes |
+Pela senioridade da área registrada no `context.md` (`jarvis-context-detect`):
+
+| Senioridade | Detalhe de cada tarefa |
+|-------------|------------------------|
+| `junior` | Em "Como fazer", passos menores, cada um com o porquê; define os termos e aponta o arquivo ou exemplo a seguir |
+| `pleno` | Os campos do template, sem texto extra; explica só o que não é óbvio |
+| `senior` | "Como fazer" enxuto; destaca decisões, trade-offs e riscos, sem fundamentos |
+
+> Muda só o texto dentro de cada tarefa. O número de fases e de tarefas, o limite de ~1h por fase, os testes de cada fase, as aprovações e o cálculo do `MAX_AI_EXECUTION_PERCENTAGE` são os mesmos nos três níveis.
 
 #### 0.4 Autonomia por MAX_AI_EXECUTION_PERCENTAGE
 

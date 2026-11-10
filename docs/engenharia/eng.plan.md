@@ -48,7 +48,7 @@ Todos os status começam como não iniciados (⏳). Ao longo do `eng.work` eles 
 | `feature` | Fases completas, todas as validações |
 | `refactor` | Fase 0 obrigatória de testes antes de qualquer mudança |
 
-Por cargo: `JUNIOR`/`PLENO` recebem mais detalhe e mais checkpoints; `SENIOR` e acima, fases maiores.
+Pela senioridade da área da tarefa (`SENIORITY` e as chaves por área do `ENV.md`): com `junior`, cada tarefa tem passos menores, cada um com o porquê; com `pleno`, os campos do template, explicando só o que não é óbvio; com `senior`, um "Como fazer" enxuto, com decisões, trade-offs e riscos. Muda só o texto de cada tarefa: o número de fases, o limite de ~1h por fase, os testes, as aprovações e o `MAX_AI_EXECUTION_PERCENTAGE` são os mesmos.
 Por `MAX_AI_EXECUTION_PERCENTAGE`: de 80% para cima, plano completo validado no final; de 70 a 79%, primeiro um resumo e o detalhe depois da aprovação; de 60 a 69%, cada fase é aprovada antes de ser detalhada.
 
 ## Perguntas que ele faz

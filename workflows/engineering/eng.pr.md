@@ -282,7 +282,7 @@ Pular a 5.1 se `TASK_MANAGER` estiver vazio (freelance); a 5.2 registra o link d
 
 ### 5.1 Mover Card
 
-Oriente a pessoa a mover o card para a etapa equivalente a "em revisão" no board (o Jarvis não move card). Quem assumiu o card o move; não é preciso esperar o TECH LEAD ou o PM.
+Oriente a pessoa a mover o card para a etapa equivalente a "em revisão" no board (o Jarvis não move card). Quem assumiu o card o move; ninguém precisa liberar a transição.
 
 ### 5.2 Link do MR no card
 

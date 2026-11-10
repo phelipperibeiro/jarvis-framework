@@ -14,7 +14,7 @@ metadata:
 
 # eng-global-tech-spec
 
-Método para escrever especificações técnicas no Jarvis. O `/eng.build-tech-spec` faz o gate de cargo, a triagem de modo e a carga das especializações; esta skill traz o "como" de cada modo e as regras que valem nos dois.
+Método para escrever especificações técnicas no Jarvis. O `/eng.build-tech-spec` faz a triagem de modo e a carga das especializações; esta skill traz o "como" de cada modo e as regras que valem nos dois.
 
 ## Modos
 

@@ -1,60 +1,39 @@
 import { buildReport } from "../lib/core/token-report.js";
 import { resolveEnvPath, loadEnv } from "../lib/env-loader.js";
 import { getFrameworkRoot } from "../lib/utils/paths.js";
-import { showBanner, RED, GREEN, BLUE, YELLOW, CYAN, DIM, NC } from "../lib/utils/ui.js";
+import { showBanner, RED, GREEN, BLUE, CYAN, DIM, NC } from "../lib/utils/ui.js";
 import { logger } from "../lib/utils/logger.js";
 
-const AXES = ["HUB", "POSITION", "AREA", "SQUAD"];
-
 /**
- * Perfil: as flags (`--hub` etc.) mandam; o que faltar vem do ENV.md.
- * ARTIFACT_STYLE é opcional (vazio = ai-generated) e não entra em `missing`.
+ * O que muda a medida: ARTIFACT_STYLE e RTK. A flag manda; o que faltar vem do ENV.md, se houver.
+ * Sem ENV.md, vale `ai-generated` e o RTK desligado (#263). Se não dá para escolher ou ler o ENV.md
+ * (dois na mesma pasta, `--ide` inválida ou sem ENV.md, `JARVIS_ENV_FILE` inexistente, ENV.md
+ * ilegível), sai com 1, como o `jarvis rules sync`: medir com o padrão daria um número errado que
+ * parece certo.
  */
 function resolveProfile(flags) {
   const profile = {};
-  for (const axis of AXES) {
-    const value = flags[axis.toLowerCase()];
-    if (typeof value === "string") profile[axis] = value;
-  }
   if (typeof flags.artifactStyle === "string") profile.ARTIFACT_STYLE = flags.artifactStyle;
-
   let rtkEnabled = flags.rtk === true || flags.rtk === "true";
-  // O ENV.md só entra quando falta algum eixo; com os 4 eixos nas flags, o RTK e o estilo vêm só das flags.
-  if (AXES.some((axis) => !profile[axis])) {
-    try {
-      const { path } = resolveEnvPath(process.cwd(), flags);
-      const env = loadEnv(process.cwd(), path);
-      for (const axis of AXES) {
-        if (!profile[axis] && env[axis]) profile[axis] = env[axis];
-      }
-      if (!profile.ARTIFACT_STYLE && env.ARTIFACT_STYLE)
-        profile.ARTIFACT_STYLE = env.ARTIFACT_STYLE;
-      if (flags.rtk === undefined) rtkEnabled = env.RTK_ENABLED === "true";
-    } catch {
-      // sem ENV.md: valem só as flags
-    }
-  }
+  if (profile.ARTIFACT_STYLE && flags.rtk !== undefined) return { profile, rtkEnabled };
 
-  const missing = AXES.filter((axis) => !profile[axis]);
-  return { profile, rtkEnabled, missing };
+  let env;
+  try {
+    // Sem ENV.md, o resolveEnvPath devolve o caminho da raiz, que não existe, e o loadEnv devolve {}.
+    env = loadEnv(process.cwd(), resolveEnvPath(process.cwd(), flags).path);
+  } catch (err) {
+    logger.error(`${RED}❌ ${err.message}${NC}`);
+    process.exit(1);
+  }
+  if (!profile.ARTIFACT_STYLE && env.ARTIFACT_STYLE) profile.ARTIFACT_STYLE = env.ARTIFACT_STYLE;
+  if (flags.rtk === undefined) rtkEnabled = env.RTK_ENABLED === "true";
+  return { profile, rtkEnabled };
 }
 
 const kb = (bytes) => (bytes / 1000).toFixed(1);
 
 export async function tokens(flags) {
-  const { profile, rtkEnabled, missing } = resolveProfile(flags);
-
-  if (missing.length > 0) {
-    logger.error(`${RED}❌ Perfil incompleto: faltam ${missing.join(", ")}${NC}`);
-    logger.info(
-      `${YELLOW}Uso: jarvis tokens [--hub X --position Y --area Z --squad W] [--rtk] [--json]${NC}`
-    );
-    logger.info(
-      `${DIM}Sem flags, o perfil vem do ENV.md do workspace (use --ide <ide> se houver mais de um).${NC}\n`
-    );
-    process.exit(1);
-  }
-
+  const { profile, rtkEnabled } = resolveProfile(flags);
   const report = buildReport(getFrameworkRoot(), profile, { rtkEnabled });
 
   if (flags.json) {
@@ -65,8 +44,7 @@ export async function tokens(flags) {
   showBanner();
   logger.info(`${CYAN}📏 Custo estimado no início da sessão${NC}`);
   logger.info(
-    `${DIM}Perfil: HUB=${profile.HUB} | POSITION=${profile.POSITION} | AREA=${profile.AREA} | SQUAD=${profile.SQUAD} | ARTIFACT_STYLE=${profile.ARTIFACT_STYLE || "ai-generated"}` +
-      ` | RTK=${rtkEnabled ? "ligado" : "desligado"}${NC}`
+    `${DIM}ARTIFACT_STYLE=${report.profile.ARTIFACT_STYLE} | RTK=${rtkEnabled ? "ligado" : "desligado"}${NC}`
   );
   logger.info(`${DIM}${report.estimate}${NC}`);
   logger.info("");

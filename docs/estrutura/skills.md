@@ -12,7 +12,7 @@ Quando o usuário digita `/jarvis-init` ou “use eng-backend”, a IDE carrega 
 skills/
 ├── AGENTS.md
 ├── jarvis-init/              # onboarding + ENV.md
-├── jarvis-context-detect/
+├── jarvis-context-detect/     # perfil da tarefa (tipo, rigor, autonomia e o tom pela senioridade da área)
 ├── jarvis-docs-central/              # sync/publish docs centrais
 ├── eng-backend/, eng-frontend/, eng-backend-nestjs/, …
 ├── eng-global-pr/, eng-global-docs-write/, eng-global-task-comment/, eng-global-branch/

@@ -54,13 +54,15 @@ Use o `CONTEXT_PROFILE` de `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/context.md` (ge
 | `novo robô`, `criar`, `implementar`, `atualizar`, `manter` | **Execução** | Fluxo completo via `/eng.rpa.robot new|update {card}` |
 | `entender`, `analisar`, `investigar` | **Consultivo** | Não executar código, apresentar opções e riscos |
 
-### Ajuste por POSITION
+### Ajuste pela senioridade da área
 
-| Categoria | POSITION | comunicacao |
-|-----------|----------|-------------|
-| Técnico | `junior`, `pleno` | `didático` — explicar por que cada seletor, o que é anti-bot, como funciona retry |
-| Sênior/Specialist | `senior`, `specialist` | `direto` — focar em trade-offs e riscos |
-| Liderança | `tech-lead` | `estratégico` — impacto no squad, manutenibilidade, custo de manutenção |
+| Senioridade | comunicacao |
+|-------------|-------------|
+| `junior` | `didático` — explicar por que cada seletor, o que é anti-bot, como funciona retry |
+| `pleno` | `equilibrado` — explicar só o que não é óbvio |
+| `senior` | `direto` — focar em trade-offs e riscos |
+
+> Mais de uma área: a menor senioridade; sem valor: `SENIORITY`; sem `SENIORITY`: `pleno`.
 
 ---
 

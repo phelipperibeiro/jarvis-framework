@@ -4,7 +4,7 @@
 
  Project Overview
 
-{WORKSPACE} é o workspace da área {AREA} do hub {HUB}, mantido pelo squad {SQUAD}.
+{WORKSPACE} é o workspace mantido pelo squad {SQUAD}.
 
 {PROJECT_DESCRIPTION}
 

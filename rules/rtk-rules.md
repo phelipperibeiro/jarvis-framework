@@ -1,5 +1,3 @@
-> **Applies to:** HUB: all | POSITION: all | AREA: all | SQUAD: all
-
 # RTK — Token-Efficient Bash Commands
 
 Quando `RTK_ENABLED=true` no ENV.md, use o prefixo `rtk` em chamadas Bash para reduzir

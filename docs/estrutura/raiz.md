@@ -85,9 +85,6 @@ Seções:
 | Seção     | Exemplos neste fork                                         |
 | --------- | ----------------------------------------------------------- |
 | Squads    | `CORE`                                                      |
-| Hubs      | `AI`, `FRONTEND`, `BACKEND`, `QA`, `DATA`, `FULLCYCLE`      |
-| Positions | `JUNIOR` … `CTO`, `QA-ENGINEER`, `GENERALIST`, … |
-| Areas     | `ENGINEERING`, `PRODUCT`                                    |
 | Domain    | e-mail corporativo (opcional; fork sem domínio obrigatório) |
 
 Cada opção é um heading `### NOME`. O init valida respostas contra essa lista.

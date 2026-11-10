@@ -1,5 +1,3 @@
-> **Applies to:** HUB: all | POSITION: all | AREA: PRODUCT | SQUAD: all
-
 # Regras de Escrita de Especificação de Produto
 
 ## Objetivo
@@ -8,7 +6,7 @@ Definir os princípios que todo documento de especificação de produto (PRD, FR
 
 ## Escopo
 
-Aplica-se a todos os comandos `prod.spec.*` que escrevem ou alteram um documento. Complementa o `prod-rules.md` (variáveis de ambiente, comandos, nomes de arquivos, status e perguntas ao usuário), que continua sendo a regra geral de produto.
+Aplica-se a todos os comandos `prod.spec.*` que escrevem ou alteram um documento. Complementa o `rules/product/prod-rules.md` (variáveis de ambiente, comandos, nomes de arquivos, status e perguntas ao usuário), que continua sendo a regra geral de produto.
 
 ## Regras
 
@@ -181,7 +179,7 @@ Quando o usuário pedir explicitamente outro formato ou nível de detalhe para u
 
 ## Referências
 
-- `prod-rules.md`: regras gerais de produto (ambiente, comandos, nomes de arquivos, status e perguntas ao usuário)
+- `rules/product/prod-rules.md`: regras gerais de produto (ambiente, comandos, nomes de arquivos, status e perguntas ao usuário)
 - `../../templates/product/`: templates dos documentos
 - `../../workflows/product/`: os comandos `prod.spec.*`
 - `../../rules-on-demand/product/prod.spec-common-rules.md`: princípios, busca de contexto e Central docs dos comandos `prod.spec.*` (lida pelo próprio comando)

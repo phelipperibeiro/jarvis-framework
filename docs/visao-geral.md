@@ -24,10 +24,10 @@ Ele **não é um aplicativo** com tela ou API de negócio. É um kit versionado 
 | [agents/](./estrutura/agents.md) | Personas (como a IA se comporta) |
 | [skills/](./estrutura/skills.md) | Playbooks (o que fazer, passo a passo) |
 | [workflows/](./estrutura/workflows.md) | Comandos slash / fases do processo |
-| [rules/](./estrutura/rules.md) | Guardrails filtrados por perfil |
+| [rules/](./estrutura/rules.md) | Guardrails, iguais para todos |
 | [templates/](./estrutura/templates.md) | Modelos de ENV e documentos |
 | [bin/](./estrutura/bin.md) | CLI `jarvis` (init, list, RTK, docs…) |
-| [taxonomy.md](./estrutura/raiz.md#taxonomymd) | Opções válidas de org (squad/hub/…) |
+| [taxonomy.md](./estrutura/raiz.md#taxonomymd) | Opções válidas de squad e o domínio de e-mail |
 
 A proposta: a IDE (Cursor, Claude, Windsurf, Codex, …) deixa de improvisar a cada chat e passa a operar com **processo, papel e contexto do workspace**.
 
@@ -46,8 +46,8 @@ Com Jarvis, o contexto vive em arquivos (`ENV.md`, taxonomy, sessions, skills) e
 
 - Dev solo / freelance (`TASK_MANAGER` vazio)
 - Squads com board (Jira, GitHub Issues, GitLab Issues)
-- Hubs AI, Frontend, Backend, QA, Data
-- Qualquer `POSITION` pode fechar o card ponta a ponta (TL/PM apoiam; não são gate no init)
+- Áreas: backend, frontend, QA, dados, automação e plataforma
+- Qualquer pessoa pode fechar o card ponta a ponta; quem apoia e revisa não é gate
 
 ---
 
@@ -108,8 +108,8 @@ jarvis/
            │ no chat: /jarvis-init
            ▼
 ┌──────────────────────┐
-│  .cursor/ENV.md      │  perfil (USER, SQUAD, HUB, vendors, RTK…)
-│  rules filtradas     │  só o que aplica ao perfil
+│  .cursor/ENV.md      │  USER, SQUAD, senioridade, vendors, RTK…
+│  rules sincronizadas │  com as duas exceções pelo ENV.md
 └──────────────────────┘
 ```
 
@@ -141,7 +141,7 @@ A stack vem do código; o **processo** (de onde nasce a branch, como se entrega,
 
 ### Taxonomia
 
-[taxonomy.md](./estrutura/raiz.md#taxonomymd) define opções de `SQUAD`, `HUB`, `AREA`, `POSITION`. O init valida contra ela. Customizar com `/taxonomy`.
+[taxonomy.md](./estrutura/raiz.md#taxonomymd) define as opções de `SQUAD` e o domínio de e-mail. O init valida contra ela. Customizar com `/taxonomy`.
 
 ### CDD
 
@@ -164,7 +164,7 @@ Sem OAuth. Ordem: `USER=` no ENV → `git config user.email` → `whoami`. CLI: 
 | Agents | [agents.md](./estrutura/agents.md) | `.$IDE/agents/` |
 | Skills | [skills.md](./estrutura/skills.md) | `.$IDE/skills/` |
 | Workflows | [workflows.md](./estrutura/workflows.md) | `.$IDE/workflows/` ou `commands/` |
-| Rules | [rules.md](./estrutura/rules.md) | `.$IDE/rules/` (filtradas no jarvis-init) |
+| Rules | [rules.md](./estrutura/rules.md) | `.$IDE/rules/` (sincronizadas no jarvis-init) |
 | Templates | [templates.md](./estrutura/templates.md) | `.$IDE/templates/` |
 
 **Agents × Skills:** agent = postura; skill = playbook. Com skill no tema, a skill manda.
@@ -223,7 +223,7 @@ Proxy Rust que comprime output de shell (~60–90% menos tokens).
 
 ```bash
 jarvis install-rtk          # rustup se preciso + cargo install rtk
-# ENV: RTK_ENABLED=true      # rule rtk-rules.md entra no perfil
+# ENV: RTK_ENABLED=true      # a rule rtk-rules.md entra na IDE
 ```
 
 Detalhe da rule: `rules/rtk-rules.md`. Comentários: `templates/ENV-template.md`.
@@ -265,7 +265,7 @@ Pastas: [agents](./estrutura/agents.md) · [bin](./estrutura/bin.md) · [docs](.
 - Não inventar stack, ambientes, secrets ou integrações  
 - Não expor tokens no chat  
 - Sem ação destrutiva sem confirmação  
-- Autonomia por `POSITION`; TL/PM não bloqueiam o init  
+- Senioridade por assunto calibra só a conversa; ninguém é gate no card  
 - Context7 obrigatório no onboarding; demais MCPs best-effort  
 - Leitura rápida → README; leitura profunda → esta pasta `docs/`
 

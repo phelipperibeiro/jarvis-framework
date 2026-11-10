@@ -25,7 +25,7 @@ As rules já estão no contexto da sessão: **não as releia**. Perfil de comuni
 ## Passo 1 — Perfil (silencioso)
 
 ```bash
-grep -E "^(POSITION|AREA|HUB|SQUAD|WORKSPACE|WORKSPACE_REPOS|WORKSPACE_MODE|PROD_MODE|ENABLE_CDD|CENTRAL_DOCS_STORAGE|[A-Z]+_SPECIALIZATIONS)=" $IDE/ENV.md
+grep -E "^(SENIORITY|[A-Z]+_SENIORITY|SQUAD|WORKSPACE|WORKSPACE_REPOS|WORKSPACE_MODE|PROD_MODE|ENABLE_CDD|CENTRAL_DOCS_STORAGE|[A-Z]+_SPECIALIZATIONS)=" $IDE/ENV.md
 ```
 
 `$IDE/ENV.md` pode estar num ancestral do cwd. `WORKSPACE` vazio = nome da pasta que contém `$IDE/`. Não invente valores ausentes; não pergunte o que está no ENV.

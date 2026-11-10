@@ -18,7 +18,7 @@ medir de novo) valem para qualquer frontend. O que depende da stack (como analis
 entregue, como medir renderizações, qual técnica de carregamento tardio usar) vem do código do
 projeto e das especializações registradas em `FRONTEND_SPECIALIZATIONS`.
 
-**Antes de começar**, aplique a regra `$IDE/rules/engineering/eng.specializations-rules.md` para a área **frontend**: ela carrega o skill base `eng-frontend` e as especializações registradas. Onde este workflow disser "conforme a especialização", siga o skill da especialização; sem especialização registrada, **pergunte ao usuário** qual ferramenta o projeto usa, em vez de presumir uma.
+**Antes de começar**, aplique a regra `$IDE/rules/engineering/eng.specializations-rules.md` para a área **frontend**: ela carrega o skill base `eng-frontend` e as especializações registradas. Leia também `$IDE/rules-on-demand/engineering/frontend/eng.frontend-rules.md` (padrões obrigatórios de frontend) e siga-a. Onde este workflow disser "conforme a especialização", siga o skill da especialização; sem especialização registrada, **pergunte ao usuário** qual ferramenta o projeto usa, em vez de presumir uma.
 
 ### Skills invocados durante o workflow
 

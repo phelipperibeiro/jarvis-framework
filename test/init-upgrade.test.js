@@ -47,8 +47,9 @@ const ENV_V520 = [
   "",
 ].join("\n");
 
-// #209: o upgrade apaga MESSAGE_BROKER e SMTP (blocos que saíram do template); o resto fica igual.
-const semRemovidas = (text) => text.replace(/^(MESSAGE_BROKER|SMTP)=.*\n/gm, "");
+// #209 e #263: o upgrade apaga MESSAGE_BROKER e SMTP (blocos que saíram do template) e as chaves HUB,
+// AREA e POSITION; o resto fica igual.
+const semRemovidas = (text) => text.replace(/^(MESSAGE_BROKER|SMTP|HUB|AREA|POSITION)=.*\n/gm, "");
 
 const OLD = "docs/jarvis/product/discoveries/discovery-001-x.md";
 const NEW = "docs/jarvis/discoveries/discovery-001-x.md";
@@ -91,7 +92,7 @@ function snapshot(dir, base = dir) {
   return out;
 }
 
-test("init --upgrade --yes: chaves novas, PROD_MODE pela AREA, discovery movido, ENV antigo intacto, idempotente", () => {
+test("init --upgrade --yes: chaves novas, PROD_MODE pendente, discovery movido, ENV antigo intacto, idempotente", () => {
   withWorkspace(
     {
       ".claude/ENV.md": ENV_V520,
@@ -105,11 +106,12 @@ test("init --upgrade --yes: chaves novas, PROD_MODE pela AREA, discovery movido,
       const env = readFileSync(join(ws, ".claude/ENV.md"), "utf-8");
       assert.ok(env.startsWith(semRemovidas(ENV_V520)), "linhas existentes do ENV mudaram");
       assert.doesNotMatch(env, /^(MESSAGE_BROKER|SMTP)=/m);
-      assert.match(r.stdout, /removidas \(não são mais usadas\): MESSAGE_BROKER, SMTP/);
+      assert.match(r.stdout, /removidas \(não são mais usadas\): HUB, AREA, MESSAGE_BROKER, SMTP/);
       assert.doesNotMatch(r.stdout, /rabbitmq/);
       assert.match(env, /^DISCOVERIES_FOLDER_NAME=discoveries$/m);
       assert.match(env, /^DISCOVERIES_DOCS=\$JARVIS_DOCS\/\$DISCOVERIES_FOLDER_NAME$/m);
-      assert.match(env, /^PROD_MODE=developer-guided$/m);
+      assert.match(env, /^PROD_MODE=$/m);
+      assert.match(r.stdout, /PROD_MODE está vazio: responda no \/jarvis-init upgrade/);
       assert.match(env, /^ARTIFACT_STYLE=ai-generated$/m);
       assert.match(env, /^RTK_ENABLED=false$/m);
       assert.equal((env.match(/^TASK_MANAGER=/gm) || []).length, 1);
@@ -761,13 +763,79 @@ test("init (Atualizar): com a versão igual, sem seta X → X e com o ENV.md com
   });
 });
 
-// Perfil completo (os 4 eixos): sem ele, o upgrade não filtra as rules e pede o /jarvis-init (#83).
-const ENV_PERFIL = ENV_SEM_BOARD.replace("HUB=BACKEND", "HUB=BACKEND\nPOSITION=SENIOR\nSQUAD=CORE");
+// ENV.md sem pendência do upgrade.
+const ENV_PERFIL = ENV_SEM_BOARD.replace(
+  "HUB=BACKEND",
+  "HUB=BACKEND\nPOSITION=SENIOR\nSQUAD=CORE\nPROD_MODE=developer-guided"
+);
 
 // #225: mapa, AGENTS.md e CLAUDE.md (cópia idêntica) existem sempre; sem eles o upgrade tem pendência.
 const MAPA_VAZIO = "| Repositório | Papel |\n|---|---|\n";
 const DOCS_EM_DIA = { "CDD-MIND-MAP.md": MAPA_VAZIO, "AGENTS.md": "# Projeto\n", "CLAUDE.md": "# Projeto\n" };
 const AGENTS_E_CLAUDE = { "AGENTS.md": "# Projeto\n", "CLAUDE.md": "# Projeto\n" };
+
+test("init --upgrade: SENIORITY nova vem do cargo antigo, com o aviso no resumo; idempotente (#263)", () => {
+  withWorkspace({ ".claude/ENV.md": ENV_PERFIL }, (ws) => {
+    const r = run(ws, "--upgrade", "--ide", "claude", "--yes");
+    assert.equal(r.status, 0, r.stderr);
+    const env = readFileSync(join(ws, ".claude/ENV.md"), "utf-8");
+    assert.match(env, /^SENIORITY=senior$/m);
+    for (const area of ["BACKEND", "FRONTEND", "QA", "DATA", "AUTOMATION", "PLATFORM"]) {
+      assert.match(env, new RegExp(`^${area}_SENIORITY=$`, "m"), area);
+    }
+    assert.match(r.stdout, /SENIORITY: gravada como senior, a partir do cargo antigo; confira no ENV\.md/);
+    assert.doesNotMatch(r.stdout, /SENIORITY está vazio/);
+
+    const again = run(ws, "--upgrade", "--ide", "claude", "--yes");
+    assert.equal(again.status, 0, again.stderr);
+    assert.equal(readFileSync(join(ws, ".claude/ENV.md"), "utf-8"), env);
+    assert.doesNotMatch(again.stdout, /SENIORITY: gravada/);
+  });
+});
+
+test("init --upgrade: sem cargo antigo, SENIORITY fica vazia e é pendência do /jarvis-init upgrade (#263)", () => {
+  withWorkspace({ ".claude/ENV.md": ENV_V520 }, (ws) => {
+    const r = run(ws, "--upgrade", "--ide", "claude", "--yes");
+    assert.equal(r.status, 0, r.stderr);
+    assert.match(readFileSync(join(ws, ".claude/ENV.md"), "utf-8"), /^SENIORITY=$/m);
+    assert.match(r.stdout, /SENIORITY está vazio: responda no \/jarvis-init upgrade/);
+    assert.match(r.stdout, /Agora rode .*\/jarvis-init upgrade.* preencher [^\n]*SENIORITY/);
+  });
+});
+
+test("init --upgrade --yes: ENV.md antigo com HUB, AREA e POSITION perde as três linhas e ganha a SENIORITY derivada (#263)", () => {
+  const antigo = ENV_V520.replace("HUB=BACKEND", "HUB=FULLCYCLE").replace(
+    "AREA=ENGINEERING",
+    "AREA=ENGINEERING\nPOSITION=GENERALIST\nSQUAD=CORE"
+  );
+  withWorkspace({ ".claude/ENV.md": antigo }, (ws) => {
+    const r = run(ws, "--upgrade", "--ide", "claude", "--yes");
+    assert.equal(r.status, 0, r.stderr);
+    const env = readFileSync(join(ws, ".claude/ENV.md"), "utf-8");
+    assert.doesNotMatch(env, /^(HUB|AREA|POSITION)=/m);
+    assert.match(env, /^SQUAD=CORE$/m);
+    assert.match(env, /^SENIORITY=senior$/m);
+    for (const area of ["BACKEND", "FRONTEND", "QA", "DATA", "AUTOMATION", "PLATFORM"]) {
+      assert.match(env, new RegExp(`^${area}_SENIORITY=$`, "m"), area);
+    }
+    assert.match(r.stdout, /removidas \(não são mais usadas\): HUB, AREA, POSITION/);
+    assert.match(r.stdout, /SENIORITY: gravada como senior, a partir do cargo antigo/);
+    assert.doesNotMatch(r.stdout, /SENIORITY está vazio/);
+    assert.doesNotMatch(r.stdout, /FULLCYCLE|GENERALIST/, "valor do ENV apareceu no resumo");
+    assert.match(r.stdout, /PROD_MODE está vazio/);
+
+    const again = run(ws, "--upgrade", "--ide", "claude", "--yes");
+    assert.equal(again.status, 0, again.stderr);
+    assert.equal(readFileSync(join(ws, ".claude/ENV.md"), "utf-8"), env);
+  });
+  // Com a PROD_MODE já preenchida, ela não vira pendência.
+  withWorkspace({ ".claude/ENV.md": `${antigo}PROD_MODE=product-led\n` }, (ws) => {
+    const r = run(ws, "--upgrade", "--ide", "claude", "--yes");
+    assert.equal(r.status, 0, r.stderr);
+    assert.doesNotMatch(r.stdout, /PROD_MODE está vazio/);
+    assert.match(readFileSync(join(ws, ".claude/ENV.md"), "utf-8"), /^PROD_MODE=product-led$/m);
+  });
+});
 
 test("init --upgrade: sem pendência, não manda rodar o /jarvis-init upgrade", () => {
   withWorkspace({ ".claude/ENV.md": ENV_PERFIL, ...DOCS_EM_DIA }, (ws) => {
@@ -1035,7 +1103,7 @@ test("promptCompanyProfile: inválido é perguntado de novo (com aviso); inváli
   assert.match(warned[1], /gravando o default stark-industries/);
 });
 
-// --- Filtro de rules pelo perfil no --upgrade (#83) ---
+// --- Rules no --upgrade e na reinstalação (#83, #263) ---
 
 test("upgradePendencies (#225): os motivos dos documentos (mapa, AGENTS.md, CLAUDE.md) entram no fim da lista", () => {
   assert.deepEqual(
@@ -1045,35 +1113,26 @@ test("upgradePendencies (#225): os motivos dos documentos (mapa, AGENTS.md, CLAU
   assert.deepEqual(upgradePendencies({ pendingAxes: [], envPlan: {} }), [], "sem documents, nada muda");
 });
 
-test("upgradePendencies: eixo do perfil vazio é pendência (#83)", () => {
-  assert.deepEqual(
-    upgradePendencies({ pendingAxes: [], envPlan: {}, missingProfile: ["POSITION", "SQUAD"] }),
-    ["preencher POSITION, SQUAD (as rules ficam sem o filtro do perfil)"]
-  );
-});
-
-test("init --upgrade: com o perfil completo, filtra as rules como o jarvis rules sync (#83)", () => {
+test("init --upgrade: sincroniza as rules como o jarvis rules sync, sem a exceção desligada (#83, #263)", () => {
   withWorkspace({ ".claude/ENV.md": ENV_PERFIL }, (ws) => {
     const r = run(ws, "--upgrade", "--ide", "claude", "--yes");
     assert.equal(r.status, 0, r.stderr);
-    assert.match(r.stdout, /Rules filtradas pelo perfil \(BACKEND\/SENIOR\/ENGINEERING\/CORE\)/);
-    // AREA: PRODUCT não é do perfil; a rule comum dos prod.spec.* (AREA: all) fica.
-    assert.ok(!existsSync(join(ws, ".claude/rules/product/prod.spec-rules.md")));
+    assert.match(r.stdout, /Rules sincronizadas: \d+ copiada\(s\), \d+ removida\(s\)/);
+    // Toda rule entra, menos a artifact-style-rules.md (ARTIFACT_STYLE padrão).
+    assert.ok(!existsSync(join(ws, ".claude/rules/artifact-style-rules.md")));
     assert.ok(existsSync(join(ws, ".claude/rules/engineering/eng-rules.md")));
     assert.ok(existsSync(join(ws, ".claude/rules-on-demand/product/prod.spec-common-rules.md")));
   });
 });
 
-test("init --upgrade: sem os 4 eixos, não filtra e manda ao /jarvis-init upgrade (#83)", () => {
+test("init --upgrade: sem os eixos antigos no ENV.md, sincroniza as rules sem pendência por isso (#83, #263)", () => {
   withWorkspace({ ".claude/ENV.md": ENV_SEM_BOARD }, (ws) => {
     const r = run(ws, "--upgrade", "--ide", "claude", "--yes");
     assert.equal(r.status, 0, r.stderr);
-    assert.doesNotMatch(r.stdout, /Rules filtradas pelo perfil/);
-    assert.ok(existsSync(join(ws, ".claude/rules/product/prod.spec-rules.md")));
-    assert.match(
-      r.stdout,
-      /Agora rode .*\/jarvis-init upgrade.* preencher POSITION, SQUAD \(as rules ficam sem o filtro do perfil\)/
-    );
+    assert.match(r.stdout, /Rules sincronizadas: \d+ copiada\(s\), \d+ removida\(s\)/);
+    assert.ok(!existsSync(join(ws, ".claude/rules/artifact-style-rules.md")));
+    assert.ok(existsSync(join(ws, ".claude/rules/engineering/eng-rules.md")));
+    assert.doesNotMatch(r.stdout, /filtro do perfil/);
   });
 });
 
@@ -1097,24 +1156,24 @@ test("init --upgrade: instalação 8.4.0 → estado final de rules/ e rules-on-d
     for (const a of antigas) {
       assert.ok(!existsSync(join(ws, ".claude/rules", a)), `rules/${a} deveria ter saído`);
     }
-    // Do perfil BACKEND/SENIOR/ENGINEERING: fica o que é dele e o que é de qualquer AREA.
+    // Fica toda rule do core, menos a exceção desligada.
     assert.ok(existsSync(join(ws, ".claude/rules/engineering/eng-rules.md")));
-    assert.ok(!existsSync(join(ws, ".claude/rules/product/prod.spec-rules.md")));
+    assert.ok(!existsSync(join(ws, ".claude/rules/artifact-style-rules.md")));
     assert.ok(existsSync(join(ws, ".claude/rules-on-demand/product/prod.spec-common-rules.md")));
     assert.ok(existsSync(join(ws, ".claude/rules-on-demand/engineering/eng.rpa-rules.md")));
     assert.ok(existsSync(join(ws, ".claude/rules-on-demand/engineering/eng.start-rules.md")));
   });
 });
 
-test("init --upgrade (kiro): o steering fica só com as rules do perfil (#83)", () => {
+test("init --upgrade (kiro): o steering acompanha as rules, sem as exceções desligadas (#83, #263)", () => {
   withWorkspace({ ".kiro/ENV.md": ENV_PERFIL.replace("IDE=claude", "IDE=kiro") }, (ws) => {
     const r = run(ws, "--upgrade", "--ide", "kiro", "--yes");
     assert.equal(r.status, 0, r.stderr);
     const steering = join(ws, ".kiro/steering");
     assert.ok(existsSync(join(steering, "eng-rules.md")));
-    // AREA: PRODUCT e HUB: FRONTEND não são do perfil BACKEND/SENIOR/ENGINEERING.
-    assert.ok(!existsSync(join(steering, "prod.spec-rules.md")));
-    assert.ok(!existsSync(join(steering, "eng.frontend-rules.md")));
+    // ARTIFACT_STYLE padrão e RTK desligado: as duas exceções não viram steering.
+    assert.ok(!existsSync(join(steering, "artifact-style-rules.md")));
+    assert.ok(!existsSync(join(steering, "rtk-rules.md")));
   });
 });
 
@@ -1151,18 +1210,17 @@ test("init --upgrade: RTK_ENABLED=true com o rtk no PATH traz a rtk-rules.md (#8
   });
 });
 
-test("init --force: reinstalação com o ENV.md completo filtra as rules como o --upgrade (#83)", () => {
+test("init --force: reinstalação com o ENV.md sincroniza as rules como o --upgrade (#83, #263)", () => {
   withWorkspace({ ".claude/ENV.md": ENV_PERFIL }, (ws) => {
     const r = run(ws, "--ide", "claude", "--force");
     assert.equal(r.status, 0, r.stderr);
-    assert.match(r.stdout, /Rules filtradas pelo perfil \(BACKEND\/SENIOR\/ENGINEERING\/CORE\)/);
-    assert.ok(!existsSync(join(ws, ".claude/rules/product/prod.spec-rules.md")));
+    assert.match(r.stdout, /Rules sincronizadas: \d+ copiada\(s\), \d+ removida\(s\)/);
+    assert.ok(!existsSync(join(ws, ".claude/rules/artifact-style-rules.md")));
     assert.ok(existsSync(join(ws, ".claude/rules/engineering/eng-rules.md")));
   });
 });
 
-const RULE_TODOS =
-  "> **Applies to:** HUB: all | POSITION: all | AREA: all | SQUAD: all\n\n# empresa\n";
+const RULE_TODOS = "# empresa\n";
 
 test("init --upgrade: falha ao gravar uma rule do overlay sai com 1 e mostra o ✗ (#83)", () => {
   withWorkspace(
@@ -1194,6 +1252,19 @@ test("init --upgrade: o filtro aplica a rule do overlay do COMPANY_PROFILE (#83)
   );
 });
 
+test("init --upgrade: o resumo avisa do fork do overlay num caminho de rule que saiu do framework (#263)", () => {
+  const fork = ".claude/overlays/stark-industries/rules/engineering/frontend/eng.frontend-rules.md";
+  withWorkspace({ ".claude/ENV.md": ENV_PERFIL, [fork]: "# fork antigo\n" }, (ws) => {
+    const r = run(ws, "--upgrade", "--ide", "claude", "--yes");
+    assert.equal(r.status, 0, r.stderr);
+    assert.match(
+      r.stdout,
+      /overlays\/stark-industries\/rules\/engineering\/frontend\/eng\.frontend-rules\.md: fork num caminho que saiu do framework/
+    );
+    assert.equal(readFileSync(join(ws, fork), "utf-8"), "# fork antigo\n", "o upgrade gravou no overlay");
+  });
+});
+
 test("init --upgrade: ARTIFACT_STYLE decide a artifact-style-rules.md (#83)", () => {
   for (const [estilo, presente] of [
     ["human-generated", true],
@@ -1207,18 +1278,6 @@ test("init --upgrade: ARTIFACT_STYLE decide a artifact-style-rules.md (#83)", ()
   }
 });
 
-test("init --upgrade: eixo com o exemplo [..] do template não filtra e vira pendência (#83)", () => {
-  withWorkspace(
-    { ".claude/ENV.md": ENV_PERFIL.replace("POSITION=SENIOR", "POSITION=[SENIOR]") },
-    (ws) => {
-      const r = run(ws, "--upgrade", "--ide", "claude", "--yes");
-      assert.equal(r.status, 0, r.stderr);
-      assert.doesNotMatch(r.stdout, /Rules filtradas pelo perfil/);
-      assert.match(r.stdout, /preencher POSITION \(as rules ficam sem o filtro do perfil\)/);
-    }
-  );
-});
-
 // Limite conhecido: o código de saída 1 do CLI (upgrade e reinstalação) com erro do filtro não tem
 // teste isolado. No único caso que faz o filtro falhar (destino não gravável), o syncAssets aplica o
 // mesmo overlay e falha antes; aqui fica provado que o filtro devolve o erro.
@@ -1230,12 +1289,11 @@ test("filterRulesByEnv: devolve o erro de gravação para o código de saída (#
     },
     (ws) => {
       mkdirSync(join(ws, ".claude/rules/empresa-rules.md"), { recursive: true });
-      const { rulesSync, missingProfile } = filterRulesByEnv(
+      const { rulesSync } = filterRulesByEnv(
         ws,
         "claude",
         join(ws, ".claude/ENV.md")
       );
-      assert.deepEqual(missingProfile, []);
       assert.ok(
         rulesSync.errors.some((e) => /empresa-rules\.md/.test(e)),
         rulesSync.errors.join("; ")
@@ -1344,7 +1402,7 @@ test("init (instalação) no modo workspace: nenhum arquivo de git é criado e n
 // ---- #227: --upgrade no modo projeto --------------------------------------------------------------
 
 test("upgradePendencies: AGENTS.md/CLAUDE.md versionados pedem a decisão no /jarvis-init upgrade", () => {
-  const base = { pendingAxes: [], envPlan: {}, missingProfile: [] };
+  const base = { pendingAxes: [], envPlan: {} };
   assert.deepEqual(upgradePendencies({ ...base, trackedGenerated: [] }), []);
   assert.deepEqual(upgradePendencies({ ...base, trackedGenerated: ["AGENTS.md"] }), [
     "decidir se AGENTS.md sai do git",

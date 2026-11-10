@@ -48,7 +48,7 @@ Cada assunto fica numa moldura de três linhas (`# ====`, título, `# ====`). No
 Inclui (entre outros):
 
 - Workspace / `USER` / `MAX_AI_EXECUTION_PERCENTAGE` / `ENABLE_CDD`
-- `SQUAD`, `HUB`, `AREA`, `POSITION`
+- `SQUAD` e a senioridade por assunto (`SENIORITY` e as seis chaves de área)
 - Pastas IDE (`FLOWS_FOLDER`, `SESSIONS_DIR`, …)
 - Task manager (vazio = freelance), VCS…
 - `BACKEND_SPECIALIZATIONS` e `FRONTEND_SPECIALIZATIONS` (seção "Especializações de stack"): listas de nomes de skill, separadas por vírgula, que os `eng.*` carregam junto da skill base; precisam **existir**, mesmo vazias (ver [especializações de stack](../especializacoes-de-stack.md))

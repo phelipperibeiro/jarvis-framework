@@ -44,9 +44,20 @@ ENABLE_CDD=true
 # Organização (obrigatório — opções vêm do taxonomy.md)
 # =============================================================================
 SQUAD=[CORE]
-HUB=[AI, FRONTEND, BACKEND, QA, DATA, FULLCYCLE]
-AREA=[ENGINEERING, PRODUCT]
-POSITION=[JUNIOR, PLENO, SENIOR, TECH LEAD, SPECIALIST, PM, TPM, GPM, CTO, GENERALIST]
+
+
+# =============================================================================
+# Senioridade por assunto (calibra só a conversa: quanto o Jarvis explica)
+# =============================================================================
+# SENIORITY é a padrão (obrigatória). As de área são opcionais: vazia = igual à SENIORITY.
+# junior = didático; pleno = equilibrado; senior = direto. Não libera nem bloqueia comando.
+SENIORITY=[junior, pleno, senior]
+BACKEND_SENIORITY=
+FRONTEND_SENIORITY=
+QA_SENIORITY=
+DATA_SENIORITY=
+AUTOMATION_SENIORITY=
+PLATFORM_SENIORITY=
 
 
 # =============================================================================
@@ -186,15 +197,6 @@ RTK_ENABLED=false
 # Opus → opus, Fable → fable). No Claude Code só a família é respeitada: "Opus 5.5"
 # e "Opus 5" abrem o mesmo modelo; remova um deles se quiser só opções distintas.
 ADVISOR_MODELS="Sonnet 5.5,Opus 5.5,Opus 5,Fable 5.1"
-
-
-# =============================================================================
-# QA / suíte de testes (opcional)
-# =============================================================================
-# Caminho relativo à raiz do projeto.
-# Cypress E2E: cypress | e2e | tests/e2e
-# Unit/integração: tests | test | src/__tests__
-TEST_FOLDER=
 
 
 # =============================================================================

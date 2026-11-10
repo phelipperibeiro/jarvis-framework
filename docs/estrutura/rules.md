@@ -10,21 +10,19 @@ Diferente de skills: rules são **restrições e padrões contínuos**; skills s
 
 ```
 rules/
-├── rtk-rules.md                    # opt-in: só se RTK_ENABLED=true
-├── company-overlay-rules.md        # universal: overlay de empresa > especialização > core, conferido na chamada (#199)
+├── artifact-style-rules.md         # só se ARTIFACT_STYLE=human-generated
+├── rtk-rules.md                    # só se RTK_ENABLED=true
+├── company-overlay-rules.md        # overlay de empresa > especialização > core, conferido na chamada (#199)
 ├── engineering/
 │   ├── eng-rules.md                # regras gerais de engenharia
 │   ├── eng-security-rules.md
 │   ├── eng.specializations-rules.md # carregamento de especializações por stack
 │   ├── eng.skills-rules.md       # área obrigatória nos skills e aviso de skill inexistente
-│   ├── … (integrations, …)
-│   ├── frontend/
-│   └── qa/                       # ponteiro: o texto está em rules-on-demand/
+│   └── eng.integrations-rules.md # vendors pelo ENV.md (board, git, Central docs)
 └── product/
-    ├── prod-rules.md
-    └── prod.spec-rules.md            # escrita de spec (AREA: PRODUCT)
+    └── prod-rules.md
 
-rules-on-demand/                    # lidas pelo workflow; não carregadas no início da sessão
+rules-on-demand/                    # lidas pelo comando; não carregadas no início da sessão
 ├── engineering/
 │   ├── eng.start-rules.md
 │   ├── eng.gate0-rules.md        # Gate 0 de eng.plan, eng.work, eng.pre-pr e eng.pr
@@ -36,12 +34,13 @@ rules-on-demand/                    # lidas pelo workflow; não carregadas no in
 │   ├── eng.transitions-rules.md
 │   ├── eng.bump-rules.md
 │   ├── eng.security-rules.md      # seções de etapa da eng-security-rules (architecture.md e gate-checklist.md)
-│   ├── eng.rpa-rules.md          # inclui a documentação de robôs (HUB: all)
-│   └── qa/
-│       └── eng.qa.cypress-standards-rules.md # convenções da suíte E2E (em rules/engineering/qa/ fica só o ponteiro)
+│   ├── eng.rpa-rules.md          # inclui a documentação de robôs
+│   └── frontend/
+│       └── eng.frontend-rules.md # padrões de frontend (lida pelos comandos e pelo agente de frontend)
 ├── product/
 │   ├── prod.guided-rules.md        # modo Developer-Guided (só com PROD_MODE=developer-guided)
-│   └── prod.spec-common-rules.md   # princípios e busca de contexto dos prod.spec.* (lida pelo comando, qualquer AREA)
+│   ├── prod.spec-common-rules.md   # princípios e busca de contexto dos prod.spec.* (lida pelo comando)
+│   └── prod.spec-rules.md          # princípios de escrita de spec (lida pelos sete prod.spec.*)
 ├── doc-links-rules.md              # links clicáveis nos documentos gerados (lida pelos comandos que gravam documentos)
 └── warm-up-consume-rules.md        # consumo do /warm-up (só quando há aquecimento)
 ```
@@ -49,35 +48,25 @@ rules-on-demand/                    # lidas pelo workflow; não carregadas no in
 ### `rules/` e `rules-on-demand/`
 
 - `rules/`: o Claude Code carrega tudo no início da sessão. Fica só o que vale sempre.
-- `rules-on-demand/`: regras de **uma etapa** (um comando) ou **transversais** a vários comandos (como `doc-links-rules.md` e `warm-up-consume-rules.md`). O workflow manda ler o arquivo no início (`rules_file` e a linha "Rules"). O mesmo bloco `Applies to` e o mesmo filtro por perfil valem nas duas pastas.
-- `jarvis tokens` mostra quanto cada perfil carrega no início.
+- `rules-on-demand/`: regras de **uma etapa** (um comando) ou **transversais** a vários comandos (como `doc-links-rules.md` e `warm-up-consume-rules.md`). O comando manda ler o arquivo no início (`rules_file` e a linha "Rules"). As duas exceções do Passo 8 valem nas duas pastas.
+- `jarvis tokens` mostra quanto o início da sessão carrega.
 
-## Bloco `Applies to:`
+## Como uma rule chega à IDE
 
-Muitas rules começam com:
+O `jarvis init` copia `rules/` e `rules-on-demand/` inteiras. O `jarvis rules sync` (Passo 8 do `/jarvis-init`, também no fim do `jarvis init --upgrade` e da reinstalação) aplica o overlay de `COMPANY_PROFILE` e as duas exceções, decididas pelo nome do arquivo (o conteúdo não é lido):
 
-```markdown
-> **Applies to:** HUB: all | POSITION: all | AREA: ENGINEERING | SQUAD: all
-```
+1. `artifact-style-rules.md` só com `ARTIFACT_STYLE=human-generated`
+2. `rtk-rules.md` só com `RTK_ENABLED=true`
 
-Um 5º campo é opcional: `| ARTIFACT_STYLE: human-generated`. Sem ele, a rule vale para qualquer estilo. É assim que `rules/artifact-style-rules.md` só chega a quem escolheu `ARTIFACT_STYLE=human-generated` no ENV (FULLCYCLE e GENERALIST não são coringa neste eixo).
-
-No `/jarvis-init` (passo de sync de rules, que roda `jarvis rules sync`):
-
-1. Lê `HUB`, `POSITION`, `AREA`, `SQUAD` e `ARTIFACT_STYLE` (vazio = `ai-generated`) do ENV
-2. Copia para `.$IDE/rules/` e `.$IDE/rules-on-demand/` só o que **bate** no perfil
-3. Remove da IDE o que não bate
-4. Exceção: `rtk-rules.md` só se `RTK_ENABLED=true`
-
-Isso reduz tokens carregados na sessão.
+As demais valem para todos. O que é de uma área só (os padrões de frontend, a escrita de spec de produto) fica em `rules-on-demand/`, e o comando da área manda ler: assim não pesa no início da sessão de quem não usa.
 
 ## No ciclo de vida
 
 1. Editadas neste repo.
-2. `jarvis init` copia o conjunto **inteiro** para `.$IDE/rules/` e `.$IDE/rules-on-demand/` (sync bruto; as rules que saíram de `rules/` são removidas das instalações antigas via `OBSOLETE_PATHS`; se a rule virou um ponteiro no mesmo caminho, como a de Cypress em `qa/`, o caminho **não** entra em `OBSOLETE_PATHS`: o sync sobrescreve a instalação antiga com o ponteiro).
-3. `/jarvis-init` **filtra** de novo conforme perfil (e RTK) (Passo 8 → `jarvis rules sync`). O `jarvis init --upgrade` e a reinstalação (`--force` ou a opção 2 do menu) já rodam o mesmo filtro no fim quando o `ENV.md` tem HUB, POSITION, AREA e SQUAD; nesses dois caminhos, a `rtk-rules.md` pede também o `rtk` no PATH. No Kiro, o filtro grava ou apaga o `steering/{nome}` junto com a rule.
+2. `jarvis init` copia o conjunto **inteiro** para `.$IDE/rules/` e `.$IDE/rules-on-demand/` (sync bruto; as rules que saíram de `rules/` são removidas das instalações antigas via `OBSOLETE_PATHS`).
+3. `/jarvis-init` tira as duas exceções desligadas e aplica o overlay (Passo 8 → `jarvis rules sync`). O `jarvis init --upgrade` e a reinstalação (`--force` ou a opção 2 do menu) já rodam o mesmo passo no fim; nesses dois caminhos, a `rtk-rules.md` pede também o `rtk` no PATH. No Kiro, o passo grava ou apaga o `steering/{nome}` junto com a rule.
 
-Se você só rodar `jarvis init` numa pasta nova (sem `ENV.md`), a IDE fica com rules a mais do que o perfil precisa até o `/jarvis-init`, responsável pelo filtro fino.
+Se você só rodar `jarvis init` numa pasta nova (sem `ENV.md`), a IDE fica também com as duas exceções até o `/jarvis-init`.
 
 ## Para quem vai criar ou editar uma rule
 
@@ -91,7 +80,7 @@ Esta seção era antes `rules/AGENTS.md`. Esse arquivo foi removido: era o únic
 3. rules-on-demand/engineering/eng.{comando}-rules.md
 4. rules-on-demand/product/prod.guided-rules.md (só com PROD_MODE=developer-guided)
 5. rules-on-demand/product/prod.spec-common-rules.md (lida pelos prod.spec.* que gravam documento)
-6. rules/product/prod.spec-rules.md
+6. rules-on-demand/product/prod.spec-rules.md (lida pelos prod.spec.*)
 7. rules/product/prod-rules.md (mais baixa)
 ```
 
@@ -103,15 +92,13 @@ Regras mais específicas têm precedência sobre regras gerais.
 |------|--------|----------|
 | Regra geral | `{dominio}-rules.md` | `eng-rules.md` |
 | Regra de comando | `{dominio}.{comando}-rules.md` | `eng.work-rules.md` |
-| Regra de QA | `qa/{nome}-rules.md` | `qa/eng.qa.cypress-standards-rules.md` |
+| Regra de uma área | `rules-on-demand/engineering/{área}/{dominio}.{área}-rules.md` | `frontend/eng.frontend-rules.md` |
 
 ### Estrutura obrigatória de um arquivo de regra
 
-Sem frontmatter YAML. Exceção: `description`, quando a rule precisa de descrição no steering do Kiro. O bloco `Applies to` é a 1ª linha (ou a 1ª depois desse frontmatter). **Não declarar `trigger:` no frontmatter.** O Claude Code ignora o campo e carrega toda rule da pasta (sem `paths`) no início da sessão. Quem filtra a rule por perfil é o bloco `applies_to`.
+Sem frontmatter YAML. Exceção: `description`, quando a rule precisa de descrição no steering do Kiro. **Não declarar `trigger:` no frontmatter.** O Claude Code ignora o campo e carrega toda rule da pasta (sem `paths`) no início da sessão. Uma rule que só serve a uma área ou a um comando vai para `rules-on-demand/`.
 
 ```markdown
-> **Applies to:** HUB: {valor ou all} | POSITION: {valor ou all} | AREA: {valor ou all} | SQUAD: {valor ou all}
-
 # {Nome} Rules
 
 ## Objetivo
@@ -142,7 +129,7 @@ Links para documentação relacionada.
 
 1. **Regras Gerais** (`eng-rules.md`) — valem para todo o domínio de engenharia; base para as específicas.
 2. **Regras de Comando** (`eng.{comando}-rules.md`) — específicas de um comando, podem sobrescrever regras gerais.
-3. **Regras de QA** (`qa/`) — qualidade, testes, critérios de aceitação, cobertura.
+3. **Regras de área** (`rules-on-demand/engineering/{área}/`, como `frontend/`) — padrões de uma área só, lidos pelo comando e pelo agente da área, fora do início da sessão.
 4. **Regras de Produto** (`product/`) — especificações, requisitos, validação de PRD/FRD.
 
 ### Regras Críticas do Framework

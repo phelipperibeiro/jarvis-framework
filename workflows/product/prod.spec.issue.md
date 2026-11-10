@@ -9,7 +9,7 @@ recommended_model: opus
 
 > 🎓 **Modo de condução**: leia `PROD_MODE` no `$IDE/ENV.md`. Se for `developer-guided`, **antes de começar leia `$IDE/rules-on-demand/product/prod.guided-rules.md` e siga-o** em toda a conversa. Vazio ou `product-led`: siga este fluxo como está.
 >
-> 📋 **Princípios e busca de contexto**: antes de começar, leia `$IDE/rules-on-demand/product/prod.spec-common-rules.md` e siga-a.
+> 📋 **Princípios e busca de contexto**: antes de começar, leia `$IDE/rules-on-demand/product/prod.spec-common-rules.md` e `$IDE/rules-on-demand/product/prod.spec-rules.md` e siga-as.
 >
 > 🤖 **Modelo**: se a IDE informar o modelo desta sessão e ele for de outra família que o `recommended_model` do documento (ou do template, se o documento for novo), avise em uma linha e siga, sem bloquear e sem repetir. Sem essa informação, não avise.
 
@@ -35,7 +35,7 @@ Um grupo de histórias de um mesmo assunto podem formar um épico.
 - Para criar ou modificar novas funcionalidades, jornadas, ações de usuário e outras modificações dentro do projeto
 
 ## Pré-requisitos
-- **Discovery (opcional).** Se o usuário apontar um discovery (por exemplo `discovery-002`), siga o princípio "Discovery como insumo" de `$PROD_RULES/prod.spec-rules.md`: leia-o como contexto e repasse tudo com o usuário antes de escrever a issue. Sem discovery apontado, siga este fluxo normalmente, sem procurar na pasta `discoveries/`.
+- **Discovery (opcional).** Se o usuário apontar um discovery (por exemplo `discovery-002`), siga o princípio "Discovery como insumo" de `$IDE/rules-on-demand/product/prod.spec-rules.md`: leia-o como contexto e repasse tudo com o usuário antes de escrever a issue. Sem discovery apontado, siga este fluxo normalmente, sem procurar na pasta `discoveries/`.
 - Entendimento claro do trabalho a ser feito. Leia a PRD, épicos, histórias criadas anteriormente para entender o contexto a ser feito.
 - Entenda também últimos commits do projeto e outras alterações que possam ter sido feitas em sessões anteriores
 - Se não houver uma PRD ou épico relacionado, sugira para o usuário a criação do épico ou da PRD, mas é totalmente opcional

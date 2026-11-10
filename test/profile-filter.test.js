@@ -1,344 +1,135 @@
 // Testes do filtro de rules por perfil. Rode com: npm run test:filtro
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { mkdtempSync, mkdirSync, writeFileSync, rmSync, readFileSync } from "node:fs";
+import { mkdtempSync, mkdirSync, writeFileSync, rmSync, readFileSync, existsSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
-import {
-  parseAppliesTo,
-  matchesProfile,
-  listRulesForProfile,
-} from "../bin/lib/core/profile-filter.js";
+import { isRuleEnabled, listRules } from "../bin/lib/core/profile-filter.js";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
-const bloco = (hub, pos, area, squad) =>
-  `> **Applies to:** HUB: ${hub} | POSITION: ${pos} | AREA: ${area} | SQUAD: ${squad}`;
 
-const profile = (HUB, POSITION, AREA, SQUAD = "CORE") => ({ HUB, POSITION, AREA, SQUAD });
-
-test("parseAppliesTo lê o bloco, com valores múltiplos", () => {
-  const r = parseAppliesTo(
-    `---\nenv_file: x\n---\n\n${bloco("BACKEND, FRONTEND", "all", "ENGINEERING", "all")}\n\n# T`
-  );
-  assert.deepEqual(r, {
-    HUB: "BACKEND, FRONTEND",
-    POSITION: "all",
-    AREA: "ENGINEERING",
-    SQUAD: "all",
-    ARTIFACT_STYLE: "all",
-  });
-});
-
-test("parseAppliesTo devolve null sem bloco", () => {
-  assert.equal(parseAppliesTo("# Sem bloco\n"), null);
-});
-
-test("parseAppliesTo: 5º campo ARTIFACT_STYLE opcional, sem vazar para o SQUAD", () => {
-  const cinco = parseAppliesTo(
-    `${bloco("all", "all", "all", "CORE")} | ARTIFACT_STYLE: human-generated\n`
-  );
-  assert.equal(cinco.SQUAD, "CORE");
-  assert.equal(cinco.ARTIFACT_STYLE, "human-generated");
-  const quatro = parseAppliesTo(`${bloco("all", "all", "all", "all")}\n\n# T | com barra`);
-  assert.equal(quatro.SQUAD, "all");
-  assert.equal(quatro.ARTIFACT_STYLE, "all");
-});
-
-test("matchesProfile: ARTIFACT_STYLE só pelo perfil, sem coringa para FULLCYCLE/GENERALIST", () => {
-  const rule = parseAppliesTo(
-    `${bloco("all", "all", "all", "all")} | ARTIFACT_STYLE: human-generated`
-  );
-  const comEstilo = (estilo, p = profile("BACKEND", "SENIOR", "ENGINEERING")) => ({
-    ...p,
-    ARTIFACT_STYLE: estilo,
-  });
-  assert.equal(matchesProfile(rule, comEstilo("human-generated")), true);
-  assert.equal(matchesProfile(rule, comEstilo("ai-generated")), false);
-  assert.equal(matchesProfile(rule, profile("BACKEND", "SENIOR", "ENGINEERING")), false);
-  assert.equal(matchesProfile(rule, profile("FULLCYCLE", "GENERALIST", "ENGINEERING")), false);
-  // rule sem o eixo vale para qualquer estilo
-  const semEixo = parseAppliesTo(bloco("all", "all", "all", "all"));
-  assert.equal(matchesProfile(semEixo, comEstilo("human-generated")), true);
-});
-
-test("matchesProfile: sem bloco é universal", () => {
-  assert.equal(matchesProfile(null, profile("QA", "JUNIOR", "PRODUCT")), true);
-});
-
-test("matchesProfile: all casa tudo", () => {
-  const a = parseAppliesTo(bloco("all", "all", "all", "all"));
-  assert.equal(matchesProfile(a, profile("DATA", "PM", "PRODUCT", "OUTRO")), true);
-});
-
-test("matchesProfile: AND entre os eixos", () => {
-  const a = parseAppliesTo(bloco("BACKEND", "all", "ENGINEERING", "all"));
-  assert.equal(matchesProfile(a, profile("BACKEND", "SENIOR", "ENGINEERING")), true);
-  assert.equal(matchesProfile(a, profile("FRONTEND", "SENIOR", "ENGINEERING")), false);
-  assert.equal(matchesProfile(a, profile("BACKEND", "SENIOR", "PRODUCT")), false);
-});
-
-test("matchesProfile: lista separada por vírgula", () => {
-  const a = parseAppliesTo(bloco("all", "QA-ENGINEER, SPECIALIST", "all", "all"));
-  assert.equal(matchesProfile(a, profile("QA", "SPECIALIST", "ENGINEERING")), true);
-  assert.equal(matchesProfile(a, profile("QA", "SENIOR", "ENGINEERING")), false);
-});
-
-test("matchesProfile: SQUAD diferente bloqueia, mesmo com GENERALIST e FULLCYCLE", () => {
-  const a = parseAppliesTo(bloco("all", "all", "all", "CORE"));
+test("isRuleEnabled: artifact-style-rules.md só com human-generated, rtk-rules.md só com o RTK, o resto entra (#263)", () => {
+  assert.equal(isRuleEnabled("artifact-style-rules.md"), false);
+  assert.equal(isRuleEnabled("artifact-style-rules.md", { artifactStyle: "ai-generated" }), false);
   assert.equal(
-    matchesProfile(a, profile("FULLCYCLE", "GENERALIST", "ENGINEERING", "OUTRO")),
-    false
+    isRuleEnabled("artifact-style-rules.md", { artifactStyle: " human-generated " }),
+    true
   );
-  assert.equal(matchesProfile(a, profile("FULLCYCLE", "GENERALIST", "ENGINEERING", "CORE")), true);
+  assert.equal(isRuleEnabled("rtk-rules.md"), false);
+  assert.equal(isRuleEnabled("rtk-rules.md", { rtkEnabled: true }), true);
+  // Decide o nome exato do arquivo, em qualquer pasta e com qualquer separador.
+  assert.equal(isRuleEnabled("engineering\\rtk-rules.md"), false);
+  for (const rel of ["engineering/eng-rules.md", "product/prod-rules.md", "minha-rtk-rules.md"]) {
+    assert.equal(isRuleEnabled(rel), true, rel);
+    assert.equal(isRuleEnabled(rel, { artifactStyle: "human-generated", rtkEnabled: true }), true);
+  }
 });
 
-test("matchesProfile: FULLCYCLE satisfaz qualquer HUB", () => {
-  const a = parseAppliesTo(bloco("QA", "all", "all", "all"));
-  assert.equal(matchesProfile(a, profile("FULLCYCLE", "SENIOR", "ENGINEERING")), true);
-});
-
-test("matchesProfile: GENERALIST satisfaz qualquer POSITION e AREA, mas não o HUB", () => {
-  const a = parseAppliesTo(bloco("QA", "QA-ENGINEER", "PRODUCT", "all"));
-  assert.equal(matchesProfile(a, profile("QA", "GENERALIST", "ENGINEERING")), true);
-  assert.equal(matchesProfile(a, profile("BACKEND", "GENERALIST", "ENGINEERING")), false);
-});
-
-test("listRulesForProfile: rtk é opt-in, sem bloco é universal, recursivo em subpastas", () => {
+test("listRules: recursivo em subpastas, sem as exceções desligadas e do maior para o menor (#263)", () => {
   const dir = mkdtempSync(join(tmpdir(), "jarvis-filtro-"));
   try {
-    mkdirSync(join(dir, "engineering"), { recursive: true });
-    writeFileSync(join(dir, "universal.md"), "# Sem bloco\n");
-    writeFileSync(join(dir, "rtk-rules.md"), bloco("all", "all", "all", "all") + "\n");
-    writeFileSync(
-      join(dir, "engineering", "back.md"),
-      bloco("BACKEND", "all", "all", "all") + "\n"
+    mkdirSync(join(dir, "engineering", "frontend"), { recursive: true });
+    writeFileSync(join(dir, "universal.md"), "u".repeat(10));
+    writeFileSync(join(dir, "engineering", "back.md"), "b".repeat(30));
+    writeFileSync(join(dir, "engineering", "frontend", "front.md"), "f".repeat(20));
+    writeFileSync(join(dir, "rtk-rules.md"), "r".repeat(5));
+    writeFileSync(join(dir, "artifact-style-rules.md"), "a".repeat(5));
+    writeFileSync(join(dir, "notas.txt"), "não é rule");
+
+    assert.deepEqual(listRules(dir), [
+      { path: "engineering/back.md", bytes: 30 },
+      { path: "engineering/frontend/front.md", bytes: 20 },
+      { path: "universal.md", bytes: 10 },
+    ]);
+    const tudo = listRules(dir, { artifactStyle: "human-generated", rtkEnabled: true });
+    assert.deepEqual(
+      tudo.map((r) => r.path),
+      [
+        "engineering/back.md",
+        "engineering/frontend/front.md",
+        "universal.md",
+        "artifact-style-rules.md",
+        "rtk-rules.md",
+      ]
     );
-    writeFileSync(join(dir, "engineering", "qa.md"), bloco("QA", "all", "all", "all") + "\n");
-    const p = profile("BACKEND", "SENIOR", "ENGINEERING");
-
-    const sem = listRulesForProfile(dir, p)
-      .map((r) => r.path)
-      .sort();
-    assert.deepEqual(sem, ["engineering/back.md", "universal.md"]);
-
-    const com = listRulesForProfile(dir, p, { rtkEnabled: true })
-      .map((r) => r.path)
-      .sort();
-    assert.deepEqual(com, ["engineering/back.md", "rtk-rules.md", "universal.md"]);
+    assert.deepEqual(listRules(join(dir, "nao-existe")), []);
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }
 });
 
-// Linha de base de rules/ para 4 perfis, sem RTK (architecture.md, seção 1.1), já sem as 7 rules de etapa
-// (92.260 B), movidas para rules-on-demand/ na etapa 2 da #54 (e com o rules/AGENTS.md 691 B maior, por documentar as duas pastas). Mudam quando uma rule é adicionada, movida ou editada.
-// +26 B em cada perfil na #64 (generalização de exemplos de domínio em eng.docs-scraping-rules.md).
-// +129 B em cada perfil na #67 (eng.bump-rules.md corrigido para package.json/npm + referência ao CHANGELOG.md).
-// +29 B em cada perfil na #72 (eng.integrations-rules.md: referências a `node bin/lib/vcs/...`
-// trocadas por `jarvis vcs .../jarvis tasks comment`) — baseline reconstruída agora na #74,
-// que foi quando o drift apareceu (test:filtro não tinha sido re-rodado após aquele PR).
-// #80 (rename eng-scraper/área scraper -> eng-automation/área automation): deltas variam por
-// perfil porque eng.rpa-rules.md (HUB: BACKEND) e eng.frontend-rules.md (HUB: FRONTEND) mudaram
-// quantidades diferentes de bytes, e cada perfil carrega um subconjunto diferente de rules.
-// +1020 B em cada perfil na #63 (eng.specializations-rules.md estendida pra 6 áreas +
-// eng-rules.md validando as 4 variáveis novas — as duas são universais, por isso o delta
-// é igual nos 4 perfis, diferente do caso da #80 acima).
-// +12 B em cada perfil na introdução da área `platform` (eng.skills-rules.md: lista de
-// áreas reconhecidas ganhou "platform" — rule universal, delta igual nos 4 perfis).
-// Consolidação de QA em eng-qa/eng-qa-planner (2026-10-05): removidas 3 rules de QA
-// (eng.qa.exploratory-session-rules.md, eng.qa.quality-gate-scoring-rules.md,
-// eng.qa.tech-spec-validation-criteria-rules.md) — -3 arquivos em FULLCYCLE e QA (que
-// carregam rules de HUB:QA); eng.qa.cypress-standards-rules.md (HUB:QA) teve só uma linha
-// trocada; eng.frontend-rules.md (HUB:FRONTEND) e eng.rpa-rules.md (HUB:BACKEND) tiveram
-// trechos de TestSprite/eng-qa-* reescritos — por isso BACKEND e FRONTEND mantêm a
-// contagem de arquivos mas mudam de bytes, cada um no seu próprio delta.
-// +201 B em cada perfil ao wirear PLATFORM_SPECIALIZATIONS (eng.specializations-rules.md
-// ganhou a área platform + eng-rules.md validando a variável nova — as duas são
-// universais, delta igual nos 4 perfis).
-// Descontinuação da área security (2026-10-05): eng-security-rules.md, eng-rules.md,
-// eng.skills-rules.md e eng.specializations-rules.md (todas universais) tiveram trechos
-// reescritos — nenhuma rule foi removida, só o conteúdo mudou de tamanho, por isso a
-// contagem de arquivos não muda e o delta de bytes é igual nos 4 perfis.
-// Remoção do eng-automation-robot-builder (2026-10-05): eng.rpa-rules.md (HUB: BACKEND) e
-// eng.frontend-rules.md (HUB: FRONTEND) perderam a referência ao Stagehand — cada um no seu
-// próprio delta; QA não carrega nenhuma das duas, por isso fica inalterado.
-// Consolidação de data em eng-data (2026-10-05): eng.specializations-rules.md trocou
-// `eng-data-engineer` por `eng-data` na tabela de skill base — rule universal, delta igual
-// nos 4 perfis.
-// Issue #140 (Advisor opcional e comentários no card só para eventos relevantes, 2026-10-06):
-// eng.integrations-rules.md (universal) trocou a seção "Comentário no card" pela regra dos
-// eventos relevantes (+482 B) — delta igual nos 4 perfis, nenhum arquivo adicionado.
-// Issue #146 (Modo Developer-Guided, 2026-10-15): +282 B em cada perfil — rules/AGENTS.md
-// (sempre copiado) passou a mostrar rules-on-demand/product/ (+220 B) e prod-rules.md
-// (universal) ganhou o status `deprecated` (+62 B). A regra do modo guiado fica em
-// rules-on-demand/ e não entra nesta conta.
-// Issue #143 (Central docs por adaptador, 2026-10-15): +261 B em cada perfil — prod-rules.md
-// (universal) trocou CENTRAL_DOCS_REPO por CENTRAL_DOCS_STORAGE/LOCATION e o PROD_DOCS do
-// projeto único; eng.integrations-rules.md (universal) tirou o `fetch-raw` e ganhou a linha
-// CENTRAL_DOCS_STORAGE. Nenhum arquivo adicionado.
-// Issue #149 (Central docs = o que foi implementado; documentos em docs/jarvis/, 2026-10-15):
-// prod-rules.md (universal: PROD_DOCS/ENG_DOCS e o novo papel do Central docs),
-// eng.integrations-rules.md (universal: evento do gate-checklist), eng.docs-scraping-rules.md
-// (AREA ENGINEERING: $ENG_DOCS/robots) e eng.rpa-rules.md (HUB BACKEND: $ENG_DOCS/robots).
-// +222 B em FRONTEND e QA; +215 B em FULLCYCLE e BACKEND, que também carregam eng.rpa-rules.md
-// (a troca de `docs/engineering/robots` por `$ENG_DOCS/robots` encurta essa rule em 7 B).
-// Issue #153 (warm-up enxuto, 2026-10-16): +128 B em cada perfil — rules/AGENTS.md (sempre
-// copiado) passou a mostrar rules-on-demand/warm-up-consume-rules.md. A rule nova fica em
-// rules-on-demand/ e não entra nesta conta.
-// Issue #154 (discovery fluido, 2026-10-16): +59 B só em FULLCYCLE/GENERALIST — prod.spec-rules.md
-// (AREA PRODUCT, que o GENERALIST também recebe) trocou "hipóteses e perguntas em aberto" por
-// "suposições e lacunas" na seção "Discovery como insumo".
-// Issue #157 (discoveries em pasta própria, 2026-10-16): +309 B em todos os perfis — prod-rules.md
-// (AREA all) ganhou $DISCOVERIES_DOCS no ENV de fallback, a descrição dela e a regra de ENV antigo;
-// no FULLCYCLE/GENERALIST, -10 B de prod.spec-rules.md ($PROD_DOCS/discoveries/ → $DISCOVERIES_DOCS/).
-// Issue #159 (estilo de artefatos, 2026-10-16): +241 B em todos os perfis — rules/AGENTS.md (sempre
-// copiado) documenta o 5º campo opcional ARTIFACT_STYLE. A rule nova (artifact-style-rules.md) só entra
-// com ARTIFACT_STYLE=human-generated, que nenhum destes perfis tem.
-// Issue #163 (perguntas do ciclo eng.*, 2026-10-17): +37 B em todos os perfis — eng.integrations-rules.md
-// (comentário no card: o relatório do eng.pre-pr passa a ser registrado se o usuário escolher resumo ou completo).
-// Issue #163 (WORKSPACE_MODE, 2026-10-17): +342 B em todos os perfis — eng-rules.md ganha a validação não bloqueante do modo.
-// Issue #163 (buscas em modo workspace, 2026-10-17): +1552 B em todos os perfis — eng-rules.md ganha a tabela IDE → pasta e a regra de buscas.
-// Issue #181 (integrações pelas CLIs oficiais, 2026-10-25): +1077 B em todos os perfis — eng.integrations-rules.md
-// ganha a cadeia de execução (jarvis → CLI do vendor → .md), os códigos de saída e o catálogo; sai a seção MR/PR.
-// Issue #181 (limpeza, 2026-10-25): -8 B em todos os perfis — eng-rules.md cita os boards como Jira, GitHub, GitLab (sai o Linear).
-// Issue #181 (pre-pr, 2026-10-25): +113 B em todos os perfis — eng-rules.md ganha a nota de que o .npmrc vale para registries npm e que board e git usam o login da CLI.
-// Issue #181 (pre-pr 2, 2026-10-25): +109 B em todos os perfis — eng.integrations-rules.md cita a saída 1 (uso) e exclui o *_ACCESS=manual do passo 2 da cadeia.
-// Issue #181 (pre-pr 3, 2026-10-25): +118 B em todos os perfis — o passo 2 da cadeia só vale para CLI ausente ou sem login (manual/inválido não roda a CLI; ENV.md ambíguo repete com --ide/--env-file).
-// Issue #182 (links clicáveis, 2026-10-26): +132 B em todos os perfis — rules/AGENTS.md (sempre copiado) passou a mostrar
-// rules-on-demand/doc-links-rules.md. A rule nova fica em rules-on-demand/ e não entra nesta conta.
-// Issue #182 (pre-pr 2, 2026-10-26): +43 B em todos os perfis — rules/AGENTS.md descreve rules-on-demand/ como etapa ou transversal.
-// Issue #184 (regra de ouro, 2026-10-27): +1022 B em todos os perfis — eng.integrations-rules.md ganha a seção "Nada é publicado sem perguntar" (com as exceções da Fase 0 do eng.pr e dos documentos aprovados juntos) e os eventos (f) e (g) na lista.
-// Issue #184 (pre-pr 11, 2026-10-28): +26 B em todos os perfis — rules/AGENTS.md descreve o eng.pr como "Push e PR, depois da pergunta (regra de ouro)".
-// Issue #184 (pre-pr 13, 2026-10-28): +191 B em todos os perfis — eng-security-rules.md: o label `security` é registrado no PR Brief e a pessoa é orientada a pô-lo no PR (o Jarvis não altera o PR sem perguntar).
-// Issue #184 (pre-pr 17, 2026-10-28): +3 B em todos os perfis — eng-security-rules.md diz que o `jarvis vcs create-merge` não põe label.
-// Issue #184 (pre-pr 19, 2026-10-28): +104 B em todos os perfis — eng-rules.md separa os documentos de trabalho da cópia local do Central docs.
-// Issue #184 (pre-pr 20, 2026-10-28): +18 B em todos os perfis — eng-rules.md: a cópia local do Central docs fica em docs/jarvis/ no local padrão.
-// Issue #184 (pre-pr 20, 2026-10-28): +210 B só no FULLCYCLE — data-rules.md (HUB: DATA) distingue o alerta automático do pipeline do aviso do Jarvis.
-// Issue #184 (pre-pr 22, 2026-10-28): +55 B em todos os perfis — eng.integrations-rules.md separa o repositório do create-merge (git remote) do --repo do create-issue.
-// Issue #199 (2026-10-30): +1 arquivo e +1126 B em todos os perfis — company-overlay-rules.md (994 B, universal: todo workspace tem um overlay) e a linha dela no rules/AGENTS.md (+132 B).
-// Issue #200 (2026-10-31): +136 B em todos os perfis — eng.integrations-rules.md (universal) aponta o nome da branch do freelance para a skill eng-global-branch (128 B na Fase 3, +8 B na Fase 6).
-// Issue #209 (2026-11-01): −1 arquivo e −7016 B só no FULLCYCLE — data-rules.md (HUB: DATA) removida; a base eng-data cobre o tema.
-// Issue #84 (auditoria de eficiência de tokens, item P0-01, 2026-10-05): rules/AGENTS.md
-// (6.724 B) e rules/product/README.md (1.519 B) removidos — eram universais (sem bloco
-// `Applies to`, o primeiro com caso especial no código), então saem da contagem dos 4
-// perfis igualmente: -2 arquivos e -9.165 B em cada um (eram 8.243 B no #84; o rules/AGENTS.md
-// cresceu na main até o rebase da branch sobre ela, em 2026-11-01).
-// Issue #85 (auditoria de eficiência de tokens, item P0-02, 2026-10-06): prod-rules.md
-// (AREA: all) perdeu o bloco de ENV/$IDE/isolamento já coberto por eng-rules.md — de 12.015 B
-// para 9.317 B (-2.698 B; eram -2.673 B no #85, antes do rebase sobre a main), mesmo delta nos
-// 4 perfis; nenhum arquivo removido.
-// Issue #86 (auditoria de eficiência de tokens, item P0-03, 2026-10-06): eng.bump-rules.md,
-// eng.docs-scraping-rules.md (fundida na seção 6 de eng.rpa-rules.md) e eng.rpa-rules.md movidos
-// para rules-on-demand/. bump e docs-scraping saem dos 4 perfis; rpa só saía de BACKEND e FULLCYCLE.
-// FULLCYCLE -3 arquivos (-11.851 B), BACKEND -3 (-11.851 B), FRONTEND -2 (-4.035 B), QA -2 (-4.035 B)
-// (no #86 eram -11.893 B e -4.070 B; os números mudaram com o rebase sobre a main).
-// Issue #89 (auditoria de eficiência de tokens, item P0-06, 2026-10-06): eng.skills-rules.md
-// (AREA: ENGINEERING, universal entre os 4 perfis) ganhou a indicação de que `skills/AGENTS.md`
-// é do repositório e não é instalado na IDE — +51 B em cada perfil, nenhum arquivo adicionado.
-// Issue #105 (auditoria de eficiência de tokens, item P1-13, 2026-10-06): prod.spec-rules.md
-// (AREA: PRODUCT) ganhou 3 seções comuns dos comandos prod.spec.* (+1.523 B; eram +2.131 B no #105,
-// antes do rebase sobre a main, que já tinha enxugado a rule). Só o perfil
-// FULLCYCLE/GENERALIST do BASE a carrega (GENERALIST satisfaz qualquer AREA); BACKEND, FRONTEND e QA
-// não mudam. Em contrapartida os 4 workflows perderam ≈ 5,5 KB, lidos só quando o comando roda.
-// Issue #93 (#206, 2026-11-01): −1.445 B em todos os perfis (seções de etapa da eng-security-rules.md
-// para rules-on-demand/engineering/eng.security-rules.md); nenhum arquivo a menos.
-// Issue #109 (#207, fase 6, 2026-11-02): frontmatter morto removido das rules (env_file em 4 de
-// rules/, name/author/version em eng.frontend-rules.md). FULLCYCLE −150 B e FRONTEND −150 B; BACKEND
-// −90 B e QA −90 B (o frontend só entra em FULLCYCLE e FRONTEND; rtk-rules.md não entra no BASE
-// porque só é copiada com RTK ligado); nenhum arquivo a menos. Total removido no repo, incluindo
-// rules-on-demand: −211 B.
-// Issue #118 (#208, fase 1, 2026-11-02): eng.qa.cypress-standards-rules.md para
-// rules-on-demand/engineering/qa/, com um ponteiro de 463 B no caminho antigo de rules/. QA e
-// FULLCYCLE −7.132 B; BACKEND e FRONTEND não mudam; nenhum arquivo a menos. A parte de dados da
-// #118 ficou sem objeto (a data-rules.md saiu na #209).
-// Issue #121 (#208, fase 2, 2026-11-02): eng.specializations-rules.md perdeu a citação de
-// skills/security-skills-deleted.md, que não existe. −41 B nos 4 perfis; nenhum arquivo a menos.
-// Issue #83 (lacunas do pré-PR, 2026-11-02): as 3 seções do #105/#139 saem de prod.spec-rules.md
-// (AREA: PRODUCT) para rules-on-demand/product/prod.spec-common-rules.md (AREA: all), lida pelos 4
-// workflows, e a rule ganha a linha que aponta para ela. Só FULLCYCLE/GENERALIST muda: −1.360 B.
-// Issue #220 (2026-11-06): eng.integrations-rules.md (AREA: all) ganha a exceção do --force do
-// /eng.spec-consolidate à regra de ouro. +466 B nos 4 perfis; nenhum arquivo a mais.
-// Issue #227 (2026-11-07): prod-rules.md (AREA: all) ganha a linha de que a cópia do AGENTS.md para o
-// CLAUDE.md respeita o .git/info/exclude no modo projeto. +195 B nos 4 perfis; nenhum arquivo a mais.
-// Issue #239 (2026-11-08): eng.integrations-rules.md (AREA: all) perde a linha do chat, a seção
-// de alertas e as menções a Slack. −301 B nos 4 perfis; nenhum arquivo a menos.
-// Issue #240 (2026-11-08): eng-rules.md (AREA: all) perde a linha da pasta $SESSIONS_DIR/qa/, sem
-// gerador desde a consolidação de QA. −74 B nos 4 perfis; nenhum arquivo a menos.
-const BASE = [
-  [
-    "FULLCYCLE/GENERALIST/ENGINEERING/CORE",
-    profile("FULLCYCLE", "GENERALIST", "ENGINEERING"),
-    10,
-    66715,
-  ],
-  ["BACKEND/SENIOR/ENGINEERING/CORE", profile("BACKEND", "SENIOR", "ENGINEERING"), 7, 47231],
-  ["FRONTEND/PLENO/ENGINEERING/CORE", profile("FRONTEND", "PLENO", "ENGINEERING"), 8, 55530],
-  ["QA/QA-ENGINEER/ENGINEERING/CORE", profile("QA", "QA-ENGINEER", "ENGINEERING"), 8, 47694],
-];
+// Medida de rules/ (o que o Claude Code carrega no início da sessão), sem RTK e com ARTIFACT_STYLE
+// padrão: as rules de toda instalação, desde a #263. Muda quando uma rule é acrescentada, movida,
+// apagada ou editada: atualize no mesmo PR, dizendo o motivo. Arquivos não rastreados em rules/ e
+// CRLF mudam a medida. As medidas antigas, por perfil, estão no histórico do git deste arquivo.
+const RULES = { arquivos: 7, bytes: 44654 };
 
-for (const [nome, p, arquivos, bytes] of BASE) {
-  test(`rules reais: ${nome} recebe ${arquivos} arquivos e ${bytes} B`, () => {
-    const rules = listRulesForProfile(join(root, "rules"), p);
-    assert.equal(rules.length, arquivos);
-    assert.equal(
-      rules.reduce((s, r) => s + r.bytes, 0),
-      bytes
-    );
-  });
-}
-
-test("rules reais: artifact-style-rules.md só com ARTIFACT_STYLE=human-generated (sem coringa)", () => {
-  const tem = (p) =>
-    listRulesForProfile(join(root, "rules"), p).some((r) => r.path === "artifact-style-rules.md");
-  const base = profile("FULLCYCLE", "GENERALIST", "ENGINEERING");
-  assert.equal(tem(base), false);
-  assert.equal(tem({ ...base, ARTIFACT_STYLE: "ai-generated" }), false);
-  assert.equal(tem({ ...base, ARTIFACT_STYLE: "human-generated" }), true);
+test(`rules reais: rules/ entrega ${RULES.arquivos} arquivos e ${RULES.bytes} B`, () => {
+  const rules = listRules(join(root, "rules"));
+  assert.equal(rules.length, RULES.arquivos);
   assert.equal(
-    tem({ ...profile("BACKEND", "SENIOR", "ENGINEERING"), ARTIFACT_STYLE: "human-generated" }),
-    true
+    rules.reduce((s, r) => s + r.bytes, 0),
+    RULES.bytes
   );
 });
 
-test("rules reais: a rule Cypress inteira está em rules-on-demand/ e o ponteiro em rules/ (#118)", () => {
-  const caminho = join("engineering", "qa", "eng.qa.cypress-standards-rules.md");
-  for (const p of [
-    profile("QA", "QA-ENGINEER", "ENGINEERING"),
-    profile("FULLCYCLE", "GENERALIST", "ENGINEERING"),
+test("rules reais: artifact-style-rules.md só com ARTIFACT_STYLE=human-generated", () => {
+  const tem = (opts) =>
+    listRules(join(root, "rules"), opts).some((r) => r.path === "artifact-style-rules.md");
+  assert.equal(tem({}), false);
+  assert.equal(tem({ artifactStyle: "ai-generated" }), false);
+  assert.equal(tem({ artifactStyle: "human-generated" }), true);
+});
+
+test("rules reais: a de frontend e a de spec de produto ficam em rules-on-demand/, e os comandos da área mandam lê-las (#263)", () => {
+  const sobDemanda = listRules(join(root, "rules-on-demand")).map((r) => r.path);
+  for (const caminho of [
+    "engineering/frontend/eng.frontend-rules.md",
+    "product/prod.spec-rules.md",
   ]) {
-    const emRules = listRulesForProfile(join(root, "rules"), p).find((r) => r.path === caminho);
-    const sobDemanda = listRulesForProfile(join(root, "rules-on-demand"), p).find(
-      (r) => r.path === caminho
-    );
-    assert.ok(emRules && emRules.bytes < 600, `${p.HUB}: ponteiro em rules/ com menos de 600 B`);
-    assert.ok(sobDemanda && sobDemanda.bytes > 7000, `${p.HUB}: rule inteira em rules-on-demand/`);
+    assert.ok(sobDemanda.includes(caminho), `rules-on-demand/${caminho}`);
+    assert.ok(!existsSync(join(root, "rules", caminho)), `rules/${caminho} não deveria existir`);
   }
-  // O ponteiro tem de continuar mandando ler a rule inteira, não só ser pequeno.
-  assert.match(
-    readFileSync(join(root, "rules", caminho), "utf8"),
-    /\$IDE\/rules-on-demand\/engineering\/qa\/eng\.qa\.cypress-standards-rules\.md/
-  );
+  // A pasta rules/engineering/qa/, que só tinha um ponteiro, não existe mais.
+  assert.ok(!existsSync(join(root, "rules", "engineering", "qa")));
+  // Os 7 comandos de spec de produto mandam ler a prod.spec-rules.md.
+  for (const w of ["prd", "frd", "epic", "issue", "breakdown", "ard", "clarify"]) {
+    assert.match(
+      readFileSync(join(root, "workflows", "product", `prod.spec.${w}.md`), "utf8"),
+      /antes de começar, leia [^\n]*`\$IDE\/rules-on-demand\/product\/prod\.spec-rules\.md`/,
+      w
+    );
+  }
+  // Os 3 comandos de frontend e o agente mandam ler a eng.frontend-rules.md.
+  for (const arquivo of [
+    "workflows/engineering/frontend/eng.frontend-component.md",
+    "workflows/engineering/frontend/eng.frontend-perf-audit.md",
+    "workflows/engineering/frontend/eng.frontend-review.md",
+    "agents/engineering/eng.frontend.agent.md",
+  ]) {
+    assert.match(
+      readFileSync(join(root, arquivo), "utf8"),
+      /\$IDE\/rules-on-demand\/engineering\/frontend\/eng\.frontend-rules\.md/,
+      arquivo
+    );
+  }
 });
 
-test("rules reais: prod.spec-common-rules.md em rules-on-demand/ chega a qualquer AREA (#83)", () => {
-  const caminho = join("product", "prod.spec-common-rules.md");
-  for (const p of [
-    profile("BACKEND", "SENIOR", "ENGINEERING"),
-    profile("FULLCYCLE", "PM", "PRODUCT"),
-  ]) {
-    const sobDemanda = listRulesForProfile(join(root, "rules-on-demand"), p).find(
-      (r) => r.path === caminho
+test("rules reais: prod.spec-common-rules.md fica em rules-on-demand/ e os 5 workflows mandam lê-la (#83)", () => {
+  const caminho = "product/prod.spec-common-rules.md";
+  assert.ok(
+    listRules(join(root, "rules-on-demand")).some((r) => r.path === caminho),
+    "rule comum dos prod.spec.* em rules-on-demand/"
+  );
+  // As 3 seções não voltam para rules/, que é carregada no início da sessão.
+  const todas = { artifactStyle: "human-generated", rtkEnabled: true };
+  for (const r of listRules(join(root, "rules"), todas)) {
+    assert.doesNotMatch(
+      readFileSync(join(root, "rules", r.path), "utf8"),
+      /^### Busca de contexto/m,
+      `${r.path} não deve ter a seção Busca de contexto`
     );
-    assert.ok(sobDemanda, `${p.HUB}/${p.AREA}: rule comum dos prod.spec.* em rules-on-demand/`);
-    // As 3 seções não voltam para rules/ (lá, só AREA: PRODUCT e GENERALIST as recebiam).
-    for (const r of listRulesForProfile(join(root, "rules"), p)) {
-      assert.doesNotMatch(
-        readFileSync(join(root, "rules", r.path), "utf8"),
-        /^### Busca de contexto/m,
-        `${r.path} não deve ter a seção Busca de contexto`
-      );
-    }
   }
   // Os 5 workflows (prd, frd, epic, issue, breakdown) mandam ler a rule antes de começar.
   for (const w of ["prd", "frd", "epic", "issue", "breakdown"]) {

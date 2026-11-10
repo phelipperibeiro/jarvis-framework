@@ -276,11 +276,11 @@ graph TD
 > Tudo que for **diferente do código ou ambíguo no card** vira uma questão aqui, detalhada a ponto de outro agente entendê-la sem reconstruir a análise. No mínimo 3 opções, mais a **4 — Outra**.
 > **Com Advisor** (cabeçalho), a sugestão do Advisor prevalece e é a decisão adotada; o agente principal não a substitui nem contesta. **Sem Advisor**, "Sugestão do Sub-Agent (Advisor)" e "Divergência" ficam "N/A (Advisor não utilizado)", a regra em destaque é omitida e a decisão é a do usuário ao revisar o documento.
 > Questão levantada depois do `eng.start` (consulta por exceção) entra aqui, numerada em sequência, marcada "levantada no `eng.plan`" ou "no `eng.work`". Sem questão em aberto, escreva "Nenhuma" e o motivo em uma frase.
-> **Marcação para leitura rápida:** enquanto a questão estiver 🔄 Aberta, a opção assumida ganha ✅ e "(assumida)" no título, e as alternativas ganham 🔄, inclusive a **4 — Outra**; a coluna "Assumido ou decidido" mostra a suposição atual (`✅ {n} — {nome curto}`). Decidida a questão, a opção escolhida ganha ✅ e "(escolhida)" no título, e as demais ganham ❌, inclusive a **4 — Outra**; a coluna passa a mostrar a decisão. Enquanto a questão estiver 🔄 Aberta, "Decisão adotada" fica "— (aguardando decisão)".
+> **Marcação para leitura rápida:** enquanto a questão estiver 🔄 Aberta, a opção assumida ganha ✅ e "(assumida)" no título, e as alternativas ganham 🔄, inclusive a **4 — Outra**; a coluna "Arquiteto (sugestão)" mostra a opção assumida (`{n} — {nome curto}`), a da decisão fica "— (aguardando)" e a "Comparação", "—". Decidida a questão, a opção escolhida ganha ✅ e "(escolhida)" no título, e as demais ganham ❌, inclusive a **4 — Outra**; a coluna da decisão mostra `✅ {n} — {nome curto}` e a "Comparação" diz "Igual", "Mesma opção; {ajuste}" ou "**Diferente**"; só quando a opção decidida é outra, a célula do Arquiteto ganha ⚠️. Enquanto a questão estiver 🔄 Aberta, "Decisão adotada" fica "— (aguardando decisão)".
 
-| ID | Status                     | Questão                      | Quem responde                | Assumido ou decidido         | Deadline    |
-| -- | -------------------------- | ---------------------------- | ---------------------------- | ---------------------------- | ----------- |
-| Q1 | {✅ Decidida \| 🔄 Aberta} | {resumo objetivo da questão} | {Advisor \| nome do usuário} | {✅ {n} — {nome curto}} | {— \| data} |
+| ID | Status | Questão | Quem responde | Arquiteto (sugestão) | {Advisor \| Usuário} (decisão adotada) | Comparação | Deadline |
+| -- | ------ | ------- | ------------- | -------------------- | -------------------------------------- | ---------- | -------- |
+| Q1 | {✅ Decidida \| 🔄 Aberta} | {resumo objetivo da questão} | {Advisor \| nome do usuário} | {{n} — {nome curto}} | {✅ {n} — {nome curto} \| — (aguardando)} | {Igual \| Mesma opção; {ajuste} \| **Diferente** \| —} | {— \| data} |
 
 ### Q1 — {Título da questão}
 
