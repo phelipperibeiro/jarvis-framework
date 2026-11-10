@@ -33,14 +33,10 @@ workflows/
     ├── eng.build-tech-spec.md    # Criar Tech Spec (Delivery Spec ou Reference Spec)
     ├── eng.light-arch.md         # Design arquitetural leve
     ├── eng.rpa.robot.md      # Criar robô RPA do zero ao PR (skill técnica)
-    ├── frontend/
-    │   ├── eng.frontend-component.md     # Criar/refatorar componente (design system vs remote, a11y, testes)
-    │   ├── eng.frontend-review.md        # Revisão de PR frontend (TS, tokens, a11y, MFE)
-    │   └── eng.frontend-perf-audit.md    # Auditoria Core Web Vitals e bundle
-    └── qa/
-        ├── eng.qa-refinement-entry.md
-        ├── eng.qa-release-signoff.md
-        └── eng.qa-sprint-planning.md
+    └── frontend/
+        ├── eng.frontend-component.md     # Criar/refatorar componente (design system vs remote, a11y, testes)
+        ├── eng.frontend-review.md        # Revisão de PR frontend (TS, tokens, a11y, MFE)
+        └── eng.frontend-perf-audit.md    # Auditoria Core Web Vitals e bundle
 ```
 
 ---
@@ -87,9 +83,6 @@ workflows/
 | `eng.frontend-component.md` | Criar ou refatorar componente frontend com qualidade (design system vs remote, a11y, testes) |
 | `eng.frontend-review.md` | Revisão de código específica para PRs frontend (TypeScript, tokens, a11y, MFE) |
 | `eng.frontend-perf-audit.md` | Auditoria de performance frontend (Core Web Vitals, bundle, diagnóstico por métrica) |
-| `eng.qa-refinement-entry.md` | Entrada do QA no refinement de tickets |
-| `eng.qa-release-signoff.md` | Sign-off QA pré-deploy (GO/NO-GO) |
-| `eng.qa-sprint-planning.md` | Planejamento de capacidade QA por sprint |
 
 ---
 

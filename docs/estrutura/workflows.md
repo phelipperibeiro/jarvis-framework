@@ -20,10 +20,8 @@ workflows/
 │   ├── eng.pr.md
 │   ├── eng.debug.md
 │   ├── eng.create-ard.md / eng.create-rfc.md / …
-│   ├── eng.security-*.md
 │   ├── eng.rpa.robot.md
-│   ├── frontend/              # component, review, perf-audit, …
-│   └── qa/                    # fluxos QA
+│   └── frontend/              # component, review, perf-audit, …
 └── product/
     ├── prod.spec.md
     ├── prod.spec.discovery.md

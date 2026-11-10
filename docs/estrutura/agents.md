@@ -25,8 +25,7 @@ agents/
 │   └── qa/
 │       ├── eng.qa.test-planner.md
 │       ├── eng.qa.testing-engineer.md
-│       ├── eng.qa.test-architect.md
-│       └── eng.qa.quality-strategist.md
+│       └── eng.qa.test-architect.md
 └── product/
     ├── prod.pm-checker.md
     └── prod.discovery-interviewer.md

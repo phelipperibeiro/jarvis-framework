@@ -66,7 +66,7 @@ bin/
 
 Pastas sincronizadas (`SYNC_DIRS`): `agents`, `skills`, `workflows`, `templates`, `rules`, `rules-on-demand`.
 
-Arquivos de raiz (`SYNC_ROOT_FILES`): `taxonomy.md`, `AGENTS.md`, `members.md`.
+Arquivos de raiz (`SYNC_ROOT_FILES`): `taxonomy.md`, `AGENTS.md`.
 
 Efeitos colaterais no init:
 

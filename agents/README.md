@@ -18,19 +18,19 @@ agents/
 │   ├── eng.rpa.agent.md          # Automação RPA (ARACHNE)
 │   ├── eng.frontend.agent.md     # Especialista frontend (neutro de stack): UI, estado, a11y
 │   ├── eng.ux-designer.agent.md  # Especialista UX/UI: heurísticas, jornada, microcopy
-│   └── qa/                       # QA específico de engenharia (4 agents)
+│   └── qa/                       # QA específico de engenharia (3 agents)
 └── product/                      # 🎯 Agentes do domínio de Produto
     ├── prod.pm-checker.md        # Product Manager checker
     └── prod.discovery-interviewer.md  # Entrevistador de discovery
 ```
 
-**📊 Total: 15 agents**
-- Engineering: 13 (9 main + 4 QA)
+**📊 Total: 14 agents**
+- Engineering: 12 (9 main + 3 QA)
 - Product: 2
 
 ---
 
-## ⚙️ 1. Engenharia (13 agents)
+## ⚙️ 1. Engenharia (12 agents)
 
 **Pasta**: `engineering/`
 
@@ -48,13 +48,12 @@ Agentes específicos para fluxos e regras do domínio de Engenharia.
 - `eng.docs-consolidator.agent.md` - `@eng.docs-consolidator.agent` - Consolida o que a entrega implementou em documentos do Central docs (por funcionalidade e por entrega), chamado pelo `/eng.spec-consolidate`
 
 
-### QA Agents (4)
+### QA Agents (3)
 **Subpasta**: `engineering/qa/`
 
 - `eng.qa.test-planner.md` - `@eng.qa.test-planner`
 - `eng.qa.testing-engineer.md` - `@eng.qa.testing-engineer` _(stack primária: Cypress + TypeScript — inclui domínio e debugging Cypress)_
 - `eng.qa.test-architect.md` - `@eng.qa.test-architect`
-- `eng.qa.quality-strategist.md` - `@eng.qa.quality-strategist` — priorização de esforço, risco de feature, distribuição QA/dev
 
 ---
 
@@ -74,10 +73,10 @@ Agentes específicos para fluxos e validações do domínio de Produto.
 | Domínio | Agentes | Uso |
 |---------|---------|-----|
 | ⚙️ **Engineering** (main) | 9 | Agent principal, advisor, bug hunter, code review, docs, docs consolidator, RPA, frontend, UX |
-| 🧪 **QA** (sub-eng) | 4 | Test planning, testing (+Cypress), test architect, quality strategist |
+| 🧪 **QA** (sub-eng) | 3 | Test planning, testing (+Cypress), test architect |
 | 🎯 **Product** | 2 | PM checker, discovery interviewer |
 
-**Total: 15 agents**
+**Total: 14 agents**
 
 ---
 
@@ -124,6 +123,7 @@ Você também pode invocar agentes manualmente usando `@`:
 ```bash
 # Invocar agente específico
 @eng.qa.test-planner "analisar cobertura de testes da branch"
+@eng.qa.test-planner TASK-123   # Modo A: estratégia de testes a partir do card, antes do código
 
 # Múltiplos agentes em paralelo
 @eng.frontend.agent @eng.ux-designer.agent "revisar fluxo de checkout"
@@ -196,4 +196,4 @@ Você também pode invocar agentes manualmente usando `@`:
 ---
 
 **Última atualização**: 2026-11-09
-**Agents ativos:** 15 (Engineering: 9 main + 4 QA, Product: 2)
+**Agents ativos:** 14 (Engineering: 9 main + 3 QA, Product: 2)

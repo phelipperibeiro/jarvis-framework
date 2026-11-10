@@ -22,7 +22,6 @@ jarvis/
 ├── LICENSE                → AGPL-3.0
 ├── package.json           → pacote jarvis-framework + bin jarvis
 ├── taxonomy.md            → squads / hubs / positions / areas válidos
-├── members.md             → lista de membros (opcional, org)
 ├── agents/                → personas de IA
 ├── skills/                → playbooks executáveis
 ├── workflows/             → comandos slash / fluxos

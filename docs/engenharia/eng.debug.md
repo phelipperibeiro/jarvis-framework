@@ -40,8 +40,7 @@ Tenho um problema
 ├── O bug ainda não está descrito (produto)? ► /prod.spec.issue (tipo Bug)
 ├── Bug, sintoma ou quero varrer código? ───► /eng.debug {card | erro | escopo}
 ├── Teste flaky do Cypress? ────────────────► agente eng.qa.testing-engineer
-├── Robô RPA quebrou? ──────────────────────► /eng.rpa.robot (manutenção)
-└── Decidir release com bugs abertos? ──────► /eng.qa-release-signoff
+└── Robô RPA quebrou? ──────────────────────► /eng.rpa.robot (manutenção)
 ```
 
 ## Como funciona

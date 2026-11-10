@@ -75,7 +75,6 @@ jarvis/
 ├── LICENSE            # AGPL-3.0
 ├── package.json       # jarvis-framework @ 2.x + bin
 ├── taxonomy.md        # opções de org
-├── members.md         # membros (opcional)
 ├── agents/            # personas
 ├── skills/            # playbooks
 ├── workflows/         # slash commands
@@ -114,7 +113,7 @@ jarvis/
 └──────────────────────┘
 ```
 
-O que o **npm publica** (`package.json` → `files`): CLI + agents + skills + workflows + templates + rules + taxonomy + members + AGENTS + README.  
+O que o **npm publica** (`package.json` → `files`): CLI + agents + skills + workflows + templates + rules + taxonomy + AGENTS + README.  
 **Fora do pacote** (mas no Git): `docs/`, etc.
 
 ---
@@ -185,7 +184,7 @@ Hierarquia de leitura completa: ver `AGENTS.md` na raiz.
 | Pré-PR | `/eng.pre-pr` | Checklist | — |
 | Entregar | `/eng.pr` | Push e MR/PR, depois da pergunta (regra de ouro) | — |
 
-Produto: família `/prod.spec*`. QA/RPA/Security: workflows sob `workflows/engineering/…` (após flatten, nomes na raiz da IDE).
+Produto: família `/prod.spec*`. RPA/Frontend: workflows sob `workflows/engineering/…` (após flatten, nomes na raiz da IDE).
 
 ---
 
@@ -256,7 +255,6 @@ Detalhe da rule: `rules/rtk-rules.md`. Comentários: `templates/ENV-template.md`
 | `LICENSE` | AGPL-3.0 | [raiz.md](./estrutura/raiz.md#license) |
 | `package.json` | Nome, versão 2.x, bin | [raiz.md](./estrutura/raiz.md#packagejson) |
 | `taxonomy.md` | Opções de org | [raiz.md](./estrutura/raiz.md#taxonomymd) |
-| `members.md` | Pessoas da org | [raiz.md](./estrutura/raiz.md#membersmd) |
 
 Pastas: [agents](./estrutura/agents.md) · [bin](./estrutura/bin.md) · [docs](./estrutura/docs.md) · [node_modules](./estrutura/node_modules.md) · [rules](./estrutura/rules.md) · [skills](./estrutura/skills.md) · [templates](./estrutura/templates.md) · [workflows](./estrutura/workflows.md)
 

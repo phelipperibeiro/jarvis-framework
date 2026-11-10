@@ -52,7 +52,7 @@ function write(root, relPath, content = "x") {
   writeFileSync(full, content, "utf-8");
 }
 
-/** Fixture mínimo com 1 arquivo por SYNC_DIRS + os 3 SYNC_ROOT_FILES. */
+/** Fixture mínimo com 1 arquivo por SYNC_DIRS + os 2 SYNC_ROOT_FILES. */
 function buildMinimalFramework(root) {
   write(root, "agents/eng.agent.md");
   write(
@@ -76,7 +76,6 @@ function buildMinimalFramework(root) {
   write(root, "rules-on-demand/engineering/eng.plan-rules.md");
   write(root, "taxonomy.md");
   write(root, "AGENTS.md");
-  write(root, "members.md");
 }
 
 test("syncAssets: caminho feliz para claude — copia SYNC_DIRS, SYNC_ROOT_FILES, achata workflows/ e grava o lock", () => {
@@ -93,7 +92,6 @@ test("syncAssets: caminho feliz para claude — copia SYNC_DIRS, SYNC_ROOT_FILES
     assert.ok(existsSync(join(target, ".claude/rules-on-demand/engineering/eng.plan-rules.md")));
     assert.ok(existsSync(join(target, ".claude/taxonomy.md")));
     assert.ok(existsSync(join(target, ".claude/AGENTS.md")));
-    assert.ok(existsSync(join(target, ".claude/members.md")));
 
     // flatten: workflows/sub/eng.start.md -> workflows/eng.start.md (sem subpasta)
     assert.ok(existsSync(join(target, ".claude/workflows/eng.start.md")));
@@ -329,8 +327,33 @@ test("syncAssets: instalação antiga é limpa (claude, windsurf e kiro) pelo OB
       // product-specs e product-specs-update, skills sem chamador (#244): somem com a entrada de pasta
       "skills/product-specs/SKILL.md",
       "skills/product-specs-update/SKILL.md",
+      // cluster QA fora do ciclo removido (#241): os 3 comandos achatados, o agente e os 2 templates
+      "commands/eng.qa-refinement-entry.md",
+      "commands/eng.qa-release-signoff.md",
+      "commands/eng.qa-sprint-planning.md",
+      "agents/engineering/qa/eng.qa.quality-strategist.md",
+      "templates/engineering/qa/qa.release-signoff-template.md",
+      "templates/engineering/qa/qa.sprint-plan-template.md",
     ],
-    windsurf: ["workflows/AGENTS.md", "workflows/README.md", "workflows/all-tools.md", "workflows/eng.review.md", "workflows/eng.docs.md", "workflows/eng.create-ard-from-code.md", "workflows/eng.breakdown-subtasks.md", "workflows/data.contract.md", "workflows/data.new-pipeline.md", "workflows/prod.roadmap.preview.md"],
+    windsurf: [
+      "workflows/AGENTS.md",
+      "workflows/README.md",
+      "workflows/all-tools.md",
+      "workflows/eng.review.md",
+      "workflows/eng.docs.md",
+      "workflows/eng.create-ard-from-code.md",
+      "workflows/eng.breakdown-subtasks.md",
+      "workflows/data.contract.md", // cluster DATA removido (#242)
+      "workflows/data.new-pipeline.md",
+      "workflows/prod.roadmap.preview.md", // prod.roadmap.preview removido (#243)
+      // cluster QA fora do ciclo removido (#241)
+      "workflows/eng.qa-refinement-entry.md",
+      "workflows/eng.qa-release-signoff.md",
+      "workflows/eng.qa-sprint-planning.md",
+      "agents/engineering/qa/eng.qa.quality-strategist.md",
+      "templates/engineering/qa/qa.release-signoff-template.md",
+      "templates/engineering/qa/qa.sprint-plan-template.md",
+    ],
     kiro: [
       "steering/AGENTS.md",
       "steering/README.md",
@@ -354,6 +377,13 @@ test("syncAssets: instalação antiga é limpa (claude, windsurf e kiro) pelo OB
       "steering/skills/skill-product-roadmap-report.md",
       "steering/skills/skill-product-specs.md", // skills sem chamador (#244)
       "steering/skills/skill-product-specs-update.md",
+      // cluster QA fora do ciclo removido (#241)
+      "steering/eng.qa-refinement-entry.md",
+      "steering/eng.qa-release-signoff.md",
+      "steering/eng.qa-sprint-planning.md",
+      "agents/engineering/qa/eng.qa.quality-strategist.md",
+      "templates/engineering/qa/qa.release-signoff-template.md",
+      "templates/engineering/qa/qa.sprint-plan-template.md",
     ],
   };
   for (const [ide, arquivos] of Object.entries(antigos)) {
@@ -399,6 +429,39 @@ test("syncAssets: instalação antiga é limpa (claude, windsurf e kiro) pelo OB
         assert.ok(!existsSync(join(target, ".claude/skills/eng-qa-planner/assets")));
     });
   }
+});
+
+// O members.md saiu do framework (#241) sem entrar no OBSOLETE_PATHS: a cópia instalada pode ter
+// dados do time. O upgrade roda com force, que sobrescreveria um arquivo de raiz do SYNC_ROOT_FILES;
+// o members.md na raiz do framework falso simula a volta dele ao sync.
+test("syncAssets: o members.md instalado sobrevive ao upgrade e não é mais copiado (#241)", () => {
+  const pastas = { claude: "commands", windsurf: "workflows", kiro: "steering" };
+  for (const [ide, workflowsFolder] of Object.entries(pastas)) {
+    withJarvisRoot((root, target) => {
+      buildMinimalFramework(root);
+      write(root, "members.md", "# Members\n(modelo vazio do framework)\n");
+      const doTime = "# Members\n| Fulana | fulana@exemplo.com | SENIOR | U123 |\n";
+      write(target, `.${ide}/members.md`, doTime);
+
+      syncAssets(target, ide, { force: true, workflowsFolder });
+
+      const instalado = join(target, `.${ide}/members.md`);
+      assert.ok(existsSync(instalado), `${ide}: o members.md instalado não pode ser apagado`);
+      assert.equal(
+        readFileSync(instalado, "utf-8"),
+        doTime,
+        `${ide}: o members.md instalado não pode ser sobrescrito`
+      );
+    });
+  }
+
+  // Instalação nova: o arquivo não é copiado, mesmo que ainda exista na raiz do framework
+  withJarvisRoot((root, target) => {
+    buildMinimalFramework(root);
+    write(root, "members.md");
+    syncAssets(target, "claude", { workflowsFolder: "commands" });
+    assert.ok(!existsSync(join(target, ".claude/members.md")));
+  });
 });
 
 test("isExcludedFromSync: só documentação de pasta fica de fora; componentes e conteúdo passam", () => {

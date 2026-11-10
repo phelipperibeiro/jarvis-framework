@@ -171,7 +171,7 @@ Escolha **Upgrade (C)** — adiciona chaves novas do template sem apagar os valo
 | **Produto** | Especificacoes, PRDs e gestao de requisitos | `workflows/product/` |
 | **TechLead** | Arquitetura, tech specs e revisao tecnica | `workflows/engineering/` |
 | **Developer** | Implementacao, testes e entrega de codigo | `workflows/engineering/` |
-| **QA** | Testes E2E, exploratórios, quality gates e relatórios de qualidade | `workflows/engineering/qa/` |
+| **QA** | Planejamento, estratégia e cobertura de testes pelos agentes do ciclo (`eng.start` → `eng.pre-pr`); base `eng-qa` + `QA_SPECIALIZATIONS` | `agents/engineering/qa/` |
 
 | Recurso | Descricao | Link |
 |---------|-----------|------|

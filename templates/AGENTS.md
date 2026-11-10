@@ -36,8 +36,6 @@ templates/
 │   ├── central-product-template.md # Central docs: pagina do produto (transversal)
 │   ├── central-home-template.md    # Central docs: pagina inicial do squad (editavel, so uma vez)
 │   └── qa/                         # Templates de QA
-│       ├── qa.release-signoff-template.md # Sign-off QA pre-deploy (GO/NO-GO)
-│       ├── qa.sprint-plan-template.md     # Planejamento de capacidade QA da sprint
 │       ├── qa.test-strategy-template.md   # Estrategia de testes (Modo A do eng.qa.test-planner)
 │       ├── qa.test-coverage-report-template.md # Relatorio de cobertura (Modo B do eng.qa.test-planner)
 │       └── qa.test-suite-report-template.md # Relatorio de teste do eng.qa.testing-engineer

@@ -98,22 +98,6 @@ Para customizar a org: edite o arquivo ou use `/taxonomy add|update|remove|valid
 
 ---
 
-## `members.md`
-
-Tabela opcional de membros da organização.
-
-Formato documentado no próprio arquivo:
-
-`Nome Completo | email | posição | slack_user_id`
-
-Uso típico: skills de comunicação / prioridades / onboarding que precisam resolver pessoa → Slack ID.
-
-Neste fork o arquivo está **zerado** (só estrutura). Preencha para a sua org ou ignore se for freelance.
-
-Também é sincronizado para `.$IDE/` no init.
-
----
-
 ## Outros arquivos na raiz (não listados no pedido, mas úteis)
 
 | Arquivo / pasta | Nota                                                             |

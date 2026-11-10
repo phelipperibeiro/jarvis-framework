@@ -556,7 +556,7 @@ test("cada ponto que envia algo tem a pergunta logo antes", () => {
     /(?:^|[\s`(|&;$"'[*:>—–])(?:rtk\s+|npx\s+)?(?:git(?:\s+-C\s+\S+)?\s+push\b|gh\s+(?:pr\s+(?:create|comment|merge|close|edit|review|ready|reopen)|issue\s+(?:create|comment|close|edit|reopen)|api|release\s+create|label)\b|glab\s+(?:mr\s+(?:create|note|merge|close|update|approve)|issue\s+(?:create|note|close|update)|api|release\s+create|label)\b|acli\s+jira\s+workitem\s+(?:create|comment|transition|assign|edit|attachment)\b|jarvis\s+(?:vcs\s+create-|tasks\s+comment|docs\s+publish))/;
   // Os .md da raiz e o bin/README.md entram; o CONTRIBUTING.md fica fora: é o guia de quem contribui com o
   // framework, e o push ali é a própria pessoa que roda, não um passo que o Jarvis executa.
-  const RAIZ = ["README.md", "AGENTS.md", "members.md", "taxonomy.md", "bin/README.md"]
+  const RAIZ = ["README.md", "AGENTS.md", "taxonomy.md", "bin/README.md"]
     .map((p) => join(root, p))
     .filter((p) => existsSync(p));
   for (const file of todosMd().concat(RAIZ)) {
