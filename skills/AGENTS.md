@@ -14,7 +14,7 @@ A pasta `skills/` contem **playbooks executaveis** que sao a fonte de verdade op
 
 ```
 skills/
-├── eng-backend-arch-c4/          # Diagramas C4
+├── eng-global-arch-c4/          # Diagramas C4 (global: usado por eng.create-ard, prod.spec.discovery, eng-global-docs-write)
 │   ├── SKILL.md
 │   ├── assets/
 │   └── references/
@@ -61,12 +61,6 @@ skills/
 ├── eng-data/ # Base neutra de dados (pipelines, modelagem, qualidade, BI, governança) + especializações em DATA_SPECIALIZATIONS
 │   ├── SKILL.md
 │   └── references/
-├── product-specs/ # Porta de entrada de especificação de produto
-│   └── SKILL.md
-├── product-specs-update/ # Sincroniza especificações de produto
-│   └── SKILL.md
-├── product-roadmap-report/ # Relatório de status do roadmap
-│   └── SKILL.md
 ├── eng-automation/          # Base neutra de automação (RPA, web, APIs, extração, ingestão) + especializações em AUTOMATION_SPECIALIZATIONS
 │   ├── SKILL.md
 │   └── references/
@@ -76,8 +70,7 @@ skills/
 │   ├── SKILL.md
 │   └── assets/
 ├── eng-qa-planner/           # Planejamento de testes e análise de gaps de cobertura (especialização de qa: registrar em QA_SPECIALIZATIONS)
-│   ├── SKILL.md
-│   └── assets/
+│   └── SKILL.md
 ├── jarvis-report-issue/         # Reportar bug no próprio Jarvis (JARVIS_PROJECT)
 │   └── SKILL.md
 ├── jarvis-fork/                 # Fork guiado de um artefato do core para o overlay da empresa (COMPANY_PROFILE; CLI jarvis fork)
@@ -167,7 +160,7 @@ O nome tem a forma `<prefixo>-<área>-<nome>`; **só os dois primeiros segmentos
 | Skill base de outra área | `eng-<área>` | `eng-platform`, `eng-qa`, `eng-ai`, `eng-data` |
 | Especialização de stack | `eng-<backend\|frontend>-<stack>` | `eng-backend-nestjs` |
 | Engenharia global | `eng-global-<nome>` | `eng-global-pr`, `eng-global-docs-write` |
-| Produto | `product-<nome>` | `product-specs`, `product-specs-update` |
+| Produto | `product-<nome>` | — |
 | Transversal do framework | `jarvis-<nome>` (`area: global`) | `jarvis-init`, `jarvis-docs-central` |
 
 ### Skill base, especialização e `stack`
@@ -236,7 +229,7 @@ Skills são invocados de formas diferentes dependendo da IDE:
 | `/jarvis-init` | `jarvis-init` |
 | `/warm-up` | `jarvis-docs-central` (só o recorte escolhido), `context7` (se o MCP estiver disponível) |
 | `eng.start` | `jarvis-docs-central` (funcionalidades implementadas; PRD/ARD vêm de `$JARVIS_DOCS`) |
-| `/eng.docs` | `eng-global-docs-write`, `jarvis-docs-index` |
+| `/eng.work` (oferta de documentação, Fase 6.2) | `eng-global-docs-write` (aciona `jarvis-docs-index` quando há índice) |
 | `/eng.pre-pr` | `eng-qa-planner`, `eng-global-docs-write`, `jarvis-docs-central` (detectar docs) |
 | `/eng.pr` | `eng-global-pr` |
 | `/eng.debug` (investigar um bug ou varrer um escopo) | `eng-global-investigation` |
@@ -245,7 +238,7 @@ Skills são invocados de formas diferentes dependendo da IDE:
 | `eng.start` (nome da branch), Gates 0.2/0.3 | `eng-global-branch` |
 | `jarvis docs sync` | `jarvis-docs-central` |
 | `jarvis docs publish` | `jarvis-docs-central` |
-| Arquitetura C4 | `eng-backend-arch-c4` |
+| Arquitetura C4 | `eng-global-arch-c4` |
 | Listar especializações de stack (instaladas e registradas) | `jarvis-list-specializations` |
 | Criar uma especialização de stack (backend ou frontend) a partir do código do projeto | `jarvis-create-specialization` |
 | Ajustar um comando do core a uma empresa sem editar o core (fork para `$IDE/overlays/{COMPANY_PROFILE}/`), listar, atualizar ou remover forks | `jarvis-fork` |
@@ -260,11 +253,7 @@ Skills são invocados de formas diferentes dependendo da IDE:
 | Módulos NestJS, DI, guards, interceptors, pipes, Passport/JWT | `eng-backend-nestjs` (especialização de backend) |
 | RPA, web scraping, Puppeteer, extração de dados, parsing, ETL | `eng-automation` (base) + `AUTOMATION_SPECIALIZATIONS` |
 | Criar robô RPA novo ou manter existente (new|update + card) | `eng.rpa.robot` (workflow) |
-| Planejar capacidade QA da sprint: risco por task, alocação entre QAs e Quality Champions | workflow `eng.qa-sprint-planning` |
-| Sign-off QA pré-deploy: verifica cobertura, bugs abertos, produz GO/NO-GO | workflow `eng.qa-release-signoff` |
 | Pipelines ETL/ELT, modelagem, qualidade, BI/dashboards, governança, onboarding de fonte, orquestração | `eng-data` (base) + `DATA_SPECIALIZATIONS` |
-| Criar pipeline novo (docs, qualidade, idempotência, gold) | `data.new-pipeline` |
-| Criar contrato de dados para squad requisitante | `data.contract` |
 | Documentação central (GitHub/GitLab) | `jarvis-docs-central` |
 | Bug cross-service (HTTP + AMQP) | `eng-backend-microservices-trace` |
 
@@ -278,7 +267,7 @@ Não há um gerador de skills: a criação é manual.
 2. Criar a pasta `skills/{nome}/` com um `SKILL.md`, usando como modelo um skill existente de porte parecido (por exemplo, `eng-qa-planner` para um skill de fluxo, `eng-backend-nestjs` para uma especialização)
 3. Preencher o frontmatter ("Frontmatter Obrigatorio"), **inclusive `metadata.area`** (e `metadata.stack` se for especialização), e as "Secoes Obrigatorias de um SKILL.md", incluindo a tabela `Skills invocados durante a execução do skill`
 4. Validar estrutura: `name` igual ao nome da pasta e área reconhecida
-5. Registrar o skill no `SKILLS-ROADMAP.md` e, se houver comando associado, na tabela "Mapeamento Comando → Skill"
+5. Registrar o skill na árvore da seção **Estrutura** deste arquivo e, se houver comando associado, na tabela "Mapeamento Comando → Skill"
 
 ---
 
@@ -317,7 +306,7 @@ Link para docs existentes?         → references/
 
 ### Skill grande com temas separaveis: roteador + references/
 
-O corpo do `SKILL.md` e carregado inteiro ao invocar a skill. Quando a skill tem **3 ou mais temas que se usam isoladamente** (por exemplo guards, testes, troubleshooting), mantenha no `SKILL.md` so o que vale sempre (objetivo, quando usar, padroes criticos, arvore de decisao, regras, checklist, a tabela de skills invocados) e uma tabela "Referencias" (Tema | Quando ler | Arquivo); cada tema vai para `references/{n}-{tema}.md`. Modelo: `skills/eng-backend/`. Ja seguem o modelo: `eng-backend-nestjs`, `eng-backend-arch-c4`, `eng-automation`, `eng-platform`, `eng-qa`, `eng-ai`, `eng-data` e `eng-frontend`.
+O corpo do `SKILL.md` e carregado inteiro ao invocar a skill. Quando a skill tem **3 ou mais temas que se usam isoladamente** (por exemplo guards, testes, troubleshooting), mantenha no `SKILL.md` so o que vale sempre (objetivo, quando usar, padroes criticos, arvore de decisao, regras, checklist, a tabela de skills invocados) e uma tabela "Referencias" (Tema | Quando ler | Arquivo); cada tema vai para `references/{n}-{tema}.md`. Modelo: `skills/eng-backend/`. Ja seguem o modelo: `eng-backend-nestjs`, `eng-global-arch-c4`, `eng-automation`, `eng-platform`, `eng-qa`, `eng-ai`, `eng-data` e `eng-frontend`.
 
 Nao converta procedimento sequencial (passo 1, 2, 3 que se le de ponta a ponta) nem skill pequena (menos de ~8 KB): nao ha tema para pular, so mais arquivos para ler.
 
@@ -325,11 +314,6 @@ Nao converta procedimento sequencial (passo 1, 2, 3 que se le de ponta a ponta) 
 
 ## Referencias
 
-- `SKILLS-ROADMAP.md` - Skills existentes e planejadas
 - `../agents/` - Agentes que usam skills
 - `../workflows/` - Workflows relacionados
 - `../rules/` - Regras que skills implementam
-
----
-
-**Ultima atualizacao**: 2026-10-05

@@ -141,10 +141,10 @@ test("loadEnv: parseia key=value, ignora comentário e linha em branco", () => {
     const envPath = writeEnv(
       dir,
       "claude",
-      ["# comentário", "", "HUB=BACKEND", "SQUAD = CORE ", "SEM_VALOR="].join("\n")
+      ["# comentário", "", "TASK_MANAGER=github", "SQUAD = CORE ", "SEM_VALOR="].join("\n")
     );
     const env = loadEnv(dir, envPath);
-    assert.equal(env.HUB, "BACKEND");
+    assert.equal(env.TASK_MANAGER, "github");
     assert.equal(env.SQUAD, "CORE");
     assert.equal(env.SEM_VALOR, undefined);
   });
@@ -152,7 +152,7 @@ test("loadEnv: parseia key=value, ignora comentário e linha em branco", () => {
 
 test("loadEnv: WORKSPACE ausente é derivado do path do ENV.md", () => {
   withTempWorkspace((dir) => {
-    const envPath = writeEnv(dir, "claude", "HUB=BACKEND\n");
+    const envPath = writeEnv(dir, "claude", "SQUAD=CORE\n");
     const env = loadEnv(dir, envPath);
     assert.equal(env.WORKSPACE, deriveWorkspaceName(envPath));
   });

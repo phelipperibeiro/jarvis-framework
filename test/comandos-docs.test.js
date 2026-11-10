@@ -9,7 +9,7 @@ const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const abs = (...p) => join(root, ...p);
 
 // Workflows de produto sem guia didático por decisão (não é erro).
-const SEM_GUIA_PRODUTO = new Set(["prod.roadmap.preview"]);
+const SEM_GUIA_PRODUTO = new Set();
 
 function walk(dir) {
   return readdirSync(dir).flatMap((n) => {

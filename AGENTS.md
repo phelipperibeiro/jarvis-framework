@@ -14,34 +14,32 @@ Este repositorio contem o **Framework Jarvis** - um framework de desenvolvimento
 
 ```
 jarvis-framework/
-├── agents/                       # 17 agentes (instalados em $IDE/agents/)
+├── agents/                       # 14 agentes (instalados em $IDE/agents/)
 │   ├── engineering/              # 9 principais (eng.agent, eng.advisor.agent, eng.rpa.agent…)
-│   │   ├── data/                 # 1 de dados (eng.data-engineer.agent)
-│   │   └── qa/                   # 5 de QA
+│   │   └── qa/                   # 3 de QA
 │   └── product/                  # 2 de produto (prod.pm-checker, prod.discovery-interviewer)
 ├── workflows/                    # comandos slash (em $IDE/commands/ ou workflows/, sem subpastas)
-│   ├── engineering/              # 17 + data/ (2), frontend/ (3) e qa/ (3)
-│   ├── product/                  # 10 (prod.spec.*, prod.roadmap.preview)
+│   ├── engineering/              # 13 + frontend/ (3)
+│   ├── product/                  # 9 (prod.spec.*)
 │   └── warm-up.md, taxonomy.md
-├── skills/                       # 29 skills, todos com metadata.area:
+├── skills/                       # 26 skills, todos com metadata.area:
 │                                 # bases: eng-backend, eng-frontend, eng-qa, eng-data, eng-automation,
 │                                 #   eng-platform, eng-ai (+ especializações: eng-backend-*, eng-qa-planner)
 │                                 # eng-global-branch (nome da branch, forkável), eng-global-pr,
-│                                 #   -task-comment, -investigation, -tech-spec, -docs-write
+│                                 #   -task-comment, -investigation, -tech-spec, -docs-write, -arch-c4
 │                                 # jarvis-*: init, fork, context-detect, docs-central, docs-index,
 │                                 #   create/list-specializations, report-issue, evolution-architect
-│                                 # product-*: specs, specs-update, roadmap-report
 ├── templates/                    # documentos: engineering/ (ARD, RFC, tech spec, architecture, plan…),
 │                                 # product/ (PRD, FRD, épico, issue, breakdown, discovery), ENV-template.md
-├── rules/                        # carregadas no início da sessão, filtradas pelo perfil (Applies to)
-│   ├── engineering/              # eng-rules.md, eng-security-rules.md, frontend/, qa/…
-│   └── product/                  # prod-rules.md, prod.spec-rules.md
-├── rules-on-demand/              # lidas pelo workflow que as usa (etapas, doc-links, warm-up, product/)
+├── rules/                        # carregadas no início da sessão, iguais para todos
+│   ├── engineering/              # eng-rules.md, eng-security-rules.md, integrations, specializations, skills
+│   └── product/                  # prod-rules.md
+├── rules-on-demand/              # lidas pelo comando que as usa (etapas, área, doc-links, warm-up, product/)
 ├── bin/                          # CLI jarvis (jarvis.js, commands/, lib/)
 ├── test/                         # node:test (npm run test:filtro, npm run test:comandos)
 ├── docs/                         # guias para humanos (engenharia/, produto/, estrutura/)
 ├── AGENTS.md                     # este arquivo (instalado como $IDE/AGENTS.md)
-├── CHANGELOG.md, CONTRIBUTING.md, taxonomy.md, members.md
+├── CHANGELOG.md, CONTRIBUTING.md, taxonomy.md
 └── .github/                      # template de PR
 ```
 
@@ -56,11 +54,7 @@ jarvis-framework/
 
 ### Taxonomia Organizacional
 
-O framework usa `taxonomy.md` (raiz) como fonte de verdade para opções válidas:
-- **SQUADS** - Times de desenvolvimento
-- **HUBS** - Áreas técnicas (AI, FRONTEND, BACKEND, QA, DATA, FULLCYCLE)
-- **POSITIONS** - Cargos (JUNIOR, PLENO, SENIOR, TECH LEAD, etc.)
-- **AREAS** - Áreas de negócio (ENGINEERING, PRODUCT)
+O framework usa `taxonomy.md` (raiz) como fonte de verdade para as opções de SQUAD (times de desenvolvimento) e o domínio de e-mail.
 
 **Relação com jarvis-init:**
 1. `taxonomy.md` define as opções válidas
@@ -78,9 +72,9 @@ O framework usa `taxonomy.md` (raiz) como fonte de verdade para opções válida
 
 ### Variaveis obrigatorias no ENV.md
 
-- `WORKSPACE`, `IDE`, `SQUAD`, `HUB`, `AREA`
+- `WORKSPACE`, `IDE`, `SQUAD`
 - `MAX_AI_EXECUTION_PERCENTAGE` (60-100)
-- `POSITION`
+- `SENIORITY` (`junior`, `pleno` ou `senior`; as seis `{ÁREA}_SENIORITY` são opcionais e só calibram a conversa)
 - `USER` (identidade; se vazio, fallback git / SO)
 
 `WORKSPACE` e a pasta que contem `$IDE/` (nao um repo). Vazio = nome dessa pasta.
@@ -113,12 +107,12 @@ O CLI resolve o `ENV.md` na seguinte precedência:
 
 | IDE | Mecanismo | Como invocar um skill |
 |-----|-----------|-----------------------|
-| Claude Code | Slash commands em `.claude/commands/` | `/warm-up-jarvis`, `/eng.start` |
-| Windsurf | Rules + prompts em `.windsurf/` | `/warm-up-jarvis`, `/eng.start` |
-| Cursor | Slash commands em `.cursor/` | `/warm-up-jarvis`, `/eng.start` |
+| Claude Code | Slash commands em `.claude/commands/` | `/warm-up`, `/eng.start` |
+| Windsurf | Rules + prompts em `.windsurf/` | `/warm-up`, `/eng.start` |
+| Cursor | Slash commands em `.cursor/` | `/warm-up`, `/eng.start` |
 | **Codex** | Skills TUI em `.codex/skills/` | Linguagem natural ou painel de skills do TUI |
-| OpenCode | Slash commands em `.opencode/` | `/warm-up-jarvis`, `/eng.start` |
-| Gemini CLI | Prompts em `.agents/` | `@warm-up-jarvis`, linguagem natural |
+| OpenCode | Slash commands em `.opencode/` | `/warm-up`, `/eng.start` |
+| Gemini CLI | Prompts em `.agents/` | `@warm-up`, linguagem natural |
 | **Kiro** | Steering files em `.kiro/steering/` | `#skill-{nome}` no chat (ex: `#skill-eng-backend`) |
 
 > **Codex**: Não existe slash command (`/`) no Codex. Skills são descobertas automaticamente
@@ -151,14 +145,13 @@ Este repositorio possui `package.json` com o CLI `jarvis` (`bin/jarvis.js`).
 
 Comandos disponíveis:
 ```bash
-jarvis whoami   [--logout]                          # Exibir identidade (ENV.md / git / SO)
-jarvis logout                                       # Remover auth.json legado (opcional)
+jarvis whoami                                       # Exibir identidade (ENV.md / git / SO)
 jarvis init                                         # Bootstrap do framework no projeto
-jarvis init --upgrade [--ide X] [--yes] [--remove-stale]   # Atualizar projeto existente: confere os caminhos do ENV (para sem alterar nada se sobrar $ sem valor) + assets + variáveis novas do ENV (inclui WORKSPACE_MODE) + documentos nas pastas novas + lista/remove skills antigos + rules filtradas pelo perfil do ENV
-jarvis list                                         # Listar agents, skills e workflows
+jarvis init --upgrade [--ide X] [--yes] [--remove-stale]   # Atualizar projeto existente: confere os caminhos do ENV (para sem alterar nada se sobrar $ sem valor) + assets + variáveis novas do ENV (inclui WORKSPACE_MODE) + documentos nas pastas novas + lista/remove skills antigos + rules sincronizadas
+jarvis list | info <tipo/nome>                      # Listar agents, skills e workflows; info mostra os detalhes de um (ex.: agent/eng.agent)
 jarvis install-rtk                                  # Instalar RTK (token killer — economia 60-90% em tokens de shell)
-jarvis tokens    [--hub X --position Y --area Z --squad W] [--rtk] [--json]   # Estimar o que carrega no início da sessão (perfil do ENV.md se sem flags)
-jarvis rules sync [--ide X]                         # Filtra rules/ e rules-on-demand/ da IDE pelo perfil do ENV.md (Passo 8 do /jarvis-init)
+jarvis tokens    [--artifact-style X] [--rtk] [--json] [--ide X]   # Estimar o que carrega no início da sessão (estilo e RTK do ENV.md se sem flags; com mais de um ENV.md na pasta, passe --ide)
+jarvis rules sync [--ide X]                         # Sincroniza rules/ e rules-on-demand/ da IDE com o ENV.md (Passo 8 do /jarvis-init)
 jarvis untrack   <AGENTS.md|CLAUDE.md>...            # Modo projeto (#227): tira do índice do git (git rm --cached) o arquivo já versionado, sem apagá-lo e sem commit; é a execução do "Tirar do git" do /jarvis-init upgrade
 jarvis map       <nome> [--depth N] [--reverse]      # Mapa de chamadas de um workflow, skill ou agente (lê só as tabelas padronizadas)
 jarvis fork      [nome] [--list] [--update [--diff]] [--delete] [--candidate]   # Overlay de empresa (#199): copia um artefato do core para $IDE/overlays/{COMPANY_PROFILE}/ com carimbo; lista; recarimba; remove
@@ -222,7 +215,8 @@ Cada pasta pode ter seu proprio AGENTS.md com instrucoes especificas. No reposit
 ### Documentacao
 
 ```bash
-/eng.docs                # Atualiza documentacao de engenharia
+/eng.work "feature"      # Oferta de documentacao no fim (Fase 6.2), pelo skill eng-global-docs-write
+/eng-global-docs-write   # Uso direto do skill (Codex, Gemini e Kiro: ver "Invocacao de Skills por IDE")
 ```
 
 ---
@@ -272,7 +266,3 @@ Lista completa de agentes: `jarvis list` (ou `agents/README.md`, no repositorio 
 - Logica de negocio ou implementacao de features.
 
 Se o usuario pedir comandos especificos, solicite o projeto alvo ou arquivos de config.
-
----
-
-**Última atualização**: 2026-04-26

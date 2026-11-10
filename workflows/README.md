@@ -9,6 +9,7 @@ Este diretório contém os workflows (templates) usados pelos comandos slash do 
 ```
 workflows/
 ├── warm-up.md                    # Preparação de sessão
+├── taxonomy.md                   # Gerenciar o taxonomy.md (opções organizacionais)
 │
 ├── product/                      # Gestão de Produto & Requisitos
 │   ├── prod.spec.md              # Entrypoint de especificações
@@ -27,24 +28,18 @@ workflows/
     ├── eng.work.md               # Execução do trabalho
     ├── eng.pre-pr.md             # Validação pré-PR
     ├── eng.pr.md                 # Criação de PR
-    ├── eng.review.md             # Revisão
     ├── eng.debug.md              # Debug: investiga um bug ou varre um escopo
-    ├── eng.docs.md               # Documentação (engenharia)
     ├── eng.create-ard.md         # Criar ARD
-    ├── eng.create-ard-from-code.md
     ├── eng.create-rfc.md         # Criar RFC
     ├── eng.build-tech-spec.md    # Criar Tech Spec (Delivery Spec ou Reference Spec)
-    ├── eng.breakdown-subtasks.md # Quebrar em subtarefas
     ├── eng.light-arch.md         # Design arquitetural leve
     ├── eng.rpa.robot.md      # Criar robô RPA do zero ao PR (skill técnica)
-    ├── frontend/
-    │   ├── eng.frontend-component.md     # Criar/refatorar componente (design system vs remote, a11y, testes)
-    │   ├── eng.frontend-review.md        # Revisão de PR frontend (TS, tokens, a11y, MFE)
-    │   └── eng.frontend-perf-audit.md    # Auditoria Core Web Vitals e bundle
-    └── qa/
-        ├── eng.qa-refinement-entry.md
-        ├── eng.qa-release-signoff.md
-        └── eng.qa-sprint-planning.md
+    ├── eng.spec-consolidate.md   # Consolidar no Central docs o que a entrega implementou
+    ├── eng.daily-report.md       # Juntar os daily.md das sessões por dia
+    └── frontend/
+        ├── eng.frontend-component.md     # Criar/refatorar componente (design system vs remote, a11y, testes)
+        ├── eng.frontend-review.md        # Revisão de PR frontend (TS, tokens, a11y, MFE)
+        └── eng.frontend-perf-audit.md    # Auditoria Core Web Vitals e bundle
 ```
 
 ---
@@ -54,6 +49,7 @@ workflows/
 | Workflow | Propósito |
 |----------|-----------|
 | `warm-up.md` | Preparar sessão carregando contexto do projeto |
+| `taxonomy.md` | Gerenciar o `taxonomy.md` de forma segura (opções organizacionais) |
 
 ---
 
@@ -82,22 +78,17 @@ workflows/
 | `eng.work.md` | Executar implementação de código |
 | `eng.pre-pr.md` | Validação final antes do PR |
 | `eng.pr.md` | Push e Pull Request, depois da pergunta (regra de ouro) |
-| `eng.review.md` | Revisão de solução/PR |
 | `eng.debug.md` | Investiga um bug ou varre um escopo atrás de problemas |
-| `eng.docs.md` | Atualizar documentação de engenharia |
 | `eng.create-ard.md` | Criar ARD (Architecture Review Document) |
-| `eng.create-ard-from-code.md` | Criar ARD a partir do código |
 | `eng.create-rfc.md` | Criar RFC (Request For Comments) |
 | `eng.build-tech-spec.md` | Criar especificação técnica (Delivery Spec ou Reference Spec) |
-| `eng.breakdown-subtasks.md` | Quebrar tech spec em subtarefas |
 | `eng.light-arch.md` | Design arquitetural leve |
 | `eng.rpa.robot.md` | Criar robô novo ou manter existente — análise, scaffolding, impl, docs, PR |
+| `eng.spec-consolidate.md` | Consolidar no Central docs o que a entrega implementou, por funcionalidade (publicar, arquivar, finalizar) |
+| `eng.daily-report.md` | Juntar os `daily.md` das sessões em um relatório por dia, com alertas das sessões sem `daily.md` |
 | `eng.frontend-component.md` | Criar ou refatorar componente frontend com qualidade (design system vs remote, a11y, testes) |
 | `eng.frontend-review.md` | Revisão de código específica para PRs frontend (TypeScript, tokens, a11y, MFE) |
 | `eng.frontend-perf-audit.md` | Auditoria de performance frontend (Core Web Vitals, bundle, diagnóstico por métrica) |
-| `eng.qa-refinement-entry.md` | Entrada do QA no refinement de tickets |
-| `eng.qa-release-signoff.md` | Sign-off QA pré-deploy (GO/NO-GO) |
-| `eng.qa-sprint-planning.md` | Planejamento de capacidade QA por sprint |
 
 ---
 
@@ -137,7 +128,3 @@ Na IDE, cada workflow é instalado como command na pasta de comandos dela (ex.: 
 - [Rules](../rules/)
 - [Templates](../templates/)
 - ENV.md (`$IDE/ENV.md`)
-
----
-
-**Última atualização**: 2026-01-25

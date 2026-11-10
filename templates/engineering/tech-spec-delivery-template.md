@@ -1,10 +1,10 @@
 # Tech Spec — Formatos de Entrega
 
-> Template com os formatos usados no fim do `eng.build-tech-spec`: descrição da subtarefa no board, comentário na história original, mensagem de entrega e um exemplo preenchido, além do diagrama do fluxo. Substitua os placeholders `{...}`.
+> Template com os formatos usados no fim do `eng.build-tech-spec`: descrição da subtarefa no board (resumo ou passo a passo), comentário na história original, mensagem de entrega e um exemplo preenchido, além do diagrama do fluxo. Substitua os placeholders `{...}`.
 
 ## Descrição da subtarefa no board
 
-Fase 7.2 do workflow. Use este formato na descrição de cada subtarefa criada no Jira pela `acli` (ou entregue ao usuário para copiar e colar no board).
+Fase 7.2 do workflow, nível **Resumo (como hoje)**. Use este formato na descrição de cada subtarefa criada no Jira pela `acli` (ou entregue ao usuário para copiar e colar no board).
 
 ```markdown
 ## Descrição
@@ -35,6 +35,85 @@ Fase 7.2 do workflow. Use este formato na descrição de cada subtarefa criada n
 Tech Spec: [Link para tech-spec.md]
 ```
 
+## Descrição da subtarefa no board, passo a passo
+
+Fase 7.2 do workflow, nível **Passo a passo para quem executa sem perguntar**. A descrição é um tutorial: quem pega o card implementa seguindo-a, sem perguntar. Preencha todas as seções; caminhos reais do projeto; código completo, sem `...` nem `// resto do código`.
+
+````markdown
+# SUBTASK-XXX: [{STACK}] {Título específico e acionável}
+
+**Depende de:** {SUBTASK-XXX / Nenhuma} · **Desbloqueia:** {SUBTASK-XXX / Nenhuma} · **Paralela com:** {SUBTASK-XXX / Nenhuma}
+
+## O que você vai fazer
+
+{2 a 3 frases: o que existirá quando a subtarefa terminar}
+
+## Por que e onde se encaixa
+
+{O motivo de negócio ou técnico e como esta fatia se conecta às outras e à funcionalidade final}
+
+**Pré-requisitos:**
+- [ ] {Subtarefa anterior concluída, ambiente, acesso}
+
+## Arquivos de referência (copie o padrão)
+
+- `{caminho/arquivo-parecido}` — use como base para {o quê} (sem arquivo parecido no projeto: "nenhum parecido no projeto")
+
+## Arquivos a criar/modificar
+
+| Arquivo | Ação | O que muda |
+|---|---|---|
+| `{caminho/arquivo}` | Criar / Modificar | {descrição} |
+
+## Passo a passo
+
+### Passo 1: {título}
+
+**O que fazer:** {explicação}
+
+```{linguagem}
+// {caminho/do/arquivo}
+{código completo}
+```
+
+**Por que assim:** {o que cada parte importante faz e por quê}
+
+**Como validar este passo:** {comando ou verificação}
+
+### Passo 2: {título}
+
+{mesma estrutura; quantos passos forem necessários}
+
+## Testes
+
+```{linguagem}
+// {caminho/do/arquivo-de-teste}
+{código completo dos testes}
+```
+
+| Cenário | Input | Output esperado |
+|---|---|---|
+| {caminho feliz} | {input} | {output} |
+| {erro} | {input inválido} | {erro esperado} |
+
+**Como rodar:** `{comando dos testes desta subtarefa}`
+
+## Checklist de conclusão
+
+- [ ] Código conforme os passos, sem log de depuração nem `TODO` sem issue
+- [ ] Testes passando; lint e build sem erros
+- [ ] Critérios de aceitação da subtarefa atendidos
+
+## Riscos e armadilhas
+
+- ⚠️ {risco e como evitar}
+- ❌ {erro comum e por que é errado}
+
+## Referência
+
+Tech Spec: [Link para tech-spec.md], seção {SUBTASK-XXX}
+````
+
 ## Comentário na história original
 
 Fase 7.4 do workflow. Comentário a registrar na história (STORY-XXX) depois de criar as subtarefas, pelo `/eng-global-task-comment`, que mostra o texto e pergunta (regra de ouro).
@@ -59,7 +138,7 @@ Fase 8.2 do workflow. O que entregar ao usuário ao final.
 ```
 ✅ Tech Spec criada com sucesso!
 
-📄 Documento Local: $SESSIONS_DIR/eng/{feature-name}/tech-spec.md
+📄 Documento Local: $SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/tech-spec.md
 📎 {Anexada na issue: {STORY-XXX} | A anexar pela pessoa (orientado: GitHub/GitLab, sem a CLI, CLI que não anexa ou acesso manual) | Não anexada (só na sessão; sem o Sim) | Sem issue (freelance)}
 
 📋 Resumo:
@@ -67,6 +146,8 @@ Fase 8.2 do workflow. O que entregar ao usuário ao final.
 - Fases: {X fases}
 - Subtarefas: {Y subtarefas}
 - Estimativa total: {Z horas}
+
+📝 Subtarefas ({resumo | passo a passo}): $SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/subtarefas.md
 
 🔗 Subtarefas {criadas no Jira pela acli | entregues em template para criação manual (outros boards, sem a CLI, com acesso manual, sem o Sim ou sem board)}:
 - SUBTASK-001: {Nome} (P0, 6h)
@@ -152,6 +233,7 @@ Visão geral do fluxo do workflow, do modo e do tipo de documento (épico ou his
 ┌─────────────────────────────────────────────────────────┐
 │ 1. ENTENDIMENTO                                         │
 │    └─ Ler card, fazer perguntas, validar contexto      │
+│    └─ História com tech-spec.md pronta? atalho → 7B    │
 └─────────────────────────────────────────────────────────┘
                           ↓
            ┌──────────────┴──────────────┐
@@ -173,7 +255,9 @@ Visão geral do fluxo do workflow, do modo e do tipo de documento (épico ou his
                                  │ 6B. Doc       │
                                  │ tech-spec.md  │
                                  ├───────────────┤
-                                 │ 7B. $TASK_MGR │
+                                 │ 7B. Nível +   │
+                                 │ subtarefas.md │
+                                 │ + $TASK_MGR   │
                                  ├───────────────┤
                                  │ 8B. Entrega   │
                                  └───────────────┘

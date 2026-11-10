@@ -1,24 +1,5 @@
-import { existsSync, readFileSync, unlinkSync } from "node:fs";
 import { execSync } from "node:child_process";
-import { join } from "node:path";
-import { homedir, userInfo } from "node:os";
-
-const SESSION_FILE = join(homedir(), ".jarvis", "auth.json");
-
-export function readSession() {
-  if (!existsSync(SESSION_FILE)) return null;
-  try {
-    return JSON.parse(readFileSync(SESSION_FILE, "utf-8"));
-  } catch {
-    return null;
-  }
-}
-
-export function clearSession() {
-  if (existsSync(SESSION_FILE)) {
-    unlinkSync(SESSION_FILE);
-  }
-}
+import { userInfo } from "node:os";
 
 /**
  * Resolve local identity without OAuth.
@@ -46,11 +27,4 @@ export function resolveUser(env = {}) {
   }
 
   return { id: "local", source: "fallback" };
-}
-
-/**
- * Identity used as dev_id. Never requires jarvis login.
- */
-export function getAuthUser(env = {}) {
-  return resolveUser(env).id;
 }

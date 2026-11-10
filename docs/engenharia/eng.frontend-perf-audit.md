@@ -33,7 +33,7 @@ O princípio do comando é **nunca otimizar sem medir antes**. Ele começa colet
 
 ### Metas dos Core Web Vitals
 
-As metas obrigatórias do framework para frontend (`eng.frontend-rules.md`) são: LCP abaixo de 2,5 s, CLS abaixo de 0,1 e INP abaixo de 200 ms.
+As metas obrigatórias do framework para frontend (`rules-on-demand/engineering/frontend/eng.frontend-rules.md`) são: LCP abaixo de 2,5 s, CLS abaixo de 0,1 e INP abaixo de 200 ms.
 
 ## Regras que importam
 

@@ -27,7 +27,7 @@ bin/
     ├── config/                # ide-config.js (fonte de verdade de IDEs), constants.js
     ├── core/                  # scanner.js, sync-engine.js (inclui o RuleResolver do overlay), profile-filter.js, token-report.js, company-profile.js (COMPANY_PROFILE e o default stark-industries)
     ├── docs/                  # Central docs, por funcionalidade (#220): fetch/publish/migrate/archive/finalize + validação
-    │   ├── validate-frontmatter.js  # Valida/extrai frontmatter (feature, delivery, product, home, history, architecture, plan, light-arch e documentos de trabalho: PRD, FRD, épico, história, tarefa, ARD, RFC, QA, discovery)
+    │   ├── validate-frontmatter.js  # Valida frontmatter (feature, delivery, product, home, history, architecture, plan, light-arch e documentos de trabalho: PRD, FRD, épico, história, tarefa, ARD, RFC, QA, discovery)
     │   ├── fetch-file.js       # openStorageFromEnv() + fetchFile() — `docs sync`/`docs fetch`/`docs publish`/`docs migrate`/`docs archive`/`docs finalize`
     │   ├── publish-file.js     # tipos, resolveDestPath(), publishFile() e publishFiles() (lote, `--dry-run`, nome com o card, conversão de links) — `docs publish [--manifest]`
     │   ├── session-inventory.js # inventário das sessões (arquivos, entrega, página-índice, pendente) — `docs sessions`
@@ -38,7 +38,7 @@ bin/
     │   └── storage/            # adaptadores (CENTRAL_DOCS_STORAGE): index.js (fábrica), filesystem.js (pasta + git, inclui publishBatch), build-index.js
     ├── utils/                 # logger.js, ui.js, paths.js, frontmatter.js (inclui readDescription), git-parser.js
     ├── flow-map/              # `jarvis map` — grafo de chamadas entre workflows/skills/agents
-    ├── auth/                  # session.js (auth.json legado, hoje só `jarvis logout` o lê)
+    ├── auth/                  # session.js (resolveUser: identidade por ENV.md, git e SO)
     └── env-loader.js          # Resolve e lê o ENV.md ($IDE/ENV.md)
 ```
 
@@ -57,11 +57,11 @@ bin/commands/*.js          →  lógica de negócio pura: async (flags) => {...}
 - Trocar de biblioteca de CLI um dia (se um dia fizer sentido) significa reescrever só `program.js`, não os arquivos de `bin/commands/`.
 - `program.js` é o **mapa completo** do CLI: para saber todo comando que existe, todas as flags que cada um aceita, é o único arquivo que precisa abrir.
 
-## O adapter: commander → formato antigo de `flags`
+## O adapter: commander → objeto `flags`
 
-O commander entrega ao `.action()` as opções em **camelCase** (`--env-file` → `options.envFile`, `--max-age` → `options.maxAge`) e cada positional como seu próprio parâmetro. As funções em `bin/commands/*.js` foram escritas para um objeto `flags` no formato que o parser manual antigo produzia: chaves com hífen literal (`flags["env-file"]`) e um array `flags._` para positionals.
+O commander entrega ao `.action()` as opções em **camelCase** (`--env-file` → `options.envFile`, `--max-age` → `options.maxAge`) e cada positional como seu próprio parâmetro. As funções em `bin/commands/*.js` leem um objeto `flags`, com chaves com hífen literal (`flags["env-file"]`) e um array `flags._` para positionals.
 
-Em vez de reescrever as 10 funções para o formato novo (risco maior, mexe em lógica que já funciona), `program.js` tem uma função `toLegacyFlags(options, extra)` que remonta o objeto no formato antigo antes de cada chamada:
+`program.js` tem uma função `toLegacyFlags(options, extra)` que monta esse objeto antes de cada chamada:
 
 ```js
 // bin/lib/cli/program.js
@@ -69,9 +69,9 @@ const whoamiCmd = cmd(program, "whoami").description("...");
 withEnvOptions(withLogOptions(whoamiCmd)).action((options) => whoami(toLegacyFlags(options)));
 ```
 
-`toLegacyFlags` remapeia só as duas chaves que mudam de formato (`envFile`→`"env-file"`, `maxAge`→`"max-age"`); todo o resto passa direto. O `extra` (segundo argumento) serve para injetar positionals como `_` ou flags sintéticas como `{ logout: true }` (usado por `jarvis logout`, que chama a mesma função de `whoami.js` com essa flag).
+`toLegacyFlags` remapeia só as duas chaves que mudam de formato (`envFile`→`"env-file"`, `maxAge`→`"max-age"`); todo o resto passa direto. O `extra` (segundo argumento) serve para injetar positionals como `_` (ex.: `jarvis list`, `jarvis fork` e `jarvis map`).
 
-**Ao adicionar uma opção nova que usa hífen** (ex: `--body-file`), decida: se a função de `bin/commands/*.js` vai ler `flags["body-file"]` (formato antigo) ou se você vai atualizá-la para ler `options.bodyFile` direto. Os 4 comandos novos (`vcs create-merge`, `vcs create-issue`, etc.) já usam o segundo caminho — passam o objeto de opções do commander quase direto, sem o adapter — porque não têm lógica legada para preservar.
+**Ao adicionar uma opção nova que usa hífen** (ex: `--body-file`), decida: se a função de `bin/commands/*.js` vai ler `flags["body-file"]` (pelo adapter) ou `options.bodyFile` direto. Os comandos `vcs create-merge`, `vcs create-issue` e `tasks comment` usam o segundo caminho: recebem as opções do commander quase direto, sem o adapter.
 
 ## O helper `cmd()` — por que todo comando passa por ele
 
@@ -81,7 +81,7 @@ function cmd(parent, name) {
 }
 ```
 
-O parser manual antigo nunca validava nada: qualquer `--flag` era aceito e ignorado silenciosamente se o comando não o lesse. O commander, por padrão, dá erro em flag não declarada e em positional excedente. `allowUnknownOption()`/`allowExcessArguments()` replicam a permissividade antiga — mas **o commander não propaga essas duas configs do comando pai para os subcomandos**: setar só no `program` raiz não é suficiente (testado e confirmado durante a implementação). Por isso `cmd()` existe e **todo** comando — incluindo os aninhados (`docs sync`, `vcs create-merge`) — é criado com ele, nunca com `.command()` direto.
+O commander, por padrão, dá erro em flag não declarada e em positional excedente. `allowUnknownOption()`/`allowExcessArguments()` fazem o CLI aceitar uma `--flag` que o comando não lê e argumentos a mais, sem erro — mas **o commander não propaga essas duas configs do comando pai para os subcomandos**: setar só no `program` raiz não é suficiente. Por isso `cmd()` existe e **todo** comando — incluindo os aninhados (`docs sync`, `vcs create-merge`) — é criado com ele, nunca com `.command()` direto.
 
 ## Argumentos: `[opcional]`, não `<obrigatório>` — de propósito
 
@@ -118,8 +118,8 @@ if (fileURLToPath(import.meta.url) === process.argv[1]) {
    - Importar a função no topo.
    - Registrar com `cmd(program, "meu-comando")` (ou `cmd(parentExistente, "nome")` se for subcomando de um grupo como `docs`/`vcs`/`tasks`).
    - Declarar as opções/positionals com `.option()`/`.argument()`. Usar `withEnvOptions()`/`withLogOptions()` de `shared-options.js` se o comando precisar de `--ide`/`--env-file` ou `--quiet`/`--verbose`/`--silent`.
-   - No `.action()`, chamar `toLegacyFlags(options, extra)` se a função usa o formato antigo de flags, ou passar `options` quase direto se for um comando novo sem lógica legada (ver os 4 de `vcs`/`tasks` como exemplo).
-3. Rodar manualmente o comando novo e **todos os outros** (não há suíte automatizada de CLI end-to-end — só `test/comandos-docs.test.js`, que valida a documentação dos workflows/skills, não o comportamento do CLI em si). Checklist mínimo: `--help` do comando novo, caminho feliz, caminho de erro (flag/argumento faltando).
+   - No `.action()`, chamar `toLegacyFlags(options, extra)` se a função lê o objeto `flags`, ou passar `options` quase direto se ela lê as opções do commander (como os comandos de `vcs` e `tasks`).
+3. Rodar manualmente o comando novo e **todos os outros** (a suíte de `test/` roda o `jarvis` de verdade em vários comandos, por exemplo em `rules-sync.test.js`, `token-report.test.js` e `docs-commands-cli.test.js`; o resto depende desse teste manual). Checklist mínimo: `--help` do comando novo, caminho feliz, caminho de erro (flag/argumento faltando).
 4. `npm run lint && npm run test:comandos && npm run test:filtro` antes de comitar.
 
 ## Variáveis de ambiente lidas diretamente (fora do ENV.md)

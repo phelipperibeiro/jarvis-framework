@@ -282,7 +282,7 @@ Pular a 5.1 se `TASK_MANAGER` estiver vazio (freelance); a 5.2 registra o link d
 
 ### 5.1 Mover Card
 
-Oriente a pessoa a mover o card para a etapa equivalente a "em revisão" no board (o Jarvis não move card). Quem assumiu o card o move; não é preciso esperar o TECH LEAD ou o PM.
+Oriente a pessoa a mover o card para a etapa equivalente a "em revisão" no board (o Jarvis não move card). Quem assumiu o card o move; ninguém precisa liberar a transição.
 
 ### 5.2 Link do MR no card
 
@@ -407,6 +407,7 @@ Pergunte uma vez, com `AskUserQuestion` de várias perguntas em abas (`rules/art
 Pergunte com `AskUserQuestion`: **"O PR já foi aprovado e mergeado?"**
 - **Ainda não (como hoje):** encerre com a mensagem acima.
 - **Sim, rodar o `/eng.spec-consolidate`:** chame o `/eng.spec-consolidate {TASK_MANAGER_KEY}` (ou mostre o comando).
+- **Sim, rodar o `/eng.spec-consolidate --force` (publica e apaga os originais, sem `archive/`):** chame o `/eng.spec-consolidate {TASK_MANAGER_KEY} --force` (ou mostre o comando). A própria flag vale como o Sim de publicar e de apagar os originais conferidos; a trava de segredo continua, e a pasta da sessão só sai com o Sim da pergunta própria (Passo 9.1).
 
 ## Regras Importantes
 

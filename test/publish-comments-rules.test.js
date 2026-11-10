@@ -37,9 +37,7 @@ const CITAM_A_REGRA = [
   TASK_COMMENT,
   REPORT_ISSUE,
   "templates/engineering/advisor-template.md",
-  "agents/engineering/qa/eng.qa.quality-champion-task-agent.md",
   "skills/eng-global-tech-spec/references/delivery-spec.md",
-  "workflows/engineering/data/data.contract.md",
   "workflows/product/prod.spec.issue.md",
   "skills/jarvis-docs-central/SKILL.md",
   SPEC_CONSOLIDATE,
@@ -513,12 +511,6 @@ test("cada ponto que envia algo tem a pergunta logo antes", () => {
       0,
       /só depois de mostrar o texto e o usuário dizer Sim \(regra de ouro\)/,
     ],
-    [
-      "workflows/engineering/data/data.contract.md",
-      /^Com o Sim, criar card no board `DE`/,
-      2,
-      /pergunte com `AskUserQuestion` antes de criar/,
-    ],
     ["docs/engenharia/eng.spec-consolidate.md", /^7\. Pergunta/, 0, /Pergunta \*\*Sim \/ Não\*\*/],
     [
       "workflows/engineering/eng.build-tech-spec.md",
@@ -564,7 +556,7 @@ test("cada ponto que envia algo tem a pergunta logo antes", () => {
     /(?:^|[\s`(|&;$"'[*:>—–])(?:rtk\s+|npx\s+)?(?:git(?:\s+-C\s+\S+)?\s+push\b|gh\s+(?:pr\s+(?:create|comment|merge|close|edit|review|ready|reopen)|issue\s+(?:create|comment|close|edit|reopen)|api|release\s+create|label)\b|glab\s+(?:mr\s+(?:create|note|merge|close|update|approve)|issue\s+(?:create|note|close|update)|api|release\s+create|label)\b|acli\s+jira\s+workitem\s+(?:create|comment|transition|assign|edit|attachment)\b|jarvis\s+(?:vcs\s+create-|tasks\s+comment|docs\s+publish))/;
   // Os .md da raiz e o bin/README.md entram; o CONTRIBUTING.md fica fora: é o guia de quem contribui com o
   // framework, e o push ali é a própria pessoa que roda, não um passo que o Jarvis executa.
-  const RAIZ = ["README.md", "AGENTS.md", "members.md", "taxonomy.md", "bin/README.md"]
+  const RAIZ = ["README.md", "AGENTS.md", "taxonomy.md", "bin/README.md"]
     .map((p) => join(root, p))
     .filter((p) => existsSync(p));
   for (const file of todosMd().concat(RAIZ)) {
@@ -746,12 +738,8 @@ test("a proibição de comentar início ou fim de etapa continua na regra e no s
   }
 });
 
-test("os outros pontos que enviam algo (agente, delivery-spec, data.contract, prod.spec.issue, central docs) trazem a pergunta", () => {
+test("os outros pontos que enviam algo (delivery-spec, prod.spec.issue, central docs) trazem a pergunta", () => {
   const FRASES = [
-    [
-      "agents/engineering/qa/eng.qa.quality-champion-task-agent.md",
-      /pelo `\/eng-global-task-comment`, que mostra o texto e pergunta/,
-    ],
     [
       "skills/eng-global-tech-spec/references/delivery-spec.md",
       /[Aa]ntes de criar as subtarefas, mostre o texto e pergunte/,
@@ -766,14 +754,6 @@ test("os outros pontos que enviam algo (agente, delivery-spec, data.contract, pr
     [
       "skills/eng-global-tech-spec/references/delivery-spec.md",
       /com o `\/eng-global-task-comment`, que mostra o texto e pergunta/,
-    ],
-    [
-      "workflows/engineering/data/data.contract.md",
-      /pergunte com `AskUserQuestion` antes de notificar/,
-    ],
-    [
-      "workflows/engineering/data/data.contract.md",
-      /pergunte com `AskUserQuestion` antes de criar/,
     ],
     ["workflows/product/prod.spec.issue.md", /pergunte com `AskUserQuestion` \(regra de ouro/],
     [
@@ -809,16 +789,8 @@ test("os outros pontos que enviam algo (agente, delivery-spec, data.contract, pr
     ],
     [ENG_PRE_PR, /nada é enviado ao card \(o texto fica no `gate-checklist\.md`\)/],
     [
-      "workflows/engineering/data/data.contract.md",
-      /pergunte com `AskUserQuestion` antes de criar \(regra de ouro\)/,
-    ],
-    [
       "skills/eng-global-tech-spec/references/delivery-spec.md",
       /[Pp]ara anexá-la na issue do board, depois da aprovação da 6\.3, mostre o que vai e pergunte com `AskUserQuestion` \(regra de ouro/,
-    ],
-    [
-      "skills/product-roadmap-report/commands/status.roadmap.preview.md",
-      /Leia o board pela CLI oficial do `\$TASK_MANAGER`.*sem REST nem MCP/,
     ],
   ];
   for (const [file, frase] of FRASES) {

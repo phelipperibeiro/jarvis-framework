@@ -1,10 +1,8 @@
-> **Applies to:** HUB: all | POSITION: all | AREA: all | SQUAD: all
-
 # Regras Comuns dos Comandos `prod.spec.*`
 
 ## Objetivo
 
-Princípios, busca de contexto e lugar dos documentos que valem para todos os comandos `prod.spec.*` que escrevem um documento. Ficam fora de `rules/` para chegar a qualquer AREA (inclusive quem é de engenharia e usa o modo developer-guided) sem pesar no início da sessão.
+Princípios, busca de contexto e lugar dos documentos que valem para todos os comandos `prod.spec.*` que escrevem um documento. Ficam fora de `rules/` para chegar a quem roda os comandos sem pesar no início da sessão.
 
 ## Escopo
 
@@ -36,5 +34,5 @@ Os documentos destes comandos são **documentos de trabalho**: nascem em `$PROD_
 
 ## Referências
 
-- `rules/product/prod.spec-rules.md`: princípios de escrita de spec (critérios de aceitação, contexto completo, terminologia, discovery)
+- `rules-on-demand/product/prod.spec-rules.md`: princípios de escrita de spec (critérios de aceitação, contexto completo, terminologia, discovery)
 - `rules/product/prod-rules.md`: regras gerais de produto

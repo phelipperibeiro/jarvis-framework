@@ -25,23 +25,21 @@ templates/
 │   ├── RFC-template.md             # Request For Comments
 │   ├── RFC-Playbook.md             # Playbook para RFCs
 │   ├── tech-spec-template.md       # Especificacao tecnica
-│   ├── tech-spec-delivery-template.md # Formatos de entrega da tech spec (Jira, mensagem final, fluxo)
+│   ├── tech-spec-delivery-template.md # Formatos de entrega da tech spec (descrição da subtarefa em resumo ou passo a passo, mensagem final, fluxo)
 │   ├── ref-spec-template.md        # Especificação técnica de referência (Reference Spec do eng.build-tech-spec)
-│   ├── breakdown-subtasks-template.md # Formato de cada subtarefa (template_file do eng.breakdown-subtasks)
 │   ├── plan-template.md            # Plano de execucao
-│   ├── work-progress-template.md   # Progresso de trabalho
 │   ├── PR-template.md              # Pull Request
 │   ├── c4-model-template.md        # Diagramas C4
 │   ├── AGENTS-template.md          # Template de AGENTS.md
-│   ├── data-pipeline-template.md   # Documentacao de pipeline de dados
-│   ├── data-contract-template.md   # Contrato de dados
 │   ├── central-feature-template.md # Central docs: pagina da funcionalidade
 │   ├── central-delivery-template.md # Central docs: registro da entrega
 │   ├── central-product-template.md # Central docs: pagina do produto (transversal)
 │   ├── central-home-template.md    # Central docs: pagina inicial do squad (editavel, so uma vez)
+│   ├── central-session-template.md # Central docs: pagina-indice da sessao
+│   ├── debug-report-template.md    # Relatorio do eng.debug (caso investigar)
+│   ├── bug-audit-report-template.md # Relatorio do eng.debug (caso varrer)
+│   ├── daily-template.md           # Registro de esforco da tarefa (daily.md do eng.pr)
 │   └── qa/                         # Templates de QA
-│       ├── qa.release-signoff-template.md # Sign-off QA pre-deploy (GO/NO-GO)
-│       ├── qa.sprint-plan-template.md     # Planejamento de capacidade QA da sprint
 │       ├── qa.test-strategy-template.md   # Estrategia de testes (Modo A do eng.qa.test-planner)
 │       ├── qa.test-coverage-report-template.md # Relatorio de cobertura (Modo B do eng.qa.test-planner)
 │       └── qa.test-suite-report-template.md # Relatorio de teste do eng.qa.testing-engineer
@@ -125,7 +123,7 @@ Use chaves `{...}` para indicar campos a serem preenchidos:
 | `ARD-template.md` | Revisao de arquitetura | `/eng.create-ard` |
 | `RFC-template.md` | Proposta de mudanca | `/eng.create-rfc` |
 | `tech-spec-template.md` | Especificação técnica de um card (Delivery Spec) | `/eng.build-tech-spec` |
-| `tech-spec-delivery-template.md` | Formatos de entrega da tech spec | `/eng.build-tech-spec` |
+| `tech-spec-delivery-template.md` | Formatos de entrega da tech spec (subtarefa em resumo ou passo a passo) | `/eng.build-tech-spec` |
 | `ref-spec-template.md` | Especificação técnica de referência | `/eng.build-tech-spec` (Reference Spec) |
 | `plan-template.md` | Plano de execucao | `/eng.plan` |
 | `PR-template.md` | Pull Request | `/eng.pr` |
@@ -133,15 +131,21 @@ Use chaves `{...}` para indicar campos a serem preenchidos:
 | `central-delivery-template.md` | Central docs: registro de uma entrega | `/eng.spec-consolidate` |
 | `central-product-template.md` | Central docs: página do produto (transversal a funcionalidades) | `/eng.spec-consolidate` |
 | `central-home-template.md` | Central docs: página inicial do squad (editável, criada uma vez) | `jarvis docs publish --tipo home` |
+| `central-session-template.md` | Central docs: página-índice da sessão | `/eng.spec-consolidate` |
+| `debug-report-template.md` | Relatório da investigação de um bug | `/eng.debug` |
+| `bug-audit-report-template.md` | Relatório da varredura de um escopo | `/eng.debug` |
+| `daily-template.md` | Registro de esforço da tarefa (`daily.md`) | `/eng.pr` |
 
 ### Product
 
 | Template | Uso | Comando |
 |----------|-----|---------|
-| `PRD-template.md` | Requisitos de produto | `/prod.spec.prd` |
-| `FRD-template.md` | Requisitos de feature | `/prod.spec.frd` |
-| `epic-template.md` | Epicos | `/prod.spec.epic` |
-| `story-template.md` | User Stories | `/prod.spec.issue` |
+| `prod-prd-template.md` | Requisitos de produto | `/prod.spec.prd` |
+| `prod-frd-template.md` | Requisitos funcionais | `/prod.spec.frd` |
+| `prod-epic-template.md` | Épicos | `/prod.spec.epic` |
+| `prod-issue-template.md` | Histórias, tarefas e bugs | `/prod.spec.issue` |
+| `prod-breakdown-template.md` | Quebra em versões, épicos e histórias | `/prod.spec.breakdown` |
+| `prod-discovery-template.md` | Rascunho de discovery | `/prod.spec.discovery` |
 
 ---
 
@@ -208,7 +212,3 @@ Checklist ao criar/editar:
 - `../skills/` - Skills que referenciam templates
 - `../commands/` - Commands que disparam uso
 - `../rules/` - Rules que governam templates
-
----
-
-**Ultima atualizacao**: 2026-01-26

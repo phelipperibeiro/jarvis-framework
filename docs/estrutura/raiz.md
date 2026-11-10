@@ -37,7 +37,7 @@ Não explica cada pasta em profundidade — isso fica em [estrutura/](./README.m
 - Lista de agentes ativos
 - O que o repo **não** fornece (build de um produto específico)
 
-Há `AGENTS.md` **aninhados** em `agents/`, `skills/`, `rules/`, `templates/`, `workflows/` — o mais próximo do arquivo em edição tem precedência.
+Há `AGENTS.md` **aninhados** em `agents/`, `skills/`, `templates/` e `workflows/` — o mais próximo do arquivo em edição tem precedência.
 
 Não confundir com o template `templates/engineering/AGENTS-template.md`, que gera o `AGENTS.md` **do projeto alvo** no `/jarvis-init`.
 
@@ -45,24 +45,24 @@ Não confundir com o template `templates/engineering/AGENTS-template.md`, que ge
 
 ## `LICENSE`
 
-Licença **GNU Affero General Public License v3 (AGPL-3.0)**.
+Licença **MIT**.
 
-Copyright: Jarvis Framework Contributors (2026).
+Copyright (c) 2026 Felipe Ribeiro de Andrade.
 
-Implicação prática: quem modifica e oferece o software em rede precisa disponibilizar o código correspondente sob AGPL. Leia o arquivo completo antes de redistribuir ou embutir em produto proprietário.
+Implicação prática: o uso, a cópia, a modificação e a redistribuição são livres, inclusive em produto proprietário, desde que o aviso de copyright e o texto da licença acompanhem as cópias. Leia o arquivo completo.
 
 ---
 
 ## `package.json`
 
-Manifesto npm do pacote **`jarvis-framework`**.
+Manifesto npm do pacote **`jarvis-ai-framework`**.
 
 Campos importantes neste fork:
 
 | Campo          | Valor / significado                                            |
 | -------------- | -------------------------------------------------------------- |
-| `name`         | `jarvis-framework`             |
-| `version`      | `2.0.0` — marco do fork de autoria própria                     |
+| `name`         | `jarvis-ai-framework`          |
+| `version`      | a versão lançada (ver o `package.json` e o `CHANGELOG.md`)     |
 | `bin.jarvis`   | `./bin/jarvis.js` — comando global `jarvis`                    |
 | `type`         | `module` (ESM)                                                 |
 | `postinstall`  | `node bin/postinstall.js` — só imprime as dicas (`jarvis init`, `jarvis install-rtk`) |
@@ -85,9 +85,6 @@ Seções:
 | Seção     | Exemplos neste fork                                         |
 | --------- | ----------------------------------------------------------- |
 | Squads    | `CORE`                                                      |
-| Hubs      | `AI`, `FRONTEND`, `BACKEND`, `QA`, `DATA`, `FULLCYCLE`      |
-| Positions | `JUNIOR` … `CTO`, `QA-ENGINEER`, `GENERALIST`, … |
-| Areas     | `ENGINEERING`, `PRODUCT`                                    |
 | Domain    | e-mail corporativo (opcional; fork sem domínio obrigatório) |
 
 Cada opção é um heading `### NOME`. O init valida respostas contra essa lista.
@@ -98,27 +95,11 @@ Para customizar a org: edite o arquivo ou use `/taxonomy add|update|remove|valid
 
 ---
 
-## `members.md`
-
-Tabela opcional de membros da organização.
-
-Formato documentado no próprio arquivo:
-
-`Nome Completo | email | posição | slack_user_id`
-
-Uso típico: skills de comunicação / prioridades / onboarding que precisam resolver pessoa → Slack ID.
-
-Neste fork o arquivo está **zerado** (só estrutura). Preencha para a sua org ou ignore se for freelance.
-
-Também é sincronizado para `.$IDE/` no init.
-
----
-
 ## Outros arquivos na raiz (não listados no pedido, mas úteis)
 
 | Arquivo / pasta | Nota                                                             |
 | --------------- | ---------------------------------------------------------------- |
-| `.gitignore`    | Deste repositório: ignora `.history` e `.jarvis/` (sessões locais) |
+| `.gitignore`    | Deste repositório: ignora `node_modules`, `.history`, `.jarvis/` (sessões locais), `.claude/` e `trash-archived-docs/` |
 | `.vscode/`      | Settings locais do editor — não faz parte do framework publicado |
 | `.git/`         | Controle de versão                                               |
 | `.history/`     | Histórico local de edições (IDE) — ignorado                      |

@@ -19,18 +19,16 @@
 jarvis/
 ├── README.md              → leitura rápida
 ├── AGENTS.md              → instruções para agentes de IA neste repo
-├── LICENSE                → AGPL-3.0
-├── package.json           → pacote jarvis-framework + bin jarvis
-├── taxonomy.md            → squads / hubs / positions / areas válidos
-├── members.md             → lista de membros (opcional, org)
+├── LICENSE                → MIT
+├── package.json           → pacote jarvis-ai-framework + bin jarvis
+├── taxonomy.md            → squads válidos e domínio de e-mail
 ├── agents/                → personas de IA
 ├── skills/                → playbooks executáveis
 ├── workflows/             → comandos slash / fluxos
-├── rules/                 → guardrails (filtrados por perfil)
+├── rules/                 → guardrails (iguais para todos)
 ├── templates/             → ENV + modelos de documento
 ├── bin/                   → CLI (jarvis init, list, …)
 ├── docs/                  → esta documentação
-├── issues/                → pendências / notas internas do framework
 └── node_modules/          → dependências locais de desenvolvimento (não é o produto)
 ```
 

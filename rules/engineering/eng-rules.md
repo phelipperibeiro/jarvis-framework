@@ -1,5 +1,3 @@
-> **Applies to:** HUB: all | POSITION: all | AREA: all | SQUAD: all
-
 - **🚨 PRÉ-REQUISITO: VALIDAÇÃO DO ENV.md**
   - **ANTES de executar qualquer comando ou workflow**, o agente **DEVE verificar** se o arquivo `$IDE/ENV.md` existe e está preenchido corretamente.
   - **Exceção**: O comando `/jarvis-init` é o único que pode ser executado sem o `ENV.md`, pois é ele que cria o arquivo.
@@ -7,11 +5,9 @@
     - `WORKSPACE` (se vazio: nome da pasta que contém `$IDE/`)
     - `IDE`
     - `SQUAD`
-    - `HUB`
-    - `AREA`
     - `MAX_AI_EXECUTION_PERCENTAGE` (entre 60 e 100)
     - `USER` (deve terminar com `@{DOMAIN}` definido em taxonomy.md)
-    - `POSITION`
+    - `SENIORITY` (`junior`, `pleno` ou `senior`)
   - **Se o ENV.md não existir ou estiver incompleto**, o agente deve:
     1. Interromper a execução do comando solicitado
     2. Informar ao usuário que o framework não foi inicializado
@@ -44,7 +40,6 @@
   - `$SESSIONS_DIR` → `.jarvis/sessions` (na pasta do workspace, a que contém `$IDE/`)
     - `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/` — architecture.md, plan.md, context.md
     - `$SESSIONS_DIR/prod/{TASK_MANAGER_KEY}/` — rascunhos de spec de produto
-    - `$SESSIONS_DIR/qa/` — exploratório EXP-*, bug-reports, specs E2E
     - Cookie/HTTP session (auth) **não** é esta pasta
   - **Detecção**: Verifique qual pasta `.{ide}/` existe no projeto antes de criar arquivos.
 
@@ -99,17 +94,6 @@
   > em chamadas cross-service, **sinalizar como `DÉBITO-TÉCNICO P2`** e recomendar correção.
 
 - Nunca invente dados técnicos, arquiteturas, stacks, credenciais, endpoints, ambientes ou integrações. Se a informação não estiver claramente disponível em arquivos do repositório, no ENV ou na mensagem do usuário, pergunte antes de assumir qualquer coisa.
-
-- **Escopo operacional de comandos e workflows (ENG/ATHENA)**
-  - Ao atuar como Engenharia (ATHENA), use **apenas** comandos, workflows, regras e templates do domínio **ENG/engineering**.
-  - Priorize e restrinja-se a:
-    - `$IDE/commands/engineering/**`
-    - `$IDE/workflows/engineering/**`
-    - `$IDE/agents/engineering/**`
-    - `$IDE/rules/engineering/**`
-    - `$IDE/templates/engineering/**`
-  - Não acione nem oriente o usuário a usar comandos/workflows de outros domínios (ex.: [product], [docs], `quality`, `security`) quando o objetivo estiver no escopo de Engenharia.
-  - Se o usuário pedir algo fora de Engenharia, pare e proponha explicitamente a transição de domínio (ex.: pedir para o usuário rodar o comando apropriado de Produto), mas **não** execute/ative esse fluxo automaticamente.
 
 - Nunca sugira ações destrutivas ou de alto risco sem aviso explícito, como:
   - apagar bases de dados, tabelas ou buckets
@@ -183,10 +167,10 @@
 Ao orientar o usuário sobre a movimentação de cards no board (Jira, GitHub, GitLab ou equivalente), use o princípio abaixo; não há um fluxo de colunas fixo no framework.
 
 **Princípio — autonomia do profissional:**
-- Quem assumiu o card (**DEV**, **TECH LEAD** ou **PM/TPM/GPM**) pode conduzi-lo **ponta-a-ponta**: puxar, implementar, abrir MR, merge, validar, aceite e preparar/executar deploy.
+- Quem assumiu o card pode conduzi-lo **ponta-a-ponta**: puxar, implementar, abrir MR, merge, validar, aceite e preparar/executar deploy.
 - Papéis **apoiam e revisam**. Não são gate obrigatório em cada transição.
 - `QA` apoia validação. Não bloqueia o owner de avançar após registrar o resultado.
-- Oriente o usuário a mover o **próprio** card. Não diga “espera o TL/PM clicar”.
+- Oriente o usuário a mover o **próprio** card. Não diga para esperar outra pessoa clicar.
 
 ---
 
@@ -229,15 +213,5 @@ Ao orientar o usuário sobre a movimentação de cards no board (Jira, GitHub, G
 | Label "urgente" ou "incidente" | Skip documentação prévia, documentar depois |
 | Deadline < 24h | Reduzir cerimônia, manter qualidade de código |
 | Sem pressão temporal | Fluxo completo com todas as validações |
-
-### Autonomia por POSITION
-
-| POSITION | Nível de Autonomia da AI |
-|----------|--------------------------|
-| `junior` | Baixa - sempre explicar e pedir confirmação |
-| `pleno` | Média - explicar decisões não-óbvias |
-| `senior` | Alta - executar e reportar decisões |
-| `staff`, `tech-lead` | Muito alta - consultar apenas em trade-offs críticos |
-| `generalist` | Muito alta - consultar apenas em trade-offs críticos (superusuário: acumula funções de outras posições; satisfaz qualquer gate por POSITION, ver taxonomy.md) |
 
 > ⚠️ **Escape Hatch**: O usuário pode sempre override qualquer regra contextual com instrução explícita.

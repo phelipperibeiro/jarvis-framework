@@ -20,12 +20,12 @@ Regras que **substituem** qualquer trecho legado deste skill ou dos assets:
 
 1. **Sem login/OAuth** — identidade = `USER=` (ENV.md → git email → SO). Nunca pedir `jarvis login` nem `~/.jarvis/auth.json`.
 2. **Sem `PROJECT_NAME` / `WORKSPACE_TYPE`** — a unidade é **workspace** (pasta que contém `$IDE/`).
-3. **Sessões no workspace** — `$SESSIONS_DIR` (padrão `.jarvis/sessions`, configurável) com `{eng,prod,qa}/`. Estado local em `{workspace}/.jarvis/` (não em `~/.jarvis/`).
+3. **Sessões no workspace** — `$SESSIONS_DIR` (padrão `.jarvis/sessions`, configurável) com `{eng,prod}/`. Estado local em `{workspace}/.jarvis/` (não em `~/.jarvis/`).
 4. **`TASK_MANAGER` vazio = freelance** — sem board. Workflows pedem `TASK_MANAGER_KEY` (controle próprio) e as ações viram `.md`.
 5. **Context7 obrigatório**; demais MCPs (Redis, Sentry, TestSprite) **não bloqueiam**. Board e git não usam MCP: usam a CLI oficial (contrato 7).
 6. **Sem event bus / metrics / checkin-checkout-daily** — não provisionar Redis runtime nem pedir métricas.
 7. **Board e git pela CLI oficial, sem token** — `gh` (GitHub), `glab` (GitLab), `acli` (Jira Cloud), com o login delas (`gh auth login`, `glab auth login`, `acli jira auth login`). Nenhum token vai no ENV.md (não existem `TOKEN_TASK_MANAGER` nem `TOKEN_VERSION_CONTROL` no template). Catálogo: `bin/lib/integrations/vendors.json`. Linear, Asana e Bitbucket não são suportados (o eixo fica em freelance).
-8. **Autonomia** — qualquer `POSITION` (JUNIOR…CTO / PM) pode rodar o card ponta a ponta (`/eng.start` → `/eng.pr`). Sem gate obrigatório de TL/PM no init.
+8. **Autonomia** — quem assumiu o card pode rodá-lo ponta a ponta (`/eng.start` → `/eng.pr`), sem gate de outra pessoa.
 9. **Fonte do ENV** — só `templates/ENV-template.md`. Não inventar variáveis. `JARVIS_PROJECT` default: `https://github.com/phelipperibeiro/jarvis-framework` (sempre a URL completa; trocar só para um fork interno).
 10. **IDEs** — windsurf, claude, cursor, codex, opencode, gemini/antigravity, kiro.
 11. **Instalação só global** — `npm install -g jarvis-ai-framework`. O `jarvis init` roda dentro do projeto e copia os assets do Jarvis global; cópia local no projeto (`node_modules` ou dependência no `package.json`) é ignorada. Antes de tudo, confira a versão (Passo 0).
@@ -34,7 +34,7 @@ Regras que **substituem** qualquer trecho legado deste skill ou dos assets:
 
 - Configurar ambiente de desenvolvimento
 - Validar MCP obrigatório (Context7) e descobrir a CLI do board e do git (instalada e logada; não bloqueante)
-- Criar arquivos de configuração (ENV.md, AGENTS.md) e pastas `$SESSIONS_DIR/{eng,prod,qa}`
+- Criar arquivos de configuração (ENV.md, AGENTS.md) e pastas `$SESSIONS_DIR/{eng,prod}`
 - Orientar nos processos do framework (sem ritual diário / login)
 
 ## Entrada
@@ -43,7 +43,7 @@ Regras que **substituem** qualquer trecho legado deste skill ou dos assets:
 
 ## Recursos
 
-- **Taxonomia**: `taxonomy.md` (na raiz do framework / workspace) - Define opções válidas para SQUAD, HUB, POSITION, AREA
+- **Taxonomia**: `taxonomy.md` (na raiz do framework / workspace) - Define as opções válidas de SQUAD (e o domínio de e-mail)
 - **Template ENV**: `templates/ENV-template.md` (**única** fonte — não use ENV-example.md)
 - **Template AGENTS**: `templates/engineering/AGENTS-template.md`
 - **Configurações MCP**: `$IDE/skills/jarvis-init/assets/mcp-configs.md`
@@ -56,7 +56,7 @@ Regras que **substituem** qualquer trecho legado deste skill ou dos assets:
 - **Modo `repos`**: `$IDE/skills/jarvis-init/assets/repos.md`
 - **Opções padrão e exemplos de validação**: `$IDE/skills/jarvis-init/assets/validacoes.md`
 - **Exemplo de execução**: `$IDE/skills/jarvis-init/assets/exemplo-execucao.md`
-- **Saída**: `$IDE/ENV.md`, `AGENTS.md`, `{workspace}/$SESSIONS_DIR/{eng,prod,qa}/`
+- **Saída**: `$IDE/ENV.md`, `AGENTS.md`, `{workspace}/$SESSIONS_DIR/{eng,prod}/`
 
 ---
 
@@ -90,7 +90,7 @@ Regras que **substituem** qualquer trecho legado deste skill ou dos assets:
 │        ↓                                                    │
 │  7. CRIAR → mapa, AGENTS.md e CLAUDE.md (cópia)             │
 │        ↓                                                    │
-│  8. SYNC RULES → jarvis rules sync (perfil do ENV.md)       │
+│  8. SYNC RULES → jarvis rules sync (ARTIFACT_STYLE e RTK)   │
 │        ↓                                                    │
 │  9. STACKS → Adicionar as stacks (opcional, pulável)        │
 │        ↓                                                    │
@@ -152,20 +152,9 @@ AUTH_EMAIL=$(grep -E '^USER=' "$IDE/ENV.md" 2>/dev/null | cut -d= -f2- | tr -d '
 cat taxonomy.md
 ```
 
-**Extrair opções válidas** de cada categoria:
-
-1. **SQUADS**: Todas as opções sob "## 🏢 Squads"
-   - Extrair apenas os nomes em MAIÚSCULAS (###)
-   - Exemplo: nomes em `###` sob Squads no `taxonomy.md`
-
-2. **HUBS**: Todas as opções sob "## 🎯 Hubs"
-   - Extrair: `AI`, `FRONTEND`, `BACKEND`, `QA`, `DATA`, `FULLCYCLE`
-
-3. **POSITIONS**: Todas as opções sob "## 👤 Positions"
-   - Extrair: `JUNIOR`, `PLENO`, `SENIOR`, `TECH LEAD`, etc.
-
-4. **AREAS**: Todas as opções sob "## 📊 Areas"
-   - Extrair: `ENGINEERING`, `PRODUCT`
+**Extrair as opções válidas** de SQUAD: todas as opções sob "## 🏢 Squads"
+- Extrair apenas os nomes em MAIÚSCULAS (###)
+- Exemplo: nomes em `###` sob Squads no `taxonomy.md`
 
 **Formato de parsing**:
 ```javascript
@@ -185,9 +174,6 @@ function extractOptions(content, sectionName) {
 }
 
 const validSquads = extractOptions(taxonomyContent, 'Squads')
-const validHubs = extractOptions(taxonomyContent, 'Hubs')
-const validPositions = extractOptions(taxonomyContent, 'Positions')
-const validAreas = extractOptions(taxonomyContent, 'Areas')
 ```
 
 > **⚠️ Se taxonomy.md não existir ou for inválido**: use os valores padrão e mostre o aviso de `assets/validacoes.md` (seção "Valores Padrão (Fallback)").
@@ -265,33 +251,17 @@ Fluxo correto:
 ### Variáveis com Opções Fixas:
 
 **Decisão por número de opções:**
-- **HUB** (6 opções: AI, FRONTEND, BACKEND, QA, DATA, FULLCYCLE) → texto numerado (>4)
-- **AREA** (4-5 opções) → se ≤4 usar AskUserQuestion, senão texto
 - **IDE** (7 opções) → mostrar em texto numerado
 - **SQUAD** (do taxonomy) → mostrar em texto numerado
-- **POSITION** (do taxonomy) → mostrar em texto numerado
+- **SENIORITY** (3 opções: junior, pleno, senior) → AskUserQuestion, sem opção sugerida
+- **Áreas com senioridade diferente** (7 opções: 0 e as seis áreas) → mostrar em texto numerado; o nível de cada área escolhida → AskUserQuestion
 - **PROD_MODE** (2 opções: product-led, developer-guided) → AskUserQuestion, sempre perguntado e sem opção sugerida
 - **ARTIFACT_STYLE** (2 opções: ai-generated, human-generated) → AskUserQuestion, `ai-generated` primeiro
-
-```
-// Exemplo 1: HUB (5 opções) - MOSTRAR EM TEXTO
-Qual o hub do projeto?
-
-Opções disponíveis:
-1. AI - Inteligência Artificial
-2. FRONTEND - Interfaces web/mobile
-3. BACKEND - APIs e serviços
-4. QA - Qualidade e testes
-5. DATA - Engenharia de dados / BI / ML
-
-Digite o número (1-5) ou nome do hub:
-[aguardar resposta e validar]
-```
 
 **Para variáveis com >4 opções, usar formato de texto:**
 
 ```
-// Exemplo 2: IDE - MOSTRAR EM TEXTO
+// Exemplo 1: IDE - MOSTRAR EM TEXTO
 Qual IDE você está usando?
 
 Opções disponíveis:
@@ -308,7 +278,7 @@ Digite o número (1-7) ou nome da opção:
 ```
 
 ```
-// Exemplo 3: SQUAD (6+ opções do taxonomy) - MOSTRAR EM TEXTO
+// Exemplo 2: SQUAD (6+ opções do taxonomy) - MOSTRAR EM TEXTO
 Qual o nome do seu squad?
 
 Opções disponíveis: (lidas de taxonomy.md)
@@ -319,22 +289,19 @@ Digite o número ou nome do squad:
 ```
 
 ```
-// Exemplo 4: POSITION (9 opções) - MOSTRAR EM TEXTO
-Qual seu cargo?
+// Exemplo 3: ÁREAS COM SENIORIDADE DIFERENTE (7 opções) - MOSTRAR EM TEXTO
+Alguma área com senioridade diferente do padrão ({SENIORITY})?
 
-Opções disponíveis:
-1. JUNIOR - Desenvolvedor Júnior
-2. PLENO - Desenvolvedor Pleno
-3. SENIOR - Desenvolvedor Sênior
-4. TECH LEAD - Líder Técnico
-5. SPECIALIST - Especialista
-6. PM - Product Manager
-7. TPM - Technical Product Manager
-8. GPM - Group Product Manager
-9. CTO - Chief Technology Officer
+0. Nenhuma (o padrão vale para todas)
+1. backend - APIs, autenticação, workers, banco de dados, servidor
+2. frontend - Componentes, interface, estilos, estado
+3. qa - Testes, cobertura, quality gates, planejamento de testes
+4. data - Pipelines, ETL/ELT, modelagem, contratos de dados, qualidade de dados
+5. automation - RPA (robôs, automação de browser/fluxos de trabalho), web scraping, crawling, parsing
+6. platform - Infraestrutura, cloud, IaC, contêineres, CI/CD, observabilidade, SRE, segurança de infra, FinOps
 
-Digite o número (1-9) ou nome do cargo:
-[aguardar resposta e validar contra lista]
+Digite 0 ou os números das áreas, separados por vírgula (ex.: 2, 3):
+[aguardar resposta e validar: 0 sozinho, ou números de 1 a 6 sem repetição]
 ```
 
 ### Variáveis Livres (Permitir Digitação):
@@ -354,7 +321,7 @@ Escanear `.git/` na raiz e nas subpastas e gravar `WORKSPACE_MODE` (o que define
 
 > O `WORKSPACE_MODE` não decide o `.gitignore` nem o `.git/info/exclude`: eles só são criados ou alterados quando a raiz tem `.git` (Passo 5). Uma pasta sem nenhum `.git` é `project` e mesmo assim não recebe nenhum dos dois.
 
-Pergunta 6: Qual o limite de execução da AI? (número entre 60 e 100)
+Pergunta 4: Qual o limite de execução da AI? (número entre 60 e 100)
 [aguardar resposta e validar range 60-100]
 ```
 
@@ -386,34 +353,34 @@ Pergunta 3 (opções fixas - 6+ opções - mostrar em texto):
 *[Validar resposta contra lista de SQUADs válidos do taxonomy]*
 
 ```
-Pergunta 4 (opções fixas - 4 opções - usar AskUserQuestion):
-```
-
-*[Mostrar TODAS as opções de HUB do taxonomy em texto numerado (inclui DATA) e aguardar]*
-
-*[Aguardar seleção do usuário]*
-
-```
-Pergunta 5 (opções fixas - 4-5 opções):
-```
-
-*[Se AREA tiver ≤4 opções: usar AskUserQuestion]*
-*[Se AREA tiver >4 opções: mostrar em texto numerado]*
-
-*[Aguardar resposta]*
-
-```
-Pergunta 6 (livre - digitação com validação):
+Pergunta 4 (livre - digitação com validação):
 Qual o limite de execução da AI? (número entre 60 e 100)
 ```
 
 *[Aguardar resposta e validar range 60-100]*
 
 ```
-Pergunta 7 (opções fixas - POSITION do taxonomy - texto se >4):
+Pergunta 5 (opções fixas - 3 opções - usar AskUserQuestion) — SENIORITY:
+Qual sua senioridade padrão? (calibra só a conversa: quanto o Jarvis explica)
+- junior: explica o porquê, define os termos, traz exemplos e confirma o entendimento com mais frequência.
+- pleno: explica só o que não é óbvio.
+- senior: direto, com trade-offs e riscos, sem fundamentos.
 ```
 
-*[Mostrar TODAS as opções de POSITION do taxonomy.md e aguardar]*
+*[Não marcar nenhuma opção como recomendada. Gravar `SENIORITY=junior`, `pleno` ou `senior`. A senioridade não libera nem bloqueia comando.]*
+
+```
+Pergunta 6 (opções fixas - 7 opções - mostrar em texto) — áreas com senioridade diferente:
+```
+
+*[Mostrar a lista do Exemplo 3 (0 = nenhuma; 1 a 6 = as áreas, com os indicadores) e aguardar os números. Com `0`, as seis chaves `{ÁREA}_SENIORITY` ficam vazias: vale a `SENIORITY`.]*
+
+```
+Pergunta 7 (opções fixas - 3 opções - usar AskUserQuestion) — só se escolheu alguma área na Pergunta 6:
+Qual sua senioridade em {área}?
+```
+
+*[Uma pergunta por área escolhida, com `junior`, `pleno` e `senior`. Gravar em `{ÁREA}_SENIORITY` (ex.: `FRONTEND_SENIORITY=junior`); as áreas não escolhidas ficam vazias.]*
 
 ```
 Pergunta 8 (opções fixas - 2 opções - usar AskUserQuestion) — PROD_MODE:
@@ -422,7 +389,7 @@ Como você quer que os comandos de produto (prod.*) e o eng.create-ard conduzam 
 - Developer-Guided: para devs e futuros PMs. Uma pergunta por vez, explicando cada termo e etapa enquanto você faz.
 ```
 
-*[Perguntar **sempre**, para qualquer `AREA` e qualquer `POSITION` (inclusive `GENERALIST` e PM). **Não** marcar nenhuma opção como recomendada nem sugerir padrão por área ou cargo. Gravar `PROD_MODE=product-led` ou `PROD_MODE=developer-guided`.]*
+*[Perguntar **sempre**, qualquer que seja a senioridade. **Não** marcar nenhuma opção como recomendada nem sugerir padrão. Gravar `PROD_MODE=product-led` ou `PROD_MODE=developer-guided`.]*
 
 ```
 Pergunta 9 (opções fixas - 2 opções - usar AskUserQuestion) — ARTIFACT_STYLE:
@@ -435,11 +402,11 @@ Qual o estilo dos artefatos que o Jarvis gera (commits, PRs, comentários e docu
 
 **Regras de Implementação:**
 - **Opções fixas com ≤4 opções** → usar AskUserQuestion
-- **Opções fixas com >4 opções** (HUB com DATA, IDE, SQUAD, POSITION) → mostrar em texto numerado
+- **Opções fixas com >4 opções** (IDE, SQUAD, áreas com senioridade diferente) → mostrar em texto numerado
 - **Valores livres** (WORKSPACE só se recusar o nome detectado, MAX_AI_EXECUTION_PERCENTAGE) → Pergunta tradicional com validação
 - **USER** → resolvido no passo 1 (ENV.md / git / SO). Só perguntar se o usuário quiser outro valor
 - **SEMPRE** mostrar TODAS as opções disponíveis (seja em AskUserQuestion ou texto)
-- **NUNCA** omitir opções da lista (HUB deve incluir DATA)
+- **NUNCA** omitir opções da lista
 - **NUNCA** perguntar múltiplas variáveis de uma vez
 - **SEMPRE** validar resposta contra lista de opções válidas (quando texto)
 
@@ -452,16 +419,15 @@ Qual o estilo dos artefatos que o Jarvis gera (commits, PRs, comentários e docu
 | `WORKSPACE_MODE` | Modo de trabalho | `workspace` (raiz sem `.git` e 1+ subpastas com `.git/`) ou `project` (raiz com `.git`). Detectado, não perguntado |
 | `IDE` | IDE utilizada | `windsurf`, `claude`, `cursor`, `codex`, `opencode`, `gemini`, `kiro` (antigravity → gemini) |
 | `SQUAD` | Nome do squad | Deve estar em `taxonomy.md` → Squads |
-| `HUB` | Hub do workspace | Deve estar em `taxonomy.md` → Hubs (**inclui DATA**) |
-| `AREA` | Área do workspace | Deve estar em `taxonomy.md` → Areas |
 | `MAX_AI_EXECUTION_PERCENTAGE` | Limite de execução da AI | Número entre 60 e 100 |
 | `USER` | Identidade do usuário (email ou nome) | ENV.md → git `user.email` → usuário do SO. Sem login |
-| `POSITION` | Cargo do usuário | Deve estar em `taxonomy.md` → Positions. Autonomia ponta a ponta em qualquer cargo |
+| `SENIORITY` | Senioridade padrão do usuário | `junior`, `pleno` ou `senior` (Pergunta 5). Calibra só a conversa |
 | `PROD_MODE` | Modo de condução dos comandos de produto e do `eng.create-ard` | `product-led` ou `developer-guided`. Sempre perguntado, sem opção sugerida (Pergunta 8) |
 | `ARTIFACT_STYLE` | Estilo dos artefatos gerados | `ai-generated` (padrão) ou `human-generated` (Pergunta 9). No Upgrade (C), entra com `ai-generated` |
 
 > **💡 Nota**:
-> - As opções para SQUAD, HUB, AREA e POSITION são definidas em `taxonomy.md` e podem ser customizadas por organização.
+> - As opções de SQUAD são definidas em `taxonomy.md` e podem ser customizadas por organização.
+> - As seis chaves `{ÁREA}_SENIORITY` (`BACKEND`, `FRONTEND`, `QA`, `DATA`, `AUTOMATION`, `PLATFORM`) são opcionais: vazias, vale a `SENIORITY` (Perguntas 6 e 7).
 > - CDD (Context-Driven Development) está sempre habilitado — `ENABLE_CDD=true` é gerado automaticamente no ENV.md.
 
 #### Validar Respostas
@@ -472,8 +438,7 @@ Aplicar validações conforme o tipo de variável:
 
 Quando usar `AskUserQuestion`, a validação é automática (usuário só pode escolher opções válidas):
 
-- **HUB**: 5 opções do taxonomy em texto → validar contra lista (inclui DATA)
-- **AREA**: AskUserQuestion se ≤4 opções → validação automática
+- **SENIORITY** e o nível de cada área: AskUserQuestion (3 opções) → validação automática
 
 **Variáveis com texto numerado (>4 opções - validação manual necessária):**
 
@@ -487,9 +452,8 @@ Quando mostrar opções em texto, DEVE validar manualmente:
   - Aceitar: número ou nome exato do SQUAD
   - Erro se inválido: `"Squad inválido. Digite um número ou nome válido da lista."`
 
-- **POSITION**: opções do taxonomy em texto → validar contra lista
-  - Aceitar: número ou nome do cargo
-  - Erro se inválido: `"Cargo inválido. Digite um número ou nome do cargo."`
+- **Áreas com senioridade diferente**: `0` sozinho, ou números de 1 a 6 separados por vírgula, sem repetir
+  - Erro se inválido: `"Opção inválida. Digite 0 ou os números das áreas (1 a 6), separados por vírgula."`
 
 **Lógica de validação para texto:**
 ```javascript
@@ -585,12 +549,6 @@ Se **A** ou **B**, perguntar sobre cada variável opcional conforme seleção �
 | `TASK_MANAGER_URL_BASE` | *(vazio)* | GitHub/GitLab: repositório dos cards (obrigatório); Jira: o site, só para o link |
 | `VERSION_CONTROL` | *(vazio)* | `github`, `gitlab` |
 | `VERSION_CONTROL_ACCESS` | *(vazio)* | `cli` ou `manual` |
-| `MESSAGE_COMUNICATOR` | *(vazio)* | `slack`, `discord`, `teams` |
-| `MESSAGE_COMUNICATOR_BOT_TOKEN` / `_SIGNING_SECRET` / `_APP_TOKEN` | *(vazio)* | Tokens do chat |
-| `ALERTS_CHANNEL` | *(vazio)* | Canal de alertas |
-| `OBJECT_STORAGE` | *(vazio)* | `aws_s3`, `gcs`, `azure_blob` |
-| `TOKEN_OBJECT_STORAGE` | *(vazio)* | Token storage |
-| `TEST_FOLDER` | *(vazio)* | Pasta de testes |
 | `JARVIS_PROJECT` | `https://github.com/phelipperibeiro/jarvis-framework` | URL completa do repo do framework (`/jarvis-report-issue`); trocar só para um fork |
 | `CENTRAL_DOCS_STORAGE` / `_LOCATION` | `filesystem` / pasta padrão do modo de trabalho | Central docs (o que foi implementado), configurado no Passo 5.2; vazio = desligado |
 | `JARVIS_DOCS` / `ENG_DOCS` | `$DOCS_FOLDER/jarvis` / `$JARVIS_DOCS/engineering` | Documentos de trabalho (não perguntar; `$JARVIS_DOCS/` no `.gitignore` só se a raiz tiver `.git`) |
@@ -652,7 +610,7 @@ cat templates/ENV-template.md
 #    NÃO incluir: TOKEN_VERSION_CONTROL, PROJECT_NAME, EVENT_BUS*, metrics*
 
 # 6. Criar pastas de sessão no workspace (pasta que contém $IDE/):
-mkdir -p "$SESSIONS_DIR/eng" "$SESSIONS_DIR/prod" "$SESSIONS_DIR/qa"   # SESSIONS_DIR expandido (padrão .jarvis/sessions)
+mkdir -p "$SESSIONS_DIR/eng" "$SESSIONS_DIR/prod"   # SESSIONS_DIR expandido (padrão .jarvis/sessions)
 
 # 7. Documentos de trabalho em $JARVIS_DOCS — nos DOIS modos de trabalho:
 #    JARVIS_DOCS=$DOCS_FOLDER/jarvis, PROD_DOCS=$JARVIS_DOCS/product, ENG_DOCS=$JARVIS_DOCS/engineering
@@ -730,9 +688,17 @@ ENABLE_CDD=true
 # Organização (obrigatório — opções vêm do taxonomy.md)
 # =============================================================================
 SQUAD={valor}
-HUB={valor}
-AREA={valor}
-POSITION={valor}
+
+# =============================================================================
+# Senioridade por assunto (calibra só a conversa: quanto o Jarvis explica)
+# =============================================================================
+SENIORITY={valor}
+BACKEND_SENIORITY={valor ou vazio}
+FRONTEND_SENIORITY={valor ou vazio}
+QA_SENIORITY={valor ou vazio}
+DATA_SENIORITY={valor ou vazio}
+AUTOMATION_SENIORITY={valor ou vazio}
+PLATFORM_SENIORITY={valor ou vazio}
 
 # =============================================================================
 # IDE e pastas
@@ -767,7 +733,7 @@ TASK_MANAGER_URL_BASE=
 # =============================================================================
 VERSION_CONTROL=
 VERSION_CONTROL_ACCESS=
-# ... restante do template, cada assunto na sua moldura (MESSAGE_COMUNICATOR*, OBJECT_STORAGE, JARVIS_PROJECT, CENTRAL_DOCS_*, etc.)
+# ... restante do template, cada assunto na sua moldura (JARVIS_PROJECT, CENTRAL_DOCS_*, etc.)
 JARVIS_PROJECT=https://github.com/phelipperibeiro/jarvis-framework
 ```
 
@@ -800,7 +766,7 @@ DISCOVERIES_DOCS=$JARVIS_DOCS/$DISCOVERIES_FOLDER_NAME
 O skill deve detectar automaticamente o IDE e definir o valor correto.
 
 **Sessões:**
-- Paths: `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/`, `$SESSIONS_DIR/prod/{TASK_MANAGER_KEY}/`, `$SESSIONS_DIR/qa/`
+- Paths: `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/` e `$SESSIONS_DIR/prod/{TASK_MANAGER_KEY}/`
 - Cookie/HTTP session **não** é esta pasta
 - Não usar `~/.jarvis/` para sessões do framework
 
@@ -932,11 +898,11 @@ Se o `AGENTS.md` não existir na raiz do projeto (itens 1 a 7; o item 8 vale sem
 7. **Bloco de repositórios** (`<!-- jarvis:repos:start -->` … `<!-- jarvis:repos:end -->`, o `{REPOS_BLOCK}` do template): no **modo projeto**, remova o bloco inteiro, marcadores incluídos (o mapa tem só a raiz). No **modo workspace**, substitua `{REPOS_BLOCK}` por uma linha por repositório do `CDD-MIND-MAP.md`, no formato `- **{repo}** — {papel}; {linguagem}/{framework} ({área})`; o mapa já existe (montado no início deste passo).
 8. **`CLAUDE.md` (sempre, exista ou não o `AGENTS.md`):** pela **regra de sincronia** (seção acima), em qualquer IDE, ele é cópia idêntica do `AGENTS.md`: se não existir, crie-o com o mesmo conteúdo do `AGENTS.md`; se já existir com outro conteúdo (escrito à mão), mostre a diferença e pergunte antes de sobrescrever.
 
-### 8. Profile-Aware Rules Sync
+### 8. Rules Sync
 
 **Executar após gravar o ENV.md** (criar, atualizar B, upgrade C e no item 4 do 9.5).
-Na pasta do workspace, rode `jarvis rules sync --ide {ide}` e mostre à pessoa o resumo que ele imprime. O comando filtra `$IDE/rules/` e `$IDE/rules-on-demand/` pelo perfil do ENV.md (HUB, POSITION, AREA, SQUAD, ARTIFACT_STYLE; `rtk-rules.md` só com RTK_ENABLED=true), aplica o overlay de `COMPANY_PROFILE` (cria a pasta vazia do perfil se faltar) e não toca em arquivo que não seja do core nem do overlay. Não filtre à mão. O `jarvis init --upgrade` e a reinstalação (`--force` ou a opção 2 do menu) já rodam esse filtro no fim, quando o ENV.md tem os 4 eixos (ali, a `rtk-rules.md` pede também o `rtk` no PATH); o Passo 8 continua valendo na criação do ENV.md e sempre que o perfil muda.
-Sem o `jarvis` no PATH, ou se o comando sair com erro (ENV incompleto, versão do lock diferente), siga `assets/rules-sync-manual.md`.
+Na pasta do workspace, rode `jarvis rules sync --ide {ide}` e mostre à pessoa o resumo que ele imprime. O comando copia todas as rules para `$IDE/rules/` e `$IDE/rules-on-demand/`, menos as duas exceções (`artifact-style-rules.md` só com `ARTIFACT_STYLE=human-generated`; `rtk-rules.md` só com `RTK_ENABLED=true`), aplica o overlay de `COMPANY_PROFILE` (cria a pasta vazia do perfil se faltar) e não toca em arquivo que não seja do core nem do overlay. Não copie à mão. O `jarvis init --upgrade` e a reinstalação (`--force` ou a opção 2 do menu) já rodam esse passo no fim (ali, a `rtk-rules.md` pede também o `rtk` no PATH); o Passo 8 continua valendo na criação do ENV.md e sempre que o `ARTIFACT_STYLE` ou o `RTK_ENABLED` mudam.
+Sem o `jarvis` no PATH, ou se o comando sair com erro (`ENV.md` fora da pasta de uma IDE, lock ausente ou de outra versão), siga `assets/rules-sync-manual.md`.
 
 ---
 
@@ -977,8 +943,8 @@ Roda no fim de todo caminho que grava o `ENV.md`: criação (opção A ou ENV.md
 |---|---|---|
 | Chave do template ausente | falta `WORKSPACE_MODE` | Acrescentar no assunto dela, com o padrão do template. |
 | Chave fora do template (saiu dele ou é do projeto) | `QA_SIGNOFF_BRANCHES`, `MINHA_VAR` | Mover para o bloco final "Variáveis fora do template", com `# (descontinuada)` numa linha própria logo acima da chave e o valor intacto |
-| Chave duplicada | `HUB=` duas vezes | Manter a preenchida (ou a última) |
-| Valor fora das opções | `HUB=BACKEN`, `MAX_AI_EXECUTION_PERCENTAGE=40`, `TASK_MANAGER_ACCESS=api` | Perguntar o valor, com as opções do template ou do `taxonomy.md` (as mesmas perguntas do passo 3) |
+| Chave duplicada | `SQUAD=` duas vezes | Manter a preenchida (ou a última) |
+| Valor fora das opções | `SENIORITY=staff`, `MAX_AI_EXECUTION_PERCENTAGE=40`, `TASK_MANAGER_ACCESS=api` | Perguntar o valor, com as opções do template ou do `taxonomy.md` (as mesmas perguntas do passo 3) |
 | `COMPANY_PROFILE` vazio, fora do padrão ou igual a uma pasta do core | `COMPANY_PROFILE=`, `COMPANY_PROFILE=Acme Corp`, `COMPANY_PROFILE=rules` | A mesma pergunta do item 6 do passo 4 (default `stark-industries` primeiro). Vazio não é válido: a chave sempre tem um perfil |
 | Obrigatória vazia | `SQUAD=` | A mesma pergunta do passo 3 |
 | Lista de exemplo não escolhida | `TASK_MANAGER=[jira, github, gitlab]` | Escolher uma ou esvaziar |
@@ -994,7 +960,7 @@ Não pergunte de novo o que as exceções 8 a 8.3 do Upgrade já resolveram nest
 - **Reorganização recusada:** grave só as correções de conteúdo aceitas, no lugar em que cada chave está, sem mover o resto.
 - **Conferência antes de gravar:** o **conjunto de chaves** depois é o de antes, mais as acrescentadas e menos as removidas por resposta; e o mapa chave → valor das chaves mantidas é igual (só mudam as corrigidas por resposta). Se não for, não grave e avise: `⚠️ A regravação mudaria chaves ou valores que não foram respondidos: nada gravado.`
 
-**4. Rules do perfil.** Se uma correção mudou `HUB`, `POSITION`, `AREA`, `SQUAD`, `ARTIFACT_STYLE` ou `RTK_ENABLED`, rode o **passo 8** de novo: ele já rodou com os valores antigos, e as rules em `$IDE/rules/` seriam de outro perfil.
+**4. Rules.** Se uma correção mudou o `ARTIFACT_STYLE` ou o `RTK_ENABLED`, rode o **passo 8** de novo: ele já rodou com os valores antigos, e as duas rules que dependem deles estariam erradas em `$IDE/rules/`.
 
 **5. Resumo.** Liste o que foi corrigido e o que ficou pendente (respostas "Manter como está"), só com nomes de chave, e se o passo 8 rodou de novo.
 
@@ -1014,10 +980,8 @@ Não pergunte de novo o que as exceções 8 a 8.3 do Upgrade já resolveram nest
 - Task manager: {TASK_MANAGER ou "vazio (freelance)"} — acesso: {TASK_MANAGER_ACCESS} ({bin}: logada | sem login | ausente)
 - Controle de versão: {VERSION_CONTROL ou vazio} — acesso: {VERSION_CONTROL_ACCESS} ({bin}: logada | sem login | ausente)
 - Squad: {SQUAD}
-- Hub: {HUB}
-- Área: {AREA}
 - Usuário: {USER}
-- Cargo: {POSITION}
+- Senioridade: {SENIORITY}; exceções: {área=valor, … ou "nenhuma"}
 - Limite AI: {MAX_AI_EXECUTION_PERCENTAGE}%
 - Especializações: {as 6 variáveis registradas, ou "só skill base" por área}
 - CDD: habilitado
@@ -1044,7 +1008,7 @@ Não pergunte de novo o que as exceções 8 a 8.3 do Upgrade já resolveram nest
 
 ### 12. Verificar Acessos
 
-Confirmar acessos relevantes (não bloqueantes): Git; a CLI do board e do git (`auth status` do catálogo) se `TASK_MANAGER`/`VERSION_CONTROL` estiverem definidos; chat se `MESSAGE_COMUNICATOR` estiver definido; ambiente de Dev.
+Confirmar acessos relevantes (não bloqueantes): Git; a CLI do board e do git (`auth status` do catálogo) se `TASK_MANAGER`/`VERSION_CONTROL` estiverem definidos; ambiente de Dev.
 
 ### 13. Entregar Checklist
 
@@ -1083,7 +1047,6 @@ Apresentar checklist de onboarding por período (Dia 1, Semana 1, Mês 1).
 - ❌ Travar o init esperando a CLI do board / Redis / Sentry
 - ❌ Instalar a CLI ou fazer o login pela pessoa; pedir, ler ou gravar token do board ou do git
 - ❌ Prosseguir sem o Context7 no arquivo de MCP da IDE (pendente de ativação é aceito; arquivo ausente ou inválido, não)
-- ❌ Omitir hub DATA da lista de HUB
 - ❌ Criar AGENTS.md sem detectar stack
 - ❌ Apresentar checkin/checkout/daily como parte do onboarding
 
@@ -1095,7 +1058,7 @@ Apresentar checklist de onboarding por período (Dia 1, Semana 1, Mês 1).
 - ✅ **SEMPRE ajustar FLOWS_FOLDER baseado no IDE (commands para claude, workflows para outros)**
 - ✅ **SEMPRE perguntar UMA variável POR VEZ e aguardar resposta antes da próxima**
 - ✅ **SEMPRE usar AskUserQuestion só para ≤4 opções**
-- ✅ **SEMPRE mostrar em texto numerado para >4 opções** (HUB com DATA, IDE, SQUAD, POSITION)
+- ✅ **SEMPRE mostrar em texto numerado para >4 opções** (IDE, SQUAD, áreas com senioridade diferente)
 - ✅ **SEMPRE mostrar TODAS as opções disponíveis** - nunca omitir nenhuma
 - ✅ **SEMPRE incluir descrição em cada opção** (AskUserQuestion ou texto)
 - ✅ **SEMPRE validar respostas em texto contra lista de opções válidas**
@@ -1104,7 +1067,7 @@ Apresentar checklist de onboarding por período (Dia 1, Semana 1, Mês 1).
 - ✅ Só perguntar USER se o usuário quiser outro identificador
 - ✅ Validar range do MAX_AI_EXECUTION_PERCENTAGE (60-100)
 - ✅ WORKSPACE detectado (basename da pasta do `$IDE/`) ou override
-- ✅ Criar `$SESSIONS_DIR/{eng,prod,qa}` e, só com `.git` na raiz, garantir `.jarvis/` (e o `$SESSIONS_DIR/` relativo fora de `.jarvis/`) e a pasta da IDE no `.gitignore`, e `AGENTS.md`, `CLAUDE.md` e `CDD-MIND-MAP.md` no `.git/info/exclude`
+- ✅ Criar `$SESSIONS_DIR/{eng,prod}` e, só com `.git` na raiz, garantir `.jarvis/` (e o `$SESSIONS_DIR/` relativo fora de `.jarvis/`) e a pasta da IDE no `.gitignore`, e `AGENTS.md`, `CLAUDE.md` e `CDD-MIND-MAP.md` no `.git/info/exclude`
 - ✅ Explicar freelance se `TASK_MANAGER` vazio (`TASK_MANAGER_KEY` próprio)
 - ✅ Garantir o Context7 no arquivo de MCP que a IDE lê, no formato dela, e validá-lo (obrigatório; pendente de ativação não bloqueia)
 - ✅ Descobrir a CLI do board e do git em best-effort (1 tentativa, nunca bloquear)
@@ -1118,7 +1081,7 @@ Apresentar checklist de onboarding por período (Dia 1, Semana 1, Mês 1).
 
 | Erro | Ação |
 |------|------|
-| **taxonomy.md não encontrado** | Usar DEFAULT_OPTIONS (`assets/validacoes.md`) (CORE + hubs com DATA) e avisar |
+| **taxonomy.md não encontrado** | Usar DEFAULT_OPTIONS (`assets/validacoes.md`) (squad CORE) e avisar |
 | **taxonomy.md inválido/corrompido** | Usar DEFAULT_OPTIONS (`assets/validacoes.md`) e alertar |
 | **AskUserQuestion não disponível** | Usar texto numerado para todas as opções fixas — não bloquear o init |
 | **Múltiplas perguntas feitas de uma vez** | ERRO CRÍTICO - NUNCA faça isso. Pergunte uma por vez e aguarde resposta |
@@ -1141,7 +1104,7 @@ Apresentar checklist de onboarding por período (Dia 1, Semana 1, Mês 1).
 📁 Arquivos criados:
 - ENV.md: $IDE/ENV.md
 - AGENTS.md: ./AGENTS.md
-- Sessões: $SESSIONS_DIR/{eng,prod,qa}/
+- Sessões: $SESSIONS_DIR/{eng,prod}/
 
 🔧 Configuração:
 - IDE: {ide}
@@ -1171,11 +1134,12 @@ Bem-vindo! 🎉
 - [ ] **Resolveu USER localmente** (ENV.md / git / SO) sem pedir login
 - [ ] **Carregou taxonomy.md e extraiu opções válidas** (ou usou valores padrão se não existir)
 - [ ] **Perguntou UMA variável POR VEZ** (nunca fez múltiplas perguntas juntas)
-- [ ] **Usou AskUserQuestion só para ≤4 opções** (AREA se aplicável — HUB com DATA vai em texto)
-- [ ] **Mostrou em texto numerado para >4 opções** (HUB, IDE, SQUAD, POSITION)
-- [ ] **Perguntou o `PROD_MODE`** (Product-Led ou Developer-Guided), sem opção sugerida, qualquer que seja a área ou o cargo
+- [ ] **Usou AskUserQuestion só para ≤4 opções** (SENIORITY e o nível de cada área)
+- [ ] **Mostrou em texto numerado para >4 opções** (IDE, SQUAD, áreas com senioridade diferente)
+- [ ] **Perguntou a `SENIORITY`** e as áreas com senioridade diferente (Perguntas 5 a 7)
+- [ ] **Perguntou o `PROD_MODE`** (Product-Led ou Developer-Guided), sem opção sugerida, qualquer que seja a senioridade
 - [ ] **Perguntou o `ARTIFACT_STYLE`** (AI-Generated primeiro ou Human-Generated)
-- [ ] **Mostrou TODAS as opções disponíveis** (HUB inclui DATA; nunca omitiu)
+- [ ] **Mostrou TODAS as opções disponíveis** (nunca omitiu)
 - [ ] **Incluiu descrição útil em cada opção** (seja AskUserQuestion ou texto)
 - [ ] **Validou respostas em texto contra lista de opções válidas**
 - [ ] **Usou multiSelect: false no AskUserQuestion** (apenas uma opção por variável)
@@ -1189,7 +1153,7 @@ Bem-vindo! 🎉
 - [ ] Validou MAX_AI_EXECUTION_PERCENTAGE (60-100) - para campos livres
 - [ ] Confirmou WORKSPACE (nome da pasta do `$IDE/` ou override)
 - [ ] ENABLE_CDD=true e SESSIONS_DIR preenchido (padrão .jarvis/sessions)
-- [ ] Criou `$SESSIONS_DIR/{eng,prod,qa}` e, só com `.git` na raiz, `.jarvis/` e a pasta da IDE no `.gitignore` e as três entradas locais no `.git/info/exclude` (raiz sem `.git`: nenhum dos dois)
+- [ ] Criou `$SESSIONS_DIR/{eng,prod}` e, só com `.git` na raiz, `.jarvis/` e a pasta da IDE no `.gitignore` e as três entradas locais no `.git/info/exclude` (raiz sem `.git`: nenhum dos dois)
 - [ ] TASK_MANAGER: valor ou vazio (freelance) explicado
 - [ ] Não gravou TOKEN_VERSION_CONTROL / PROJECT_NAME / EVENT_BUS*
 - [ ] Perguntou sobre variáveis opcionais

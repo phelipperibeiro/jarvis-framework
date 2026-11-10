@@ -275,11 +275,3 @@ export function getWorkflowsFolder(ideValue) {
 export function getMCPTargets(ideValue) {
   return getIDEConfig(ideValue)?.mcp || [];
 }
-
-/**
- * Limpa o cache (útil para testes)
- * @private
- */
-export function _clearCache() {
-  _ideConfigCache = null;
-}

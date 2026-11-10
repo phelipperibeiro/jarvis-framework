@@ -1,8 +1,6 @@
-> **Applies to:** HUB: all | POSITION: all | AREA: all | SQUAD: all
-
 # Integrações — vendors via ENV
 
-O Jarvis não assume Jira, GitLab ou Slack. Leia `$IDE/ENV.md` e siga a cadeia de execução abaixo. Board e git usam **só a CLI oficial** do vendor, com o login dela; nenhum token passa pelo Jarvis.
+O Jarvis não assume Jira ou GitLab. Leia `$IDE/ENV.md` e siga a cadeia de execução abaixo. Board e git usam **só a CLI oficial** do vendor, com o login dela; nenhum token passa pelo Jarvis.
 
 ## Variáveis
 
@@ -11,7 +9,6 @@ O Jarvis não assume Jira, GitLab ou Slack. Leia `$IDE/ENV.md` e siga a cadeia d
 | `TASK_MANAGER` (+ `TASK_MANAGER_ACCESS`, `TASK_MANAGER_URL_BASE`) | jira (`acli`, só Cloud), github (`gh`), gitlab (`glab`) | `jarvis tasks comment` |
 | `VERSION_CONTROL` (+ `VERSION_CONTROL_ACCESS`) | github (`gh`), gitlab (`glab`); no `create-merge` o repo vem do `git remote`, no `create-issue` vai em `--repo` | `jarvis vcs create-merge` / `create-issue` |
 | `CENTRAL_DOCS_STORAGE` | filesystem (s3 e gdrive no futuro) | `jarvis docs fetch` / `sync` / `publish` |
-| `MESSAGE_COMUNICATOR` | slack, discord, teams | runtime `communicator/` |
 
 Comandos por ação: `bin/lib/integrations/vendors.json` (o catálogo). `*_ACCESS`: `cli` ou `manual`. `{TASK_MANAGER_KEY}` = id do card; sem board, o número de controle.
 
@@ -49,17 +46,11 @@ Com board definido, se o key não veio nos argumentos, perguntar o id do card na
 
 Falha no comentário não bloqueia o workflow.
 
-Comentar **somente** em eventos relevantes, **cada um depois da pergunta acima**: (a) **desvio do plano** (mudança de direção, fase bloqueada), (b) **auditoria do Advisor** (as questões do `architecture.md` com as opções junto da escolha), (c) **bloqueio** com valor de rastreabilidade, (d) **link do MR**, uma única vez, (e) o **`gate-checklist.md` do `eng.pre-pr`**, só se o usuário escolher registrar (resumo ou relatório completo), (f) a arquitetura do **`eng.light-arch`**, depois de aprovada, (g) outro comentário que o fluxo peça e você aprove (como o de refinamento do agente de QA e o da 7.4 do `delivery-spec`). **Nunca** comentar início ou fim de etapa ("Iniciando…", "concluído…"): o acompanhamento fica no fluxo e no PR.
+Comentar **somente** em eventos relevantes, **cada um depois da pergunta acima**: (a) **desvio do plano** (mudança de direção, fase bloqueada), (b) **auditoria do Advisor** (as questões do `architecture.md` com as opções junto da escolha), (c) **bloqueio** com valor de rastreabilidade, (d) **link do MR**, uma única vez, (e) o **`gate-checklist.md` do `eng.pre-pr`**, só se o usuário escolher registrar (resumo ou relatório completo), (f) a arquitetura do **`eng.light-arch`**, depois de aprovada, (g) outro comentário que o fluxo peça e você aprove (como o da 7.4 do `delivery-spec`). **Nunca** comentar início ou fim de etapa ("Iniciando…", "concluído…"): o acompanhamento fica no fluxo e no PR.
 
 ```
 /eng-global-task-comment {TASK_MANAGER_KEY} {mensagem}
 ```
-
-## Alertas (runtime)
-
-`MESSAGE_COMUNICATOR=slack` → Socket Mode (três tokens).
-`discord` → Bot token + channel ID em `ALERTS_CHANNEL`.
-`teams` → Incoming Webhook em `MESSAGE_COMUNICATOR_BOT_TOKEN`.
 
 ## URL do card
 
@@ -71,5 +62,5 @@ Comentar **somente** em eventos relevantes, **cada um depois da pergunta acima**
 
 ## Proibido
 
-- Hardcodar `gitlab.com`, `/browse/` ou Slack Bolt fora dos adapters.
+- Hardcodar `gitlab.com` ou `/browse/` fora dos adapters.
 - Pedir, ler ou gravar token do board ou do git; usar REST ou MCP para eles (a forma de acesso é a CLI oficial).

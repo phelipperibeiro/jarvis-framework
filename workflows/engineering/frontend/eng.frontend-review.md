@@ -1,7 +1,7 @@
 ---
 name: eng.frontend-review
 description: >
-  Revisão de PR frontend: tipagem, tokens de design, acessibilidade, performance, testes; complementa eng.review; neutra de stack (FRONTEND_SPECIALIZATIONS).
+  Revisão de PR frontend: tipagem, tokens de design, acessibilidade, performance, testes; complementa eng.pre-pr; neutra de stack (FRONTEND_SPECIALIZATIONS).
 version: "1.1"
 
 ---
@@ -17,7 +17,7 @@ código de interface.
 da stack (por exemplo, como se busca dados ou como se organiza um módulo), a referência é a
 especialização registrada em `FRONTEND_SPECIALIZATIONS` e o código existente do projeto.
 
-**Antes de revisar**, aplique a regra `$IDE/rules/engineering/eng.specializations-rules.md` para a área **frontend**: ela carrega o skill base `eng-frontend` e as especializações registradas. Se o PR tiver exigências que você não consegue verificar sem conhecer a stack, diga isso na revisão em vez de presumir.
+**Antes de revisar**, aplique a regra `$IDE/rules/engineering/eng.specializations-rules.md` para a área **frontend**: ela carrega o skill base `eng-frontend` e as especializações registradas. Leia também `$IDE/rules-on-demand/engineering/frontend/eng.frontend-rules.md` (padrões obrigatórios de frontend) e siga-a. Se o PR tiver exigências que você não consegue verificar sem conhecer a stack, diga isso na revisão em vez de presumir.
 
 ### Skills invocados durante o workflow
 

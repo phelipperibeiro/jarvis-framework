@@ -15,6 +15,8 @@ const PRE_PR = "workflows/engineering/eng.pre-pr.md";
 const PRE_PR_RULES = "rules-on-demand/engineering/eng.pre-pr-rules.md";
 const TRANSITIONS = "rules-on-demand/engineering/eng.transitions-rules.md";
 const CONTEXT_DETECT = "skills/jarvis-context-detect/SKILL.md";
+const GUIA_PRE_PR = "docs/engenharia/eng.pre-pr.md";
+const WORK = "workflows/engineering/eng.work.md";
 
 // A mensagem de falha diz que o valor é guardado de propósito: mudar num arquivo pede mudar nos outros e no teste.
 const DE_PROPOSITO =
@@ -43,8 +45,8 @@ test("os rótulos da variante B na tabela de transições são os mesmos do fech
     .map((r) => r.replace(/\s*\(como hoje\)$/, "").trim());
   assert.equal(
     rotulos.length,
-    3,
-    `${TRANSITIONS}: a variante B deveria ter 3 opções. ${DE_PROPOSITO}`
+    4,
+    `${TRANSITIONS}: a variante B deveria ter 4 opções. ${DE_PROPOSITO}`
   );
   // Só o trecho da variante B: "Só gerar o relatório" também é opção da variante A.
   const fechamento = secao(read(PRE_PR), "## Fechamento");
@@ -58,12 +60,13 @@ test("os rótulos da variante B na tabela de transições são os mesmos do fech
     rotulos.length,
     `${PRE_PR}: a variante B tem ${opcoes.length} opções, a tabela de transições tem ${rotulos.length}. ${DE_PROPOSITO}`
   );
-  for (const rotulo of rotulos) {
+  // Mesma ordem nos dois arquivos: a ordem é decisão de produto (#191 e #259: Aceitar, depois Corrigir e seguir).
+  rotulos.forEach((rotulo, i) => {
     assert.ok(
-      opcoes.some((l) => l.includes(`**${rotulo}`)),
-      `${PRE_PR}: a variante B não tem a opção "${rotulo}" da tabela de transições. ${DE_PROPOSITO}`
+      opcoes[i].includes(`**${rotulo}`),
+      `${PRE_PR}: a ${i + 1}ª opção da variante B deveria ser "${rotulo}", como na tabela de transições. ${DE_PROPOSITO}`
     );
-  }
+  });
 });
 
 test("os rótulos da pergunta do teto na tabela de transições são os mesmos do fechamento", () => {
@@ -120,6 +123,8 @@ test("a variante B tem os rótulos de cada caso e a condição dela é a mesma n
     "Aceitar as 🟡 e as ⚪ e seguir para o PR",
     "Aceitar as ⚪ e decidir as 🟡 uma a uma",
     "Decidir as 🟡 uma a uma",
+    "Corrigir as 🟡 e as ⚪ e seguir para o PR",
+    "Corrigir as 🟡 e seguir para o PR",
   ]) {
     assert.ok(
       fechamento.includes(rotulo),
@@ -150,10 +155,42 @@ test('o modelo do relatório e a rule usam o "(item N)" que a rodada incremental
   );
 });
 
+test("a opção \"Corrigir … e seguir para o PR\" (#259): linha do PR Brief, rule, guia e o atalho pelo /eng.work", () => {
+  const prePr = read(PRE_PR);
+  // A linha do modelo do PR Brief, gravada antes do /eng.work: "Mandadas corrigir" vale mesmo se ele parar.
+  assert.match(
+    prePr,
+    /^- Mandadas corrigir depois da rodada \{N\}, sem nova rodada do pre-pr: \{lista\}/m,
+    `${PRE_PR}: o modelo do PR Brief sem a linha "Mandadas corrigir … sem nova rodada do pre-pr". ${DE_PROPOSITO}`
+  );
+  // A rule e o guia citam a opção.
+  assert.ok(
+    read(PRE_PR_RULES).includes("Corrigir … e seguir para o PR"),
+    `${PRE_PR_RULES} sem a opção "Corrigir … e seguir para o PR". ${DE_PROPOSITO}`
+  );
+  for (const rotulo of ["Corrigir as ⚪ e seguir para o PR", "Corrigir as 🟡 e as ⚪ e seguir para o PR"]) {
+    assert.ok(read(GUIA_PRE_PR).includes(rotulo), `${GUIA_PRE_PR} sem "${rotulo}". ${DE_PROPOSITO}`);
+  }
+  // O atalho depende de rótulos do /eng.work: a opção "Rodar o /eng.pr" do "Depois do work" e a pergunta da retomada.
+  const work = read(WORK);
+  const depois = work.split("\n").find((l) => l.startsWith("| **Depois do work** |"));
+  assert.ok(depois, `${WORK} sem a linha "Depois do work" da 1.3. ${DE_PROPOSITO}`);
+  assert.ok(
+    depois.includes("**Rodar o `/eng.pr`**"),
+    `${WORK}: o "Depois do work" sem a opção "Rodar o \`/eng.pr\`", que o atalho do pre-pr cita. ${DE_PROPOSITO}`
+  );
+  assert.ok(work.includes("Manter as escolhas"), `${WORK} sem a pergunta "Manter as escolhas". ${DE_PROPOSITO}`);
+  assert.ok(
+    prePr.includes("no \"Depois do work\", \"Rodar o `/eng.pr`\"") && prePr.includes("\"Manter as escolhas?\""),
+    `${PRE_PR}: a opção nova sem o aviso de "Mudar" para "Rodar o \`/eng.pr\`". ${DE_PROPOSITO}`
+  );
+});
+
 test("os textos de decisão da variante B são os mesmos no workflow e na rule", () => {
   for (const texto of [
     "👍 Aceitar: aceito no fechamento da rodada {N}",
     "👍 Aceitar: teto de rodadas atingido na rodada {N}",
+    "sem nova rodada do pre-pr",
   ]) {
     for (const arquivo of [PRE_PR, PRE_PR_RULES]) {
       assert.ok(read(arquivo).includes(texto), `${arquivo} sem "${texto}". ${DE_PROPOSITO}`);
@@ -253,5 +290,33 @@ test("a numeração dos gates é a mesma na lista, na tabela de chamadas e na ta
     [...incremental].sort((a, b) => a - b),
     esperado,
     `${PRE_PR}: a tabela da rodada incremental não cobre cada gate da lista uma vez ("Gate (N)"). ${DE_PROPOSITO}`
+  );
+});
+
+// A pergunta de merge do fim do eng.pr (#255): o padrão fica em primeiro e a opção --force (irreversível) por último.
+const MERGE_FORCE =
+  "As opções da pergunta de merge do eng.pr são guardadas de propósito (#255): ao mudá-las, atualize a eng.transitions-rules.md, o workflows/engineering/eng.pr.md e este teste junto.";
+
+test("a pergunta de merge do eng.pr mantém o padrão e oferece o --force com o mesmo rótulo no workflow (#255)", () => {
+  const linha = read(TRANSITIONS)
+    .split("\n")
+    .find((l) => l.startsWith("| `eng.pr` | Fim |") && l.includes("aprovado e mergeado"));
+  assert.ok(linha, `${TRANSITIONS} sem a linha da pergunta de merge do eng.pr. ${MERGE_FORCE}`);
+  const celulas = linha.split("|").map((c) => c.trim());
+  const opcoes = celulas[celulas.length - 2].split(" · ").map((o) => o.trim());
+  assert.equal(opcoes.length, 3, `${TRANSITIONS}: a pergunta de merge deveria ter 3 opções. ${MERGE_FORCE}`);
+  assert.equal(opcoes[0], "Ainda não (como hoje)", "o padrão da pergunta de merge deve continuar sendo a primeira opção");
+  assert.match(opcoes[2], /--force/, "a terceira opção da pergunta de merge deve ser a do --force");
+  // No workflow, as 3 opções aparecem como `**{opção}:**`, na mesma ordem da tabela.
+  const workflow = read("workflows/engineering/eng.pr.md");
+  const posicoes = opcoes.map((opcao) => {
+    const i = workflow.indexOf(`**${opcao}:**`);
+    assert.ok(i >= 0, `workflows/engineering/eng.pr.md sem a opção "${opcao}" da tabela. ${MERGE_FORCE}`);
+    return i;
+  });
+  assert.deepEqual(
+    [...posicoes].sort((x, y) => x - y),
+    posicoes,
+    `workflows/engineering/eng.pr.md: as opções da pergunta de merge estão fora da ordem da tabela. ${MERGE_FORCE}`
   );
 });

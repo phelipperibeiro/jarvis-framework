@@ -3,9 +3,6 @@
  * @module config/constants
  */
 
-/** @constant {string} Nome do pacote NPM */
-export const CLI_NAME = "jarvis-framework";
-
 /** @constant {string} Nome do arquivo de lock */
 export const LOCK_FILE = "jarvis-lock.json";
 
@@ -20,7 +17,6 @@ export const SYNC_DIRS = Object.freeze([
   "templates",
   "rules",
   "rules-on-demand",
-  "scripts",
 ]);
 
 /**
@@ -187,6 +183,97 @@ export const OBSOLETE_PATHS = Object.freeze([
   "templates/engineering/swagger-template.md",
   "templates/engineering/CONTACTS-template.md",
   "templates/cdd-aplicado-a-prompts.md",
+  // Lote A de código morto (issue #238, mãe #237): template, agente e arquivos de skill sem
+  // consumidor. A pasta assets/ do eng-qa-planner saiu inteira (test-coverage-template.md e
+  // test-patterns.md). O commands/status.memory.md do product-roadmap-report fica: a regra do skill manda rodá-lo (até a #243, que tirou o skill inteiro).
+  "templates/engineering/work-progress-template.md",
+  "agents/engineering/qa/eng.qa.quality-champion-task-agent.md",
+  "skills/eng-qa-planner/assets",
+  "skills/product-roadmap-report/commands/status.compiled.single.team.md",
+  "skills/product-roadmap-report/commands/status.list.projects.md",
+  // eng.review (issue #245, mãe #237): consolidado no eng.pre-pr (com o eng.frontend-review para
+  // interface). O workflow é achatado na pasta de comandos de cada IDE.
+  "workflows/eng.review.md",
+  "commands/eng.review.md",
+  "steering/eng.review.md",
+  // eng.docs (issue #246, mãe #237): coberto pela oferta de documentação do eng.work (Fase 6.2) e
+  // pelo gate 9 do eng.pre-pr; o skill eng-global-docs-write continua. O workflow é achatado.
+  "workflows/eng.docs.md",
+  "commands/eng.docs.md",
+  "steering/eng.docs.md",
+  // eng.create-ard-from-code (issue #247, mãe #237): fundido no eng.create-ard, no modo "Do código existente"
+  // (--codigo). O workflow é achatado. O skill de diagramas C4 virou global (eng-backend-arch-c4 → eng-global-arch-c4).
+  "workflows/eng.create-ard-from-code.md",
+  "commands/eng.create-ard-from-code.md",
+  "steering/eng.create-ard-from-code.md",
+  "skills/eng-backend-arch-c4",
+  "steering/skills/skill-eng-backend-arch-c4.md",
+  // eng.breakdown-subtasks (issue #248, mãe #237): fundido no Delivery Spec do eng.build-tech-spec (atalho da
+  // Tech Spec pronta, nível "passo a passo" na Fase 7). O workflow é achatado; a rule e o template saem junto.
+  "workflows/eng.breakdown-subtasks.md",
+  "commands/eng.breakdown-subtasks.md",
+  "steering/eng.breakdown-subtasks.md",
+  "rules-on-demand/engineering/eng.breakdown-subtasks-rules.md",
+  "templates/engineering/breakdown-subtasks-template.md",
+  // Cluster DATA (issue #242, mãe #237): os workflows data.contract e data.new-pipeline, o agente
+  // eng.data-engineer e os 2 templates não tinham porta de entrada no ciclo eng.*; a área data fica
+  // com o skill eng-data. Os workflows são achatados. Só o arquivo do agente sai: a pasta
+  // agents/engineering/data/ fica vazia na IDE, sem apagar o que a empresa tenha posto lá.
+  "workflows/engineering/data/data.contract.md",
+  "workflows/data.contract.md",
+  "commands/data.contract.md",
+  "steering/data.contract.md",
+  "workflows/engineering/data/data.new-pipeline.md",
+  "workflows/data.new-pipeline.md",
+  "commands/data.new-pipeline.md",
+  "steering/data.new-pipeline.md",
+  "agents/engineering/data/eng.data-engineer.agent.md",
+  "templates/engineering/data-contract-template.md",
+  "templates/engineering/data-pipeline-template.md",
+  // prod.roadmap.preview e product-roadmap-report (issue #243, mãe #237): o par só chamava um ao outro,
+  // dependia de Obsidian e de .claude/status.memory/ e não tinha uso. O workflow é achatado; a pasta do skill sai inteira.
+  "workflows/prod.roadmap.preview.md",
+  "commands/prod.roadmap.preview.md",
+  "steering/prod.roadmap.preview.md",
+  "skills/product-roadmap-report",
+  "steering/skills/skill-product-roadmap-report.md",
+  // product-specs e product-specs-update (issue #244, mãe #237): skills sem chamador. O roteamento para os
+  // prod.spec.* fica no /prod.spec, e a cascata PRD↔FRD não era executada por nenhum comando. No Kiro, o
+  // skill vira steering/skills/skill-{nome}.md.
+  "skills/product-specs",
+  "skills/product-specs-update",
+  "steering/skills/skill-product-specs.md",
+  "steering/skills/skill-product-specs-update.md",
+  // Cluster QA fora do ciclo (issue #241, mãe #237): os 3 comandos só citavam uns aos outros. O workflow é
+  // achatado; o agente e os 2 templates saem pelo caminho normal. O Modo A do eng.qa.test-planner continua
+  // por chamada direta. O cadastro de membros da raiz não entra aqui: saiu do SYNC_ROOT_FILES, e a cópia
+  // instalada é do usuário (pode ter dados do time).
+  "workflows/eng.qa-refinement-entry.md",
+  "commands/eng.qa-refinement-entry.md",
+  "steering/eng.qa-refinement-entry.md",
+  "workflows/eng.qa-release-signoff.md",
+  "commands/eng.qa-release-signoff.md",
+  "steering/eng.qa-release-signoff.md",
+  "workflows/eng.qa-sprint-planning.md",
+  "commands/eng.qa-sprint-planning.md",
+  "steering/eng.qa-sprint-planning.md",
+  "agents/engineering/qa/eng.qa.quality-strategist.md",
+  "templates/engineering/qa/qa.release-signoff-template.md",
+  "templates/engineering/qa/qa.sprint-plan-template.md",
+  // Rules de uma área só saíram de rules/ (issue #263, mãe #237): a de frontend e a de spec de produto
+  // foram para rules-on-demand/ e são lidas pelos comandos da área; o ponteiro de Cypress foi apagado (a
+  // rule inteira já estava em rules-on-demand/). Entradas de arquivo, para não apagar uma rule própria da
+  // pessoa na mesma pasta. No Kiro, a cópia de cada uma em steering/.
+  "rules/engineering/frontend/eng.frontend-rules.md",
+  "rules/engineering/qa/eng.qa.cypress-standards-rules.md",
+  "rules/product/prod.spec-rules.md",
+  "steering/eng.frontend-rules.md",
+  "steering/eng.qa.cypress-standards-rules.md",
+  "steering/prod.spec-rules.md",
+  // Tudo de Cypress saiu (issue #263, mãe #237): a rule de rules-on-demand/, que nenhum comando lia, e o
+  // agente antigo de Cypress, removido do framework sem entrar aqui.
+  "rules-on-demand/engineering/qa/eng.qa.cypress-standards-rules.md",
+  "agents/engineering/qa/eng.qa.cypress-specialist.md",
 ]);
 
 /**
@@ -208,7 +295,7 @@ export const SYNC_EXCLUDE = Object.freeze({
  * Arquivos da raiz que devem ser sincronizados
  * @constant {ReadonlyArray<string>}
  */
-export const SYNC_ROOT_FILES = Object.freeze(["taxonomy.md", "AGENTS.md", "members.md"]);
+export const SYNC_ROOT_FILES = Object.freeze(["taxonomy.md", "AGENTS.md"]);
 
 /**
  * Mapeamento de model do Jarvis para formato OpenCode (provider/model-id)
@@ -216,14 +303,13 @@ export const SYNC_ROOT_FILES = Object.freeze(["taxonomy.md", "AGENTS.md", "membe
  */
 export const OPENCODE_MODEL_MAP = Object.freeze({
   // Anthropic — shorthands usados no Jarvis
-  opus: "anthropic/claude-opus-4-6",
-  sonnet: "anthropic/claude-sonnet-4-6",
-  haiku: "anthropic/claude-haiku-4-5-20250414",
-  // Anthropic — IDs completos
+  opus: "anthropic/claude-opus-5-5",
+  sonnet: "anthropic/claude-sonnet-5-5",
+  haiku: "anthropic/claude-haiku-5-5",
+  // Anthropic — IDs completos com data: normalizados para o ID sem data. Os demais IDs `claude-*`
+  // (ex.: claude-sonnet-5) passam direto pelo fallback `anthropic/{id}` de resolveOpenCodeModel.
   "claude-opus-4-6-20250529": "anthropic/claude-opus-4-6",
   "claude-sonnet-4-6-20250514": "anthropic/claude-sonnet-4-6",
-  "claude-sonnet-5": "anthropic/claude-sonnet-4-6",
-  "claude-haiku-4-5-20250414": "anthropic/claude-haiku-4-5-20250414",
   // OpenAI
   "gpt-4o": "openai/gpt-4o",
   "gpt-4o-mini": "openai/gpt-4o-mini",
@@ -250,17 +336,4 @@ export const OPENCODE_DEFAULT_PERMISSIONS = Object.freeze({
   glob: "allow",
   grep: "allow",
   task: "allow",
-});
-
-/**
- * Mapeamento de HUB Jarvis para fileMatchPattern do Kiro
- * Usado para gerar steering files de rules com inclusion: fileMatch
- * @constant {Readonly<Record<string, string>>}
- */
-export const KIRO_HUB_FILE_PATTERNS = Object.freeze({
-  FRONTEND: "**/*.tsx,**/*.ts,**/*.jsx,**/*.js,**/*.css,**/*.scss",
-  BACKEND: "**/*.ts,**/*.js",
-  QA: "**/*.test.ts,**/*.spec.ts,**/*.cy.ts,**/*.test.js,**/*.spec.js",
-  DATA: "**/*.py,**/*.sql,**/*.ipynb",
-  AI: "**/*.ts,**/*.py",
 });

@@ -11,9 +11,8 @@ Quando o usuário digita `/jarvis-init` ou “use eng-backend”, a IDE carrega 
 ```
 skills/
 ├── AGENTS.md
-├── SKILLS-ROADMAP.md          # roadmap interno de skills
 ├── jarvis-init/              # onboarding + ENV.md
-├── jarvis-context-detect/
+├── jarvis-context-detect/     # perfil da tarefa (tipo, rigor, autonomia e o tom pela senioridade da área)
 ├── jarvis-docs-central/              # sync/publish docs centrais
 ├── eng-backend/, eng-frontend/, eng-backend-nestjs/, …
 ├── eng-global-pr/, eng-global-docs-write/, eng-global-task-comment/, eng-global-branch/
@@ -22,8 +21,7 @@ skills/
 ├── eng-qa/, eng-qa-planner/    # base de QA + especializações em QA_SPECIALIZATIONS
 ├── eng-data/                   # base de dados (+ especializações em DATA_SPECIALIZATIONS)
 ├── eng-platform/               # base de platform/infra (+ segurança) em PLATFORM_SPECIALIZATIONS
-├── eng-rpa via eng-automation (base) + AUTOMATION_SPECIALIZATIONS
-├── product-specs/ (porta de entrada), product-specs-update/, product-roadmap-report/
+├── eng-automation/             # base de automação/RPA, usada pelo /eng.rpa.robot (+ especializações em AUTOMATION_SPECIALIZATIONS)
 ├── jarvis-report-issue/
 ├── jarvis-fork/                # fork guiado para o overlay da empresa (COMPANY_PROFILE), só grava com o Sim
 └── … (skills restantes; todos com `metadata.area`)

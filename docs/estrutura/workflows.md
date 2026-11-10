@@ -18,25 +18,20 @@ workflows/
 │   ├── eng.work.md
 │   ├── eng.pre-pr.md
 │   ├── eng.pr.md
-│   ├── eng.docs.md
 │   ├── eng.debug.md
-│   ├── eng.review.md
 │   ├── eng.create-ard.md / eng.create-rfc.md / …
-│   ├── eng.security-*.md
 │   ├── eng.rpa.robot.md
-│   ├── data/                  # data.new-pipeline, data.contract, …
-│   ├── frontend/              # component, review, perf-audit, …
-│   ├── qa/                    # fluxos QA
+│   └── frontend/              # component, review, perf-audit, …
 └── product/
     ├── prod.spec.md
     ├── prod.spec.discovery.md
     ├── prod.spec.prd.md
     ├── prod.spec.frd.md
     ├── prod.spec.ard.md
+    ├── prod.spec.breakdown.md
     ├── prod.spec.epic.md
     ├── prod.spec.issue.md
-    ├── prod.spec.clarify.md
-    └── prod.roadmap.preview.md
+    └── prod.spec.clarify.md
 ```
 
 ## Flatten no `jarvis init`

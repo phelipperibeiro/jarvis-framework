@@ -97,12 +97,12 @@ Mesmos passos 2 e 3 do [Get Started](#get-started) acima — `jarvis init --ide 
 
 ```bash
 npm install -g jarvis-ai-framework@latest
-jarvis init --upgrade --ide {ide}   # confere os caminhos do ENV.md (para sem alterar nada se sobrar $ sem valor) + assets + variáveis novas do ENV.md + documentos para as pastas novas + rules filtradas pelo perfil
+jarvis init --upgrade --ide {ide}   # confere os caminhos do ENV.md (para sem alterar nada se sobrar $ sem valor) + assets + variáveis novas do ENV.md + documentos para as pastas novas + rules sincronizadas
 ```
 
 `jarvis init --ide {ide}` numa pasta já instalada mostra o menu **Atualizar** (Enter, o mesmo que o `--upgrade`) / **Reinstalar** (o mesmo que o `--force`) / **Cancelar**, com a versão instalada e a do pacote. No fim, ele manda rodar o `/jarvis-init upgrade` quando há pendência da IDE e o `/jarvis-init repos` quando há repositório (subpasta com `.git`) fora do mapa `CDD-MIND-MAP.md`; sem nenhuma das duas, diz que não há nada pendente.
 
-Na IDE, o `/jarvis-init upgrade` vai direto ao Upgrade (C), cuida do que precisa de conversa (Central docs antigo, o passo das stacks, o `AGENTS.md` e o `CDD-MIND-MAP.md` no padrão (os dois existem sempre, nos dois modos, e o `CLAUDE.md` é sempre cópia do `AGENTS.md`; enquanto não for, o `--upgrade` volta a acusar) e, no modo projeto, a decisão de tirar `AGENTS.md`/`CLAUDE.md` do git quando já estão versionados) e, no fim, valida o `ENV.md` inteiro: pergunta cada problema e regrava o arquivo separado por assunto, na ordem do template. O `--upgrade` **acrescenta** as chaves novas ao `ENV.md`, no fim do arquivo, e nenhuma chave existente muda, com uma exceção: as chaves que saíram do template (mensageria, banco de dados, observabilidade, SMTP, code quality e o bloco Data Engineering; `DATA_SPECIALIZATIONS` fica) são apagadas, e o resumo mostra só os nomes, nunca os valores. Ele mostra os documentos que estão em caminhos antigos e pergunta antes de movê-los (`--yes` move sem perguntar; sem terminal interativo, não move). Também lista os skills instalados que saíram do framework e pergunta antes de removê-los (`--remove-stale` remove sem perguntar só os listados; skills registrados em `*_SPECIALIZATIONS` nunca são listados).
+Na IDE, o `/jarvis-init upgrade` vai direto ao Upgrade (C), cuida do que precisa de conversa (Central docs antigo, o passo das stacks, o `AGENTS.md` e o `CDD-MIND-MAP.md` no padrão (os dois existem sempre, nos dois modos, e o `CLAUDE.md` é sempre cópia do `AGENTS.md`; enquanto não for, o `--upgrade` volta a acusar) e, no modo projeto, a decisão de tirar `AGENTS.md`/`CLAUDE.md` do git quando já estão versionados) e, no fim, valida o `ENV.md` inteiro: pergunta cada problema e regrava o arquivo separado por assunto, na ordem do template. O `--upgrade` **acrescenta** as chaves novas ao `ENV.md`, no fim do arquivo, e nenhuma chave existente muda, com uma exceção: as chaves que saíram do template (mensageria, banco de dados, observabilidade, SMTP, code quality, o bloco Data Engineering, chat, object storage, `TEST_FOLDER`, `HUB`, `AREA` e `POSITION`; `DATA_SPECIALIZATIONS` fica) são apagadas, e o resumo mostra só os nomes, nunca os valores. Antes de apagar o `POSITION`, ele grava a `SENIORITY` a partir do cargo, com aviso para conferir. Ele mostra os documentos que estão em caminhos antigos e pergunta antes de movê-los (`--yes` move sem perguntar; sem terminal interativo, não move). Também lista os skills instalados que saíram do framework e pergunta antes de removê-los (`--remove-stale` remove sem perguntar só os listados; skills registrados em `*_SPECIALIZATIONS` nunca são listados).
 
 **Instalou via clone local** (fluxo de [Desenvolvendo o Jarvis localmente](#desenvolvendo-o-jarvis-localmente)) — quando o repo no GitHub ganhar commits novos, sincronize assim:
 
@@ -164,14 +164,14 @@ Escolha **Upgrade (C)** — adiciona chaves novas do template sem apagar os valo
 | `jarvis init` | Arquivos em `.$IDE/` (skills, agents, workflows…) e o Context7 no arquivo de MCP da IDE (ex.: `.mcp.json` no Claude Code; só acrescenta, sem apagar outros servidores) |
 | `/jarvis-init` Upgrade | Só `$IDE/ENV.md` (variáveis faltantes) e, se você aceitar o passo opcional "adicionar as stacks", as listas de especializações |
 
-`ENV.md`, `$SESSIONS_DIR/` (padrão `.jarvis/sessions/`) e o `.gitignore` do workspace **não** são sobrescritos pelo sync de assets. O `jarvis init` cria `$SESSIONS_DIR/{eng,prod,qa}` e, com `.git` na raiz (modo projeto), põe no `.gitignore` o `.jarvis/`, o `$SESSIONS_DIR/` (quando relativo e fora de `.jarvis/`), a pasta dos documentos (`docs/jarvis/`) e a pasta da IDE, e mantém `AGENTS.md`, `CLAUDE.md` e `CDD-MIND-MAP.md` no `.git/info/exclude` (local, fora do PR; para versionar de propósito, remova a linha). Se `AGENTS.md` ou `CLAUDE.md` já estiver versionado, o `/jarvis-init upgrade` pergunta se ele sai do git (`jarvis untrack`, sem commit). Sem `.git` (como no modo workspace) a raiz não é versionada e o init não toca em nenhum dos dois. Se o git não responder, o init avisa e segue (saída 0); se não conseguir gravar o exclude ou o `.gitignore`, mostra o erro e sai com 1.
+`ENV.md`, `$SESSIONS_DIR/` (padrão `.jarvis/sessions/`) e o `.gitignore` do workspace **não** são sobrescritos pelo sync de assets. O `jarvis init` cria `$SESSIONS_DIR/{eng,prod}` e, com `.git` na raiz (modo projeto), põe no `.gitignore` o `.jarvis/`, o `$SESSIONS_DIR/` (quando relativo e fora de `.jarvis/`), a pasta dos documentos (`docs/jarvis/`) e a pasta da IDE, e mantém `AGENTS.md`, `CLAUDE.md` e `CDD-MIND-MAP.md` no `.git/info/exclude` (local, fora do PR; para versionar de propósito, remova a linha). Se `AGENTS.md` ou `CLAUDE.md` já estiver versionado, o `/jarvis-init upgrade` pergunta se ele sai do git (`jarvis untrack`, sem commit). Sem `.git` (como no modo workspace) a raiz não é versionada e o init não toca em nenhum dos dois. Se o git não responder, o init avisa e segue (saída 0); se não conseguir gravar o exclude ou o `.gitignore`, mostra o erro e sai com 1.
 
 | Papel | Descricao | Link |
 |-------|-----------|------|
 | **Produto** | Especificacoes, PRDs e gestao de requisitos | `workflows/product/` |
 | **TechLead** | Arquitetura, tech specs e revisao tecnica | `workflows/engineering/` |
 | **Developer** | Implementacao, testes e entrega de codigo | `workflows/engineering/` |
-| **QA** | Testes E2E, exploratórios, quality gates e relatórios de qualidade | `workflows/engineering/qa/` |
+| **QA** | Planejamento, estratégia e cobertura de testes pelos agentes do ciclo (`eng.start` → `eng.pre-pr`); base `eng-qa` + `QA_SPECIALIZATIONS` | `agents/engineering/qa/` |
 
 | Recurso | Descricao | Link |
 |---------|-----------|------|
@@ -188,10 +188,22 @@ O `/jarvis-init` pergunta o `ARTIFACT_STYLE` (variável do `ENV.md`):
 
 | Valor | O que acontece |
 |---|---|
-| `ai-generated` (padrão) | Como sempre: metadados, links de rastreabilidade e padrões da ferramenta |
+| `ai-generated` (padrão) | Metadados, links de rastreabilidade e padrões da ferramenta |
 | `human-generated` | Nada do que o Jarvis publica (commit, PR/MR, comentário no card, issue; sempre depois da pergunta) leva marca de IA ou da IDE: o `/eng.pr` confere e limpa antes do push. Todo documento gerado pergunta, no fim, se você quer a versão humanizada, gravada ao lado como `{nome}.public.md` para repassar a clientes ou stakeholders |
 
-Com `human-generated`, o `/jarvis-init` copia a rule `rules/artifact-style-rules.md` (eixo `ARTIFACT_STYLE` do `Applies to`); com `ai-generated`, ela nem existe na sessão. Trocou o valor à mão? Rode `/jarvis-init upgrade`.
+Com `human-generated`, o `/jarvis-init` copia a rule `rules/artifact-style-rules.md`; com `ai-generated`, ela nem existe na sessão. Trocou o valor à mão? Rode `/jarvis-init upgrade`.
+
+## Senioridade por assunto
+
+O `/jarvis-init` pergunta a sua senioridade padrão (`SENIORITY`) e, se você quiser, uma diferente por área (`BACKEND_SENIORITY`, `FRONTEND_SENIORITY`, `QA_SENIORITY`, `DATA_SENIORITY`, `AUTOMATION_SENIORITY` e `PLATFORM_SENIORITY`; vazia = igual à padrão). A senioridade da área da tarefa calibra só a conversa:
+
+| Valor | Como o Jarvis conversa |
+|---|---|
+| `junior` | Didático: explica o porquê, define termos, traz exemplos e confirma o entendimento com mais frequência |
+| `pleno` | Equilibrado: explica só o que não é óbvio |
+| `senior` | Direto: trade-offs e riscos, sem fundamentos |
+
+A área vem do card e da sua mensagem; com mais de uma área, vale a menor senioridade. Ela não libera nem bloqueia comando, não muda o `MAX_AI_EXECUTION_PERCENTAGE` nem as rules carregadas. Para outro tom numa tarefa: `/jarvis-context-detect --override comunicacao=direto` (ou `didático`, `equilibrado`).
 
 ## Funciona com qualquer stack
 
@@ -225,7 +237,7 @@ O Jarvis e organizado em 5 camadas.
 | **Agents** | Agentes especializados de IA para engenharia, QA e produto |
 | **Skills** | Playbooks executaveis com logica autonoma |
 | **Templates** | Modelos de documentos (ARD, RFC, Tech Spec, PRD, Epic) |
-| **Rules** | Regras de dominio filtradas por perfil (HUB, POSITION, AREA, SQUAD) no `/jarvis-init` |
+| **Rules** | Regras de dominio carregadas no inicio da sessao, iguais para todos; as de uma etapa ou area ficam em `rules-on-demand/` |
 | **Workflows** | Fluxos de execucao dos comandos slash |
 
 ---
@@ -243,4 +255,4 @@ Precisa de ajuda?
 - **Instrucoes para agentes / mapa de skills** &mdash; `AGENTS.md`
 - **Issues/Feedback** &mdash; skill `jarvis-report-issue` (pergunta antes de abrir; sem a CLI do host (`gh`), sem login, sem rede ou com o seu Não, a issue fica em `.jarvis/issues/issue-{desc}.md` para abrir à mão)
 - **Duvidas sobre comandos** &mdash; Pergunte diretamente ao agent:
-  `"Como funciona /eng.start?"` | `"Qual a diferenca entre /eng.work e /pr?"` | `"O que e CDD?"`
+  `"Como funciona /eng.start?"` | `"Qual a diferenca entre /eng.work e /eng.pr?"` | `"O que e CDD?"`

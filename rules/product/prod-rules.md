@@ -1,5 +1,3 @@
-> **Applies to:** HUB: all | POSITION: all | AREA: all | SQUAD: all
-
 ## Principais Regras
 - O idioma padrão é o português do Brasil. Mas mude caso o usuário solicite outro idioma.
 - Leia o `./$IDE/ENV.md` para entender as variáveis de ambiente do framework. Ele é importante para você saber caminhos de pastas e outras informações sobre projeto e usuário.

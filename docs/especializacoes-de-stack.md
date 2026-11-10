@@ -68,7 +68,7 @@ Formato: separado por vírgula (a leitura aceita colchetes e aspas, mas o framew
 
 ## Especializações que já vêm no framework
 
-Os skills de apoio abaixo viram especializações quando você os registra: `eng-backend-nestjs`, `eng-backend-arch-c4` e `eng-backend-microservices-trace`.
+Os skills de apoio abaixo viram especializações quando você os registra: `eng-backend-nestjs` e `eng-backend-microservices-trace`.
 
 ## Nomes e áreas dos skills
 
@@ -77,7 +77,7 @@ Os skills de apoio abaixo viram especializações quando você os registra: `eng
 | Engenharia por área | `eng-<área>-<nome>` | `eng-qa-planner` |
 | Especialização | `eng-<backend\|frontend>-<stack>` | `eng-backend-golang` |
 | Engenharia global | `eng-global-<nome>` | `eng-global-pr`, `eng-global-branch` |
-| Produto | `product-<nome>` | `product-specs` |
+| Produto | `product-<nome>` | — |
 | Transversal do framework | `jarvis-<nome>` | `jarvis-init`, `jarvis-create-specialization` |
 
 Áreas reconhecidas: `qa`, `data`, `ai`, `frontend`, `backend`, `automation`, `devops`, `platform`, `global` e `product`. A convenção completa está em [`skills/AGENTS.md`](../skills/AGENTS.md).
@@ -87,7 +87,6 @@ Os skills de apoio abaixo viram especializações quando você os registra: `eng
 1. `jarvis init --upgrade --ide {ide}`: as pastas dos skills renomeados ou removidos somem, o `ENV.md` ganha as variáveis novas e perde as que saíram do template (como as listas de especializações; sem elas, os comandos `eng.*` da área param) e os documentos em caminhos antigos podem ir para as pastas novas.
 2. `/jarvis-init upgrade`: vai direto ao **Upgrade (C)** e oferece o passo "adicionar as stacks". Você pode pular esse passo (é a única etapa que dá para pular); o Upgrade sempre termina com a validação do `ENV.md` (passo 9.5 do `/jarvis-init`) e o resumo.
 3. **Skills criados por você** sem `metadata.area` bloqueiam os `eng.*`: marque a área ou remova.
-4. Nomes antigos (`eng-nestjs`, `eng-pr`, `init-jarvis`…) deixaram de existir; troque pelos novos. A tabela completa está nas notas de release.
 
 ## Limites
 

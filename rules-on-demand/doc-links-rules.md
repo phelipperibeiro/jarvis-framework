@@ -1,5 +1,3 @@
-> **Applies to:** HUB: all | POSITION: all | AREA: all | SQUAD: all
-
 # Links clicáveis nos documentos
 
 ## Objetivo
@@ -8,14 +6,14 @@ Toda citação com lugar exato num documento gerado pelo Jarvis vira um link mar
 
 ## Escopo
 
-Lida pelo comando antes de escrever o documento. A tabela mostra quem lê:
+Lida pelo comando ou skill antes de escrever o documento. A tabela mostra quem lê:
 
-| Documento | Comando |
+| Documento | Comando ou skill |
 |---|---|
 | `architecture.md`, `plan.md` (inclusive os comentários de fase), `gate-checklist.md` (e as rodadas anteriores `gate-checklist-rodada-{N}.md`), `pull-request.md` | `eng.start`, `eng.plan`, `eng.work`, `eng.pre-pr`, `eng.pr` |
 | PRD, FRD, épico, história/tarefa, discovery, breakdown | `prod.spec.prd`, `prod.spec.frd`, `prod.spec.epic`, `prod.spec.issue`, `prod.spec.discovery`, `prod.spec.breakdown`, `prod.spec.clarify` |
-| ARD, RFC, SPEC | `prod.spec.ard`, `eng.create-ard`, `eng.create-ard-from-code`, `eng.create-rfc`, `eng.build-tech-spec` |
-| Outros documentos gravados por comando (subtarefas, arquitetura leve, relatório de investigação, documentação do repositório (regra 7), revisão, robô, Central docs) | `eng.breakdown-subtasks`, `eng.light-arch`, `eng.debug`, `eng.docs`, `eng.review`, `eng.rpa.robot`, `eng.spec-consolidate` |
+| ARD, RFC, SPEC | `prod.spec.ard`, `eng.create-ard`, `eng.create-rfc`, `eng.build-tech-spec` |
+| Outros documentos gravados por comando ou skill (subtarefas, arquitetura leve, relatório de investigação, documentação do repositório (regra 7), robô, Central docs) | `eng.build-tech-spec` (Delivery Spec), `eng.light-arch`, `eng.debug`, `eng-global-docs-write` (skill), `eng.rpa.robot`, `eng.spec-consolidate` |
 
 ## Regras
 
@@ -55,7 +53,7 @@ Lida pelo comando antes de escrever o documento. A tabela mostra quem lê:
    - O `{sha}` é o `HEAD` no momento em que o `eng.pr` escreve o `pull-request.md` (Fase 4.1). Se a conferência de marcas (Fase 3.0) reescrever commits, atualize o sha dos links. Com "Só gerar os arquivos" (na Fase 0 ou na revisão da 4.2), os links valem quando o push for feito sem rebase.
    - No Central docs, o `{sha}` é o do merge na branch base (a consolidação roda depois do merge).
    - No `.public.md` (gerado no fim do próprio comando, muitas vezes sem push), o `{sha}` é o último commit já enviado ao remoto (`git rev-parse @{u}`), ou o sha do cabeçalho se ele já estiver no remoto. Sem nenhum dos dois, o código fica em texto.
-7. **Documento versionado no repositório** (`README.md`, a pasta `$DOCS_FOLDER` do projeto, gravados por exemplo pelo `eng.docs`): o caminho é relativo dentro do próprio repositório (nada de subir até o workspace com `../../{repo}/…`), porque ele é lido no GitHub/GitLab. A sessão e o `$JARVIS_DOCS` ficam em texto, sem link.
+7. **Documento versionado no repositório** (`README.md`, a pasta `$DOCS_FOLDER` do projeto, gravados por exemplo pelo skill `eng-global-docs-write`, na oferta da Fase 6.2 do `eng.work`): o caminho é relativo dentro do próprio repositório (nada de subir até o workspace com `../../{repo}/…`), porque ele é lido no GitHub/GitLab. A sessão e o `$JARVIS_DOCS` ficam em texto, sem link.
 8. **Texto que vem do Advisor:** quem registra no documento converte as citações dele (caminho absoluto e linha) no formato desta rule.
 
 ### Proibido

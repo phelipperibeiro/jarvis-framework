@@ -19,7 +19,6 @@ Fonte: `workflows/product/`. Guia didático: [produto/README.md](./produto/READM
 | [`/prod.spec.issue`](./produto/prod.spec.issue.md) | Cria issues: histórias de usuário, tarefas técnicas e bugs | [workflow](../workflows/product/prod.spec.issue.md) |
 | [`/prod.spec.breakdown`](./produto/prod.spec.breakdown.md) | Quebra uma spec grande em fatias (versões, épicos e histórias) | [workflow](../workflows/product/prod.spec.breakdown.md) |
 | [`/prod.spec.clarify`](./produto/prod.spec.clarify.md) | Faz até 5 perguntas para esclarecer ambiguidades e grava as respostas na spec | [workflow](../workflows/product/prod.spec.clarify.md) |
-| `/prod.roadmap.preview` | Mostra o roadmap de entregas planejadas (períodos, projetos e responsáveis) | [workflow](../workflows/product/prod.roadmap.preview.md) |
 
 ## Engenharia (`eng.*`)
 
@@ -36,7 +35,6 @@ Fonte: `workflows/engineering/`. Guias didáticos: [engenharia/README.md](./enge
 | [`/eng.pr`](./engenharia/eng.pr.md) | Faz o push e abre o merge request, depois da pergunta (regra de ouro) | [workflow](../workflows/engineering/eng.pr.md) |
 | [`/eng.spec-consolidate`](./engenharia/eng.spec-consolidate.md) | Registra no Central docs o que a entrega implementou (funcionalidade + entrega) | [workflow](../workflows/engineering/eng.spec-consolidate.md) |
 | [`/eng.daily-report`](./engenharia/eng.daily-report.md) | Junta os `daily.md` das sessões em um relatório por dia, com alertas das sessões sem registro | [workflow](../workflows/engineering/eng.daily-report.md) |
-| [`/eng.review`](./engenharia/eng.review.md) | Revisão de solução ou PR | [workflow](../workflows/engineering/eng.review.md) |
 | [`/eng.debug`](./engenharia/eng.debug.md) | Investiga um bug ou varre um escopo atrás de problemas, só lendo | [workflow](../workflows/engineering/eng.debug.md) |
 
 ### Arquitetura e specs técnicas
@@ -44,12 +42,9 @@ Fonte: `workflows/engineering/`. Guias didáticos: [engenharia/README.md](./enge
 | Comando                     | O que faz                                              | Workflow |
 | --------------------------- | ------------------------------------------------------ | --- |
 | [`/eng.light-arch`](./engenharia/eng.light-arch.md) | Design arquitetural leve | [workflow](../workflows/engineering/eng.light-arch.md) |
-| [`/eng.create-ard`](./engenharia/eng.create-ard.md) | Cria ou itera um ARD | [workflow](../workflows/engineering/eng.create-ard.md) |
-| [`/eng.create-ard-from-code`](./engenharia/eng.create-ard-from-code.md) | Cria ou itera um ARD a partir do código do repositório | [workflow](../workflows/engineering/eng.create-ard-from-code.md) |
+| [`/eng.create-ard`](./engenharia/eng.create-ard.md) | Cria ou itera um ARD, a partir de PRD ou do código existente | [workflow](../workflows/engineering/eng.create-ard.md) |
 | [`/eng.create-rfc`](./engenharia/eng.create-rfc.md) | Cria ou itera um RFC (RFC-Playbook) | [workflow](../workflows/engineering/eng.create-rfc.md) |
 | [`/eng.build-tech-spec`](./engenharia/eng.build-tech-spec.md) | Cria a Tech Spec de um card (Delivery Spec) ou uma especificação técnica de referência (Reference Spec) | [workflow](../workflows/engineering/eng.build-tech-spec.md) |
-| [`/eng.breakdown-subtasks`](./engenharia/eng.breakdown-subtasks.md) | Quebra a Tech Spec em subtarefas detalhadas | [workflow](../workflows/engineering/eng.breakdown-subtasks.md) |
-| [`/eng.docs`](./engenharia/eng.docs.md) | Atualiza a documentação de engenharia | [workflow](../workflows/engineering/eng.docs.md) |
 
 ### Frontend
 
@@ -59,14 +54,6 @@ Fonte: `workflows/engineering/`. Guias didáticos: [engenharia/README.md](./enge
 | [`/eng.frontend-review`](./engenharia/eng.frontend-review.md) | Revisão de PR frontend (tipagem, a11y, tokens, itens da stack) | [workflow](../workflows/engineering/frontend/eng.frontend-review.md) |
 | [`/eng.frontend-perf-audit`](./engenharia/eng.frontend-perf-audit.md) | Auditoria de performance frontend (Core Web Vitals, bundle) | [workflow](../workflows/engineering/frontend/eng.frontend-perf-audit.md) |
 
-### QA
-
-| Comando                           | O que faz                                           | Workflow |
-| --------------------------------- | --------------------------------------------------- | --- |
-| [`/eng.qa-refinement-entry`](./engenharia/eng.qa-refinement-entry.md) | Estratégia de testes a partir de spec, PRD ou FRD | [workflow](../workflows/engineering/qa/eng.qa-refinement-entry.md) |
-| [`/eng.qa-sprint-planning`](./engenharia/eng.qa-sprint-planning.md) | Capacidade de QA da sprint e distribuição por risco | [workflow](../workflows/engineering/qa/eng.qa-sprint-planning.md) |
-| [`/eng.qa-release-signoff`](./engenharia/eng.qa-release-signoff.md) | Sign-off pré-deploy (GO/NO-GO) | [workflow](../workflows/engineering/qa/eng.qa-release-signoff.md) |
-
 ### Fluxos especializados
 
 | Comando               | O que faz                                                  | Workflow |
@@ -75,6 +62,6 @@ Fonte: `workflows/engineering/`. Guias didáticos: [engenharia/README.md](./enge
 
 ## Outros comandos
 
-Os comandos de dados (`/data.new-pipeline`, `/data.contract`), `/jarvis-init`, `/warm-up` e `/taxonomy` não estão nesta lista. Para o quadro completo do que o CLI instala, rode `jarvis list`.
+`/jarvis-init`, `/warm-up` e `/taxonomy` não estão nesta lista. Para o quadro completo do que o CLI instala, rode `jarvis list`.
 
 **Overlay de empresa:** `/jarvis-fork {artefato}` ajusta um comando do core a uma empresa sem editar o core (fork para `$IDE/overlays/{COMPANY_PROFILE}/`), com `--list`, `--update` e `--delete`. Guia: [overlay-de-empresa.md](./overlay-de-empresa.md).

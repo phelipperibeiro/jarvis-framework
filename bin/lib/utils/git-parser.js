@@ -92,11 +92,6 @@ export function parseRepoUrl(url, { versionControl } = {}) {
   };
 }
 
-export function buildWebUrl(repoUrl, path) {
-  const { webBase, projectPath } = parseRepoUrl(repoUrl);
-  return `${webBase}/${projectPath}/${path}`;
-}
-
 export function mergeRequestPath(vendor, iid) {
   if (vendor === "gitlab") return `-/merge_requests/${iid}`;
   return `pull/${iid}`;

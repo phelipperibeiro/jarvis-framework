@@ -50,7 +50,7 @@ function getVersion() {
 
 /**
  * Remonta as opções do commander (camelCase) no formato antigo de `flags`
- * que `bin/commands/*.js` espera. `extra` (positionals, `logout: true`, etc.)
+ * que `bin/commands/*.js` espera. `extra` (positionals em `_`)
  * é aplicado por último e sempre vence.
  * @param {Record<string, unknown>} options
  * @param {Record<string, unknown>} [extra]
@@ -123,9 +123,6 @@ export function buildProgram() {
 
   const whoamiCmd = cmd(program, "whoami").description("Exibir identidade (ENV.md / git / SO)");
   withEnvOptions(withLogOptions(whoamiCmd)).action((options) => whoami(toLegacyFlags(options)));
-
-  const logoutCmd = cmd(program, "logout").description("Remover auth.json legado");
-  withLogOptions(logoutCmd).action((options) => whoami(toLegacyFlags(options, { logout: true })));
 
   const docs = cmd(program, "docs").description("Sincronizar ou publicar documentação");
 
@@ -240,10 +237,6 @@ export function buildProgram() {
 
   cmd(program, "tokens")
     .description("Estimar o que carrega no início da sessão")
-    .option("--hub <hub>")
-    .option("--position <position>")
-    .option("--area <area>")
-    .option("--squad <squad>")
     .option("--artifact-style <estilo>", "ai-generated ou human-generated (padrão: lido do ENV.md)")
     .option("--rtk", "Força RTK ligado (padrão: lido do ENV.md)")
     .option("--json", "Saída em JSON")
@@ -253,7 +246,7 @@ export function buildProgram() {
 
   const rules = cmd(program, "rules").description("Rules da pasta da IDE");
   const rulesSyncCmd = cmd(rules, "sync").description(
-    "Filtrar rules/ e rules-on-demand/ da IDE pelo perfil do ENV.md (Passo 8 do /jarvis-init)"
+    "Sincronizar rules/ e rules-on-demand/ da IDE com o ENV.md (Passo 8 do /jarvis-init)"
   );
   withEnvOptions(withLogOptions(rulesSyncCmd)).action((options) =>
     rulesSync(toLegacyFlags(options))

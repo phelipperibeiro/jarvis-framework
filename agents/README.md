@@ -13,25 +13,24 @@ agents/
 │   ├── eng.agent.md              # Agent principal de engenharia
 │   ├── eng.bug-hunter.md         # Caça e análise de bugs (persona do /eng.debug)
 │   ├── eng.dev-code-reviewer.md  # Code reviewer
+│   ├── eng.docs-consolidator.agent.md  # Consolida a entrega no Central docs (/eng.spec-consolidate)
 │   ├── eng.docs-writer.md        # Escritor de documentação
 │   ├── eng.rpa.agent.md          # Automação RPA (ARACHNE)
 │   ├── eng.frontend.agent.md     # Especialista frontend (neutro de stack): UI, estado, a11y
 │   ├── eng.ux-designer.agent.md  # Especialista UX/UI: heurísticas, jornada, microcopy
-│   ├── data/                     # Data Engineering (1 agent)
-│   │   └── eng.data-engineer.agent.md
-│   └── qa/                       # QA específico de engenharia (5 agents)
+│   └── qa/                       # QA específico de engenharia (3 agents)
 └── product/                      # 🎯 Agentes do domínio de Produto
     ├── prod.pm-checker.md        # Product Manager checker
     └── prod.discovery-interviewer.md  # Entrevistador de discovery
 ```
 
-**📊 Total: 16 agents**
-- Engineering: 14 (8 main + 1 data + 5 QA)
+**📊 Total: 14 agents**
+- Engineering: 12 (9 main + 3 QA)
 - Product: 2
 
 ---
 
-## ⚙️ 1. Engenharia (14 agents)
+## ⚙️ 1. Engenharia (12 agents)
 
 **Pasta**: `engineering/`
 
@@ -42,25 +41,19 @@ Agentes específicos para fluxos e regras do domínio de Engenharia.
 - `eng.bug-hunter.md` - `@eng.bug-hunter` - Caça e análise de bugs
 - `eng.dev-code-reviewer.md` - `@eng.dev-code-reviewer` - Code review
 - `eng.docs-writer.md` - `@eng.docs-writer` - Documentação técnica
-- `eng.rpa.agent.md` - `@eng.rpa` - Automação e scraping RPA (ARACHNE)
+- `eng.rpa.agent.md` - `@eng.rpa.agent` - Automação e scraping RPA (ARACHNE)
 - `eng.frontend.agent.md` - `@eng.frontend` - Especialista frontend (neutro de stack): UI, estado, performance, a11y
 - `eng.ux-designer.agent.md` - `@eng.ux-designer` - Especialista UX/UI: heurísticas Nielsen, jornada, microcopy
 - `eng.advisor.agent.md` - `@eng.advisor.agent` - Advisor opcional: orienta as questões em aberto do `eng.start` (modelo escolhido pelo usuário)
+- `eng.docs-consolidator.agent.md` - `@eng.docs-consolidator.agent` - Consolida o que a entrega implementou em documentos do Central docs (por funcionalidade e por entrega), chamado pelo `/eng.spec-consolidate`
 
 
-### Data Agents (1)
-**Subpasta**: `engineering/data/`
-
-- `eng.data-engineer.agent.md` - `@eng.data-engineer` - Pipelines ETL/ELT, contratos de dados, qualidade (HEPHAESTUS)
-
-### QA Agents (5)
+### QA Agents (3)
 **Subpasta**: `engineering/qa/`
 
-- `eng.qa.quality-champion-task-agent.md` - `@eng.qa.quality-champion-task-agent`
 - `eng.qa.test-planner.md` - `@eng.qa.test-planner`
-- `eng.qa.testing-engineer.md` - `@eng.qa.testing-engineer` _(stack primária: Cypress + TypeScript — inclui domínio e debugging Cypress)_
+- `eng.qa.testing-engineer.md` - `@eng.qa.testing-engineer` _(testes unitários e E2E, com a ferramenta do projeto)_
 - `eng.qa.test-architect.md` - `@eng.qa.test-architect`
-- `eng.qa.quality-strategist.md` - `@eng.qa.quality-strategist` — priorização de esforço, risco de feature, distribuição QA/dev
 
 ---
 
@@ -79,12 +72,11 @@ Agentes específicos para fluxos e validações do domínio de Produto.
 
 | Domínio | Agentes | Uso |
 |---------|---------|-----|
-| ⚙️ **Engineering** (main) | 7 | Agent principal, bug hunter, code review, docs, RPA, frontend, UX |
-| 🧪 **QA** (sub-eng) | 5 | Test planning, testing (+Cypress), test architect, quality champion, quality strategist |
-| 📊 **Data** (sub-eng) | 1 | Pipelines, contratos de dados, qualidade |
+| ⚙️ **Engineering** (main) | 9 | Agent principal, advisor, bug hunter, code review, docs, docs consolidator, RPA, frontend, UX |
+| 🧪 **QA** (sub-eng) | 3 | Test planning, testing, test architect |
 | 🎯 **Product** | 2 | PM checker, discovery interviewer |
 
-**Total: 15 agents**
+**Total: 14 agents**
 
 ---
 
@@ -99,7 +91,7 @@ Quando um agente estiver atuando em um tema que possui skill correspondente, ele
 
 ### Mapeamento recomendado (Workflows/Comandos → Skills)
 
-- **eng.docs** → `eng-global-docs-write` (principal) e `jarvis-docs-index` (quando houver índice).
+- **eng.work** (oferta de documentação, Fase 6.2) → `eng-global-docs-write` (e `jarvis-docs-index` quando houver índice).
 - **eng.pre-pr** → `eng-qa-planner` (cobertura) e `eng-global-docs-write` (docs).
 - **eng.start** (nome da branch) e **eng.pr** → `eng-global-branch` (política de nome da branch; o `eng.pr` também usa `eng-global-pr`).
 - **eng.pr** → `eng-global-pr`.
@@ -131,6 +123,7 @@ Você também pode invocar agentes manualmente usando `@`:
 ```bash
 # Invocar agente específico
 @eng.qa.test-planner "analisar cobertura de testes da branch"
+@eng.qa.test-planner TASK-123   # Modo A: estratégia de testes a partir do card, antes do código
 
 # Múltiplos agentes em paralelo
 @eng.frontend.agent @eng.ux-designer.agent "revisar fluxo de checkout"
@@ -157,7 +150,7 @@ Você também pode invocar agentes manualmente usando `@`:
    └─> @eng.dev-code-reviewer
 
 5. 📚 DOCUMENTAÇÃO
-   └─> @eng.docs-writer → /eng.docs
+   └─> /eng.work (oferta 6.2) → /eng-global-docs-write; @eng.docs-writer aponta o que ficou desatualizado no gate 9 do /eng.pre-pr
 
 6. 🔧 ENTREGA
    └─> /eng.pre-pr, /eng.pr
@@ -190,7 +183,7 @@ Você também pode invocar agentes manualmente usando `@`:
 - **Todos os agentes são compatíveis** com os comandos slash existentes
 - **Ativação automática** baseada em contexto continua funcionando
 - **Invocação manual** com `@nome-do-agente` permanece a mesma
-- **Agentes de QA consolidados** em `engineering/qa/` (antes estavam em stand-by)
+- **Agentes de QA** em `engineering/qa/`
 
 ---
 
@@ -202,5 +195,4 @@ Você também pode invocar agentes manualmente usando `@`:
 
 ---
 
-**Última atualização**: 2026-10-04
-**Agents ativos:** 16 (Engineering: 8 main + 5 QA + 1 Data, Product: 2)
+**Agents ativos:** 14 (Engineering: 9 main + 3 QA, Product: 2)

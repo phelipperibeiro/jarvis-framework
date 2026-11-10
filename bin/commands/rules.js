@@ -8,8 +8,6 @@ import { getPackageInfo } from "../lib/utils/paths.js";
 import { logger, configureFromFlags } from "../lib/utils/logger.js";
 import { RED, GREEN, YELLOW, CYAN, NC } from "../lib/utils/ui.js";
 
-const AXES = ["HUB", "POSITION", "AREA", "SQUAD"];
-
 /**
  * Versão do `jarvis-lock.json` da pasta (a da IDE ou a raiz do workspace), ou `null` sem o arquivo.
  * Arquivo presente, mas ilegível ou sem `version`, interrompe o comando: não cai para outro lock.
@@ -45,10 +43,11 @@ function fail(message) {
 }
 
 /**
- * `jarvis rules sync`: Passo 8 do `/jarvis-init` pelo CLI (#102). Filtra `.{ide}/rules/` e
- * `.{ide}/rules-on-demand/` pelo perfil do ENV.md e aplica o overlay de `COMPANY_PROFILE`.
- * Sai com 1, sem gravar nada, sem ENV.md numa pasta de IDE, com eixo faltando ou com o lock ausente
- * ou de outra versão (os assets da IDE seriam de outra versão que as rules do Jarvis em uso).
+ * `jarvis rules sync`: Passo 8 do `/jarvis-init` pelo CLI (#102). Sincroniza `.{ide}/rules/` e
+ * `.{ide}/rules-on-demand/` com o ENV.md (as duas exceções seguem `ARTIFACT_STYLE` e `RTK_ENABLED`,
+ * #263) e aplica o overlay de `COMPANY_PROFILE`. Sai com 1, sem gravar nada, sem ENV.md numa pasta
+ * de IDE ou com o lock ausente ou de outra versão (os assets da IDE seriam de outra versão que as
+ * rules do Jarvis em uso).
  * @param {{ ide?: string, "env-file"?: string }} flags
  */
 export async function rulesSync(flags) {
@@ -90,33 +89,22 @@ export async function rulesSync(flags) {
   const envText = readFileSync(resolved.path, "utf-8");
   const env = loadEnv(process.cwd(), resolved.path);
 
-  const missing = AXES.filter((axis) => !env[axis]);
-  if (missing.length > 0) fail(`Perfil incompleto no ENV.md: faltam ${missing.join(", ")}`);
-
   // O lock da IDE filtrada vale primeiro: com duas IDEs, o da raiz é o do último init.
   const lock = readLock(ideDir) ?? readLock(workspaceDir);
   const running = getPackageInfo().version;
   if (lock === null) fail(`Sem ${LOCK_FILE} no workspace: rode \`jarvis init\``);
   if (lock !== running) {
     fail(
-      `assets da ${lock} e Jarvis ${running}: rode \`jarvis init --upgrade\` (ou siga sem filtrar pelo CLI)`
+      `assets da ${lock} e Jarvis ${running}: rode \`jarvis init --upgrade\` (ou sincronize sem o CLI)`
     );
   }
 
-  const profile = {
-    HUB: env.HUB,
-    POSITION: env.POSITION,
-    AREA: env.AREA,
-    SQUAD: env.SQUAD,
-    ARTIFACT_STYLE: env.ARTIFACT_STYLE || "ai-generated",
-  };
-  const result = syncRulesForProfile(ideDir, profile, {
-    rtkEnabled: env.RTK_ENABLED === "true",
-    envText,
-  });
+  const profile = { ARTIFACT_STYLE: env.ARTIFACT_STYLE || "ai-generated" };
+  const rtkEnabled = env.RTK_ENABLED === "true";
+  const result = syncRulesForProfile(ideDir, profile, { rtkEnabled, envText });
 
   logger.info(
-    `${CYAN}🔍 Sincronizando rules para o perfil: HUB=${profile.HUB} | POSITION=${profile.POSITION} | AREA=${profile.AREA} | SQUAD=${profile.SQUAD} | ARTIFACT_STYLE=${profile.ARTIFACT_STYLE}${NC}\n`
+    `${CYAN}🔍 Sincronizando rules: ARTIFACT_STYLE=${profile.ARTIFACT_STYLE} | RTK=${rtkEnabled ? "ligado" : "desligado"}${NC}\n`
   );
   for (const warning of result.warnings) logger.info(`${YELLOW}⚠️  ${warning}${NC}`);
   const total = result.copied.rules + result.copied["rules-on-demand"];
@@ -124,8 +112,7 @@ export async function rulesSync(flags) {
   logger.info(
     `   Copiadas : ${total} arquivos (rules/: ${result.copied.rules} | rules-on-demand/: ${result.copied["rules-on-demand"]})`
   );
-  logger.info(`   Removidas: ${result.removed} arquivos (não batem com o perfil)`);
-  logger.info(`   Universais: ${result.universal} arquivos (sem applies_to — sempre copiadas)`);
+  logger.info(`   Removidas: ${result.removed} arquivos (exceção desligada)`);
   logger.info(`   Do overlay: ${result.fromOverlay} arquivos (${result.companyProfile})`);
   if (result.folderCreated) logger.info(`   Overlay ${result.companyProfile}: pasta criada`);
 

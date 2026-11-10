@@ -12,6 +12,7 @@ import { readDescription } from "../bin/lib/utils/frontmatter.js";
 import { discoverAll } from "../bin/lib/core/scanner.js";
 import { syncAssets } from "../bin/lib/core/sync-engine.js";
 import { getWorkflowsFolder } from "../bin/lib/config/ide-config.js";
+import { OPENCODE_MODEL_MAP } from "../bin/lib/config/constants.js";
 
 test("readDescription: valor na mesma linha, com e sem aspas", () => {
   assert.equal(
@@ -79,24 +80,59 @@ test("OpenCode: agents e commands gerados do framework real sem description '>' 
   }
 });
 
-test("rules reais: o Applies to vem na 1ª linha ou logo depois do frontmatter (#83)", () => {
+test("OpenCode: model dos agents, dos comandos e do opencode.json na família Claude 5.5 (#239)", () => {
+  const target = mkdtempSync(join(tmpdir(), "jarvis-opencode-model-"));
+  try {
+    syncAssets(target, "opencode", { workflowsFolder: getWorkflowsFolder("opencode") });
+    const model = (caminho) =>
+      readFileSync(join(target, ".opencode", caminho), "utf-8").match(/^model: (.*)$/m)?.[1];
+    // Amostras do framework real: eng.agent.md (model: opus), prod.pm-checker.md (model: sonnet) e
+    // eng.start.md (recommended_model: claude-sonnet-5, que passa pelo fallback anthropic/{id}).
+    // Se o model de uma delas mudar, troque a amostra por outra com o mesmo valor.
+    assert.equal(model("agents/engineering/eng.agent.md"), "anthropic/claude-opus-5-5");
+    assert.equal(model("agents/product/prod.pm-checker.md"), "anthropic/claude-sonnet-5-5");
+    assert.equal(model("commands/eng.start.md"), "anthropic/claude-sonnet-5");
+    // haiku não é usado por nenhum agent hoje: confere direto no mapa.
+    assert.equal(OPENCODE_MODEL_MAP.haiku, "anthropic/claude-haiku-5-5");
+    const config = JSON.parse(readFileSync(join(target, "opencode.json"), "utf-8"));
+    assert.equal(config.model, "anthropic/claude-sonnet-5-5");
+    // Nenhum model gerado aponta para os IDs antigos (o do haiku nem existia no catálogo).
+    const antigos = [];
+    const visitar = (dir) => {
+      for (const e of readdirSync(dir, { withFileTypes: true })) {
+        const caminho = join(dir, e.name);
+        if (e.isDirectory()) visitar(caminho);
+        else if (
+          e.name.endsWith(".md") &&
+          /^model: .*(4-6|haiku-4-5)/m.test(readFileSync(caminho, "utf-8"))
+        ) {
+          antigos.push(caminho.slice(target.length + 1));
+        }
+      }
+    };
+    visitar(join(target, ".opencode"));
+    assert.deepEqual(antigos, []);
+  } finally {
+    rmSync(target, { recursive: true, force: true });
+  }
+});
+
+test("rules reais: nenhuma rule tem a linha Applies to, que o CLI não lê mais (#263)", () => {
   const raiz = join(dirname(fileURLToPath(import.meta.url)), "..");
-  const fora = [];
+  const com = [];
   const visitar = (dir) => {
     for (const e of readdirSync(dir, { withFileTypes: true })) {
       const caminho = join(dir, e.name);
       if (e.isDirectory()) visitar(caminho);
-      else if (e.name.endsWith(".md") && !["AGENTS.md", "README.md"].includes(e.name)) {
+      else if (e.name.endsWith(".md")) {
         const texto = readFileSync(caminho, "utf-8");
-        const fm = texto.match(/^---\n[\s\S]*?\n---\n/);
-        const corpo = (fm ? texto.slice(fm[0].length) : texto).replace(/^\n+/, "");
-        if (!corpo.startsWith("> **Applies to:**")) fora.push(caminho.slice(raiz.length + 1));
+        if (/^> \*\*Applies to:\*\*/m.test(texto)) com.push(caminho.slice(raiz.length + 1));
       }
     }
   };
   visitar(join(raiz, "rules"));
   visitar(join(raiz, "rules-on-demand"));
-  assert.deepEqual(fora, []);
+  assert.deepEqual(com, []);
 });
 
 test("readDescription: indicadores de bloco e aspas escapadas (#83)", () => {

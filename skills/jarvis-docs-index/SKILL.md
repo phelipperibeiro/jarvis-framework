@@ -348,7 +348,7 @@ Além do índice, gerar relatório de saúde:
 Relações com outras skills (não são chamadas do fluxo):
 
 - `eng-global-docs-write`: após criar ou atualizar documentação, rodar `jarvis-docs-index` para atualizar o índice
-- `eng-backend-arch-c4`: incluir diagramas C4 na seção de Arquitetura do índice
+- `eng-global-arch-c4`: incluir diagramas C4 na seção de Arquitetura do índice
 
 ---
 

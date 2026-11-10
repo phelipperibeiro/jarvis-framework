@@ -8,40 +8,42 @@ Cria ou atualiza um **ARD** (Architecture Requirements Document): o documento qu
 
 ## O que é
 
-O ARD responde "como vamos construir isto?" de forma versionada e revisável. Ele nasce de uma demanda de produto (PRD) e serve de base para as tarefas técnicas. O comando funciona em dois modos: **novo ARD** ou **iteração** de um ARD existente.
+O ARD responde "como vamos construir isto?" de forma versionada e revisável. Ele nasce de uma demanda de produto (PRD) e serve de base para as tarefas técnicas. O comando funciona em dois modos: **novo ARD** ou **iteração** de um ARD existente. Nos dois, o ARD pode partir **de PRD e decisões** ou **do código existente**, quando ele deve refletir a arquitetura que o repositório já tem.
 
 Atalhos:
 
-- `eng.create-ard new <nome> [--prd <caminho-do-prd>]`
-- `eng.create-ard edit <nome-ou-caminho>`
+- `eng.create-ard new <nome> [--prd <caminho-do-prd>] [--codigo]`
+- `eng.create-ard edit <nome-ou-caminho> [--codigo]`
+- `--codigo`: o ARD parte do código existente (sem a flag, o comando pergunta "Qual é a base do ARD?")
 
 ## Quando usar
 
 - Mudança arquitetural relevante ou feature nova com impacto em vários componentes
 - Quando a decisão precisa ficar documentada e versionada
 - Para atualizar um ARD depois que a solução mudou
+- O ARD deve refletir o código que já existe → modo **código existente** (`--codigo`): o comando lê o repositório (stack, estrutura, entrypoints, integrações, contratos observados), separa o que é fato observado do que é hipótese e registra a arquitetura atual ao lado da proposta; para diagramas C4, oferece o `/eng-global-arch-c4` (opcional)
 
 ## Quando **não** usar
 
 - Você quer um desenho rápido para uma feature pequena → [`eng.light-arch`](./eng.light-arch.md)
-- O ARD deve refletir o código que já existe → [`eng.create-ard-from-code`](./eng.create-ard-from-code.md)
 - A decisão precisa de discussão aberta e aprovação formal → [`eng.create-rfc`](./eng.create-rfc.md)
 
 ## Como funciona
 
 | Passo | O que acontece |
 |---|---|
-| 0 | Define se é novo ARD ou iteração (pergunta se os argumentos não deixarem claro) |
+| 0 | Define se é novo ARD ou iteração e qual é a base do ARD: de PRD e decisões ou do código existente (`--codigo`); pergunta se os argumentos não deixarem claro |
 | 0.5 | **Versiona** com SemVer: novo ARD começa em `1.0.0`; em iteração, você diz se a mudança foi major, minor ou patch (regras em `eng.bump-rules.md`) |
 | 1 | Confirma o contexto e a origem da demanda |
-| 1.1 | **Verifica o PRD** (obrigatório) em `$PROD_DOCS`, consulta o implementado no central docs (se configurado) ou pergunta |
+| 1.1 | **Verifica o PRD** (obrigatório; no modo código, quando existir) em `$PROD_DOCS`, consulta o implementado no central docs (se configurado) ou pergunta |
 | 2 | Lê os insumos relevantes |
+| 2.1 | **Só no modo código:** coleta o contexto do repositório (stack, estrutura, entrypoints, integrações, contratos observados), separando fato observado de hipótese |
 | 2.5 | **Avalia a complexidade** (simples, moderada ou complexa) e declara o resultado antes de decidir qualquer coisa |
-| 3 | Preenche o `ARD-template.md` |
+| 3 | Preenche o `ARD-template.md`; no modo código, registra a arquitetura atual ao lado da proposta e oferece o `/eng-global-arch-c4` para diagramas C4 (opcional) |
 | 4 | Análise de impacto e riscos |
 | 5 | Estratégia de testes e validação |
 | 6 | Checagem final com os guard rails das regras de engenharia |
-| 7 | Entrega: ARD preenchido, resumo executivo e próximos passos |
+| 7 | Entrega: ARD preenchido, resumo executivo (no modo código, com a arquitetura atual observada) e próximos passos |
 | 8 | O ARD fica em `$ENG_DOCS/ARD/` (documento de trabalho); o Central docs é atualizado pelo `/eng.spec-consolidate` depois da entrega |
 
 ### Avaliação de complexidade (passo 2.5)

@@ -1,5 +1,3 @@
-> **Applies to:** HUB: all | POSITION: all | AREA: ENGINEERING | SQUAD: all
-
 # Regras do Workflow PR (Pull Request / Merge Request)
 
 ## Propósito
@@ -204,7 +202,7 @@ Antes de considerar o PR completo:
 - [ ] Pessoa orientada a mover o card no board (o Jarvis não move card)
 - [ ] Comentários de code review processados
 - [ ] `pull-request.md` aprovado na sessão (e publicado, se o usuário respondeu Sim)
-- [ ] Pergunta "O PR já foi aprovado e mergeado?" no fim (Sim → `/eng.spec-consolidate`)
+- [ ] Pergunta "O PR já foi aprovado e mergeado?" no fim (Sim → `/eng.spec-consolidate`, ou com `--force`)
 - [ ] `daily.md` gerado ou atualizado e aprovado (com ou sem PR publicado), com a linha de timesheet na mensagem final
 
 ---

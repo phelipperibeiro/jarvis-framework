@@ -8,7 +8,7 @@ Revisa um PR de frontend, de qualquer stack, com um checklist aprofundado: tipag
 
 ## O que é
 
-Complementa o [`eng.review`](./eng.review.md) genérico com os pontos específicos de interface. Você aponta um PR (ou um conjunto de arquivos) e o comando lê os arquivos alterados antes de revisar.
+Complementa o [`eng.pre-pr`](./eng.pre-pr.md) com os pontos específicos de interface. Você aponta um PR (ou um conjunto de arquivos) e o comando lê os arquivos alterados antes de revisar.
 
 ## Quando usar
 
@@ -17,7 +17,7 @@ Complementa o [`eng.review`](./eng.review.md) genérico com os pontos específic
 
 ## Quando **não** usar
 
-- PR sem interface → [`eng.review`](./eng.review.md)
+- PR sem interface → [`eng.pre-pr`](./eng.pre-pr.md), na branch do PR
 - Você vai criar o componente → [`eng.frontend-component`](./eng.frontend-component.md)
 - O problema é lentidão → [`eng.frontend-perf-audit`](./eng.frontend-perf-audit.md)
 

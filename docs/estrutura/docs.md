@@ -13,6 +13,8 @@ docs/
 ├── README.md                         # índice desta pasta
 ├── visao-geral.md                    # proposta + conceitos + fluxos
 ├── comandos.md                       # consulta rápida: todos os comandos eng.* e prod.*
+├── especializacoes-de-stack.md       # adaptar o Jarvis à sua stack
+├── overlay-de-empresa.md             # adaptar o Jarvis à sua empresa
 ├── produto/                          # universo PM/PO + um guia por comando
 │   ├── README.md
 │   └── prod.spec*.md
@@ -21,11 +23,10 @@ docs/
 │   └── eng.*.md
 └── estrutura/
     ├── README.md                     # como as pastas se montam
-    ├── raiz.md                       # README, AGENTS, LICENSE, package, taxonomy, members
+    ├── raiz.md                       # README, AGENTS, LICENSE, package, taxonomy
     ├── agents.md
     ├── bin.md
     ├── docs.md                       # este arquivo
-    ├── issues.md
     ├── node_modules.md
     ├── rules.md
     ├── skills.md

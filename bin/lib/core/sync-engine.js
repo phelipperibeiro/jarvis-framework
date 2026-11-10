@@ -15,7 +15,7 @@ import { getFrameworkRoot } from "../utils/paths.js";
 import { getIDEFolder } from "../config/ide-config.js";
 import { extractFrontmatterBlock, readDescription } from "../utils/frontmatter.js";
 import { readCompanyProfile } from "./company-profile.js";
-import { parseAppliesTo, matchesProfile } from "./profile-filter.js";
+import { isRuleEnabled } from "./profile-filter.js";
 import {
   SYNC_DIRS,
   SYNC_ROOT_FILES,
@@ -24,7 +24,6 @@ import {
   LOCK_FILE,
   OPENCODE_MODEL_MAP,
   OPENCODE_DEFAULT_PERMISSIONS,
-  KIRO_HUB_FILE_PATTERNS,
 } from "../config/constants.js";
 
 /**
@@ -380,21 +379,21 @@ export function applyRuleOverlay(ideDir, result, { dryRun = false, frameworkRoot
 }
 
 /**
- * Passo 8 do `/jarvis-init` (Profile-Aware Rules Sync) pelo CLI (#102): deixa em `.{ide}/rules/` e
- * `.{ide}/rules-on-demand/` só as rules do perfil, com o filtro de `profile-filter.js`.
+ * Passo 8 do `/jarvis-init` pelo CLI (#102): sincroniza `.{ide}/rules/` e `.{ide}/rules-on-demand/`.
  * Candidatos de cada pasta: todo `.md` do core mais os do overlay ativo que o core não tem. O arquivo
- * efetivo é o do overlay, se existir (e estiver dentro dele), senão o do core; o `Applies to` lido é
- * o dele. Entra → copia do core (o do overlay já foi gravado, marcado, por `applyRuleOverlay`); não
- * entra → sai da IDE. `rtk-rules.md` só com `rtkEnabled`. Arquivo da IDE que não é candidato não é tocado.
+ * efetivo é o do overlay, se existir (e estiver dentro dele), senão o do core. Toda rule entra, menos
+ * as duas exceções de `isRuleEnabled`, decididas pelo nome do arquivo, sem ler o conteúdo (#263).
+ * Entra → copia do core (o do overlay já foi gravado, marcado, por `applyRuleOverlay`); não entra →
+ * sai da IDE. Arquivo da IDE que não é candidato não é tocado.
  * @param {string} ideDir - Pasta da IDE (ex.: `{workspace}/.claude`)
- * @param {{ HUB: string, POSITION: string, AREA: string, SQUAD: string, ARTIFACT_STYLE?: string }} profile
+ * @param {{ ARTIFACT_STYLE?: string }} [profile] - `ARTIFACT_STYLE` vazio = `ai-generated`
  * @param {{ rtkEnabled?: boolean, frameworkRoot?: string, dryRun?: boolean, envText?: string }} [opts]
  * @returns {{ companyProfile: string, copied: Record<string, number>, removed: number,
- *   universal: number, fromOverlay: number, folderCreated: boolean, warnings: string[], errors: string[] }}
+ *   fromOverlay: number, folderCreated: boolean, warnings: string[], errors: string[] }}
  */
 export function syncRulesForProfile(
   ideDir,
-  profile,
+  profile = {},
   { rtkEnabled = false, frameworkRoot = getFrameworkRoot(), dryRun = false, envText } = {}
 ) {
   const overlayResult = { copied: [], skipped: [], errors: [] };
@@ -409,7 +408,6 @@ export function syncRulesForProfile(
     companyProfile,
     copied: {},
     removed: 0,
-    universal: 0,
     fromOverlay: 0,
     folderCreated: overlayResult.copied.some((line) =>
       line.startsWith(`Overlay ${companyProfile}:`)
@@ -438,6 +436,29 @@ export function syncRulesForProfile(
         }
       }
     }
+    // Fork do overlay num caminho de rule que saiu do framework (OBSOLETE_PATHS), como as rules que
+    // foram para rules-on-demand/ na #263: ele entra como rule só da empresa e não vale onde o core
+    // está agora. Só os arquivos válidos do overlay (os que são copiados) avisam. Numa pasta que
+    // saiu do framework, a rule pode ser própria da empresa: o aviso só pede para conferir. Quem
+    // grava no overlay é o /jarvis-fork.
+    for (const rel of fromOverlay.keys()) {
+      const relPath = `${dir}/${rel.split(sep).join("/")}`;
+      const shown = `overlays/${companyProfile}/${relPath}`;
+      if (OBSOLETE_PATHS.includes(relPath)) {
+        out.warnings.push(
+          `${shown}: fork num caminho que saiu do framework, copiado como rule só da empresa. Mova-o para o caminho novo ou apague-o (veja o CHANGELOG).`
+        );
+        continue;
+      }
+      const folder = OBSOLETE_PATHS.map((p) => p.replace(/\/$/, "")).find((p) =>
+        relPath.startsWith(`${p}/`)
+      );
+      if (folder) {
+        out.warnings.push(
+          `${shown}: rule numa pasta que saiu do framework (${folder}/), copiada como rule só da empresa. Confira se ela ainda serve (veja o CHANGELOG).`
+        );
+      }
+    }
     const coreDir = join(frameworkRoot, dir);
     const coreFiles = [];
     if (existsSync(coreDir)) collectMdFiles(coreDir, coreFiles);
@@ -451,15 +472,12 @@ export function syncRulesForProfile(
       const source = overlayFile ?? join(coreDir, rel);
       const dest = join(ideDir, dir, rel);
       try {
-        const appliesTo = parseAppliesTo(readFileSync(source, "utf-8"));
-        const rtkOk = !rel.split(sep).join("/").endsWith("rtk-rules.md") || rtkEnabled;
-        if (rtkOk && matchesProfile(appliesTo, profile)) {
+        if (isRuleEnabled(rel, { artifactStyle: profile.ARTIFACT_STYLE, rtkEnabled })) {
           if (!overlayFile && !dryRun) {
             mkdirSync(dirname(dest), { recursive: true });
             cpSync(source, dest);
           }
           out.copied[dir]++;
-          if (appliesTo === null) out.universal++;
           if (overlayFile) out.fromOverlay++;
           if (kiro && dir === "rules" && !dryRun && existsSync(dest))
             writeKiroRuleSteering(ideDir, dest);
@@ -539,10 +557,10 @@ function reconcileRtk(ideDir, targetDir, ide, { keepEnvValues = false } = {}) {
 /**
  * Resolve o model Jarvis para formato OpenCode (provider/model-id).
  * @param {string} model - Model no formato Jarvis (ex: "opus", "claude-sonnet-5")
- * @returns {string} Model no formato OpenCode (ex: "anthropic/claude-opus-4-6")
+ * @returns {string} Model no formato OpenCode (ex: "anthropic/claude-opus-5-5")
  */
 function resolveOpenCodeModel(model) {
-  if (!model) return "anthropic/claude-sonnet-4-6";
+  if (!model) return "anthropic/claude-sonnet-5-5";
   const trimmed = model.trim();
   if (trimmed.includes("/")) return trimmed; // já no formato provider/model
   if (OPENCODE_MODEL_MAP[trimmed]) return OPENCODE_MODEL_MAP[trimmed];
@@ -646,7 +664,7 @@ function generateOpenCodeConfig(targetDir) {
 
   const config = {
     $schema: "https://opencode.ai/config.json",
-    model: "anthropic/claude-sonnet-4-6",
+    model: "anthropic/claude-sonnet-5-5",
     instructions: [".opencode/AGENTS.md", ".opencode/rules/**/*.md"],
   };
 
@@ -699,20 +717,16 @@ function flattenDir(dir, rootDir, skip = []) {
 
 /**
  * Converte o frontmatter de um arquivo .md para um steering file Kiro.
- * - Remonta o frontmatter só com inclusion e description (e fileMatchPattern, quando houver)
+ * - Remonta o frontmatter só com inclusion e description
  * @param {string} content - Conteúdo original do .md
- * @param {string} inclusion - Valor de inclusion: "auto" | "manual" | "fileMatch"
- * @param {string} [fileMatchPattern] - Pattern para inclusion: fileMatch
+ * @param {string} inclusion - Valor de inclusion: "auto" | "manual"
  * @returns {string} Conteúdo transformado
  */
-function toKiroSteeringFile(content, inclusion, fileMatchPattern) {
+function toKiroSteeringFile(content, inclusion) {
   const fmMatch = content.match(/^---\n([\s\S]*?)\n---/);
   const body = fmMatch ? content.slice(fmMatch[0].length).trimStart() : content;
 
   const lines = [`inclusion: ${inclusion}`];
-  if (inclusion === "fileMatch" && fileMatchPattern) {
-    lines.push(`fileMatchPattern: "${fileMatchPattern}"`);
-  }
 
   if (fmMatch) {
     const fm = fmMatch[1];
@@ -724,20 +738,7 @@ function toKiroSteeringFile(content, inclusion, fileMatchPattern) {
 }
 
 /**
- * Detecta o HUB de uma rule a partir do bloco "Applies to" no corpo.
- * Retorna o HUB em maiúsculas ou null se não encontrado.
- * @param {string} content
- * @returns {string | null}
- */
-function detectRuleHub(content) {
-  const match = content.match(/\*\*Applies to:\*\*[^\n]*HUB:\s*([A-Z-]+)/i);
-  if (!match) return null;
-  const hub = match[1].trim().toUpperCase();
-  return hub === "ALL" ? null : hub;
-}
-
-/**
- * Grava o steering de uma rule do Kiro (`steering/{nome}`), com `inclusion` pelo HUB da rule.
+ * Grava o steering de uma rule do Kiro (`steering/{nome}`), com `inclusion: auto`.
  * Arquivos de índice (`AGENTS.md`, `README.md`) não viram steering.
  * @param {string} kiroDir - Pasta `.kiro/`
  * @param {string} filePath - Rule em `.kiro/rules/`
@@ -746,18 +747,15 @@ function writeKiroRuleSteering(kiroDir, filePath) {
   const name = basename(filePath);
   if (name === "AGENTS.md" || name === "README.md") return;
   const content = readFileSync(filePath, "utf-8");
-  const hub = detectRuleHub(content);
-  const pattern = hub ? KIRO_HUB_FILE_PATTERNS[hub] : null;
-  const inclusion = pattern ? "fileMatch" : "auto";
   const steeringDir = join(kiroDir, "steering");
   mkdirSync(steeringDir, { recursive: true });
-  writeFileSync(join(steeringDir, name), toKiroSteeringFile(content, inclusion, pattern), "utf-8");
+  writeFileSync(join(steeringDir, name), toKiroSteeringFile(content, "auto"), "utf-8");
 }
 
 /**
  * Transforma os assets copiados para .kiro/ em steering files.
  * 1. Workflows em steering/ → adiciona inclusion: manual
- * 2. Rules em rules/ → copia para steering/ com inclusion: auto ou fileMatch
+ * 2. Rules em rules/ → copia para steering/ com inclusion: auto
  * 3. Skills em skills/*\/SKILL.md → copia para steering/skills/skill-{nome}.md
  * @param {string} kiroDir - Caminho para .kiro/
  * @param {string} targetDir - Raiz do projeto (para buscar MCPs.md)

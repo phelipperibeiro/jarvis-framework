@@ -9,7 +9,7 @@ Complemento do [README](../README.md) (leitura rápida). Aqui está o **detalhe*
 | Produto / PM / PO (comandos `/prod.spec*`) | [produto/](./produto/README.md) |
 | Instruções para agentes (operacional) | [../AGENTS.md](../AGENTS.md) |
 
-**Pacote:** `jarvis-framework` · **Versão:** ver `package.json` (marco deste fork: **2.0.0**) · **Repo:** [phelipperibeiro/jarvis-framework](https://github.com/phelipperibeiro/jarvis-framework)
+**Pacote:** `jarvis-ai-framework` · **Versão:** ver `package.json` · **Repo:** [phelipperibeiro/jarvis-framework](https://github.com/phelipperibeiro/jarvis-framework)
 
 ---
 
@@ -24,10 +24,10 @@ Ele **não é um aplicativo** com tela ou API de negócio. É um kit versionado 
 | [agents/](./estrutura/agents.md) | Personas (como a IA se comporta) |
 | [skills/](./estrutura/skills.md) | Playbooks (o que fazer, passo a passo) |
 | [workflows/](./estrutura/workflows.md) | Comandos slash / fases do processo |
-| [rules/](./estrutura/rules.md) | Guardrails filtrados por perfil |
+| [rules/](./estrutura/rules.md) | Guardrails, iguais para todos |
 | [templates/](./estrutura/templates.md) | Modelos de ENV e documentos |
 | [bin/](./estrutura/bin.md) | CLI `jarvis` (init, list, RTK, docs…) |
-| [taxonomy.md](./estrutura/raiz.md#taxonomymd) | Opções válidas de org (squad/hub/…) |
+| [taxonomy.md](./estrutura/raiz.md#taxonomymd) | Opções válidas de squad e o domínio de e-mail |
 
 A proposta: a IDE (Cursor, Claude, Windsurf, Codex, …) deixa de improvisar a cada chat e passa a operar com **processo, papel e contexto do workspace**.
 
@@ -46,8 +46,8 @@ Com Jarvis, o contexto vive em arquivos (`ENV.md`, taxonomy, sessions, skills) e
 
 - Dev solo / freelance (`TASK_MANAGER` vazio)
 - Squads com board (Jira, GitHub Issues, GitLab Issues)
-- Hubs AI, Frontend, Backend, QA, Data
-- Qualquer `POSITION` pode fechar o card ponta a ponta (TL/PM apoiam; não são gate no init)
+- Áreas: backend, frontend, QA, dados, automação e plataforma
+- Qualquer pessoa pode fechar o card ponta a ponta; quem apoia e revisa não é gate
 
 ---
 
@@ -57,8 +57,6 @@ Com Jarvis, o contexto vive em arquivos (`ENV.md`, taxonomy, sessions, skills) e
 |-------|---------|
 | App de produto | Só prompts + CLI |
 | Login OAuth | Identidade = `USER=` → git → SO |
-| Runtime Redis / event bus | Removidos no fork v2 |
-| Ritual diário (checkin/daily) | Removido do CLI |
 | Vendor locked | Vendors no `ENV.md` |
 | `node_modules` “mágico” | Ver [node_modules.md](./estrutura/node_modules.md) |
 
@@ -72,10 +70,9 @@ Com Jarvis, o contexto vive em arquivos (`ENV.md`, taxonomy, sessions, skills) e
 jarvis/
 ├── README.md          # leitura rápida
 ├── AGENTS.md          # manual operacional para agentes neste repo
-├── LICENSE            # AGPL-3.0
-├── package.json       # jarvis-framework @ 2.x + bin
+├── LICENSE            # MIT
+├── package.json       # jarvis-ai-framework + bin
 ├── taxonomy.md        # opções de org
-├── members.md         # membros (opcional)
 ├── agents/            # personas
 ├── skills/            # playbooks
 ├── workflows/         # slash commands
@@ -83,7 +80,6 @@ jarvis/
 ├── templates/         # ENV + docs models
 ├── bin/               # CLI
 ├── docs/              # esta documentação (humana)
-├── issues/            # pendências internas do framework
 └── node_modules/      # deps locais de desenvolvimento
 ```
 
@@ -105,18 +101,18 @@ jarvis/
 ┌──────────────────────┐
 │  .cursor/ (ou IDE)   │  cópia de agents, skills, workflows, rules, templates
 │  jarvis-lock.json    │  versão + origem do framework
-│  $SESSIONS_DIR/      │  estado local eng/prod/qa
+│  $SESSIONS_DIR/      │  estado local eng/prod
 └──────────┬───────────┘
            │ no chat: /jarvis-init
            ▼
 ┌──────────────────────┐
-│  .cursor/ENV.md      │  perfil (USER, SQUAD, HUB, vendors, RTK…)
-│  rules filtradas     │  só o que aplica ao perfil
+│  .cursor/ENV.md      │  USER, SQUAD, senioridade, vendors, RTK…
+│  rules sincronizadas │  com as duas exceções pelo ENV.md
 └──────────────────────┘
 ```
 
-O que o **npm publica** (`package.json` → `files`): CLI + agents + skills + workflows + templates + rules + taxonomy + members + AGENTS + README.  
-**Fora do pacote** (mas no Git): `docs/`, `issues/`, etc.
+O que o **npm publica** (`package.json` → `files`): CLI + agents + skills + workflows + templates + rules + taxonomy + AGENTS + README.  
+**Fora do pacote** (mas no Git): `docs/`, etc.
 
 ---
 
@@ -126,8 +122,8 @@ O que o **npm publica** (`package.json` → `files`): CLI + agents + skills + wo
 
 Pasta que contém `.$IDE/`. Não é “um repo git” necessariamente — pode ser multi-repo com `WORKSPACE_REPOS`.
 
-Sessões: `{workspace}/$SESSIONS_DIR/{eng,prod,qa}/` (`SESSIONS_DIR`, padrão `.jarvis/sessions`; o `jarvis init` cria as pastas nesse caminho).  
-Estado do framework **não** fica em `~/.jarvis/` neste fork (exceto restos legados de login, ignorados).
+Sessões: `{workspace}/$SESSIONS_DIR/{eng,prod}/` (`SESSIONS_DIR`, padrão `.jarvis/sessions`; o `jarvis init` cria as pastas nesse caminho).  
+Estado do framework **não** fica em `~/.jarvis/`.
 
 ### ENV.md
 
@@ -143,7 +139,7 @@ A stack vem do código; o **processo** (de onde nasce a branch, como se entrega,
 
 ### Taxonomia
 
-[taxonomy.md](./estrutura/raiz.md#taxonomymd) define opções de `SQUAD`, `HUB`, `AREA`, `POSITION`. O init valida contra ela. Customizar com `/taxonomy`.
+[taxonomy.md](./estrutura/raiz.md#taxonomymd) define as opções de `SQUAD` e o domínio de e-mail. O init valida contra ela. Customizar com `/taxonomy`.
 
 ### CDD
 
@@ -166,7 +162,7 @@ Sem OAuth. Ordem: `USER=` no ENV → `git config user.email` → `whoami`. CLI: 
 | Agents | [agents.md](./estrutura/agents.md) | `.$IDE/agents/` |
 | Skills | [skills.md](./estrutura/skills.md) | `.$IDE/skills/` |
 | Workflows | [workflows.md](./estrutura/workflows.md) | `.$IDE/workflows/` ou `commands/` |
-| Rules | [rules.md](./estrutura/rules.md) | `.$IDE/rules/` (filtradas no jarvis-init) |
+| Rules | [rules.md](./estrutura/rules.md) | `.$IDE/rules/` (sincronizadas no jarvis-init) |
 | Templates | [templates.md](./estrutura/templates.md) | `.$IDE/templates/` |
 
 **Agents × Skills:** agent = postura; skill = playbook. Com skill no tema, a skill manda.
@@ -186,7 +182,7 @@ Hierarquia de leitura completa: ver `AGENTS.md` na raiz.
 | Pré-PR | `/eng.pre-pr` | Checklist | — |
 | Entregar | `/eng.pr` | Push e MR/PR, depois da pergunta (regra de ouro) | — |
 
-Produto: família `/prod.spec*`. Data/QA/RPA/Security: workflows sob `workflows/engineering/…` (após flatten, nomes na raiz da IDE).
+Produto: família `/prod.spec*`. RPA/Frontend: workflows sob `workflows/engineering/…` (após flatten, nomes na raiz da IDE).
 
 ---
 
@@ -213,8 +209,7 @@ O banner do `init` mostra **versão + path de origem** do pacote.
 |------------|----------|-------|
 | Board | `TASK_MANAGER` (jira, github, gitlab), `TASK_MANAGER_ACCESS`, `TASK_MANAGER_URL_BASE` | vazio = freelance; CLI oficial (`acli`, `gh`, `glab`) com o login dela |
 | Git | `VERSION_CONTROL` (github, gitlab), `VERSION_CONTROL_ACCESS` | repo pelo `git remote`; CLI oficial (`gh`, `glab`); nenhum token no ENV |
-| Chat | `MESSAGE_COMUNICATOR` | slack/discord/teams |
-| Demais | ver ENV-template | storage, RTK, Advisor, QA… |
+| Demais | ver ENV-template | RTK, Advisor, QA… |
 
 **MCPs no `/jarvis-init`:** Context7 **obrigatório**, gravado pelo `jarvis init` no arquivo de MCP que a IDE lê, no formato dela (pendente de ativação até reiniciar a IDE, sem bloquear). Board e git não usam MCP: usam a CLI oficial, descoberta no init sem bloquear.
 
@@ -225,8 +220,8 @@ O banner do `init` mostra **versão + path de origem** do pacote.
 Proxy Rust que comprime output de shell (~60–90% menos tokens).
 
 ```bash
-jarvis install-rtk          # rustup se preciso + cargo install rtk
-# ENV: RTK_ENABLED=true      # rule rtk-rules.md entra no perfil
+jarvis install-rtk          # rustup se preciso + cargo install brokk-rtk
+# ENV: RTK_ENABLED=true      # a rule rtk-rules.md entra na IDE
 ```
 
 Detalhe da rule: `rules/rtk-rules.md`. Comentários: `templates/ENV-template.md`.
@@ -255,12 +250,11 @@ Detalhe da rule: `rules/rtk-rules.md`. Comentários: `templates/ENV-template.md`
 |---------|-----------|---------|
 | `README.md` | Install/sync rápido | [raiz.md](./estrutura/raiz.md#readmemd) |
 | `AGENTS.md` | Manual do agente neste repo | [raiz.md](./estrutura/raiz.md#agentsmd) |
-| `LICENSE` | AGPL-3.0 | [raiz.md](./estrutura/raiz.md#license) |
-| `package.json` | Nome, versão 2.x, bin | [raiz.md](./estrutura/raiz.md#packagejson) |
+| `LICENSE` | MIT | [raiz.md](./estrutura/raiz.md#license) |
+| `package.json` | Nome, versão, bin | [raiz.md](./estrutura/raiz.md#packagejson) |
 | `taxonomy.md` | Opções de org | [raiz.md](./estrutura/raiz.md#taxonomymd) |
-| `members.md` | Pessoas da org | [raiz.md](./estrutura/raiz.md#membersmd) |
 
-Pastas: [agents](./estrutura/agents.md) · [bin](./estrutura/bin.md) · [docs](./estrutura/docs.md) · [issues](./estrutura/issues.md) · [node_modules](./estrutura/node_modules.md) · [rules](./estrutura/rules.md) · [skills](./estrutura/skills.md) · [templates](./estrutura/templates.md) · [workflows](./estrutura/workflows.md)
+Pastas: [agents](./estrutura/agents.md) · [bin](./estrutura/bin.md) · [docs](./estrutura/docs.md) · [node_modules](./estrutura/node_modules.md) · [rules](./estrutura/rules.md) · [skills](./estrutura/skills.md) · [templates](./estrutura/templates.md) · [workflows](./estrutura/workflows.md)
 
 ---
 
@@ -269,10 +263,10 @@ Pastas: [agents](./estrutura/agents.md) · [bin](./estrutura/bin.md) · [docs](.
 - Não inventar stack, ambientes, secrets ou integrações  
 - Não expor tokens no chat  
 - Sem ação destrutiva sem confirmação  
-- Autonomia por `POSITION`; TL/PM não bloqueiam o init  
+- Senioridade por assunto calibra só a conversa; ninguém é gate no card  
 - Context7 obrigatório no onboarding; demais MCPs best-effort  
 - Leitura rápida → README; leitura profunda → esta pasta `docs/`
 
 ---
 
-**Última atualização:** 2026-08-13 · documentação em subarquivos sob `docs/estrutura/`
+Documentação em subarquivos sob `docs/estrutura/`.

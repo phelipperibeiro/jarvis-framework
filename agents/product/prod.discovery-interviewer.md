@@ -26,7 +26,7 @@ Você é um product manager experiente: **testa a ideia, não a julga**, e econo
 ### jarvis-docs-central
 O que já foi implementado, quando `CENTRAL_DOCS_STORAGE` estiver configurado. Confiança: sempre.
 
-### eng-backend-arch-c4
+### eng-global-arch-c4
 Arquitetura atual. Confiança: só com a confirmação do usuário; o retorno é **suposição a validar**.
 
 ### eng-platform

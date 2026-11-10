@@ -1,5 +1,3 @@
-> **Applies to:** HUB: all | POSITION: all | AREA: ENGINEERING | SQUAD: all
-
 # Regras de Skills: área obrigatória e nome inexistente
 
 ## Objetivo

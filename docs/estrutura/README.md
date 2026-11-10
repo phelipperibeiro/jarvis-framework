@@ -15,17 +15,17 @@ Como o Jarvis está **montado** no disco: o que cada peça é, o que entra no pa
 │            ▼                                                │
 │  workspace-squad/.cursor/{agents,skills,workflows,...}      │
 │  workspace-squad/.cursor/ENV.md   ← /jarvis-init            │
-│  workspace-squad/$SESSIONS_DIR/{eng,prod,qa}/               │
+│  workspace-squad/$SESSIONS_DIR/{eng,prod}/                  │
 └─────────────────────────────────────────────────────────────┘
 ```
 
 1. Você desenvolve/versiona o **framework** neste repo.
 2. `npm install -g` / `npm link` registra o CLI `jarvis` (lê assets de `bin/` + pastas do pacote).
-3. No **workspace** do projeto, `jarvis init` **copia** agents, skills, workflows, rules, rules-on-demand, templates (+ taxonomy, AGENTS, members) para `.$IDE/`.
-4. No chat, `/jarvis-init` cria o `ENV.md` e filtra rules pelo perfil.
+3. No **workspace** do projeto, `jarvis init` **copia** agents, skills, workflows, rules, rules-on-demand, templates (+ taxonomy, AGENTS) para `.$IDE/`.
+4. No chat, `/jarvis-init` cria o `ENV.md` e sincroniza as rules (Passo 8).
 
-O que o npm publica (campo `files` do `package.json`): `bin/`, `agents/`, `skills/`, `workflows/`, `templates/`, `rules/`, `rules-on-demand/`, `taxonomy.md`, `members.md`, `AGENTS.md`, `README.md`.  
-**Não** entra no pacote: `docs/`, `issues/`, `node_modules/`, `.git/`, etc. (docs ficam no GitHub para leitura humana).
+O que o npm publica (campo `files` do `package.json`): `bin/`, `agents/`, `skills/`, `workflows/`, `templates/`, `rules/`, `rules-on-demand/`, `taxonomy.md`, `AGENTS.md`, `README.md`.  
+**Não** entra no pacote: `docs/`, `node_modules/`, `.git/`, etc. (docs ficam no GitHub para leitura humana).
 
 ## Índice das subpáginas
 
@@ -38,7 +38,6 @@ O que o npm publica (campo `files` do `package.json`): `bin/`, `agents/`, `skill
 | `LICENSE` | [raiz.md#license](./raiz.md#license) |
 | `package.json` | [raiz.md#packagejson](./raiz.md#packagejson) |
 | `taxonomy.md` | [raiz.md#taxonomymd](./raiz.md#taxonomymd) |
-| `members.md` | [raiz.md#membersmd](./raiz.md#membersmd) |
 
 ### Pastas
 
@@ -47,7 +46,6 @@ O que o npm publica (campo `files` do `package.json`): `bin/`, `agents/`, `skill
 | `agents/` | [agents.md](./agents.md) |
 | `bin/` | [bin.md](./bin.md) |
 | `docs/` | [docs.md](./docs.md) |
-| `issues/` | [issues.md](./issues.md) |
 | `node_modules/` | [node_modules.md](./node_modules.md) |
 | `rules/` | [rules.md](./rules.md) |
 | `rules-on-demand/` | [rules.md](./rules.md) |

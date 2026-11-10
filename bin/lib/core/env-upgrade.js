@@ -1,7 +1,8 @@
 // Upgrade do ENV.md (`jarvis init --upgrade`): acrescenta as chaves do template que faltam.
 // Regra: só acrescenta. Nenhuma chave existente muda, preenchida, vazia ou com lista de opções.
 // Exceções declaradas (automáticas): `JARVIS_PROJECT=` vazio recebe o valor oficial do template, e
-// as chaves de REMOVED_KEYS (blocos que saíram do template, #209) são apagadas, sem ler o valor.
+// as chaves de REMOVED_KEYS (blocos e chaves que saíram do template, #209, #239 e #263) são apagadas
+// sem ler o valor, salvo o POSITION, que vira a SENIORITY (#263).
 // As outras exceções (CENTRAL_DOCS_LOCATION e esvaziar o TOKEN_TASK_MANAGER) pedem confirmação
 // e ficam no Upgrade (C) do skill jarvis-init (item 8). Mesmas regras dos itens 3, 4, 8, 9 e 10.
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
@@ -13,8 +14,20 @@ import { EnvPathError, expandEnvPath } from "./env-paths.js";
 
 const KEY_LINE = /^([A-Z][A-Z0-9_]*)=(.*)$/;
 
-// PROD_MODE nova: o valor vem da AREA (só no upgrade; a criação do ENV continua perguntando).
-const PROD_MODE_BY_AREA = { ENGINEERING: "developer-guided", PRODUCT: "product-led" };
+/**
+ * SENIORITY nova (#263): vem do cargo antigo (POSITION), que o upgrade apaga, lido sem distinguir
+ * maiúsculas nem espaços nas pontas. JUNIOR → junior, PLENO → pleno, outro valor → senior. Sem
+ * cargo (ausente, vazio ou a lista de exemplo do template) → vazia, e vira pendência.
+ * @param {string | undefined} role
+ * @returns {string}
+ */
+function seniorityFromRole(role) {
+  const value = (role || "").trim().toUpperCase();
+  if (!value || isOptionList(value)) return "";
+  if (value === "JUNIOR") return "junior";
+  if (value === "PLENO") return "pleno";
+  return "senior";
+}
 
 /**
  * Lê as chaves do ENV na ordem do arquivo, **incluindo as vazias** (o `loadEnv`
@@ -35,8 +48,9 @@ function isOptionList(value) {
   return /^\[.*\]$/.test(value);
 }
 
-// Blocos que saíram do template (#209): o upgrade apaga as chaves e, quando o bloco fica vazio,
-// a moldura dele. Os comentários são os do template na época; moldura diferente fica.
+// Blocos que saíram do template (#209, #239): o upgrade apaga as chaves e, quando o bloco fica vazio,
+// a moldura dele. Os comentários são os do template na época; moldura diferente fica. Na #263 saem só
+// três chaves da moldura "Organização", que fica no ENV.md da pessoa com o SQUAD.
 const REMOVED_BLOCKS = Object.freeze([
   {
     title: "Mensageria (opcional)",
@@ -79,6 +93,42 @@ const REMOVED_BLOCKS = Object.freeze([
       "# URL da instância (self-hosted).",
     ],
   },
+  {
+    title: "Chat / comunicador (opcional)",
+    keys: [
+      "MESSAGE_COMUNICATOR",
+      "MESSAGE_COMUNICATOR_BOT_TOKEN",
+      "MESSAGE_COMUNICATOR_SIGNING_SECRET",
+      "MESSAGE_COMUNICATOR_APP_TOKEN",
+      "ALERTS_CHANNEL",
+    ],
+    comments: [
+      "# slack: BOT_TOKEN + SIGNING_SECRET + APP_TOKEN (Socket Mode)",
+      "# discord: BOT_TOKEN (Bot) + ALERTS_CHANNEL = ID do canal",
+      "# teams: BOT_TOKEN = URL do Incoming Webhook (SIGNING/APP vazios)",
+    ],
+  },
+  {
+    title: "Object storage (opcional)",
+    keys: ["OBJECT_STORAGE", "TOKEN_OBJECT_STORAGE"],
+    comments: [],
+  },
+  {
+    // #263: a variável só servia à rule de Cypress, que saiu.
+    title: "QA / suíte de testes (opcional)",
+    keys: ["TEST_FOLDER"],
+    comments: [
+      "# Caminho relativo à raiz do projeto.",
+      "# Cypress E2E: cypress | e2e | tests/e2e",
+      "# Unit/integração: tests | test | src/__tests__",
+    ],
+  },
+  {
+    // #263: o cargo vira a SENIORITY nova antes de sair (planEnvUpgrade); hub e área não têm substituto.
+    title: "Organização (obrigatório — opções vêm do taxonomy.md)",
+    keys: ["HUB", "AREA", "POSITION"],
+    comments: [],
+  },
 ]);
 
 export const REMOVED_KEYS = Object.freeze(REMOVED_BLOCKS.flatMap((b) => b.keys));
@@ -105,7 +155,6 @@ const AXES = ["TASK_MANAGER", "VERSION_CONTROL"];
 export function planEnvUpgrade(envText, templateText, { workspaceDir } = {}) {
   const env = parseEnvEntries(envText);
   const template = parseEnvEntries(templateText);
-  const area = (env.get("AREA") || "").toUpperCase();
 
   const added = [];
   const filled = [];
@@ -116,9 +165,12 @@ export function planEnvUpgrade(envText, templateText, { workspaceDir } = {}) {
     if (env.has(key) || REMOVED_KEYS.includes(key)) continue;
 
     let value = isOptionList(templateValue) ? "" : templateValue;
-    if (key === "PROD_MODE") {
-      value = PROD_MODE_BY_AREA[area] || "";
-      if (!value) pending.push("PROD_MODE");
+    // PROD_MODE nova: sempre perguntada no /jarvis-init upgrade (#263).
+    if (key === "PROD_MODE") pending.push("PROD_MODE");
+    if (key === "SENIORITY") {
+      value = seniorityFromRole(env.get("POSITION"));
+      if (value) warnings.push("SENIORITY_DERIVED");
+      else pending.push("SENIORITY");
     }
     if (key === "WORKSPACE_MODE" && workspaceDir) {
       const repos = (env.get("WORKSPACE_REPOS") || "")

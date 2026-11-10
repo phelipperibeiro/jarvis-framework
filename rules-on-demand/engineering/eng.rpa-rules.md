@@ -1,5 +1,3 @@
-> **Applies to:** HUB: all | POSITION: all | AREA: ENGINEERING | SQUAD: all
-
 # Eng RPA Rules — Padrões de Arquitetura e Código para Robôs de Automação
 
 ## Objetivo

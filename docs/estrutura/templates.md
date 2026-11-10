@@ -2,7 +2,7 @@
 
 ## Para que serve
 
-Modelos Markdown que skills/workflows preenchem (ARD, RFC, tech spec, PRD, planos QA…) e o **template canônico do ENV** do projeto.
+Modelos Markdown que skills/workflows preenchem (ARD, RFC, tech spec, PRD, estratégia e relatórios de QA…) e o **template canônico do ENV** do projeto.
 
 ## Como é montado
 
@@ -10,6 +10,8 @@ Modelos Markdown que skills/workflows preenchem (ARD, RFC, tech spec, PRD, plano
 templates/
 ├── AGENTS.md
 ├── ENV-template.md              # ÚNICA fonte do ENV.md no init (fork)
+├── cdd-mind-map-template.md     # mapa de tecnologias (CDD-MIND-MAP.md) do /jarvis-init
+├── warm-up-template.md          # aquecimento do /warm-up
 └── engineering/
     ├── AGENTS-template.md       # gera AGENTS.md do projeto alvo (com a linha do mapa e, no modo workspace, o bloco de repositórios mantido pelo /jarvis-init repos)
     ├── advisor-template.md      # prompts e auditoria do Advisor (eng.start)
@@ -17,27 +19,22 @@ templates/
     ├── RFC-template.md
     ├── RFC-Playbook.md
     ├── tech-spec-template.md
-    ├── tech-spec-delivery-template.md
+    ├── tech-spec-delivery-template.md  # formatos de entrega do Delivery Spec (subtarefa em resumo ou passo a passo)
     ├── ref-spec-template.md     # Reference Spec do eng.build-tech-spec
     ├── architecture-template.md
     ├── light-arch-template.md   # desenho leve do eng.light-arch (sem branch nem PR)
     ├── c4-model-template.md
     ├── plan-template.md
     ├── PR-template.md
-    ├── breakdown-subtasks-template.md  # formato de cada subtarefa (template_file do eng.breakdown-subtasks)
+    ├── daily-template.md             # registro de esforço da tarefa (daily.md do /eng.pr)
     ├── debug-report-template.md      # relatório do /eng.debug (caso investigar)
     ├── bug-audit-report-template.md  # relatório do /eng.debug (caso varrer)
-    ├── data-pipeline-template.md
-    ├── data-contract-template.md
-    ├── work-progress-template.md
     ├── central-feature-template.md   # Central docs: página da funcionalidade
     ├── central-delivery-template.md  # Central docs: registro da entrega
     ├── central-product-template.md   # Central docs: página do produto (transversal)
     ├── central-home-template.md      # Central docs: página inicial do squad (editável, só uma vez)
     ├── central-session-template.md   # Central docs: página-índice da sessão de um card (history/{card}/{card}.md)
     └── qa/
-        ├── qa.release-signoff-template.md
-        ├── qa.sprint-plan-template.md
         ├── qa.test-strategy-template.md         # estratégia do Modo A do eng.qa.test-planner
         ├── qa.test-coverage-report-template.md  # relatório de cobertura do Modo B do eng.qa.test-planner
         └── qa.test-suite-report-template.md     # relatório de teste do eng.qa.testing-engineer
@@ -54,9 +51,9 @@ Cada assunto fica numa moldura de três linhas (`# ====`, título, `# ====`). No
 Inclui (entre outros):
 
 - Workspace / `USER` / `MAX_AI_EXECUTION_PERCENTAGE` / `ENABLE_CDD`
-- `SQUAD`, `HUB`, `AREA`, `POSITION`
+- `SQUAD` e a senioridade por assunto (`SENIORITY` e as seis chaves de área)
 - Pastas IDE (`FLOWS_FOLDER`, `SESSIONS_DIR`, …)
-- Task manager (vazio = freelance), VCS, chat, storage…
+- Task manager (vazio = freelance), VCS…
 - `BACKEND_SPECIALIZATIONS` e `FRONTEND_SPECIALIZATIONS` (seção "Especializações de stack"): listas de nomes de skill, separadas por vírgula, que os `eng.*` carregam junto da skill base; precisam **existir**, mesmo vazias (ver [especializações de stack](../especializacoes-de-stack.md))
 - `JARVIS_PROJECT`, `CENTRAL_DOCS_*`
 - `RTK_ENABLED`

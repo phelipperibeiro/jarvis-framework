@@ -1,5 +1,3 @@
-> **Applies to:** HUB: all | POSITION: all | AREA: all | SQUAD: all
-
 # Regras do Modo Developer-Guided
 
 ## Objetivo
@@ -11,7 +9,7 @@ O Modo Fácil **não é um Jarvis simplificado**. É um programa de transição 
 ## Escopo
 
 - Vale **somente** quando `PROD_MODE=developer-guided` no `$IDE/ENV.md`. Com `PROD_MODE` vazio ou `product-led`, este arquivo não se aplica.
-- Vale em todos os comandos de `workflows/product/` (`prod.spec`, `prod.spec.discovery`, `.prd`, `.frd`, `.ard`, `.epic`, `.issue`, `.breakdown`, `.clarify`, `prod.roadmap.preview`) e no `eng.create-ard`.
+- Vale em todos os comandos de `workflows/product/` (`prod.spec`, `prod.spec.discovery`, `.prd`, `.frd`, `.ard`, `.epic`, `.issue`, `.breakdown`, `.clarify`) e no `eng.create-ard`.
 - Muda **a conversa**, não o documento: etapas, seções e conteúdo de cada documento seguem o workflow e o template, como no Modo Padrão.
 - Complementa `rules/product/prod-rules.md`. Onde as duas falam do mesmo assunto (formato das perguntas), esta prevalece.
 
@@ -99,6 +97,6 @@ Ao terminar um documento, sem esperar pedido:
 ## Referências
 
 - `rules/product/prod-rules.md`: regras gerais de produto (ambiente, status, formato das perguntas)
-- `rules/product/prod.spec-rules.md`: princípios de escrita de spec
+- `rules-on-demand/product/prod.spec-rules.md`: princípios de escrita de spec
 - `templates/product/`: templates com o frontmatter comentado
 - `docs/produto/`: guia humano de cada comando (para quem mantém o framework)

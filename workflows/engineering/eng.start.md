@@ -280,7 +280,7 @@ Documente:
 **Se a feature envolver engenharia de dados** (pipelines ETL/ELT, modelagem dimensional, ingestão em S3/Athena, jobs AWS Glue, DAGs Airflow, contratos de dados, Great Expectations, camadas bronze/silver/gold), aplique a regra [eng.specializations-rules.md]($IDE/rules/engineering/eng.specializations-rules.md) para a área **data**: ela carrega o skill base [eng-data]($IDE/skills/eng-data/SKILL.md) mais as especializações registradas em `DATA_SPECIALIZATIONS`, e então:
 - Definir a arquitetura Medallion da feature (bronze → silver → gold)
 - Planejar Expectation Suite obrigatória e checks de qualidade
-- Documentar pipeline com `data-pipeline-template.md` antes de implementar
+- Documentar origem, transformação e responsável do pipeline antes de implementar (Padrão 1 do `eng-data`)
 - Garantir idempotência e nomenclatura padronizada
 
 **Se a feature envolver RPA ou extração de dados** (web scraping, Puppeteer, parsing, ETL, automação de browser/fluxos de trabalho), aplique a regra [eng.specializations-rules.md]($IDE/rules/engineering/eng.specializations-rules.md) para a área **automation**: ela carrega o skill base [eng-automation]($IDE/skills/eng-automation/SKILL.md) mais as especializações registradas em `AUTOMATION_SPECIALIZATIONS`, e então:
@@ -373,7 +373,7 @@ Se o usuário tiver feedback:
 - Continue até aprovação explícita
 
 **Sem Advisor**, a aprovação é a pergunta de transição (`eng.transitions-rules.md`): **"Aprovar o architecture.md?"** (depois da mensagem em markdown com o link clicável do arquivo) → **Aprovar e parar aqui (como hoje)** / **Aprovar e seguir para o `/eng.plan`** / **Ajustar o documento**. Com "seguir", chame o `/eng.plan {TASK_MANAGER_KEY}` (ou mostre o comando).
-**Com Advisor**, o gate segue a autonomia do `context.md` (CDD): `alta` → apresente o resumo e siga para o `eng.plan` sem aguardar, salvo se o passe crítico (Fase 4.4) abriu questão nova; `média` ou `baixa` → aguarde a aprovação explícita. Sem `context.md`, use a tabela "Autonomia por POSITION" de `eng-rules.md`. **Sempre que a aprovação explícita for obrigatória com Advisor** (`média` ou `baixa`, ou questão nova do passe crítico), peça-a com a mesma pergunta de transição de quem não usa Advisor: a pergunta "Aprovar o architecture.md?", com as mesmas opções. Sem Advisor, nada muda.
+**Com Advisor**, o gate segue a autonomia do `context.md` (CDD): `alta` → apresente o resumo e siga para o `eng.plan` sem aguardar, salvo se o passe crítico (Fase 4.4) abriu questão nova; `média` ou `baixa` → aguarde a aprovação explícita. Sem `context.md`, use a tabela 3.2 do `jarvis-context-detect`, por `MAX_AI_EXECUTION_PERCENTAGE`. **Sempre que a aprovação explícita for obrigatória com Advisor** (`média` ou `baixa`, ou questão nova do passe crítico), peça-a com a mesma pergunta de transição de quem não usa Advisor: a pergunta "Aprovar o architecture.md?", com as mesmas opções. Sem Advisor, nada muda.
 
 ### 5.3 Atualizar Board
 

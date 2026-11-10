@@ -14,22 +14,20 @@ A pasta `agents/` contem **definicoes de agentes especializados** que atuam no f
 
 ```
 agents/
-├── engineering/           # Agentes ativos de engenharia (13 agents)
+├── engineering/           # Agentes ativos de engenharia (12 agents)
+│   ├── eng.advisor.agent.md
 │   ├── eng.agent.md
 │   ├── eng.bug-hunter.md
 │   ├── eng.dev-code-reviewer.md
+│   ├── eng.docs-consolidator.agent.md
 │   ├── eng.docs-writer.md
 │   ├── eng.frontend.agent.md
 │   ├── eng.rpa.agent.md
 │   ├── eng.ux-designer.agent.md
-│   ├── data/              # Agentes de Data (1 agent)
-│   │   └── eng.data-engineer.agent.md
-│   └── qa/                # Agentes de QA (5 agents)
+│   └── qa/                # Agentes de QA (3 agents)
 │       ├── eng.qa.test-planner.md
 │       ├── eng.qa.testing-engineer.md
-│       ├── eng.qa.test-architect.md
-│       ├── eng.qa.quality-champion-task-agent.md
-│       └── eng.qa.quality-strategist.md
+│       └── eng.qa.test-architect.md
 └── product/               # Agentes ativos de produto (2 agents)
     ├── prod.pm-checker.md
     └── prod.discovery-interviewer.md
@@ -124,7 +122,6 @@ Para que serve e quando usar:
 
 ```bash
 @eng.qa.test-planner "analisar cobertura"
-@eng.data-engineer "design de contrato de dados"
 @eng.dev-code-reviewer "revisar PR #123"
 ```
 
@@ -143,7 +140,7 @@ CONTEXT_PROFILE:
   tipo: [hotfix|bugfix|feature|refactor]
   urgencia: [alta|normal|baixa]
   rigor: [minimo|padrao|alto]
-  comunicacao: [didatico|direto|estrategico]
+  comunicacao: [didatico|equilibrado|direto]
   autonomia: [baixa|media|alta]
 ```
 
@@ -156,6 +153,7 @@ CONTEXT_PROFILE:
 | `urgencia: alta` | Priorizacao de velocidade, less is more |
 | `urgencia: baixa` | Analise profunda, considerar melhorias estruturais |
 | `comunicacao: didatico` | Explicar decisoes, incluir referencias, usar exemplos |
+| `comunicacao: equilibrado` | Explicar so o que nao e obvio |
 | `comunicacao: direto` | Conciso, focar em trade-offs e riscos |
 | `autonomia: alta` | Executar decisoes, reportar ao final |
 | `autonomia: baixa` | Apresentar opcoes, aguardar aprovacao |
@@ -178,7 +176,7 @@ ENABLE_CDD=true
 
 ## Agentes Ativos
 
-- `engineering/` - Agentes de engenharia (14 agents: 8 main + 5 QA + 1 Data)
+- `engineering/` - Agentes de engenharia (12 agents: 9 main + 3 QA)
 - `product/` - Agentes de produto (2 agents)
 
 ---
@@ -228,7 +226,3 @@ ENABLE_CDD=true
 - `../skills/` - Skills correspondentes
 - `../workflows/` - Workflows que ativam agentes
 - `../rules/` - Regras que agentes devem seguir
-
----
-
-**Última atualização**: 2026-04-26

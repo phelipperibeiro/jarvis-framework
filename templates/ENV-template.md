@@ -44,9 +44,20 @@ ENABLE_CDD=true
 # Organização (obrigatório — opções vêm do taxonomy.md)
 # =============================================================================
 SQUAD=[CORE]
-HUB=[AI, FRONTEND, BACKEND, QA, DATA, FULLCYCLE]
-AREA=[ENGINEERING, PRODUCT]
-POSITION=[JUNIOR, PLENO, SENIOR, TECH LEAD, SPECIALIST, PM, TPM, GPM, CTO, GENERALIST]
+
+
+# =============================================================================
+# Senioridade por assunto (calibra só a conversa: quanto o Jarvis explica)
+# =============================================================================
+# SENIORITY é a padrão (obrigatória). As de área são opcionais: vazia = igual à SENIORITY.
+# junior = didático; pleno = equilibrado; senior = direto. Não libera nem bloqueia comando.
+SENIORITY=[junior, pleno, senior]
+BACKEND_SENIORITY=
+FRONTEND_SENIORITY=
+QA_SENIORITY=
+DATA_SENIORITY=
+AUTOMATION_SENIORITY=
+PLATFORM_SENIORITY=
 
 
 # =============================================================================
@@ -63,7 +74,7 @@ TEMPLATES_FOLDER=templates
 RULES_FOLDER=.$IDE/rules
 
 # Sessões de trabalho — relativo à pasta do workspace (a que contém $IDE/), não ao cwd, ou absoluto.
-# Aceita $VAR (ex.: $DOCS_FOLDER/sessoes). jarvis init cria $SESSIONS_DIR/{eng,prod,qa} (o padrão é
+# Aceita $VAR (ex.: $DOCS_FOLDER/sessoes). jarvis init cria $SESSIONS_DIR/{eng,prod} (o padrão é
 # .jarvis/sessions; sem ENV.md vale o padrão) e, se a raiz tiver .git, adiciona .jarvis/ ao
 # .gitignore, mais o $SESSIONS_DIR quando ele é relativo e fica fora de .jarvis/ (raiz sem .git,
 # como no modo workspace, não é versionada: o .gitignore não é criado).
@@ -71,7 +82,6 @@ RULES_FOLDER=.$IDE/rules
 # ($JARVIS_DOCS/) e mantém AGENTS.md, CLAUDE.md e CDD-MIND-MAP.md no .git/info/exclude (local, fora do PR).
 #   $SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/
 #   $SESSIONS_DIR/prod/{TASK_MANAGER_KEY}/
-#   $SESSIONS_DIR/qa/
 # Cookie/HTTP session (auth) NÃO é esta pasta.
 SESSIONS_DIR=.jarvis/sessions
 
@@ -168,30 +178,10 @@ VERSION_CONTROL_ACCESS=[cli, manual]
 
 
 # =============================================================================
-# Chat / comunicador (opcional)
-# =============================================================================
-# slack: BOT_TOKEN + SIGNING_SECRET + APP_TOKEN (Socket Mode)
-# discord: BOT_TOKEN (Bot) + ALERTS_CHANNEL = ID do canal
-# teams: BOT_TOKEN = URL do Incoming Webhook (SIGNING/APP vazios)
-MESSAGE_COMUNICATOR=[slack, discord, teams]
-MESSAGE_COMUNICATOR_BOT_TOKEN=
-MESSAGE_COMUNICATOR_SIGNING_SECRET=
-MESSAGE_COMUNICATOR_APP_TOKEN=
-ALERTS_CHANNEL=
-
-
-# =============================================================================
-# Object storage (opcional)
-# =============================================================================
-OBJECT_STORAGE=[aws_s3, gcs, azure_blob]
-TOKEN_OBJECT_STORAGE=
-
-
-# =============================================================================
 # RTK — Token Killer (opcional)
 # =============================================================================
 # Proxy CLI em Rust que comprime output de shell (economia 60–90% de tokens).
-# Instale com: cargo install rtk (requer Rust).
+# Instale com: jarvis install-rtk (ou cargo install brokk-rtk; requer Rust).
 # false = a rule RTK não é copiada para $IDE/rules/.
 RTK_ENABLED=false
 
@@ -206,15 +196,6 @@ RTK_ENABLED=false
 # Opus → opus, Fable → fable). No Claude Code só a família é respeitada: "Opus 5.5"
 # e "Opus 5" abrem o mesmo modelo; remova um deles se quiser só opções distintas.
 ADVISOR_MODELS="Sonnet 5.5,Opus 5.5,Opus 5,Fable 5.1"
-
-
-# =============================================================================
-# QA / suíte de testes (opcional)
-# =============================================================================
-# Caminho relativo à raiz do projeto.
-# Cypress E2E: cypress | e2e | tests/e2e
-# Unit/integração: tests | test | src/__tests__
-TEST_FOLDER=
 
 
 # =============================================================================
