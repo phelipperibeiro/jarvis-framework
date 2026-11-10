@@ -8,7 +8,6 @@
 - Toda **decisão arquitetural deve ter justificativa documentada**.
 - **Subtarefas devem ser fatias verticais completas** (endpoint inteiro, modal inteiro, tela inteira) com **mínimo 4h e máximo 1 dia** de trabalho. Nunca fatias horizontais (só enum, só repository, só factory). Se menor que 4h, agrupar com a próxima (sinal de fatia atômica). Se maior que 1 dia, quebrar em **duas fatias verticais independentes** — nunca em camadas.
 - Sempre documente **riscos e mitigações** de forma explícita.
-- Quem executa: `POSITION` igual a `TECH LEAD`, `HEAD`, `CTO`, `SPECIALIST` ou `SENIOR`; o `GENERALIST` sempre passa (`taxonomy.md`). O gate fica no workflow.
 - Exemplos bom/ruim por princípio: um curto em cada princípio abaixo; os extensos estão em `docs/engenharia/eng.build-tech-spec.md` (leitura humana, não carregada pelo workflow). A estrutura está em `tech-spec-template.md` e os formatos de entrega em `tech-spec-delivery-template.md`.
 
 ---

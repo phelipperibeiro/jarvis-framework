@@ -49,7 +49,7 @@ Utilize o `$ARGUMENTS` que o usuário passar como ponto de partida e para entend
 | Passo | Skill | Condição |
 |-------|-------|----------|
 | Gate 1: Reconhecer o contexto | `/jarvis-docs-central` (via `jarvis docs sync --silent`) | Se `CENTRAL_DOCS_STORAGE` estiver definido no ENV.md e for preciso conhecer as funcionalidades já implementadas relacionadas |
-| Gate 4: Conduzir o ARD | `/eng.create-ard` | Sempre, depois de os requisitos serem confirmados: modo `new`, com `--prd` quando houver PRD (workflow de engenharia; o aviso de transição de domínio é dado antes) |
+| Gate 4: Conduzir o ARD | `/eng.create-ard` | Sempre, depois de os requisitos serem confirmados: modo `new`, com `--prd` quando houver PRD (workflow de engenharia; o aviso do passo 1 do Gate 4 é dado antes) |
 
 ## Resultado final
 - Um **resumo dos requisitos arquiteturais** confirmado pelo usuário (Gate 3), entregue como insumo ao `eng.create-ard`

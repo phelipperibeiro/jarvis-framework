@@ -110,19 +110,6 @@ PR comum sem risco identificado = zero token extra (so as rules, que ja ficam ca
 
 ---
 
-## Escalacao por POSITION
-
-As regras acima se aplicam a TODOS os engenheiros. A responsabilidade escala com o cargo:
-
-| POSITION | Responsabilidade adicional |
-|----------|---------------------------|
-| JUNIOR, PLENO | Seguir as regras. Em duvida de seguranca, consultar senior/TL — nao bloqueia a entrega se o risco for registrado |
-| SENIOR, SPECIALIST | Seguir + revisar seguranca de PRs do squad quando solicitado |
-| TECH LEAD, HEAD | Seguir + garantir que o gate de seguranca do `eng.pre-pr` foi seguido em PRs com label `security`. Decidir se escala incidente |
-| CTO | Seguir + visao de compliance (LGPD/GDPR) e risco organizacional. Aprovar excecoes de seguranca |
-
----
-
 ## Quando o risco excede estas regras
 
 O agente de engenharia (ATHENA) deve sinalizar explicitamente ao usuario e pedir revisao humana quando:

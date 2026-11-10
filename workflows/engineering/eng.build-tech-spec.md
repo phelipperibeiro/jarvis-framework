@@ -9,31 +9,6 @@ template_file: $IDE/templates/engineering/tech-spec-template.md
 
 # Tech Spec Generator
 
-## ⚠️ Validação de Permissão
-
-**IMPORTANTE**: Este workflow só pode ser executado por quem decide arquitetura e padrões. Cargos aceitos em `POSITION`: `TECH LEAD`, `HEAD`, `CTO`, `SPECIALIST` e `SENIOR`. O `GENERALIST` sempre passa: em qualquer verificação de POSITION ele é coringa (`taxonomy.md`), porque em time pequeno acumula todos os papéis.
-
-Antes de prosseguir, verifique:
-
-- Se a variável `POSITION` existe no `ENV.md`
-- Se o valor é `GENERALIST` ou um dos cargos aceitos (sem diferenciar maiúsculas e espaços extras)
-
-**Se `POSITION` não for um deles:**
-
-```
-❌ Acesso Negado
-
-Este workflow é restrito a quem decide arquitetura e padrões.
-Cargos aceitos (POSITION no ENV.md): TECH LEAD, HEAD, CTO, SPECIALIST, SENIOR.
-GENERALIST sempre passa (coringa em qualquer verificação de POSITION, ver taxonomy.md).
-
-Seu papel atual: {POSITION ou "não definido"}
-
-Para criar Tech Specs, peça a alguém com um desses cargos.
-```
-
-**Somente se `POSITION` for aceito**, prossiga com o workflow abaixo.
-
 > 📋 **Rules**: `$IDE/rules-on-demand/engineering/eng.tech-spec-rules.md` — **antes de começar, leia esse arquivo e siga-o**: ele não é carregado automaticamente no início da sessão.
 >
 > 🔗 **Links**: antes de escrever a SPEC, leia `$IDE/rules-on-demand/doc-links-rules.md` e siga-a: toda citação com lugar exato (requisito, documento, código, card, PR) vira link.
