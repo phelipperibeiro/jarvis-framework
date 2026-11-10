@@ -120,13 +120,13 @@ test("buildReport: framework sem warm-up nem AGENTS.md não quebra", () => {
 // Orçamento de tokens do contexto base (o mesmo cálculo do `jarvis tokens`), sem RTK, com
 // ARTIFACT_STYLE padrão (ai-generated), sem overlay nem ENV.md, na raiz deste repositório
 // (#122, #208 fase 4). Fórmula: orçamento = Math.ceil(medido × 1,02 / 100) × 100.
-// Desde a #263 as rules são as mesmas para todo mundo, e a medida é uma só. Medido em 2026-11-10
-// (af71103, antes da #263): 25.982 tokens; o orçamento é provisório até a medição final da #263.
+// Desde a #263 as rules são as mesmas para todo mundo, e a medida é uma só. Medido em 2026-11-10,
+// no fim da #263 (sobre 77a3118): 20.433 tokens (81.732 B; antes da #263, 25.982 tokens).
 // Arquivos não rastreados em rules/ ou skills/ e CRLF mudam a medida (como na medida de rules/ do
 // profile-filter). Aumento intencional: recalcule pela fórmula e atualize no mesmo PR, com o
 // motivo. Reduções não exigem mudar o teste.
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
-const ORCAMENTO = 27300;
+const ORCAMENTO = 20900;
 
 test(`orçamento de tokens: contexto base ≤ ${ORCAMENTO}`, () => {
   const r = buildReport(root, {});
