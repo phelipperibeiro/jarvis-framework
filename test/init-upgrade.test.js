@@ -1103,7 +1103,7 @@ test("promptCompanyProfile: inválido é perguntado de novo (com aviso); inváli
   assert.match(warned[1], /gravando o default stark-industries/);
 });
 
-// --- Filtro de rules pelo perfil no --upgrade (#83) ---
+// --- Rules no --upgrade e na reinstalação (#83, #263) ---
 
 test("upgradePendencies (#225): os motivos dos documentos (mapa, AGENTS.md, CLAUDE.md) entram no fim da lista", () => {
   assert.deepEqual(

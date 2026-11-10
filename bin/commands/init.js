@@ -971,7 +971,7 @@ async function runUpgrade(cwd, flags) {
   return sync.errors.length ||
     moveErrors.length ||
     staleErrors.length ||
-    rulesSync?.errors.length ||
+    rulesSync.errors.length ||
     gitSetup.errors.length
     ? 1
     : 0;

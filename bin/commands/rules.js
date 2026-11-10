@@ -95,7 +95,7 @@ export async function rulesSync(flags) {
   if (lock === null) fail(`Sem ${LOCK_FILE} no workspace: rode \`jarvis init\``);
   if (lock !== running) {
     fail(
-      `assets da ${lock} e Jarvis ${running}: rode \`jarvis init --upgrade\` (ou siga sem filtrar pelo CLI)`
+      `assets da ${lock} e Jarvis ${running}: rode \`jarvis init --upgrade\` (ou sincronize sem o CLI)`
     );
   }
 

@@ -2,6 +2,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from "node:fs";
+import { spawnSync } from "node:child_process";
 import { tmpdir } from "node:os";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -145,4 +146,98 @@ test(`orçamento de tokens: contexto base ≤ ${ORCAMENTO}`, () => {
       `Maiores arquivos: ${maiores}. Se o aumento é intencional, atualize ORCAMENTO em ` +
       "test/token-report.test.js (fórmula no comentário)."
   );
+});
+
+// --- Comando `jarvis tokens` (#263): a flag, o ENV.md e os erros ao escolher o ENV.md ---
+
+const cli = join(root, "bin", "jarvis.js");
+// Sem IDE nem JARVIS_ENV_FILE herdados: o ENV.md vem só da pasta do teste.
+const ENV_LIMPO = Object.fromEntries(
+  Object.entries(process.env).filter(([k]) => k !== "IDE" && k !== "JARVIS_ENV_FILE")
+);
+const AS_DUAS_LIGADAS = "ARTIFACT_STYLE=human-generated\nRTK_ENABLED=true\n";
+
+/**
+ * Roda `jarvis tokens --json` numa pasta temporária com os ENV.md pedidos ({ claude: "texto" }).
+ * `rules` são os caminhos da categoria rules do relatório (vazio quando o comando falha).
+ */
+function tokensNaPasta(envs, args = []) {
+  const dir = mkdtempSync(join(tmpdir(), "jarvis-tokens-cli-"));
+  try {
+    for (const [ide, texto] of Object.entries(envs)) {
+      mkdirSync(join(dir, `.${ide}`), { recursive: true });
+      writeFileSync(join(dir, `.${ide}`, "ENV.md"), texto);
+    }
+    const r = spawnSync("node", [cli, "tokens", "--json", ...args], {
+      cwd: dir,
+      encoding: "utf-8",
+      env: { ...ENV_LIMPO, NO_COLOR: "1" },
+    });
+    const report = r.status === 0 ? JSON.parse(r.stdout) : null;
+    const rules = report
+      ? report.categories.find((c) => c.id === "rules").files.map((f) => f.path)
+      : [];
+    return { status: r.status, stdout: r.stdout, stderr: r.stderr, report, rules };
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+}
+
+test("jarvis tokens: sem ENV.md, mede com ai-generated e sem as duas exceções", () => {
+  const r = tokensNaPasta({});
+  assert.equal(r.status, 0, r.stderr);
+  assert.deepEqual(r.report.profile, { ARTIFACT_STYLE: "ai-generated" });
+  assert.equal(r.report.rtkEnabled, false);
+  assert.ok(!r.rules.includes("artifact-style-rules.md"), r.rules.join(", "));
+  assert.ok(!r.rules.includes("rtk-rules.md"), r.rules.join(", "));
+});
+
+test("jarvis tokens: o ENV.md liga as duas exceções, e a flag vence o ENV.md", () => {
+  const peloEnv = tokensNaPasta({ claude: AS_DUAS_LIGADAS });
+  assert.equal(peloEnv.status, 0, peloEnv.stderr);
+  assert.deepEqual(peloEnv.report.profile, { ARTIFACT_STYLE: "human-generated" });
+  assert.ok(peloEnv.rules.includes("artifact-style-rules.md"), peloEnv.rules.join(", "));
+  assert.ok(peloEnv.rules.includes("rtk-rules.md"), peloEnv.rules.join(", "));
+
+  const pelaFlag = tokensNaPasta({ claude: AS_DUAS_LIGADAS }, ["--artifact-style", "ai-generated"]);
+  assert.equal(pelaFlag.status, 0, pelaFlag.stderr);
+  assert.ok(!pelaFlag.rules.includes("artifact-style-rules.md"), "a flag vence o ENV.md");
+  assert.ok(pelaFlag.rules.includes("rtk-rules.md"), "sem --rtk, o RTK continua vindo do ENV.md");
+});
+
+test("jarvis tokens: --rtk sem ENV.md liga a rtk-rules.md", () => {
+  const r = tokensNaPasta({}, ["--rtk"]);
+  assert.equal(r.status, 0, r.stderr);
+  assert.ok(r.rules.includes("rtk-rules.md"), r.rules.join(", "));
+});
+
+test("jarvis tokens: com dois ENV.md sai com 1 e pede o --ide; com --ide, mede pelo ENV.md dela", () => {
+  const dois = { claude: AS_DUAS_LIGADAS, cursor: "ARTIFACT_STYLE=ai-generated\n" };
+  const semIde = tokensNaPasta(dois);
+  assert.equal(semIde.status, 1, "medir com o padrão daria um número errado que parece certo");
+  assert.match(semIde.stderr, /Múltiplos ENV\.md/);
+  assert.match(semIde.stderr, /--ide/);
+  assert.equal(semIde.stdout, "");
+
+  const comIde = tokensNaPasta(dois, ["--ide", "claude"]);
+  assert.equal(comIde.status, 0, comIde.stderr);
+  assert.deepEqual(comIde.report.profile, { ARTIFACT_STYLE: "human-generated" });
+});
+
+test("jarvis tokens: --ide inválida sai com 1", () => {
+  const r = tokensNaPasta({ claude: AS_DUAS_LIGADAS }, ["--ide", "xpto"]);
+  assert.equal(r.status, 1);
+  assert.match(r.stderr, /IDE não suportada/);
+  assert.equal(r.stdout, "");
+});
+
+test("jarvis tokens: com as duas flags, o ENV.md não é lido (nem com dois na pasta)", () => {
+  const r = tokensNaPasta({ claude: AS_DUAS_LIGADAS, cursor: AS_DUAS_LIGADAS }, [
+    "--artifact-style",
+    "ai-generated",
+    "--rtk",
+  ]);
+  assert.equal(r.status, 0, r.stderr);
+  assert.deepEqual(r.report.profile, { ARTIFACT_STYLE: "ai-generated" });
+  assert.ok(r.rules.includes("rtk-rules.md"), r.rules.join(", "));
 });

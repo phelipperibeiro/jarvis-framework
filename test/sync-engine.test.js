@@ -1037,6 +1037,24 @@ test("syncRulesForProfile: rule própria da pessoa (fora do core e do overlay) f
   });
 });
 
+test("syncRulesForProfile: fork do overlay num caminho que saiu do framework gera aviso e fica intacto (#263)", () => {
+  withJarvisRoot((root, target) => {
+    const ideDir = buildRulesFixture(root, target);
+    const antigo = "rules/engineering/frontend/eng.frontend-rules.md";
+    assert.ok(OBSOLETE_PATHS.includes(antigo), "o caminho antigo precisa estar no OBSOLETE_PATHS");
+    write(ideDir, `overlays/acme/${antigo}`, "# fork antigo\n");
+    write(ideDir, "overlays/acme/rules/so-da-acme.md", "# só da acme\n");
+    const r = syncRulesForProfile(ideDir, {}, { frameworkRoot: root });
+    const avisos = r.warnings.filter((w) => w.includes("saiu do framework"));
+    // Só o caminho antigo avisa; a rule da empresa num caminho atual, não.
+    assert.deepEqual(
+      avisos.map((w) => w.split(":")[0]),
+      [`overlays/acme/${antigo}`]
+    );
+    assert.equal(readFileSync(join(ideDir, `overlays/acme/${antigo}`), "utf-8"), "# fork antigo\n");
+  });
+});
+
 test("syncRulesForProfile: rules-on-demand/ segue a mesma regra (g)", () => {
   withJarvisRoot((root, target) => {
     const ideDir = buildRulesFixture(root, target);

@@ -1,29 +1,32 @@
 import { buildReport } from "../lib/core/token-report.js";
 import { resolveEnvPath, loadEnv } from "../lib/env-loader.js";
 import { getFrameworkRoot } from "../lib/utils/paths.js";
-import { showBanner, GREEN, BLUE, CYAN, DIM, NC } from "../lib/utils/ui.js";
+import { showBanner, RED, GREEN, BLUE, CYAN, DIM, NC } from "../lib/utils/ui.js";
 import { logger } from "../lib/utils/logger.js";
 
 /**
  * O que muda a medida: ARTIFACT_STYLE e RTK. A flag manda; o que faltar vem do ENV.md, se houver.
- * Sem ENV.md, vale `ai-generated` e o RTK desligado (#263).
+ * Sem ENV.md, vale `ai-generated` e o RTK desligado (#263). Se não dá para escolher o ENV.md (dois
+ * na mesma pasta, `--ide` inválida ou sem ENV.md, `--env-file` inexistente), sai com 1, como o
+ * `jarvis rules sync`: medir com o padrão daria um número errado que parece certo.
  */
 function resolveProfile(flags) {
   const profile = {};
   if (typeof flags.artifactStyle === "string") profile.ARTIFACT_STYLE = flags.artifactStyle;
-
   let rtkEnabled = flags.rtk === true || flags.rtk === "true";
-  if (!profile.ARTIFACT_STYLE || flags.rtk === undefined) {
-    try {
-      const { path } = resolveEnvPath(process.cwd(), flags);
-      const env = loadEnv(process.cwd(), path);
-      if (!profile.ARTIFACT_STYLE && env.ARTIFACT_STYLE)
-        profile.ARTIFACT_STYLE = env.ARTIFACT_STYLE;
-      if (flags.rtk === undefined) rtkEnabled = env.RTK_ENABLED === "true";
-    } catch {
-      // sem ENV.md: valem só as flags
-    }
+  if (profile.ARTIFACT_STYLE && flags.rtk !== undefined) return { profile, rtkEnabled };
+
+  let envPath;
+  try {
+    envPath = resolveEnvPath(process.cwd(), flags).path;
+  } catch (err) {
+    logger.error(`${RED}❌ ${err.message}${NC}`);
+    process.exit(1);
   }
+  // Sem ENV.md, o resolveEnvPath devolve o caminho da raiz, que não existe, e o loadEnv devolve {}.
+  const env = loadEnv(process.cwd(), envPath);
+  if (!profile.ARTIFACT_STYLE && env.ARTIFACT_STYLE) profile.ARTIFACT_STYLE = env.ARTIFACT_STYLE;
+  if (flags.rtk === undefined) rtkEnabled = env.RTK_ENABLED === "true";
   return { profile, rtkEnabled };
 }
 
