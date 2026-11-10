@@ -24,7 +24,6 @@ import {
   LOCK_FILE,
   OPENCODE_MODEL_MAP,
   OPENCODE_DEFAULT_PERMISSIONS,
-  KIRO_HUB_FILE_PATTERNS,
 } from "../config/constants.js";
 
 /**
@@ -695,20 +694,16 @@ function flattenDir(dir, rootDir, skip = []) {
 
 /**
  * Converte o frontmatter de um arquivo .md para um steering file Kiro.
- * - Remonta o frontmatter só com inclusion e description (e fileMatchPattern, quando houver)
+ * - Remonta o frontmatter só com inclusion e description
  * @param {string} content - Conteúdo original do .md
- * @param {string} inclusion - Valor de inclusion: "auto" | "manual" | "fileMatch"
- * @param {string} [fileMatchPattern] - Pattern para inclusion: fileMatch
+ * @param {string} inclusion - Valor de inclusion: "auto" | "manual"
  * @returns {string} Conteúdo transformado
  */
-function toKiroSteeringFile(content, inclusion, fileMatchPattern) {
+function toKiroSteeringFile(content, inclusion) {
   const fmMatch = content.match(/^---\n([\s\S]*?)\n---/);
   const body = fmMatch ? content.slice(fmMatch[0].length).trimStart() : content;
 
   const lines = [`inclusion: ${inclusion}`];
-  if (inclusion === "fileMatch" && fileMatchPattern) {
-    lines.push(`fileMatchPattern: "${fileMatchPattern}"`);
-  }
 
   if (fmMatch) {
     const fm = fmMatch[1];
@@ -720,20 +715,7 @@ function toKiroSteeringFile(content, inclusion, fileMatchPattern) {
 }
 
 /**
- * Detecta o HUB de uma rule a partir do bloco "Applies to" no corpo.
- * Retorna o HUB em maiúsculas ou null se não encontrado.
- * @param {string} content
- * @returns {string | null}
- */
-function detectRuleHub(content) {
-  const match = content.match(/\*\*Applies to:\*\*[^\n]*HUB:\s*([A-Z-]+)/i);
-  if (!match) return null;
-  const hub = match[1].trim().toUpperCase();
-  return hub === "ALL" ? null : hub;
-}
-
-/**
- * Grava o steering de uma rule do Kiro (`steering/{nome}`), com `inclusion` pelo HUB da rule.
+ * Grava o steering de uma rule do Kiro (`steering/{nome}`), com `inclusion: auto`.
  * Arquivos de índice (`AGENTS.md`, `README.md`) não viram steering.
  * @param {string} kiroDir - Pasta `.kiro/`
  * @param {string} filePath - Rule em `.kiro/rules/`
@@ -742,18 +724,15 @@ function writeKiroRuleSteering(kiroDir, filePath) {
   const name = basename(filePath);
   if (name === "AGENTS.md" || name === "README.md") return;
   const content = readFileSync(filePath, "utf-8");
-  const hub = detectRuleHub(content);
-  const pattern = hub ? KIRO_HUB_FILE_PATTERNS[hub] : null;
-  const inclusion = pattern ? "fileMatch" : "auto";
   const steeringDir = join(kiroDir, "steering");
   mkdirSync(steeringDir, { recursive: true });
-  writeFileSync(join(steeringDir, name), toKiroSteeringFile(content, inclusion, pattern), "utf-8");
+  writeFileSync(join(steeringDir, name), toKiroSteeringFile(content, "auto"), "utf-8");
 }
 
 /**
  * Transforma os assets copiados para .kiro/ em steering files.
  * 1. Workflows em steering/ → adiciona inclusion: manual
- * 2. Rules em rules/ → copia para steering/ com inclusion: auto ou fileMatch
+ * 2. Rules em rules/ → copia para steering/ com inclusion: auto
  * 3. Skills em skills/*\/SKILL.md → copia para steering/skills/skill-{nome}.md
  * @param {string} kiroDir - Caminho para .kiro/
  * @param {string} targetDir - Raiz do projeto (para buscar MCPs.md)

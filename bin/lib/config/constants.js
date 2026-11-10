@@ -323,16 +323,3 @@ export const OPENCODE_DEFAULT_PERMISSIONS = Object.freeze({
   grep: "allow",
   task: "allow",
 });
-
-/**
- * Mapeamento de HUB Jarvis para fileMatchPattern do Kiro
- * Usado para gerar steering files de rules com inclusion: fileMatch
- * @constant {Readonly<Record<string, string>>}
- */
-export const KIRO_HUB_FILE_PATTERNS = Object.freeze({
-  FRONTEND: "**/*.tsx,**/*.ts,**/*.jsx,**/*.js,**/*.css,**/*.scss",
-  BACKEND: "**/*.ts,**/*.js",
-  QA: "**/*.test.ts,**/*.spec.ts,**/*.cy.ts,**/*.test.js,**/*.spec.js",
-  DATA: "**/*.py,**/*.sql,**/*.ipynb",
-  AI: "**/*.ts,**/*.py",
-});
