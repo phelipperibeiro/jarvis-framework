@@ -52,7 +52,7 @@ function write(root, relPath, content = "x") {
   writeFileSync(full, content, "utf-8");
 }
 
-/** Fixture mínimo com 1 arquivo por SYNC_DIRS + os 3 SYNC_ROOT_FILES. */
+/** Fixture mínimo com 1 arquivo por SYNC_DIRS + os 2 SYNC_ROOT_FILES. */
 function buildMinimalFramework(root) {
   write(root, "agents/eng.agent.md");
   write(
