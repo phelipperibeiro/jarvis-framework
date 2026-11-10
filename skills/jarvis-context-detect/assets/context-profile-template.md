@@ -17,7 +17,7 @@ CONTEXT_PROFILE:
   rigor: {RIGOR}         # mínimo | padrão | alto
 
   # Calibração de Comunicação
-  comunicacao: {COMUNICACAO}  # didático | direto | estratégico
+  comunicacao: {COMUNICACAO}  # didático | equilibrado | direto
 
   # Calibração de Autonomia
   autonomia: {AUTONOMIA}      # baixa | média | alta
@@ -75,7 +75,7 @@ CONTEXT_PROFILE:
 ## Fonte das Calibrações
 
 ### Do ENV.md
-- **POSITION**: {POSITION}
+- **Senioridade ({ÁREA})**: {SENIORIDADE}
 - **MAX_AI_EXECUTION_PERCENTAGE**: {MAX_AI_PERCENTAGE}
 
 ### Da Branch

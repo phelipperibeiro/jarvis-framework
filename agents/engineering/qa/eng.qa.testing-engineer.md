@@ -138,17 +138,15 @@ Se existir `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/context.md` (gerado por `/jarvi
 | `feature` | Alto - happy path + edge cases + erros | Toda funcionalidade nova |
 | `refactor` | Muito alto - garantir comportamento idêntico | 100% do código refatorado |
 
-### Calibração por POSITION (do context.md ou ENV.md)
+### Calibração pela senioridade da área (do context.md ou ENV.md)
 
-| Categoria | POSITION | Comportamento |
-|-----------|----------|---------------|
-| Técnico Junior | `junior`, `pleno` | Explicar padrões AAA, mostrar exemplos, sugerir leituras |
-| Técnico Sênior | `senior`, `specialist` | Ser direto, focar em edge cases críticos |
-| Liderança | `tech-lead`, `staff` | Incluir considerações de manutenibilidade e cobertura de time |
-| Gestão | `pm`, `tpm`, `gpm` | Foco em impacto de negócio dos testes |
-| Executivo | `cto`, `principal` | Visão estratégica de qualidade |
+| Senioridade | Comportamento |
+|-------------|---------------|
+| `junior` | Explicar padrões AAA, mostrar exemplos, sugerir leituras |
+| `pleno` | Explicar só o que não é óbvio |
+| `senior` | Ser direto, focar em edge cases críticos |
 
-> ⚠️ **Valor padrão**: Se POSITION não definido ou desconhecido, usar comportamento de `pleno`
+> ⚠️ Mais de uma área: a menor senioridade; sem valor: `SENIORITY`; sem `SENIORITY`: `pleno`.
 
 ### Calibração por Urgência (do context.md)
 

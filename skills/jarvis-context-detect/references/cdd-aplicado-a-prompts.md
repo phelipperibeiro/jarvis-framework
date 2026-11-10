@@ -2,15 +2,15 @@ CDD aplicado a Prompts
                                                                                                   
   1. Contexto como input primário (você já faz isso)                                              
                                                                                                   
-  O ENV.md é CDD puro — ele injeta variáveis de contexto (WORKSPACE, SQUAD, POSITION,          
+  O ENV.md é CDD puro — ele injeta variáveis de contexto (WORKSPACE, SQUAD, SENIORITY,         
   MAX_AI_EXECUTION_PERCENTAGE) que mudam o comportamento dos prompts sem alterar o prompt em si.  
                                                                                                   
   Pra ir além: os prompts poderiam adaptar seu nível de detalhe, tom e complexidade com base no   
   contexto. Exemplo:                                                                              
                                                                                                   
   ## Comportamento Adaptativo                                                                     
-  - Se `POSITION` = junior → explicar decisões, sugerir leituras                                  
-  - Se `POSITION` = senior → ser direto, focar em trade-offs                                      
+  - Se a senioridade da área = junior → explicar decisões, sugerir leituras                       
+  - Se a senioridade da área = senior → ser direto, focar em trade-offs                           
   - Se `MAX_AI_EXECUTION_PERCENTAGE` > 80 → executar mais, perguntar menos                        
   - Se `MAX_AI_EXECUTION_PERCENTAGE` < 30 → planejar mais, executar menos                         
                                                                                                   
@@ -90,7 +90,7 @@ CDD aplicado a Prompts
   ├───────────────────────────────┼──────────────────────────────────────────┤                    
   │ Sem "best practice" universal │ Fluxos adaptativos por tipo de tarefa    │                    
   ├───────────────────────────────┼──────────────────────────────────────────┤                    
-  │ Pessoas > Regras              │ Calibração por POSITION e preferências   │                    
+  │ Pessoas > Regras              │ Calibração por senioridade e preferências│                    
   ├───────────────────────────────┼──────────────────────────────────────────┤                    
   │ Pensamento crítico            │ Fase 0 de análise antes de execução      │                    
   ├───────────────────────────────┼──────────────────────────────────────────┤                    
@@ -110,7 +110,7 @@ As seguintes mudanças foram aplicadas para tornar o framework aware:
 
 | Workflow | Mudança |
 |----------|---------|
-| `eng.start.md` | Nova Fase 0 que classifica tarefa (hotfix/bugfix/feature/refactor), calibra por POSITION e MAX_AI_EXECUTION_PERCENTAGE, define CONTEXT_PROFILE |
+| `eng.start.md` | Nova Fase 0 que classifica tarefa (hotfix/bugfix/feature/refactor), calibra pela senioridade da área e por MAX_AI_EXECUTION_PERCENTAGE, define CONTEXT_PROFILE |
 | `eng.plan.md` | Fase 0 que herda contexto e ajusta granularidade do plano por tipo de tarefa |
 | `eng.work.md` | Fase 0 que herda CONTEXT_PROFILE e calibra testes/validações automaticamente |
 
@@ -120,14 +120,13 @@ Em `eng-rules.md`, nova seção "Regras Graduais por Contexto (CDD)" com tabelas
 - Documentação obrigatória/opcional/desnecessária por tipo de tarefa
 - Rigor de testes por contexto do projeto (cobertura existente)
 - Code review por tamanho de PR
-- Autonomia da AI por POSITION
 
 ### 3. Agents com Calibração Contextual
 
 | Agent | Mudança |
 |-------|---------|
-| `eng.agent.md` | Seção "Calibração Contextual (CDD)": segue o `context.md` (gerado pelo skill) e mantém só o modo pela mensagem do usuário e a comunicação por `POSITION` sem `context.md`; ajuste silencioso |
-| `eng.qa.testing-engineer.md` | Calibração por cobertura existente, tipo de tarefa, POSITION e urgência |
+| `eng.agent.md` | Seção "Calibração Contextual (CDD)": segue o `context.md` (gerado pelo skill) e mantém só o modo pela mensagem do usuário e a comunicação pela senioridade da área sem `context.md`; ajuste silencioso |
+| `eng.qa.testing-engineer.md` | Calibração por cobertura existente, tipo de tarefa, senioridade da área e urgência |
 
 ### 4. CONTEXT_PROFILE
 
@@ -137,7 +136,7 @@ Novo padrão que flui entre workflows:
 CONTEXT_PROFILE:
   tipo: [hotfix|bugfix|feature|refactor]
   rigor: [mínimo|padrão|alto]
-  comunicacao: [didático|direto|estratégico]
+  comunicacao: [didático|equilibrado|direto]
   autonomia: [baixa|média|alta]
 ```
 
@@ -151,7 +150,7 @@ Criado o skill `/jarvis-context-detect` em `$IDE/skills/jarvis-context-detect/SK
 - Centraliza toda a lógica de detecção CDD
 - Detecta tipo de tarefa pela branch e jira key
 - Analisa características do projeto (testes, TypeScript, CI/CD, linter)
-- Lê POSITION e MAX_AI_EXECUTION_PERCENTAGE do ENV.md
+- Lê a `SENIORITY` (e a da área da tarefa) e o `MAX_AI_EXECUTION_PERCENTAGE` do ENV.md
 - Gera arquivo `context.md` com CONTEXT_PROFILE completo
 - Suporta override manual via parâmetros
 

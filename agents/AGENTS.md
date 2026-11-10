@@ -140,7 +140,7 @@ CONTEXT_PROFILE:
   tipo: [hotfix|bugfix|feature|refactor]
   urgencia: [alta|normal|baixa]
   rigor: [minimo|padrao|alto]
-  comunicacao: [didatico|direto|estrategico]
+  comunicacao: [didatico|equilibrado|direto]
   autonomia: [baixa|media|alta]
 ```
 
@@ -153,6 +153,7 @@ CONTEXT_PROFILE:
 | `urgencia: alta` | Priorizacao de velocidade, less is more |
 | `urgencia: baixa` | Analise profunda, considerar melhorias estruturais |
 | `comunicacao: didatico` | Explicar decisoes, incluir referencias, usar exemplos |
+| `comunicacao: equilibrado` | Explicar so o que nao e obvio |
 | `comunicacao: direto` | Conciso, focar em trade-offs e riscos |
 | `autonomia: alta` | Executar decisoes, reportar ao final |
 | `autonomia: baixa` | Apresentar opcoes, aguardar aprovacao |
