@@ -6,7 +6,7 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), e o
 
 > Versões anteriores a `2.1.1` não foram documentadas retroativamente neste changelog — o histórico detalhado dessas versões continua disponível via `git log`.
 
-## Não lançado
+## [9.0.0] - 2026-11-10
 
 ### Added
 - **Senioridade por assunto (#263, limpeza de código morto #237)**: o `ENV.md` ganha a `SENIORITY` (`junior`, `pleno` ou `senior`, obrigatória) e seis chaves opcionais por área (`BACKEND_SENIORITY`, `FRONTEND_SENIORITY`, `QA_SENIORITY`, `DATA_SENIORITY`, `AUTOMATION_SENIORITY` e `PLATFORM_SENIORITY`; vazia = igual à `SENIORITY`). A senioridade da área da tarefa calibra só a conversa: `junior` = didático, `pleno` = equilibrado, `senior` = direto; com mais de uma área, vale a menor. O `jarvis-context-detect` acha a área pelo card e pela mensagem do usuário. A senioridade não libera nem bloqueia comando, não filtra rules e não muda o `MAX_AI_EXECUTION_PERCENTAGE`. O `/jarvis-init` pergunta a senioridade padrão e as áreas com senioridade diferente; o `eng.plan`, o `eng.debug` e os agentes usam três níveis no lugar das tabelas por cargo.
