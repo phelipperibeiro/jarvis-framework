@@ -103,7 +103,7 @@ jarvis/
 ┌──────────────────────┐
 │  .cursor/ (ou IDE)   │  cópia de agents, skills, workflows, rules, templates
 │  jarvis-lock.json    │  versão + origem do framework
-│  $SESSIONS_DIR/      │  estado local eng/prod/qa
+│  $SESSIONS_DIR/      │  estado local eng/prod
 └──────────┬───────────┘
            │ no chat: /jarvis-init
            ▼
@@ -124,7 +124,7 @@ O que o **npm publica** (`package.json` → `files`): CLI + agents + skills + wo
 
 Pasta que contém `.$IDE/`. Não é “um repo git” necessariamente — pode ser multi-repo com `WORKSPACE_REPOS`.
 
-Sessões: `{workspace}/$SESSIONS_DIR/{eng,prod,qa}/` (`SESSIONS_DIR`, padrão `.jarvis/sessions`; o `jarvis init` cria as pastas nesse caminho).  
+Sessões: `{workspace}/$SESSIONS_DIR/{eng,prod}/` (`SESSIONS_DIR`, padrão `.jarvis/sessions`; o `jarvis init` cria as pastas nesse caminho).  
 Estado do framework **não** fica em `~/.jarvis/` neste fork (exceto restos legados de login, ignorados).
 
 ### ENV.md

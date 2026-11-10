@@ -150,7 +150,7 @@ export function assertPathsResolved(expanded, keys = PATH_KEYS) {
 }
 
 /** Subpasta de cada área dentro do `SESSIONS_DIR`. */
-export const SESSION_AREAS = Object.freeze(["eng", "prod", "qa"]);
+export const SESSION_AREAS = Object.freeze(["eng", "prod"]);
 
 /**
  * O que o `jarvis init` cria para as sessões (#228): a pasta (de `SESSIONS_DIR`, com o padrão
@@ -177,7 +177,7 @@ export function planSessionsSetup({ workspaceDir, env = {}, isRepo }) {
     const underJarvis = inside && (rel === ".jarvis" || rel.startsWith(".jarvis/") || rel.startsWith(".jarvis\\"));
     if (inside && !underJarvis) gitignore.push(`${rel.split("\\").join("/")}/`);
     else if (isRoot) {
-      warnings.push(`SESSIONS_DIR (${value}) é a própria raiz do workspace: eng/, prod/ e qa/ ficam soltas nela e o .gitignore não as cobre.`);
+      warnings.push(`SESSIONS_DIR (${value}) é a própria raiz do workspace: eng/ e prod/ ficam soltas nela e o .gitignore não as cobre.`);
     } else if (!inside) {
       warnings.push(`SESSIONS_DIR (${value}) fora da raiz do repositório: sem entrada no .gitignore para ele.`);
     }

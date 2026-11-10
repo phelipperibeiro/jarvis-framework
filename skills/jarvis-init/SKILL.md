@@ -20,7 +20,7 @@ Regras que **substituem** qualquer trecho legado deste skill ou dos assets:
 
 1. **Sem login/OAuth** — identidade = `USER=` (ENV.md → git email → SO). Nunca pedir `jarvis login` nem `~/.jarvis/auth.json`.
 2. **Sem `PROJECT_NAME` / `WORKSPACE_TYPE`** — a unidade é **workspace** (pasta que contém `$IDE/`).
-3. **Sessões no workspace** — `$SESSIONS_DIR` (padrão `.jarvis/sessions`, configurável) com `{eng,prod,qa}/`. Estado local em `{workspace}/.jarvis/` (não em `~/.jarvis/`).
+3. **Sessões no workspace** — `$SESSIONS_DIR` (padrão `.jarvis/sessions`, configurável) com `{eng,prod}/`. Estado local em `{workspace}/.jarvis/` (não em `~/.jarvis/`).
 4. **`TASK_MANAGER` vazio = freelance** — sem board. Workflows pedem `TASK_MANAGER_KEY` (controle próprio) e as ações viram `.md`.
 5. **Context7 obrigatório**; demais MCPs (Redis, Sentry, TestSprite) **não bloqueiam**. Board e git não usam MCP: usam a CLI oficial (contrato 7).
 6. **Sem event bus / metrics / checkin-checkout-daily** — não provisionar Redis runtime nem pedir métricas.
@@ -34,7 +34,7 @@ Regras que **substituem** qualquer trecho legado deste skill ou dos assets:
 
 - Configurar ambiente de desenvolvimento
 - Validar MCP obrigatório (Context7) e descobrir a CLI do board e do git (instalada e logada; não bloqueante)
-- Criar arquivos de configuração (ENV.md, AGENTS.md) e pastas `$SESSIONS_DIR/{eng,prod,qa}`
+- Criar arquivos de configuração (ENV.md, AGENTS.md) e pastas `$SESSIONS_DIR/{eng,prod}`
 - Orientar nos processos do framework (sem ritual diário / login)
 
 ## Entrada
@@ -56,7 +56,7 @@ Regras que **substituem** qualquer trecho legado deste skill ou dos assets:
 - **Modo `repos`**: `$IDE/skills/jarvis-init/assets/repos.md`
 - **Opções padrão e exemplos de validação**: `$IDE/skills/jarvis-init/assets/validacoes.md`
 - **Exemplo de execução**: `$IDE/skills/jarvis-init/assets/exemplo-execucao.md`
-- **Saída**: `$IDE/ENV.md`, `AGENTS.md`, `{workspace}/$SESSIONS_DIR/{eng,prod,qa}/`
+- **Saída**: `$IDE/ENV.md`, `AGENTS.md`, `{workspace}/$SESSIONS_DIR/{eng,prod}/`
 
 ---
 
@@ -610,7 +610,7 @@ cat templates/ENV-template.md
 #    NÃO incluir: TOKEN_VERSION_CONTROL, PROJECT_NAME, EVENT_BUS*, metrics*
 
 # 6. Criar pastas de sessão no workspace (pasta que contém $IDE/):
-mkdir -p "$SESSIONS_DIR/eng" "$SESSIONS_DIR/prod" "$SESSIONS_DIR/qa"   # SESSIONS_DIR expandido (padrão .jarvis/sessions)
+mkdir -p "$SESSIONS_DIR/eng" "$SESSIONS_DIR/prod"   # SESSIONS_DIR expandido (padrão .jarvis/sessions)
 
 # 7. Documentos de trabalho em $JARVIS_DOCS — nos DOIS modos de trabalho:
 #    JARVIS_DOCS=$DOCS_FOLDER/jarvis, PROD_DOCS=$JARVIS_DOCS/product, ENG_DOCS=$JARVIS_DOCS/engineering
@@ -766,7 +766,7 @@ DISCOVERIES_DOCS=$JARVIS_DOCS/$DISCOVERIES_FOLDER_NAME
 O skill deve detectar automaticamente o IDE e definir o valor correto.
 
 **Sessões:**
-- Paths: `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/`, `$SESSIONS_DIR/prod/{TASK_MANAGER_KEY}/`, `$SESSIONS_DIR/qa/`
+- Paths: `$SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/` e `$SESSIONS_DIR/prod/{TASK_MANAGER_KEY}/`
 - Cookie/HTTP session **não** é esta pasta
 - Não usar `~/.jarvis/` para sessões do framework
 
@@ -1067,7 +1067,7 @@ Apresentar checklist de onboarding por período (Dia 1, Semana 1, Mês 1).
 - ✅ Só perguntar USER se o usuário quiser outro identificador
 - ✅ Validar range do MAX_AI_EXECUTION_PERCENTAGE (60-100)
 - ✅ WORKSPACE detectado (basename da pasta do `$IDE/`) ou override
-- ✅ Criar `$SESSIONS_DIR/{eng,prod,qa}` e, só com `.git` na raiz, garantir `.jarvis/` (e o `$SESSIONS_DIR/` relativo fora de `.jarvis/`) e a pasta da IDE no `.gitignore`, e `AGENTS.md`, `CLAUDE.md` e `CDD-MIND-MAP.md` no `.git/info/exclude`
+- ✅ Criar `$SESSIONS_DIR/{eng,prod}` e, só com `.git` na raiz, garantir `.jarvis/` (e o `$SESSIONS_DIR/` relativo fora de `.jarvis/`) e a pasta da IDE no `.gitignore`, e `AGENTS.md`, `CLAUDE.md` e `CDD-MIND-MAP.md` no `.git/info/exclude`
 - ✅ Explicar freelance se `TASK_MANAGER` vazio (`TASK_MANAGER_KEY` próprio)
 - ✅ Garantir o Context7 no arquivo de MCP que a IDE lê, no formato dela, e validá-lo (obrigatório; pendente de ativação não bloqueia)
 - ✅ Descobrir a CLI do board e do git em best-effort (1 tentativa, nunca bloquear)
@@ -1104,7 +1104,7 @@ Apresentar checklist de onboarding por período (Dia 1, Semana 1, Mês 1).
 📁 Arquivos criados:
 - ENV.md: $IDE/ENV.md
 - AGENTS.md: ./AGENTS.md
-- Sessões: $SESSIONS_DIR/{eng,prod,qa}/
+- Sessões: $SESSIONS_DIR/{eng,prod}/
 
 🔧 Configuração:
 - IDE: {ide}
@@ -1153,7 +1153,7 @@ Bem-vindo! 🎉
 - [ ] Validou MAX_AI_EXECUTION_PERCENTAGE (60-100) - para campos livres
 - [ ] Confirmou WORKSPACE (nome da pasta do `$IDE/` ou override)
 - [ ] ENABLE_CDD=true e SESSIONS_DIR preenchido (padrão .jarvis/sessions)
-- [ ] Criou `$SESSIONS_DIR/{eng,prod,qa}` e, só com `.git` na raiz, `.jarvis/` e a pasta da IDE no `.gitignore` e as três entradas locais no `.git/info/exclude` (raiz sem `.git`: nenhum dos dois)
+- [ ] Criou `$SESSIONS_DIR/{eng,prod}` e, só com `.git` na raiz, `.jarvis/` e a pasta da IDE no `.gitignore` e as três entradas locais no `.git/info/exclude` (raiz sem `.git`: nenhum dos dois)
 - [ ] TASK_MANAGER: valor ou vazio (freelance) explicado
 - [ ] Não gravou TOKEN_VERSION_CONTROL / PROJECT_NAME / EVENT_BUS*
 - [ ] Perguntou sobre variáveis opcionais

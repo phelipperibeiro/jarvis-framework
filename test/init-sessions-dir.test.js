@@ -42,7 +42,7 @@ const areas = (dir) => readdirSync(dir).sort();
 test("planSessionsSetup: sem a chave vale o padrão .jarvis/sessions", () => {
   const p = planSessionsSetup({ workspaceDir: "/w", isRepo: true });
   assert.equal(p.sessionsDir, "/w/.jarvis/sessions");
-  assert.deepEqual(p.areaDirs, ["/w/.jarvis/sessions/eng", "/w/.jarvis/sessions/prod", "/w/.jarvis/sessions/qa"]);
+  assert.deepEqual(p.areaDirs, ["/w/.jarvis/sessions/eng", "/w/.jarvis/sessions/prod"]);
   assert.deepEqual(p.gitignore, [".jarvis/"]);
   assert.deepEqual(p.warnings, []);
 });
@@ -104,11 +104,11 @@ test("planSessionsSetup: variável sem valor lança EnvPathError", () => {
 
 // --- jarvis init (processo real) ------------------------------------------------
 
-test("init sem ENV.md: cria .jarvis/sessions/{eng,prod,qa} e .jarvis/ no .gitignore", () => {
+test("init sem ENV.md: cria .jarvis/sessions/{eng,prod} e .jarvis/ no .gitignore", () => {
   withWorkspace({}, (ws) => {
     const r = init(ws);
     assert.equal(r.status, 0, r.stderr);
-    assert.deepEqual(areas(join(ws, ".jarvis/sessions")), ["eng", "prod", "qa"]);
+    assert.deepEqual(areas(join(ws, ".jarvis/sessions")), ["eng", "prod"]);
     assert.match(gitignore(ws), /^\.jarvis\/$/m);
   });
 });
@@ -117,7 +117,7 @@ test("init com SESSIONS_DIR=tmp/sessoes: cria nesse caminho, não cria .jarvis/s
   withWorkspace({ env: "SESSIONS_DIR=tmp/sessoes" }, (ws) => {
     const r = init(ws);
     assert.equal(r.status, 0, r.stderr);
-    assert.deepEqual(areas(join(ws, "tmp/sessoes")), ["eng", "prod", "qa"]);
+    assert.deepEqual(areas(join(ws, "tmp/sessoes")), ["eng", "prod"]);
     assert.ok(!existsSync(join(ws, ".jarvis/sessions")), "antes: criava .jarvis/sessions de qualquer jeito");
     const ig = gitignore(ws);
     assert.match(ig, /^\.jarvis\/$/m);
@@ -129,7 +129,7 @@ test("init com SESSIONS_DIR=$DOCS_FOLDER/sessoes: expande a variável e não cri
   withWorkspace({ env: "DOCS_FOLDER=documentos\nSESSIONS_DIR=$DOCS_FOLDER/sessoes" }, (ws) => {
     const r = init(ws);
     assert.equal(r.status, 0, r.stderr);
-    assert.deepEqual(areas(join(ws, "documentos/sessoes")), ["eng", "prod", "qa"]);
+    assert.deepEqual(areas(join(ws, "documentos/sessoes")), ["eng", "prod"]);
     assert.deepEqual(readdirSync(ws).filter((n) => n.includes("$")), []);
   });
 });
@@ -140,7 +140,7 @@ test("init com SESSIONS_DIR absoluto: cria lá, avisa e deixa só .jarvis/ (e a 
     withWorkspace({ env: `SESSIONS_DIR=${abs}` }, (ws) => {
       const r = init(ws);
       assert.equal(r.status, 0, r.stderr);
-      assert.deepEqual(areas(abs), ["eng", "prod", "qa"]);
+      assert.deepEqual(areas(abs), ["eng", "prod"]);
       assert.match(r.stdout, /fora da raiz do repositório/);
       assert.deepEqual(new Set(gitignore(ws).trim().split("\n")), new Set([".jarvis/", ".claude/", "docs/jarvis/"]));
     });
@@ -163,7 +163,7 @@ test("init sem .git na raiz (modo workspace): cria as pastas e não cria .gitign
   withWorkspace({ env: "SESSIONS_DIR=tmp/sessoes", repo: false }, (ws) => {
     const r = init(ws);
     assert.equal(r.status, 0, r.stderr);
-    assert.deepEqual(areas(join(ws, "tmp/sessoes")), ["eng", "prod", "qa"]);
+    assert.deepEqual(areas(join(ws, "tmp/sessoes")), ["eng", "prod"]);
     assert.ok(!existsSync(join(ws, ".gitignore")));
   });
 });

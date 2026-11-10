@@ -74,7 +74,7 @@ TEMPLATES_FOLDER=templates
 RULES_FOLDER=.$IDE/rules
 
 # Sessões de trabalho — relativo à pasta do workspace (a que contém $IDE/), não ao cwd, ou absoluto.
-# Aceita $VAR (ex.: $DOCS_FOLDER/sessoes). jarvis init cria $SESSIONS_DIR/{eng,prod,qa} (o padrão é
+# Aceita $VAR (ex.: $DOCS_FOLDER/sessoes). jarvis init cria $SESSIONS_DIR/{eng,prod} (o padrão é
 # .jarvis/sessions; sem ENV.md vale o padrão) e, se a raiz tiver .git, adiciona .jarvis/ ao
 # .gitignore, mais o $SESSIONS_DIR quando ele é relativo e fica fora de .jarvis/ (raiz sem .git,
 # como no modo workspace, não é versionada: o .gitignore não é criado).
@@ -82,7 +82,6 @@ RULES_FOLDER=.$IDE/rules
 # ($JARVIS_DOCS/) e mantém AGENTS.md, CLAUDE.md e CDD-MIND-MAP.md no .git/info/exclude (local, fora do PR).
 #   $SESSIONS_DIR/eng/{TASK_MANAGER_KEY}/
 #   $SESSIONS_DIR/prod/{TASK_MANAGER_KEY}/
-#   $SESSIONS_DIR/qa/
 # Cookie/HTTP session (auth) NÃO é esta pasta.
 SESSIONS_DIR=.jarvis/sessions
 
