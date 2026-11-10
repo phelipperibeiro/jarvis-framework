@@ -431,6 +431,39 @@ test("syncAssets: instalação antiga é limpa (claude, windsurf e kiro) pelo OB
   }
 });
 
+// O members.md saiu do framework (#241) sem entrar no OBSOLETE_PATHS: a cópia instalada pode ter
+// dados do time. O upgrade roda com force, que sobrescreveria um arquivo de raiz do SYNC_ROOT_FILES;
+// o members.md na raiz do framework falso simula a volta dele ao sync.
+test("syncAssets: o members.md instalado sobrevive ao upgrade e não é mais copiado (#241)", () => {
+  const pastas = { claude: "commands", windsurf: "workflows", kiro: "steering" };
+  for (const [ide, workflowsFolder] of Object.entries(pastas)) {
+    withJarvisRoot((root, target) => {
+      buildMinimalFramework(root);
+      write(root, "members.md", "# Members\n(modelo vazio do framework)\n");
+      const doTime = "# Members\n| Fulana | fulana@exemplo.com | SENIOR | U123 |\n";
+      write(target, `.${ide}/members.md`, doTime);
+
+      syncAssets(target, ide, { force: true, workflowsFolder });
+
+      const instalado = join(target, `.${ide}/members.md`);
+      assert.ok(existsSync(instalado), `${ide}: o members.md instalado não pode ser apagado`);
+      assert.equal(
+        readFileSync(instalado, "utf-8"),
+        doTime,
+        `${ide}: o members.md instalado não pode ser sobrescrito`
+      );
+    });
+  }
+
+  // Instalação nova: o arquivo não é copiado, mesmo que ainda exista na raiz do framework
+  withJarvisRoot((root, target) => {
+    buildMinimalFramework(root);
+    write(root, "members.md");
+    syncAssets(target, "claude", { workflowsFolder: "commands" });
+    assert.ok(!existsSync(join(target, ".claude/members.md")));
+  });
+});
+
 test("isExcludedFromSync: só documentação de pasta fica de fora; componentes e conteúdo passam", () => {
   const fora = [
     ["workflows", "AGENTS.md"],

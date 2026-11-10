@@ -24,13 +24,13 @@ agents/
     └── prod.discovery-interviewer.md  # Entrevistador de discovery
 ```
 
-**📊 Total: 15 agents**
-- Engineering: 13 (9 main + 4 QA)
+**📊 Total: 14 agents**
+- Engineering: 12 (9 main + 3 QA)
 - Product: 2
 
 ---
 
-## ⚙️ 1. Engenharia (13 agents)
+## ⚙️ 1. Engenharia (12 agents)
 
 **Pasta**: `engineering/`
 
@@ -73,10 +73,10 @@ Agentes específicos para fluxos e validações do domínio de Produto.
 | Domínio | Agentes | Uso |
 |---------|---------|-----|
 | ⚙️ **Engineering** (main) | 9 | Agent principal, advisor, bug hunter, code review, docs, docs consolidator, RPA, frontend, UX |
-| 🧪 **QA** (sub-eng) | 4 | Test planning, testing (+Cypress), test architect, quality strategist |
+| 🧪 **QA** (sub-eng) | 3 | Test planning, testing (+Cypress), test architect |
 | 🎯 **Product** | 2 | PM checker, discovery interviewer |
 
-**Total: 15 agents**
+**Total: 14 agents**
 
 ---
 
@@ -196,4 +196,4 @@ Você também pode invocar agentes manualmente usando `@`:
 ---
 
 **Última atualização**: 2026-11-09
-**Agents ativos:** 15 (Engineering: 9 main + 4 QA, Product: 2)
+**Agents ativos:** 14 (Engineering: 9 main + 3 QA, Product: 2)
