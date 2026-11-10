@@ -317,7 +317,3 @@ Nao converta procedimento sequencial (passo 1, 2, 3 que se le de ponta a ponta) 
 - `../agents/` - Agentes que usam skills
 - `../workflows/` - Workflows relacionados
 - `../rules/` - Regras que skills implementam
-
----
-
-**Ultima atualizacao**: 2026-10-05

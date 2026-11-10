@@ -195,5 +195,4 @@ Você também pode invocar agentes manualmente usando `@`:
 
 ---
 
-**Última atualização**: 2026-11-09
 **Agents ativos:** 14 (Engineering: 9 main + 3 QA, Product: 2)

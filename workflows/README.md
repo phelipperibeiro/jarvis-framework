@@ -128,7 +128,3 @@ Na IDE, cada workflow é instalado como command na pasta de comandos dela (ex.: 
 - [Rules](../rules/)
 - [Templates](../templates/)
 - ENV.md (`$IDE/ENV.md`)
-
----
-
-**Última atualização**: 2026-01-25
