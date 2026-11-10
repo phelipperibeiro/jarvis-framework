@@ -173,9 +173,9 @@ Ao orientar o usuário sobre movimentação de cards, siga o princípio de auton
 |---|---|
 | Profissional assume o card (`eng.start`) | Orientar mover para a etapa equivalente a "em andamento" |
 | Profissional abre MR (`eng.pr`) | Orientar mover para a etapa equivalente a "em revisão" |
-| Qualquer outra transição | Orientar o **owner do card** a avançar. TL/PM revisam e apoiam — não são gate. |
+| Qualquer outra transição | Orientar o **owner do card** a avançar; ninguém é gate. |
 
-**Regra crítica:** o agente não move cards automaticamente. Ele **orienta** o profissional que está com o card. Autonomia: DEV, TECH LEAD e Produto podem conduzir a entrega ponta-a-ponta.
+**Regra crítica:** o agente não move cards automaticamente. Ele **orienta** o profissional que está com o card.
 
 ---
 

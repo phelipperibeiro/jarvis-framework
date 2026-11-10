@@ -49,7 +49,7 @@ Para cada arquivo alterado, avalie:
  - Exposição de dados sensíveis (PII em logs, stack traces em produção)
  - Vulnerabilidades em dependências (npm audit)
  - Secrets hardcoded no código (tokens, senhas, API keys)
- - Se achados de segurança HIGH/CRITICAL: bloquear o PR e pedir revisão humana de um tech lead antes do merge
+ - Se achados de segurança HIGH/CRITICAL: bloquear o PR e pedir revisão humana antes do merge
 
 3. Revisão de Documentação
 Verifique se a documentação reflete as mudanças realizadas:

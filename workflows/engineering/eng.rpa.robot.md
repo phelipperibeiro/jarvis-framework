@@ -60,7 +60,7 @@ Formato esperado: `new {TASK_MANAGER_KEY}` ou `update {TASK_MANAGER_KEY}`
 ### 0.1 Verificar ENV.md
 
 ```bash
-grep -E "^(SQUAD|HUB|POSITION|ENABLE_CDD)=" $IDE/ENV.md
+grep -E "^(SQUAD|SENIORITY|[A-Z]+_SENIORITY|ENABLE_CDD)=" $IDE/ENV.md
 ```
 
 ### 0.2 CDD (condicional)
