@@ -237,10 +237,6 @@ export function buildProgram() {
 
   cmd(program, "tokens")
     .description("Estimar o que carrega no início da sessão")
-    .option("--hub <hub>")
-    .option("--position <position>")
-    .option("--area <area>")
-    .option("--squad <squad>")
     .option("--artifact-style <estilo>", "ai-generated ou human-generated (padrão: lido do ENV.md)")
     .option("--rtk", "Força RTK ligado (padrão: lido do ENV.md)")
     .option("--json", "Saída em JSON")
@@ -250,7 +246,7 @@ export function buildProgram() {
 
   const rules = cmd(program, "rules").description("Rules da pasta da IDE");
   const rulesSyncCmd = cmd(rules, "sync").description(
-    "Filtrar rules/ e rules-on-demand/ da IDE pelo perfil do ENV.md (Passo 8 do /jarvis-init)"
+    "Sincronizar rules/ e rules-on-demand/ da IDE com o ENV.md (Passo 8 do /jarvis-init)"
   );
   withEnvOptions(withLogOptions(rulesSyncCmd)).action((options) =>
     rulesSync(toLegacyFlags(options))
