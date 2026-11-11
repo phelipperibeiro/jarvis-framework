@@ -75,3 +75,62 @@ test("removeStaleSkills remove só as pastas listadas e recusa nome inválido", 
     assert.ok(existsSync(join(ide, "outro")));
   });
 });
+
+test("skill com o prefixo do COMPANY_PROFILE nunca é obsoleto; sem o prefixo continua listado (#266)", () => {
+  withDirs(["claro-onboarding", "skill-antigo"], [], (ide, fw) => {
+    assert.deepEqual(
+      findStaleSkills({ ideSkillsDir: ide, frameworkSkillsDir: fw, companyProfile: "claro" }),
+      ["skill-antigo"]
+    );
+  });
+});
+
+test("perfil vazio ou ausente: sem o filtro do prefixo, como antes (#266)", () => {
+  withDirs(["claro-onboarding", "skill-antigo"], [], (ide, fw) => {
+    const todos = ["claro-onboarding", "skill-antigo"];
+    assert.deepEqual(findStaleSkills({ ideSkillsDir: ide, frameworkSkillsDir: fw }), todos);
+    assert.deepEqual(
+      findStaleSkills({ ideSkillsDir: ide, frameworkSkillsDir: fw, companyProfile: "" }),
+      todos
+    );
+  });
+});
+
+test("o perfil padrão stark-industries protege o próprio prefixo, como qualquer perfil (#266)", () => {
+  withDirs(["stark-industries-local", "skill-antigo"], [], (ide, fw) => {
+    assert.deepEqual(
+      findStaleSkills({
+        ideSkillsDir: ide,
+        frameworkSkillsDir: fw,
+        companyProfile: "stark-industries",
+      }),
+      ["skill-antigo"]
+    );
+  });
+});
+
+test("o prefixo inclui o hífen: nome igual ao perfil ou sem o hífen continua listado (#266)", () => {
+  withDirs(["claro", "claroapp", "claro-onboarding"], [], (ide, fw) => {
+    assert.deepEqual(
+      findStaleSkills({ ideSkillsDir: ide, frameworkSkillsDir: fw, companyProfile: "claro" }),
+      ["claro", "claroapp"]
+    );
+  });
+});
+
+test("prefixo do perfil e *_SPECIALIZATIONS valem juntos (#266)", () => {
+  withDirs(["claro-onboarding", "eng-backend-golang", "skill-antigo"], [], (ide, fw) => {
+    const registered = registeredSpecializations(
+      parseEnvEntries("BACKEND_SPECIALIZATIONS=eng-backend-golang\n")
+    );
+    assert.deepEqual(
+      findStaleSkills({
+        ideSkillsDir: ide,
+        frameworkSkillsDir: fw,
+        registered,
+        companyProfile: "claro",
+      }),
+      ["skill-antigo"]
+    );
+  });
+});
