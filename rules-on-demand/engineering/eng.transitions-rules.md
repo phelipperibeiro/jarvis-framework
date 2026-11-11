@@ -38,8 +38,8 @@ Lida pelos workflows `eng.start`, `eng.plan`, `eng.work`, `eng.pre-pr` e `eng.pr
 | `eng.start` | Início, só **sem Advisor** | "Como tratar as questões em aberto que surgirem?" | Tratar no architecture.md (como hoje) · Uma a uma, assim que surgirem |
 | `eng.start` | Fim, **sem Advisor**, ou com Advisor quando a aprovação é obrigatória (autonomia `média`/`baixa`, ou questão nova do passe crítico) | "Aprovar o architecture.md?" | Aprovar e parar aqui (como hoje) · Aprovar e seguir para o `/eng.plan` · Ajustar o documento |
 | `eng.plan` | Fim | "O que fazer com o plano?" | Aprovar e implementar agora · Aprovar e seguir manualmente (como hoje) · Ajustar o plano |
-| `eng.work` | Início | Execução | Fase a fase, com aprovação (como hoje) · Todas de uma vez ("N de M tarefas", pelo limite) |
-| `eng.work` | Início | Commits | Um por fase (como hoje) · Um commit só ao final |
+| `eng.work` | Início | Execução | Fase a fase, com aprovação (como hoje) · Tarefa a tarefa, com aprovação · Todas de uma vez ("N de M tarefas", pelo limite) |
+| `eng.work` | Início | Commits | Um por fase (como hoje) · Um por tarefa · Um commit só ao final |
 | `eng.work` | Início | Depois do work | Rodar o `/eng.pre-pr` · Rodar o `/eng.pr` · Fluxo normal (como hoje: o usuário segue os próximos comandos manualmente) |
 | `eng.work` | Fim (Fase 6.2, antes de "Depois do work"; só se o diff ainda não altera o guia de uso do repositório) | "Quer gerar ou atualizar a documentação do projeto a partir desta entrega?" | Sim, gerar ou atualizar agora · Não, seguir sem atualizar (como hoje) |
 | `eng.pre-pr` | Fim | Teto de rodadas atingido com lacuna pendente (a rodada que atinge o teto e cada uma acima dele): "Teto de {T} rodadas da urgência `{u}` atingido. Como seguir?" (antes das perguntas das lacunas) | Parar e seguir para o PR · Mais uma rodada · Só gerar o relatório (como hoje) |
@@ -55,7 +55,7 @@ Nas perguntas "Depois do work", "O que fazer com o plano?", no teto de rodadas, 
 
 ### Recomendado
 
-- Mostre, na própria opção, o que muda na prática (ex.: "Todas de uma vez (6 de 6 tarefas)").
+- Mostre, na própria opção, o que muda na prática (ex.: "Todas de uma vez (6 de 6 tarefas)", "Um por tarefa (até 6 commits)").
 - No `eng.work`, grave as escolhas no cabeçalho do `plan.md`; numa retomada, pergunte uma vez se mantém.
 
 ## Exceções

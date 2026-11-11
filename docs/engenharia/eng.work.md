@@ -48,8 +48,8 @@ No início, três perguntas (a primeira opção de cada é o fluxo de sempre); a
 
 | Pergunta | Opções |
 |---|---|
-| Execução | Fase a fase, com aprovação (como hoje) · Todas de uma vez ("N de M tarefas", pelo limite da IA) |
-| Commits | Um por fase (como hoje) · Um commit só ao final |
+| Execução | Fase a fase, com aprovação (como hoje) · Tarefa a tarefa, com aprovação · Todas de uma vez ("N de M tarefas", pelo limite da IA) |
+| Commits | Um por fase (como hoje) · Um por tarefa ("até N commits") · Um commit só ao final |
 | Depois do work | Rodar o `/eng.pre-pr` · Rodar o `/eng.pr` · Fluxo normal (como hoje: você segue os próximos comandos manualmente) |
 
 Em qualquer escolha, ele para no limite da IA, com um teste falhando ou diante de uma questão nova.

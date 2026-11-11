@@ -87,13 +87,23 @@ Pergunte com `AskUserQuestion`, uma pergunta por decisão (padrão primeiro):
 
 | Pergunta | Opções |
 |---|---|
-| **Execução das fases** | **Fase a fase, com aprovação (como hoje)** / **Todas de uma vez** (mostre "N de M tarefas", com N pelo limite `MAX_AI_EXECUTION_PERCENTAGE` abaixo) |
-| **Commits** | **Um por fase (como hoje)** / **Um commit só ao final** |
+| **Execução das fases** | **Fase a fase, com aprovação (como hoje)** / **Tarefa a tarefa, com aprovação** / **Todas de uma vez** (mostre "N de M tarefas", com N pelo limite `MAX_AI_EXECUTION_PERCENTAGE` abaixo) |
+| **Commits** | **Um por fase (como hoje)** / **Um por tarefa** (mostre "até N commits", com o mesmo N) / **Um commit só ao final** |
 | **Depois do work** | **Rodar o `/eng.pre-pr`** / **Rodar o `/eng.pr`** (sem o `/eng.pre-pr`) / **Fluxo normal (como hoje)** (só a mensagem final; o usuário segue os próximos comandos manualmente) |
 
 - Grave as escolhas no cabeçalho do `plan.md` (`Execução:`, `Commits:`, `Depois do work:`). Retomada com escolhas já gravadas: uma pergunta só, **"Manter as escolhas ({resumo})?"** (Manter / Mudar).
 - **Em qualquer escolha**, o limite de execução, um teste falhando e uma questão nova em aberto **param** a execução e voltam a perguntar.
 - Com **Todas de uma vez**, a escolha é a aprovação das fases: as pausas da Fase 2.2 e da 6.1 não acontecem.
+- Com **Tarefa a tarefa**, o ciclo das Fases 2 a 6 roda para cada tarefa do `plan.md` (cada `### {fase}.{n}`): o plano da tarefa e a pausa (2.1 e 2.2), a implementação, as validações e os testes só da tarefa (3.1 a 3.3), o resultado e a pausa para a validação (4.1), a marcação no `plan.md` (5.1) e a pergunta pela próxima tarefa (6.1). Detalhes em cada fase.
+- Com **Um por tarefa**, cada tarefa vira um commit só com os arquivos dela, com os testes passando, e nada é commitado antes da validação do usuário:
+
+  | Execução | Quando sai o commit da tarefa |
+  |---|---|
+  | Tarefa a tarefa | Depois da validação de cada tarefa |
+  | Fase a fase | Depois da validação da fase (com os testes da fase passando), um commit por tarefa, na ordem do `plan.md` |
+  | Todas de uma vez | Ao fim de cada tarefa, com os testes passando (a escolha já é a aprovação) |
+
+  Se duas tarefas mexem no mesmo arquivo e não dá para separar as mudanças sem `git add -p` (interativo, não suportado), elas saem num commit só; avise quais tarefas juntou.
 
 ---
 

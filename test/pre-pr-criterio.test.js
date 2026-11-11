@@ -363,3 +363,57 @@ test("a oferta de documentação do eng.work tem o \"Sim\" primeiro e só aparec
     assert.ok(work.includes(trecho), `${WORK} sem "${trecho}" (regra de não fazer a oferta). ${OFERTA_DOCS}`);
   }
 });
+
+// As escolhas do início do eng.work (#268): "Execução das fases" e "Commits" têm 3 opções cada, com as de
+// "tarefa a tarefa" no meio e o padrão (como hoje) em primeiro, iguais na tabela, no workflow e no plan-template.
+const ESCOLHAS_INICIO =
+  "As escolhas do início do eng.work são guardadas de propósito (#268): ao mudá-las, atualize a eng.transitions-rules.md, o workflows/engineering/eng.work.md (Fase 1.3), o templates/engineering/plan-template.md e este teste junto.";
+
+test("as escolhas do início do eng.work oferecem tarefa a tarefa e um por tarefa, na mesma ordem na tabela e no workflow (#268)", () => {
+  const transicoes = read(TRANSITIONS).split("\n");
+  const work = read(WORK).split("\n");
+  const perguntas = [
+    {
+      tabela: "| `eng.work` | Início | Execução |",
+      workflow: "| **Execução das fases** |",
+      rotulos: ["Fase a fase, com aprovação (como hoje)", "Tarefa a tarefa, com aprovação", "Todas de uma vez"],
+    },
+    {
+      tabela: "| `eng.work` | Início | Commits |",
+      workflow: "| **Commits** |",
+      rotulos: ["Um por fase (como hoje)", "Um por tarefa", "Um commit só ao final"],
+    },
+  ];
+  for (const { tabela, workflow, rotulos } of perguntas) {
+    const linha = transicoes.find((l) => l.startsWith(tabela));
+    assert.ok(linha, `${TRANSITIONS} sem a linha "${tabela}". ${ESCOLHAS_INICIO}`);
+    const celulas = linha.split("|").map((c) => c.trim());
+    const opcoes = celulas[celulas.length - 2].split(" · ").map((o) => o.trim());
+    assert.equal(opcoes.length, rotulos.length, `${TRANSITIONS}: "${tabela}" deveria ter ${rotulos.length} opções. ${ESCOLHAS_INICIO}`);
+    // "Todas de uma vez" traz o parêntese do limite na tabela: a opção começa pelo rótulo.
+    rotulos.forEach((rotulo, i) =>
+      assert.ok(opcoes[i].startsWith(rotulo), `${TRANSITIONS}: a opção ${i + 1} de "${tabela}" deveria ser "${rotulo}". ${ESCOLHAS_INICIO}`)
+    );
+    // Na Fase 1.3 do workflow, cada rótulo aparece como `**{rótulo}**`, na mesma ordem.
+    const linhaWork = work.find((l) => l.startsWith(workflow));
+    assert.ok(linhaWork, `${WORK} sem a linha "${workflow}" da Fase 1.3. ${ESCOLHAS_INICIO}`);
+    const posicoes = rotulos.map((rotulo) => {
+      const i = linhaWork.indexOf(`**${rotulo}**`);
+      assert.ok(i >= 0, `${WORK}: "${workflow}" sem a opção "**${rotulo}**". ${ESCOLHAS_INICIO}`);
+      return i;
+    });
+    assert.deepEqual(
+      [...posicoes].sort((x, y) => x - y),
+      posicoes,
+      `${WORK}: as opções de "${workflow}" estão fora da ordem da tabela. ${ESCOLHAS_INICIO}`
+    );
+  }
+  // O cabeçalho do plan-template grava os valores novos.
+  const cabecalho = read("templates/engineering/plan-template.md")
+    .split("\n")
+    .find((l) => l.startsWith("> **Execução:**"));
+  assert.ok(cabecalho, `templates/engineering/plan-template.md sem o cabeçalho "Execução:". ${ESCOLHAS_INICIO}`);
+  for (const valor of ["tarefa a tarefa", "um por tarefa"]) {
+    assert.ok(cabecalho.includes(valor), `templates/engineering/plan-template.md: o cabeçalho sem "${valor}". ${ESCOLHAS_INICIO}`);
+  }
+});
