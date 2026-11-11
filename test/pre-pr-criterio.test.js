@@ -386,6 +386,11 @@ test("a oferta de documentação do eng.work tem o \"Sim\" primeiro e só aparec
   ]) {
     assert.ok(work.includes(trecho), `${WORK} sem "${trecho}" (regra de não fazer a oferta). ${OFERTA_DOCS}`);
   }
+  // A regra 1 da tabela de transições ("a opção padrão mantém o fluxo atual") registra a exceção da oferta.
+  assert.ok(
+    read(TRANSITIONS).includes("Exceção: na oferta de documentação do `eng.work`"),
+    `${TRANSITIONS}: a regra 1 sem a exceção da oferta de documentação (o padrão é o Sim). ${OFERTA_DOCS}`
+  );
   // O guia do /eng.work diz o mesmo: o Sim como padrão e a regra de não fazer a oferta.
   const guia = read(GUIA_WORK);
   for (const trecho of ["**Sim** como padrão", "o `CHANGELOG` sozinho não conta"]) {
@@ -415,8 +420,16 @@ test("as escolhas do início do eng.work oferecem tarefa a tarefa e um por taref
       noGuia: "| Commits |",
       rotulos: ["Um por fase (como hoje)", "Um por tarefa", "Um commit só ao final"],
     },
+    {
+      // Na tabela e no guia, o "Fluxo normal" continua com a explicação dentro do parêntese.
+      tabela: "| `eng.work` | Início | Depois do work |",
+      workflow: "| **Depois do work** |",
+      noGuia: "| Depois do work |",
+      rotulos: ["Rodar o `/eng.pre-pr`", "Rodar o `/eng.pr`", "Fluxo normal (como hoje"],
+      noWorkflow: ["Rodar o `/eng.pre-pr`", "Rodar o `/eng.pr`", "Fluxo normal (como hoje)"],
+    },
   ];
-  for (const { tabela, workflow, noGuia, rotulos } of perguntas) {
+  for (const { tabela, workflow, noGuia, rotulos, noWorkflow = rotulos } of perguntas) {
     const linha = transicoes.find((l) => l.startsWith(tabela));
     assert.ok(linha, `${TRANSITIONS} sem a linha "${tabela}". ${ESCOLHAS_INICIO}`);
     const celulas = linha.split("|").map((c) => c.trim());
@@ -429,7 +442,7 @@ test("as escolhas do início do eng.work oferecem tarefa a tarefa e um por taref
     // Na Fase 1.3 do workflow, cada rótulo aparece como `**{rótulo}**`, na mesma ordem.
     const linhaWork = work.find((l) => l.startsWith(workflow));
     assert.ok(linhaWork, `${WORK} sem a linha "${workflow}" da Fase 1.3. ${ESCOLHAS_INICIO}`);
-    const posicoes = rotulos.map((rotulo) => {
+    const posicoes = noWorkflow.map((rotulo) => {
       const i = linhaWork.indexOf(`**${rotulo}**`);
       assert.ok(i >= 0, `${WORK}: "${workflow}" sem a opção "**${rotulo}**". ${ESCOLHAS_INICIO}`);
       return i;
@@ -453,7 +466,8 @@ test("as escolhas do início do eng.work oferecem tarefa a tarefa e um por taref
       `${GUIA_WORK}: as opções de "${noGuia}" estão fora da ordem da tabela. ${ESCOLHAS_INICIO}`
     );
   }
-  // O ciclo por tarefa: a retomada (1.2) e as pausas (2.2 e 6.1) citam "Tarefa a tarefa"; o commit (5.3), "Um por tarefa".
+  // O ciclo por tarefa: a retomada (1.2, que remete ao fim da 1.3) e as pausas (2.2 e 6.1) citam "Tarefa a tarefa";
+  // a 1.3 cita a {fase}.T; o commit (5.3), "Um por tarefa".
   const textoWork = work.join("\n");
   const ciclo = [
     ["### 1.2 Identificar Fase Atual", "Tarefa a tarefa"],
@@ -468,13 +482,28 @@ test("as escolhas do início do eng.work oferecem tarefa a tarefa e um por taref
       `${WORK}: a seção "${titulo}" não cita "${opcao}" (ciclo por tarefa). ${ESCOLHAS_INICIO}`
     );
   }
+  // A tabela "Quando sai o commit" da 1.3: as três formas de commit nas colunas e uma linha por execução.
+  const escolhas = secao(textoWork, "### 1.3 Escolhas do início (`eng.transitions-rules.md`)", ESCOLHAS_INICIO)
+    .split("\n")
+    .map((l) => l.trim());
+  assert.ok(
+    escolhas.includes("| Execução | Um por fase | Um por tarefa | Um commit só ao final |"),
+    `${WORK}: a 1.3 sem o cabeçalho da tabela "Quando sai o commit" (Execução × Um por fase, Um por tarefa, Um commit só ao final). ${ESCOLHAS_INICIO}`
+  );
+  for (const execucao of ["Fase a fase", "Tarefa a tarefa", "Todas de uma vez"]) {
+    assert.ok(
+      escolhas.some((l) => l.startsWith(`| ${execucao} |`)),
+      `${WORK}: a tabela "Quando sai o commit" da 1.3 sem a linha "${execucao}". ${ESCOLHAS_INICIO}`
+    );
+  }
   // O cabeçalho do plan-template grava os valores novos.
   const cabecalho = read("templates/engineering/plan-template.md")
     .split("\n")
     .find((l) => l.startsWith("> **Execução:**"));
   assert.ok(cabecalho, `templates/engineering/plan-template.md sem o cabeçalho "Execução:". ${ESCOLHAS_INICIO}`);
-  for (const valor of ["tarefa a tarefa", "um por tarefa", "rodar /eng.pr", "fluxo normal"]) {
-    assert.ok(cabecalho.includes(valor), `templates/engineering/plan-template.md: o cabeçalho sem "${valor}". ${ESCOLHAS_INICIO}`);
+  // "rodar /eng.pr" com limite: o texto também aparece dentro de "rodar /eng.pre-pr".
+  for (const valor of [/tarefa a tarefa/, /um por tarefa/, /rodar \/eng\.pre-pr/, /rodar \/eng\.pr(?!e)/, /fluxo normal/]) {
+    assert.match(cabecalho, valor, `templates/engineering/plan-template.md: o cabeçalho sem ${valor}. ${ESCOLHAS_INICIO}`);
   }
   // A regra do eng.work cita as opções novas (ela governa o agente).
   const regra = read("rules-on-demand/engineering/eng.work-rules.md");
