@@ -23,7 +23,7 @@ Escreve o código e os testes, fase por fase, seguindo o `plan.md`, sempre pedin
 
 ## Como funciona
 
-Para cada fase do plano:
+Para cada fase do plano (ou para cada tarefa, se você escolher "Tarefa a tarefa" no início):
 
 1. **Apresenta o plano de abordagem:** tarefas, arquivos a criar e modificar, pontos de atenção. **Para e aguarda sua aprovação**
 2. **Implementa** o código seguindo os padrões do projeto
@@ -31,8 +31,8 @@ Para cada fase do plano:
 4. **Analisa e implementa testes:** identifica lacunas e escreve os testes que faltam, depois revalida
 5. **Apresenta o resultado** para você validar e itera se precisar
 6. **Atualiza o `plan.md`:** marca as tarefas como completadas e registra comentários; se houver mudança de direção (desvio do plano), prepara também um comentário para o card, que só sai depois da pergunta (regra de ouro)
-7. **Faz o commit da fase**, com arquivos adicionados um a um e a chave da tarefa na mensagem
-8. **Pergunta** se você quer iniciar a próxima fase e espera a resposta
+7. **Faz o commit da fase** (ou da tarefa, se você escolher "Um por tarefa"), com arquivos adicionados um a um e a chave da tarefa na mensagem
+8. **Pergunta** se você quer iniciar a próxima fase (ou a próxima tarefa) e espera a resposta
 
 Quando todas as fases terminam, antes de perguntar o que fazer depois, ele confere se a entrega já mexeu na documentação do projeto (o diff desde a branch base altera `docs/`, o `README` ou equivalente; o `CHANGELOG` sozinho não conta). Se mexeu, não pergunta nada: a mensagem final lista os arquivos de documentação já atualizados. Se não mexeu, ele **oferece** gerar ou atualizar a documentação a partir da entrega, com **Sim** como padrão (opcional, não trava o fluxo, e não entra na conta de `MAX_AI_EXECUTION_PERCENTAGE`). Com Sim, usa o skill `eng-global-docs-write`, mostra a proposta, só grava com a sua aprovação e comita a atualização em separado. Com Não, segue direto. Nos dois casos, se a documentação ficou desatualizada ou incompleta, é o `/eng.pre-pr` (Gate 9) que aponta depois.
 
@@ -57,7 +57,7 @@ Em qualquer escolha, ele para no limite da IA, com um teste falhando ou diante d
 ## Regras que importam
 
 - **Não faz push nem abre PR** (isso é do `eng.pr`)
-- **Nunca usa `git add .`** e nunca commita sem sua aprovação da fase nem com testes falhando
+- **Nunca usa `git add .`** e nunca commita sem sua aprovação da fase (ou da tarefa, com "Tarefa a tarefa") nem com testes falhando
 - **Não move cards** no board
 - **Stack do projeto:** em trabalho de backend ou de frontend, carrega a skill base mais as **especializações** registradas no `ENV.md` (`BACKEND_SPECIALIZATIONS` e `FRONTEND_SPECIALIZATIONS`); se algum skill instalado não tem `metadata.area`, **o comando é interrompido** ([especializações de stack](../especializacoes-de-stack.md))
 - Se surgir um bloqueio técnico, registra no plano como bloqueada (🚫), prepara o comentário do bloqueio (só sai depois da pergunta), explica e sugere alternativas

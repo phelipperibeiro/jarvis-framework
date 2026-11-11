@@ -408,6 +408,20 @@ test("as escolhas do início do eng.work oferecem tarefa a tarefa e um por taref
       `${WORK}: as opções de "${workflow}" estão fora da ordem da tabela. ${ESCOLHAS_INICIO}`
     );
   }
+  // O ciclo por tarefa: a retomada (1.2) e as pausas (2.2 e 6.1) citam "Tarefa a tarefa"; o commit (5.3), "Um por tarefa".
+  const textoWork = work.join("\n");
+  const ciclo = [
+    ["### 1.2 Identificar Fase Atual", "Tarefa a tarefa"],
+    ["### 2.2 Aguardar Aprovação", "Tarefa a tarefa"],
+    ["### 5.3 Commit da Fase ou da Tarefa (GitFlow)", "Um por tarefa"],
+    ["### 6.1 Se Houver Mais Fases", "Tarefa a tarefa"],
+  ];
+  for (const [titulo, opcao] of ciclo) {
+    assert.ok(
+      secao(textoWork, titulo).includes(opcao),
+      `${WORK}: a seção "${titulo}" não cita "${opcao}" (ciclo por tarefa). ${ESCOLHAS_INICIO}`
+    );
+  }
   // O cabeçalho do plan-template grava os valores novos.
   const cabecalho = read("templates/engineering/plan-template.md")
     .split("\n")

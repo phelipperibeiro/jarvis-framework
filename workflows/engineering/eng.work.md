@@ -15,8 +15,8 @@ Este comando executa a **implementação de código** seguindo o plano de execu�
 >
 > 🔗 **Links**: antes de escrever os comentários de fase no `plan.md`, leia `$IDE/rules-on-demand/doc-links-rules.md` e siga-a: toda citação com lugar exato (requisito, documento, código, card, PR) vira link.
 
-> ⚠️ **IMPORTANTE**: Este workflow é para codificação com commits incrementais por fase.
-> **NÃO crie PRs, NÃO faça push**, mas **FAZ commit ao final de cada fase validada.**
+> ⚠️ **IMPORTANTE**: Este workflow é para codificação com commits incrementais por fase (ou por tarefa, com a escolha "Um por tarefa" da 1.3).
+> **NÃO crie PRs, NÃO faça push**, mas **FAZ commit ao final de cada fase validada** (ou de cada tarefa, com "Um por tarefa").
 
 ### Skills invocados durante o workflow
 
@@ -28,7 +28,7 @@ Este comando executa a **implementação de código** seguindo o plano de execu�
 | Fase 3 › 3.1 Implementar Código (skill de domínio) | `/eng-backend` (via `eng.specializations-rules.md`) | Se o domínio da feature for backend (endpoints, auth, workers, filas, cache, banco, integrações); a regra também carrega `BACKEND_SPECIALIZATIONS` |
 | Fase 3 › 3.1 Implementar Código (skill de domínio) | `/eng-automation` (via `eng.specializations-rules.md`) | Se o domínio da feature for RPA, scraping, extração de dados, ETL ou parsing; a regra também carrega `AUTOMATION_SPECIALIZATIONS` |
 | Fase 3 › 3.1 Implementar Código (skill de domínio) | `/eng-platform` (via `eng.specializations-rules.md`) | Se o domínio da feature for infraestrutura (IaC, contêineres, CI/CD, observabilidade, SRE, custo); a regra também carrega `PLATFORM_SPECIALIZATIONS` |
-| Fase 3 › 3.3.1 Identificar Gaps de Teste | `eng.qa.test-planner` (agente) | Sempre, depois de implementar o código da fase |
+| Fase 3 › 3.3.1 Identificar Gaps de Teste | `eng.qa.test-planner` (agente) | Sempre, depois de implementar o código da fase (com "Tarefa a tarefa", o da tarefa) |
 | Fase 3 › 3.3.2 Implementar Testes Faltantes (Opção A) | `eng.qa.testing-engineer` (agente) | Se o test-planner identificar gaps e a estratégia do `architecture.md` seção 6.5 indicar testes manuais (unitário/integração) |
 | Fase 3 › 3.3.2 Implementar Testes Faltantes (Opção B) | `/eng-qa` | Se a estratégia do `architecture.md` seção 6.5 indicar uma especialização registrada em `QA_SPECIALIZATIONS` |
 | Fase 3 › 3.1 Implementar Código (exceção) | `eng.advisor.agent` (agente) | Só por exceção: questão nova em aberto, com o Advisor habilitado no `eng.start` (cabeçalho do `architecture.md`) |
@@ -80,6 +80,7 @@ Procure no `plan.md`:
 
 - Fase marcada como `[Em Progresso ⏰]`
 - Se nenhuma, identifique a primeira `[Não Iniciada ⏳]`
+- Com **Tarefa a tarefa** (escolha da 1.3, gravada no cabeçalho do `plan.md`), identifique também a tarefa, dentro da fase atual: a `[Em Progresso ⏰]` ou, se não houver, a primeira `[Não Iniciada ⏳]`. A retomada começa por ela.
 
 ### 1.3 Escolhas do início (`eng.transitions-rules.md`)
 
@@ -136,9 +137,24 @@ Apresente ao usuário:
 - {risco_ou_decisão}
 ```
 
+Com **Tarefa a tarefa**, apresente o plano de uma tarefa só, no mesmo formato:
+
+```
+📋 PLANO DE IMPLEMENTAÇÃO - Tarefa {N.n} (Fase {N}: {nome da fase})
+
+🎯 Objetivo:
+{o que fazer, do plan.md}
+
+📁 Arquivos a criar / ✏️ Arquivos a modificar:
+- {arquivos da tarefa, do "Onde fazer"}
+
+⚠️ Pontos de atenção:
+- {risco_ou_decisão da tarefa}
+```
+
 ### 2.2 Aguardar Aprovação
 
-**PARE e aguarde confirmação do usuário antes de implementar** (com "Fase a fase"; com "Todas de uma vez", siga direto).
+**PARE e aguarde confirmação do usuário antes de implementar** (com "Fase a fase", antes de cada fase; com "Tarefa a tarefa", antes de cada tarefa; com "Todas de uma vez", siga direto).
 
 Se o usuário tiver sugestões, ajuste o plano.
 
@@ -157,7 +173,7 @@ Se o usuário tiver sugestões, ajuste o plano.
 | Automation (RPA & Web) | RPA, web scraping, Puppeteer, extração de dados, ETL, parsing | regra [eng.specializations-rules.md]($IDE/rules/engineering/eng.specializations-rules.md) (área automation: `eng-automation` + `AUTOMATION_SPECIALIZATIONS`) |
 | Platform (infra) | IaC, contêineres/orquestração, pipeline de CI/CD, observabilidade, SRE, custo de nuvem | regra [eng.specializations-rules.md]($IDE/rules/engineering/eng.specializations-rules.md) (área platform: `eng-platform` + `PLATFORM_SPECIALIZATIONS`) |
 
-Para cada tarefa da fase:
+Para cada tarefa da fase (com **Tarefa a tarefa**, só a tarefa aprovada na 2.2):
 
 1. **Analisar contexto**
    - Verificar arquivos similares no projeto
@@ -176,7 +192,7 @@ Para cada tarefa da fase:
 
 ### 3.2 Executar Validações Locais
 
-Após implementar:
+Após implementar (com **Tarefa a tarefa**, a cada tarefa, antes da validação dela):
 
 ```bash
 # Executar testes
@@ -191,7 +207,7 @@ npm run build # ou comando do projeto
 
 ### 3.3 Análise e Implementação de Testes
 
-Após implementar o código da fase, execute o ciclo de testes:
+Após implementar o código da fase (com **Tarefa a tarefa**, o código da tarefa), execute o ciclo de testes:
 
 #### 3.3.1 Identificar Gaps de Teste
 
@@ -270,6 +286,8 @@ npm run test:coverage # se disponível
 ❓ Aguardando sua validação para atualizar o plan.md
 ```
 
+Com **Tarefa a tarefa**, o título é `✅ IMPLEMENTAÇÃO CONCLUÍDA - Tarefa {N.n} (Fase {N})`, com os arquivos, os testes e as decisões só da tarefa, e a pausa é a mesma: aguarde a validação antes de marcar a tarefa no `plan.md` e de commitar.
+
 ### 4.2 Iterar se Necessário
 
 Se o usuário solicitar mudanças:
@@ -290,6 +308,8 @@ Atualize o `plan.md`:
 2. Mudar status da fase para `[Completada ✅]`
 3. Adicionar seção de comentários
 
+Com **Tarefa a tarefa**, faça isso a cada tarefa validada: marque só ela `[Completada ✅]` (e a próxima `[Em Progresso ⏰]` quando começar) e anote nos comentários da fase o que for da tarefa. A fase passa a `[Completada ✅]` quando a última tarefa dela termina.
+
 ### 5.2 Adicionar Comentários
 
 ```markdown
@@ -303,9 +323,9 @@ Atualize o `plan.md`:
 
 Se o comentário registrar uma **mudança de direção** (desvio do plano), monte também um comentário para o card, dizendo o que mudou e por quê, e publique-o com `/eng-global-task-comment`, que mostra o texto e pergunta (regra de ouro, `eng.integrations-rules.md`; freelance: o skill registra no `task-log.md`). Sem o Sim, o texto fica no `task-comment-*.md`.
 
-### 5.3 Commit da Fase (GitFlow)
+### 5.3 Commit da Fase ou da Tarefa (GitFlow)
 
-Após validação do usuário e atualização do `plan.md`, commitar a fase na branch atual:
+Após validação do usuário e atualização do `plan.md`, commitar a fase (ou cada tarefa, com **Um por tarefa**, no momento da tabela da 1.3) na branch atual:
 
 ```bash
 # Verificar branch (deve ser a branch criada no eng.start)
@@ -328,7 +348,7 @@ Refs: {TASK_MANAGER_KEY}"
 
 **Regras de commit:**
 - Sempre referenciar o `TASK_MANAGER_KEY` no início e no `Refs:`
-- Uma fase = um commit (agrupar todas as mudanças da fase), com "Um por fase"; com "Um commit só ao final", um commit depois da última fase, com todos os testes passando
+- Uma fase = um commit (agrupar todas as mudanças da fase), com "Um por fase"; uma tarefa = um commit (só os arquivos dela, descrição da tarefa na mensagem), com "Um por tarefa"; com "Um commit só ao final", um commit depois da última fase, com todos os testes passando
 - Tipo: `feat`, `fix`, `refactor`, `test`, `docs`, `chore`
 - **NUNCA** usar `git add .` — adicionar arquivos individualmente
 
@@ -351,6 +371,14 @@ git commit -m "TASK-123 feat(auth): implementar endpoint POST /auth/register
 - Adicionar testes unitários do AuthService
 
 Refs: TASK-123"
+
+# Tarefa, com "Um por tarefa" (tarefa 2.1 do plan.md)
+git commit -m "TASK-123 feat(auth): criar AuthService com validação de email e hash de senha
+
+- Tarefa 2.1 do plan.md
+- Adicionar testes unitários do AuthService
+
+Refs: TASK-123"
 ```
 
 > ⚠️ Se testes falham → **NÃO commitar**. Corrigir primeiro, depois commitar.
@@ -367,7 +395,18 @@ Refs: TASK-123"
 ❓ Deseja iniciar a Fase {N+1}?
 ```
 
-**AGUARDE confirmação antes de iniciar** (com "Fase a fase"; com "Todas de uma vez", siga para a próxima fase).
+Com **Tarefa a tarefa**, a pergunta é pela próxima tarefa, dentro da fase ou, se a fase acabou, a primeira da fase seguinte:
+
+```
+✅ Tarefa {N.n} concluída com sucesso!
+
+📌 Próxima tarefa: Tarefa {N.n+1} (ou {N+1}.1, na Fase {N+1})
+   - {resumo da próxima tarefa}
+
+❓ Deseja iniciar a Tarefa {N.n+1}?
+```
+
+**AGUARDE confirmação antes de iniciar** (com "Fase a fase", antes da próxima fase; com "Tarefa a tarefa", antes da próxima tarefa, que substitui a pausa entre fases; com "Todas de uma vez", siga para a próxima fase).
 
 ### 6.2 Se Todas as Fases Foram Concluídas
 
@@ -380,7 +419,7 @@ Refs: TASK-123"
 
 📊 Resumo:
 - Fases completadas: {N}
-- Commits realizados: {N} (um por fase)
+- Commits realizados: {N} ({um por fase | um por tarefa | um só ao final}, conforme a escolha da 1.3)
 - Arquivos criados: {X}
 - Arquivos modificados: {Y}
 - Testes adicionados: {Z}
@@ -400,7 +439,7 @@ Refs: TASK-123"
 
 - **O diff já altera o guia de uso do repositório** (`docs/`, `README` ou equivalente; o `CHANGELOG` sozinho não conta): **não faça a oferta**. Mostre, na mensagem acima, a linha `📚 Documentação: …` com esses arquivos e siga para a escolha "Depois do work".
 - **O diff não altera o guia de uso:** pergunte com `AskUserQuestion` (sem a ferramenta, use a tabela de `prod-rules.md`): **"Quer gerar ou atualizar a documentação do projeto (`docs/` ou equivalente) a partir desta entrega?"**, sempre nesta ordem e com o "Sim" recomendado (o contexto da entrega não troca a ordem nem a recomendação).
-  - **Sim, gerar ou atualizar agora** (padrão): use o skill `/eng-global-docs-write` para analisar o diff desde a `Branch base:` do `architecture.md` e propor a atualização do guia de uso do repositório (o que existe **hoje**; nunca histórico, nem "antes"/"passou a", nem funcionalidade removida — ela some do guia, não vira uma nota de descontinuação). Mostre a edição proposta e só grave com a aprovação. Comite em **commit próprio** (`{TASK_MANAGER_KEY} docs({escopo}): atualizar documentação da entrega`, `Refs: {TASK_MANAGER_KEY}`), fora da sequência de commits por fase.
+  - **Sim, gerar ou atualizar agora** (padrão): use o skill `/eng-global-docs-write` para analisar o diff desde a `Branch base:` do `architecture.md` e propor a atualização do guia de uso do repositório (o que existe **hoje**; nunca histórico, nem "antes"/"passou a", nem funcionalidade removida — ela some do guia, não vira uma nota de descontinuação). Mostre a edição proposta e só grave com a aprovação. Comite em **commit próprio** (`{TASK_MANAGER_KEY} docs({escopo}): atualizar documentação da entrega`, `Refs: {TASK_MANAGER_KEY}`), fora da sequência de commits da entrega.
   - **Não, seguir sem atualizar (como hoje)**: segue direto para a escolha "Depois do work". A lacuna, se houver, é apontada depois pelo Gate 9 do `/eng.pre-pr` ("Documentação do projeto").
 
 Depois da oferta (com Sim ou Não), ou sem ela quando a documentação já foi atualizada, siga a escolha **Depois do work**: chamar o `/eng.pre-pr {TASK_MANAGER_KEY}`, chamar o `/eng.pr {TASK_MANAGER_KEY}`, fazer o que o usuário descreveu em texto livre (o "Outros" automático) ou, no **Fluxo normal (como hoje)**, só encerrar com a mensagem (chamar = pelo Skill tool, ou mostrar o comando pronto na IDE que não permite).
@@ -412,7 +451,7 @@ Depois da oferta (com Sim ou Não), ou sem ela quando a documentação já foi a
 - ❌ NÃO crie Pull Requests
 - ❌ NÃO faça push (`git push`) — push é responsabilidade do `eng.pr`
 - ❌ NÃO use `git add .` — adicionar arquivos individualmente
-- ❌ NÃO commite sem aprovação explícita do usuário na fase (a escolha "Todas de uma vez" da 1.3 é essa aprovação)
+- ❌ NÃO commite sem aprovação explícita do usuário na fase ou, com "Tarefa a tarefa", na tarefa (a escolha "Todas de uma vez" da 1.3 é essa aprovação)
 - ❌ NÃO commite com testes falhando
 - ❌ NÃO mova cards no Jira
 - ❌ NÃO sugira "vamos fazer o PR agora" (salvo a escolha "Rodar o `/eng.pr`" da 1.3)
@@ -425,7 +464,7 @@ Depois da oferta (com Sim ou Não), ou sem ela quando a documentação já foi a
 - ✅ Executar validações locais (lint, test, build)
 - ✅ Atualizar plan.md com progresso
 - ✅ Dialogar com usuário para validação
-- ✅ **Commitar ao final de cada fase validada** (GitFlow — Fase 5.3)
+- ✅ **Commitar ao final de cada fase validada** (ou de cada tarefa, com "Um por tarefa"; GitFlow — Fase 5.3)
 
 ---
 
@@ -433,7 +472,7 @@ Depois da oferta (com Sim ou Não), ou sem ela quando a documentação já foi a
 
 ### Se o usuário pedir para fazer commit antes da fase estar concluída:
 
-→ Informe que commits são feitos ao final de cada fase completa e validada (Fase 5.3)
+→ Informe que commits são feitos ao final de cada fase (ou tarefa, com "Um por tarefa") completa e validada (Fase 5.3)
 
 ### Se faltar o plan.md:
 
