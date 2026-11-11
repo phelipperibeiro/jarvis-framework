@@ -57,10 +57,10 @@ No início, três perguntas (a primeira opção de cada é o fluxo de sempre); a
 Quando sai o commit, conforme a combinação (nada é commitado antes da sua validação; com "Todas de uma vez", a escolha do início já é a aprovação):
 
 - **Um por fase:** ao fim de cada fase (com "Tarefa a tarefa", depois que você valida a última tarefa dela).
-- **Um por tarefa:** com "Tarefa a tarefa", depois que você valida cada tarefa; com "Fase a fase" ou "Todas de uma vez", todos juntos ao fim da fase, um por tarefa. Tarefas que mexem no mesmo arquivo sem dar para separar saem num commit só, com aviso, e tarefa sem mudança de arquivo não gera commit.
+- **Um por tarefa:** com "Tarefa a tarefa", depois que você valida cada tarefa; com "Fase a fase" ou "Todas de uma vez", todos juntos ao fim da fase, um por tarefa. Os testes da fase saem no commit da `X.T`. Tarefas que mexem no mesmo arquivo sem dar para separar saem num commit só, com aviso, e tarefa sem mudança de arquivo não gera commit.
 - **Um commit só ao final:** depois da última fase.
 
-Em qualquer escolha, ele para no limite da IA, com um teste falhando ou diante de uma questão nova.
+Em qualquer escolha, ele para no limite da IA, com um teste falhando ou diante de uma questão nova. Se a parada cai no meio de uma fase cujo commit só sai no fim dela, ele pergunta se commita agora o que já está pronto ou deixa sem commit para a retomada (o padrão). Numa retomada, segue só as tarefas que não estão completadas.
 
 ## Regras que importam
 

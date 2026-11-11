@@ -496,6 +496,11 @@ test("as escolhas do início do eng.work oferecem tarefa a tarefa e um por taref
       `${WORK}: a tabela "Quando sai o commit" da 1.3 sem a linha "${execucao}". ${ESCOLHAS_INICIO}`
     );
   }
+  // O guia do /eng.work explica quando sai o commit em cada forma de commit (a lista resume a tabela da 1.3).
+  const textoGuia = guia.join("\n");
+  for (const trecho of ["Quando sai o commit", "**Um por fase:**", "**Um por tarefa:**", "**Um commit só ao final:**"]) {
+    assert.ok(textoGuia.includes(trecho), `${GUIA_WORK} sem "${trecho}" (quando sai o commit). ${ESCOLHAS_INICIO}`);
+  }
   // O cabeçalho do plan-template grava os valores novos.
   const cabecalho = read("templates/engineering/plan-template.md")
     .split("\n")
