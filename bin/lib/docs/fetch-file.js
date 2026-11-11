@@ -9,7 +9,7 @@ import { getStorage } from "./storage/index.js";
 
 /**
  * Carrega o ENV.md e devolve o adaptador do Central docs.
- * @param {Object} [flags] - `envFile`/`ide` (mesmas opções dos outros comandos)
+ * @param {Object} [flags] - `ide`, `env` (ou a alternativa `env-file`): as mesmas opções dos outros comandos
  * @param {Object} [opts]
  * @param {string} [opts.cwd]
  * @param {Object} [opts.deps] - Dependências injetáveis do adaptador (testes)
