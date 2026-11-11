@@ -23,6 +23,7 @@ import { resolveEnvPath } from "../lib/env-loader.js";
 import { LOCK_FILE } from "../lib/config/constants.js";
 import { compareVersions, localInstall } from "../lib/utils/version.js";
 import {
+  companyProfilesFor,
   findStaleSkills,
   registeredSpecializations,
   removeStaleSkills,
@@ -828,23 +829,33 @@ async function runUpgrade(cwd, flags) {
   }
 
   // 3.1 Skills instalados que saíram do framework: só lista; remove com confirmação ou --remove-stale
-  // Skill com o prefixo do COMPANY_PROFILE (`{perfil}-…`) é da empresa e fica de fora (#266). O
-  // perfil vem do ENV.md já gravado (vale o respondido no 3.2, como no 3.3); só o nome resolvido
-  // é usado, e o valor nunca é impresso aqui (os avisos do perfil saem no passo das rules, 3.4).
-  const ideSkillsDir = join(workspaceDir, `.${getIDEFolder(ide)}`, "skills");
-  const { profile: activeProfile } = readCompanyProfile(readFileSync(envPath, "utf-8"));
+  // Skill com o prefixo de um perfil de empresa (`{perfil}-…`) fica de fora (#266): o perfil ativo,
+  // lido do ENV.md já gravado (vale o respondido no 3.2, como no 3.3), e os que têm pasta em
+  // `overlays/` (empresas que o workspace já usou). O valor do perfil nunca é impresso aqui. Com o
+  // COMPANY_PROFILE vazio ou inválido, a lista usa o perfil padrão: avisa antes da lista, e o
+  // --remove-stale não remove sozinho (com terminal, a pessoa decide pela pergunta).
+  const ideRoot = join(workspaceDir, `.${getIDEFolder(ide)}`);
+  const ideSkillsDir = join(ideRoot, "skills");
+  const { profile: activeProfile, warning: profileWarning } = readCompanyProfile(
+    readFileSync(envPath, "utf-8")
+  );
   const stale = findStaleSkills({
     ideSkillsDir,
     frameworkSkillsDir: join(getFrameworkRoot(), "skills"),
     registered: registeredSpecializations(parseEnvEntries(envText)),
-    companyProfile: activeProfile,
+    companyProfiles: companyProfilesFor(activeProfile, join(ideRoot, "overlays")),
   });
   let staleRemoved = [];
   let staleErrors = [];
   if (stale.length > 0) {
+    if (profileWarning) {
+      logger.info(
+        `${YELLOW}⚠️  COMPANY_PROFILE vazio ou inválido no ENV.md: a lista usa o perfil padrão. Corrija o ENV.md antes de remover.${NC}`
+      );
+    }
     logger.info(`${YELLOW}🧹 Skills instalados que saíram do framework:${NC}`);
     for (const name of stale) logger.info(`  .${getIDEFolder(ide)}/skills/${name}/`);
-    let confirmed = Boolean(flags.removeStale);
+    let confirmed = Boolean(flags.removeStale) && !profileWarning;
     if (!confirmed && !flags.yes && process.stdin.isTTY) {
       const rl = createInterface({ input: process.stdin, output: process.stdout });
       const answer = await ask(rl, `Remover estes skills antigos? (s/N): `);
@@ -853,6 +864,10 @@ async function runUpgrade(cwd, flags) {
     }
     if (confirmed) {
       ({ removed: staleRemoved, errors: staleErrors } = removeStaleSkills(ideSkillsDir, stale));
+    } else if (profileWarning) {
+      logger.info(
+        `${DIM}  Nada removido: com o COMPANY_PROFILE vazio ou inválido, o ${BOLD}--remove-stale${NC}${DIM} não remove sozinho. Corrija o ENV.md e rode de novo, ou apague as pastas à mão.${NC}`
+      );
     } else {
       logger.info(
         `${DIM}  Nada removido. Apague as pastas à mão ou rode de novo com ${BOLD}--remove-stale${NC}${DIM}.${NC}`
