@@ -39,14 +39,12 @@ import { runComment } from "../tasks/comment.js";
 import { fetchFile } from "../docs/fetch-file.js";
 import { formatIDEsList } from "../config/ide-config.js";
 import { showBanner } from "../utils/ui.js";
-import {
-  ENV_FILE_OPTION_HELP,
-  ENV_OPTION_HELP,
-  withEnvOptions,
-  withLogOptions,
-} from "./shared-options.js";
+import { explicitEnvPath, withEnvOptions, withLogOptions } from "./shared-options.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
+
+/** Ajuda do `--ide` nos comandos de integração (`vcs create-merge`, `tasks comment`). */
+const INTEGRATION_IDE_HELP = "IDE do ENV.md (quando há mais de um no workspace)";
 
 function getVersion() {
   const packageJson = JSON.parse(readFileSync(join(__dirname, "../../../package.json"), "utf-8"));
@@ -310,27 +308,26 @@ export function buildProgram() {
 
   const vcs = cmd(program, "vcs").description("Git host pela CLI oficial (gh, glab)");
 
-  cmd(vcs, "create-merge")
-    .description("Abrir um MR/PR (gh pr create / glab mr create)")
-    .option("--source <branch>")
-    .option("--target <branch>")
-    .option("--title <titulo>")
-    .option("--body-file <path>")
-    .option("--repo <url>", "Padrão: git remote get-url origin")
-    .option("--ide <ide>", "IDE do ENV.md (quando há mais de um no workspace)")
-    .option("--env <path>", ENV_OPTION_HELP)
-    .option("--env-file <path>", ENV_FILE_OPTION_HELP)
-    .action((options) =>
-      runCreateMerge({
-        source: options.source,
-        target: options.target,
-        title: options.title,
-        bodyFile: options.bodyFile,
-        repo: options.repo,
-        ide: options.ide,
-        envFile: options.env || options.envFile,
-      })
-    );
+  withEnvOptions(
+    cmd(vcs, "create-merge")
+      .description("Abrir um MR/PR (gh pr create / glab mr create)")
+      .option("--source <branch>")
+      .option("--target <branch>")
+      .option("--title <titulo>")
+      .option("--body-file <path>")
+      .option("--repo <url>", "Padrão: git remote get-url origin"),
+    { ideHelp: INTEGRATION_IDE_HELP }
+  ).action((options) =>
+    runCreateMerge({
+      source: options.source,
+      target: options.target,
+      title: options.title,
+      bodyFile: options.bodyFile,
+      repo: options.repo,
+      ide: options.ide,
+      envFile: explicitEnvPath(options),
+    })
+  );
 
   cmd(vcs, "create-issue")
     .description("Abrir uma issue (gh issue create / glab issue create)")
@@ -351,21 +348,20 @@ export function buildProgram() {
     "Board de cards pela CLI oficial (gh, glab, acli)"
   );
 
-  cmd(tasks, "comment")
-    .description("Comentar num card (Jira, GitHub, GitLab — lê TASK_MANAGER do ambiente)")
-    .argument("[card-key]")
-    .argument("[message...]", "Texto do comentário (pode ter espaços)")
-    .option("--body-file <path>", "Lê o texto do comentário de um arquivo")
-    .option("--ide <ide>", "IDE do ENV.md (quando há mais de um no workspace)")
-    .option("--env <path>", ENV_OPTION_HELP)
-    .option("--env-file <path>", ENV_FILE_OPTION_HELP)
-    .action((cardKey, messageParts, options) =>
-      runComment(cardKey, messageParts.join(" "), {
-        bodyFile: options.bodyFile,
-        ide: options.ide,
-        envFile: options.env || options.envFile,
-      })
-    );
+  withEnvOptions(
+    cmd(tasks, "comment")
+      .description("Comentar num card (Jira, GitHub, GitLab — lê TASK_MANAGER do ambiente)")
+      .argument("[card-key]")
+      .argument("[message...]", "Texto do comentário (pode ter espaços)")
+      .option("--body-file <path>", "Lê o texto do comentário de um arquivo"),
+    { ideHelp: INTEGRATION_IDE_HELP }
+  ).action((cardKey, messageParts, options) =>
+    runComment(cardKey, messageParts.join(" "), {
+      bodyFile: options.bodyFile,
+      ide: options.ide,
+      envFile: explicitEnvPath(options),
+    })
+  );
 
   return program;
 }

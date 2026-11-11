@@ -6,8 +6,10 @@
 import { after, test } from "node:test";
 import assert from "node:assert/strict";
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { spawnSync } from "node:child_process";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import {
   createMergeRequest,
   createIssue,
@@ -702,5 +704,37 @@ test("runCreateMerge --ide com dois ENV.md reais no workspace: o PR abre (o ENV.
   } finally {
     process.chdir(prevCwd);
     rmSync(ws, { recursive: true, force: true });
+  }
+});
+
+// #269: o --env chega ao `vcs create-merge` pelo CLI e pelo modo compatível
+// (`node bin/lib/vcs/create-merge.js`). Num repositório com `origin` e sem
+// VERSION_CONTROL_ACCESS no ambiente, um --env inexistente sai com 3 e manda usar --ide ou --env.
+test("vcs create-merge --env inexistente (CLI e modo compatível) sai com 3 e cita o --env (#269)", () => {
+  const raiz = join(dirname(fileURLToPath(import.meta.url)), "..");
+  const repo = mkdtempSync(join(tmpdir(), "jarvis-merge-env-"));
+  try {
+    spawnSync("git", ["init", "-q"], { cwd: repo });
+    spawnSync("git", ["remote", "add", "origin", "https://github.com/o/r.git"], { cwd: repo });
+    const limpo = Object.fromEntries(
+      Object.entries(process.env).filter(
+        ([k]) => !/^(VERSION_CONTROL|TASK_MANAGER|JARVIS_ENV_FILE|IDE$)/.test(k)
+      )
+    );
+    const args = ["--source", "a", "--target", "b", "--title", "t", "--env", "nao-existe.md"];
+    for (const entrada of [
+      [join(raiz, "bin", "jarvis.js"), "vcs", "create-merge"],
+      [join(raiz, "bin", "lib", "vcs", "create-merge.js")],
+    ]) {
+      const r = spawnSync(process.execPath, [...entrada, ...args], {
+        cwd: repo,
+        encoding: "utf-8",
+        env: { ...limpo, JARVIS_SKIP_CLI_CHECK: "1", NO_COLOR: "1" },
+      });
+      assert.equal(r.status, 3, `${entrada.at(-1)}: ${r.stdout}${r.stderr}`);
+      assert.match(r.stdout + r.stderr, /--ide ou --env\./);
+    }
+  } finally {
+    rmSync(repo, { recursive: true, force: true });
   }
 });

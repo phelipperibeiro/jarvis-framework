@@ -2,6 +2,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { buildProgram } from "../bin/lib/cli/program.js";
+import { explicitEnvPath } from "../bin/lib/cli/shared-options.js";
 
 test("buildProgram: whoami registrado e logout fora do CLI (#239)", () => {
   const nomes = buildProgram().commands.map((c) => c.name());
@@ -52,4 +53,11 @@ test("buildProgram: os 15 comandos com ENV.md têm --env antes do --env-file (#2
       `${caminho.join(" ")}: ${longos}`
     );
   }
+});
+
+test("explicitEnvPath: o --env vence; sem ele (ou vazio), vale o --env-file (#269)", () => {
+  assert.equal(explicitEnvPath({ env: "a.md", envFile: "b.md" }), "a.md");
+  assert.equal(explicitEnvPath({ envFile: "b.md" }), "b.md");
+  assert.equal(explicitEnvPath({ env: "", envFile: "b.md" }), "b.md");
+  assert.equal(explicitEnvPath({}), undefined);
 });

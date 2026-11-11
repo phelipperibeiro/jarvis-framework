@@ -12,7 +12,7 @@ import { logger, configureFromFlags } from "../lib/utils/logger.js";
  *
  * @param {Object} flags
  * @param {string} flags.manifest - O manifesto já passado por `--archive` (tem `archiveDestPath`)
- * @param {string} flags.envFile - Path customizado do ENV.md
+ * @param {string} [flags.env] - Path explícito do ENV.md (`--env`; a alternativa `--env-file` chega em `flags["env-file"]`)
  */
 export async function docsFinalize(flags = {}) {
   configureFromFlags(flags);

@@ -17,7 +17,7 @@ import { RED, GREEN, YELLOW, DIM, NC } from "../lib/utils/ui.js";
  *
  * Sai com 1 se algum arquivo foi recusado (nome fora da lista, não versionado, raiz sem repositório).
  * @param {string[]} files
- * @param {{ ide?: string, "env-file"?: string }} [flags]
+ * @param {{ ide?: string, env?: string, "env-file"?: string }} [flags]
  */
 export function untrack(files, flags = {}) {
   configureFromFlags(flags);

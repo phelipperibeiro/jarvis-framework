@@ -48,7 +48,7 @@ function fail(message) {
  * #263) e aplica o overlay de `COMPANY_PROFILE`. Sai com 1, sem gravar nada, sem ENV.md numa pasta
  * de IDE ou com o lock ausente ou de outra versão (os assets da IDE seriam de outra versão que as
  * rules do Jarvis em uso).
- * @param {{ ide?: string, "env-file"?: string }} flags
+ * @param {{ ide?: string, env?: string, "env-file"?: string }} flags
  */
 export async function rulesSync(flags) {
   configureFromFlags(flags);

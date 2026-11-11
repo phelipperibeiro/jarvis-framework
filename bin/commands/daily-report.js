@@ -18,7 +18,7 @@ function resolveDir(root, value) {
 
 /**
  * Lê as sessões do workspace e devolve o JSON do relatório. Separado de `dailyReport` para ser testável.
- * @param {Record<string, unknown>} flags - `days`, `ide`, `env-file`
+ * @param {Record<string, unknown>} flags - `days`, `ide`, `env` (ou `env-file`)
  * @param {string} [cwd]
  * @param {Date} [now]
  * @returns {{ code: number, json?: object, lines?: string[] }}
