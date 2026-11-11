@@ -830,10 +830,11 @@ async function runUpgrade(cwd, flags) {
 
   // 3.1 Skills instalados que saíram do framework: só lista; remove com confirmação ou --remove-stale
   // Skill com o prefixo de um perfil de empresa (`{perfil}-…`) fica de fora (#266): o perfil ativo,
-  // lido do ENV.md já gravado (vale o respondido no 3.2, como no 3.3), e os que têm pasta em
-  // `overlays/` (empresas que o workspace já usou). O valor do perfil nunca é impresso aqui. Com o
-  // COMPANY_PROFILE vazio ou inválido, a lista usa o perfil padrão: avisa antes da lista, e o
-  // --remove-stale não remove sozinho (com terminal, a pessoa decide pela pergunta).
+  // lido do ENV.md já gravado (vale o respondido no 3.2, como no 3.3), e as empresas que o
+  // workspace já usou, com pasta em `overlays/` (ou link para ela, mesmo quebrado). O valor do
+  // perfil nunca é impresso aqui. Com o COMPANY_PROFILE vazio ou inválido, a lista usa o perfil
+  // padrão: avisa antes da lista, e o --remove-stale não remove sozinho (com terminal, a pessoa
+  // decide pela pergunta).
   const ideRoot = join(workspaceDir, `.${getIDEFolder(ide)}`);
   const ideSkillsDir = join(ideRoot, "skills");
   const { profile: activeProfile, warning: profileWarning } = readCompanyProfile(

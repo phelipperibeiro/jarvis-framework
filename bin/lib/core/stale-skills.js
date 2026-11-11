@@ -3,8 +3,8 @@
 // Nunca marca como obsoleto um skill registrado em alguma lista `*_SPECIALIZATIONS` do ENV.md
 // (especializações criadas pelo usuário com o jarvis-create-specialization) nem um skill com o
 // prefixo de um perfil de empresa (`{perfil}-…`, ex.: `claro-onboarding`): o perfil ativo
-// (`COMPANY_PROFILE`) e os que têm pasta em `$IDE/overlays/`. É o skill próprio da empresa, que
-// mora em `$IDE/skills/` e nunca vem do framework (#266).
+// (`COMPANY_PROFILE`) e os que têm pasta em `$IDE/overlays/` (ou link para ela, mesmo quebrado).
+// É o skill próprio da empresa, que mora em `$IDE/skills/` e nunca vem do framework (#266).
 // Só lê nomes de pasta: nunca lê nem imprime o conteúdo dos skills.
 import { existsSync, lstatSync, readdirSync, rmSync, statSync } from "node:fs";
 import { join } from "node:path";
