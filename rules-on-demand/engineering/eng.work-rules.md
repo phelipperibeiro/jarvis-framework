@@ -183,7 +183,7 @@ Com **"Fase a fase, com aprovação (como hoje)"**, o workflow **DEVE pausar e a
 
 Com **"Tarefa a tarefa, com aprovação"**, as mesmas três pausas valem para cada tarefa: antes de iniciá-la, depois de implementá-la (antes de marcá-la no `plan.md` e de commitar) e antes da próxima tarefa (que substitui a pausa entre fases).
 
-Com **"Todas de uma vez"**, essas pausas não acontecem. **Em qualquer escolha**, o workflow para no limite do `MAX_AI_EXECUTION_PERCENTAGE`, com um teste falhando e diante de uma questão nova em aberto. Se a parada cai no meio de uma fase cujo commit só sai no fim dela, ele também pergunta se commita o que já está pronto ou deixa sem commit (o padrão), como na Fase 1.3 do workflow; com o commit, as tarefas commitadas ficam `[Completada ✅]`; a retomada segue só as tarefas que não estão `[Completada ✅]` e confere com `git status` e `git log` o que ainda falta commitar.
+Com **"Todas de uma vez"**, essas pausas não acontecem. **Em qualquer escolha**, o workflow para no limite do `MAX_AI_EXECUTION_PERCENTAGE`, com um teste falhando e diante de uma questão nova em aberto. Se a parada cai no meio de uma fase cujo commit só sai no fim dela, ele também pergunta se commita o que já está pronto ou deixa sem commit (o padrão), como na Fase 1.3 do workflow; o commit leva só arquivos que a tarefa interrompida não tocou (se ela mexeu num arquivo de uma tarefa pronta, ou se a suíte não passa sem o código dela, fica sem commit); com o commit, as tarefas commitadas ficam `[Completada ✅]`; a retomada segue só as tarefas que não estão `[Completada ✅]` e confere com `git status` e `git log` o que ainda falta commitar.
 
 ### Comunicação
 
