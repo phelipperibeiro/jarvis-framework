@@ -270,6 +270,26 @@ test("init --upgrade --remove-stale: remove só o obsoleto; especialização reg
   );
 });
 
+// #266: o skill próprio da empresa (prefixo do COMPANY_PROFILE) não é listado nem apagado; o resto
+// da lista segue igual. Sem terminal: a chave já está no ENV, então o 3.2 não pergunta nada.
+test("init --upgrade --remove-stale: skill com o prefixo do COMPANY_PROFILE fica; o antigo sai (#266)", () => {
+  withWorkspace(
+    {
+      ".claude/ENV.md": `${ENV_V520}COMPANY_PROFILE=claro\n`,
+      ".claude/skills/claro-onboarding/SKILL.md": SKILL,
+      ".claude/skills/skill-antigo/SKILL.md": SKILL,
+    },
+    (ws) => {
+      const r = run(ws, "--upgrade", "--ide", "claude", "--remove-stale");
+      assert.equal(r.status, 0, r.stderr);
+      assert.match(r.stdout, /skill-antigo/);
+      assert.doesNotMatch(r.stdout, /claro-onboarding/);
+      assert.ok(existsSync(join(ws, ".claude/skills/claro-onboarding/SKILL.md")));
+      assert.ok(!existsSync(join(ws, ".claude/skills/skill-antigo")));
+    }
+  );
+});
+
 test("init --upgrade: eng-scraper e eng-scraper-robot-builder (renomeados na #81) saem sozinhos", () => {
   withWorkspace(
     {

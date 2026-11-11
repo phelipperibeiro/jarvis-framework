@@ -28,7 +28,11 @@ import {
   removeStaleSkills,
 } from "../lib/core/stale-skills.js";
 import { parseEnvEntries, planEnvUpgrade, applyEnvUpgrade } from "../lib/core/env-upgrade.js";
-import { DEFAULT_COMPANY_PROFILE, isValidCompanyProfile } from "../lib/core/company-profile.js";
+import {
+  DEFAULT_COMPANY_PROFILE,
+  isValidCompanyProfile,
+  readCompanyProfile,
+} from "../lib/core/company-profile.js";
 import { checkCli, getVendor } from "../lib/integrations/cli-runner.js";
 import {
   expandEnv,
@@ -818,11 +822,16 @@ async function runUpgrade(cwd, flags) {
   }
 
   // 3.1 Skills instalados que saíram do framework: só lista; remove com confirmação ou --remove-stale
+  // Skill com o prefixo do COMPANY_PROFILE (`{perfil}-…`) é da empresa e fica de fora (#266). O
+  // perfil vem do ENV.md já gravado (vale o respondido no 3.2, como no 3.3); só o nome resolvido
+  // é usado, e o valor nunca é impresso aqui (os avisos do perfil saem no passo das rules, 3.4).
   const ideSkillsDir = join(workspaceDir, `.${getIDEFolder(ide)}`, "skills");
+  const { profile: activeProfile } = readCompanyProfile(readFileSync(envPath, "utf-8"));
   const stale = findStaleSkills({
     ideSkillsDir,
     frameworkSkillsDir: join(getFrameworkRoot(), "skills"),
     registered: registeredSpecializations(parseEnvEntries(envText)),
+    companyProfile: activeProfile,
   });
   let staleRemoved = [];
   let staleErrors = [];
