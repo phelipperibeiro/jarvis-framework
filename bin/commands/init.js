@@ -866,7 +866,7 @@ async function runUpgrade(cwd, flags) {
       ({ removed: staleRemoved, errors: staleErrors } = removeStaleSkills(ideSkillsDir, stale));
     } else if (profileWarning) {
       logger.info(
-        `${DIM}  Nada removido: com o COMPANY_PROFILE vazio ou inválido, o ${BOLD}--remove-stale${NC}${DIM} não remove sozinho. Corrija o ENV.md e rode de novo, ou apague as pastas à mão.${NC}`
+        `${DIM}  Nada removido. Com o COMPANY_PROFILE vazio ou inválido, o ${BOLD}--remove-stale${NC}${DIM} não remove sozinho: corrija o ENV.md e rode de novo, ou apague as pastas à mão.${NC}`
       );
     } else {
       logger.info(

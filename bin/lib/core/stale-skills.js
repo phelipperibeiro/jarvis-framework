@@ -6,7 +6,7 @@
 // (`COMPANY_PROFILE`) e os que têm pasta em `$IDE/overlays/`. É o skill próprio da empresa, que
 // mora em `$IDE/skills/` e nunca vem do framework (#266).
 // Só lê nomes de pasta: nunca lê nem imprime o conteúdo dos skills.
-import { existsSync, readdirSync, rmSync, statSync } from "node:fs";
+import { existsSync, lstatSync, readdirSync, rmSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { isValidCompanyProfile } from "./company-profile.js";
 
@@ -33,7 +33,10 @@ export function registeredSpecializations(entries) {
  * Perfis de empresa que o workspace já usou: os nomes das pastas em `$IDE/overlays/` aceitos por
  * `isValidCompanyProfile` (#266). A pasta de um perfil nasce quando ele é ativado e o upgrade
  * nunca a apaga, então ela marca uma empresa conhecida mesmo depois da troca de `COMPANY_PROFILE`.
- * Segue link simbólico (o próprio `overlays/{perfil}` pode ser um link). Só lê nomes.
+ * Segue link simbólico (o próprio `overlays/{perfil}` pode ser um link). Um link quebrado também
+ * conta: o destino sumiu (o repositório da empresa mudou de lugar ou não foi clonado), mas o link
+ * ainda marca uma empresa que o workspace usou, e na dúvida o skill fica. Um link para arquivo não
+ * conta, como um arquivo comum: o destino existe e não é pasta. Só lê nomes.
  * @param {string} overlaysDir - `$IDE/overlays`
  * @returns {Set<string>}
  */
@@ -48,10 +51,16 @@ export function overlayProfiles(overlaysDir) {
   }
   for (const name of names) {
     if (!isValidCompanyProfile(name)) continue;
+    const entry = join(overlaysDir, name);
     try {
-      if (statSync(join(overlaysDir, name)).isDirectory()) profiles.add(name);
+      if (statSync(entry).isDirectory()) profiles.add(name);
     } catch {
-      // link quebrado ou sem permissão: não conta como perfil
+      // o `stat` segue o link e falha no link quebrado; o `lstat` lê o próprio link
+      try {
+        if (lstatSync(entry).isSymbolicLink()) profiles.add(name);
+      } catch {
+        // sem permissão: não conta como perfil
+      }
     }
   }
   return profiles;

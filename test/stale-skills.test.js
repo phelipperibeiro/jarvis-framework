@@ -189,16 +189,22 @@ test("companyProfilesFor: o perfil ativo entra mesmo sem pasta em overlays/, jun
   }
 });
 
-test("overlayProfiles: segue link simbólico para pasta e ignora link quebrado (#266)", () => {
+// O link quebrado é o overlay guardado no repositório da empresa quando esse repositório muda de
+// lugar ou não foi clonado: o nome ainda marca uma empresa que o workspace usou, então conta. O link
+// para arquivo não conta, como um arquivo comum: o destino existe e não é pasta.
+test("overlayProfiles: segue link para pasta, conta o link quebrado e ignora o link para arquivo (#266)", () => {
   const root = mkdtempSync(join(tmpdir(), "jarvis-overlays-"));
   try {
     const overlays = join(root, "overlays");
     const repoDaEmpresa = join(root, "repo-da-empresa");
     mkdirSync(overlays, { recursive: true });
     mkdirSync(repoDaEmpresa, { recursive: true });
+    writeFileSync(join(root, "notas.txt"), "");
     symlinkSync(repoDaEmpresa, join(overlays, "vivo"));
     symlinkSync(join(root, "nao-existe"), join(overlays, "tim"));
-    assert.deepEqual([...overlayProfiles(overlays)], ["vivo"]);
+    symlinkSync(join(root, "nao-existe"), join(overlays, "Oi"));
+    symlinkSync(join(root, "notas.txt"), join(overlays, "claro"));
+    assert.deepEqual([...overlayProfiles(overlays)].sort(), ["tim", "vivo"]);
   } finally {
     rmSync(root, { recursive: true, force: true });
   }
