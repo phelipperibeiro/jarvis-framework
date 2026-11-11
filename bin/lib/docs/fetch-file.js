@@ -9,7 +9,7 @@ import { getStorage } from "./storage/index.js";
 
 /**
  * Carrega o ENV.md e devolve o adaptador do Central docs.
- * @param {Object} [flags] - `envFile`/`ide` (mesmas opções dos outros comandos)
+ * @param {Object} [flags] - `ide`, `env` (ou a alternativa `env-file`): as mesmas opções dos outros comandos
  * @param {Object} [opts]
  * @param {string} [opts.cwd]
  * @param {Object} [opts.deps] - Dependências injetáveis do adaptador (testes)
@@ -18,7 +18,7 @@ import { getStorage } from "./storage/index.js";
 export function openStorageFromEnv(flags = {}, { cwd = process.cwd(), deps } = {}) {
   const { path, root } = resolveEnvPath(cwd, flags);
   const env = loadEnv(cwd, path);
-  // O ENV.md lido aqui (com --ide/--env-file) segue até o gate do acesso no MR do Central docs
+  // O ENV.md lido aqui (com --ide/--env) segue até o gate do acesso no MR do Central docs
   // (o `docs sync` e o `fetch` não abrem MR e ignoram o fileEnvResult).
   const storageDeps = { fileEnvResult: { vars: env, error: null }, ...deps };
   return { env, root, storage: getStorage(env, { root, deps: storageDeps }) };

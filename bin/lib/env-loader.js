@@ -35,24 +35,27 @@ export function deriveWorkspaceName(envPath) {
 
 /**
  * Resolve o path do ENV.md com a seguinte precedência:
- *   1. --env-file (path explícito)
+ *   1. --env (path explícito; --env-file é a alternativa, e com os dois vale o --env)
  *   2. --ide (ex: windsurf → .windsurf/ENV.md) — sobe pastas se estiver num repo filho
  *   3. JARVIS_ENV_FILE (variável de ambiente)
  *   4. IDE (variável de ambiente → .{ide}/ENV.md)
  *   5. Auto-detect (sobe até achar $IDE/ENV.md no workspace)
  *
+ * O --env existe porque o Node 20+ confere o arquivo de todo --env-file da linha de comando,
+ * mesmo depois do script, e sai com 9 antes do CLI quando o caminho não existe (#269).
+ *
  * Retorna { path, source, warnings, root }
  */
 export function resolveEnvPath(cwd, flags = {}) {
-  // 1. --env-file
-  if (flags["env-file"]) {
-    const p = isAbsolute(flags["env-file"]) ? flags["env-file"] : join(cwd, flags["env-file"]);
+  // 1. --env (ou a alternativa --env-file)
+  const option = flags.env ? "--env" : "--env-file";
+  const explicit = flags.env || flags["env-file"];
+  if (explicit) {
+    const p = isAbsolute(explicit) ? explicit : join(cwd, explicit);
     if (!existsSync(p)) {
-      throw new Error(
-        `ENV.md não encontrado: ${p}\n` + `Dica: verifique o path passado em --env-file`
-      );
+      throw new Error(`ENV.md não encontrado: ${p}\nDica: verifique o path passado em ${option}`);
     }
-    return { path: p, source: "--env-file", warnings: [], root: dirname(dirname(p)) };
+    return { path: p, source: option, warnings: [], root: dirname(dirname(p)) };
   }
 
   // 2. --ide (cwd e ancestrais — abre um repo filho e ainda acha o workspace)

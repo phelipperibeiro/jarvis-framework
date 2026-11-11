@@ -139,7 +139,7 @@ function recordPublished(manifestPath, files, published) {
  * @param {string} [flags.taskKey] - Obrigatório para `--tipo history`
  * @param {string} [flags.squad] - Override do SQUAD do ENV.md
  * @param {string} [flags.workspace] - Override do WORKSPACE (padrão do --produto)
- * @param {string} flags.envFile - Path customizado do ENV.md
+ * @param {string} [flags.env] - Path explícito do ENV.md (`--env`; a alternativa `--env-file` chega em `flags["env-file"]`)
  */
 export async function docsPublish(flags = {}) {
   configureFromFlags(flags);

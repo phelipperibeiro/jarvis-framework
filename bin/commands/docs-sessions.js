@@ -17,7 +17,7 @@ const sim = (v) => (v === null ? "?" : v ? "sim" : "não");
  * @param {boolean} [flags.proxima] - Imprime só o card da próxima sessão pendente (stdout)
  * @param {string} [flags.squad] - Override do SQUAD do ENV.md
  * @param {string} [flags.produto] - Override do WORKSPACE do ENV.md (pasta do produto)
- * @param {string} [flags.envFile] - Path customizado do ENV.md
+ * @param {string} [flags.env] - Path explícito do ENV.md (`--env`; a alternativa `--env-file` chega em `flags["env-file"]`)
  */
 export async function docsSessions(flags = {}) {
   configureFromFlags(flags);

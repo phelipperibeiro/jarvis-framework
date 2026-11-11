@@ -97,7 +97,7 @@ A variavel `$IDE` representa a pasta da IDE:
 - `.kiro/` - Kiro (AWS)
 
 O CLI resolve o `ENV.md` na seguinte precedência:
-1. `--env-file <path>` — path explícito
+1. `--env <path>` — path explícito (a alternativa `--env-file <path>` também vale, mas no Node 20+ um caminho inexistente faz o próprio Node sair com 9 antes do CLI; com os dois, vale o `--env`)
 2. `--ide <ide>` — ex: `--ide windsurf` → `.windsurf/ENV.md`
 3. `JARVIS_ENV_FILE` — variável de ambiente com path
 4. `IDE` — variável de ambiente (ex: `IDE=windsurf`)

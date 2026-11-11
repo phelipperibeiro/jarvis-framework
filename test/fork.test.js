@@ -1,7 +1,7 @@
 // Testes do `jarvis fork` (bin/commands/fork.js, #199). Rode com: npm run test:filtro
 //
 // O core vem de um fixture mínimo apontado por JARVIS_ROOT (como em sync-engine.test.js) e o
-// workspace é uma pasta temporária com .claude/ENV.md, passada por --env-file. Nada toca o
+// workspace é uma pasta temporária com .claude/ENV.md, passada em `flags["env-file"]`. Nada toca o
 // framework real nem o ENV.md de quem roda.
 import { test, before, after } from "node:test";
 import assert from "node:assert/strict";
@@ -369,11 +369,10 @@ test("fork --update --candidate marca core_candidate; --delete de rule só do ov
   });
 });
 
-test("fork: ENV.md inexistente (--env-file errado) sai com 1 sem gravar", async () => {
-  assert.equal(
-    await fork({ _: ["eng.start"], "env-file": join(tmpdir(), "nao-existe", "ENV.md") }),
-    1
-  );
+test("fork: ENV.md inexistente (--env ou --env-file errado) sai com 1 sem gravar", async () => {
+  const naoExiste = join(tmpdir(), "nao-existe", "ENV.md");
+  assert.equal(await fork({ _: ["eng.start"], env: naoExiste }), 1);
+  assert.equal(await fork({ _: ["eng.start"], "env-file": naoExiste }), 1);
 });
 
 // --- Fase 9: contrato do --update, --list em colunas, CRLF, LCS ----------------------------------

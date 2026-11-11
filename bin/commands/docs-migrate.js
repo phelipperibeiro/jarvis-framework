@@ -13,7 +13,7 @@ import { logger, configureFromFlags } from "../lib/utils/logger.js";
  * @param {Object} flags
  * @param {boolean} [flags.apply] - Aplica o plano; sem ela, só mostra (dry-run)
  * @param {string} [flags.squad] - Override do SQUAD do ENV.md
- * @param {string} flags.envFile - Path customizado do ENV.md
+ * @param {string} [flags.env] - Path explícito do ENV.md (`--env`; a alternativa `--env-file` chega em `flags["env-file"]`)
  */
 export async function docsMigrate(flags = {}) {
   configureFromFlags(flags);

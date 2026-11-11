@@ -76,12 +76,12 @@ Se o `jarvis` não estiver no projeto, use `node "$JARVIS_ROOT/bin/jarvis.js" ta
 
 - `0` → comentário feito (ou freelance). Encerrar.
 - `1` → uso (ex.: no GitHub/GitLab o card é o número da issue). Corrija a chamada; não siga para o passo 2.
-- `3` → indisponível, nada enviado → passo 2 só com CLI ausente ou sem login; `TASK_MANAGER_ACCESS` `manual` ou inválido → passo 3; ENV.md ambíguo → repetir o passo 1 com `--ide` ou `--env-file`.
+- `3` → indisponível, nada enviado → passo 2 só com CLI ausente ou sem login; `TASK_MANAGER_ACCESS` `manual` ou inválido → passo 3; ENV.md ambíguo → repetir o passo 1 com `--ide` ou `--env`.
 - `4` → enviado com erro → passo 3, com o aviso de conferir no card antes de repetir. **Não** tentar o passo 2.
 
 ### 2. CLI do vendor direto
 
-Só se o passo 1 saiu com `3` por CLI ausente ou sem login (ou o `jarvis` não rodou). Se o motivo for `TASK_MANAGER_ACCESS` `manual` ou inválido, vá direto ao passo 3; se for ENV.md ambíguo, repita o passo 1 com `--ide` ou `--env-file`. Confira a CLI com o `auth_status` do catálogo (`bin/lib/integrations/vendors.json`) e, logada, rode a ação `comment` dele:
+Só se o passo 1 saiu com `3` por CLI ausente ou sem login (ou o `jarvis` não rodou). Se o motivo for `TASK_MANAGER_ACCESS` `manual` ou inválido, vá direto ao passo 3; se for ENV.md ambíguo, repita o passo 1 com `--ide` ou `--env`. Confira a CLI com o `auth_status` do catálogo (`bin/lib/integrations/vendors.json`) e, logada, rode a ação `comment` dele:
 
 | Vendor | Comando |
 |---|---|

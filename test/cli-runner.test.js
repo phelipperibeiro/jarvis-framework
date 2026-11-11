@@ -534,7 +534,7 @@ test("setting: aspas e comentário de fim de linha; entre aspas, um ' # ' fica",
   assert.equal(setting("Z_181", { Z_181: "'x' # c" }), "x");
 });
 
-test("readFileEnv: lê o ENV.md por --env-file; dois ENV.md sem --ide dão erro; --ide resolve", async () => {
+test("readFileEnv: lê o ENV.md pelo envFile (--env ou --env-file); dois ENV.md sem --ide dão erro; --ide resolve", async () => {
   const { readFileEnv } = await import("../bin/lib/integrations/cli-runner.js");
   const { mkdtempSync, mkdirSync, writeFileSync, rmSync } = await import("node:fs");
   const { tmpdir } = await import("node:os");

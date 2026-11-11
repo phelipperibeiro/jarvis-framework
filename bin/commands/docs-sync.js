@@ -16,7 +16,7 @@ const COUNTED = [
  * @param {boolean} flags.silent - Modo silencioso (nem erros aparecem)
  * @param {boolean} flags.quiet - Só erros aparecem
  * @param {boolean} flags.verbose - Mostra o conteúdo completo retornado
- * @param {string} flags.envFile - Path customizado do ENV.md
+ * @param {string} [flags.env] - Path explícito do ENV.md (`--env`; a alternativa `--env-file` chega em `flags["env-file"]`)
  */
 export async function docsSync(flags = {}) {
   configureFromFlags(flags);

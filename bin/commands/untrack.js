@@ -12,12 +12,12 @@ import { RED, GREEN, YELLOW, DIM, NC } from "../lib/utils/ui.js";
  * É a execução da escolha **Tirar do git**, feita no `/jarvis-init upgrade` (skill na IDE) depois do Sim da
  * pessoa. O `jarvis init` e o `jarvis init --upgrade` nunca chamam isto, nem com `--yes`: arquivo que a
  * pessoa não confirmou não sai do índice. Só vale no modo projeto (raiz com `.git`) e exige o `ENV.md` do
- * workspace (achado da pasta atual para cima, ou por `--ide`/`--env-file`): sem ele o comando recusa, para não
+ * workspace (achado da pasta atual para cima, ou por `--ide`/`--env`): sem ele o comando recusa, para não
  * agir no repositório filho de um workspace por acidente.
  *
  * Sai com 1 se algum arquivo foi recusado (nome fora da lista, não versionado, raiz sem repositório).
  * @param {string[]} files
- * @param {{ ide?: string, "env-file"?: string }} [flags]
+ * @param {{ ide?: string, env?: string, "env-file"?: string }} [flags]
  */
 export function untrack(files, flags = {}) {
   configureFromFlags(flags);
@@ -34,7 +34,7 @@ export function untrack(files, flags = {}) {
     const resolved = resolveEnvPath(process.cwd(), flags);
     if (!resolved.path || !existsSync(resolved.path)) {
       throw new Error(
-        "ENV.md não encontrado: rode o comando na pasta do workspace (a que contém a pasta da IDE) ou use --ide/--env-file"
+        "ENV.md não encontrado: rode o comando na pasta do workspace (a que contém a pasta da IDE) ou use --ide/--env"
       );
     }
     workspaceDir = resolved.root || process.cwd();

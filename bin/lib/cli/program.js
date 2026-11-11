@@ -39,9 +39,12 @@ import { runComment } from "../tasks/comment.js";
 import { fetchFile } from "../docs/fetch-file.js";
 import { formatIDEsList } from "../config/ide-config.js";
 import { showBanner } from "../utils/ui.js";
-import { withEnvOptions, withLogOptions } from "./shared-options.js";
+import { explicitEnvPath, withEnvOptions, withLogOptions } from "./shared-options.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
+
+/** Ajuda do `--ide` nos comandos de integração (`vcs create-merge`, `tasks comment`). */
+const INTEGRATION_IDE_HELP = "IDE do ENV.md (quando há mais de um no workspace)";
 
 function getVersion() {
   const packageJson = JSON.parse(readFileSync(join(__dirname, "../../../package.json"), "utf-8"));
@@ -235,14 +238,16 @@ export function buildProgram() {
   );
   withLogOptions(installRtkCmd).action((options) => installRtk(toLegacyFlags(options)));
 
-  cmd(program, "tokens")
-    .description("Estimar o que carrega no início da sessão")
-    .option("--artifact-style <estilo>", "ai-generated ou human-generated (padrão: lido do ENV.md)")
-    .option("--rtk", "Força RTK ligado (padrão: lido do ENV.md)")
-    .option("--json", "Saída em JSON")
-    .option("--ide <ide>")
-    .option("--env-file <path>")
-    .action((options) => tokens(toLegacyFlags(options)));
+  withEnvOptions(
+    cmd(program, "tokens")
+      .description("Estimar o que carrega no início da sessão")
+      .option(
+        "--artifact-style <estilo>",
+        "ai-generated ou human-generated (padrão: lido do ENV.md)"
+      )
+      .option("--rtk", "Força RTK ligado (padrão: lido do ENV.md)")
+      .option("--json", "Saída em JSON")
+  ).action((options) => tokens(toLegacyFlags(options)));
 
   const rules = cmd(program, "rules").description("Rules da pasta da IDE");
   const rulesSyncCmd = cmd(rules, "sync").description(
@@ -261,7 +266,7 @@ export function buildProgram() {
     untrack(files, toLegacyFlags(options))
   );
 
-  cmd(program, "fork")
+  const forkCmd = cmd(program, "fork")
     .description(
       "Overlay de empresa: copia um artefato do core para $IDE/overlays/{COMPANY_PROFILE}/, com carimbo"
     )
@@ -282,10 +287,10 @@ export function buildProgram() {
       "Com --update: só mostra o diff fork × core atual, por seção (🔴 em possível mudança de contrato), sem gravar"
     )
     .option("--delete", "Remove o fork do overlay; rules voltam à versão do core na IDE")
-    .option("--candidate", "Marca o fork como candidato a core (core_candidate: true)")
-    .option("--ide <ide>")
-    .option("--env-file <path>")
-    .action((nome, options) => fork(toLegacyFlags(options, { _: [nome].filter(Boolean) })));
+    .option("--candidate", "Marca o fork como candidato a core (core_candidate: true)");
+  withEnvOptions(forkCmd).action((nome, options) =>
+    fork(toLegacyFlags(options, { _: [nome].filter(Boolean) }))
+  );
 
   cmd(program, "map")
     .description("Mapa de chamadas de um workflow, skill ou agente")
@@ -294,36 +299,35 @@ export function buildProgram() {
     .option("--reverse", "Mostra quem chama, em vez do que é chamado")
     .action((name, options) => map(toLegacyFlags(options, { _: [name].filter(Boolean) })));
 
-  cmd(program, "daily-report")
-    .description("Junta os daily.md das sessões por dia (base do /eng.daily-report)")
-    .option("--days <n>", "Janela em dias: 1, 3, 7, 15, 30 ou 60 (padrão: 7)")
-    .option("--json", "Saída em JSON")
-    .option("--ide <ide>")
-    .option("--env-file <path>")
-    .action((options) => dailyReport(toLegacyFlags(options)));
+  withEnvOptions(
+    cmd(program, "daily-report")
+      .description("Junta os daily.md das sessões por dia (base do /eng.daily-report)")
+      .option("--days <n>", "Janela em dias: 1, 3, 7, 15, 30 ou 60 (padrão: 7)")
+      .option("--json", "Saída em JSON")
+  ).action((options) => dailyReport(toLegacyFlags(options)));
 
   const vcs = cmd(program, "vcs").description("Git host pela CLI oficial (gh, glab)");
 
-  cmd(vcs, "create-merge")
-    .description("Abrir um MR/PR (gh pr create / glab mr create)")
-    .option("--source <branch>")
-    .option("--target <branch>")
-    .option("--title <titulo>")
-    .option("--body-file <path>")
-    .option("--repo <url>", "Padrão: git remote get-url origin")
-    .option("--ide <ide>", "IDE do ENV.md (quando há mais de um no workspace)")
-    .option("--env-file <path>", "Path explícito do ENV.md")
-    .action((options) =>
-      runCreateMerge({
-        source: options.source,
-        target: options.target,
-        title: options.title,
-        bodyFile: options.bodyFile,
-        repo: options.repo,
-        ide: options.ide,
-        envFile: options.envFile,
-      })
-    );
+  withEnvOptions(
+    cmd(vcs, "create-merge")
+      .description("Abrir um MR/PR (gh pr create / glab mr create)")
+      .option("--source <branch>")
+      .option("--target <branch>")
+      .option("--title <titulo>")
+      .option("--body-file <path>")
+      .option("--repo <url>", "Padrão: git remote get-url origin"),
+    { ideHelp: INTEGRATION_IDE_HELP }
+  ).action((options) =>
+    runCreateMerge({
+      source: options.source,
+      target: options.target,
+      title: options.title,
+      bodyFile: options.bodyFile,
+      repo: options.repo,
+      ide: options.ide,
+      envFile: explicitEnvPath(options),
+    })
+  );
 
   cmd(vcs, "create-issue")
     .description("Abrir uma issue (gh issue create / glab issue create)")
@@ -344,20 +348,20 @@ export function buildProgram() {
     "Board de cards pela CLI oficial (gh, glab, acli)"
   );
 
-  cmd(tasks, "comment")
-    .description("Comentar num card (Jira, GitHub, GitLab — lê TASK_MANAGER do ambiente)")
-    .argument("[card-key]")
-    .argument("[message...]", "Texto do comentário (pode ter espaços)")
-    .option("--body-file <path>", "Lê o texto do comentário de um arquivo")
-    .option("--ide <ide>", "IDE do ENV.md (quando há mais de um no workspace)")
-    .option("--env-file <path>", "Path explícito do ENV.md")
-    .action((cardKey, messageParts, options) =>
-      runComment(cardKey, messageParts.join(" "), {
-        bodyFile: options.bodyFile,
-        ide: options.ide,
-        envFile: options.envFile,
-      })
-    );
+  withEnvOptions(
+    cmd(tasks, "comment")
+      .description("Comentar num card (Jira, GitHub, GitLab — lê TASK_MANAGER do ambiente)")
+      .argument("[card-key]")
+      .argument("[message...]", "Texto do comentário (pode ter espaços)")
+      .option("--body-file <path>", "Lê o texto do comentário de um arquivo"),
+    { ideHelp: INTEGRATION_IDE_HELP }
+  ).action((cardKey, messageParts, options) =>
+    runComment(cardKey, messageParts.join(" "), {
+      bodyFile: options.bodyFile,
+      ide: options.ide,
+      envFile: explicitEnvPath(options),
+    })
+  );
 
   return program;
 }
