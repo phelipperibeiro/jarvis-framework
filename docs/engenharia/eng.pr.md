@@ -45,7 +45,11 @@ A sessão **não é apagada**: o `/eng.spec-consolidate` precisa dela. Remova à
 ## Perguntas que ele faz
 
 - **No início:** "O que fazer com o PR?" → **Revisar o texto e publicar (como hoje)**, **Publicar sem revisar o texto**, **Só gerar os arquivos** (o texto ainda é mostrado para revisão; você abre o PR à mão e nada é enviado). Na revisão do texto de quem escolheu "Revisar o texto e publicar", o botão `[Só gerar os arquivos]` faz o mesmo.
-- **No fim:** "O PR já foi aprovado e mergeado?" → **Ainda não (como hoje)**, **Sim, rodar o `/eng.spec-consolidate`**, que registra no Central docs o que a entrega implementou, ou **Sim, rodar o `/eng.spec-consolidate --force` (publica e apaga os originais, sem `archive/`)**, que faz o mesmo sem as perguntas de publicar e de apagar os originais e sem arquivar (irreversível); a trava de segredo e a pergunta de apagar a pasta da sessão continuam.
+- **No fim:** "O PR já foi aprovado e mergeado?", com quatro opções, nesta ordem:
+  - **Sim, rodar o `/eng.spec-consolidate --force` (publica e apaga os originais, sem `archive/`)**, a recomendada: registra no Central docs o que a entrega implementou, sem as perguntas de publicar e de apagar os originais e sem arquivar (irreversível); a trava de segredo e a pergunta de apagar a pasta da sessão continuam.
+  - **Ainda não (como hoje)**: encerra com a mensagem final.
+  - **Sim, rodar o `/eng.spec-consolidate`**: publica o mesmo registro, com o seu Sim; arquivar e apagar os originais são chamadas à parte (`--archive` e `--finalize`), cada uma com o seu Sim.
+  - **Sim, mas rodo o `/eng.spec-consolidate` depois**: encerra sem rodar nada e mostra os dois comandos (com e sem `--force`) para você rodar quando quiser.
 
 ## Regras que importam
 

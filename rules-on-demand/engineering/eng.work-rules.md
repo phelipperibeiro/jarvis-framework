@@ -24,7 +24,7 @@ O `work` é **estritamente proibido** de:
 | Fazer `git push`                                   | Escrever código                                           |
 | Criar Pull Requests                                | Criar/modificar arquivos de código                        |
 | Usar `git add .`                                   | `git add` de arquivos específicos da fase                 |
-| Commitar sem aprovação do usuário na fase          | Commitar ao final da fase validada (ou ao final, com "Um commit só"), com testes passando |
+| Commitar sem aprovação do usuário na fase          | Commitar no momento da tabela "Quando sai o commit" da 1.3 do workflow (por fase, por tarefa ou ao final), com testes passando |
 | Commitar com testes falhando                       | Executar testes locais                                    |
 | Mover cards no Jira                                | Ler arquivos da sessão                                    |
 | Fazer merge de branches                            | Atualizar `plan.md` com progresso                         |
@@ -32,7 +32,7 @@ O `work` é **estritamente proibido** de:
 
 O commit segue o formato do workflow (`{TASK_MANAGER_KEY} {tipo}({escopo}): {descrição}`, com `Refs:`). Push e PR são responsabilidade do `eng.pr`.
 
-**Escolhas do início** (`eng.transitions-rules.md`, Fase 1.3 do workflow): execução, commits e o que vem depois. Com "Todas de uma vez", a escolha é a aprovação das fases; com "Um commit só ao final", o commit é um só, depois da última fase; com "Rodar o `/eng.pr`", o work termina chamando o `/eng.pr` (que faz o push e o PR, não o work).
+**Escolhas do início** (`eng.transitions-rules.md`, Fase 1.3 do workflow): execução, commits e o que vem depois. Com "Todas de uma vez", a escolha é a aprovação das fases; com "Tarefa a tarefa", o ciclo inteiro (plano, implementação, testes, validação, marcação no `plan.md` e retomada) é por tarefa; com "Um por tarefa", cada tarefa vira um commit, nunca antes da validação do usuário (com "Tarefa a tarefa", depois da validação de cada tarefa; com "Fase a fase" ou "Todas de uma vez", ao fim da fase, depois da 3.2 e da 3.3, um por tarefa; a `{fase}.T` é a última tarefa da fase e leva os testes da fase; tabela "Quando sai o commit" da 1.3); com "Um commit só ao final", o commit é um só, depois da última fase; com "Rodar o `/eng.pr`", o work termina chamando o `/eng.pr` (que faz o push e o PR, não o work).
 
 ### 2. Escopo de Atuação
 
@@ -181,7 +181,9 @@ Com **"Fase a fase, com aprovação (como hoje)"**, o workflow **DEVE pausar e a
 2. ✋ **Após completar implementação** (antes de atualizar plan.md)
 3. ✋ **Antes de iniciar próxima fase**
 
-Com **"Todas de uma vez"**, essas pausas não acontecem. **Em qualquer escolha**, o workflow para no limite do `MAX_AI_EXECUTION_PERCENTAGE`, com um teste falhando e diante de uma questão nova em aberto.
+Com **"Tarefa a tarefa, com aprovação"**, as mesmas três pausas valem para cada tarefa: antes de iniciá-la, depois de implementá-la (antes de marcá-la no `plan.md` e de commitar) e antes da próxima tarefa (que substitui a pausa entre fases).
+
+Com **"Todas de uma vez"**, essas pausas não acontecem. **Em qualquer escolha**, o workflow para no limite do `MAX_AI_EXECUTION_PERCENTAGE`, com um teste falhando e diante de uma questão nova em aberto. Se a parada cai no meio de uma fase cujo commit só sai no fim dela, ele também pergunta se commita o que já está pronto ou deixa sem commit (o padrão), como na Fase 1.3 do workflow, mas só quando o commit é possível sem tirar nada do lugar (nem `git stash`): só arquivos que a tarefa interrompida não tocou, com a suíte passando e sem dependência do que ela criou ou mudou; senão, ou na dúvida, avisa que fica sem commit; com o commit, as tarefas commitadas ficam `[Completada ✅]`; a retomada segue só as tarefas que não estão `[Completada ✅]` e confere com `git status` e `git log` o que ainda falta commitar.
 
 ### Comunicação
 
@@ -246,7 +248,7 @@ Ao finalizar **TODAS as fases** do `plan.md`, informe:
 2. Execute os testes completos
 3. Quando estiver pronto, use `eng.pr` para criar o Pull Request
 
-⚠️ Este workflow commita (por fase ou ao final), mas NÃO faz push nem PR.
+⚠️ Este workflow commita (por fase, por tarefa ou ao final), mas NÃO faz push nem PR.
    Use `eng.pr` quando estiver pronto para submeter.
 ```
 
@@ -264,7 +266,7 @@ Antes de considerar uma fase completa:
 - [ ]  Usuário validou o código
 - [ ]  `plan.md` atualizado com status
 - [ ]  Comentários adicionados no plan.md
-- [ ]  Commit da fase feito (arquivos adicionados um a um, testes passando)
+- [ ]  Commit da fase (ou de cada tarefa, com "Um por tarefa") feito (arquivos adicionados um a um, testes passando)
 - [ ]  NENHUM push foi feito
 - [ ]  NENHUM PR foi criado
 - [ ]  Próximos passos comunicados

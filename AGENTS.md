@@ -215,7 +215,7 @@ Cada pasta pode ter seu proprio AGENTS.md com instrucoes especificas. No reposit
 ### Documentacao
 
 ```bash
-/eng.work "feature"      # Oferta de documentacao no fim (Fase 6.2), pelo skill eng-global-docs-write
+/eng.work "feature"      # Oferta de documentacao no fim (Fase 6.2, so se o diff ainda nao altera docs/ ou README), pelo skill eng-global-docs-write
 /eng-global-docs-write   # Uso direto do skill (Codex, Gemini e Kiro: ver "Invocacao de Skills por IDE")
 ```
 

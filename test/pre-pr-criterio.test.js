@@ -1,6 +1,8 @@
 // Confere a consistência do critério de parada e da rodada incremental do /eng.pre-pr (#191, #195): o mesmo
 // valor escrito em mais de um arquivo (rótulos da variante B e da pergunta do teto, teto de rodadas por urgência) e a numeração
-// dos gates citada em três lugares do workflow. Guarda só o texto (a prosa não tem teste de comportamento).
+// dos gates citada em três lugares do workflow. Confere também as perguntas de transição do eng.pr e do eng.work que outros
+// comandos e guias repetem (#255, #268): a pergunta de merge, a oferta de documentação e as escolhas do início.
+// Guarda só o texto (a prosa não tem teste de comportamento).
 // Rode com: npm run test:filtro
 import { test } from "node:test";
 import assert from "node:assert/strict";
@@ -17,16 +19,19 @@ const TRANSITIONS = "rules-on-demand/engineering/eng.transitions-rules.md";
 const CONTEXT_DETECT = "skills/jarvis-context-detect/SKILL.md";
 const GUIA_PRE_PR = "docs/engenharia/eng.pre-pr.md";
 const WORK = "workflows/engineering/eng.work.md";
+const GUIA_PR = "docs/engenharia/eng.pr.md";
+const GUIA_WORK = "docs/engenharia/eng.work.md";
 
 // A mensagem de falha diz que o valor é guardado de propósito: mudar num arquivo pede mudar nos outros e no teste.
 const DE_PROPOSITO =
   "O critério de parada do pre-pr é guardado de propósito (#191): ao mudá-lo, atualize os outros arquivos e test/pre-pr-criterio.test.js junto.";
 
-// Trecho entre o título `de` e o próximo título do mesmo nível (ou o fim do arquivo).
-function secao(texto, titulo) {
+// Trecho entre o título `de` e o próximo título do mesmo nível (ou o fim do arquivo). A mensagem diz qual decisão
+// o título guarda (padrão: o critério de parada do pre-pr).
+function secao(texto, titulo, mensagem = DE_PROPOSITO) {
   const linhas = texto.split("\n");
   const inicio = linhas.findIndex((l) => l === titulo);
-  assert.notEqual(inicio, -1, `seção não encontrada: ${titulo}. ${DE_PROPOSITO}`);
+  assert.notEqual(inicio, -1, `seção não encontrada: ${titulo}. ${mensagem}`);
   const nivel = titulo.match(/^#+/)[0];
   const fim = linhas.findIndex(
     (l, i) => i > inicio && new RegExp(`^#{1,${nivel.length}} `).test(l)
@@ -293,21 +298,28 @@ test("a numeração dos gates é a mesma na lista, na tabela de chamadas e na ta
   );
 });
 
-// A pergunta de merge do fim do eng.pr (#255): o padrão fica em primeiro e a opção --force (irreversível) por último.
+// A pergunta de merge do fim do eng.pr (#255, #268): o --force (o caminho mais usado) em primeiro, o "como hoje"
+// presente e o "rodo depois" por último, mostrando os dois comandos.
 const MERGE_FORCE =
-  "As opções da pergunta de merge do eng.pr são guardadas de propósito (#255): ao mudá-las, atualize a eng.transitions-rules.md, o workflows/engineering/eng.pr.md e este teste junto.";
+  "As opções da pergunta de merge do eng.pr são guardadas de propósito (#255, #268): ao mudá-las, atualize a eng.transitions-rules.md, o workflows/engineering/eng.pr.md, o guia docs/engenharia/eng.pr.md e este teste junto.";
+const RODO_DEPOIS = "Sim, mas rodo o `/eng.spec-consolidate` depois";
 
-test("a pergunta de merge do eng.pr mantém o padrão e oferece o --force com o mesmo rótulo no workflow (#255)", () => {
+test("a pergunta de merge do eng.pr tem o --force primeiro e o \"rodo depois\" por último, com os mesmos rótulos no workflow (#255, #268)", () => {
   const linha = read(TRANSITIONS)
     .split("\n")
     .find((l) => l.startsWith("| `eng.pr` | Fim |") && l.includes("aprovado e mergeado"));
   assert.ok(linha, `${TRANSITIONS} sem a linha da pergunta de merge do eng.pr. ${MERGE_FORCE}`);
   const celulas = linha.split("|").map((c) => c.trim());
   const opcoes = celulas[celulas.length - 2].split(" · ").map((o) => o.trim());
-  assert.equal(opcoes.length, 3, `${TRANSITIONS}: a pergunta de merge deveria ter 3 opções. ${MERGE_FORCE}`);
-  assert.equal(opcoes[0], "Ainda não (como hoje)", "o padrão da pergunta de merge deve continuar sendo a primeira opção");
-  assert.match(opcoes[2], /--force/, "a terceira opção da pergunta de merge deve ser a do --force");
-  // No workflow, as 3 opções aparecem como `**{opção}:**`, na mesma ordem da tabela.
+  assert.equal(opcoes.length, 4, `${TRANSITIONS}: a pergunta de merge deveria ter 4 opções. ${MERGE_FORCE}`);
+  assert.match(opcoes[0], /--force/, `a primeira opção da pergunta de merge deve ser a do --force. ${MERGE_FORCE}`);
+  assert.equal(
+    opcoes[1],
+    "Ainda não (como hoje)",
+    `a segunda opção da pergunta de merge deve ser "Ainda não (como hoje)", o fluxo de quem não escolhe. ${MERGE_FORCE}`
+  );
+  assert.equal(opcoes[3], RODO_DEPOIS, `a última opção da pergunta de merge deve ser "${RODO_DEPOIS}". ${MERGE_FORCE}`);
+  // No workflow, as 4 opções aparecem como `**{opção}:**`, na mesma ordem da tabela.
   const workflow = read("workflows/engineering/eng.pr.md");
   const posicoes = opcoes.map((opcao) => {
     const i = workflow.indexOf(`**${opcao}:**`);
@@ -319,4 +331,188 @@ test("a pergunta de merge do eng.pr mantém o padrão e oferece o --force com o 
     posicoes,
     `workflows/engineering/eng.pr.md: as opções da pergunta de merge estão fora da ordem da tabela. ${MERGE_FORCE}`
   );
+  // O "rodo depois" mostra os dois comandos, para a pessoa copiar o que vai usar (Q1 da #268).
+  const rodoDepois = workflow.split("\n").find((l) => l.includes(`**${RODO_DEPOIS}:**`));
+  for (const comando of ["`/eng.spec-consolidate {TASK_MANAGER_KEY}`", "`/eng.spec-consolidate {TASK_MANAGER_KEY} --force`"]) {
+    assert.ok(
+      rodoDepois.includes(comando),
+      `workflows/engineering/eng.pr.md: a opção "${RODO_DEPOIS}" sem o comando ${comando}. ${MERGE_FORCE}`
+    );
+  }
+  // O guia do /eng.pr lista as 4 opções como `**{opção}**`, na mesma ordem da tabela.
+  const guia = read(GUIA_PR);
+  const noGuia = opcoes.map((opcao) => {
+    const i = guia.indexOf(`**${opcao}**`);
+    assert.ok(i >= 0, `${GUIA_PR} sem a opção "**${opcao}**" da pergunta de merge. ${MERGE_FORCE}`);
+    return i;
+  });
+  assert.deepEqual(
+    [...noGuia].sort((x, y) => x - y),
+    noGuia,
+    `${GUIA_PR}: as opções da pergunta de merge estão fora da ordem da tabela. ${MERGE_FORCE}`
+  );
+});
+
+// A oferta de documentação do fim do eng.work (#268): o "Sim" é a primeira opção e o padrão, e a oferta nem é feita
+// quando o diff já altera o guia de uso do repositório.
+const OFERTA_DOCS =
+  "A oferta de documentação do eng.work é guardada de propósito (#268): ao mudá-la, atualize a eng.transitions-rules.md, o workflows/engineering/eng.work.md, o guia docs/engenharia/eng.work.md e este teste junto.";
+
+test("a oferta de documentação do eng.work tem o \"Sim\" primeiro e só aparece quando o diff não altera o guia (#268)", () => {
+  const linha = read(TRANSITIONS)
+    .split("\n")
+    .find((l) => l.startsWith("| `eng.work` | Fim (Fase 6.2"));
+  assert.ok(linha, `${TRANSITIONS} sem a linha da oferta de documentação do eng.work. ${OFERTA_DOCS}`);
+  const celulas = linha.split("|").map((c) => c.trim());
+  const opcoes = celulas[celulas.length - 2].split(" · ").map((o) => o.trim());
+  assert.deepEqual(
+    opcoes,
+    ["Sim, gerar ou atualizar agora", "Não, seguir sem atualizar (como hoje)"],
+    `${TRANSITIONS}: a oferta de documentação deveria ter o "Sim" primeiro e o "Não" depois. ${OFERTA_DOCS}`
+  );
+  // No workflow, as opções aparecem como `**{opção}**`, na mesma ordem, e o "Sim" é o padrão.
+  const work = read(WORK);
+  const sim = work.indexOf("**Sim, gerar ou atualizar agora** (padrão)");
+  const nao = work.indexOf("**Não, seguir sem atualizar (como hoje)**");
+  assert.ok(sim >= 0, `${WORK} sem "**Sim, gerar ou atualizar agora** (padrão)". ${OFERTA_DOCS}`);
+  assert.ok(nao > sim, `${WORK}: o "Não, seguir sem atualizar (como hoje)" deveria vir depois do "Sim". ${OFERTA_DOCS}`);
+  // A regra de não fazer a oferta, a base remota da conferência (a local pode estar atrás e trazer outros PRs)
+  // e a linha que substitui a oferta na mensagem final.
+  for (const trecho of [
+    "o `CHANGELOG` sozinho não conta",
+    "git fetch origin {Branch base}",
+    "origin/{Branch base}...HEAD",
+    "📚 Documentação: já atualizada nesta entrega",
+  ]) {
+    assert.ok(work.includes(trecho), `${WORK} sem "${trecho}" (regra de não fazer a oferta). ${OFERTA_DOCS}`);
+  }
+  // A regra 1 da tabela de transições ("a opção padrão mantém o fluxo atual") registra a exceção da oferta.
+  assert.ok(
+    read(TRANSITIONS).includes("Exceção: na oferta de documentação do `eng.work`"),
+    `${TRANSITIONS}: a regra 1 sem a exceção da oferta de documentação (o padrão é o Sim). ${OFERTA_DOCS}`
+  );
+  // O guia do /eng.work diz o mesmo: o Sim como padrão e a regra de não fazer a oferta.
+  const guia = read(GUIA_WORK);
+  for (const trecho of ["**Sim** como padrão", "o `CHANGELOG` sozinho não conta"]) {
+    assert.ok(guia.includes(trecho), `${GUIA_WORK} sem "${trecho}" (oferta de documentação). ${OFERTA_DOCS}`);
+  }
+});
+
+// As escolhas do início do eng.work (#268): "Execução das fases" e "Commits" têm 3 opções cada, com as de
+// "tarefa a tarefa" no meio e o padrão (como hoje) em primeiro, iguais na tabela, no workflow e no plan-template.
+const ESCOLHAS_INICIO =
+  "As escolhas do início do eng.work são guardadas de propósito (#268): ao mudá-las, atualize a eng.transitions-rules.md, o workflows/engineering/eng.work.md (Fase 1.3 e o ciclo por tarefa), a eng.work-rules.md, o guia docs/engenharia/eng.work.md, o templates/engineering/plan-template.md e este teste junto.";
+
+test("as escolhas do início do eng.work oferecem tarefa a tarefa e um por tarefa, na mesma ordem na tabela e no workflow (#268)", () => {
+  const transicoes = read(TRANSITIONS).split("\n");
+  const work = read(WORK).split("\n");
+  const guia = read(GUIA_WORK).split("\n");
+  const perguntas = [
+    {
+      tabela: "| `eng.work` | Início | Execução |",
+      workflow: "| **Execução das fases** |",
+      noGuia: "| Execução |",
+      rotulos: ["Fase a fase, com aprovação (como hoje)", "Tarefa a tarefa, com aprovação", "Todas de uma vez"],
+    },
+    {
+      tabela: "| `eng.work` | Início | Commits |",
+      workflow: "| **Commits** |",
+      noGuia: "| Commits |",
+      rotulos: ["Um por fase (como hoje)", "Um por tarefa", "Um commit só ao final"],
+    },
+    {
+      // Na tabela e no guia, o "Fluxo normal" continua com a explicação dentro do parêntese.
+      tabela: "| `eng.work` | Início | Depois do work |",
+      workflow: "| **Depois do work** |",
+      noGuia: "| Depois do work |",
+      rotulos: ["Rodar o `/eng.pre-pr`", "Rodar o `/eng.pr`", "Fluxo normal (como hoje"],
+      noWorkflow: ["Rodar o `/eng.pre-pr`", "Rodar o `/eng.pr`", "Fluxo normal (como hoje)"],
+    },
+  ];
+  for (const { tabela, workflow, noGuia, rotulos, noWorkflow = rotulos } of perguntas) {
+    const linha = transicoes.find((l) => l.startsWith(tabela));
+    assert.ok(linha, `${TRANSITIONS} sem a linha "${tabela}". ${ESCOLHAS_INICIO}`);
+    const celulas = linha.split("|").map((c) => c.trim());
+    const opcoes = celulas[celulas.length - 2].split(" · ").map((o) => o.trim());
+    assert.equal(opcoes.length, rotulos.length, `${TRANSITIONS}: "${tabela}" deveria ter ${rotulos.length} opções. ${ESCOLHAS_INICIO}`);
+    // "Todas de uma vez" traz o parêntese do limite na tabela: a opção começa pelo rótulo.
+    rotulos.forEach((rotulo, i) =>
+      assert.ok(opcoes[i].startsWith(rotulo), `${TRANSITIONS}: a opção ${i + 1} de "${tabela}" deveria ser "${rotulo}". ${ESCOLHAS_INICIO}`)
+    );
+    // Na Fase 1.3 do workflow, cada rótulo aparece como `**{rótulo}**`, na mesma ordem.
+    const linhaWork = work.find((l) => l.startsWith(workflow));
+    assert.ok(linhaWork, `${WORK} sem a linha "${workflow}" da Fase 1.3. ${ESCOLHAS_INICIO}`);
+    const posicoes = noWorkflow.map((rotulo) => {
+      const i = linhaWork.indexOf(`**${rotulo}**`);
+      assert.ok(i >= 0, `${WORK}: "${workflow}" sem a opção "**${rotulo}**". ${ESCOLHAS_INICIO}`);
+      return i;
+    });
+    assert.deepEqual(
+      [...posicoes].sort((x, y) => x - y),
+      posicoes,
+      `${WORK}: as opções de "${workflow}" estão fora da ordem da tabela. ${ESCOLHAS_INICIO}`
+    );
+    // No guia do /eng.work, a linha da pergunta traz os mesmos rótulos, na mesma ordem.
+    const linhaGuia = guia.find((l) => l.startsWith(noGuia));
+    assert.ok(linhaGuia, `${GUIA_WORK} sem a linha "${noGuia}". ${ESCOLHAS_INICIO}`);
+    const noTextoGuia = rotulos.map((rotulo) => {
+      const i = linhaGuia.indexOf(rotulo);
+      assert.ok(i >= 0, `${GUIA_WORK}: "${noGuia}" sem a opção "${rotulo}". ${ESCOLHAS_INICIO}`);
+      return i;
+    });
+    assert.deepEqual(
+      [...noTextoGuia].sort((x, y) => x - y),
+      noTextoGuia,
+      `${GUIA_WORK}: as opções de "${noGuia}" estão fora da ordem da tabela. ${ESCOLHAS_INICIO}`
+    );
+  }
+  // O ciclo por tarefa: a retomada (1.2, que remete ao fim da 1.3) e as pausas (2.2 e 6.1) citam "Tarefa a tarefa";
+  // a 1.3 cita a {fase}.T; o commit (5.3), "Um por tarefa".
+  const textoWork = work.join("\n");
+  const ciclo = [
+    ["### 1.2 Identificar Fase Atual", "Tarefa a tarefa"],
+    ["### 1.3 Escolhas do início (`eng.transitions-rules.md`)", "{fase}.T"],
+    ["### 2.2 Aguardar Aprovação", "Tarefa a tarefa"],
+    ["### 5.3 Commit da Fase ou da Tarefa (GitFlow)", "Um por tarefa"],
+    ["### 6.1 Se Houver Mais Fases", "Tarefa a tarefa"],
+  ];
+  for (const [titulo, opcao] of ciclo) {
+    assert.ok(
+      secao(textoWork, titulo, ESCOLHAS_INICIO).includes(opcao),
+      `${WORK}: a seção "${titulo}" não cita "${opcao}" (ciclo por tarefa). ${ESCOLHAS_INICIO}`
+    );
+  }
+  // A tabela "Quando sai o commit" da 1.3: as três formas de commit nas colunas e uma linha por execução.
+  const escolhas = secao(textoWork, "### 1.3 Escolhas do início (`eng.transitions-rules.md`)", ESCOLHAS_INICIO)
+    .split("\n")
+    .map((l) => l.trim());
+  assert.ok(
+    escolhas.includes("| Execução | Um por fase | Um por tarefa | Um commit só ao final |"),
+    `${WORK}: a 1.3 sem o cabeçalho da tabela "Quando sai o commit" (Execução × Um por fase, Um por tarefa, Um commit só ao final). ${ESCOLHAS_INICIO}`
+  );
+  for (const execucao of ["Fase a fase", "Tarefa a tarefa", "Todas de uma vez"]) {
+    assert.ok(
+      escolhas.some((l) => l.startsWith(`| ${execucao} |`)),
+      `${WORK}: a tabela "Quando sai o commit" da 1.3 sem a linha "${execucao}". ${ESCOLHAS_INICIO}`
+    );
+  }
+  // O guia do /eng.work explica quando sai o commit em cada forma de commit (a lista resume a tabela da 1.3).
+  const textoGuia = guia.join("\n");
+  for (const trecho of ["Quando sai o commit", "**Um por fase:**", "**Um por tarefa:**", "**Um commit só ao final:**"]) {
+    assert.ok(textoGuia.includes(trecho), `${GUIA_WORK} sem "${trecho}" (quando sai o commit). ${ESCOLHAS_INICIO}`);
+  }
+  // O cabeçalho do plan-template grava os valores novos.
+  const cabecalho = read("templates/engineering/plan-template.md")
+    .split("\n")
+    .find((l) => l.startsWith("> **Execução:**"));
+  assert.ok(cabecalho, `templates/engineering/plan-template.md sem o cabeçalho "Execução:". ${ESCOLHAS_INICIO}`);
+  // "rodar /eng.pr" com limite: o texto também aparece dentro de "rodar /eng.pre-pr".
+  for (const valor of [/tarefa a tarefa/, /um por tarefa/, /rodar \/eng\.pre-pr/, /rodar \/eng\.pr(?!e)/, /fluxo normal/]) {
+    assert.match(cabecalho, valor, `templates/engineering/plan-template.md: o cabeçalho sem ${valor}. ${ESCOLHAS_INICIO}`);
+  }
+  // A regra do eng.work cita as opções novas (ela governa o agente).
+  const regra = read("rules-on-demand/engineering/eng.work-rules.md");
+  for (const rotulo of ["Tarefa a tarefa", "Um por tarefa"]) {
+    assert.ok(regra.includes(rotulo), `rules-on-demand/engineering/eng.work-rules.md sem "${rotulo}". ${ESCOLHAS_INICIO}`);
+  }
 });

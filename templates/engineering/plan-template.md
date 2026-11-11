@@ -6,7 +6,7 @@
 >
 > Links (inclusive nos comentários de fase): `rules-on-demand/doc-links-rules.md`; os arquivos de "Onde fazer" que já existem viram link (`{RAIZ}{repo}/{arquivo}#L{n}`), e os novos ficam em texto. `{RAIZ}` é a sequência de `../` até a pasta do workspace, contada para este arquivo (regra 1).
 >
-> **Execução:** {fase a fase | todas de uma vez} · **Commits:** {um por fase | um só ao final} · **Depois do work:** {sugerir /eng.pre-pr | rodar /eng.pre-pr | direto para /eng.pr | parar} _(preenchido pelo `eng.work`, Fase 1.3)_
+> **Execução:** {fase a fase | tarefa a tarefa | todas de uma vez} · **Commits:** {um por fase | um por tarefa | um só ao final} · **Depois do work:** {rodar /eng.pre-pr | rodar /eng.pr | fluxo normal} _(preenchido pelo `eng.work`, Fase 1.3)_
 >
 > **Ajustes antes da aprovação:** {0} _(o `eng.plan` soma 1 a cada "Ajustar o plano"; o `eng.pre-pr` copia o número para o PR Brief)_
 
