@@ -435,7 +435,7 @@ Com **Tarefa a tarefa**, a pergunta é pela próxima tarefa, dentro da fase ou, 
 ⚠️ LEMBRETE: push e PR são responsabilidade do `eng.pr`.
 ```
 
-**Oferta de Documentação (opcional, não trava o fluxo; não conta no `MAX_AI_EXECUTION_PERCENTAGE` — não é uma tarefa do `plan.md`).** Antes da escolha "Depois do work", confira se a entrega já atualizou a documentação: `git diff --name-only {Branch base}...HEAD`, com a `Branch base:` do `architecture.md`.
+**Oferta de Documentação (opcional, não trava o fluxo; não conta no `MAX_AI_EXECUTION_PERCENTAGE` — não é uma tarefa do `plan.md`).** Antes da escolha "Depois do work", confira se a entrega já atualizou a documentação: `git fetch origin {Branch base}` e `git diff --name-only origin/{Branch base}...HEAD`, com a `Branch base:` do `architecture.md` (a base remota, porque a local pode estar atrás e trazer mudanças de outros PRs já mergeados; sem remoto, use a branch local).
 
 - **O diff já altera o guia de uso do repositório** (`docs/`, `README` ou equivalente; o `CHANGELOG` sozinho não conta): **não faça a oferta**. Mostre, na mensagem acima, a linha `📚 Documentação: …` com esses arquivos e siga para a escolha "Depois do work".
 - **O diff não altera o guia de uso:** pergunte com `AskUserQuestion` (sem a ferramenta, use a tabela de `prod-rules.md`): **"Quer gerar ou atualizar a documentação do projeto (`docs/` ou equivalente) a partir desta entrega?"**, sempre nesta ordem e com o "Sim" recomendado (o contexto da entrega não troca a ordem nem a recomendação).
