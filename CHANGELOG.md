@@ -6,6 +6,11 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), e o
 
 > Versões anteriores a `2.1.1` não foram documentadas retroativamente neste changelog — o histórico detalhado dessas versões continua disponível via `git log`.
 
+## Não lançado
+
+### Changed
+- **`jarvis init --upgrade` não lista skills com o prefixo do `COMPANY_PROFILE` (#266)**: o upgrade não mostra nem apaga (nem com `--remove-stale`) os skills cujo nome começa com o perfil ativo seguido de hífen, como `claro-onboarding` com `COMPANY_PROFILE=claro`: são os skills próprios da empresa, que ficam em `$IDE/skills/` e nunca vêm do framework. Vale o perfil gravado no `ENV.md`, inclusive o respondido no próprio upgrade e o padrão `stark-industries`. Um skill próprio sem o prefixo continua na lista; para protegê-lo, renomeie-o com o prefixo. Sem skill com o prefixo, nada muda.
+
 ## [9.0.0] - 2026-11-10
 
 ### Added
