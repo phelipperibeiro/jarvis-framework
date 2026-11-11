@@ -23,12 +23,17 @@ import { resolveEnvPath } from "../lib/env-loader.js";
 import { LOCK_FILE } from "../lib/config/constants.js";
 import { compareVersions, localInstall } from "../lib/utils/version.js";
 import {
+  companyProfilesFor,
   findStaleSkills,
   registeredSpecializations,
   removeStaleSkills,
 } from "../lib/core/stale-skills.js";
 import { parseEnvEntries, planEnvUpgrade, applyEnvUpgrade } from "../lib/core/env-upgrade.js";
-import { DEFAULT_COMPANY_PROFILE, isValidCompanyProfile } from "../lib/core/company-profile.js";
+import {
+  DEFAULT_COMPANY_PROFILE,
+  isValidCompanyProfile,
+  readCompanyProfile,
+} from "../lib/core/company-profile.js";
 import { checkCli, getVendor } from "../lib/integrations/cli-runner.js";
 import {
   expandEnv,
@@ -800,11 +805,17 @@ async function runUpgrade(cwd, flags) {
     }
   }
 
-  const overrides =
+  // `keptPaths`: só os caminhos de documento mantidos no lugar antigo (o resumo os lista). A resposta
+  // do 3.2 vai junto apenas para a gravação, para não aparecer como caminho mantido (#266).
+  const keptPaths =
     docsPlan.moves.length > 0 && !accepted ? declineEnvValues(docsPlan, addedKeys, env) : {};
-  if (companyProfile) overrides.COMPANY_PROFILE = companyProfile;
   const today = new Date().toISOString().slice(0, 10);
-  applyEnvUpgrade(envPath, envPlan, today, overrides);
+  applyEnvUpgrade(
+    envPath,
+    envPlan,
+    today,
+    companyProfile ? { ...keptPaths, COMPANY_PROFILE: companyProfile } : keptPaths
+  );
 
   // 3.3 Perfil respondido agora: o sync acima rodou com o default. Reaplica o overlay do perfil
   // gravado (pasta dele criada, rules dele por cima). A pasta do default criada antes fica: todo
@@ -818,18 +829,34 @@ async function runUpgrade(cwd, flags) {
   }
 
   // 3.1 Skills instalados que saíram do framework: só lista; remove com confirmação ou --remove-stale
-  const ideSkillsDir = join(workspaceDir, `.${getIDEFolder(ide)}`, "skills");
+  // Skill com o prefixo de um perfil de empresa (`{perfil}-…`) fica de fora (#266): o perfil ativo,
+  // lido do ENV.md já gravado (vale o respondido no 3.2, como no 3.3), e as empresas que o
+  // workspace já usou, com pasta em `overlays/` (ou link para ela, mesmo quebrado). O valor do
+  // perfil nunca é impresso aqui. Com o COMPANY_PROFILE vazio ou inválido, a lista usa o perfil
+  // padrão: avisa antes da lista, e o --remove-stale não remove sozinho (com terminal e sem
+  // --yes, a pessoa decide pela pergunta).
+  const ideRoot = join(workspaceDir, `.${getIDEFolder(ide)}`);
+  const ideSkillsDir = join(ideRoot, "skills");
+  const { profile: activeProfile, warning: profileWarning } = readCompanyProfile(
+    readFileSync(envPath, "utf-8")
+  );
   const stale = findStaleSkills({
     ideSkillsDir,
     frameworkSkillsDir: join(getFrameworkRoot(), "skills"),
     registered: registeredSpecializations(parseEnvEntries(envText)),
+    companyProfiles: companyProfilesFor(activeProfile, join(ideRoot, "overlays")),
   });
   let staleRemoved = [];
   let staleErrors = [];
   if (stale.length > 0) {
+    if (profileWarning) {
+      logger.info(
+        `${YELLOW}⚠️  COMPANY_PROFILE vazio ou inválido no ENV.md: a lista usa o perfil padrão. Corrija o ENV.md antes de remover.${NC}`
+      );
+    }
     logger.info(`${YELLOW}🧹 Skills instalados que saíram do framework:${NC}`);
     for (const name of stale) logger.info(`  .${getIDEFolder(ide)}/skills/${name}/`);
-    let confirmed = Boolean(flags.removeStale);
+    let confirmed = Boolean(flags.removeStale) && !profileWarning;
     if (!confirmed && !flags.yes && process.stdin.isTTY) {
       const rl = createInterface({ input: process.stdin, output: process.stdout });
       const answer = await ask(rl, `Remover estes skills antigos? (s/N): `);
@@ -838,6 +865,10 @@ async function runUpgrade(cwd, flags) {
     }
     if (confirmed) {
       ({ removed: staleRemoved, errors: staleErrors } = removeStaleSkills(ideSkillsDir, stale));
+    } else if (profileWarning) {
+      logger.info(
+        `${DIM}  Nada removido. Com o COMPANY_PROFILE vazio ou inválido, o ${BOLD}--remove-stale${NC}${DIM} não remove sozinho: corrija o ENV.md e rode de novo, ou apague as pastas à mão.${NC}`
+      );
     } else {
       logger.info(
         `${DIM}  Nada removido. Apague as pastas à mão ou rode de novo com ${BOLD}--remove-stale${NC}${DIM}.${NC}`
@@ -890,8 +921,8 @@ async function runUpgrade(cwd, flags) {
       `  • COMPANY_PROFILE: ${companyProfile ? "definido" : `default (${DEFAULT_COMPANY_PROFILE})`}`
     );
   }
-  if (Object.keys(overrides).length) {
-    logger.info(`  • Mantidos no caminho antigo: ${Object.keys(overrides).join(", ")}`);
+  if (Object.keys(keptPaths).length) {
+    logger.info(`  • Mantidos no caminho antigo: ${Object.keys(keptPaths).join(", ")}`);
   }
   if (docsPlan.moves.length && !accepted) {
     logger.info(`  • Documentos: nada movido (${docsPlan.moves.length} no caminho antigo)`);

@@ -4,6 +4,7 @@ import assert from "node:assert/strict";
 import {
   realpathSync,
   symlinkSync,
+  lstatSync,
   chmodSync,
   mkdtempSync,
   mkdirSync,
@@ -140,6 +141,8 @@ test("init --upgrade sem terminal e sem --yes: não move e DISCOVERIES_DOCS fica
     assert.ok(!existsSync(join(ws, NEW)));
     const env = readFileSync(join(ws, ".claude/ENV.md"), "utf-8");
     assert.match(env, /^DISCOVERIES_DOCS=\$PROD_DOCS\/discoveries$/m);
+    // #266: o resumo lista só os caminhos de documento mantidos (`keptPaths`)
+    assert.match(r.stdout, /Mantidos no caminho antigo: DISCOVERIES_DOCS/);
   });
 });
 
@@ -269,6 +272,197 @@ test("init --upgrade --remove-stale: remove só o obsoleto; especialização reg
     }
   );
 });
+
+// #266: o skill próprio da empresa (prefixo do COMPANY_PROFILE) não é listado nem apagado; o resto
+// da lista segue igual. Sem terminal: a chave já está no ENV, então o 3.2 não pergunta nada.
+test("init --upgrade --remove-stale: skill com o prefixo do COMPANY_PROFILE fica; o antigo sai (#266)", () => {
+  withWorkspace(
+    {
+      ".claude/ENV.md": `${ENV_V520}COMPANY_PROFILE=claro\n`,
+      ".claude/skills/claro-onboarding/SKILL.md": SKILL,
+      ".claude/skills/skill-antigo/SKILL.md": SKILL,
+    },
+    (ws) => {
+      const r = run(ws, "--upgrade", "--ide", "claude", "--remove-stale");
+      assert.equal(r.status, 0, r.stderr);
+      assert.match(r.stdout, /skill-antigo/);
+      assert.doesNotMatch(r.stdout, /claro-onboarding/);
+      assert.ok(existsSync(join(ws, ".claude/skills/claro-onboarding/SKILL.md")));
+      assert.ok(!existsSync(join(ws, ".claude/skills/skill-antigo")));
+    }
+  );
+});
+
+// #266: o ENV sem a chave ganha o perfil padrão no próprio upgrade (resumo "default"), e o 3.1 lê o
+// ENV.md gravado: o skill `stark-industries-*` fica, como o de qualquer perfil.
+test("init --upgrade --remove-stale: ENV sem a chave grava o perfil padrão e protege stark-industries-* (#266)", () => {
+  withWorkspace(
+    {
+      ".claude/ENV.md": ENV_V520,
+      ".claude/skills/stark-industries-local/SKILL.md": SKILL,
+      ".claude/skills/skill-antigo/SKILL.md": SKILL,
+    },
+    (ws) => {
+      const r = run(ws, "--upgrade", "--ide", "claude", "--remove-stale");
+      assert.equal(r.status, 0, r.stderr);
+      assert.match(r.stdout, /COMPANY_PROFILE: default \(stark-industries\)/);
+      assert.doesNotMatch(r.stdout, /stark-industries-local/);
+      const env = readFileSync(join(ws, ".claude/ENV.md"), "utf-8");
+      assert.match(env, /^COMPANY_PROFILE=stark-industries$/m);
+      assert.ok(existsSync(join(ws, ".claude/skills/stark-industries-local/SKILL.md")));
+      assert.ok(!existsSync(join(ws, ".claude/skills/skill-antigo")));
+    }
+  );
+});
+
+// #266: depois de trocar de empresa, o skill da anterior continua protegido enquanto a pasta do
+// overlay dela existir (vários overlays podem coexistir; um está ativo).
+test("init --upgrade --remove-stale: depois de trocar de empresa, o skill de um perfil com overlay fica (#266)", () => {
+  withWorkspace(
+    {
+      ".claude/ENV.md": `${ENV_V520}COMPANY_PROFILE=vivo\n`,
+      ".claude/overlays/claro/.gitkeep": "",
+      ".claude/skills/claro-onboarding/SKILL.md": SKILL,
+      ".claude/skills/vivo-onboarding/SKILL.md": SKILL,
+      ".claude/skills/skill-antigo/SKILL.md": SKILL,
+    },
+    (ws) => {
+      const r = run(ws, "--upgrade", "--ide", "claude", "--remove-stale");
+      assert.equal(r.status, 0, r.stderr);
+      assert.doesNotMatch(r.stdout, /claro-onboarding|vivo-onboarding/);
+      assert.ok(existsSync(join(ws, ".claude/skills/claro-onboarding/SKILL.md")));
+      assert.ok(existsSync(join(ws, ".claude/skills/vivo-onboarding/SKILL.md")));
+      assert.ok(!existsSync(join(ws, ".claude/skills/skill-antigo")));
+    }
+  );
+});
+
+// #266: o overlay guardado no repositório da empresa entra em `overlays/` como link; se esse
+// repositório muda de lugar ou não foi clonado, o link fica quebrado, e o skill da empresa continua
+// protegido. O upgrade segue até o fim e não mexe no link.
+test("init --upgrade --remove-stale: link quebrado em overlays/ ainda protege o skill daquele perfil (#266)", () => {
+  withWorkspace(
+    {
+      ".claude/ENV.md": `${ENV_V520}COMPANY_PROFILE=vivo\n`,
+      ".claude/skills/claro-onboarding/SKILL.md": SKILL,
+      ".claude/skills/skill-antigo/SKILL.md": SKILL,
+    },
+    (ws) => {
+      const link = join(ws, ".claude/overlays/claro");
+      mkdirSync(dirname(link), { recursive: true });
+      symlinkSync(join(ws, "repo-da-claro-fora-do-lugar"), link);
+      const r = run(ws, "--upgrade", "--ide", "claude", "--remove-stale");
+      assert.equal(r.status, 0, r.stderr);
+      assert.doesNotMatch(r.stdout, /claro-onboarding/);
+      assert.ok(existsSync(join(ws, ".claude/skills/claro-onboarding/SKILL.md")));
+      assert.ok(!existsSync(join(ws, ".claude/skills/skill-antigo")));
+      assert.ok(lstatSync(link).isSymbolicLink(), "o upgrade não mexe no link de overlays/");
+    }
+  );
+});
+
+// #266: com o COMPANY_PROFILE inválido, a lista usa o perfil padrão; o aviso sai antes da lista e o
+// --remove-stale não remove nada sozinho.
+test("init --upgrade --remove-stale: com COMPANY_PROFILE inválido, avisa antes da lista e não remove (#266)", () => {
+  withWorkspace(
+    {
+      ".claude/ENV.md": `${ENV_V520}COMPANY_PROFILE=Claro\n`,
+      ".claude/skills/claro-onboarding/SKILL.md": SKILL,
+      ".claude/skills/skill-antigo/SKILL.md": SKILL,
+    },
+    (ws) => {
+      const r = run(ws, "--upgrade", "--ide", "claude", "--remove-stale");
+      assert.equal(r.status, 0, r.stderr);
+      const aviso = r.stdout.indexOf("COMPANY_PROFILE vazio ou inválido no ENV.md");
+      const lista = r.stdout.indexOf("Skills instalados que saíram do framework");
+      assert.ok(aviso >= 0 && lista > aviso, "o aviso sai antes da lista");
+      assert.match(r.stdout, /Nada removido\. Com o COMPANY_PROFILE vazio ou inválido/);
+      assert.ok(existsSync(join(ws, ".claude/skills/claro-onboarding/SKILL.md")));
+      assert.ok(existsSync(join(ws, ".claude/skills/skill-antigo/SKILL.md")));
+    }
+  );
+});
+
+// #266: as perguntas do upgrade (o perfil no 3.2, a remoção no 3.1) só saem com terminal (o
+// runUpgrade lê `process.stdin.isTTY` antes de perguntar), então os testes abaixo usam o
+// pseudo-terminal do `script` do util-linux. Fora do Linux, ou sem esse `script`, eles são pulados:
+// lá esses caminhos ficam sem teste.
+const scriptVersion = spawnSync("script", ["--version"], { encoding: "utf-8" });
+const semTerminal =
+  scriptVersion.status === 0 && /util-linux/.test(scriptVersion.stdout)
+    ? false
+    : "sem o script do util-linux para o pseudo-terminal";
+
+// O `jarvis init` dentro do pseudo-terminal, com o texto digitado em `input`.
+const runComTerminal = (cwd, input, ...args) =>
+  spawnSync(
+    "script",
+    ["-qec", [process.execPath, cli, "init", ...args].map((a) => `'${a}'`).join(" "), "/dev/null"],
+    {
+      cwd,
+      input,
+      encoding: "utf-8",
+      timeout: 30000,
+      env: { ...process.env, JARVIS_SKIP_CLI_CHECK: "1" },
+    }
+  );
+
+test(
+  "init --upgrade com terminal: o perfil respondido protege o skill e não vira 'caminho antigo' no resumo (#266)",
+  { skip: semTerminal },
+  () => {
+    withWorkspace(
+      {
+        ".claude/ENV.md": ENV_V520,
+        ".claude/skills/claro-onboarding/SKILL.md": SKILL,
+        ".claude/skills/skill-antigo/SKILL.md": SKILL,
+      },
+      (ws) => {
+        const r = runComTerminal(ws, "claro\n", "--upgrade", "--ide", "claude", "--remove-stale");
+        assert.equal(r.status, 0, `${r.stdout}${r.stderr}`);
+        assert.match(r.stdout, /COMPANY_PROFILE: definido/);
+        assert.doesNotMatch(r.stdout, /Mantidos no caminho antigo: COMPANY_PROFILE/);
+        const env = readFileSync(join(ws, ".claude/ENV.md"), "utf-8");
+        assert.match(env, /^COMPANY_PROFILE=claro$/m);
+        assert.ok(existsSync(join(ws, ".claude/skills/claro-onboarding/SKILL.md")));
+        assert.ok(!existsSync(join(ws, ".claude/skills/skill-antigo")));
+      }
+    );
+  }
+);
+
+// #266 (Q9): com terminal, o perfil inválido não tira a decisão da pessoa, nem com o --remove-stale
+// (a flag não pula a pergunta). O aviso sai antes da pergunta; "s" remove o que a lista mostrou (o
+// skill com o prefixo também, porque a lista usou o perfil padrão) e "n" não remove nada.
+for (const [resposta, remove, ...flags] of [
+  ["s", true],
+  ["n", false],
+  ["n", false, "--remove-stale"],
+]) {
+  test(
+    `init --upgrade${flags.map((f) => ` ${f}`).join("")} com terminal e COMPANY_PROFILE inválido: avisa antes da pergunta e "${resposta}" ${remove ? "remove" : "não remove"} (#266)`,
+    { skip: semTerminal },
+    () => {
+      withWorkspace(
+        {
+          ".claude/ENV.md": `${ENV_V520}COMPANY_PROFILE=Claro\n`,
+          ".claude/skills/claro-onboarding/SKILL.md": SKILL,
+          ".claude/skills/skill-antigo/SKILL.md": SKILL,
+        },
+        (ws) => {
+          const r = runComTerminal(ws, `${resposta}\n`, "--upgrade", "--ide", "claude", ...flags);
+          assert.equal(r.status, 0, `${r.stdout}${r.stderr}`);
+          const aviso = r.stdout.indexOf("COMPANY_PROFILE vazio ou inválido no ENV.md");
+          const pergunta = r.stdout.indexOf("Remover estes skills antigos?");
+          assert.ok(aviso >= 0 && pergunta > aviso, "o aviso sai antes da pergunta");
+          for (const skill of ["claro-onboarding", "skill-antigo"]) {
+            assert.equal(existsSync(join(ws, ".claude/skills", skill)), !remove, skill);
+          }
+        }
+      );
+    }
+  );
+}
 
 test("init --upgrade: eng-scraper e eng-scraper-robot-builder (renomeados na #81) saem sozinhos", () => {
   withWorkspace(

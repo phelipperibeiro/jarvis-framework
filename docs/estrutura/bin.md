@@ -31,7 +31,7 @@ bin/
 │   ├── fork.js             # jarvis fork (overlay de empresa, #199)
 │   └── daily-report.js     # jarvis daily-report
 └── lib/
-    ├── core/               # sync-engine (com o RuleResolver do overlay), scanner, profile-filter, token-report, env-upgrade, docs-migrate, git-exclude (exclude local do modo projeto e untrack, #227), workspace-mode, repos-map (repositórios com `.git` fora do `CDD-MIND-MAP.md`, só lê, #225), mcp-config, stale-skills, session-scan, env-paths (`expandEnvPath`, `checkEnvPaths`, `EnvPathError`: caminhos do ENV.md com `$VAR`), company-profile (COMPANY_PROFILE e o default stark-industries)
+    ├── core/               # sync-engine (com o RuleResolver do overlay), scanner, profile-filter, token-report, env-upgrade, docs-migrate, git-exclude (exclude local do modo projeto e untrack, #227), workspace-mode, repos-map (repositórios com `.git` fora do `CDD-MIND-MAP.md`, só lê, #225), mcp-config, stale-skills (skills que saíram do framework, para o `init --upgrade`; fora os de `*_SPECIALIZATIONS` e os com o prefixo do perfil ativo ou de um perfil com pasta em `overlays/` (ou link para ela, mesmo quebrado)), session-scan, env-paths (`expandEnvPath`, `checkEnvPaths`, `EnvPathError`: caminhos do ENV.md com `$VAR`), company-profile (COMPANY_PROFILE e o default stark-industries)
     ├── flow-map/           # índice, leitor das tabelas de chamadas, árvore e saída do jarvis map
     ├── config/             # IDEs, constants (SYNC_DIRS, LOCK_FILE)
     ├── vcs/                # GitHub/GitLab pela CLI (gh, glab)
