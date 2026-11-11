@@ -60,7 +60,7 @@ Quando sai o commit, conforme a combinação (nada é commitado antes da sua val
 - **Um por tarefa:** com "Tarefa a tarefa", depois que você valida cada tarefa; com "Fase a fase" ou "Todas de uma vez", todos juntos ao fim da fase, um por tarefa. Os testes da fase saem no commit da `X.T`. Tarefas que mexem no mesmo arquivo sem dar para separar saem num commit só, com aviso, e tarefa sem mudança de arquivo não gera commit.
 - **Um commit só ao final:** depois da última fase.
 
-Em qualquer escolha, ele para no limite da IA, com um teste falhando ou diante de uma questão nova. Se a parada cai no meio de uma fase cujo commit só sai no fim dela, ele pergunta se commita agora o que já está pronto ou deixa sem commit para a retomada (o padrão); só dá para commitar o que não divide arquivo com a tarefa interrompida e passa nos testes sem ela. Numa retomada, segue só as tarefas que não estão completadas.
+Em qualquer escolha, ele para no limite da IA, com um teste falhando ou diante de uma questão nova. Se a parada cai no meio de uma fase cujo commit só sai no fim dela, ele pergunta se commita agora o que já está pronto ou deixa sem commit para a retomada (o padrão). A pergunta só aparece quando dá para commitar sem mexer no que está em andamento (arquivos que a tarefa interrompida não tocou, com os testes passando); senão, ele avisa e deixa sem commit. Numa retomada, segue só as tarefas que não estão completadas.
 
 ## Regras que importam
 
