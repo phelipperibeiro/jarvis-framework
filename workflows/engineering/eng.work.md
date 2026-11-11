@@ -33,7 +33,7 @@ Este comando executa a **implementação de código** seguindo o plano de execu�
 | Fase 3 › 3.3.2 Implementar Testes Faltantes (Opção B) | `/eng-qa` | Se a estratégia do `architecture.md` seção 6.5 indicar uma especialização registrada em `QA_SPECIALIZATIONS` |
 | Fase 3 › 3.1 Implementar Código (exceção) | `eng.advisor.agent` (agente) | Só por exceção: questão nova em aberto, com o Advisor habilitado no `eng.start` (cabeçalho do `architecture.md`) |
 | Fase 5 › 5.2 e "Se houver bloqueio técnico" | `/eng-global-task-comment` | Se houver desvio do plano: mudança de direção, fase bloqueada ou questão nova consultada ao Advisor, só com o Sim da pergunta (regra de ouro; freelance: o skill registra no `task-log.md`); sem o Sim, o texto fica no `task-comment-*.md` |
-| Fase 6 › 6.2 Oferta de Documentação | `/eng-global-docs-write` | Sempre que todas as fases forem concluídas e o usuário disser Sim à oferta de gerar/atualizar a documentação |
+| Fase 6 › 6.2 Oferta de Documentação | `/eng-global-docs-write` | Quando todas as fases forem concluídas, a oferta for feita (o diff ainda não altera o guia de uso do repositório) e o usuário disser Sim a gerar/atualizar a documentação |
 
 ---
 
@@ -375,6 +375,9 @@ Refs: TASK-123"
 - Arquivos modificados: {Y}
 - Testes adicionados: {Z}
 
+📚 Documentação: já atualizada nesta entrega ({arquivos}); uma lacuna restante é apontada pelo Gate 9 do /eng.pre-pr
+   (só quando a oferta abaixo não é feita)
+
 📌 Próximos passos:
 1. Revise o código e os commits: git log --oneline
 2. Execute os testes completos do projeto
@@ -383,12 +386,14 @@ Refs: TASK-123"
 ⚠️ LEMBRETE: push e PR são responsabilidade do `eng.pr`.
 ```
 
-**Oferta de Documentação (opcional, não trava o fluxo; não conta no `MAX_AI_EXECUTION_PERCENTAGE` — não é uma tarefa do `plan.md`).** Antes da escolha "Depois do work", pergunte com `AskUserQuestion` (sem a ferramenta, use a tabela de `prod-rules.md`): **"Quer gerar ou atualizar a documentação do projeto (`docs/` ou equivalente) a partir desta entrega?"**:
+**Oferta de Documentação (opcional, não trava o fluxo; não conta no `MAX_AI_EXECUTION_PERCENTAGE` — não é uma tarefa do `plan.md`).** Antes da escolha "Depois do work", confira se a entrega já atualizou a documentação: `git diff --name-only {Branch base}...HEAD`, com a `Branch base:` do `architecture.md`.
 
-- **Não, seguir sem atualizar (como hoje)** (padrão): segue direto para a escolha "Depois do work". A lacuna, se houver, é apontada depois pelo Gate 9 do `/eng.pre-pr` ("Documentação do projeto").
-- **Sim, gerar ou atualizar agora**: use o skill `/eng-global-docs-write` para analisar o diff desde a `Branch base:` do `architecture.md` e propor a atualização do guia de uso do repositório (o que existe **hoje**; nunca histórico, nem "antes"/"passou a", nem funcionalidade removida — ela some do guia, não vira uma nota de descontinuação). Mostre a edição proposta e só grave com a aprovação. Comite em **commit próprio** (`{TASK_MANAGER_KEY} docs({escopo}): atualizar documentação da entrega`, `Refs: {TASK_MANAGER_KEY}`), fora da sequência de commits por fase.
+- **O diff já altera o guia de uso do repositório** (`docs/`, `README` ou equivalente; o `CHANGELOG` sozinho não conta): **não faça a oferta**. Mostre, na mensagem acima, a linha `📚 Documentação: …` com esses arquivos e siga para a escolha "Depois do work".
+- **O diff não altera o guia de uso:** pergunte com `AskUserQuestion` (sem a ferramenta, use a tabela de `prod-rules.md`): **"Quer gerar ou atualizar a documentação do projeto (`docs/` ou equivalente) a partir desta entrega?"**, sempre nesta ordem e com o "Sim" recomendado (o contexto da entrega não troca a ordem nem a recomendação).
+  - **Sim, gerar ou atualizar agora** (padrão): use o skill `/eng-global-docs-write` para analisar o diff desde a `Branch base:` do `architecture.md` e propor a atualização do guia de uso do repositório (o que existe **hoje**; nunca histórico, nem "antes"/"passou a", nem funcionalidade removida — ela some do guia, não vira uma nota de descontinuação). Mostre a edição proposta e só grave com a aprovação. Comite em **commit próprio** (`{TASK_MANAGER_KEY} docs({escopo}): atualizar documentação da entrega`, `Refs: {TASK_MANAGER_KEY}`), fora da sequência de commits por fase.
+  - **Não, seguir sem atualizar (como hoje)**: segue direto para a escolha "Depois do work". A lacuna, se houver, é apontada depois pelo Gate 9 do `/eng.pre-pr` ("Documentação do projeto").
 
-Depois da oferta (com Sim ou Não), siga a escolha **Depois do work**: chamar o `/eng.pre-pr {TASK_MANAGER_KEY}`, chamar o `/eng.pr {TASK_MANAGER_KEY}`, fazer o que o usuário descreveu em texto livre (o "Outros" automático) ou, no **Fluxo normal (como hoje)**, só encerrar com a mensagem (chamar = pelo Skill tool, ou mostrar o comando pronto na IDE que não permite).
+Depois da oferta (com Sim ou Não), ou sem ela quando a documentação já foi atualizada, siga a escolha **Depois do work**: chamar o `/eng.pre-pr {TASK_MANAGER_KEY}`, chamar o `/eng.pr {TASK_MANAGER_KEY}`, fazer o que o usuário descreveu em texto livre (o "Outros" automático) ou, no **Fluxo normal (como hoje)**, só encerrar com a mensagem (chamar = pelo Skill tool, ou mostrar o comando pronto na IDE que não permite).
 
 ## Regras Importantes
 

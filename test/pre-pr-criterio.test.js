@@ -334,3 +334,32 @@ test("a pergunta de merge do eng.pr tem o --force primeiro e o \"rodo depois\" p
     );
   }
 });
+
+// A oferta de documentação do fim do eng.work (#268): o "Sim" é a primeira opção e o padrão, e a oferta nem é feita
+// quando o diff já altera o guia de uso do repositório.
+const OFERTA_DOCS =
+  "A oferta de documentação do eng.work é guardada de propósito (#268): ao mudá-la, atualize a eng.transitions-rules.md, o workflows/engineering/eng.work.md e este teste junto.";
+
+test("a oferta de documentação do eng.work tem o \"Sim\" primeiro e só aparece quando o diff não altera o guia (#268)", () => {
+  const linha = read(TRANSITIONS)
+    .split("\n")
+    .find((l) => l.startsWith("| `eng.work` | Fim (Fase 6.2"));
+  assert.ok(linha, `${TRANSITIONS} sem a linha da oferta de documentação do eng.work. ${OFERTA_DOCS}`);
+  const celulas = linha.split("|").map((c) => c.trim());
+  const opcoes = celulas[celulas.length - 2].split(" · ").map((o) => o.trim());
+  assert.deepEqual(
+    opcoes,
+    ["Sim, gerar ou atualizar agora", "Não, seguir sem atualizar (como hoje)"],
+    `${TRANSITIONS}: a oferta de documentação deveria ter o "Sim" primeiro e o "Não" depois. ${OFERTA_DOCS}`
+  );
+  // No workflow, as opções aparecem como `**{opção}**`, na mesma ordem, e o "Sim" é o padrão.
+  const work = read(WORK);
+  const sim = work.indexOf("**Sim, gerar ou atualizar agora** (padrão)");
+  const nao = work.indexOf("**Não, seguir sem atualizar (como hoje)**");
+  assert.ok(sim >= 0, `${WORK} sem "**Sim, gerar ou atualizar agora** (padrão)". ${OFERTA_DOCS}`);
+  assert.ok(nao > sim, `${WORK}: o "Não, seguir sem atualizar (como hoje)" deveria vir depois do "Sim". ${OFERTA_DOCS}`);
+  // A regra de não fazer a oferta e a linha que a substitui na mensagem final.
+  for (const trecho of ["o `CHANGELOG` sozinho não conta", "📚 Documentação: já atualizada nesta entrega"]) {
+    assert.ok(work.includes(trecho), `${WORK} sem "${trecho}" (regra de não fazer a oferta). ${OFERTA_DOCS}`);
+  }
+});

@@ -34,7 +34,7 @@ Para cada fase do plano:
 7. **Faz o commit da fase**, com arquivos adicionados um a um e a chave da tarefa na mensagem
 8. **Pergunta** se você quer iniciar a próxima fase e espera a resposta
 
-Quando todas as fases terminam, antes de perguntar o que fazer depois, ele **oferece** gerar ou atualizar a documentação do projeto a partir da entrega (opcional, não trava o fluxo, e não entra na conta de `MAX_AI_EXECUTION_PERCENTAGE`). Com Sim, usa o skill `eng-global-docs-write` e comita a atualização em separado. Com Não, segue direto; se a documentação ficou desatualizada, é o `/eng.pre-pr` (Gate 9) que aponta depois.
+Quando todas as fases terminam, antes de perguntar o que fazer depois, ele confere se a entrega já mexeu na documentação do projeto (o diff desde a branch base altera `docs/`, o `README` ou equivalente; o `CHANGELOG` sozinho não conta). Se mexeu, não pergunta nada: a mensagem final lista os arquivos de documentação já atualizados. Se não mexeu, ele **oferece** gerar ou atualizar a documentação a partir da entrega, com **Sim** como padrão (opcional, não trava o fluxo, e não entra na conta de `MAX_AI_EXECUTION_PERCENTAGE`). Com Sim, usa o skill `eng-global-docs-write`, mostra a proposta, só grava com a sua aprovação e comita a atualização em separado. Com Não, segue direto. Nos dois casos, se a documentação ficou desatualizada ou incompleta, é o `/eng.pre-pr` (Gate 9) que aponta depois.
 
 ## O limite da IA
 
