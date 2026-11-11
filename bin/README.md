@@ -59,7 +59,7 @@ bin/commands/*.js          →  lógica de negócio pura: async (flags) => {...}
 
 ## O adapter: commander → objeto `flags`
 
-O commander entrega ao `.action()` as opções em **camelCase** (`--env-file` → `options.envFile`, `--max-age` → `options.maxAge`) e cada positional como seu próprio parâmetro. As funções em `bin/commands/*.js` leem um objeto `flags`, com chaves com hífen literal (`flags["env-file"]`) e um array `flags._` para positionals.
+O commander entrega ao `.action()` as opções em **camelCase** (`--env` → `options.env`, `--max-age` → `options.maxAge`) e cada positional como seu próprio parâmetro. As funções em `bin/commands/*.js` leem um objeto `flags`, com chaves com hífen literal (`flags["max-age"]`; o `--env` chega em `flags.env` e a alternativa `--env-file`, em `flags["env-file"]`) e um array `flags._` para positionals.
 
 `program.js` tem uma função `toLegacyFlags(options, extra)` que monta esse objeto antes de cada chamada:
 
@@ -117,14 +117,14 @@ if (fileURLToPath(import.meta.url) === process.argv[1]) {
 2. Em `bin/lib/cli/program.js`:
    - Importar a função no topo.
    - Registrar com `cmd(program, "meu-comando")` (ou `cmd(parentExistente, "nome")` se for subcomando de um grupo como `docs`/`vcs`/`tasks`).
-   - Declarar as opções/positionals com `.option()`/`.argument()`. Usar `withEnvOptions()`/`withLogOptions()` de `shared-options.js` se o comando precisar de `--ide`/`--env-file` ou `--quiet`/`--verbose`/`--silent`.
+   - Declarar as opções/positionals com `.option()`/`.argument()`. Usar `withEnvOptions()`/`withLogOptions()` de `shared-options.js` se o comando precisar de `--ide`/`--env` (o helper também registra a alternativa `--env-file`, que no Node 20+ sai com 9 antes do CLI quando o caminho não existe) ou `--quiet`/`--verbose`/`--silent`.
    - No `.action()`, chamar `toLegacyFlags(options, extra)` se a função lê o objeto `flags`, ou passar `options` quase direto se ela lê as opções do commander (como os comandos de `vcs` e `tasks`).
 3. Rodar manualmente o comando novo e **todos os outros** (a suíte de `test/` roda o `jarvis` de verdade em vários comandos, por exemplo em `rules-sync.test.js`, `token-report.test.js` e `docs-commands-cli.test.js`; o resto depende desse teste manual). Checklist mínimo: `--help` do comando novo, caminho feliz, caminho de erro (flag/argumento faltando).
 4. `npm run lint && npm run test:comandos && npm run test:filtro` antes de comitar.
 
 ## Variáveis de ambiente lidas diretamente (fora do ENV.md)
 
-`bin/lib/tasks/comment.js` e `bin/lib/vcs/*.js` leem `process.env` direto (`TASK_MANAGER`, `TASK_MANAGER_ACCESS`, `TASK_MANAGER_URL_BASE`, `VERSION_CONTROL`, etc.; nenhum token: o login é o da CLI do vendor) — não passam pelo `env-loader.js`/ENV.md. O `jarvis tasks comment` e o `jarvis vcs create-merge` completam o que faltar no ambiente lendo o `$IDE/ENV.md` do workspace (`readFileEnv`/`resolveFileEnv` em `integrations/cli-runner.js`, com `--ide`/`--env-file`; o ambiente do processo vence; `setting` tira aspas e comentário de fim de linha), então os skills não precisam exportar nada nem usar `eval`. O `accessGate` decide antes de qualquer envio: só `cli` (ou vazio, com aviso) segue; `manual`, valor inválido e ENV.md ilegível saem com 3. O ENV.md lido é repassado ao `createMergeRequest` (`fileEnvResult`), inclusive pelo Central docs. Se um comando novo precisar ler o `ENV.md` diretamente, use `env-loader.js#resolveEnvPath`/`loadEnv` (ver `whoami.js` e `tokens.js` como exemplo) em vez de `process.env`.
+`bin/lib/tasks/comment.js` e `bin/lib/vcs/*.js` leem `process.env` direto (`TASK_MANAGER`, `TASK_MANAGER_ACCESS`, `TASK_MANAGER_URL_BASE`, `VERSION_CONTROL`, etc.; nenhum token: o login é o da CLI do vendor) — não passam pelo `env-loader.js`/ENV.md. O `jarvis tasks comment` e o `jarvis vcs create-merge` completam o que faltar no ambiente lendo o `$IDE/ENV.md` do workspace (`readFileEnv`/`resolveFileEnv` em `integrations/cli-runner.js`, com `--ide`/`--env`; o ambiente do processo vence; `setting` tira aspas e comentário de fim de linha), então os skills não precisam exportar nada nem usar `eval`. O `accessGate` decide antes de qualquer envio: só `cli` (ou vazio, com aviso) segue; `manual`, valor inválido e ENV.md ilegível saem com 3. O ENV.md lido é repassado ao `createMergeRequest` (`fileEnvResult`), inclusive pelo Central docs. Se um comando novo precisar ler o `ENV.md` diretamente, use `env-loader.js#resolveEnvPath`/`loadEnv` (ver `whoami.js` e `tokens.js` como exemplo) em vez de `process.env`.
 
 ## Testes
 

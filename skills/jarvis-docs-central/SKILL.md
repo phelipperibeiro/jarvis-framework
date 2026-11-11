@@ -263,4 +263,4 @@ O Central docs foi organizado para migrar ao Confluence sem refazer o conteúdo:
 | `Labels fora do padrão` | `labels` com maiúscula, espaço ou símbolo fora de letras/números/hífen | Corrigir para minúsculas, no singular, sem espaço |
 | `destino já existe (…), não sobrescrito` (`jarvis docs migrate --apply`) | Já existe arquivo no caminho novo | Conferir se não é duplicidade; mover à mão se for intencional |
 | `git pull`/`push` falhou (com `.git`) | Rede, permissão ou pasta suja | `git status` na pasta; o commit local fica para repetir |
-| `MR não aberto (…)` (com `.git`) | CLI do host ausente ou sem login; `VERSION_CONTROL_ACCESS` `manual` ou inválido; ENV.md ambíguo | Abrir o MR pelo link da mensagem, ou fazer o login da CLI / corrigir o `ACCESS` / passar `--ide` ou `--env-file` |
+| `MR não aberto (…)` (com `.git`) | CLI do host ausente ou sem login; `VERSION_CONTROL_ACCESS` `manual` ou inválido; ENV.md ambíguo | Abrir o MR pelo link da mensagem, ou fazer o login da CLI / corrigir o `ACCESS` / passar `--ide` ou `--env` |
