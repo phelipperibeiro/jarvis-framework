@@ -833,8 +833,8 @@ async function runUpgrade(cwd, flags) {
   // lido do ENV.md já gravado (vale o respondido no 3.2, como no 3.3), e as empresas que o
   // workspace já usou, com pasta em `overlays/` (ou link para ela, mesmo quebrado). O valor do
   // perfil nunca é impresso aqui. Com o COMPANY_PROFILE vazio ou inválido, a lista usa o perfil
-  // padrão: avisa antes da lista, e o --remove-stale não remove sozinho (com terminal, a pessoa
-  // decide pela pergunta).
+  // padrão: avisa antes da lista, e o --remove-stale não remove sozinho (com terminal e sem
+  // --yes, a pessoa decide pela pergunta).
   const ideRoot = join(workspaceDir, `.${getIDEFolder(ide)}`);
   const ideSkillsDir = join(ideRoot, "skills");
   const { profile: activeProfile, warning: profileWarning } = readCompanyProfile(
