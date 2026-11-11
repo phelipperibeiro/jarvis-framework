@@ -202,7 +202,7 @@ Antes de considerar o PR completo:
 - [ ] Pessoa orientada a mover o card no board (o Jarvis não move card)
 - [ ] Comentários de code review processados
 - [ ] `pull-request.md` aprovado na sessão (e publicado, se o usuário respondeu Sim)
-- [ ] Pergunta "O PR já foi aprovado e mergeado?" no fim (Sim → `/eng.spec-consolidate`, ou com `--force`)
+- [ ] Pergunta "O PR já foi aprovado e mergeado?" no fim (Sim → `/eng.spec-consolidate --force`, ou sem a flag, ou "Sim, mas rodo o `/eng.spec-consolidate` depois", que só mostra os dois comandos)
 - [ ] `daily.md` gerado ou atualizado e aprovado (com ou sem PR publicado), com a linha de timesheet na mensagem final
 
 ---

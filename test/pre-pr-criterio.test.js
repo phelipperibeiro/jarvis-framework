@@ -293,21 +293,27 @@ test("a numeração dos gates é a mesma na lista, na tabela de chamadas e na ta
   );
 });
 
-// A pergunta de merge do fim do eng.pr (#255): o padrão fica em primeiro e a opção --force (irreversível) por último.
+// A pergunta de merge do fim do eng.pr (#255, #268): o --force (o caminho mais usado) em primeiro, o "como hoje"
+// presente e o "rodo depois" por último, mostrando os dois comandos.
 const MERGE_FORCE =
-  "As opções da pergunta de merge do eng.pr são guardadas de propósito (#255): ao mudá-las, atualize a eng.transitions-rules.md, o workflows/engineering/eng.pr.md e este teste junto.";
+  "As opções da pergunta de merge do eng.pr são guardadas de propósito (#255, #268): ao mudá-las, atualize a eng.transitions-rules.md, o workflows/engineering/eng.pr.md e este teste junto.";
+const RODO_DEPOIS = "Sim, mas rodo o `/eng.spec-consolidate` depois";
 
-test("a pergunta de merge do eng.pr mantém o padrão e oferece o --force com o mesmo rótulo no workflow (#255)", () => {
+test("a pergunta de merge do eng.pr tem o --force primeiro e o \"rodo depois\" por último, com os mesmos rótulos no workflow (#255, #268)", () => {
   const linha = read(TRANSITIONS)
     .split("\n")
     .find((l) => l.startsWith("| `eng.pr` | Fim |") && l.includes("aprovado e mergeado"));
   assert.ok(linha, `${TRANSITIONS} sem a linha da pergunta de merge do eng.pr. ${MERGE_FORCE}`);
   const celulas = linha.split("|").map((c) => c.trim());
   const opcoes = celulas[celulas.length - 2].split(" · ").map((o) => o.trim());
-  assert.equal(opcoes.length, 3, `${TRANSITIONS}: a pergunta de merge deveria ter 3 opções. ${MERGE_FORCE}`);
-  assert.equal(opcoes[0], "Ainda não (como hoje)", "o padrão da pergunta de merge deve continuar sendo a primeira opção");
-  assert.match(opcoes[2], /--force/, "a terceira opção da pergunta de merge deve ser a do --force");
-  // No workflow, as 3 opções aparecem como `**{opção}:**`, na mesma ordem da tabela.
+  assert.equal(opcoes.length, 4, `${TRANSITIONS}: a pergunta de merge deveria ter 4 opções. ${MERGE_FORCE}`);
+  assert.match(opcoes[0], /--force/, `a primeira opção da pergunta de merge deve ser a do --force. ${MERGE_FORCE}`);
+  assert.ok(
+    opcoes.includes("Ainda não (como hoje)"),
+    `a pergunta de merge deve manter "Ainda não (como hoje)", o fluxo de quem não escolhe. ${MERGE_FORCE}`
+  );
+  assert.equal(opcoes[3], RODO_DEPOIS, `a última opção da pergunta de merge deve ser "${RODO_DEPOIS}". ${MERGE_FORCE}`);
+  // No workflow, as 4 opções aparecem como `**{opção}:**`, na mesma ordem da tabela.
   const workflow = read("workflows/engineering/eng.pr.md");
   const posicoes = opcoes.map((opcao) => {
     const i = workflow.indexOf(`**${opcao}:**`);
@@ -319,4 +325,12 @@ test("a pergunta de merge do eng.pr mantém o padrão e oferece o --force com o 
     posicoes,
     `workflows/engineering/eng.pr.md: as opções da pergunta de merge estão fora da ordem da tabela. ${MERGE_FORCE}`
   );
+  // O "rodo depois" mostra os dois comandos, para a pessoa copiar o que vai usar (Q1 da #268).
+  const rodoDepois = workflow.split("\n").find((l) => l.includes(`**${RODO_DEPOIS}:**`));
+  for (const comando of ["`/eng.spec-consolidate {TASK_MANAGER_KEY}`", "`/eng.spec-consolidate {TASK_MANAGER_KEY} --force`"]) {
+    assert.ok(
+      rodoDepois.includes(comando),
+      `workflows/engineering/eng.pr.md: a opção "${RODO_DEPOIS}" sem o comando ${comando}. ${MERGE_FORCE}`
+    );
+  }
 });
