@@ -105,7 +105,7 @@ export function buildProgram() {
     )
     .option(
       "--remove-stale",
-      "Com --upgrade (ou a opção Atualizar do menu), remove sem perguntar os skills instalados que saíram do framework (só os listados)"
+      "Com --upgrade (ou a opção Atualizar do menu), remove sem perguntar os skills instalados que saíram do framework (só os listados; com o COMPANY_PROFILE vazio ou inválido no ENV.md, não remove)"
     );
   withLogOptions(initCmd).action((options) => init(toLegacyFlags(options)));
 

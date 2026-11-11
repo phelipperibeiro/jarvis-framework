@@ -135,7 +135,7 @@ O Jarvis é **neutro de stack**: `eng-backend` e `eng-frontend` guardam o que va
 
 ### Overlay de empresa
 
-A stack vem do código; o **processo** (de onde nasce a branch, como se entrega, quais gates valem) vem da empresa. `COMPANY_PROFILE` no `ENV.md` (nasce como `stark-industries`, o overlay padrão) aponta para `$IDE/overlays/{perfil}/`, uma pasta que espelha o core e guarda **só o que a empresa substituiu**, com carimbo de origem. Uma rule universal resolve workflows, skills, agentes e templates na chamada; o sync e o `/jarvis-init` resolvem `rules/` na instalação. O `init`/`upgrade` nunca gravam arquivo no overlay (só criam a pasta do perfil); quem grava é o `/jarvis-fork`, depois de uma conversa e do Sim. Detalhes: [overlay-de-empresa.md](./overlay-de-empresa.md).
+A stack vem do código; o **processo** (de onde nasce a branch, como se entrega, quais gates valem) vem da empresa. `COMPANY_PROFILE` no `ENV.md` (nasce como `stark-industries`, o overlay padrão) aponta para `$IDE/overlays/{perfil}/`, uma pasta que espelha o core e guarda **só o que a empresa substituiu**, com carimbo de origem. Uma rule universal resolve workflows, skills, agentes e templates na chamada; o sync e o `/jarvis-init` resolvem `rules/` na instalação. O `init`/`upgrade` nunca gravam arquivo no overlay (só criam a pasta do perfil); quem grava é o `/jarvis-fork`, depois de uma conversa e do Sim. Um skill novo da empresa (que não é fork) fica em `$IDE/skills/`, com o prefixo do perfil (`{perfil}-…`) e `metadata.area`, e o upgrade não o lista entre os skills antigos. Detalhes: [overlay-de-empresa.md](./overlay-de-empresa.md).
 
 ### Taxonomia
 
