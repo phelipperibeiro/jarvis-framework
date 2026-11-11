@@ -24,7 +24,7 @@ O `work` é **estritamente proibido** de:
 | Fazer `git push`                                   | Escrever código                                           |
 | Criar Pull Requests                                | Criar/modificar arquivos de código                        |
 | Usar `git add .`                                   | `git add` de arquivos específicos da fase                 |
-| Commitar sem aprovação do usuário na fase          | Commitar ao final da fase validada (ou de cada tarefa, com "Um por tarefa"; ou ao final, com "Um commit só"), com testes passando |
+| Commitar sem aprovação do usuário na fase          | Commitar no momento da tabela "Quando sai o commit" da 1.3 do workflow (por fase, por tarefa ou ao final), com testes passando |
 | Commitar com testes falhando                       | Executar testes locais                                    |
 | Mover cards no Jira                                | Ler arquivos da sessão                                    |
 | Fazer merge de branches                            | Atualizar `plan.md` com progresso                         |

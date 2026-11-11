@@ -16,7 +16,7 @@ Este comando executa a **implementação de código** seguindo o plano de execu�
 > 🔗 **Links**: antes de escrever os comentários de fase no `plan.md`, leia `$IDE/rules-on-demand/doc-links-rules.md` e siga-a: toda citação com lugar exato (requisito, documento, código, card, PR) vira link.
 
 > ⚠️ **IMPORTANTE**: Este workflow é para codificação com commits incrementais por fase (ou por tarefa, com a escolha "Um por tarefa" da 1.3).
-> **NÃO crie PRs, NÃO faça push**, mas **FAZ commit ao final de cada fase validada** (ou de cada tarefa, com "Um por tarefa").
+> **NÃO crie PRs, NÃO faça push**, mas **FAZ commit** no momento da tabela "Quando sai o commit" da 1.3 (por fase, por tarefa ou ao final), com testes passando.
 
 ### Skills invocados durante o workflow
 
@@ -93,10 +93,10 @@ Pergunte com `AskUserQuestion`, uma pergunta por decisão (padrão primeiro):
 | **Depois do work** | **Rodar o `/eng.pre-pr`** / **Rodar o `/eng.pr`** (sem o `/eng.pre-pr`) / **Fluxo normal (como hoje)** (só a mensagem final; o usuário segue os próximos comandos manualmente) |
 
 - Grave as escolhas no cabeçalho do `plan.md` (`Execução:`, `Commits:`, `Depois do work:`). Retomada com escolhas já gravadas: uma pergunta só, **"Manter as escolhas ({resumo})?"** (Manter / Mudar).
-- **Em qualquer escolha**, o limite de execução, um teste falhando e uma questão nova em aberto **param** a execução e voltam a perguntar.
+- **Em qualquer escolha**, o limite de execução, um teste falhando e uma questão nova em aberto **param** a execução e voltam a perguntar. Se a parada cai no meio de uma fase cujo commit só sai no fim dela (tabela "Quando sai o commit", abaixo), pergunte também se commita agora o que já está pronto e com os testes passando (pela escolha de commits: um commit por tarefa pronta ou um da fase parcial) ou se deixa sem commit para a retomada.
 - Com **Todas de uma vez**, a escolha é a aprovação das fases: as pausas da Fase 2.2 e da 6.1 não acontecem.
 - Com **Tarefa a tarefa**, o ciclo das Fases 2 a 6 roda para cada tarefa do `plan.md` (cada `### {fase}.{n}`, inclusive a `{fase}.T`): o plano da tarefa e a pausa (2.1 e 2.2), a implementação, as validações e os testes só da tarefa (3.1 a 3.3), o resultado e a pausa para a validação (4.1), a marcação no `plan.md` (5.1) e a pergunta pela próxima tarefa (6.1). Detalhes em cada fase. A **`{fase}.T`** (Testes da Fase) é a última tarefa da fase: roda depois das tarefas numeradas, e a 3.3 dela olha a fase inteira.
-- **Retomada com Tarefa a tarefa** (escolhida agora ou mantida): identifique a tarefa, dentro da fase atual da 1.2: a `[Em Progresso ⏰]` ou, se não houver, a primeira `[Não Iniciada ⏳]`. Se a escolha mudou para "Tarefa a tarefa" com uma fase em andamento, as tarefas dela ainda estão `[Não Iniciada ⏳]` (com "Fase a fase" ou "Todas de uma vez", elas só são marcadas no fim da fase): confira com `git status` quais já têm código e pergunte de onde seguir.
+- **Retomada com Tarefa a tarefa** (escolhida agora ou mantida): identifique a tarefa, dentro da fase atual da 1.2: a `[Em Progresso ⏰]` ou, se não houver, a primeira `[Não Iniciada ⏳]`. Se a escolha mudou para "Tarefa a tarefa" com uma fase em andamento, as tarefas dela ainda estão `[Não Iniciada ⏳]` (com "Fase a fase" ou "Todas de uma vez", elas só são marcadas no fim da fase): confira com `git status` quais já têm código e pergunte de onde seguir. Se mudou de "Tarefa a tarefa" para "Fase a fase" ou "Todas de uma vez", a 2.1 e a 3.1 seguem só as tarefas que não estão `[Completada ✅]`.
 - **Quando sai o commit**, em cada combinação. Nada é commitado antes da validação do usuário; com "Todas de uma vez", a escolha é a aprovação:
 
   | Execução | Um por fase | Um por tarefa | Um commit só ao final |
@@ -105,7 +105,7 @@ Pergunte com `AskUserQuestion`, uma pergunta por decisão (padrão primeiro):
   | Tarefa a tarefa | Depois da validação da última tarefa da fase (a `{fase}.T`) | Depois da validação de cada tarefa | Depois da validação da última tarefa do plano |
   | Todas de uma vez | Ao fim da fase, com a 3.2 e a 3.3 passando | Ao fim da fase, depois que a 3.2 e a 3.3 passarem, um commit por tarefa, na ordem do `plan.md` | Depois da última fase |
 
-  Com **Um por tarefa**, cada commit leva só os arquivos da tarefa e os testes que a 3.3 escreveu para ela; o que a 3.3 da fase (com "Fase a fase" ou "Todas de uma vez") ou a `{fase}.T` acrescentam sai no commit da `{fase}.T`. Se duas tarefas mexem no mesmo arquivo e não dá para separar as mudanças sem `git add -p` (interativo, não suportado), elas saem num commit só; avise quais tarefas juntou.
+  Com **Um por tarefa**, cada commit leva só os arquivos da tarefa e os testes que a 3.3 escreveu para ela; o que a 3.3 da fase (com "Fase a fase" ou "Todas de uma vez") ou a `{fase}.T` acrescentam sai no commit da `{fase}.T`. Se duas tarefas mexem no mesmo arquivo e não dá para separar as mudanças sem `git add -p` (interativo, não suportado), elas saem num commit só; avise quais tarefas juntou. Tarefa sem mudança de arquivo (por exemplo, uma validação manual) não gera commit (nem `--allow-empty`): diga isso no resultado (4.1).
 
 ---
 
@@ -396,15 +396,15 @@ Refs: TASK-123"
 ❓ Deseja iniciar a Fase {N+1}?
 ```
 
-Com **Tarefa a tarefa**, a pergunta é pela próxima tarefa, dentro da fase ou, se a fase acabou, a primeira da fase seguinte:
+Com **Tarefa a tarefa**, a pergunta é pela próxima tarefa (`{próxima}`): a {N.n+1}, a {N}.T (a de testes da fase, depois das numeradas) ou, se a fase acabou, a {N+1}.1:
 
 ```
 ✅ Tarefa {N.n} concluída com sucesso!
 
-📌 Próxima tarefa: Tarefa {N.n+1} (ou {N}.T, a de testes da fase; ou {N+1}.1, na Fase {N+1})
+📌 Próxima tarefa: Tarefa {próxima}
    - {resumo da próxima tarefa}
 
-❓ Deseja iniciar a Tarefa {N.n+1}?
+❓ Deseja iniciar a Tarefa {próxima}?
 ```
 
 **AGUARDE confirmação antes de iniciar** (com "Fase a fase", antes da próxima fase; com "Tarefa a tarefa", antes da próxima tarefa, que substitui a pausa entre fases; com "Todas de uma vez", siga para a próxima fase).
@@ -466,7 +466,7 @@ Depois da oferta (com Sim ou Não), ou sem ela quando a documentação já foi a
 - ✅ Executar validações locais (lint, test, build)
 - ✅ Atualizar plan.md com progresso
 - ✅ Dialogar com usuário para validação
-- ✅ **Commitar ao final de cada fase validada** (ou de cada tarefa, com "Um por tarefa"; GitFlow — Fase 5.3)
+- ✅ **Commitar no momento da tabela "Quando sai o commit" da 1.3** (por fase, por tarefa ou ao final), com testes passando (GitFlow — Fase 5.3)
 
 ---
 

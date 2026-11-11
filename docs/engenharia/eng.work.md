@@ -34,7 +34,9 @@ Para cada fase do plano (ou para cada tarefa, se você escolher "Tarefa a tarefa
 7. **Faz o commit da fase** (ou da tarefa, se você escolher "Um por tarefa"), com arquivos adicionados um a um e a chave da tarefa na mensagem
 8. **Pergunta** se você quer iniciar a próxima fase (ou a próxima tarefa) e espera a resposta
 
-Quando todas as fases terminam, antes de perguntar o que fazer depois, ele confere se a entrega já mexeu na documentação do projeto (o diff desde a branch base altera `docs/`, o `README` ou equivalente; o `CHANGELOG` sozinho não conta). Se mexeu, não pergunta nada: a mensagem final lista os arquivos de documentação já atualizados. Se não mexeu, ele **oferece** gerar ou atualizar a documentação a partir da entrega, com **Sim** como padrão (opcional, não trava o fluxo, e não entra na conta de `MAX_AI_EXECUTION_PERCENTAGE`). Com Sim, usa o skill `eng-global-docs-write`, mostra a proposta, só grava com a sua aprovação e comita a atualização em separado. Com Não, segue direto. Nos dois casos, se a documentação ficou desatualizada ou incompleta, é o `/eng.pre-pr` (Gate 9) que aponta depois.
+Com "Tarefa a tarefa", a última tarefa de cada fase é a `X.T` (testes da fase), que roda depois das tarefas numeradas e olha a fase inteira. Numa retomada, ele segue da tarefa em andamento (ou da primeira não iniciada da fase).
+
+Quando todas as fases terminam, antes de perguntar o que fazer depois, ele confere se a entrega já mexeu na documentação do projeto (o diff desde a branch base no remoto, `origin/{base}`, altera `docs/`, o `README` ou equivalente; o `CHANGELOG` sozinho não conta; se o `git fetch` da base falhar, ele usa a cópia local e avisa). Se mexeu, não pergunta nada: a mensagem final lista os arquivos de documentação já atualizados. Se não mexeu, ele **oferece** gerar ou atualizar a documentação a partir da entrega, com **Sim** como padrão (opcional, não trava o fluxo, e não entra na conta de `MAX_AI_EXECUTION_PERCENTAGE`). Com Sim, usa o skill `eng-global-docs-write`, mostra a proposta, só grava com a sua aprovação e comita a atualização em separado. Com Não, segue direto. Nos dois casos, se a documentação ficou desatualizada ou incompleta, é o `/eng.pre-pr` (Gate 9) que aponta depois.
 
 ## O limite da IA
 
@@ -52,6 +54,12 @@ No início, três perguntas (a primeira opção de cada é o fluxo de sempre); a
 | Commits | Um por fase (como hoje) · Um por tarefa ("até N commits") · Um commit só ao final |
 | Depois do work | Rodar o `/eng.pre-pr` · Rodar o `/eng.pr` · Fluxo normal (como hoje: você segue os próximos comandos manualmente) |
 
+Quando sai o commit, conforme a combinação (nada é commitado antes da sua validação; com "Todas de uma vez", a escolha do início já é a aprovação):
+
+- **Um por fase:** ao fim de cada fase (com "Tarefa a tarefa", depois que você valida a última tarefa dela).
+- **Um por tarefa:** com "Tarefa a tarefa", depois que você valida cada tarefa; com "Fase a fase" ou "Todas de uma vez", todos juntos ao fim da fase, um por tarefa. Tarefas que mexem no mesmo arquivo sem dar para separar saem num commit só, com aviso, e tarefa sem mudança de arquivo não gera commit.
+- **Um commit só ao final:** depois da última fase.
+
 Em qualquer escolha, ele para no limite da IA, com um teste falhando ou diante de uma questão nova.
 
 ## Regras que importam
@@ -63,7 +71,7 @@ Em qualquer escolha, ele para no limite da IA, com um teste falhando ou diante d
 - Se surgir um bloqueio técnico, registra no plano como bloqueada (🚫), prepara o comentário do bloqueio (só sai depois da pergunta), explica e sugere alternativas
 - **Questão nova em aberto é exceção:** se surgir uma e o Advisor tiver sido habilitado no `eng.start`, ele é consultado; a questão entra no `architecture.md`, a auditoria vai para o card só com o seu Sim (sem o Sim, o texto fica no `task-comment-*.md`) e o PR cita a lacuna
 - No card, só desvios do plano e bloqueios, cada um depois da pergunta (regra de ouro): nada de comentário de início ou fim
-- Se você pedir commit antes do ponto de commit da sua escolha (fim da fase, da tarefa ou de todas as fases, sempre depois da sua validação), ele explica quando o commit sai
+- Se você pedir commit antes do ponto de commit da sua combinação de escolhas (fim da fase, da tarefa ou de todas as fases; com "Todas de uma vez", a escolha do início já é a aprovação), ele explica quando o commit sai
 - **Links clicáveis:** os comentários de fase do `plan.md` citam arquivos, linhas e commits como links (`rules-on-demand/doc-links-rules.md`)
 
 ## Próximo passo típico
