@@ -51,7 +51,7 @@ Mapa comando → skill: ver a tabela em `skills/AGENTS.md` (só no repositório;
 
 ## Áreas e nomes
 
-Todo skill tem `metadata.area` (`qa`, `data`, `ai`, `frontend`, `backend`, `automation`, `devops`, `platform`, `global` ou `product`) e um nome no padrão `<prefixo>-<área>-<nome>`: `eng-<área>-...` para engenharia, `eng-global-...` para engenharia global, `product-...` para produto e `jarvis-...` para os transversais do framework. Especializações de backend e frontend também têm `metadata.stack` e só são carregadas quando registradas no `ENV.md`. Skill sem área reconhecida bloqueia os comandos `eng.*`. Detalhes em `skills/AGENTS.md`.
+Todo skill tem `metadata.area` (`qa`, `data`, `ai`, `frontend`, `backend`, `automation`, `devops`, `platform`, `global` ou `product`) e um nome no padrão `<prefixo>-<área>-<nome>`: `eng-<área>-...` para engenharia, `eng-global-...` para engenharia global, `product-...` para produto e `jarvis-...` para os transversais do framework. Esse padrão de nome é o dos skills do framework: um skill próprio da empresa leva o prefixo do perfil (`{perfil}-…`, ver [Overlay de empresa](../overlay-de-empresa.md#o-que-o-initupgrade-fazem-e-não-fazem-com-o-overlay)) e também precisa de `metadata.area`. Especializações de backend e frontend também têm `metadata.stack` e só são carregadas quando registradas no `ENV.md`. Skill sem área reconhecida bloqueia os comandos `eng.*`. Detalhes em `skills/AGENTS.md`.
 
 ## No ciclo de vida
 

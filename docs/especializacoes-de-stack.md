@@ -84,7 +84,7 @@ Os skills de apoio abaixo viram especializações quando você os registra: `eng
 
 ## Atualizando de uma versão anterior
 
-1. `jarvis init --upgrade --ide {ide}`: as pastas dos skills renomeados ou removidos somem, o `ENV.md` ganha as variáveis novas e perde as que saíram do template (como as listas de especializações; sem elas, os comandos `eng.*` da área param) e os documentos em caminhos antigos podem ir para as pastas novas.
+1. `jarvis init --upgrade --ide {ide}`: as pastas dos skills que o framework renomeou ou removeu somem; os outros skills instalados que não existem no framework aparecem numa lista e só saem com a sua confirmação ou com `--remove-stale` (os registrados em `*_SPECIALIZATIONS` e os com o prefixo do perfil da empresa não entram nela); o `ENV.md` ganha as variáveis novas e perde as que saíram do template (como as listas de especializações; sem elas, os comandos `eng.*` da área param) e os documentos em caminhos antigos podem ir para as pastas novas.
 2. `/jarvis-init upgrade`: vai direto ao **Upgrade (C)** e oferece o passo "adicionar as stacks". Você pode pular esse passo (é a única etapa que dá para pular); o Upgrade sempre termina com a validação do `ENV.md` (passo 9.5 do `/jarvis-init`) e o resumo.
 3. **Skills criados por você** sem `metadata.area` bloqueiam os `eng.*`: marque a área ou remova.
 
