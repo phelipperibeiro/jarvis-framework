@@ -60,7 +60,7 @@ export async function rulesSync(flags) {
     fail(err.message);
   }
   // Sem --ide, a pasta filtrada é a do ENV.md. Fora de uma pasta de IDE (o fallback legado do
-  // resolveEnvPath, ou um --env-file/JARVIS_ENV_FILE em outro lugar), o comando gravaria rules ali.
+  // resolveEnvPath, ou um --env/JARVIS_ENV_FILE em outro lugar), o comando gravaria rules ali.
   // Com --ide, o ENV.md pode vir de fora de uma IDE (o workspace é então a pasta, o cwd ou uma
   // acima, que tem a .{ide}/), mas não da pasta de outra IDE.
   const ideFolders = getIDEValues().map((ide) => `.${getIDEFolder(ide)}`);

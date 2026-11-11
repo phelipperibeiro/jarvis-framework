@@ -68,7 +68,7 @@ const MAXBUFFER = "ERR_CHILD_PROCESS_STDIO_MAXBUFFER";
 const SPAWN_ERRORS = new Set(["ENOENT", "EACCES", "EPERM", "E2BIG", "ENOEXEC", "ENOTDIR"]);
 
 /**
- * Variáveis do `$IDE/ENV.md` do workspace (sobe a partir do cwd; `--ide`, `--env-file` e
+ * Variáveis do `$IDE/ENV.md` do workspace (sobe a partir do cwd; `--ide`, `--env` e
  * `JARVIS_ENV_FILE` vencem). Sem ENV.md, `vars` vazio e sem erro. ENV.md ambíguo (dois IDEs no
  * workspace) ou caminho inexistente: `error` com o motivo, para o comando não seguir às cegas.
  * @param {{ cwd?: string, ide?: string, envFile?: string }} [opts]
@@ -138,7 +138,7 @@ export function accessGate(name, fileEnv) {
       ok: false,
       code: EXIT.UNAVAILABLE,
       mode: "unknown",
-      reason: `não deu para ler o ENV.md (${fileEnv.error}); use --ide ou --env-file. Nada foi enviado`,
+      reason: `não deu para ler o ENV.md (${fileEnv.error}); use --ide ou --env. Nada foi enviado`,
     };
   }
   const mode = accessMode(name, fileEnv.vars);

@@ -264,6 +264,35 @@ test("jarvis tokens: --env-file inexistente não mede", () => {
   assert.equal(r.stdout, "");
 });
 
+// #269: o --env é o nome que o Node não confere antes do script, então o caminho inexistente
+// chega ao CLI em qualquer versão: a mensagem é a do CLI, com saída 1 (nunca o 9 do Node).
+test("jarvis tokens: --env inexistente sai com 1 e a mensagem do CLI (#269)", () => {
+  const r = tokensNaPasta({}, ["--env", "nao-existe.md"]);
+  assert.equal(r.status, 1, r.stderr);
+  assert.match(r.stderr, /ENV\.md não encontrado/);
+  assert.match(r.stderr, /verifique o path passado em --env\b/);
+  assert.doesNotMatch(r.stderr, /not found/);
+  assert.equal(r.stdout, "");
+});
+
+test("jarvis tokens: --env e a alternativa --env-file escolhem o ENV.md; com os dois, vale o --env (#269)", () => {
+  const envs = { claude: AS_DUAS_LIGADAS, cursor: "ARTIFACT_STYLE=ai-generated\n" };
+  const porEnv = tokensNaPasta(envs, ["--env", join(".claude", "ENV.md")]);
+  assert.equal(porEnv.status, 0, porEnv.stderr);
+  assert.deepEqual(porEnv.report.profile, { ARTIFACT_STYLE: "human-generated" });
+  const porEnvFile = tokensNaPasta(envs, ["--env-file", join(".claude", "ENV.md")]);
+  assert.equal(porEnvFile.status, 0, porEnvFile.stderr);
+  assert.deepEqual(porEnvFile.report.profile, { ARTIFACT_STYLE: "human-generated" });
+  const osDois = tokensNaPasta(envs, [
+    "--env-file",
+    join(".cursor", "ENV.md"),
+    "--env",
+    join(".claude", "ENV.md"),
+  ]);
+  assert.equal(osDois.status, 0, osDois.stderr);
+  assert.deepEqual(osDois.report.profile, { ARTIFACT_STYLE: "human-generated" });
+});
+
 test("jarvis tokens: com as duas flags, o ENV.md não é lido (nem com dois na pasta)", () => {
   const r = tokensNaPasta({ claude: AS_DUAS_LIGADAS, cursor: AS_DUAS_LIGADAS }, [
     "--artifact-style",

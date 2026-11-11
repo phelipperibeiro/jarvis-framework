@@ -348,7 +348,7 @@ export function createFilesystemStorage({
         const description = `## Documento\n\n- **Tipo**: ${tipo}\n- **Arquivo**: \`${destPath}\``;
         let mr = null;
         try {
-          // O ENV.md que o comando já leu (com --ide/--env-file) vai junto para o gate do acesso.
+          // O ENV.md que o comando já leu (com --ide/--env) vai junto para o gate do acesso.
           mr = await createMergeRequest(
             remoteUrl,
             {

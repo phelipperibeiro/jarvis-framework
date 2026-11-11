@@ -59,7 +59,7 @@ export async function commentOnCard(cardKey, message, deps = {}) {
   // se há board; não trata como freelance às cegas.
   if (fileEnv.error && !String(process.env.TASK_MANAGER || "").trim()) {
     err.push(
-      `⚠️ Não deu para ler o ENV.md (${fileEnv.error}). Use --ide ou --env-file. Nada foi enviado.`
+      `⚠️ Não deu para ler o ENV.md (${fileEnv.error}). Use --ide ou --env. Nada foi enviado.`
     );
     return { code: EXIT.UNAVAILABLE, out, err };
   }

@@ -46,7 +46,49 @@ test("resolveEnvPath: --env-file relativo ao cwd", () => {
 
 test("resolveEnvPath: --env-file inexistente lança erro com dica", () => {
   withTempWorkspace((dir) => {
-    assert.throws(() => resolveEnvPath(dir, { "env-file": "nope.md" }), /não encontrado/);
+    assert.throws(
+      () => resolveEnvPath(dir, { "env-file": "nope.md" }),
+      /não encontrado[\s\S]*passado em --env-file/
+    );
+  });
+});
+
+// #269: o --env é o nome recomendado (o Node 20+ não o confere antes do script).
+test("resolveEnvPath: --env explícito (absoluto e relativo ao cwd) (#269)", () => {
+  withTempWorkspace((dir) => {
+    const envPath = writeEnv(dir, "claude");
+    const absoluto = resolveEnvPath(dir, { env: envPath });
+    assert.equal(absoluto.path, envPath);
+    assert.equal(absoluto.source, "--env");
+    assert.equal(resolveEnvPath(dir, { env: ".claude/ENV.md" }).path, envPath);
+  });
+});
+
+test("resolveEnvPath: --env inexistente lança erro com a dica citando o --env (#269)", () => {
+  withTempWorkspace((dir) => {
+    assert.throws(
+      () => resolveEnvPath(dir, { env: "nope.md" }),
+      /não encontrado[\s\S]*passado em --env$/
+    );
+  });
+});
+
+test("resolveEnvPath: com --env e --env-file, vale o --env; os dois vencem o --ide (#269)", () => {
+  withTempWorkspace((dir) => {
+    const claude = writeEnv(dir, "claude");
+    const cursor = writeEnv(dir, "cursor");
+    const r = resolveEnvPath(dir, { env: claude, "env-file": cursor, ide: "cursor" });
+    assert.equal(r.path, claude);
+    assert.equal(r.source, "--env");
+  });
+});
+
+test("resolveEnvPath: --env válido vence um --env-file inexistente; --env vazio cai no --env-file (#269)", () => {
+  withTempWorkspace((dir) => {
+    const claude = writeEnv(dir, "claude");
+    const r = resolveEnvPath(dir, { env: claude, "env-file": join(dir, "nope.md") });
+    assert.equal(r.source, "--env");
+    assert.equal(resolveEnvPath(dir, { env: "", "env-file": claude }).source, "--env-file");
   });
 });
 

@@ -31,7 +31,7 @@ function withWorkspace(envLines, extra, fn) {
 }
 
 const run = (cwd, args) =>
-  spawnSync(process.execPath, [cli, ...args, "--env-file", join(cwd, ".claude/ENV.md")], {
+  spawnSync(process.execPath, [cli, ...args, "--env", join(cwd, ".claude/ENV.md")], {
     cwd,
     encoding: "utf-8",
     stdio: "pipe",

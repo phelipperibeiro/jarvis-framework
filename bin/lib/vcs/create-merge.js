@@ -16,7 +16,7 @@ import { accessGate, getVendor, resolveFileEnv, setting } from "../integrations/
  * @param {string} [options.bodyFile] - Path de um arquivo com a descrição
  * @param {string} [options.repo] - URL do repo (padrão: `git remote get-url origin`)
  * @param {string} [options.ide] - `--ide`, para achar o ENV.md quando há mais de um no workspace
- * @param {string} [options.envFile] - `--env-file`, ENV.md explícito
+ * @param {string} [options.envFile] - `--env` (ou a alternativa `--env-file`), ENV.md explícito
  * @param {{ exec?: Function, fileEnv?: Object }} [deps] - `exec` da CLI e as variáveis do ENV.md, injetáveis (testes)
  */
 export async function runCreateMerge(
@@ -65,7 +65,7 @@ export async function runCreateMerge(
 
   const nounOf = (vendor) => (vendor === "gitlab" ? "MR" : "PR");
   try {
-    // Repassa o ENV.md já resolvido (com --ide/--env-file): sem isso, o createMergeRequest o leria
+    // Repassa o ENV.md já resolvido (com --ide/--env): sem isso, o createMergeRequest o leria
     // de novo pelo cwd e falharia com dois ENV.md no workspace.
     const result = await createMergeRequest(
       repoUrl,
@@ -103,6 +103,6 @@ if (fileURLToPath(import.meta.url) === process.argv[1]) {
     bodyFile: arg("body-file"),
     repo: arg("repo"),
     ide: arg("ide"),
-    envFile: arg("env-file"),
+    envFile: arg("env") || arg("env-file"),
   });
 }

@@ -15,8 +15,41 @@ test("buildProgram: jarvis tokens só com as opções da medida, sem os eixos an
   const tokens = buildProgram().commands.find((c) => c.name() === "tokens");
   assert.deepEqual(
     tokens.options.map((o) => o.long),
-    ["--artifact-style", "--rtk", "--json", "--ide", "--env-file"]
+    ["--artifact-style", "--rtk", "--json", "--ide", "--env", "--env-file"]
   );
   // O CLI aceita flag desconhecida de propósito (o helper cmd()): a conferência é o --help.
   assert.doesNotMatch(tokens.helpInformation(), /--(hub|position|area|squad)\b/);
+});
+
+// #269: os 15 comandos que resolvem o ENV.md aceitam o --env (o nome que o Node não confere antes
+// do script) e, depois dele, a alternativa --env-file.
+test("buildProgram: os 15 comandos com ENV.md têm --env antes do --env-file (#269)", () => {
+  const program = buildProgram();
+  const achar = (caminho) =>
+    caminho.reduce((c, nome) => c.commands.find((k) => k.name() === nome), program);
+  const comandos = [
+    ["whoami"],
+    ["docs", "sync"],
+    ["docs", "fetch"],
+    ["docs", "publish"],
+    ["docs", "archive"],
+    ["docs", "sessions"],
+    ["docs", "finalize"],
+    ["docs", "migrate"],
+    ["tokens"],
+    ["rules", "sync"],
+    ["untrack"],
+    ["fork"],
+    ["daily-report"],
+    ["vcs", "create-merge"],
+    ["tasks", "comment"],
+  ];
+  for (const caminho of comandos) {
+    const longos = achar(caminho).options.map((o) => o.long);
+    const env = longos.indexOf("--env");
+    assert.ok(
+      env >= 0 && longos.indexOf("--env-file") === env + 1,
+      `${caminho.join(" ")}: ${longos}`
+    );
+  }
 });

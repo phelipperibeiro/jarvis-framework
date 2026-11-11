@@ -698,7 +698,7 @@ test("runCreateMerge --ide com dois ENV.md reais no workspace: o PR abre (o ENV.
     assert.match(b.err, /manual/);
     const c = await withEnv(env, () => captureRun(() => runCreateMerge(MERGE, { exec })));
     assert.equal(c.code, 3);
-    assert.match(c.err, /--ide ou --env-file/);
+    assert.match(c.err, /--ide ou --env\./);
   } finally {
     process.chdir(prevCwd);
     rmSync(ws, { recursive: true, force: true });

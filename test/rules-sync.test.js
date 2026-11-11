@@ -142,12 +142,12 @@ test("rules sync: falha ao gravar uma rule sai com 1 e lista o erro", () => {
   });
 });
 
-test("rules sync: --env-file ou JARVIS_ENV_FILE fora de uma pasta de IDE sai com 1, sem gravar nada", () => {
+test("rules sync: --env ou JARVIS_ENV_FILE fora de uma pasta de IDE sai com 1, sem gravar nada", () => {
   withWorkspace({ lock: VERSION }, (ws) => {
     mkdirSync(join(ws, "config"));
     writeFileSync(join(ws, "config", "ENV.md"), ENV_MD);
     const casos = [
-      run(ws, ["--env-file", join("config", "ENV.md")]),
+      run(ws, ["--env", join("config", "ENV.md")]),
       spawnSync("node", [cli, "rules", "sync"], {
         cwd: ws,
         encoding: "utf-8",
@@ -164,7 +164,7 @@ test("rules sync: --env-file ou JARVIS_ENV_FILE fora de uma pasta de IDE sai com
   });
 });
 
-test("rules sync: --env-file dentro da pasta da IDE continua valendo", () => {
+test("rules sync: --env-file dentro da pasta da IDE continua valendo (alternativa ao --env, #269)", () => {
   withWorkspace({ env: ENV_MD, lock: VERSION }, (ws) => {
     const r = run(ws, ["--env-file", join(".claude", "ENV.md")]);
     assert.equal(r.status, 0, r.stderr);
@@ -176,7 +176,7 @@ test("rules sync: --ide com ENV.md de fora de uma IDE filtra a pasta da IDE pedi
   withWorkspace({ lock: VERSION }, (ws) => {
     mkdirSync(join(ws, "config"));
     writeFileSync(join(ws, "config", "ENV.md"), ENV_MD);
-    const r = run(ws, ["--ide", "claude", "--env-file", join("config", "ENV.md")]);
+    const r = run(ws, ["--ide", "claude", "--env", join("config", "ENV.md")]);
     assert.equal(r.status, 0, r.stderr);
     assert.ok(!existsSync(join(ws, ".claude", CANARIO)));
     assert.ok(!existsSync(join(ws, "config", "rules")));
@@ -185,7 +185,7 @@ test("rules sync: --ide com ENV.md de fora de uma IDE filtra a pasta da IDE pedi
 
 test("rules sync: --ide com o ENV.md da pasta de outra IDE sai com 1, sem gravar nada", () => {
   withWorkspace({ env: ENV_MD, lock: VERSION, ide: "cursor" }, (ws) => {
-    const r = run(ws, ["--ide", "claude", "--env-file", join(".cursor", "ENV.md")]);
+    const r = run(ws, ["--ide", "claude", "--env", join(".cursor", "ENV.md")]);
     assert.equal(r.status, 1);
     assert.match(r.stderr + r.stdout, /ENV\.md de outra IDE \(\.cursor\/\) com --ide claude/);
     assert.equal(readFileSync(join(ws, ".claude", CANARIO), "utf-8"), "antes\n");
@@ -230,7 +230,7 @@ test("rules sync: --ide com o ENV.md na raiz (ou numa subpasta funda) usa o work
     withWorkspace({ lock: VERSION }, (ws) => {
       mkdirSync(join(ws, "a", "b"), { recursive: true });
       writeFileSync(join(ws, envRel), ENV_MD);
-      const r = run(ws, ["--ide", "claude", "--env-file", envRel]);
+      const r = run(ws, ["--ide", "claude", "--env", envRel]);
       assert.equal(r.status, 0, `${envRel}: ${r.stderr}`);
       assert.ok(!existsSync(join(ws, ".claude", CANARIO)), envRel);
     });
@@ -240,7 +240,7 @@ test("rules sync: --ide com o ENV.md na raiz (ou numa subpasta funda) usa o work
 test("rules sync: --ide com ENV.md de fora e sem a pasta da IDE no caminho sai com 1, sem gravar", () => {
   withWorkspace({ lock: VERSION }, (ws) => {
     writeFileSync(join(ws, "ENV.md"), ENV_MD);
-    const r = run(ws, ["--ide", "cursor", "--env-file", "ENV.md"]);
+    const r = run(ws, ["--ide", "cursor", "--env", "ENV.md"]);
     assert.equal(r.status, 1);
     assert.match(r.stderr + r.stdout, /Pasta \.cursor\/ não encontrada/);
     assert.ok(!existsSync(join(ws, ".cursor")));
@@ -255,7 +255,7 @@ test("rules sync: workspace dentro de outro grava só no de dentro", () => {
     writeFileSync(join(dentro, "jarvis-lock.json"), JSON.stringify({ version: VERSION }));
     mkdirSync(join(dentro, "config"));
     writeFileSync(join(dentro, "config", "ENV.md"), ENV_MD);
-    const r = run(dentro, ["--ide", "claude", "--env-file", join("config", "ENV.md")]);
+    const r = run(dentro, ["--ide", "claude", "--env", join("config", "ENV.md")]);
     assert.equal(r.status, 0, r.stderr);
     assert.ok(!existsSync(join(dentro, ".claude", CANARIO)));
     assert.equal(readFileSync(join(fora, ".claude", CANARIO), "utf-8"), "antes\n");

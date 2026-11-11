@@ -2,9 +2,11 @@
 // A CLI do vendor é falsa (`exec` injetado); nenhum token é lido.
 import { after, test } from "node:test";
 import assert from "node:assert/strict";
-import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { spawnSync } from "node:child_process";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { boardRepo, commentOnCard, isFreelance } from "../bin/lib/tasks/comment.js";
 
 const ENV_KEYS = [
@@ -299,6 +301,39 @@ test("ENV.md ilegível sem TASK_MANAGER no ambiente sai com 3 (não vira freelan
     commentOnCard("1", "m", { exec, fileEnvResult: { vars: {}, error: "Múltiplos ENV.md" } })
   );
   assert.equal(r.code, 3);
-  assert.match(r.err[0], /--ide ou --env-file/);
+  assert.match(r.err[0], /--ide ou --env\./);
   assert.equal(calls.length, 0);
+});
+
+// #269: o --env chega ao `tasks comment` pelo CLI de verdade (program.js repassa options.env ao
+// readFileEnv). Sem TASK_MANAGER no ambiente, o ENV.md apontado decide: ACCESS=manual sai com 3 sem
+// rodar a CLI; um --env inexistente sai com 3 e manda usar --ide ou --env.
+test("jarvis tasks comment --env: lê o ENV.md apontado; inexistente sai com 3 e cita o --env (#269)", () => {
+  const cli = join(dirname(fileURLToPath(import.meta.url)), "..", "bin", "jarvis.js");
+  const ws = mkdtempSync(join(tmpdir(), "jarvis-comment-env-"));
+  try {
+    mkdirSync(join(ws, ".claude"));
+    const envPath = join(ws, ".claude", "ENV.md");
+    writeFileSync(
+      envPath,
+      "TASK_MANAGER=github\nTASK_MANAGER_ACCESS=manual\nTASK_MANAGER_URL_BASE=https://github.com/o/r\n"
+    );
+    const limpo = Object.fromEntries(
+      Object.entries(process.env).filter(([k]) => !/^(TASK_MANAGER|JARVIS_ENV_FILE|IDE$)/.test(k))
+    );
+    const rodar = (...args) =>
+      spawnSync(process.execPath, [cli, "tasks", "comment", "1", "oi", ...args], {
+        cwd: ws,
+        encoding: "utf-8",
+        env: { ...limpo, JARVIS_SKIP_CLI_CHECK: "1", NO_COLOR: "1" },
+      });
+    const manual = rodar("--env", envPath);
+    assert.equal(manual.status, 3, manual.stdout + manual.stderr);
+    assert.match(manual.stdout + manual.stderr, /manual/);
+    const inexistente = rodar("--env", join(ws, "nao-existe.md"));
+    assert.equal(inexistente.status, 3, inexistente.stdout + inexistente.stderr);
+    assert.match(inexistente.stdout + inexistente.stderr, /--ide ou --env\./);
+  } finally {
+    rmSync(ws, { recursive: true, force: true });
+  }
 });
