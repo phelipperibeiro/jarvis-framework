@@ -804,11 +804,17 @@ async function runUpgrade(cwd, flags) {
     }
   }
 
-  const overrides =
+  // `keptPaths`: só os caminhos de documento mantidos no lugar antigo (o resumo os lista). A resposta
+  // do 3.2 vai junto apenas para a gravação, para não aparecer como caminho mantido (#266).
+  const keptPaths =
     docsPlan.moves.length > 0 && !accepted ? declineEnvValues(docsPlan, addedKeys, env) : {};
-  if (companyProfile) overrides.COMPANY_PROFILE = companyProfile;
   const today = new Date().toISOString().slice(0, 10);
-  applyEnvUpgrade(envPath, envPlan, today, overrides);
+  applyEnvUpgrade(
+    envPath,
+    envPlan,
+    today,
+    companyProfile ? { ...keptPaths, COMPANY_PROFILE: companyProfile } : keptPaths
+  );
 
   // 3.3 Perfil respondido agora: o sync acima rodou com o default. Reaplica o overlay do perfil
   // gravado (pasta dele criada, rules dele por cima). A pasta do default criada antes fica: todo
@@ -899,8 +905,8 @@ async function runUpgrade(cwd, flags) {
       `  • COMPANY_PROFILE: ${companyProfile ? "definido" : `default (${DEFAULT_COMPANY_PROFILE})`}`
     );
   }
-  if (Object.keys(overrides).length) {
-    logger.info(`  • Mantidos no caminho antigo: ${Object.keys(overrides).join(", ")}`);
+  if (Object.keys(keptPaths).length) {
+    logger.info(`  • Mantidos no caminho antigo: ${Object.keys(keptPaths).join(", ")}`);
   }
   if (docsPlan.moves.length && !accepted) {
     logger.info(`  • Documentos: nada movido (${docsPlan.moves.length} no caminho antigo)`);
