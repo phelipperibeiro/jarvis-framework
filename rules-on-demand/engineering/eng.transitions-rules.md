@@ -12,7 +12,7 @@ Lida pelos workflows `eng.start`, `eng.plan`, `eng.work`, `eng.pre-pr` e `eng.pr
 
 ### Obrigatório
 
-1. **A opção padrão mantém o fluxo atual.** É a primeira (ou a marcada como padrão) e diz o que acontece, com "(como hoje)" ou o nome do fluxo. **Nunca** se chama "Ignorar": quem a escolhe não pula nada, segue o fluxo de sempre e interage com o documento como sempre fez.
+1. **A opção padrão mantém o fluxo atual.** É a primeira (ou a marcada como padrão) e diz o que acontece, com "(como hoje)" ou o nome do fluxo. **Nunca** se chama "Ignorar": quem a escolhe não pula nada, segue o fluxo de sempre e interage com o documento como sempre fez. Exceção: na oferta de documentação do `eng.work`, o padrão é o "Sim, gerar ou atualizar agora", porque ele só grava com aprovação (mostra a proposta antes); o "Não" mantém o "(como hoje)" no rótulo.
 2. **Formato:** `AskUserQuestion`, uma pergunta por decisão, no máximo 4 opções. **Não liste "Outros"**: o `AskUserQuestion` já o acrescenta sozinho para o texto livre, e listá-lo gasta uma das 4 vagas. Sem `AskUserQuestion`, use a tabela de opções de `prod-rules.md`.
 3. **A resposta é a aprovação.** "Aprovar e seguir" ou "Aprovar e parar aqui" valem como a aprovação explícita que as rules de cada comando exigem. Sem uma dessas respostas, nada avança.
 4. **Seguir para o próximo comando:** se a IDE permite chamar outro comando (no Claude Code, pelo Skill tool), chame-o com o mesmo `{TASK_MANAGER_KEY}`; senão, mostre o comando pronto para colar.

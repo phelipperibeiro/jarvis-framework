@@ -48,7 +48,7 @@ A sessão **não é apagada**: o `/eng.spec-consolidate` precisa dela. Remova à
 - **No fim:** "O PR já foi aprovado e mergeado?", com quatro opções, nesta ordem:
   - **Sim, rodar o `/eng.spec-consolidate --force` (publica e apaga os originais, sem `archive/`)**, a recomendada: registra no Central docs o que a entrega implementou, sem as perguntas de publicar e de apagar os originais e sem arquivar (irreversível); a trava de segredo e a pergunta de apagar a pasta da sessão continuam.
   - **Ainda não (como hoje)**: encerra com a mensagem final.
-  - **Sim, rodar o `/eng.spec-consolidate`**: o mesmo registro, com o seu Sim em cada passo (publicar, arquivar e apagar os originais).
+  - **Sim, rodar o `/eng.spec-consolidate`**: publica o mesmo registro, com o seu Sim; arquivar e apagar os originais são chamadas à parte (`--archive` e `--finalize`), cada uma com o seu Sim.
   - **Sim, mas rodo o `/eng.spec-consolidate` depois**: encerra sem rodar nada e mostra os dois comandos (com e sem `--force`) para você rodar quando quiser.
 
 ## Regras que importam

@@ -32,7 +32,7 @@ O `work` é **estritamente proibido** de:
 
 O commit segue o formato do workflow (`{TASK_MANAGER_KEY} {tipo}({escopo}): {descrição}`, com `Refs:`). Push e PR são responsabilidade do `eng.pr`.
 
-**Escolhas do início** (`eng.transitions-rules.md`, Fase 1.3 do workflow): execução, commits e o que vem depois. Com "Todas de uma vez", a escolha é a aprovação das fases; com "Tarefa a tarefa", o ciclo inteiro (plano, implementação, testes, validação, marcação no `plan.md` e retomada) é por tarefa; com "Um por tarefa", cada tarefa vira um commit, só depois da validação do usuário (ou, com "Todas de uma vez", ao fim da tarefa, com os testes passando); com "Um commit só ao final", o commit é um só, depois da última fase; com "Rodar o `/eng.pr`", o work termina chamando o `/eng.pr` (que faz o push e o PR, não o work).
+**Escolhas do início** (`eng.transitions-rules.md`, Fase 1.3 do workflow): execução, commits e o que vem depois. Com "Todas de uma vez", a escolha é a aprovação das fases; com "Tarefa a tarefa", o ciclo inteiro (plano, implementação, testes, validação, marcação no `plan.md` e retomada) é por tarefa; com "Um por tarefa", cada tarefa vira um commit, nunca antes da validação do usuário (com "Tarefa a tarefa", depois da validação de cada tarefa; com "Fase a fase" ou "Todas de uma vez", ao fim da fase, depois da 3.2 e da 3.3, um por tarefa; a `{fase}.T` é a última tarefa da fase e leva os testes da fase; tabela "Quando sai o commit" da 1.3); com "Um commit só ao final", o commit é um só, depois da última fase; com "Rodar o `/eng.pr`", o work termina chamando o `/eng.pr` (que faz o push e o PR, não o work).
 
 ### 2. Escopo de Atuação
 
@@ -248,7 +248,7 @@ Ao finalizar **TODAS as fases** do `plan.md`, informe:
 2. Execute os testes completos
 3. Quando estiver pronto, use `eng.pr` para criar o Pull Request
 
-⚠️ Este workflow commita (por fase ou ao final), mas NÃO faz push nem PR.
+⚠️ Este workflow commita (por fase, por tarefa ou ao final), mas NÃO faz push nem PR.
    Use `eng.pr` quando estiver pronto para submeter.
 ```
 

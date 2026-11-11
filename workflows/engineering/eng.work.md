@@ -80,7 +80,7 @@ Procure no `plan.md`:
 
 - Fase marcada como `[Em Progresso ⏰]`
 - Se nenhuma, identifique a primeira `[Não Iniciada ⏳]`
-- Com **Tarefa a tarefa** (escolha da 1.3, gravada no cabeçalho do `plan.md`), identifique também a tarefa, dentro da fase atual: a `[Em Progresso ⏰]` ou, se não houver, a primeira `[Não Iniciada ⏳]`. A retomada começa por ela.
+- Com **Tarefa a tarefa**, a tarefa da retomada é identificada depois das escolhas, no fim da 1.3, porque a escolha pode mudar ali.
 
 ### 1.3 Escolhas do início (`eng.transitions-rules.md`)
 
@@ -95,16 +95,17 @@ Pergunte com `AskUserQuestion`, uma pergunta por decisão (padrão primeiro):
 - Grave as escolhas no cabeçalho do `plan.md` (`Execução:`, `Commits:`, `Depois do work:`). Retomada com escolhas já gravadas: uma pergunta só, **"Manter as escolhas ({resumo})?"** (Manter / Mudar).
 - **Em qualquer escolha**, o limite de execução, um teste falhando e uma questão nova em aberto **param** a execução e voltam a perguntar.
 - Com **Todas de uma vez**, a escolha é a aprovação das fases: as pausas da Fase 2.2 e da 6.1 não acontecem.
-- Com **Tarefa a tarefa**, o ciclo das Fases 2 a 6 roda para cada tarefa do `plan.md` (cada `### {fase}.{n}`): o plano da tarefa e a pausa (2.1 e 2.2), a implementação, as validações e os testes só da tarefa (3.1 a 3.3), o resultado e a pausa para a validação (4.1), a marcação no `plan.md` (5.1) e a pergunta pela próxima tarefa (6.1). Detalhes em cada fase.
-- Com **Um por tarefa**, cada tarefa vira um commit só com os arquivos dela, com os testes passando, e nada é commitado antes da validação do usuário:
+- Com **Tarefa a tarefa**, o ciclo das Fases 2 a 6 roda para cada tarefa do `plan.md` (cada `### {fase}.{n}`, inclusive a `{fase}.T`): o plano da tarefa e a pausa (2.1 e 2.2), a implementação, as validações e os testes só da tarefa (3.1 a 3.3), o resultado e a pausa para a validação (4.1), a marcação no `plan.md` (5.1) e a pergunta pela próxima tarefa (6.1). Detalhes em cada fase. A **`{fase}.T`** (Testes da Fase) é a última tarefa da fase: roda depois das tarefas numeradas, e a 3.3 dela olha a fase inteira.
+- **Retomada com Tarefa a tarefa** (escolhida agora ou mantida): identifique a tarefa, dentro da fase atual da 1.2: a `[Em Progresso ⏰]` ou, se não houver, a primeira `[Não Iniciada ⏳]`. Se a escolha mudou para "Tarefa a tarefa" com uma fase em andamento, as tarefas dela ainda estão `[Não Iniciada ⏳]` (com "Fase a fase" ou "Todas de uma vez", elas só são marcadas no fim da fase): confira com `git status` quais já têm código e pergunte de onde seguir.
+- **Quando sai o commit**, em cada combinação. Nada é commitado antes da validação do usuário; com "Todas de uma vez", a escolha é a aprovação:
 
-  | Execução | Quando sai o commit da tarefa |
-  |---|---|
-  | Tarefa a tarefa | Depois da validação de cada tarefa |
-  | Fase a fase | Depois da validação da fase (com os testes da fase passando), um commit por tarefa, na ordem do `plan.md` |
-  | Todas de uma vez | Ao fim de cada tarefa, com os testes passando (a escolha já é a aprovação) |
+  | Execução | Um por fase | Um por tarefa | Um commit só ao final |
+  |---|---|---|---|
+  | Fase a fase | Depois da validação da fase | Depois da validação da fase (com a 3.2 e a 3.3 passando), um commit por tarefa, na ordem do `plan.md` | Depois da última fase |
+  | Tarefa a tarefa | Depois da validação da última tarefa da fase (a `{fase}.T`) | Depois da validação de cada tarefa | Depois da validação da última tarefa do plano |
+  | Todas de uma vez | Ao fim da fase, com a 3.2 e a 3.3 passando | Ao fim da fase, depois que a 3.2 e a 3.3 passarem, um commit por tarefa, na ordem do `plan.md` | Depois da última fase |
 
-  Se duas tarefas mexem no mesmo arquivo e não dá para separar as mudanças sem `git add -p` (interativo, não suportado), elas saem num commit só; avise quais tarefas juntou.
+  Com **Um por tarefa**, cada commit leva só os arquivos da tarefa e os testes que a 3.3 escreveu para ela; o que a 3.3 da fase (com "Fase a fase" ou "Todas de uma vez") ou a `{fase}.T` acrescentam sai no commit da `{fase}.T`. Se duas tarefas mexem no mesmo arquivo e não dá para separar as mudanças sem `git add -p` (interativo, não suportado), elas saem num commit só; avise quais tarefas juntou.
 
 ---
 
@@ -325,7 +326,7 @@ Se o comentário registrar uma **mudança de direção** (desvio do plano), mont
 
 ### 5.3 Commit da Fase ou da Tarefa (GitFlow)
 
-Após validação do usuário e atualização do `plan.md`, commitar a fase (ou cada tarefa, com **Um por tarefa**, no momento da tabela da 1.3) na branch atual:
+Após validação do usuário e atualização do `plan.md`, commitar a fase (ou cada tarefa, com **Um por tarefa**) na branch atual, no momento da tabela "Quando sai o commit" da 1.3. Com **Tarefa a tarefa** e **Um por fase**, o commit da fase sai depois da validação da última tarefa dela (a `{fase}.T`); com **Um commit só ao final**, depois da última tarefa do plano:
 
 ```bash
 # Verificar branch (deve ser a branch criada no eng.start)
@@ -400,7 +401,7 @@ Com **Tarefa a tarefa**, a pergunta é pela próxima tarefa, dentro da fase ou, 
 ```
 ✅ Tarefa {N.n} concluída com sucesso!
 
-📌 Próxima tarefa: Tarefa {N.n+1} (ou {N+1}.1, na Fase {N+1})
+📌 Próxima tarefa: Tarefa {N.n+1} (ou {N}.T, a de testes da fase; ou {N+1}.1, na Fase {N+1})
    - {resumo da próxima tarefa}
 
 ❓ Deseja iniciar a Tarefa {N.n+1}?
@@ -409,6 +410,8 @@ Com **Tarefa a tarefa**, a pergunta é pela próxima tarefa, dentro da fase ou, 
 **AGUARDE confirmação antes de iniciar** (com "Fase a fase", antes da próxima fase; com "Tarefa a tarefa", antes da próxima tarefa, que substitui a pausa entre fases; com "Todas de uma vez", siga para a próxima fase).
 
 ### 6.2 Se Todas as Fases Foram Concluídas
+
+Antes de mostrar a mensagem abaixo, faça a conferência da documentação ("Oferta de Documentação", depois da mensagem): ela decide se a linha `📚` entra.
 
 ```
 🎉 TODAS AS FASES CONCLUÍDAS!
@@ -424,8 +427,7 @@ Com **Tarefa a tarefa**, a pergunta é pela próxima tarefa, dentro da fase ou, 
 - Arquivos modificados: {Y}
 - Testes adicionados: {Z}
 
-📚 Documentação: já atualizada nesta entrega ({arquivos}); uma lacuna restante é apontada pelo Gate 9 do /eng.pre-pr
-   (só quando a oferta abaixo não é feita)
+{só quando a oferta não é feita:} 📚 Documentação: já atualizada nesta entrega ({arquivos}); uma lacuna restante é apontada pelo Gate 9 do /eng.pre-pr
 
 📌 Próximos passos:
 1. Revise o código e os commits: git log --oneline
@@ -435,11 +437,11 @@ Com **Tarefa a tarefa**, a pergunta é pela próxima tarefa, dentro da fase ou, 
 ⚠️ LEMBRETE: push e PR são responsabilidade do `eng.pr`.
 ```
 
-**Oferta de Documentação (opcional, não trava o fluxo; não conta no `MAX_AI_EXECUTION_PERCENTAGE` — não é uma tarefa do `plan.md`).** Antes da escolha "Depois do work", confira se a entrega já atualizou a documentação: `git fetch origin {Branch base}` e `git diff --name-only origin/{Branch base}...HEAD`, com a `Branch base:` do `architecture.md` (a base remota, porque a local pode estar atrás e trazer mudanças de outros PRs já mergeados; sem remoto, use a branch local).
+**Oferta de Documentação (opcional, não trava o fluxo; não conta no `MAX_AI_EXECUTION_PERCENTAGE` — não é uma tarefa do `plan.md`).** Antes da escolha "Depois do work", confira se a entrega já atualizou a documentação: `git fetch origin {Branch base}` e `git diff --name-only origin/{Branch base}...HEAD`, com a `Branch base:` do `architecture.md` (a base remota, porque a local pode estar atrás e trazer mudanças de outros PRs já mergeados; sem remoto, use a branch local). Se o `git fetch` falhar (sem rede ou sem login), use a `origin/{Branch base}` que já existe localmente (ou, sem ela, a branch local) e avise em uma linha que a base pode estar desatualizada.
 
 - **O diff já altera o guia de uso do repositório** (`docs/`, `README` ou equivalente; o `CHANGELOG` sozinho não conta): **não faça a oferta**. Mostre, na mensagem acima, a linha `📚 Documentação: …` com esses arquivos e siga para a escolha "Depois do work".
 - **O diff não altera o guia de uso:** pergunte com `AskUserQuestion` (sem a ferramenta, use a tabela de `prod-rules.md`): **"Quer gerar ou atualizar a documentação do projeto (`docs/` ou equivalente) a partir desta entrega?"**, sempre nesta ordem e com o "Sim" recomendado (o contexto da entrega não troca a ordem nem a recomendação).
-  - **Sim, gerar ou atualizar agora** (padrão): use o skill `/eng-global-docs-write` para analisar o diff desde a `Branch base:` do `architecture.md` e propor a atualização do guia de uso do repositório (o que existe **hoje**; nunca histórico, nem "antes"/"passou a", nem funcionalidade removida — ela some do guia, não vira uma nota de descontinuação). Mostre a edição proposta e só grave com a aprovação. Comite em **commit próprio** (`{TASK_MANAGER_KEY} docs({escopo}): atualizar documentação da entrega`, `Refs: {TASK_MANAGER_KEY}`), fora da sequência de commits da entrega.
+  - **Sim, gerar ou atualizar agora** (padrão): use o skill `/eng-global-docs-write` para analisar o diff desde a base remota (`origin/{Branch base}`, a mesma da conferência acima) e propor a atualização do guia de uso do repositório (o que existe **hoje**; nunca histórico, nem "antes"/"passou a", nem funcionalidade removida — ela some do guia, não vira uma nota de descontinuação). Mostre a edição proposta e só grave com a aprovação. Comite em **commit próprio** (`{TASK_MANAGER_KEY} docs({escopo}): atualizar documentação da entrega`, `Refs: {TASK_MANAGER_KEY}`), fora da sequência de commits da entrega.
   - **Não, seguir sem atualizar (como hoje)**: segue direto para a escolha "Depois do work". A lacuna, se houver, é apontada depois pelo Gate 9 do `/eng.pre-pr` ("Documentação do projeto").
 
 Depois da oferta (com Sim ou Não), ou sem ela quando a documentação já foi atualizada, siga a escolha **Depois do work**: chamar o `/eng.pre-pr {TASK_MANAGER_KEY}`, chamar o `/eng.pr {TASK_MANAGER_KEY}`, fazer o que o usuário descreveu em texto livre (o "Outros" automático) ou, no **Fluxo normal (como hoje)**, só encerrar com a mensagem (chamar = pelo Skill tool, ou mostrar o comando pronto na IDE que não permite).

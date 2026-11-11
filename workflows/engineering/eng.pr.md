@@ -408,7 +408,7 @@ Pergunte com `AskUserQuestion`: **"O PR já foi aprovado e mergeado?"**, com as 
 - **Sim, rodar o `/eng.spec-consolidate --force` (publica e apaga os originais, sem `archive/`):** chame o `/eng.spec-consolidate {TASK_MANAGER_KEY} --force` (ou mostre o comando). A própria flag vale como o Sim de publicar e de apagar os originais conferidos; a trava de segredo continua, e a pasta da sessão só sai com o Sim da pergunta própria (Passo 9.1).
 - **Ainda não (como hoje):** encerre com a mensagem acima.
 - **Sim, rodar o `/eng.spec-consolidate`:** chame o `/eng.spec-consolidate {TASK_MANAGER_KEY}` (ou mostre o comando).
-- **Sim, mas rodo o `/eng.spec-consolidate` depois:** encerre sem chamar o comando e mostre os dois, para a pessoa rodar quando quiser: `/eng.spec-consolidate {TASK_MANAGER_KEY}` (publica, arquiva e finaliza, cada passo com o seu Sim) e `/eng.spec-consolidate {TASK_MANAGER_KEY} --force` (publica e apaga os originais, sem `archive/`).
+- **Sim, mas rodo o `/eng.spec-consolidate` depois:** encerre sem chamar o comando e mostre os dois, para a pessoa rodar quando quiser: `/eng.spec-consolidate {TASK_MANAGER_KEY}` (publica, com o seu Sim; arquivar e apagar os originais são chamadas à parte, com `--archive` e `--finalize`) e `/eng.spec-consolidate {TASK_MANAGER_KEY} --force` (publica e apaga os originais, sem `archive/`).
 
 ## Regras Importantes
 
